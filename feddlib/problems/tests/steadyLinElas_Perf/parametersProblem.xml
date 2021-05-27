@@ -1,0 +1,21 @@
+<ParameterList name="steady linear elasticity">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension"							    type="int"   	value="3"/>
+        <Parameter name="Discretization"                        type="string"   value="P1"/><!--P1, P2-->
+        <Parameter name="Homogeneous Dirichlet Flag"			type="int"      value="2"/>
+        <Parameter name="Mesh Delimiter"					    type="string"   value=" "/>
+        <Parameter name="H/h"							    	type="int"   	value="4"/>
+        <Parameter name="Volume force"                          type="double"   value="1."/>        
+	    <Parameter name="Density"					            type="double"   value="1000.e-0"/>
+	    <Parameter name="Poisson Ratio"					        type="double"   value="0.4e-0"/>
+	    <Parameter name="Mu"					                type="double"   value="2.0e+6"/>
+    </ParameterList>
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse"		                type="int"      value="0"/>
+        <Parameter name="ParaViewExport"			            type="bool"     value="true"/>
+        <Parameter name="ParaViewCoarse"                        type="bool"     value="false"/>
+        <Parameter name="Preconditioner Method"                 type="string"   value="Monolithic"/><!-- Monolithic, Diagonal, Triangular -->
+        <Parameter name="Scale mass matrix"                     type="bool"     value="true"/>
+        <Parameter name="Set Zeros"		                        type="bool"     value="true"/>
+    </ParameterList>
+</ParameterList>

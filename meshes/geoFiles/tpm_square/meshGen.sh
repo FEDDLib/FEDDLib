@@ -1,0 +1,1 @@
+/Applications/Gmsh.app/Contents/MacOS/gmsh -2 tpm_square.geo

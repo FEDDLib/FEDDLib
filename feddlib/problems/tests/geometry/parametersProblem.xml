@@ -1,0 +1,32 @@
+<ParameterList name="steady linear elasticity">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="2"/>
+        <Parameter name="Discretization"                        type="string"   value="P2"/><!--P1, P2-->
+        <Parameter name="Volume force" type="double" value="-10."/>
+        <Parameter name="Volume ID"							    type="int"   	value="0"/>
+        <Parameter name="Primary Surface ID"					type="int"   	value="1"/>
+        <Parameter name="Zero Dir ID"							type="int"      value="1"/>
+        <Parameter name="Mesh Type"			                    type="string"   value="unstructured"/> <!-- structuredRec, structured, unstructured, structured_bfs, unstructured_bfs -->
+        <Parameter name="H/h"							    	type="int"   	value="10"/>        
+	    <Parameter name="Density"					            type="double"   value="1000.e-0"/>
+	    <Parameter name="Poisson Ratio"					        type="double"   value="0.4e-0"/>
+	    <Parameter name="Mu"					                type="double"   value="2.0e+6"/>
+    </ParameterList>
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        
+        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h004.mesh"/>
+        <Parameter name="Mesh 2 Name" type="string" value="dfg_fsi_solid_h004.mesh"/>
+    </ParameterList>
+
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse"		                type="int"      value="0"/>
+        <Parameter name="ParaViewExport"			            type="bool"     value="true"/>
+        <Parameter name="ParaViewCoarse"                        type="bool"     value="false"/>
+        <Parameter name="Preconditioner Method"                 type="string"   value="Monolithic"/><!-- Monolithic, Diagonal, Triangular -->
+        <Parameter name="Scale mass matrix"                     type="bool"     value="true"/>
+        <Parameter name="Set Zeros"		                        type="bool"     value="true"/>
+        <Parameter name="Build serial P2 Mesh"		            type="bool"     value="true"/>
+        <Parameter name="ParaViewExport Subdomains"             type="bool"     value="true"/>
+    </ParameterList>
+</ParameterList>

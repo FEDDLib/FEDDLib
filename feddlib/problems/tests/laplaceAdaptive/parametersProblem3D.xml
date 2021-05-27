@@ -1,0 +1,40 @@
+<ParameterList name="Laplace">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization" type="string" value="P1"/><!--P1, P2; velocity, pressure always P1 -->
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured, structured_bfs -->
+        <Parameter name="Mesh Name" type="string" value="cube_131.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh-->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+        <Parameter name="H/h" type="int" value="10"/>        
+    </ParameterList>
+    
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        
+        <Parameter name="Mesh 1 Name" type="string" value="cube_131.mesh"/>
+    </ParameterList>
+
+<!-- Fehlerschätzer -->
+ 	<ParameterList name="Mesh Refinement">
+        <Parameter name="Toleranz" type="double" value="0.001"/>
+        <Parameter name="Theta" type="double" value="0.35"/>
+        <Parameter name="MaxIter" type="int" value="1"/>
+        <Parameter name="RefinementType" type="string" value="Uniform"/>
+    </ParameterList>
+    
+    <ParameterList name="Exporter">
+        
+        <Parameter name="Export coarse functions" type="bool" value="false"/>
+        
+        <Parameter name="Name coarse functions block1" type="string" value="phiUP1"/>
+        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
+        
+    </ParameterList>
+
+
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+    </ParameterList>
+</ParameterList>

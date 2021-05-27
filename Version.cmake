@@ -1,0 +1,7 @@
+SET(feddlib_VERSION 1.0.0)
+SET(feddlib_MAJOR_VERSION 1)
+SET(feddlib_MINOR_VERSION 0)
+SET(feddlib_MICRO_VERSION 0)
+SET(feddlib_MAJOR_MINOR_VERSION 100)
+SET(feddlib_VERSION_STRING "1.0.0")
+SET(feddlib_ENABLE_DEVELOPMENT_MODE_DEFAULT ON) # Change to 'OFF' for a release

@@ -1,0 +1,5 @@
+#cmakedefine FEDD_HAVE_TEKO
+
+#cmakedefine FEDD_HAVE_NOX
+
+#cmakedefine FEDD_HAVE_ZOLTAN2

@@ -1,0 +1,16 @@
+<ParameterList name="meshes_inferface">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization" type="string" value="P2"/>
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!-- structuredRec, structured, unstructured, structured_bfs, unstructured_bfs -->
+        <Parameter name="Mesh Name Fluid"					    type="string"   value="richter_3d_fluid_2f.mesh"/><!---->
+        <Parameter name="Mesh Name Structure"					type="string"   value="richter_3d_solid_2f.mesh"/><!---->
+        <Parameter name="Interface Flags" type="int" value="2"/><!---->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+    </ParameterList>
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewExport Subdomains" type="bool" value="true"/>
+    </ParameterList>
+</ParameterList>

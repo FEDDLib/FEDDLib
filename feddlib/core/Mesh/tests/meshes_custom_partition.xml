@@ -1,0 +1,29 @@
+<ParameterList name="meshes_inferface">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="2"/>
+        <Parameter name="Discretization" type="string" value="P2"/>
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!-- structuredRec, structured, unstructured, structured_bfs, unstructured_bfs -->
+        <Parameter name="BC Type" type="string" value="constInflow"/>
+    </ParameterList>
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewExport Subdomains" type="bool" value="true"/>
+    </ParameterList>
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        
+        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h004.mesh"/>
+        <Parameter name="Mesh 2 Name" type="string" value="dfg_fsi_solid_h004.mesh"/>
+
+        <Parameter name="Automatic partition" type="bool" value="true"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
+        
+        <Parameter name="Mesh 1 fraction ranks" type="int" value="0"/> <!-- percentage of ranks for mesh 1; if Automatic partition=true this will be ignored; if set below 0 number of ranks will be used -->
+        <Parameter name="Mesh 1 number ranks" type="int" value="0"/><!-- number of ranks for this mesh; if Automatic partition=true this will be ignored; if fraction ranks>=0 this will be ignored -->
+        
+        <Parameter name="Mesh 2 fraction ranks" type="int" value="0"/>
+        <Parameter name="Mesh 2 number ranks" type="int" value="0"/>
+        
+    </ParameterList>
+
+</ParameterList>
