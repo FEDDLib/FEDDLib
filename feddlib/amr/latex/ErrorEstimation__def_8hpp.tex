@@ -1,0 +1,39 @@
+\hypertarget{ErrorEstimation__def_8hpp}{}\section{Error\+Estimation\+\_\+def.\+hpp File Reference}
+\label{ErrorEstimation__def_8hpp}\index{Error\+Estimation\+\_\+def.\+hpp@{Error\+Estimation\+\_\+def.\+hpp}}
+{\ttfamily \#include \char`\"{}Error\+Estimation\+\_\+decl.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+Linear\+Algebra/\+Multi\+Vector\+\_\+def.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+Include dependency graph for Error\+Estimation\+\_\+def.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{ErrorEstimation__def_8hpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespaceFEDD}{F\+E\+DD}
+\begin{DoxyCompactList}\small\item\em Mesh\+Unstructured\+Refinement. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ErrorEstimation__def_8hpp_aa1a5c1388eec07e84b71fa4f0f534bda}{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT}(A,  S)~Teuchos\+::\+R\+CP$<$Teuchos\+::\+Time\+Monitor$>$ A = Teuchos\+::rcp(new Teuchos\+::\+Time\+Monitor($\ast$Teuchos\+::\+Time\+Monitor\+::get\+New\+Timer(std\+::string(\char`\"{}Mesh Refinement\char`\"{}) + std\+::string(S))));
+\item 
+\#define \hyperlink{ErrorEstimation__def_8hpp_a3c920e3d75aa84a024c9750ea98dd8a0}{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP}(A)~A.\+reset();
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{ErrorEstimation__def_8hpp_aa1a5c1388eec07e84b71fa4f0f534bda}\label{ErrorEstimation__def_8hpp_aa1a5c1388eec07e84b71fa4f0f534bda}} 
+\index{Error\+Estimation\+\_\+def.\+hpp@{Error\+Estimation\+\_\+def.\+hpp}!M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT@{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT}}
+\index{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT@{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT}!Error\+Estimation\+\_\+def.\+hpp@{Error\+Estimation\+\_\+def.\+hpp}}
+\subsubsection{\texorpdfstring{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT}{MESH\_TIMER\_START}}
+{\footnotesize\ttfamily \#define M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT(\begin{DoxyParamCaption}\item[{}]{A,  }\item[{}]{S }\end{DoxyParamCaption})~Teuchos\+::\+R\+CP$<$Teuchos\+::\+Time\+Monitor$>$ A = Teuchos\+::rcp(new Teuchos\+::\+Time\+Monitor($\ast$Teuchos\+::\+Time\+Monitor\+::get\+New\+Timer(std\+::string(\char`\"{}Mesh Refinement\char`\"{}) + std\+::string(S))));}
+
+\mbox{\Hypertarget{ErrorEstimation__def_8hpp_a3c920e3d75aa84a024c9750ea98dd8a0}\label{ErrorEstimation__def_8hpp_a3c920e3d75aa84a024c9750ea98dd8a0}} 
+\index{Error\+Estimation\+\_\+def.\+hpp@{Error\+Estimation\+\_\+def.\+hpp}!M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP@{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP}}
+\index{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP@{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP}!Error\+Estimation\+\_\+def.\+hpp@{Error\+Estimation\+\_\+def.\+hpp}}
+\subsubsection{\texorpdfstring{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP}{MESH\_TIMER\_STOP}}
+{\footnotesize\ttfamily \#define M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP(\begin{DoxyParamCaption}\item[{}]{A }\end{DoxyParamCaption})~A.\+reset();}
+

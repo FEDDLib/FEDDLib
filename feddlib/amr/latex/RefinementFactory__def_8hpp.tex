@@ -1,0 +1,39 @@
+\hypertarget{RefinementFactory__def_8hpp}{}\section{Refinement\+Factory\+\_\+def.\+hpp File Reference}
+\label{RefinementFactory__def_8hpp}\index{Refinement\+Factory\+\_\+def.\+hpp@{Refinement\+Factory\+\_\+def.\+hpp}}
+{\ttfamily \#include \char`\"{}Refinement\+Factory\+\_\+decl.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+Linear\+Algebra/\+Multi\+Vector\+\_\+def.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+Include dependency graph for Refinement\+Factory\+\_\+def.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{RefinementFactory__def_8hpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespaceFEDD}{F\+E\+DD}
+\begin{DoxyCompactList}\small\item\em Mesh\+Unstructured\+Refinement. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{RefinementFactory__def_8hpp_aa1a5c1388eec07e84b71fa4f0f534bda}{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT}(A,  S)~Teuchos\+::\+R\+CP$<$Teuchos\+::\+Time\+Monitor$>$ A = Teuchos\+::rcp(new Teuchos\+::\+Time\+Monitor($\ast$Teuchos\+::\+Time\+Monitor\+::get\+New\+Timer(std\+::string(\char`\"{}Mesh Refinement\char`\"{}) + std\+::string(S))));
+\item 
+\#define \hyperlink{RefinementFactory__def_8hpp_a3c920e3d75aa84a024c9750ea98dd8a0}{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP}(A)~A.\+reset();
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{RefinementFactory__def_8hpp_aa1a5c1388eec07e84b71fa4f0f534bda}\label{RefinementFactory__def_8hpp_aa1a5c1388eec07e84b71fa4f0f534bda}} 
+\index{Refinement\+Factory\+\_\+def.\+hpp@{Refinement\+Factory\+\_\+def.\+hpp}!M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT@{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT}}
+\index{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT@{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT}!Refinement\+Factory\+\_\+def.\+hpp@{Refinement\+Factory\+\_\+def.\+hpp}}
+\subsubsection{\texorpdfstring{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT}{MESH\_TIMER\_START}}
+{\footnotesize\ttfamily \#define M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+A\+RT(\begin{DoxyParamCaption}\item[{}]{A,  }\item[{}]{S }\end{DoxyParamCaption})~Teuchos\+::\+R\+CP$<$Teuchos\+::\+Time\+Monitor$>$ A = Teuchos\+::rcp(new Teuchos\+::\+Time\+Monitor($\ast$Teuchos\+::\+Time\+Monitor\+::get\+New\+Timer(std\+::string(\char`\"{}Mesh Refinement\char`\"{}) + std\+::string(S))));}
+
+\mbox{\Hypertarget{RefinementFactory__def_8hpp_a3c920e3d75aa84a024c9750ea98dd8a0}\label{RefinementFactory__def_8hpp_a3c920e3d75aa84a024c9750ea98dd8a0}} 
+\index{Refinement\+Factory\+\_\+def.\+hpp@{Refinement\+Factory\+\_\+def.\+hpp}!M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP@{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP}}
+\index{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP@{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP}!Refinement\+Factory\+\_\+def.\+hpp@{Refinement\+Factory\+\_\+def.\+hpp}}
+\subsubsection{\texorpdfstring{M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP}{MESH\_TIMER\_STOP}}
+{\footnotesize\ttfamily \#define M\+E\+S\+H\+\_\+\+T\+I\+M\+E\+R\+\_\+\+S\+T\+OP(\begin{DoxyParamCaption}\item[{}]{A }\end{DoxyParamCaption})~A.\+reset();}
+

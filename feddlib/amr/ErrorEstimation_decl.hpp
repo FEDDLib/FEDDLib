@@ -77,12 +77,12 @@ public:
 
     ErrorEstimation();
     
-    ErrorEstimation( CommConstPtr_Type comm, int volumeID=10 );
+    ErrorEstimation(int dim, string problemType);
     
     ~ErrorEstimation();
     
 	// Error Estimation Functions that will be reallocted soon
-	vec_dbl_Type estimateError(MultiVectorPtrConst_Type valuesSolution, double theta, string strategy, RhsFunc_Type rhsFunc);
+	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type meshUnstr, MultiVectorPtrConst_Type valuesSolution, double theta, string strategy, RhsFunc_Type rhsFunc);
 
 	vec3D_dbl_Type calcDPhiU(MultiVectorPtr_Type valuesSolutionRepeated);
 	vec_dbl_Type calculateJump(MultiVectorPtr_Type valuesSolutionRepeated);
@@ -92,7 +92,7 @@ public:
 
 	double determineResElement(FiniteElementNew element, Teuchos::ArrayRCP< SC > valuesSolutionRep, RhsFunc_Type rhsFunc);
 
-	void markElements(vec_dbl_Type errorEstimation,string strategy); 
+	void markElements(MultiVectorPtr_Type errorElementMv, string strategy, MeshUnstrPtr_Type meshUnstr);
 	
 	vec_dbl_Type determineH_T_min(ElementsNewPtr_Type elements,EdgeElementsNewPtr_Type edgeElements, vec2D_dbl_ptr_Type points, vec_dbl_Type& volTetraeder);
 
@@ -100,6 +100,7 @@ public:
 
 	vec_dbl_Type determineAreaTriangles(ElementsNewPtr_Type elements,EdgeElementsNewPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceElements, vec2D_dbl_ptr_Type points);
 
+	void buildTriangleMap();
 
 	void setErrorEstimate(vec_dbl_Type errorElements) { errorEstimation_ = errorElements;};	
 
@@ -115,6 +116,8 @@ public:
 	bool timeTablePrint_ = "false";
 	int refinement3DDiagonal_ = 0; // 0 beeing the shortest interior Diagonal, 1 the second shortest and 2 the longest interior Diagonal 
 
+	int dim_;
+	string problemType_;
 
 protected: 
 	vec_GO_Type globalInterfaceIDs_;
@@ -130,7 +133,12 @@ protected:
 
 
 private:
-		
+
+	MapConstPtr_Type surfaceTriangleMap_;
+	
+	MeshUnstrPtr_Type inputMesh_;
+	string FEType1_;
+	string FEType2_;
 
     
  

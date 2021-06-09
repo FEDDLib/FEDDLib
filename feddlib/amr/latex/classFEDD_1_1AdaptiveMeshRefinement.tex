@@ -1,0 +1,402 @@
+\hypertarget{classFEDD_1_1AdaptiveMeshRefinement}{}\section{F\+E\+DD\+:\+:Adaptive\+Mesh\+Refinement$<$ SC, LO, GO, NO $>$ Class Template Reference}
+\label{classFEDD_1_1AdaptiveMeshRefinement}\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement$<$ S\+C, L\+O, G\+O, N\+O $>$@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement$<$ S\+C, L\+O, G\+O, N\+O $>$}}
+
+
+{\ttfamily \#include $<$Adaptive\+Mesh\+Refinement\+\_\+decl.\+hpp$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef Mesh$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a7d24de886f92d012c43fbe13d884f08b}{Mesh\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ Mesh\+Unstructured$<$ SC, LO, GO, NO $>$ $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_abc927c0c0253b094c3c53338f9128d20}{Mesh\+Unstr\+Ptr\+\_\+\+Type}
+\item 
+typedef std\+::vector$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_abc927c0c0253b094c3c53338f9128d20}{Mesh\+Unstr\+Ptr\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_aae5b66cd506467dbeff01795c41cafcb}{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}
+\item 
+typedef Mesh\+Unstructured\+Refinement$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ade0625d6a1aa9c3586f3b04abb0a9e5e}{Mesh\+Unstr\+Ref\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ade0625d6a1aa9c3586f3b04abb0a9e5e}{Mesh\+Unstr\+Ref\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ad166d4fc2a5e64ed6c4b5ee3941c77bf}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}
+\item 
+typedef std\+::vector$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ad166d4fc2a5e64ed6c4b5ee3941c77bf}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a9d1410723e7af7a2835cc294934fba65}{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}
+\item 
+typedef Mesh\+\_\+\+Type\+::\+Comm\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a28759ffaba5c0900ad9ad3b7b185d504}{Comm\+Ptr\+\_\+\+Type}
+\item 
+typedef Mesh\+\_\+\+Type\+::\+Comm\+Const\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a6bd5089532bd8dac39bebc4a92e33c40}{Comm\+Const\+Ptr\+\_\+\+Type}
+\item 
+typedef Elements \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ae08f7ca72876c1aba944120b3ca088d3}{Elements\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ae08f7ca72876c1aba944120b3ca088d3}{Elements\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a9a08c5e3801ff9f9f3dff7997f9f4b1b}{Elements\+Ptr\+\_\+\+Type}
+\item 
+typedef Surface\+Elements \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afa6eaf74293132701460f9107ce0c070}{Surface\+Elements\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afa6eaf74293132701460f9107ce0c070}{Surface\+Elements\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_aabda3ef3658f8847265104c6cf9a3877}{Surface\+Elements\+Ptr\+\_\+\+Type}
+\item 
+typedef Edge\+Elements \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a891870bd161746dd633e1c8126d8fea1}{Edge\+Elements\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a891870bd161746dd633e1c8126d8fea1}{Edge\+Elements\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a495f60e86da92289b7fe1c15e291660d}{Edge\+Elements\+Ptr\+\_\+\+Type}
+\item 
+typedef Mesh\+Interface$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a2d24dca5502ca055019d31c569bf003e}{Mesh\+Interface\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a2d24dca5502ca055019d31c569bf003e}{Mesh\+Interface\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a5d1f62bff0822daa8f0b7caf3e3b4311}{Mesh\+Interface\+Ptr\+\_\+\+Type}
+\item 
+typedef Map$<$ LO, GO, NO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_af60419a5ef8a4785991b704d1ad7aacb}{Map\+\_\+\+Type}
+\item 
+typedef Map\+\_\+\+Type\+::\+Map\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a751bcbe2e4fddcdcde836067b776d42d}{Map\+Ptr\+\_\+\+Type}
+\item 
+typedef Map\+\_\+\+Type\+::\+Map\+Const\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a584bfb3398e9072ddf188bfa3c04c926}{Map\+Const\+Ptr\+\_\+\+Type}
+\item 
+typedef Multi\+Vector$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afba165f2caa97c6de40654b1ee51e38d}{Multi\+Vector\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afba165f2caa97c6de40654b1ee51e38d}{Multi\+Vector\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_af4fb11adbdf1bba9bcaf8952324d32f2}{Multi\+Vector\+Ptr\+\_\+\+Type}
+\item 
+typedef Multi\+Vector$<$ LO, LO, GO, NO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ae48fff0bc9a94bc0332516f1d1e05d92}{Multi\+Vector\+L\+O\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ae48fff0bc9a94bc0332516f1d1e05d92}{Multi\+Vector\+L\+O\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a838fdef10af2d85bf1259037b821019e}{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type}
+\item 
+typedef Multi\+Vector$<$ GO, LO, GO, NO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a582403f1b9f5ba542a6269e1b00a9031}{Multi\+Vector\+G\+O\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a582403f1b9f5ba542a6269e1b00a9031}{Multi\+Vector\+G\+O\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ab2378e2061f0df4ec2df4a44af300996}{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ const \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afba165f2caa97c6de40654b1ee51e38d}{Multi\+Vector\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a5af7c0982afd7187a77c802477675cc6}{Multi\+Vector\+Ptr\+Const\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+Ordinal\+Traits$<$ LO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a5926fc86d008bfd69ae52e9190197eb0}{O\+T\+LO}
+\item 
+typedef Matrix$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a607791df1d84bc4ea9fc08acd31225c7}{Matrix\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a607791df1d84bc4ea9fc08acd31225c7}{Matrix\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a862a72ab4878d57a61b746f5ac8d0b6c}{Matrix\+Ptr\+\_\+\+Type}
+\item 
+typedef Exporter\+Para\+View$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a67eda4a3b688720eec1f8d4a6dcb7577}{Exporter\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a67eda4a3b688720eec1f8d4a6dcb7577}{Exporter\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ac8cda8533e68f9049ede0208be2175d6}{Exporter\+Ptr\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ Exporter\+Txt $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afc81b6919eb7756e16e696631e0d666b}{Exporter\+Txt\+Ptr\+\_\+\+Type}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a259e41c282b1db70f233ac94854ba8bd}{Adaptive\+Mesh\+Refinement} ()
+\item 
+\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a3c39f02b73abebe017642e83a8f5b3bc}{Adaptive\+Mesh\+Refinement} (\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a6bd5089532bd8dac39bebc4a92e33c40}{Comm\+Const\+Ptr\+\_\+\+Type} comm, int volume\+ID=10)
+\item 
+\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a90df20bfec3fa56bb731e39b2008dd8f}{Adaptive\+Mesh\+Refinement} (string problem\+Type, int dim)
+\item 
+\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afbfd75b4f7579382147c6ca96f14b3b0}{Adaptive\+Mesh\+Refinement} (string problem\+Type, int dim, vec\+\_\+dbl\+\_\+\+Type paras\+Dbl, vec\+\_\+string\+\_\+type paras\+String,, \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ac8cda8533e68f9049ede0208be2175d6}{Exporter\+Ptr\+\_\+\+Type} export\+Sol, \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ac8cda8533e68f9049ede0208be2175d6}{Exporter\+Ptr\+\_\+\+Type} \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a1dc2d35c4ddb08d1ffeacc66abf4da89}{export\+Error}) $\sim$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{Adaptive\+Mesh\+Refinement}()
+\item 
+void \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_af882598ec6c8af6d1d755b088b324db1}{global\+Algorithm} (Domain\+Ptr\+\_\+\+Type domain\+P1, Domain\+Ptr\+\_\+\+Type domain\+P2 \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_af4fb11adbdf1bba9bcaf8952324d32f2}{Multi\+Vector\+Ptr\+\_\+\+Type} solution\+P1, \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_af4fb11adbdf1bba9bcaf8952324d32f2}{Multi\+Vector\+Ptr\+\_\+\+Type} solution\+P2)
+\begin{DoxyCompactList}\small\item\em Global Algorithm of Mesh Refinement. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a3e2a80f6e9caad8507b0d1afb0537e53}{export\+Solution} ()
+\item 
+void \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a1dc2d35c4ddb08d1ffeacc66abf4da89}{export\+Error} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a6bd5089532bd8dac39bebc4a92e33c40}\label{classFEDD_1_1AdaptiveMeshRefinement_a6bd5089532bd8dac39bebc4a92e33c40}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Comm\+Const\+Ptr\+\_\+\+Type@{Comm\+Const\+Ptr\+\_\+\+Type}}
+\index{Comm\+Const\+Ptr\+\_\+\+Type@{Comm\+Const\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Comm\+Const\+Ptr\+\_\+\+Type}{CommConstPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Mesh\+\_\+\+Type\+::\+Comm\+Const\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a6bd5089532bd8dac39bebc4a92e33c40}{Comm\+Const\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a28759ffaba5c0900ad9ad3b7b185d504}\label{classFEDD_1_1AdaptiveMeshRefinement_a28759ffaba5c0900ad9ad3b7b185d504}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Comm\+Ptr\+\_\+\+Type@{Comm\+Ptr\+\_\+\+Type}}
+\index{Comm\+Ptr\+\_\+\+Type@{Comm\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Comm\+Ptr\+\_\+\+Type}{CommPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Mesh\+\_\+\+Type\+::\+Comm\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a28759ffaba5c0900ad9ad3b7b185d504}{Comm\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a891870bd161746dd633e1c8126d8fea1}\label{classFEDD_1_1AdaptiveMeshRefinement_a891870bd161746dd633e1c8126d8fea1}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Edge\+Elements\+\_\+\+Type@{Edge\+Elements\+\_\+\+Type}}
+\index{Edge\+Elements\+\_\+\+Type@{Edge\+Elements\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Edge\+Elements\+\_\+\+Type}{EdgeElements\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Edge\+Elements \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a891870bd161746dd633e1c8126d8fea1}{Edge\+Elements\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a495f60e86da92289b7fe1c15e291660d}\label{classFEDD_1_1AdaptiveMeshRefinement_a495f60e86da92289b7fe1c15e291660d}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Edge\+Elements\+Ptr\+\_\+\+Type@{Edge\+Elements\+Ptr\+\_\+\+Type}}
+\index{Edge\+Elements\+Ptr\+\_\+\+Type@{Edge\+Elements\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Edge\+Elements\+Ptr\+\_\+\+Type}{EdgeElementsPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a891870bd161746dd633e1c8126d8fea1}{Edge\+Elements\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a495f60e86da92289b7fe1c15e291660d}{Edge\+Elements\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_ae08f7ca72876c1aba944120b3ca088d3}\label{classFEDD_1_1AdaptiveMeshRefinement_ae08f7ca72876c1aba944120b3ca088d3}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Elements\+\_\+\+Type@{Elements\+\_\+\+Type}}
+\index{Elements\+\_\+\+Type@{Elements\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Elements\+\_\+\+Type}{Elements\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Elements \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ae08f7ca72876c1aba944120b3ca088d3}{Elements\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a9a08c5e3801ff9f9f3dff7997f9f4b1b}\label{classFEDD_1_1AdaptiveMeshRefinement_a9a08c5e3801ff9f9f3dff7997f9f4b1b}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Elements\+Ptr\+\_\+\+Type@{Elements\+Ptr\+\_\+\+Type}}
+\index{Elements\+Ptr\+\_\+\+Type@{Elements\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Elements\+Ptr\+\_\+\+Type}{ElementsPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ae08f7ca72876c1aba944120b3ca088d3}{Elements\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a9a08c5e3801ff9f9f3dff7997f9f4b1b}{Elements\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a67eda4a3b688720eec1f8d4a6dcb7577}\label{classFEDD_1_1AdaptiveMeshRefinement_a67eda4a3b688720eec1f8d4a6dcb7577}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Exporter\+\_\+\+Type@{Exporter\+\_\+\+Type}}
+\index{Exporter\+\_\+\+Type@{Exporter\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Exporter\+\_\+\+Type}{Exporter\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Exporter\+Para\+View$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a67eda4a3b688720eec1f8d4a6dcb7577}{Exporter\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_ac8cda8533e68f9049ede0208be2175d6}\label{classFEDD_1_1AdaptiveMeshRefinement_ac8cda8533e68f9049ede0208be2175d6}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Exporter\+Ptr\+\_\+\+Type@{Exporter\+Ptr\+\_\+\+Type}}
+\index{Exporter\+Ptr\+\_\+\+Type@{Exporter\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Exporter\+Ptr\+\_\+\+Type}{ExporterPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a67eda4a3b688720eec1f8d4a6dcb7577}{Exporter\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ac8cda8533e68f9049ede0208be2175d6}{Exporter\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_afc81b6919eb7756e16e696631e0d666b}\label{classFEDD_1_1AdaptiveMeshRefinement_afc81b6919eb7756e16e696631e0d666b}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Exporter\+Txt\+Ptr\+\_\+\+Type@{Exporter\+Txt\+Ptr\+\_\+\+Type}}
+\index{Exporter\+Txt\+Ptr\+\_\+\+Type@{Exporter\+Txt\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Exporter\+Txt\+Ptr\+\_\+\+Type}{ExporterTxtPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$Exporter\+Txt$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afc81b6919eb7756e16e696631e0d666b}{Exporter\+Txt\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_af60419a5ef8a4785991b704d1ad7aacb}\label{classFEDD_1_1AdaptiveMeshRefinement_af60419a5ef8a4785991b704d1ad7aacb}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Map\+\_\+\+Type@{Map\+\_\+\+Type}}
+\index{Map\+\_\+\+Type@{Map\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Map\+\_\+\+Type}{Map\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Map$<$LO,GO,NO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_af60419a5ef8a4785991b704d1ad7aacb}{Map\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a584bfb3398e9072ddf188bfa3c04c926}\label{classFEDD_1_1AdaptiveMeshRefinement_a584bfb3398e9072ddf188bfa3c04c926}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Map\+Const\+Ptr\+\_\+\+Type@{Map\+Const\+Ptr\+\_\+\+Type}}
+\index{Map\+Const\+Ptr\+\_\+\+Type@{Map\+Const\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Map\+Const\+Ptr\+\_\+\+Type}{MapConstPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Map\+\_\+\+Type\+::\+Map\+Const\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a584bfb3398e9072ddf188bfa3c04c926}{Map\+Const\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a751bcbe2e4fddcdcde836067b776d42d}\label{classFEDD_1_1AdaptiveMeshRefinement_a751bcbe2e4fddcdcde836067b776d42d}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Map\+Ptr\+\_\+\+Type@{Map\+Ptr\+\_\+\+Type}}
+\index{Map\+Ptr\+\_\+\+Type@{Map\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Map\+Ptr\+\_\+\+Type}{MapPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Map\+\_\+\+Type\+::\+Map\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a751bcbe2e4fddcdcde836067b776d42d}{Map\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a607791df1d84bc4ea9fc08acd31225c7}\label{classFEDD_1_1AdaptiveMeshRefinement_a607791df1d84bc4ea9fc08acd31225c7}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Matrix\+\_\+\+Type@{Matrix\+\_\+\+Type}}
+\index{Matrix\+\_\+\+Type@{Matrix\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Matrix\+\_\+\+Type}{Matrix\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Matrix$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a607791df1d84bc4ea9fc08acd31225c7}{Matrix\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a862a72ab4878d57a61b746f5ac8d0b6c}\label{classFEDD_1_1AdaptiveMeshRefinement_a862a72ab4878d57a61b746f5ac8d0b6c}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Matrix\+Ptr\+\_\+\+Type@{Matrix\+Ptr\+\_\+\+Type}}
+\index{Matrix\+Ptr\+\_\+\+Type@{Matrix\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Matrix\+Ptr\+\_\+\+Type}{MatrixPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a607791df1d84bc4ea9fc08acd31225c7}{Matrix\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a862a72ab4878d57a61b746f5ac8d0b6c}{Matrix\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a7d24de886f92d012c43fbe13d884f08b}\label{classFEDD_1_1AdaptiveMeshRefinement_a7d24de886f92d012c43fbe13d884f08b}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Mesh\+\_\+\+Type@{Mesh\+\_\+\+Type}}
+\index{Mesh\+\_\+\+Type@{Mesh\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Mesh\+\_\+\+Type}{Mesh\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Mesh$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a7d24de886f92d012c43fbe13d884f08b}{Mesh\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a2d24dca5502ca055019d31c569bf003e}\label{classFEDD_1_1AdaptiveMeshRefinement_a2d24dca5502ca055019d31c569bf003e}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Mesh\+Interface\+\_\+\+Type@{Mesh\+Interface\+\_\+\+Type}}
+\index{Mesh\+Interface\+\_\+\+Type@{Mesh\+Interface\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Mesh\+Interface\+\_\+\+Type}{MeshInterface\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Mesh\+Interface$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a2d24dca5502ca055019d31c569bf003e}{Mesh\+Interface\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a5d1f62bff0822daa8f0b7caf3e3b4311}\label{classFEDD_1_1AdaptiveMeshRefinement_a5d1f62bff0822daa8f0b7caf3e3b4311}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Mesh\+Interface\+Ptr\+\_\+\+Type@{Mesh\+Interface\+Ptr\+\_\+\+Type}}
+\index{Mesh\+Interface\+Ptr\+\_\+\+Type@{Mesh\+Interface\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Mesh\+Interface\+Ptr\+\_\+\+Type}{MeshInterfacePtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a2d24dca5502ca055019d31c569bf003e}{Mesh\+Interface\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a5d1f62bff0822daa8f0b7caf3e3b4311}{Mesh\+Interface\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_abc927c0c0253b094c3c53338f9128d20}\label{classFEDD_1_1AdaptiveMeshRefinement_abc927c0c0253b094c3c53338f9128d20}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Mesh\+Unstr\+Ptr\+\_\+\+Type@{Mesh\+Unstr\+Ptr\+\_\+\+Type}}
+\index{Mesh\+Unstr\+Ptr\+\_\+\+Type@{Mesh\+Unstr\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Mesh\+Unstr\+Ptr\+\_\+\+Type}{MeshUnstrPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$Mesh\+Unstructured$<$SC,LO,GO,NO$>$ $>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_abc927c0c0253b094c3c53338f9128d20}{Mesh\+Unstr\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_aae5b66cd506467dbeff01795c41cafcb}\label{classFEDD_1_1AdaptiveMeshRefinement_aae5b66cd506467dbeff01795c41cafcb}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type@{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}}
+\index{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type@{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}{MeshUnstrPtrArray\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef std\+::vector$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_abc927c0c0253b094c3c53338f9128d20}{Mesh\+Unstr\+Ptr\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_aae5b66cd506467dbeff01795c41cafcb}{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_ade0625d6a1aa9c3586f3b04abb0a9e5e}\label{classFEDD_1_1AdaptiveMeshRefinement_ade0625d6a1aa9c3586f3b04abb0a9e5e}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Mesh\+Unstr\+Ref\+\_\+\+Type@{Mesh\+Unstr\+Ref\+\_\+\+Type}}
+\index{Mesh\+Unstr\+Ref\+\_\+\+Type@{Mesh\+Unstr\+Ref\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Mesh\+Unstr\+Ref\+\_\+\+Type}{MeshUnstrRef\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Mesh\+Unstructured\+Refinement$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ade0625d6a1aa9c3586f3b04abb0a9e5e}{Mesh\+Unstr\+Ref\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_ad166d4fc2a5e64ed6c4b5ee3941c77bf}\label{classFEDD_1_1AdaptiveMeshRefinement_ad166d4fc2a5e64ed6c4b5ee3941c77bf}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type@{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}}
+\index{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type@{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}{MeshUnstrRefPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ade0625d6a1aa9c3586f3b04abb0a9e5e}{Mesh\+Unstr\+Ref\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ad166d4fc2a5e64ed6c4b5ee3941c77bf}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a9d1410723e7af7a2835cc294934fba65}\label{classFEDD_1_1AdaptiveMeshRefinement_a9d1410723e7af7a2835cc294934fba65}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type@{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}}
+\index{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type@{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}{MeshUnstrRefPtrArray\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef std\+::vector$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ad166d4fc2a5e64ed6c4b5ee3941c77bf}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a9d1410723e7af7a2835cc294934fba65}{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_afba165f2caa97c6de40654b1ee51e38d}\label{classFEDD_1_1AdaptiveMeshRefinement_afba165f2caa97c6de40654b1ee51e38d}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Multi\+Vector\+\_\+\+Type@{Multi\+Vector\+\_\+\+Type}}
+\index{Multi\+Vector\+\_\+\+Type@{Multi\+Vector\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+\_\+\+Type}{MultiVector\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Multi\+Vector$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afba165f2caa97c6de40654b1ee51e38d}{Multi\+Vector\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a582403f1b9f5ba542a6269e1b00a9031}\label{classFEDD_1_1AdaptiveMeshRefinement_a582403f1b9f5ba542a6269e1b00a9031}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Multi\+Vector\+G\+O\+\_\+\+Type@{Multi\+Vector\+G\+O\+\_\+\+Type}}
+\index{Multi\+Vector\+G\+O\+\_\+\+Type@{Multi\+Vector\+G\+O\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+G\+O\+\_\+\+Type}{MultiVectorGO\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Multi\+Vector$<$GO,LO,GO,NO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a582403f1b9f5ba542a6269e1b00a9031}{Multi\+Vector\+G\+O\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_ab2378e2061f0df4ec2df4a44af300996}\label{classFEDD_1_1AdaptiveMeshRefinement_ab2378e2061f0df4ec2df4a44af300996}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type@{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type}}
+\index{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type@{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type}{MultiVectorGOPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a582403f1b9f5ba542a6269e1b00a9031}{Multi\+Vector\+G\+O\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ab2378e2061f0df4ec2df4a44af300996}{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_ae48fff0bc9a94bc0332516f1d1e05d92}\label{classFEDD_1_1AdaptiveMeshRefinement_ae48fff0bc9a94bc0332516f1d1e05d92}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Multi\+Vector\+L\+O\+\_\+\+Type@{Multi\+Vector\+L\+O\+\_\+\+Type}}
+\index{Multi\+Vector\+L\+O\+\_\+\+Type@{Multi\+Vector\+L\+O\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+L\+O\+\_\+\+Type}{MultiVectorLO\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Multi\+Vector$<$LO,LO,GO,NO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ae48fff0bc9a94bc0332516f1d1e05d92}{Multi\+Vector\+L\+O\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a838fdef10af2d85bf1259037b821019e}\label{classFEDD_1_1AdaptiveMeshRefinement_a838fdef10af2d85bf1259037b821019e}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type@{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type}}
+\index{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type@{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type}{MultiVectorLOPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ae48fff0bc9a94bc0332516f1d1e05d92}{Multi\+Vector\+L\+O\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a838fdef10af2d85bf1259037b821019e}{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_af4fb11adbdf1bba9bcaf8952324d32f2}\label{classFEDD_1_1AdaptiveMeshRefinement_af4fb11adbdf1bba9bcaf8952324d32f2}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Multi\+Vector\+Ptr\+\_\+\+Type@{Multi\+Vector\+Ptr\+\_\+\+Type}}
+\index{Multi\+Vector\+Ptr\+\_\+\+Type@{Multi\+Vector\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+Ptr\+\_\+\+Type}{MultiVectorPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afba165f2caa97c6de40654b1ee51e38d}{Multi\+Vector\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_af4fb11adbdf1bba9bcaf8952324d32f2}{Multi\+Vector\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a5af7c0982afd7187a77c802477675cc6}\label{classFEDD_1_1AdaptiveMeshRefinement_a5af7c0982afd7187a77c802477675cc6}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Multi\+Vector\+Ptr\+Const\+\_\+\+Type@{Multi\+Vector\+Ptr\+Const\+\_\+\+Type}}
+\index{Multi\+Vector\+Ptr\+Const\+\_\+\+Type@{Multi\+Vector\+Ptr\+Const\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+Ptr\+Const\+\_\+\+Type}{MultiVectorPtrConst\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$const \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afba165f2caa97c6de40654b1ee51e38d}{Multi\+Vector\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a5af7c0982afd7187a77c802477675cc6}{Multi\+Vector\+Ptr\+Const\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a5926fc86d008bfd69ae52e9190197eb0}\label{classFEDD_1_1AdaptiveMeshRefinement_a5926fc86d008bfd69ae52e9190197eb0}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!O\+T\+LO@{O\+T\+LO}}
+\index{O\+T\+LO@{O\+T\+LO}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{O\+T\+LO}{OTLO}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+Ordinal\+Traits$<$LO$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a5926fc86d008bfd69ae52e9190197eb0}{O\+T\+LO}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_afa6eaf74293132701460f9107ce0c070}\label{classFEDD_1_1AdaptiveMeshRefinement_afa6eaf74293132701460f9107ce0c070}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Surface\+Elements\+\_\+\+Type@{Surface\+Elements\+\_\+\+Type}}
+\index{Surface\+Elements\+\_\+\+Type@{Surface\+Elements\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Surface\+Elements\+\_\+\+Type}{SurfaceElements\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Surface\+Elements \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afa6eaf74293132701460f9107ce0c070}{Surface\+Elements\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_aabda3ef3658f8847265104c6cf9a3877}\label{classFEDD_1_1AdaptiveMeshRefinement_aabda3ef3658f8847265104c6cf9a3877}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Surface\+Elements\+Ptr\+\_\+\+Type@{Surface\+Elements\+Ptr\+\_\+\+Type}}
+\index{Surface\+Elements\+Ptr\+\_\+\+Type@{Surface\+Elements\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Surface\+Elements\+Ptr\+\_\+\+Type}{SurfaceElementsPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_afa6eaf74293132701460f9107ce0c070}{Surface\+Elements\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_aabda3ef3658f8847265104c6cf9a3877}{Surface\+Elements\+Ptr\+\_\+\+Type}}
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a259e41c282b1db70f233ac94854ba8bd}\label{classFEDD_1_1AdaptiveMeshRefinement_a259e41c282b1db70f233ac94854ba8bd}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Adaptive\+Mesh\+Refinement@{Adaptive\+Mesh\+Refinement}}
+\index{Adaptive\+Mesh\+Refinement@{Adaptive\+Mesh\+Refinement}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Adaptive\+Mesh\+Refinement()}{AdaptiveMeshRefinement()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+\hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{Adaptive\+Mesh\+Refinement} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a3c39f02b73abebe017642e83a8f5b3bc}\label{classFEDD_1_1AdaptiveMeshRefinement_a3c39f02b73abebe017642e83a8f5b3bc}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Adaptive\+Mesh\+Refinement@{Adaptive\+Mesh\+Refinement}}
+\index{Adaptive\+Mesh\+Refinement@{Adaptive\+Mesh\+Refinement}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Adaptive\+Mesh\+Refinement()}{AdaptiveMeshRefinement()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+\hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{Adaptive\+Mesh\+Refinement} (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_a6bd5089532bd8dac39bebc4a92e33c40}{Comm\+Const\+Ptr\+\_\+\+Type}}]{comm,  }\item[{int}]{volume\+ID = {\ttfamily 10} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a90df20bfec3fa56bb731e39b2008dd8f}\label{classFEDD_1_1AdaptiveMeshRefinement_a90df20bfec3fa56bb731e39b2008dd8f}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Adaptive\+Mesh\+Refinement@{Adaptive\+Mesh\+Refinement}}
+\index{Adaptive\+Mesh\+Refinement@{Adaptive\+Mesh\+Refinement}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Adaptive\+Mesh\+Refinement()}{AdaptiveMeshRefinement()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+\hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{Adaptive\+Mesh\+Refinement} (\begin{DoxyParamCaption}\item[{string}]{problem\+Type,  }\item[{int}]{dim }\end{DoxyParamCaption})}
+
+Initializing problem with the kind of problem (e.\+g. Laplace, Stokes) for determining the correct error estimation and the dimension 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em problem\+Type,dim} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_afbfd75b4f7579382147c6ca96f14b3b0}\label{classFEDD_1_1AdaptiveMeshRefinement_afbfd75b4f7579382147c6ca96f14b3b0}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!Adaptive\+Mesh\+Refinement@{Adaptive\+Mesh\+Refinement}}
+\index{Adaptive\+Mesh\+Refinement@{Adaptive\+Mesh\+Refinement}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{Adaptive\+Mesh\+Refinement()}{AdaptiveMeshRefinement()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+\hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{Adaptive\+Mesh\+Refinement} (\begin{DoxyParamCaption}\item[{string}]{problem\+Type,  }\item[{int}]{dim,  }\item[{vec\+\_\+dbl\+\_\+\+Type}]{paras\+Dbl,  }\item[{vec\+\_\+string\+\_\+type}]{paras\+String,  }\item[{\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ac8cda8533e68f9049ede0208be2175d6}{Exporter\+Ptr\+\_\+\+Type}}]{export\+Sol,  }\item[{\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_ac8cda8533e68f9049ede0208be2175d6}{Exporter\+Ptr\+\_\+\+Type}}]{export\+Error }\end{DoxyParamCaption})}
+
+Initializing problem with the kind of problem, dimension and refinement spectific parameters 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a1dc2d35c4ddb08d1ffeacc66abf4da89}\label{classFEDD_1_1AdaptiveMeshRefinement_a1dc2d35c4ddb08d1ffeacc66abf4da89}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!export\+Error@{export\+Error}}
+\index{export\+Error@{export\+Error}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{export\+Error()}{exportError()}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+void Adaptive\+Mesh\+Refinement\+::export\+Error (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_a3e2a80f6e9caad8507b0d1afb0537e53}\label{classFEDD_1_1AdaptiveMeshRefinement_a3e2a80f6e9caad8507b0d1afb0537e53}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!export\+Solution@{export\+Solution}}
+\index{export\+Solution@{export\+Solution}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{export\+Solution()}{exportSolution()}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+void Adaptive\+Mesh\+Refinement\+::export\+Solution (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFEDD_1_1AdaptiveMeshRefinement_af882598ec6c8af6d1d755b088b324db1}\label{classFEDD_1_1AdaptiveMeshRefinement_af882598ec6c8af6d1d755b088b324db1}} 
+\index{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}!global\+Algorithm@{global\+Algorithm}}
+\index{global\+Algorithm@{global\+Algorithm}!F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement@{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}}
+\subsubsection{\texorpdfstring{global\+Algorithm()}{globalAlgorithm()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{F\+E\+D\+D\+::\+Adaptive\+Mesh\+Refinement}$<$ SC, LO, GO, NO $>$\+::global\+Algorithm (\begin{DoxyParamCaption}\item[{Domain\+Ptr\+\_\+\+Type}]{domain\+P1,  }\item[{Domain\+Ptr\+\_\+\+Type domain\+P2 \hyperlink{classFEDD_1_1AdaptiveMeshRefinement_af4fb11adbdf1bba9bcaf8952324d32f2}{Multi\+Vector\+Ptr\+\_\+\+Type}}]{solution\+P1,  }\item[{\hyperlink{classFEDD_1_1AdaptiveMeshRefinement_af4fb11adbdf1bba9bcaf8952324d32f2}{Multi\+Vector\+Ptr\+\_\+\+Type}}]{solution\+P2 }\end{DoxyParamCaption})}
+
+
+
+Global Algorithm of Mesh Refinement. 
+
+Given domains and solutions depending on problem global mesh refinement algorithm and error estimation is performed
+
+i.\+e. if to solve simple laplace problem, we have only one solution to put in, if to estimate error for Navier-\/\+Stokes equation we need pressure and velocity solution
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em domain\+P1} & domain with P1 discretization, always neccesary as refinement is performed on P1 Mesh \\
+\hline
+\mbox{\tt in}  & {\em domain\+P12} & domain with P1 or P2 discretization if available, otherwise input domain\+P1 \\
+\hline
+\mbox{\tt in}  & {\em solution1} & solution of problem on P1 or P2 discretization \\
+\hline
+\mbox{\tt in}  & {\em solution2} & solution of problem on P1 or P2 discretization if available, otherwise input solution\+P1 \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{AdaptiveMeshRefinement__decl_8hpp}{Adaptive\+Mesh\+Refinement\+\_\+decl.\+hpp}\item 
+\hyperlink{AdaptiveMeshRefinement__def_8hpp}{Adaptive\+Mesh\+Refinement\+\_\+def.\+hpp}\end{DoxyCompactItemize}

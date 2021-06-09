@@ -9,6 +9,7 @@
 #include "feddlib/core/FE/EdgeElements.hpp"
 #include "feddlib/core/FE/TriangleElements.hpp"
 #include "feddlib/core/FE/EdgeElements.hpp"
+#include "feddlib/core/FE/Domain.hpp"
 #include <Tpetra_CrsMatrix.hpp>
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
@@ -17,6 +18,7 @@
 #include "feddlib/core/Mesh/MeshUnstructuredRefinement.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include  <boost/function.hpp>
+#include "feddlib/problem/abstract/problem.hpp'
 
 /*!
  Declaration of Adaptive Mesh Refinement
@@ -76,6 +78,15 @@ public:
     typedef Teuchos::RCP<Exporter_Type> ExporterPtr_Type;
     typedef Teuchos::RCP<ExporterTxt> ExporterTxtPtr_Type;
 
+	typedef Problem<SC,LO,GO,NO> Problem_Type;
+    typedef Teuchos::RCP<Problem_Type> ProblemPtr_Type;
+
+	typedef Domain<SC,LO,GO,NO> Domain_Type;
+    typedef Teuchos::RCP<Domain_Type> DomainPtr_Type;
+    typedef std::vector<DomainPtr_Type> DomainPtrArray_Type;
+
+    typedef std::vector<MultiVectorPtr_Type> MultiVectorPtrArray_Type;
+
 
     AdaptiveMeshRefinement();
     
@@ -87,7 +98,7 @@ public:
     
     ~AdaptiveMeshRefinement();
 
-	void globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP2, vec_dbl_Type parasDbl, vec_string_type parasString, ExporterPtr_Type exportSol, ExporterPtr_Type exportError, MultiVectorPtr_Type solutionP1, MultiVectorPtr_Type solutionP2 );
+	void globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP2 MultiVectorPtr_Type solutionP1, MultiVectorPtr_Type solutionP2 );
     
 	void exportSolution();
 	void exportError();
@@ -99,13 +110,22 @@ protected:
 
 private:
 
+	RhsFunc_Type rhsFunc_;
+	Func_Type exactSol_;
+	
+	MeshUnstrPtr_Type inputMeshP1_;
+	MeshUnstrPtr_Type inputMeshP12_;
+	MeshUnstrPtr_Type outputMesh_;
+
+	MultiVectorPtrArray_Type errorEstimationMv_;
+
 	bool exportWithParaview_ = true;
 
 	ExporterPtr_Type exportSol_;
 	ExporterPtr_Type exportError_;
 
-	DomainPtr_Type domainsP1_;
-	DomainPtr_Type domainsP12_;
+	DomainPtrArray_Type domainsP1_;
+	DomainPtrArray_Type domainsP12_;
 
 	string refinementRestrictions_ = "none";
 	string markingStrategy_ = "Maximum";
@@ -116,7 +136,8 @@ private:
 	bool timeTablePrint_ = "false";
 	int refinement3DDiagonal_ = 0; // 0 beeing the shortest interior Diagonal, 1 the second shortest and 2 the longest interior Diagonal 
 
-
+	string problemType_;
+	int dim_;
 
 	
 	

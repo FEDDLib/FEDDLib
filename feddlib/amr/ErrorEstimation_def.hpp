@@ -30,16 +30,13 @@ using Teuchos::outArg;
 namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>
-ErrorEstimation<SC,LO,GO,NO>::ErrorEstimation():
-ErrorEstimation<SC,LO,GO,NO>()
+ErrorEstimation<SC,LO,GO,NO>:: ErrorEstimation(int dim, string problemType)
 {
+	this->dim_ = dim;
+	this->problemType_ = problemType;	
 
-  
-}
-
-template <class SC, class LO, class GO, class NO>
-ErrorEstimation<SC,LO,GO,NO>::ErrorEstimation(CommConstPtr_Type comm, int volumeID)
-{
+	if(problemType != "Laplace")
+   		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "The Errorestimator only applies to a laplace problem");
 
 }
 
@@ -49,13 +46,184 @@ ErrorEstimation<SC,LO,GO,NO>::~ErrorEstimation(){
 
 // Residualbased A-posteriori ErrorEstimation as proposed in Verfuerths' "A Posteriori Error Estimation Techniques for Finite Element Methods"
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::tagArea(vec2D_dbl_Type area){
+MultiVectorPtr_Type RefinementFactory<SC,LO,GO,NO>::estimateError(MeshUnstrPtr_Type meshUnstr, MultiVectorPtrConst_Type valuesSolution, double theta, string strategy, RhsFunc_Type rhsFunc){
+	
+	inputMesh_ = meshUnstr;
+	FEType1_ = meshUnstr->getFEType();
 
-	int numberEl = this->getElementsC()->numberElements();
-	int numberPoints = this->dim_+1;
- 	ElementsPtr_Type elements = this->getElementsC();
+	if(FEType1_ != "P1" && FEType1_ != "P2"){ 
+   		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Error Estimation only wors for Triangular P1 or P2 Elements");
+	}
+	theta_ = theta;
+	markingStrategy_ = strategy;
 
-	vec2D_dbl_ptr_Type vecPoints= this->pointsRep_;
+	ElementsPtr_Type elements = inputMesh_->getElementsC();
+    EdgeElementsPtr_Type edgeElements = inputMesh_->getEdgeElements();
+	MapConstPtr_Type elementMap = inputMesh_>getElementMap();
+	vec2D_dbl_ptr_Type points = inputMesh_->getPointsRepeated();
+	int myRank = inputMesh_->comm_->getRank();
+
+
+    
+	// 3D Residual Based Error Estimation work when using Surfaces
+	// - New Surface Set
+	// - 
+	MESH_TIMER_START(errorEstimation," Error Estimation ");
+
+ 	
+	Teuchos::ArrayRCP<const SC> valuesLaplace = valuesSolution->getDataNonConst(0);
+
+	// We import the values of the solution in order to have a repeated distributed solution on the processors, which we need for the error Estimation
+	MultiVectorPtr_Type valuesSolutionRepeated = Teuchos::rcp( new MultiVector_Type( inputMesh_->getMapRepeated(), 1 ) );
+	valuesSolutionRepeated->putScalar( 0);
+	valuesSolutionRepeated->importFromVector(valuesSolution , false, "Insert");
+
+	Teuchos::ArrayRCP< SC > valuesSolutionRep  = valuesSolutionRepeated->getDataNonConst(0);
+
+	edgeElements->matchEdgesToElements(elementMap);
+
+	vec2D_GO_Type elementsOfEdgesGlobal = edgeElements->getElementsOfEdgeGlobal();
+	vec2D_LO_Type elementsOfEdgesLocal = edgeElements->getElementsOfEdgeLocal();
+
+	// Vector size of elements for the resdual based error estimate
+	MultiVectorPtr_Type errorElementMv = Teuchos::rcp(new MultiVector_Type( elementMap) ); 
+	Teuchos::ArrayRCP<SC> errorElement = errorElementMv->getDataNonConst(0);
+
+	double maxErrorEl;
+	double maxErrorElLoc=0.0;
+
+
+	if(this->dim_ == 2){ 
+
+		// Jump per Element over edges
+		vec_dbl_Type errorEdgesInterior(3); 
+		// Edge Numbers of Element
+		vec_int_Type edgeNumbers(3);
+		// tmp values u_1,u_2 of gradient u of two elements corresponing with edge 
+		vec_dbl_Type u1(2),u2(2);
+		
+		// gradient of u elementwise
+		vec_dbl_Type u_Jump = calculateJump(valuesSolutionRepeated);
+		//vec_dbl_Type resElement(elements->numberElements());// = determineDeltaU(elements, valuesSolution);
+
+		int elTmp1,elTmp2;
+		
+		// necessary entities
+		// calculating diameter of elements	
+		vec_dbl_Type h_T = calcDiamElements(elements,points);
+
+		vec_dbl_Type p1_2(2); // normal Vector of Surface
+		
+		// Then we determine the jump over the edges, if the element we need for this is not on our proc, we import the solution u
+		for(int k=0; k< elements->numberElements();k++){
+			edgeNumbers = edgeElements->getEdgesOfElement(k); // edges of Element k
+			double resElement = determineResElement(elements->getElement(k), valuesSolutionRep,rhsFunc);
+			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+h_T[k]*h_T[k]*resElement); 
+
+			if(maxErrorElLoc < errorElement[k] )
+					maxErrorElLoc = errorElement[k];
+			
+		}	
+				
+	}
+
+	else if(this->dim_ == 3){
+
+		this->buildTriangleMap();
+		this->surfaceTriangleElements_->matchSurfacesToElements(elementMap);
+		SurfaceElementsPtr_Type surfaceElements = this->surfaceTriangleElements_;
+	 
+		// Jump per Element over edges
+		vec_dbl_Type errorSurfacesInterior(4); 
+		// Edge Numbers of Element
+		vec_int_Type surfaceNumbers(4);
+		// tmp values u_1,u_2 of gradient u of two elements corresponing with surface 
+		vec_dbl_Type u1(3),u2(3);
+		
+		// gradient of u elementwise 
+		vec_dbl_Type u_Jump = calculateJump(valuesSolutionRepeated);
+
+		// h_E,min defined as in "A posteriori error estimation for anisotropic tetrahedral and triangular finite element meshes"
+		// This is the minimal per element, later we also need the adjacent elements' minimal height in order to determine h_E
+		vec_dbl_Type areaTriangles = determineAreaTriangles(elements,edgeElements, surfaceElements,  points);
+		vec_dbl_Type volTetraeder(elements->numberElements());
+		vec_dbl_Type h_T_min = determineH_T_min(elements,edgeElements, points, volTetraeder);
+
+		vec_dbl_Type h_E_min = vec_dbl_Type(surfaceElements->numberElements());
+		vec_dbl_Type h_E(surfaceElements->numberElements());
+		//MultiVectorPtr_Type h_E_minMv = Teuchos::rcp( new MultiVector_Type( elementMap, 1 ) );	
+		//Teuchos::ArrayRCP< SC > valuesSolutionRep  = valuesSolutionRepeated->getDataNonConst(0);
+
+		// necessary entities
+		vec_dbl_Type p1(3),p2(3); // normal Vector of Surface
+		vec_dbl_Type v_E(3); // normal Vector of Surface
+		double norm_v_E;
+
+		int elTmp1,elTmp2;
+
+	
+		// Adjustment for 3D Implememtation	
+		// In case we have more than one proc we need to exchange information via the interface. 
+		// We design a multivector consisting of u's x and y values, to import and export it easier to other procs only for interface elements
+
+		// Then we determine the jump over the edges, if the element we need for this is not on our proc, we import the solution u
+		for(int k=0; k< elements->numberElements();k++){
+			surfaceNumbers = surfaceElements->getSurfacesOfElement(k); // surfaces of Element k
+			double resElement = determineResElement(elements->getElement(k), valuesSolutionRep,rhsFunc);
+			//cout << " Res " << resElement << endl;
+			errorElement[k] = h_T_min[k]*sqrt((u_Jump[surfaceNumbers[0]]+u_Jump[surfaceNumbers[1]]+u_Jump[surfaceNumbers[2]]+u_Jump[surfaceNumbers[3]]+resElement)); 
+			//cout << " Error Element " << k << " " << errorElement[k] << " Jumps: " << u_Jump[surfaceNumbers[0]] << " " << u_Jump[surfaceNumbers[1]] << " " << u_Jump[surfaceNumbers[2]] << " " << u_Jump[surfaceNumbers[3]]  << " h_T " << h_T_min[k] << " res " << resElement << endl;
+		
+			if(maxErrorElLoc < errorElement[k] )
+					maxErrorElLoc = errorElement[k];
+			
+		}	
+		
+		double maxArea, minArea;
+		double maxhTmin, minhTmin, maxhEmin, minhEmin, maxhE, minhE;
+
+		auto it = max_element(areaTriangles.begin(), areaTriangles.end()); // c++11
+		maxArea = areaTriangles[distance(areaTriangles.begin(), it)];
+
+		it = min_element(areaTriangles.begin(), areaTriangles.end()); // c++11
+		minArea = areaTriangles[distance(areaTriangles.begin(), it)];
+		if(this->comm_->getRank() == 0){
+			cout << "__________________________________________________________________________________________________________ " << endl;
+			cout << " " << endl;
+			cout << " Mesh Quality Assesment 3D " << endl;
+			cout << " Area Triangles- Max: " << maxArea << " Min " << minArea  << endl;
+			cout << " The maximal Error of Elements is "  << maxErrorElLoc << endl;
+			cout << "__________________________________________________________________________________________________________ " << endl;
+		}
+	}
+	errorEstimation_ = errorElement;
+	//this->markElements(errorElement);
+
+	//cout << " done " << endl;
+	
+	MESH_TIMER_STOP(errorEstimation);
+
+	return errorElementMv;
+
+}
+
+
+
+// Residualbased A-posteriori ErrorEstimation as proposed in Verfuerths' "A Posteriori Error Estimation Techniques for Finite Element Methods"
+template <class SC, class LO, class GO, class NO>
+void RefinementFactory<SC,LO,GO,NO>::tagArea(vec2D_dbl_Type area, MeshUnstrPtr_Type meshUnstr){
+
+	inputMesh_ = meshUnstr;
+
+	ElementsPtr_Type elements = inputMesh_->getElementsC();
+    EdgeElementsPtr_Type edgeElements = inputMesh_->getEdgeElements();
+	MapConstPtr_Type elementMap = inputMesh_>getElementMap();
+	int myRank = inputMesh_->comm_->getRank();
+
+	int numberEl = elements->numberElements();
+	int numberPoints =dim_+1;
+
+	vec2D_dbl_ptr_Type vecPoints= inputMesh_->getPointsRepeated();
 
 	int taggedElements=0;
 
@@ -71,8 +239,7 @@ void RefinementFactory<SC,LO,GO,NO>::tagArea(vec2D_dbl_Type area){
 		cout << "__________________________________________________________________________________________________________ " << endl;
 	}
 	vec_int_Type edgeNum(6); 
-	EdgeElementsPtr_Type edgeElements = this->getEdgeElements();
-	edgeElements->matchEdgesToElements(this->getElementMap());
+	edgeElements->matchEdgesToElements(elementMap);
 
 	vec_dbl_Type point(this->dim_);
 	int edgeNumber = 3*(this->dim_-1);
@@ -150,15 +317,15 @@ template <class SC, class LO, class GO, class NO>
 vec_dbl_Type RefinementFactory<SC,LO,GO,NO>::calculateJump(MultiVectorPtr_Type valuesSolutionRepeated){
 
 	int dim = this->dim_;
-	int surfaceNumbers = dim+1 ; // Number of (dim-1) - dimensional surfaces of Element (triangle has 3 edges)		
+	int surfaceNumbers = dim+1 ; // Number of (dim-1) - dimensional surfaces of Element (triangle has 3 edges)	
 
-	ElementsPtr_Type elements = this->getElementsC();
 	
-    EdgeElementsPtr_Type edgeElements = this->getEdgeElements();
-
-	SurfaceElementsPtr_Type surfaceTriangleElements = this->surfaceTriangleElements_;
-
-	MapConstPtr_Type elementMap = this->elementMap_;
+	ElementsPtr_Type elements = inputMesh_->getElementsC();
+    EdgeElementsPtr_Type edgeElements = inputMesh_->getEdgeElements();
+	MapConstPtr_Type elementMap = inputMesh_>getElementMap();
+	int myRank = inputMesh_->comm_->getRank();
+	SurfaceElementsPtr_Type surfaceTriangleElements = inputMesh_->surfaceTriangleElements_;
+	vec2D_dbl_ptr_Type points = inputMesh_->pointsRep_;
 
 	vec_int_Type surfaceElementsIds(surfaceNumbers);
 
@@ -177,8 +344,6 @@ vec_dbl_Type RefinementFactory<SC,LO,GO,NO>::calculateJump(MultiVectorPtr_Type v
 	//vec3D_dbl_Type deriPhi(numberSurfaceElements,vec2D_dbl_Type(numRowsDPhi, vec_dbl_Type(dim))) // calcDPih();
 
 	vec3D_dbl_Type u_El = calcDPhiU(valuesSolutionRepeated);
-
-	vec2D_dbl_ptr_Type points = this->pointsRep_;
 
 	double quadWeightConst =1.;
 	
@@ -258,7 +423,7 @@ vec_dbl_Type RefinementFactory<SC,LO,GO,NO>::calculateJump(MultiVectorPtr_Type v
 
 		// global Ids of Elements' Nodes
 		MapPtr_Type mapElementImport =
-			Teuchos::rcp( new Map_Type( this->elementMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalElementArrayImp, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type( elementMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalElementArrayImp, 0, this->comm_) );
 
 		MultiVectorPtr_Type h_T_min_MV = Teuchos::rcp( new MultiVector_Type(elementMap, 1 ) );	
 		MultiVectorPtr_Type volTet_MV = Teuchos::rcp( new MultiVector_Type( elementMap, 1 ) );
@@ -315,8 +480,8 @@ vec_dbl_Type RefinementFactory<SC,LO,GO,NO>::calculateJump(MultiVectorPtr_Type v
 								elementInq[1]=elTmp2;
 							}
 
-						h_E_min[surfaceElementsIds[i]] = 1./2* (h_T_min[this->elementMap_->getLocalElement(elementInq[1])] + h_T_min_Entries[mapElementImport->getLocalElement(elementInq[0])]);
-						h_E[surfaceElementsIds[i]] = 3./2. * (volTetraeder[this->elementMap_->getLocalElement(elementInq[1])] + volTet_Entries[mapElementImport->getLocalElement(elementInq[0])] ) /areaTriangles[surfaceElementsIds[i]];
+						h_E_min[surfaceElementsIds[i]] = 1./2* (h_T_min[elementMap->getLocalElement(elementInq[1])] + h_T_min_Entries[mapElementImport->getLocalElement(elementInq[0])]);
+						h_E[surfaceElementsIds[i]] = 3./2. * (volTetraeder[elementMap->getLocalElement(elementInq[1])] + volTet_Entries[mapElementImport->getLocalElement(elementInq[0])] ) /areaTriangles[surfaceElementsIds[i]];
 
 					}
 				}
@@ -377,22 +542,17 @@ vec3D_dbl_Type RefinementFactory<SC,LO,GO,NO>::calcDPhiU(MultiVectorPtr_Type val
 	int dim = this->dim_;
 	int surfaceNumbers = dim+1 ; // Number of (dim-1) - dimensional surfaces of Element (triangle has 3 edges)		
 
-	vec2D_dbl_ptr_Type points = this->pointsRep_;
-
-	ElementsPtr_Type elements = this->getElementsC();
-	
-    EdgeElementsPtr_Type edgeElements = this->getEdgeElements();
-
-	SurfaceElementsPtr_Type surfaceTriangleElements = this->surfaceTriangleElements_;
-
+	vec2D_dbl_ptr_Type points = inputMesh_->pointsRep_;
+	ElementsPtr_Type elements = inputMesh_->getElementsC();	
+    EdgeElementsPtr_Type edgeElements = inputMesh_->getEdgeElements();
+	SurfaceElementsPtr_Type surfaceTriangleElements = inputMesh_->surfaceTriangleElements_;
 	vec_int_Type surfaceElementsIds(surfaceNumbers);
-
 	MapConstPtr_Type surfaceMap;
 
 	int numberSurfaceElements=0;
 	if(dim==2){
 		numberSurfaceElements = edgeElements->numberElements();
-		surfaceMap= this->edgeMap_;
+		surfaceMap= inputMesh_->edgeMap_;
 	}
 	else if(dim==3){
 		numberSurfaceElements = surfaceTriangleElements->numberElements();
@@ -633,7 +793,7 @@ vec3D_dbl_Type RefinementFactory<SC,LO,GO,NO>::calcDPhiU(MultiVectorPtr_Type val
 
 	// global Ids of Elements' Nodes
 	MapPtr_Type mapElementImport =
-		Teuchos::rcp( new Map_Type( this->elementMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalElementArrayImp, 0, this->comm_) );
+		Teuchos::rcp( new Map_Type( elementMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalElementArrayImp, 0, this->comm_) );
 
 	int maxRank = std::get<1>(this->rankRange_);
 	MapPtr_Type mapElementsUnique = mapElementImport;
@@ -843,192 +1003,22 @@ vec2D_dbl_Type RefinementFactory<SC,LO,GO,NO>::gradPhi(int dim,
 
 
 
-// Residualbased A-posteriori ErrorEstimation as proposed in Verfuerths' "A Posteriori Error Estimation Techniques for Finite Element Methods"
-template <class SC, class LO, class GO, class NO>
-vec_dbl_Type RefinementFactory<SC,LO,GO,NO>::estimateError(MultiVectorPtrConst_Type valuesSolution, double theta, string strategy, RhsFunc_Type rhsFunc){
-	
-	theta_ = theta;
-	markingStrategy_ = strategy;
-
-	if(this->FEType_ != "P1" && this->FEType_ != "P2"){ 
-   		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Mesh Refinement and Error Estimation only wors for Triangular P1 or P2 Elements");
-	}
-    
-	// 3D Residual Based Error Estimation work when using Surfaces
-	// - New Surface Set
-	// - 
-	MESH_TIMER_START(errorEstimation," Error Estimation ");
-
- 	ElementsPtr_Type elements = this->getElementsC();
-	Teuchos::ArrayRCP<const SC> valuesLaplace = valuesSolution->getDataNonConst(0);
-	
-	// We import the values of the solution in order to have a repeated distributed solution on the processors, which we need for the error Estimation
-	MultiVectorPtr_Type valuesSolutionRepeated = Teuchos::rcp( new MultiVector_Type( this->getMapRepeated(), 1 ) );
-	valuesSolutionRepeated->putScalar( 0);
-	valuesSolutionRepeated->importFromVector(valuesSolution , false, "Insert");
-
-	Teuchos::ArrayRCP< SC > valuesSolutionRep  = valuesSolutionRepeated->getDataNonConst(0);
-
-	int dim = this->dim_;
-
-    EdgeElementsPtr_Type edgeElements = this->getEdgeElements();
-
-	string FEType = this->FEType_;
-	MapConstPtr_Type elementMap = this->getElementMap();
-
-	vec2D_dbl_ptr_Type points = this->getPointsRepeated();
-	
-	int myRank = this->comm_->getRank();
-
-
-	edgeElements->matchEdgesToElements(this->getElementMap());
-	vec2D_GO_Type elementsOfEdgesGlobal = edgeElements->getElementsOfEdgeGlobal();
-	vec2D_LO_Type elementsOfEdgesLocal = edgeElements->getElementsOfEdgeLocal();
-
-	// Vector size of elements for the resdual based error estimate
-	vec_dbl_Type errorElement(elements->numberElements());
-	double maxErrorEl;
-	double maxErrorElLoc=0.0;
-
-
-	if(this->dim_ == 2){ 
-
-		// Jump per Element over edges
-		vec_dbl_Type errorEdgesInterior(3); 
-		// Edge Numbers of Element
-		vec_int_Type edgeNumbers(3);
-		// tmp values u_1,u_2 of gradient u of two elements corresponing with edge 
-		vec_dbl_Type u1(2),u2(2);
-		
-		// gradient of u elementwise
-		vec_dbl_Type u_Jump = calculateJump(valuesSolutionRepeated);
-		//vec_dbl_Type resElement(elements->numberElements());// = determineDeltaU(elements, valuesSolution);
-
-		int elTmp1,elTmp2;
-		
-		// necessary entities
-		// calculating diameter of elements	
-		vec_dbl_Type h_T = calcDiamElements(elements,points);
-
-		vec_dbl_Type p1_2(2); // normal Vector of Surface
-		
-		// Then we determine the jump over the edges, if the element we need for this is not on our proc, we import the solution u
-		for(int k=0; k< elements->numberElements();k++){
-			edgeNumbers = edgeElements->getEdgesOfElement(k); // edges of Element k
-			double resElement = determineResElement(elements->getElement(k), valuesSolutionRep,rhsFunc);
-			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+h_T[k]*h_T[k]*resElement); 
-
-			if(maxErrorElLoc < errorElement[k] )
-					maxErrorElLoc = errorElement[k];
-			
-		}	
-				
-	}
-
-	else if(this->dim_ == 3){
-
-		if(this->surfaceTriangleElements_.is_null()){
-			this->surfaceTriangleElements_.reset(new SurfaceElements()); // Surface
-			cout << " Building surfaceTriangleElemenets ... " << endl;
-			this->buildSurfaceTriangleElements(elements,edgeElements);
-			cout << " ... done " << endl;
-		}
-		else if(this->surfaceTriangleElements_->numberElements() ==0){
-			cout << " Building surfaceTriangleElemenets " << endl;
-			this->buildSurfaceTriangleElements(elements,edgeElements);
-			cout << " ... done " << endl;
-		}
-		this->buildTriangleMap();
-		this->surfaceTriangleElements_->matchSurfacesToElements(this->elementMap_);
-		SurfaceElementsPtr_Type surfaceElements = this->surfaceTriangleElements_;
-	 
-		// Jump per Element over edges
-		vec_dbl_Type errorSurfacesInterior(4); 
-		// Edge Numbers of Element
-		vec_int_Type surfaceNumbers(4);
-		// tmp values u_1,u_2 of gradient u of two elements corresponing with surface 
-		vec_dbl_Type u1(3),u2(3);
-		
-		// gradient of u elementwise 
-		vec_dbl_Type u_Jump = calculateJump(valuesSolutionRepeated);
-
-		// h_E,min defined as in "A posteriori error estimation for anisotropic tetrahedral and triangular finite element meshes"
-		// This is the minimal per element, later we also need the adjacent elements' minimal height in order to determine h_E
-		vec_dbl_Type areaTriangles = determineAreaTriangles(elements,edgeElements, surfaceElements,  points);
-		vec_dbl_Type volTetraeder(elements->numberElements());
-		vec_dbl_Type h_T_min = determineH_T_min(elements,edgeElements, points, volTetraeder);
-
-		vec_dbl_Type h_E_min = vec_dbl_Type(surfaceElements->numberElements());
-		vec_dbl_Type h_E(surfaceElements->numberElements());
-		//MultiVectorPtr_Type h_E_minMv = Teuchos::rcp( new MultiVector_Type( elementMap, 1 ) );	
-		//Teuchos::ArrayRCP< SC > valuesSolutionRep  = valuesSolutionRepeated->getDataNonConst(0);
-
-		// necessary entities
-		vec_dbl_Type p1(3),p2(3); // normal Vector of Surface
-		vec_dbl_Type v_E(3); // normal Vector of Surface
-		double norm_v_E;
-
-		int elTmp1,elTmp2;
-
-	
-		// Adjustment for 3D Implememtation	
-		// In case we have more than one proc we need to exchange information via the interface. 
-		// We design a multivector consisting of u's x and y values, to import and export it easier to other procs only for interface elements
-
-		// Then we determine the jump over the edges, if the element we need for this is not on our proc, we import the solution u
-		for(int k=0; k< elements->numberElements();k++){
-			surfaceNumbers = surfaceElements->getSurfacesOfElement(k); // surfaces of Element k
-			double resElement = determineResElement(elements->getElement(k), valuesSolutionRep,rhsFunc);
-			//cout << " Res " << resElement << endl;
-			errorElement[k] = h_T_min[k]*sqrt((u_Jump[surfaceNumbers[0]]+u_Jump[surfaceNumbers[1]]+u_Jump[surfaceNumbers[2]]+u_Jump[surfaceNumbers[3]]+resElement)); 
-			//cout << " Error Element " << k << " " << errorElement[k] << " Jumps: " << u_Jump[surfaceNumbers[0]] << " " << u_Jump[surfaceNumbers[1]] << " " << u_Jump[surfaceNumbers[2]] << " " << u_Jump[surfaceNumbers[3]]  << " h_T " << h_T_min[k] << " res " << resElement << endl;
-		
-			if(maxErrorElLoc < errorElement[k] )
-					maxErrorElLoc = errorElement[k];
-			
-		}	
-		
-		double maxArea, minArea;
-		double maxhTmin, minhTmin, maxhEmin, minhEmin, maxhE, minhE;
-
-		auto it = max_element(areaTriangles.begin(), areaTriangles.end()); // c++11
-		maxArea = areaTriangles[distance(areaTriangles.begin(), it)];
-
-		it = min_element(areaTriangles.begin(), areaTriangles.end()); // c++11
-		minArea = areaTriangles[distance(areaTriangles.begin(), it)];
-		if(this->comm_->getRank() == 0){
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Mesh Quality Assesment 3D " << endl;
-			cout << " Area Triangles- Max: " << maxArea << " Min " << minArea  << endl;
-			cout << " The maximal Error of Elements is "  << maxErrorElLoc << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-		}
-	}
-	errorEstimation_ = errorElement;
-	//this->markElements(errorElement);
-
-	//cout << " done " << endl;
-	
-	MESH_TIMER_STOP(errorEstimation);
-	return errorElement;
-
-}
 
 // Applying a marking strategy to the calculated estimations
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::markElements(vec_dbl_Type errorEstimation, string strategy){
+void RefinementFactory<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElementMv, string strategy, MeshUnstrPtr_Type meshUnstr){
+
+
+	Teuchos::ArrayRCP<SC> errorEstimation = errorElementMv->getDataNonConst(0);
+
+	ElementsPtr_Type elements = meshUnstr->getElementsC();	
 
 	this->markingStrategy_ = strategy;
-	ElementsPtr_Type elements = this->elementsNewNew_;
-	// Marking Strategies
-	// As no P2 Error Estimation is implemented we use uniform Refinement in that case
+
 
 	// As we decide which element to tag based on the maximum error in the elements globally, we need to communicated this maxErrorEl
 	auto it = max_element(errorEstimation.begin(), errorEstimation.end()); // c++11
 	double maxErrorEl= errorEstimation[distance(errorEstimation.begin(), it)];
-
-	cout << " Max Error El " << maxErrorEl << " Elements Size " << elements->numberElements() << endl;
 
     reduceAll<int, double> (*this->comm_, REDUCE_MAX, maxErrorEl, outArg (maxErrorEl));
 	int flagCount=0;
@@ -1464,144 +1454,6 @@ vec_dbl_Type RefinementFactory<SC,LO,GO,NO>::determineAreaTriangles(ElementsPtr_
 	return areaTriangles;
 }
 
-// Mesh Refinement 
-template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements){
-    TEUCHOS_TEST_FOR_EXCEPTION( this->elementsNewNew_.is_null(), std::runtime_error, "Elements not initialized! Have you initiated MeshUnstrRef yet?");
-    TEUCHOS_TEST_FOR_EXCEPTION( elements.is_null(), std::runtime_error, "Elements not initialized! Have you initiated MeshUnstrRef yet?");
-
-	vec_LO_Type nodeInd(4);
-	vec2D_int_Type newTriangles(4,vec_int_Type(0)); // new Triangles
-	
-	vec_GO_Type globalInterfaceIDs;
-	if(globalInterfaceIDs_.size() == 0 )
-		globalInterfaceIDs = edgeElements->determineInterfaceEdges(this->edgeMap_);
-	//if(edgeElements->getEdgesOfElement(0) ) here we need some sort of test if the function was already used
-	edgeElements->matchEdgesToElements(this->elementMap_);
-
-
-	for(int i=0; i<elements->numberElements(); i++){
-		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(i); // indeces of edges belonging to element
-
-		// Extract the four points of tetraeder
-		vec_int_Type nodeInd(0);
-		for(int i=0; i<6; i++)	{
-			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(0));
-			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(1));
-		}
-		sort( nodeInd.begin(), nodeInd.end() );
-		nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
-
-		// With our sorted Nodes we construct edges as follows
-
-		// Edge_0 = [x_0,x_1]
-		// Edge_1 = [x_0,x_2]	 
-		// Edge_2 = [x_0,x_3]	 
-		// Edge_3 = [x_1,x_2]
-		// Edge_4 = [x_1,x_3]	 
-		// Edge_5 = [x_2,x_3]
-
-		vec_int_Type edgeNumbersTmp = edgeNumbers;
-		for(int i=0; i<6; i++){
-			if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[0] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[0]){
-				if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[1] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[1])
-					edgeNumbers[0] = edgeNumbersTmp[i];
-				else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[2] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[2])
-					edgeNumbers[1] = edgeNumbersTmp[i];
-				else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[3] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[3])
-					edgeNumbers[2] = edgeNumbersTmp[i];	
-			}
-			else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[1] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[1]){
-				if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[2] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[2])
-					edgeNumbers[3] = edgeNumbersTmp[i];
-				else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[3] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[3])
-					edgeNumbers[4] = edgeNumbersTmp[i];
-			}
-			 else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[2] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[2]){
-				if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[3] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[3])
-					edgeNumbers[5] = edgeNumbersTmp[i];
-			}
-		}
-
-		// We hace 4 Triangles in our Tetraedron
-		// If one or more of those Triangles are Part of the domains' boundaries, they are added to the element in question as subelement
-		// We extract them in follwing pattern:
-
-		// Tri_0 = [x_0,x_1,x_2] -> Edge 0,1,3
-		// Tri_1 = [x_0,x_1,x_3] -> Edge 0,2,4
-		// Tri_2 = [x_0,x_2,x_3] -> Edge 1,2,5
-		// Tri_3 = [x_1,x_2,x_3] -> Edge 3,4,5
-
-		/*vec2D_int_Type subElements(4,vec_int_Type(3));
-		subElements[0] = {edgeNumbers[0],edgeNumbers[1],edgeNumbers[3]};
-		subElements[1] = {edgeNumbers[0],edgeNumbers[2],edgeNumbers[4]};
-		subElements[2] = {edgeNumbers[1],edgeNumbers[2],edgeNumbers[5]};
-		subElements[3] = {edgeNumbers[3],edgeNumbers[4],edgeNumbers[5]};*/
-
-		// We check if one or more of these triangles are part of the boundary surface and determine there flag
-
-		vec2D_int_Type originTriangles(4,vec_int_Type(3));
-		originTriangles[0] = {nodeInd[0],nodeInd[1],nodeInd[2]};
-		originTriangles[1] = {nodeInd[0],nodeInd[1],nodeInd[3]};
-		originTriangles[2] = {nodeInd[0],nodeInd[2],nodeInd[3]};
-		originTriangles[3] = {nodeInd[1],nodeInd[2],nodeInd[3]};
-		
-		
-		vec_int_Type originFlag(4,10); // Triangle Flag
-
-		int numberSubElSurf=0;
-		vec_LO_Type triTmp(3);
-		vec_int_Type originTriangleTmp(3);
-		int entry; 
-		if (elements->getElement(i).subElementsInitialized() ){
-			numberSubElSurf = elements->getElement(i).getSubElements()->numberElements();
-			for(int k=0; k< numberSubElSurf ; k++){
-				triTmp =elements->getElement(i).getSubElements()->getElement(k).getVectorNodeList();
-				for(int j=0; j<4 ; j++){
-					originTriangleTmp = originTriangles[j];
-					sort(originTriangleTmp.begin(),originTriangleTmp.end());
-					sort(triTmp.begin(),triTmp.end());
-					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] &&  triTmp[2] == originTriangleTmp[2] ) 
-						originFlag[j] = elements->getElement(i).getSubElements()->getElement(k).getFlag();
-					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
-               		//entry = distance( originTriangles.begin() , it1 );
-				}
-			}
-		}
-
-		// Furthermore we have to determine whether the triangles are part of the interface between processors, as we need this information to determine if edges
-		// that emerge on the triangles are part of the interface
-		// A triangle is part of the interface if all of its edges are part of the interface (the information if edges are part of the interface was determined
-		// in the beginning of the Mesh Refinement by 'determineInterfaceEdges')
-
-		vec_bool_Type interfaceSurface = checkInterfaceSurface(edgeElements,originFlag, edgeNumbers,i);
-		
-		for(int j=0; j<4; j++){	
-			sort( newTriangles.at(j).begin(), newTriangles.at(j).end() );
-			FiniteElementNew feNew(originTriangles[j],originFlag[j]);
-			feNew.setInterfaceElement(interfaceSurface[j]);
-			this->surfaceTriangleElements_->addSurface(feNew, i);
-		}
-	}
-	vec2D_GO_Type combinedSurfaceElements;
-	this->surfaceTriangleElements_->sortUniqueAndSetGlobalIDsParallel(this->elementMap_,combinedSurfaceElements);
-	
-	this->surfaceTriangleElements_->setElementsSurface( combinedSurfaceElements );
-
-	this->surfaceTriangleElements_->setUpElementsOfSurface( this->elementMap_, this->edgeMap_, edgeElements);
-
-	this->updateElementsOfSurfaceLocalAndGlobal(edgeElements);
-
-	vec2D_GO_Type elementsOfSurfaceGlobal = this->surfaceTriangleElements_->getElementsOfSurfaceGlobal();
-
-	/*for(int i=0; i< this->surfaceTriangleElements_->numberElements() ;i++){
-		cout << " Surface i="<< i << " liegt an Element " << elementsOfSurfaceGlobal[i][0] ;
-		if(elementsOfSurfaceGlobal[i].size()>1)
-			cout << " " << elementsOfSurfaceGlobal[i][1] ;
-		cout << endl;
-	}*/
-
-}
 
 
 // We execute this function with an estimated error from the above 'estimateCoarseningError' function. With this error, we mark the elements according to that error and refine afterwards
@@ -1672,6 +1524,246 @@ vec_dbl_Type RefinementFactory<SC,LO,GO,NO>::determineCoarseningError(MeshUnstrR
 
 }
 
+// Build Surface Map
+// Contrary to building the edge map, building the surface map is somewhat simpler as elementsOfSurfaceGlobal and elementsOfSurfaceLocal already exist.
+// Via elementsOfSurface global each surface can be uniquely determined by the two elements it connects.
+template <class SC, class LO, class GO, class NO>
+void RefinementFactory<SC,LO,GO,NO>::buildTriangleMap(){
+
+		cout << " ---- Building Triangle Surface Map ----- " << endl;
+
+		int maxRank = std::get<1>(this->rankRange_);
+		const int myRank = this->comm_->getRank();
+
+		vec_GO_Type globalProcs(0);
+		for (int i=0; i<= maxRank; i++)
+			globalProcs.push_back(i);
+
+		Teuchos::ArrayView<GO> globalProcArray = Teuchos::arrayViewFromVector( globalProcs);
+
+		vec_GO_Type localProc(0);
+		localProc.push_back(this->comm_->getRank());
+		Teuchos::ArrayView<GO> localProcArray = Teuchos::arrayViewFromVector( localProc);
+
+		MapPtr_Type mapGlobalProc =
+			Teuchos::rcp( new Map_Type( this->edgeMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
+
+		MapPtr_Type mapProc =
+			Teuchos::rcp( new Map_Type( this->edgeMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
+
+
+
+		vec2D_int_Type interfaceSurfacesLocalId(1,vec_int_Type(1));
+
+
+		MultiVectorLOPtr_Type exportLocalEntry = Teuchos::rcp( new MultiVectorLO_Type( mapProc, 1 ) );
+
+		// (A) First we determine a Map only for the interface Nodes
+		// This will reduce the size of the Matrix we build later significantly if only look at the interface edges
+		int numSurfaces= this->surfaceTriangleElements_->numberElements();
+		vec2D_GO_Type inzidenzIndices(0,vec_GO_Type(2)); // Vector that stores global IDs of each edge (in Repeated Sense)
+		vec_LO_Type localSurfaceIndex(0); // stores the local ID of surfaces in question 
+		vec_GO_Type id(2);
+		int surfacesUnique=0;
+    	SurfaceElementsPtr_Type surfaceElements = this->surfaceTriangleElements_; // Surfaces
+
+		vec2D_dbl_ptr_Type points = this->pointsRep_;
+
+		vec2D_GO_Type elementsOfSurfaceGlobal = surfaceElements->getElementsOfSurfaceGlobal();
+
+		vec_GO_Type elementRep(0);
+
+		int interfaceNum=0;
+		for(int i=0; i<numSurfaces; i++ ){
+			if(surfaceElements->getElement(i).isInterfaceElement()){
+
+				id[0] = elementsOfSurfaceGlobal[i][0]; 
+				id[1] = elementsOfSurfaceGlobal[i][1];
+			 	
+
+
+				sort(id.begin(),id.end());
+				inzidenzIndices.push_back(id);
+
+				localSurfaceIndex.push_back(i);
+				interfaceNum++;
+
+			}
+	
+			else{
+				surfacesUnique++;
+			}
+			
+			for(int j=0; j < elementsOfSurfaceGlobal[i].size() ; j++)
+				elementRep.push_back(elementsOfSurfaceGlobal[i][j]);
+
+		 }
+
+		sort(elementRep.begin(),elementRep.end());
+		vec_GO_Type::iterator ip = unique( elementRep.begin(), elementRep.end());
+		elementRep.resize(distance(elementRep.begin(), ip)); 
+
+		Teuchos::ArrayView<GO> elementRepArray = Teuchos::arrayViewFromVector( elementRep);
+
+		MapPtr_Type elementMapRep =
+			Teuchos::rcp( new Map_Type( this->elementMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), elementRepArray, 0, this->comm_) );
+
+	
+
+		// This Matrix is row based, where the row is based on mapInterfaceNodesUnqiue
+		// We then add a '1' Entry when two global Node IDs form an edge
+		MatrixPtr_Type inzidenzMatrix = Teuchos::rcp( new Matrix_Type(this->elementMap_, 40 ) );
+		Teuchos::Array<GO> index(1);
+		Teuchos::Array<GO> col(1);
+		Teuchos::Array<SC> value(1, Teuchos::ScalarTraits<SC>::one() );
+
+		for(int i=0; i<inzidenzIndices.size(); i++ ){
+			index[0] = inzidenzIndices[i][0];
+			col[0] = inzidenzIndices[i][1];
+			inzidenzMatrix->insertGlobalValues(index[0], col(), value());
+		 }
+   		inzidenzMatrix->fillComplete(); //mapInterfaceNodesUnique,mapInterfaceNodesUnique);
+
+	
+		// ---------------------------------------------------
+		// 2 .Set unique edges IDs ---------------------------
+		// Setting the IDs of Edges that are uniquely on one
+		// Processor
+		// ---------------------------------------------------
+		exportLocalEntry->putScalar( (LO) surfacesUnique );
+
+		MultiVectorLOPtr_Type newSurfacesUniqueGlobal= Teuchos::rcp( new MultiVectorLO_Type( mapGlobalProc, 1 ) );
+		newSurfacesUniqueGlobal->putScalar( (LO) 0 ); 
+		newSurfacesUniqueGlobal->importFromVector( exportLocalEntry, false, "Insert");
+
+		// offset EdgesUnique for proc and globally
+		Teuchos::ArrayRCP< const LO > newSurfacesList = newSurfacesUniqueGlobal->getData(0);
+
+		GO procOffsetSurface=0;
+		for(int i=0; i< myRank; i++)
+			procOffsetSurface= procOffsetSurface + newSurfacesList[i];
+
+		// global IDs for map
+		vec_GO_Type vecGlobalIDsSurfaces(numSurfaces); 
+	
+		// Step 1: adding unique global edge IDs
+		int count=0;
+		for(int i=0; i< numSurfaces; i++){
+			if(!surfaceElements->getElement(i).isInterfaceElement()){
+				vecGlobalIDsSurfaces.at(i) = procOffsetSurface+count;
+				count++;
+			}
+		}	
+		
+		// Now we add the repeated ids, by first turning interfaceEdgesTag into a map
+		// Offset for interface IDS:
+		GO offsetInterface=0;
+		for(int i=0; i< maxRank+1; i++)
+			 offsetInterface=  offsetInterface + newSurfacesList[i];
+		
+		// (D) Now we count the row entries on each processor an set global IDs
+
+		Teuchos::ArrayView<const LO> indices;
+		Teuchos::ArrayView<const SC> values;
+		vec2D_GO_Type inzidenzIndicesUnique(0,vec_GO_Type(2)); // Vector that stores only both global IDs if the first is part of my unique Interface Nodes
+		MapConstPtr_Type colMap = inzidenzMatrix->getMap("col");
+		MapConstPtr_Type rowMap = inzidenzMatrix->getMap("row");
+		int numRows = rowMap->getNodeNumElements();
+		int uniqueSurfaces =0;
+		for(int i=0; i<numRows; i++ ){
+			inzidenzMatrix->getLocalRowView(i, indices,values); 
+			uniqueSurfaces = uniqueSurfaces+indices.size();
+			vec_GO_Type surfaceTmp(2);
+			for(int j=0; j<indices.size(); j++){
+				surfaceTmp[0] = rowMap->getGlobalElement(i);
+				surfaceTmp[1] = colMap->getGlobalElement(indices[j]);
+				inzidenzIndicesUnique.push_back(surfaceTmp);
+			}
+		}
+	
+		exportLocalEntry->putScalar( uniqueSurfaces);
+		MultiVectorLOPtr_Type newSurfaceInterfaceGlobal= Teuchos::rcp( new MultiVectorLO_Type( mapGlobalProc, 1 ) );
+		newSurfaceInterfaceGlobal->putScalar( (LO) 0 ); 
+		newSurfaceInterfaceGlobal->importFromVector( exportLocalEntry,true, "Insert");
+
+		// offset EdgesUnique for proc and globally
+		Teuchos::ArrayRCP< const LO > numUniqueInterface = newSurfaceInterfaceGlobal->getData(0);
+
+		procOffsetSurface=0;
+		for(int i=0; i< myRank; i++)
+			procOffsetSurface= procOffsetSurface + numUniqueInterface[i];
+
+		int numInterfaceSurface=0;
+		
+		vec_GO_Type uniqueInterfaceIDsList_(inzidenzIndicesUnique.size());
+		for(int i=0; i< uniqueInterfaceIDsList_.size(); i++)
+			uniqueInterfaceIDsList_[i] = procOffsetSurface + i;
+
+		MatrixPtr_Type indMatrix = Teuchos::rcp( new Matrix_Type(this->elementMap_, 40 ) );
+
+		for(int i=0; i<inzidenzIndicesUnique.size(); i++ ){
+			index[0] = inzidenzIndicesUnique[i][0];
+			col[0] = inzidenzIndicesUnique[i][1];
+			Teuchos::Array<SC> value2(1,uniqueInterfaceIDsList_[i]);
+			indMatrix->insertGlobalValues(index[0], col(), value2());
+		}
+   		indMatrix->fillComplete(); //mapUniqueInterfaceNodes,mapUniqueInterfaceNodes);
+		//sindMatrix->print();
+		//indMatrix->writeMM();
+
+		MatrixPtr_Type importMatrix = Teuchos::rcp( new Matrix_Type(elementMapRep, 40 ) );
+   		
+		importMatrix->importFromVector(indMatrix,false,"Insert");
+		importMatrix->fillComplete(); // mapInterfaceNodesRep, mapInterfaceNodesUnique); //mapScaledInterfaceNodesGlobalID,mapScaledInterfaceNodesGlobalID);
+		
+		//importMatrix->print(Teuchos::VERB_EXTREME);
+
+		//importMatrix->writeMM();
+
+		// Determine global indices
+		GO surfaceID=0;
+		colMap = importMatrix->getMap("col");
+		rowMap = importMatrix->getMap("row");
+		LO valueID=0;
+		bool found = false;
+		GO entry =0;
+		for(int i=0; i<inzidenzIndices.size(); i++ ){
+			
+			importMatrix->getLocalRowView(rowMap->getLocalElement(inzidenzIndices[i][0]), indices,values); // Indices and values connected to node i / row i in Matrix
+			// Entries in 'indices' represent the local entry in 'colmap
+			// with 'getGlobalElement' we know the global Node ID that belongs to the first Node that form an edge
+			// vector in with entries only for edges belonging to node i;
+			vec2D_GO_Type indicesTmp(indices.size(),vec_GO_Type(2));
+			vec_GO_Type indTmp(2);
+			for(int j=0; j<indices.size(); j++){
+				indTmp[0] = colMap->getGlobalElement(indices[j]);
+				indTmp[1] = values[j];
+				indicesTmp.push_back(indTmp);	// vector with the indices and values belonging to node i
+			}
+			//sort(indicesTmp.begin(),indicesTmp.end());
+			found = false;
+			for(int k=0; k<indicesTmp.size();k++){
+				if(inzidenzIndices[i][1] == indicesTmp[k][0]){
+					entry =k;
+					k = indicesTmp.size();
+					surfaceID = indicesTmp[entry][1];
+					vecGlobalIDsSurfaces.at(localSurfaceIndex[i]) = offsetInterface + surfaceID;
+					found =true;
+				}
+			}
+			if(found == false)
+				cout << " Asking for row " << rowMap->getLocalElement(inzidenzIndices[i][0]) << " for Edge [" << inzidenzIndices[i][0] << ",  " << inzidenzIndices[i][1] << "], on Proc " << myRank << " but no Value found " <<endl;
+		 }
+
+
+		Teuchos::RCP<std::vector<GO>> surfacesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsSurfaces ) );
+		Teuchos::ArrayView<GO> surfacesGlobMappingArray = Teuchos::arrayViewFromVector( *surfacesGlobMapping);
+
+		this->surfaceTriangleMap_.reset(new Map<LO,GO,NO>(this->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingArray, 0, this->comm_) );
+		//this->surfaceTriangleMap_->print();
+
+		cout << "--- done" << endl;
+}
 
 
 }

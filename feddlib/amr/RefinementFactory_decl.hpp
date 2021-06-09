@@ -108,8 +108,7 @@ public:
 
 	void buildEdgeMap(MapConstPtr_Type mapGlobalProc,MapConstPtr_Type mapProc);
 	void buildNodeMap(EdgeElementsPtr_Type edgeElements, MapConstPtr_Type mapGlobalProc, MapConstPtr_Type mapProc, int newPoints, int newPointsRepeated);
-	
-	void buildTriangleMap();
+
 	
 	void updateElementsOfEdgesLocalAndGlobal(int maxRank, MapConstPtr_Type edgeMap);
 
@@ -117,7 +116,7 @@ public:
 
 	vec_bool_Type checkInterfaceSurface( EdgeElementsPtr_Type edgeElements,vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement);
 
-		void tagArea(vec2D_dbl_Type area);
+	void tagArea(vec2D_dbl_Type area);
 
 	void refinementRestrictions(MeshUnstrRefPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction,  int& newElements); // check if Element that is tagged to be refined green has previously been refined green
 
