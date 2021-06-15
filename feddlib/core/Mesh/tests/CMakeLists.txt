@@ -126,27 +126,6 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_unstructured
 )
 
 
-### mesh_unstructured_adaptive_parallel
-TRIBITS_ADD_EXECUTABLE(
-	mesh_unstructured_adaptive_parallel
-	SOURCES mesh_unstructured_adaptive_parallel.cpp
-)
-
-TRIBITS_ADD_TEST(
-	mesh_unstructured_adaptive_parallel
-   	NAME mesh_unstructured_adaptive_parallel
-    	ARGS
-    	NUM_MPI_PROCS 1
-)
-
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_unstructured_adaptive_parallel
-	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-	SOURCE_FILES tetrahedrons_4.mesh
-	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES tetrahedrons_4.mesh
-	EXEDEPS mesh_unstructured_adaptive_parallel
-)
-
 ### meshes_interface
 TRIBITS_ADD_EXECUTABLE(
     meshes_interface
