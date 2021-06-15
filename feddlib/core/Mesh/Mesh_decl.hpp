@@ -145,6 +145,7 @@ public:
     ElementsPtr_Type        surfaceElements_;
 
     ElementsPtr_Type        elementsC_;
+
     MapPtr_Type				elementMap_;
     MapPtr_Type				edgeMap_;
 

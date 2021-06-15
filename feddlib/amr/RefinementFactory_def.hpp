@@ -45,7 +45,7 @@ MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 }
 
 template <class SC, class LO, class GO, class NO>
-RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID, MeshUnstrPtr_Type meshP1):
+RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID, MeshUnstrPtr_Type meshP1, string refinementRestriction, int refinement3DDiagonal):
 MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 {
 	this->dim_ = meshP1->dim_;
@@ -58,8 +58,8 @@ MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 	this->mapUnique_ = meshP1->mapUnique_;
 	this->mapRepeated_=meshP1->mapRepeated_;
 	this->edgeMap_ = meshP1->edgeMap_;
-    this->edgeElementsNew_.reset(new EdgeElementsNew(*edgeElements)); // Edges
-    this->elementsNewNew_.reset(new ElementsNew(*elements));    // Elements set with the elements we already have
+    this->edgeElements_.reset(new EdgeElements(*edgeElements)); // Edges
+    this->elementsC_.reset(new Elements(*elements));    // Elements set with the elements we already have
     this->pointsRep_.reset(new std::vector<std::vector<double> >(meshP1->pointsRep_->size(),vector<double>(this->dim_,-1.)));
     *this->pointsRep_ = *meshP1->pointsRep_; // Points
 	this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), vector<double>(this->dim_,-1. ) ) );
@@ -71,7 +71,9 @@ MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 	this->edgesElementOrder_=meshP1->getEdgeElementOrder();
 	this->numElementsGlob_ = meshP1->numElementsGlob_; 
 	this->surfaceTriangleElements_=meshP1->surfaceTriangleElements_;
-	
+
+	this->refinement3DDiagonal_= refinement3DDiagonal;
+	this->refinementRestriction_ = refinementRestriction;
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -83,7 +85,7 @@ RefinementFactory<SC,LO,GO,NO>::~RefinementFactory(){
 // This is similar to the function determineEdgeFlagP2New, but uses the edgeMap 
 
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::assignEdgeFlags( MeshUnstrRefPtr_Type meshP1, EdgeElementsPtr_Type edgeElements){
+void RefinementFactory<SC,LO,GO,NO>::assignEdgeFlags( MeshUnstrPtr_Type meshP1, EdgeElementsPtr_Type edgeElements){
 
 	vec2D_LO_Type markedPoints(0);
 	ElementsPtr_Type elements = meshP1->getElementsC();
@@ -224,19 +226,17 @@ void RefinementFactory<SC,LO,GO,NO>::assignEdgeFlags( MeshUnstrRefPtr_Type meshP
 
 // Mesh Refinement 
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshesP1, int iteration){
-
+void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh){
 	MESH_TIMER_START(totalTime," Total Time for Mesh Refinement of this Step ");		
 
-	MeshUnstrRefPtr_Type meshP1 = meshesP1[iteration];
-	
-	if(meshP1->getFEType() != "P1" && meshP1->getFEType() != "P2"){ 
-   		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Mesh Refinement only wors for Triangular Elements");
+
+	if(meshP1->FEType_ != "P1" && meshP1->FEType_ != "P2"){ 
+   		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Mesh Refinement only works for Triangular Elements");
 	}
     
 	
 	this->dim_ = meshP1->getDimension();
-	this->FEType_=meshP1->FEType_;
+	this->FEType_ =meshP1->FEType_;
     this->volumeID_ = meshP1->volumeID_;
 	this->rankRange_=meshP1->rankRange_;
 	// necessary entities
@@ -244,8 +244,8 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshe
     SurfaceElementsPtr_Type surfaceTriangleElements = meshP1->getSurfaceTriangleElements(); // Surfaces
     ElementsPtr_Type elementsTmp = meshP1->getElementsC(); // Elements
 
-	EdgeElementsPtr_Type edgeElements =Teuchos::rcp( new EdgeElementsNew(*edgeElementsTmp));
-	ElementsPtr_Type elements =Teuchos::rcp( new ElementsNew(*elementsTmp));
+	EdgeElementsPtr_Type edgeElements =Teuchos::rcp( new EdgeElements(*edgeElementsTmp));
+	ElementsPtr_Type elements =Teuchos::rcp( new Elements(*elementsTmp));
 
     vec2D_dbl_ptr_Type points = meshP1->getPointsRepeated(); // Points
     this->elementMap_ = meshP1->elementMap_;
@@ -255,9 +255,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshe
 	// entities for resulting Elements, Points, Edges, Flags
 	// - Points, Elements and Flags are added to the existding entities
 	// . edges are reset every refinement step
-    this->edgeElementsNew_.reset(new EdgeElementsNew()); // Edges
+    this->edgeElements_.reset(new EdgeElements()); // Edges
     this->surfaceTriangleElements_.reset(new SurfaceElements()); // Surface
-    this->elementsNewNew_.reset(new ElementsNew(*elementsTmp));    // Elements 
+    this->elementsC_.reset(new Elements(*elementsTmp));    // Elements 
     this->pointsRep_.reset(new std::vector<std::vector<double> >(meshP1->pointsRep_->size(),vector<double>(this->dim_,-1.)));
     *this->pointsRep_ = *meshP1->pointsRep_; // Points
 	this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), vector<double>(this->dim_,-1. ) ) );
@@ -317,7 +317,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshe
 		if(iteration ==0 ){
 			globalInterfaceIDs = edgeElements->determineInterfaceEdges(this->edgeMap_);
 			for(int i=0; i< elements->numberElements(); i++){
-				this->elementsNewNew_->getElement(i).setPredecessorElement(i);
+				this->elementsC_->getElement(i).setPredecessorElement(i);
 			}
 
 		}
@@ -332,14 +332,24 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshe
 		globalInterfaceIDs_ = globalInterfaceIDs;
 
 		
-		if(surfaceTriangleElements->numberElements() == 0 && this->dim_==3){
-			cout << " Building Surface Triangles " << flush ;
-			this->buildSurfaceTriangleElements(elements,edgeElements);
-			surfaceTriangleElements = this->surfaceTriangleElements_;
-   			this->surfaceTriangleElements_.reset(new SurfaceElements()); // Surface
-			this->buildTriangleMap();
+		if(this->dim_==3){
+			if(surfaceTriangleElements.is_null()){
+				cout << " Building Surface Triangles " << flush ;
+				this->buildSurfaceTriangleElements(elements,edgeElements, surfaceTriangleElements, this->edgeMap_, this->elementMap_ );
+				surfaceTriangleElements = this->surfaceTriangleElements_;
+	   			this->surfaceTriangleElements_.reset(new SurfaceElements()); // Surface
+				//this->buildTriangleMap();
+			}
+			else if(surfaceTriangleElements->numberElements() ==0){
+				cout << " Building surfaceTriangleElemenets " << endl;
+				this->buildSurfaceTriangleElements(elements,edgeElements, surfaceTriangleElements, this->edgeMap_, this->elementMap_ );
+				surfaceTriangleElements = this->surfaceTriangleElements_;
+	   			this->surfaceTriangleElements_.reset(new SurfaceElements()); // Surface
+				cout << " ... done " << endl;
+			} 
+			surfaceTriangleElements->matchSurfacesToElements(this->elementMap_);
 		}
-		surfaceTriangleElements->matchSurfacesToElements(this->elementMap_);
+
 
 
 		//for(int i=0; i< edgeElements->numberElements(); i++)
@@ -567,7 +577,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshe
 
 		MESH_TIMER_START(uniqueEdgesTimer," Step 7:	 Making Edges Unique");		
 		vec2D_GO_Type combinedEdgeElements;
-		this->edgeElementsNew_->sortUniqueAndSetGlobalIDsParallel(this->elementMap_,combinedEdgeElements);
+		this->edgeElements_->sortUniqueAndSetGlobalIDsParallel(this->elementMap_,combinedEdgeElements);
 		MESH_TIMER_STOP(uniqueEdgesTimer);		
 		this->comm_->barrier();
 		// ------------------------------------------------------------------------------------------------------
@@ -592,9 +602,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshe
 		// ------------------------------------------------------------------------------------------------------
 
 		MESH_TIMER_START(elementsOfEdgeTimer," Step 9:	 Updating ElementsOfEdgeLocal/Global");		
-		this->edgeElementsNew_->setElementsEdges( combinedEdgeElements );
+		this->edgeElements_->setElementsEdges( combinedEdgeElements );
 
-		this->edgeElementsNew_->setUpElementsOfEdge( this->elementMap_, this->edgeMap_);
+		this->edgeElements_->setUpElementsOfEdge( this->elementMap_, this->edgeMap_);
 
 		this->updateElementsOfEdgesLocalAndGlobal(maxRank, edgeMap);
 
@@ -608,9 +618,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshe
 		
 		this->surfaceTriangleElements_->setElementsSurface( combinedSurfaceElements );
 
-		this->surfaceTriangleElements_->setUpElementsOfSurface( this->elementMap_, this->edgeMap_, this->edgeElementsNew_);
+		this->surfaceTriangleElements_->setUpElementsOfSurface( this->elementMap_, this->edgeMap_, this->edgeElements_);
 
-		this->updateElementsOfSurfaceLocalAndGlobal(this->edgeElementsNew_);
+		//this->updateElementsOfSurfaceLocalAndGlobal(this->edgeElements_);
 		MESH_TIMER_STOP(elementsOfSurfaceTimer);	
 
 		/*MESH_TIMER_START(surfaceMapTimer," Step 10:	 Creating SurfaceMap");		
@@ -639,7 +649,6 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshe
 
    		Teuchos::TimeMonitor::report(cout,"Mesh Refinement");
 		//Teuchos::TimeMonitor::summarize(cout, false, true, false, Teuchos::Union , "Mesh Refinement", false);
-		Teuchos::TimeMonitor::zeroOutTimers();
 	
 		/*		
 		for(int i=0; i < this->pointsRep_->size(); i++){
@@ -665,113 +674,38 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshe
 		}
 
 		
+	
+
+	outputMesh->dim_ = this->dim_ ;
+	outputMesh->FEType_ = this->FEType_ ;
+	outputMesh->rankRange_ =  this->rankRange_;
+
+    outputMesh->elementMap_ = this->elementMap_ ;
+	outputMesh->mapUnique_ = this->mapUnique_  ;
+	outputMesh->mapRepeated_ = this->mapRepeated_;
+	outputMesh->edgeMap_  = this->edgeMap_  ;
+
+	outputMesh->elementsC_ = this->elementsC_;
+	outputMesh->edgeElements_ = this->edgeElements_;
+	outputMesh->surfaceTriangleElements_ = this->surfaceTriangleElements_;
+
+   	outputMesh->pointsRep_ =  this->pointsRep_  ; // Points
+
+    outputMesh->pointsUni_ = this->pointsUni_; 
+
+    outputMesh->bcFlagUni_ = this->bcFlagUni_ ; 
+	outputMesh->bcFlagRep_ = this->bcFlagRep_ ;
+
+
+	outputMesh->edgesElementOrder_ = this->edgesElementOrder_;
+
+	outputMesh->numElementsGlob_ = this->numElementsGlob_  ; 
+
 	}
+
 
 }
 
-template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeElementsPtr_Type edgeElements){
-
-	// The vector contains the Information which elements contain the edge
-	vec2D_GO_Type elementsOfEdgeGlobal = edgeElements->getElementsOfEdgeGlobal();
-	vec2D_LO_Type elementsOfEdgeLocal = edgeElements->getElementsOfEdgeLocal();
-
-	/*for(int i=0; i<elementsOfEdgeGlobal.size(); i++){
-	  if(edgeElements->getElement(i).isInterfaceElement()){
-		cout << "i="<<i ;
-		for(int j=0; j< elementsOfEdgeGlobal.at(i).size() ; j++){
-			cout <<  " " << elementsOfEdgeGlobal.at(i).at(j);
-		}
-		cout << " my rank " << this->comm_->getRank()<< endl;
-		}
-	}*/
-
-	vec2D_GO_Type elementsOfSurfaceGlobal = this->surfaceTriangleElements_->getElementsOfSurfaceGlobal();
-
-	GO nEl;
-	vec_LO_Type edgeTmp1, edgeTmp2, edgeTmp3;
-	LO id1, id2, id3;
-
-	vec2D_LO_Type edgeList(0,vec_LO_Type(2));	
-
-	for(int i=0; i<edgeElements->numberElements(); i++){
-		edgeList.push_back({edgeElements->getElement(i).getNode(0),edgeElements->getElement(i).getNode(1)});
-	}
-	//for(int i=0; i<edgeElements->numberElements(); i++){
-		//cout<< " Kante i=" << i << " (" << edgeList[i][0]<< "," << edgeList[i][1] << ") " << endl  ;
-	//}
-	
-	for(int i=0; i < this->surfaceTriangleElements_->numberElements() ; i++){
-		FiniteElementNew surfaceTmp = this->surfaceTriangleElements_->getElement(i);
-		if(surfaceTmp.isInterfaceElement()){
-			//cout << " Surface " << i << ": " <<  surfaceTmp.getNode(0) << " " << surfaceTmp.getNode(1) << " " << surfaceTmp.getNode(2) << endl;
-			vec_int_Type tmpElements(0);
-			//this->surfaceTriangleElements_->setElementsOfSurfaceLocalEntry(i,-1);
-
-			edgeTmp1={surfaceTmp.getNode(0),surfaceTmp.getNode(1)};
-			edgeTmp2={surfaceTmp.getNode(0),surfaceTmp.getNode(2)};
-			//edgeTmp3={surfaceTmp.getNode(1),surfaceTmp.getNode(2)};
-
-			sort(edgeTmp1.begin(),edgeTmp1.end());
-			sort(edgeTmp2.begin(),edgeTmp2.end());
-			//sort(edgeTmp3.begin(),edgeTmp3.end());
-
-			//cout << " Suchen (" << edgeTmp1[0] << "," << edgeTmp1[1] << ") , (" << edgeTmp2[0] << "," << edgeTmp2[1] << ") " << endl;
-			
-			auto it1 = find( edgeList.begin(), edgeList.end() ,edgeTmp1 );
-            id1 = distance( edgeList.begin() , it1 );
-
-			auto it2 = find(edgeList.begin(), edgeList.end() ,edgeTmp2 );
-            id2 = distance(edgeList.begin() , it2 );
-
-			//cout << "ElementOfEdge size 1 : " << elementsOfEdgeGlobal[id1].size() << " " << id1 << " num edges1 " << edgeElements->numberElements() << endl;
-			//cout << "ElementOfEdge size 2 : " << elementsOfEdgeGlobal[id2].size() << " " << id2 << " num edges2 "<< edgeElements->numberElements() <<  endl;
-	
-			for(int j=0 ; j< elementsOfEdgeGlobal[id1].size() ; j++)
-				tmpElements.push_back( elementsOfEdgeGlobal[id1][j]);
-
-			for(int j=0 ; j< elementsOfEdgeGlobal[id2].size() ; j++)
-				tmpElements.push_back( elementsOfEdgeGlobal[id2][j]);
-
-
-			sort(tmpElements.begin(),tmpElements.end());
-			bool found =false;
-
-			//cout << "Surface Element da " << elementsOfSurfaceGlobal[i][0] << " tmp elements in question "  << tmpElements[0] << " " ;
-			for(int j=0; j< tmpElements.size()-1; j++){
-				//cout << tmpElements[j+1] << " " ;
-				if((tmpElements[j] == tmpElements[j+1] )&& (tmpElements[j] != elementsOfSurfaceGlobal[i][0]) && (found==false)) { 
-					//cout << " Update: tmp1=" << tmpElements[j] << " tmp2=" << tmpElements[j+1] << " und element schon da=" << elementsOfSurfaceGlobal[i][0] << endl;
-					nEl = tmpElements[j];
-  					this->surfaceTriangleElements_->setElementsOfSurfaceGlobalEntry(i,nEl);
-					found = true;
-				}
-			}
-			//cout << endl;
-			if(found == false)
-				cout << " No Element Found for edges " << id1 << " " << id2 << " on Proc " << this->comm_->getRank() << endl;
-		}
-	}
-
-	vec2D_LO_Type elementsOfSurfaceLocal = this->surfaceTriangleElements_->getElementsOfSurfaceLocal();
-	elementsOfSurfaceGlobal = this->surfaceTriangleElements_->getElementsOfSurfaceGlobal();
-	/*for(int i=0; i< this->surfaceTriangleElements_->numberElements() ;i++){
-			cout << " Surface i="<< i << " liegt an Element local " << elementsOfSurfaceLocal[i][0] ;
-			for(int j=1; j < elementsOfSurfaceLocal[i].size(); j++){			
-				cout << " " << elementsOfSurfaceLocal[i][j];
-			}
-			cout << endl;
-		}
-
-	for(int i=0; i< this->surfaceTriangleElements_->numberElements() ;i++){
-			cout << " Surface i="<< i << " liegt an Element global " << elementsOfSurfaceGlobal[i][0] ;
-			for(int j=1; j < elementsOfSurfaceGlobal[i].size(); j++){			
-				cout << " " << elementsOfSurfaceGlobal[i][j];
-			}
-			cout << endl;
-		}*/
-
-}
 
 template <class SC, class LO, class GO, class NO>
 vec_bool_Type RefinementFactory<SC,LO,GO,NO>::checkInterfaceSurface( EdgeElementsPtr_Type edgeElements,vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement){
@@ -1063,6 +997,132 @@ void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeEleme
 
 }
 
+// Mesh Refinement 
+template <class SC, class LO, class GO, class NO>
+void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceTriangleElements, MapConstPtr_Type edgeMap, MapConstPtr_Type elementMap ){
+    TEUCHOS_TEST_FOR_EXCEPTION( elements.is_null(), std::runtime_error, "Elements not initialized!");
+    TEUCHOS_TEST_FOR_EXCEPTION( surfaceTriangleElements.is_null(), std::runtime_error, "Surface Triangle Elements not initialized!");
+
+
+	vec_LO_Type nodeInd(4);
+	vec2D_int_Type newTriangles(4,vec_int_Type(0)); // new Triangles
+	
+	vec_GO_Type globalInterfaceIDs = edgeElements->determineInterfaceEdges(edgeMap);
+	//if(edgeElements->getEdgesOfElement(0) ) here we need some sort of test if the function was already used
+	edgeElements->matchEdgesToElements(elementMap);
+
+
+	for(int i=0; i<elements->numberElements(); i++){
+		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(i); // indeces of edges belonging to element
+
+		// Extract the four points of tetraeder
+		vec_int_Type nodeInd(0);
+		for(int i=0; i<6; i++)	{
+			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(0));
+			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(1));
+		}
+		sort( nodeInd.begin(), nodeInd.end() );
+		nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
+
+		// With our sorted Nodes we construct edges as follows
+
+		// Edge_0 = [x_0,x_1]
+		// Edge_1 = [x_0,x_2]	 
+		// Edge_2 = [x_0,x_3]	 
+		// Edge_3 = [x_1,x_2]
+		// Edge_4 = [x_1,x_3]	 
+		// Edge_5 = [x_2,x_3]
+
+		vec_int_Type edgeNumbersTmp = edgeNumbers;
+		for(int i=0; i<6; i++){
+			if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[0] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[0]){
+				if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[1] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[1])
+					edgeNumbers[0] = edgeNumbersTmp[i];
+				else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[2] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[2])
+					edgeNumbers[1] = edgeNumbersTmp[i];
+				else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[3] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[3])
+					edgeNumbers[2] = edgeNumbersTmp[i];	
+			}
+			else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[1] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[1]){
+				if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[2] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[2])
+					edgeNumbers[3] = edgeNumbersTmp[i];
+				else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[3] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[3])
+					edgeNumbers[4] = edgeNumbersTmp[i];
+			}
+			 else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[2] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[2]){
+				if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == nodeInd[3] || edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == nodeInd[3])
+					edgeNumbers[5] = edgeNumbersTmp[i];
+			}
+		}
+
+		// We hace 4 Triangles in our Tetraedron
+		// If one or more of those Triangles are Part of the domains' boundaries, they are added to the element in question as subelement
+		// We extract them in follwing pattern:
+
+		// Tri_0 = [x_0,x_1,x_2] -> Edge 0,1,3
+		// Tri_1 = [x_0,x_1,x_3] -> Edge 0,2,4
+		// Tri_2 = [x_0,x_2,x_3] -> Edge 1,2,5
+		// Tri_3 = [x_1,x_2,x_3] -> Edge 3,4,5
+
+		/*vec2D_int_Type subElements(4,vec_int_Type(3));
+		subElements[0] = {edgeNumbers[0],edgeNumbers[1],edgeNumbers[3]};
+		subElements[1] = {edgeNumbers[0],edgeNumbers[2],edgeNumbers[4]};
+		subElements[2] = {edgeNumbers[1],edgeNumbers[2],edgeNumbers[5]};
+		subElements[3] = {edgeNumbers[3],edgeNumbers[4],edgeNumbers[5]};*/
+
+		// We check if one or more of these triangles are part of the boundary surface and determine there flag
+
+		vec2D_int_Type originTriangles(4,vec_int_Type(3));
+		originTriangles[0] = {nodeInd[0],nodeInd[1],nodeInd[2]};
+		originTriangles[1] = {nodeInd[0],nodeInd[1],nodeInd[3]};
+		originTriangles[2] = {nodeInd[0],nodeInd[2],nodeInd[3]};
+		originTriangles[3] = {nodeInd[1],nodeInd[2],nodeInd[3]};
+		
+		
+		vec_int_Type originFlag(4,10); // Triangle Flag
+
+		int numberSubElSurf=0;
+		vec_LO_Type triTmp(3);
+		vec_int_Type originTriangleTmp(3);
+		int entry; 
+		if (elements->getElement(i).subElementsInitialized() ){
+			numberSubElSurf = elements->getElement(i).getSubElements()->numberElements();
+			for(int k=0; k< numberSubElSurf ; k++){
+				triTmp =elements->getElement(i).getSubElements()->getElement(k).getVectorNodeList();
+				for(int j=0; j<4 ; j++){
+					originTriangleTmp = originTriangles[j];
+					sort(originTriangleTmp.begin(),originTriangleTmp.end());
+					sort(triTmp.begin(),triTmp.end());
+					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] &&  triTmp[2] == originTriangleTmp[2] ) 
+						originFlag[j] = elements->getElement(i).getSubElements()->getElement(k).getFlag();
+					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
+               		//entry = distance( originTriangles.begin() , it1 );
+				}
+			}
+		}
+
+		// Furthermore we have to determine whether the triangles are part of the interface between processors, as we need this information to determine if edges
+		// that emerge on the triangles are part of the interface
+		// A triangle is part of the interface if all of its edges are part of the interface (the information if edges are part of the interface was determined
+		// in the beginning of the Mesh Refinement by 'determineInterfaceEdges')
+
+		vec_bool_Type interfaceSurface = checkInterfaceSurface(edgeElements,originFlag, edgeNumbers,i);
+		
+		for(int j=0; j<4; j++){	
+			sort( newTriangles.at(j).begin(), newTriangles.at(j).end() );
+			FiniteElement feNew(originTriangles[j],originFlag[j]);
+			feNew.setInterfaceElement(interfaceSurface[j]);
+			surfaceTriangleElements->addSurface(feNew, i);
+		}
+	}
+	vec2D_GO_Type combinedSurfaceElements;
+	surfaceTriangleElements->sortUniqueAndSetGlobalIDsParallel(elementMap,combinedSurfaceElements);
+	
+	surfaceTriangleElements->setElementsSurface( combinedSurfaceElements );
+
+	surfaceTriangleElements->setUpElementsOfSurface(elementMap,edgeMap, edgeElements);	
+}
+
 
 
 
@@ -1078,12 +1138,12 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 
 		// (A) First we determine a Map only for the interface Nodes
 		// This will reduce the size of the Matrix we build later significantly if only look at the interface edges
-		int numEdges= this->edgeElementsNew_->numberElements();
+		int numEdges= this->edgeElements_->numberElements();
 		vec2D_GO_Type inzidenzIndices(0,vec_GO_Type(2)); // Vector that stores global IDs of each edge (in Repeated Sense)
 		vec_LO_Type localEdgeIndex(0); // stores the local ID of edges in question 
 		vec_GO_Type id(2);
 		int edgesUnique=0;
-    	EdgeElementsPtr_Type edgeElements = this->edgeElementsNew_; // Edges
+    	EdgeElementsPtr_Type edgeElements = this->edgeElements_; // Edges
 
 		vec2D_dbl_ptr_Type points = this->pointsRep_;
 
@@ -1146,12 +1206,12 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 			procOffsetEdges= procOffsetEdges + newEdgesList[i];
 
 		// global IDs for map
-		vec_GO_Type vecGlobalIDsEdges(this->edgeElementsNew_->numberElements()); 
+		vec_GO_Type vecGlobalIDsEdges(this->edgeElements_->numberElements()); 
 	
 		// Step 1: adding unique global edge IDs
 		int count=0;
-		for(int i=0; i< this->edgeElementsNew_->numberElements(); i++){
-			if(!this->edgeElementsNew_->getElement(i).isInterfaceElement()){
+		for(int i=0; i< this->edgeElements_->numberElements(); i++){
+			if(!this->edgeElements_->getElement(i).isInterfaceElement()){
 				vecGlobalIDsEdges.at(i) = procOffsetEdges+count;
 				count++;
 			}
@@ -1281,9 +1341,11 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 // irrregular refinement strategy (Type(1)-Type(4) don't fit) we refine regular instead.
 // ------------------------------------------------------------------------------------------------------
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrRefPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction, int& newElements){
+void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction, int& newElements){
 
 	vec2D_dbl_ptr_Type points = meshP1->getPointsRepeated(); // Points
+
+	cout << " RefinementRestriction " << this->refinementRestriction_ << endl;
 
 	if(this->dim_ == 2){
 		// We determine whether a element that is tagged for green refinement has been refined green in the previous refinement
@@ -1466,8 +1528,8 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrRefPtr_Type
 
 
 	else if(this->dim_== 3){
-		if(restriction != "checkLongestEdge" && restriction != "Bey"){
-			cout << " !!! The restriction Type you requested is not available, 'bey' will be performed instead !!! " << endl; 
+		if(refinementRestriction_ != "Bey" && refinementRestriction_ != "BeyIrregular"){
+			cout << " !!! The restriction Type you requested is not available, 'Bey' will be performed instead !!! " << endl; 
 			restriction = "Bey";
 		}
 
@@ -1499,29 +1561,20 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrRefPtr_Type
 					sort( nodeInd.begin(), nodeInd.end() );
 					nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
 					nodeTag = nodeInd.size();
-					if (restriction == "checkLongestEdge"){
-						int	entry = this->determineLongestEdge(edgeElements,edgeElements->getEdgesOfElement(i),points); // we determine the edge, we would choose for 'blue' Refinement
-
-						if(edgeTag == 1 && edgeElements->getElement(entry).isTaggedForRefinement() == false  ){
+					if(refinementRestriction_ == "BeyIrregular") {
+						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregularRegular" ){
+							numPoints= this->pointsRep_->size();
+							elements->getElement(i).tagForRefinement();
+							elements->getElement(i).setFiniteElementRefinementType("irregular");
+							this->refineRegular( edgeElements, elements, i);
+							newPoints=newPoints + this->pointsRep_->size()-numPoints;
+							newElements = newElements +7;
 							alright=0;
-							this->addMidpoint(edgeElements,entry);	// we add the necessary midpoint
-							newPoints ++; 
-							edgeElements->getElement(entry).tagForRefinement(); 
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
 				
 						}
-						else if(edgeTag == 2 && edgeElements->getElement(entry).isTaggedForRefinement() == false  ){
-							alright=0;
-							this->addMidpoint(edgeElements,entry);	// we add the necessary midpoint
-							newPoints ++; 
-							edgeElements->getElement(entry).tagForRefinement(); 
-							for(int j=0; j<untaggedIDsTmp.size(); j++)
-								untaggedIDs.push_back(untaggedIDsTmp[j]);
-				
-						}
-
-						else  if(nodeTag >3 && edgeTag >2){
+						else if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
 							this->refineRegular( edgeElements, elements, i);
@@ -1530,9 +1583,20 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrRefPtr_Type
 							alright=0;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
+				
 						}
-					}
-					else if(restriction == "Bey") {
+						else  if(nodeTag >3 && edgeTag >2){
+							numPoints= this->pointsRep_->size();
+							elements->getElement(i).tagForRefinement();
+							this->refineRegular(edgeElements, elements, i);
+							newPoints=newPoints + this->pointsRep_->size()-numPoints;
+							newElements = newElements +7;
+							alright=0;
+							for(int j=0; j<untaggedIDsTmp.size(); j++)
+								untaggedIDs.push_back(untaggedIDsTmp[j]);
+						}
+				    }
+					else if(refinementRestriction_ == "Bey") {
 						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
@@ -1555,7 +1619,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrRefPtr_Type
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
 						}
 				    }
-					else
+					else {
 						if(nodeTag >3 && edgeTag >2){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
@@ -1567,6 +1631,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrRefPtr_Type
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
 						}
 		
+					}
 				}
 			}
 
@@ -1652,12 +1717,12 @@ void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, 
 						edgeElements->getElement(edgesOfElement[j]).setFiniteElementRefinementType("unrefined");
 						edgeElements->getElement(edgesOfElement[j]).setPredecessorElement(edgeMap->getGlobalElement(edgesOfElement[j]));
 						edgeElements->getElement(edgesOfElement[j]).setInterfaceElement( edgeElements->getElement(edgesOfElement[j]).isInterfaceElement());
-						this->edgeElementsNew_->addEdge(edgeElements->getElement(edgesOfElement[j]),i);
+						this->edgeElements_->addEdge(edgeElements->getElement(edgesOfElement[j]),i);
 						
 						if(edgeElements->getElement(edgesOfElement[j]).getFlag() !=0 && edgeElements->getElement(edgesOfElement[j]).getFlag() !=10){
-							if ( !this->elementsNewNew_->getElement(i).subElementsInitialized() )
-								this->elementsNewNew_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -1) ;
-							this->elementsNewNew_->getElement(i).addSubElement(edgeElements->getElement(edgesOfElement[j]));	
+							if ( !this->elementsC_->getElement(i).subElementsInitialized() )
+								this->elementsC_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -1) ;
+							this->elementsC_->getElement(i).addSubElement(edgeElements->getElement(edgesOfElement[j]));	
 						}
 
 					}	
@@ -1726,12 +1791,12 @@ void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, 
 						edgeElements->getElement(edgesOfElement[j]).setFiniteElementRefinementType("unrefined");
 						edgeElements->getElement(edgesOfElement[j]).setPredecessorElement(edgeMap->getGlobalElement(edgesOfElement[j]));
 						//edgeElements->getElement(edgesOfElement[j]).setInterfaceElement( edgeElements->getElement(edgesOfElement[j]).isInterfaceElement());
-						this->edgeElementsNew_->addEdge(edgeElements->getElement(edgesOfElement[j]),i);
+						this->edgeElements_->addEdge(edgeElements->getElement(edgesOfElement[j]),i);
 						
 						/*if(edgeElements->getElement(edgesOfElement[j]).getFlag() !=0 && edgeElements->getElement(edgesOfElement[j]).getFlag() !=10){
-							if ( !this->elementsNewNew_->getElement(i).subElementsInitialized() )
-								this->elementsNewNew_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -1) ;
-							this->elementsNewNew_->getElement(i).addSubElement(edgeElements->getElement(edgesOfElement[j]));	
+							if ( !this->elementsC_->getElement(i).subElementsInitialized() )
+								this->elementsC_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -1) ;
+							this->elementsC_->getElement(i).addSubElement(edgeElements->getElement(edgesOfElement[j]));	
 						}*/
 
 					}
@@ -1746,9 +1811,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, 
 		}
 
 	}
-	for(int j=0;j<this->edgeElementsNew_->numberElements();j++){
-		//this->elementsNewNew_->getElement(j).untagForRefinement();			
-		if(this->edgeElementsNew_->getElement(j).isTaggedForRefinement())
+	for(int j=0;j<this->edgeElements_->numberElements();j++){
+		//this->elementsC_->getElement(j).untagForRefinement();			
+		if(this->edgeElements_->getElement(j).isTaggedForRefinement())
 			cout<< "tagged edge element somehow made it " << endl;
 	}
 
@@ -1765,9 +1830,9 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 	if(maxRank >0 && this->dim_ == 2){
 		vec_GO_Type edgesInterfaceGlobalID(0);
 		LO id=0;
-		for(int i=0; i< this->edgeElementsNew_->numberElements(); i++){
-			if(this->edgeElementsNew_->getElement(i).isInterfaceElement() ){		
-				this->edgeElementsNew_->setElementsOfEdgeLocalEntry(i,-1);
+		for(int i=0; i< this->edgeElements_->numberElements(); i++){
+			if(this->edgeElements_->getElement(i).isInterfaceElement() ){		
+				this->edgeElements_->setElementsOfEdgeLocalEntry(i,-1);
 				edgesInterfaceGlobalID.push_back(this->edgeMap_->getGlobalElement(i)); // extracting the global IDs of the new interfaceEdges
 			}
 			
@@ -1786,7 +1851,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		Teuchos::ArrayRCP< LO > interfaceElementsEntries  = interfaceElements->getDataNonConst(0);
 
 		for(int i=0; i< interfaceElementsEntries.size() ; i++){
-			interfaceElementsEntries[i] = this->edgeElementsNew_->getElementsOfEdgeGlobal(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i])).at(0);
+			interfaceElementsEntries[i] = this->edgeElements_->getElementsOfEdgeGlobal(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i])).at(0);
 		}
 
 		//interfaceElements->print();
@@ -1814,7 +1879,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		interfaceElementsEntries  = isInterfaceElement2_imp->getDataNonConst(0);
 
 		for(int i=0; i< interfaceElementsEntries.size() ; i++){
-			this->edgeElementsNew_->setElementsOfEdgeGlobalEntry(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i]),interfaceElementsEntries[i]);
+			this->edgeElements_->setElementsOfEdgeGlobalEntry(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i]),interfaceElementsEntries[i]);
 			}
 
 	}
@@ -1827,8 +1892,8 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		vec_GO_Type edgesInterfaceGlobalID(0);
 		vec_int_Type numberElements(0); // represents number of elements the edge is connected to on my Processor
 		
-		for(int i=0; i< this->edgeElementsNew_->numberElements(); i++){
-			if(this->edgeElementsNew_->getElement(i).isInterfaceElement() ){
+		for(int i=0; i< this->edgeElements_->numberElements(); i++){
+			if(this->edgeElements_->getElement(i).isInterfaceElement() ){
 				edgesInterfaceGlobalID.push_back(this->edgeMap_->getGlobalElement(i)); // extracting the global IDs of the new interfaceEdges
 			}
 			
@@ -1836,7 +1901,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		sort(edgesInterfaceGlobalID.begin(), edgesInterfaceGlobalID.end());
 
 		for(int i=0; i< edgesInterfaceGlobalID.size(); i++){
-			numberElements.push_back(this->edgeElementsNew_->getElementsOfEdgeGlobal(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i])).size());
+			numberElements.push_back(this->edgeElements_->getElementsOfEdgeGlobal(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i])).size());
 		}
 			
 		
@@ -1881,7 +1946,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		// With this number we can complete the elementsOfEdgeLocal List with -1 for the elements not on our processor
 		for(int i=0; i<numberInterfaceElementsEntries.size() ; i++){
 			for(int j=0; j< numberInterfaceElementsImportEntries[i] - numberInterfaceElementsEntries[i];j++){
-				this->edgeElementsNew_->setElementsOfEdgeLocalEntry(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i]),-1);
+				this->edgeElements_->setElementsOfEdgeLocalEntry(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i]),-1);
 				missingEntries[i] = numberInterfaceElementsImportEntries[i] -numberInterfaceElementsEntries[i];
 			}
 		}
@@ -1903,7 +1968,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		MultiVectorLOPtr_Type interfaceElements = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterface, 1 ) );
 		Teuchos::ArrayRCP< LO > interfaceElementsEntries  = interfaceElements->getDataNonConst(0);
 
-		vec2D_int_Type importElements(this->edgeElementsNew_->getElementsOfEdgeGlobal().size(),vec_int_Type( 0));
+		vec2D_int_Type importElements(this->edgeElements_->getElementsOfEdgeGlobal().size(),vec_int_Type( 0));
 
 		// We extended this function to also consider the ranks. Before we would only exchange the information, but in case one processor received information from more than one processor at 
 		// the same time some of the information would get lost. Now we only send the information one processor holds to the other at the same time and move through the processor only destributing their
@@ -1928,9 +1993,9 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 
 				for(int i=0; i< interfaceElementsEntries.size() ; i++){		
 					if(numberElements[i] > j && this->comm_->getRank() == k )
-						interfaceElementsEntries[i] = this->edgeElementsNew_->getElementsOfEdgeGlobal(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i])).at(j);
+						interfaceElementsEntries[i] = this->edgeElements_->getElementsOfEdgeGlobal(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i])).at(j);
 					else
-						interfaceElementsEntries[i] = -1; //this->edgeElementsNew_->getElementsOfEdgeGlobal(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i])).at(0);
+						interfaceElementsEntries[i] = -1; //this->edgeElements_->getElementsOfEdgeGlobal(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i])).at(0);
 				}
 				
 				/*MultiVectorLOPtr_Type isInterfaceElement_imp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterface, 1 ) );
@@ -1999,14 +2064,14 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		for(int i=0; i< interfaceElementsEntries.size() ; i++){
 			for(int j=0; j < importElements[i].size(); j++){
 				if(importElements[i][j] != -1)
-					this->edgeElementsNew_->setElementsOfEdgeGlobalEntry(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i]),importElements[i][j]);
+					this->edgeElements_->setElementsOfEdgeGlobalEntry(this->edgeMap_->getLocalElement(edgesInterfaceGlobalID[i]),importElements[i][j]);
 			}
 		}
 
-		/*for(int i=0; i<this->edgeElementsNew_->getElementsOfEdgeGlobal().size() ; i++){
+		/*for(int i=0; i<this->edgeElements_->getElementsOfEdgeGlobal().size() ; i++){
 			cout << "ElementsOfEdgeGlobal " << i << " " ;
-			for(int j=0; j < this->edgeElementsNew_->getElementsOfEdgeGlobal(i).size() ; j++){
-				cout << this->edgeElementsNew_->getElementsOfEdgeGlobal(i).at(j) << " " ; 
+			for(int j=0; j < this->edgeElements_->getElementsOfEdgeGlobal(i).size() ; j++){
+				cout << this->edgeElements_->getElementsOfEdgeGlobal(i).at(j) << " " ; 
 	
 			}
 			cout << " " << endl;
@@ -2251,41 +2316,41 @@ void RefinementFactory<SC,LO,GO,NO>::refineBlue(EdgeElementsPtr_Type edgeElement
 		predecessorElement[8] = this->edgeMap_->getGlobalElement(taggedEdge[edgeIndexS]);
 
 
-        int offsetElements = this->elementsNewNew_->numberElements(); 
-		int offsetEdges = this->edgeElementsNew_->numberElements(); 
+        int offsetElements = this->elementsC_->numberElements(); 
+		int offsetEdges = this->edgeElements_->numberElements(); 
 
 		for( int i=0;i<3; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElementNew feNew(newElements.at(i),10);
+			FiniteElement feNew(newElements.at(i),10);
 			feNew.setFiniteElementRefinementType("blue");
 			feNew.setPredecessorElement(indexElement);
 			if(i<2)
-				this->elementsNewNew_->addElement(feNew);
+				this->elementsC_->addElement(feNew);
 			else
-				this->elementsNewNew_->switchElement(indexElement,feNew);
+				this->elementsC_->switchElement(indexElement,feNew);
 		}
 
 		// Kanten hinzufügen
 		for( int i=0;i<9; i++){
 			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
-			FiniteElementNew feNew(newEdges.at(i),edgeFlags[i]);
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
 			feNew.setInterfaceElement(isInterfaceEdge[i]);
 			feNew.setPredecessorElement(predecessorElement[i]);
 			if(i<6){
-				this->edgeElementsNew_->addEdge(feNew,i/3+offsetElements);
+				this->edgeElements_->addEdge(feNew,i/3+offsetElements);
 				if(edgeFlags[i]!=0 && edgeFlags[i]!=10){
-					if ( !this->elementsNewNew_->getElement(i/3+offsetElements).subElementsInitialized() )
-						this->elementsNewNew_->getElement(i/3+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(i/3+offsetElements).addSubElement(feNew);	
+					if ( !this->elementsC_->getElement(i/3+offsetElements).subElementsInitialized() )
+						this->elementsC_->getElement(i/3+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(i/3+offsetElements).addSubElement(feNew);	
 
 					}	
 				}
 			else{
-				this->edgeElementsNew_->addEdge(feNew,indexElement);
+				this->edgeElements_->addEdge(feNew,indexElement);
 				if(edgeFlags[i]!=0 && edgeFlags[i]!=10){
-					if ( !this->elementsNewNew_->getElement(indexElement).subElementsInitialized() )
-						this->elementsNewNew_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(indexElement).addSubElement(feNew);	}
+					if ( !this->elementsC_->getElement(indexElement).subElementsInitialized() )
+						this->elementsC_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(indexElement).addSubElement(feNew);	}
 
 				}			
 		}	
@@ -2435,40 +2500,40 @@ void RefinementFactory<SC,LO,GO,NO>::refineGreen(EdgeElementsPtr_Type edgeElemen
 		predecessorElement[5] = this->edgeMap_->getGlobalElement(sortedEdges[2]);
 
 		// We add one element and switch one element with the element 'indexElement'
-        int offsetElements = this->elementsNewNew_->numberElements(); // for determining which edge corresponds to which element
-		int offsetEdges = this->edgeElementsNew_->numberElements(); // just for printing
+        int offsetElements = this->elementsC_->numberElements(); // for determining which edge corresponds to which element
+		int offsetEdges = this->edgeElements_->numberElements(); // just for printing
 
 		for( int i=0;i<2; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElementNew feNew(newElements.at(i),10);
+			FiniteElement feNew(newElements.at(i),10);
 			feNew.setFiniteElementRefinementType("green"); // setting green refinement type in order to check in following refinement stages
 			feNew.setPredecessorElement(indexElement);
 			if(i==0)
-				this->elementsNewNew_->addElement(feNew);
+				this->elementsC_->addElement(feNew);
 			else
-				this->elementsNewNew_->switchElement(indexElement,feNew);
+				this->elementsC_->switchElement(indexElement,feNew);
 		}
 
 		// add edges
 		for( int i=0;i<6; i++){
 			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
-			FiniteElementNew feNew(newEdges.at(i),edgeFlags[i]);
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
 			feNew.setInterfaceElement(isInterfaceEdge[i]);
 			feNew.setPredecessorElement(predecessorElement[i]);
 			if(i<3){
-				this->edgeElementsNew_->addEdge(feNew,offsetElements);
+				this->edgeElements_->addEdge(feNew,offsetElements);
 				if(edgeFlags[i]!=0 && edgeFlags[i]!=10){
-					if ( !this->elementsNewNew_->getElement(offsetElements).subElementsInitialized() )
-						this->elementsNewNew_->getElement(offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(offsetElements).addSubElement(feNew);		
+					if ( !this->elementsC_->getElement(offsetElements).subElementsInitialized() )
+						this->elementsC_->getElement(offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(offsetElements).addSubElement(feNew);		
 					}
 				}
 			else{
-				this->edgeElementsNew_->addEdge(feNew,indexElement);
+				this->edgeElements_->addEdge(feNew,indexElement);
 				if(edgeFlags[i]!=0 && edgeFlags[i]!=10){
-					if ( !this->elementsNewNew_->getElement(indexElement).subElementsInitialized() )
-						this->elementsNewNew_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(indexElement).addSubElement(feNew);	
+					if ( !this->elementsC_->getElement(indexElement).subElementsInitialized() )
+						this->elementsC_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(indexElement).addSubElement(feNew);	
 					}
 				}
 			}				
@@ -2607,34 +2672,34 @@ void RefinementFactory<SC,LO,GO,NO>::refineRed(EdgeElementsPtr_Type edgeElements
 		predecessorElement[10] = -1;
 		predecessorElement[11] = -1;
 
-		int offsetElements = this->elementsNewNew_->numberElements(); 
-		int offsetEdges = this->edgeElementsNew_->numberElements(); 
+		int offsetElements = this->elementsC_->numberElements(); 
+		int offsetEdges = this->edgeElements_->numberElements(); 
 		for( int i=0;i<4; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElementNew feNew(newElements.at(i),0);
+			FiniteElement feNew(newElements.at(i),0);
 			feNew.setFiniteElementRefinementType("red");
 			feNew.setPredecessorElement(indexElement);
 			if(i<3)
-				this->elementsNewNew_->addElement(feNew);
+				this->elementsC_->addElement(feNew);
 			else
-				this->elementsNewNew_->switchElement(indexElement,feNew);
+				this->elementsC_->switchElement(indexElement,feNew);
 		}
 
 		for( int i=0;i<12; i++){
 			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
-			FiniteElementNew feNew(newEdges.at(i),edgeFlags[i]);
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
 			feNew.setInterfaceElement(isInterfaceEdge[i]);
 			feNew.setPredecessorElement(predecessorElement[i]);
 			if(i<9){
-				this->edgeElementsNew_->addEdge(feNew,i/3+offsetElements);
+				this->edgeElements_->addEdge(feNew,i/3+offsetElements);
 				if(edgeFlags[i]!=0 && edgeFlags[i]!=10){
-					if ( !this->elementsNewNew_->getElement(i/3+offsetElements).subElementsInitialized() )
-						this->elementsNewNew_->getElement(i/3+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(i/3+offsetElements).addSubElement(feNew);	
+					if ( !this->elementsC_->getElement(i/3+offsetElements).subElementsInitialized() )
+						this->elementsC_->getElement(i/3+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(i/3+offsetElements).addSubElement(feNew);	
 					}
 				}
 			else
-				this->edgeElementsNew_->addEdge(feNew,indexElement);
+				this->edgeElements_->addEdge(feNew,indexElement);
 			
 		}
     }
@@ -2739,16 +2804,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElemen
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
 		int entry; 
-		if (this->elementsNewNew_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsNewNew_->getElement(indexElement).getSubElements()->numberElements();
+		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
+			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
 			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
+				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
 				for(int j=0; j<4 ; j++){
 					originTriangleTmp = originTriangles[j];
 					sort(triTmp.begin(),triTmp.end());
 					sort(originTriangleTmp.begin(),originTriangleTmp.end());
 					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
+						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
 					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
                		//entry = distance( originTriangles.begin() , it1 );
 				}
@@ -2998,58 +3063,58 @@ void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElemen
 		// Now we add the elements, edges and triangles 
 
 		// Adding Elements
-		int offsetElements = this->elementsNewNew_->numberElements(); 
-		int offsetEdges = this->edgeElementsNew_->numberElements(); 
+		int offsetElements = this->elementsC_->numberElements(); 
+		int offsetEdges = this->edgeElements_->numberElements(); 
 		for( int i=0;i<4; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElementNew feNew(newElements.at(i),10);
+			FiniteElement feNew(newElements.at(i),10);
 			feNew.setFiniteElementRefinementType("irregular");	
 			feNew.setPredecessorElement(indexElement);
 			if(i<3)
-				this->elementsNewNew_->addElement(feNew);
+				this->elementsC_->addElement(feNew);
 			else
-				this->elementsNewNew_->switchElement(indexElement,feNew);
+				this->elementsC_->switchElement(indexElement,feNew);
 		}
 
 		// Adding the edges (they also have to be added to triangles as subelements, but that is not implemented yet)
 		for( int i=0;i<24; i++){
 			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
-			FiniteElementNew feNew(newEdges.at(i),edgeFlags[i]);
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
 			feNew.setInterfaceElement(isInterfaceEdge[i]);
 			feNew.setPredecessorElement(predecessorElement[i]);
 			if(i<18){
-				this->edgeElementsNew_->addEdge(feNew,i/6+offsetElements);
+				this->edgeElements_->addEdge(feNew,i/6+offsetElements);
 			}
 			else
-				this->edgeElementsNew_->addEdge(feNew,indexElement);		
+				this->edgeElements_->addEdge(feNew,indexElement);		
 		}
 
 		// Adding triangles as subelements, if they arent interior triangles
 		int offsetSurface=0;
 		for( int i=0;i<16; i++){
 			sort( newTriangles.at(i).begin(), newTriangles.at(i).end() );
-			FiniteElementNew feNew(newTriangles[i],newTrianglesFlag[i]);
+			FiniteElement feNew(newTriangles[i],newTrianglesFlag[i]);
 			feNew.setInterfaceElement(isInterfaceSurface[i]);
 			if(i<12){
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-				 	if ( !this->elementsNewNew_->getElement(i/4+offsetElements).subElementsInitialized() )
-						this->elementsNewNew_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(i/4+offsetElements).addSubElement(feNew);					
+				 	if ( !this->elementsC_->getElement(i/4+offsetElements).subElementsInitialized() )
+						this->elementsC_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(i/4+offsetElements).addSubElement(feNew);					
 				}
 				this->surfaceTriangleElements_->addSurface(feNew, i/4+offsetElements);
 			}
 			else{
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-					if ( !this->elementsNewNew_->getElement(indexElement).subElementsInitialized() )
-						this->elementsNewNew_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(indexElement).addSubElement(feNew);	
+					if ( !this->elementsC_->getElement(indexElement).subElementsInitialized() )
+						this->elementsC_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(indexElement).addSubElement(feNew);	
 				}
 				this->surfaceTriangleElements_->addSurface(feNew, indexElement);
 			}	
 
 			this->surfaceTriangleElements_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -2) ;
 			for(int j=0; j< 3 ; j++){
-				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElementsNew_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
+				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElements_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
 			}
 			offsetSurface += 3;
 			if((i % 4) == 0)
@@ -3200,16 +3265,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
 		int entry; 
-		if (this->elementsNewNew_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsNewNew_->getElement(indexElement).getSubElements()->numberElements();
+		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
+			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
 			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
+				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
 				for(int j=0; j<4 ; j++){
 					originTriangleTmp = originTriangles[j];
 					sort(triTmp.begin(),triTmp.end());
 					sort(originTriangleTmp.begin(),originTriangleTmp.end());
 					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
+						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
 					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
                		//entry = distance( originTriangles.begin() , it1 );
 				}
@@ -3409,58 +3474,58 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 		// Now we add the elements, edges and triangles 
 
 		// Adding Elements
-		int offsetElements = this->elementsNewNew_->numberElements(); 
-		int offsetEdges = this->edgeElementsNew_->numberElements(); 
+		int offsetElements = this->elementsC_->numberElements(); 
+		int offsetEdges = this->edgeElements_->numberElements(); 
 		for( int i=0;i<3; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElementNew feNew(newElements.at(i),10);
+			FiniteElement feNew(newElements.at(i),10);
 			feNew.setFiniteElementRefinementType("irregular");	
 			feNew.setPredecessorElement(indexElement);
 			if(i<2)
-				this->elementsNewNew_->addElement(feNew);
+				this->elementsC_->addElement(feNew);
 			else
-				this->elementsNewNew_->switchElement(indexElement,feNew);
+				this->elementsC_->switchElement(indexElement,feNew);
 		}
 
 		// Adding the edges (they also have to be added to triangles as subelements, but that is not implemented yet)
 		for( int i=0;i<18; i++){
 			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
-			FiniteElementNew feNew(newEdges.at(i),edgeFlags[i]);
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
 			feNew.setInterfaceElement(isInterfaceEdge[i]);
 			feNew.setPredecessorElement(predecessorElement[i]);
 			if(i<12){
-				this->edgeElementsNew_->addEdge(feNew,i/6+offsetElements);
+				this->edgeElements_->addEdge(feNew,i/6+offsetElements);
 			}
 			else
-				this->edgeElementsNew_->addEdge(feNew,indexElement);		
+				this->edgeElements_->addEdge(feNew,indexElement);		
 		}
 
 		// Adding triangles as subelements, if they arent interior triangles
 		int offsetSurface =0;
 		for( int i=0;i<12; i++){
 			sort( newTriangles.at(i).begin(), newTriangles.at(i).end() );
-			FiniteElementNew feNew(newTriangles[i],newTrianglesFlag[i]);
+			FiniteElement feNew(newTriangles[i],newTrianglesFlag[i]);
 			feNew.setInterfaceElement(isInterfaceSurface[i]);
 			if(i<8){
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-				 	if ( !this->elementsNewNew_->getElement(i/4+offsetElements).subElementsInitialized() )
-						this->elementsNewNew_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(i/4+offsetElements).addSubElement(feNew);					
+				 	if ( !this->elementsC_->getElement(i/4+offsetElements).subElementsInitialized() )
+						this->elementsC_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(i/4+offsetElements).addSubElement(feNew);					
 				}
 				this->surfaceTriangleElements_->addSurface(feNew, i/4+offsetElements);
 			}
 			else{
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-					if ( !this->elementsNewNew_->getElement(indexElement).subElementsInitialized() )
-						this->elementsNewNew_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(indexElement).addSubElement(feNew);	
+					if ( !this->elementsC_->getElement(indexElement).subElementsInitialized() )
+						this->elementsC_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(indexElement).addSubElement(feNew);	
 				}
 				this->surfaceTriangleElements_->addSurface(feNew, indexElement);
 			}	
 
 			this->surfaceTriangleElements_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -2) ;
 			for(int j=0; j< 3 ; j++){
-				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElementsNew_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
+				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElements_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
 			}
 			offsetSurface += 3;
 			if((i % 4) == 0)
@@ -3582,16 +3647,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElemen
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
 		int entry; 
-		if (this->elementsNewNew_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsNewNew_->getElement(indexElement).getSubElements()->numberElements();
+		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
+			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
 			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
+				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
 				for(int j=0; j<4 ; j++){
 					originTriangleTmp = originTriangles[j];
 					sort(triTmp.begin(),triTmp.end());
 					sort(originTriangleTmp.begin(),originTriangleTmp.end());
 					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
+						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
 					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
                		//entry = distance( originTriangles.begin() , it1 );
 				}
@@ -3741,58 +3806,58 @@ void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElemen
 		// Now we add the elements, edges and triangles 
 
 		// Adding Elements
-		int offsetElements = this->elementsNewNew_->numberElements(); 
-		int offsetEdges = this->edgeElementsNew_->numberElements(); 
+		int offsetElements = this->elementsC_->numberElements(); 
+		int offsetEdges = this->edgeElements_->numberElements(); 
 		for( int i=0;i<2; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElementNew feNew(newElements.at(i),10);
+			FiniteElement feNew(newElements.at(i),10);
 			feNew.setFiniteElementRefinementType("irregular");	
 			feNew.setPredecessorElement(indexElement);
 			if(i<1)
-				this->elementsNewNew_->addElement(feNew);
+				this->elementsC_->addElement(feNew);
 			else
-				this->elementsNewNew_->switchElement(indexElement,feNew);
+				this->elementsC_->switchElement(indexElement,feNew);
 		}
 
 		// Adding the edges (they also have to be added to triangles as subelements, but that is not implemented yet)
 		for( int i=0;i<12; i++){
 			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
-			FiniteElementNew feNew(newEdges.at(i),edgeFlags[i]);
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
 			feNew.setInterfaceElement(isInterfaceEdge[i]);
 			feNew.setPredecessorElement(predecessorElement[i]);
 			if(i<6){
-				this->edgeElementsNew_->addEdge(feNew,i/6+offsetElements);
+				this->edgeElements_->addEdge(feNew,i/6+offsetElements);
 			}
 			else
-				this->edgeElementsNew_->addEdge(feNew,indexElement);		
+				this->edgeElements_->addEdge(feNew,indexElement);		
 		}
 
 		// Adding triangles as subelements, if they arent interior triangles
 		int offsetSurface =0;
 		for( int i=0;i<8; i++){
 			sort( newTriangles.at(i).begin(), newTriangles.at(i).end() );
-			FiniteElementNew feNew(newTriangles[i],newTrianglesFlag[i]);
+			FiniteElement feNew(newTriangles[i],newTrianglesFlag[i]);
 			feNew.setInterfaceElement(isInterfaceSurface[i]);
 			if(i<4){
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-				 	if ( !this->elementsNewNew_->getElement(i/4+offsetElements).subElementsInitialized() )
-						this->elementsNewNew_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(i/4+offsetElements).addSubElement(feNew);					
+				 	if ( !this->elementsC_->getElement(i/4+offsetElements).subElementsInitialized() )
+						this->elementsC_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(i/4+offsetElements).addSubElement(feNew);					
 				}
 				this->surfaceTriangleElements_->addSurface(feNew, i/4+offsetElements);	
 			}			
 			else{
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-					if ( !this->elementsNewNew_->getElement(indexElement).subElementsInitialized() )
-						this->elementsNewNew_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(indexElement).addSubElement(feNew);	
+					if ( !this->elementsC_->getElement(indexElement).subElementsInitialized() )
+						this->elementsC_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(indexElement).addSubElement(feNew);	
 				}
 				this->surfaceTriangleElements_->addSurface(feNew, indexElement);				
 			}	
 
 			this->surfaceTriangleElements_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -2) ;
 			for(int j=0; j< 3 ; j++){
-				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElementsNew_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
+				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElements_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
 			}
 			offsetSurface += 3;
 			if((i % 4) == 0)
@@ -3903,16 +3968,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
 		int entry; 
-		if (this->elementsNewNew_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsNewNew_->getElement(indexElement).getSubElements()->numberElements();
+		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
+			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
 			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
+				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
 				for(int j=0; j<4 ; j++){
 					originTriangleTmp = originTriangles[j];
 					sort(triTmp.begin(),triTmp.end());
 					sort(originTriangleTmp.begin(),originTriangleTmp.end());
 					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
+						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
 					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
                		//entry = distance( originTriangles.begin() , it1 );
 				}
@@ -4161,51 +4226,51 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
 		// Now we add the elements, edges and triangles 
 
 		// Adding Elements
-		int offsetElements = this->elementsNewNew_->numberElements(); 
-		int offsetEdges = this->edgeElementsNew_->numberElements(); 
+		int offsetElements = this->elementsC_->numberElements(); 
+		int offsetEdges = this->edgeElements_->numberElements(); 
 		for( int i=0;i<4; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElementNew feNew(newElements.at(i),10);
+			FiniteElement feNew(newElements.at(i),10);
 			feNew.setFiniteElementRefinementType("irregular");	
 			feNew.setPredecessorElement(indexElement);
 			if(i<3)
-				this->elementsNewNew_->addElement(feNew);
+				this->elementsC_->addElement(feNew);
 			else
-				this->elementsNewNew_->switchElement(indexElement,feNew);
+				this->elementsC_->switchElement(indexElement,feNew);
 		}
 
 		// Adding the edges (they also have to be added to triangles as subelements, but that is not implemented yet)
 		for( int i=0;i<24; i++){
 			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
-			FiniteElementNew feNew(newEdges.at(i),edgeFlags[i]);
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
 			feNew.setInterfaceElement(isInterfaceEdge[i]);
 			feNew.setPredecessorElement(predecessorElement[i]);
 			if(i<18){
-				this->edgeElementsNew_->addEdge(feNew,i/6+offsetElements);
+				this->edgeElements_->addEdge(feNew,i/6+offsetElements);
 			}
 			else
-				this->edgeElementsNew_->addEdge(feNew,indexElement);		
+				this->edgeElements_->addEdge(feNew,indexElement);		
 		}
 
 		// Adding triangles as subelements, if they arent interior triangles
 		int offsetSurface=0;
 		for( int i=0;i<16; i++){
 			sort( newTriangles.at(i).begin(), newTriangles.at(i).end() );
-			FiniteElementNew feNew(newTriangles[i],newTrianglesFlag[i]);
+			FiniteElement feNew(newTriangles[i],newTrianglesFlag[i]);
 			feNew.setInterfaceElement(isInterfaceSurface[i]);
 			if(i<12){
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-				 	if ( !this->elementsNewNew_->getElement(i/4+offsetElements).subElementsInitialized() )
-						this->elementsNewNew_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(i/4+offsetElements).addSubElement(feNew);	
+				 	if ( !this->elementsC_->getElement(i/4+offsetElements).subElementsInitialized() )
+						this->elementsC_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(i/4+offsetElements).addSubElement(feNew);	
 				}	
 				this->surfaceTriangleElements_->addSurface(feNew, i/4+offsetElements);				
 			}
 			else{
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-					if ( !this->elementsNewNew_->getElement(indexElement).subElementsInitialized() )
-						this->elementsNewNew_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(indexElement).addSubElement(feNew);	
+					if ( !this->elementsC_->getElement(indexElement).subElementsInitialized() )
+						this->elementsC_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(indexElement).addSubElement(feNew);	
 				}
 				this->surfaceTriangleElements_->addSurface(feNew, indexElement);				
 
@@ -4213,7 +4278,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
 	
 			this->surfaceTriangleElements_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -2) ;
 			for(int j=0; j< 3 ; j++){
-				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElementsNew_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
+				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElements_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
 			}
 			offsetSurface += 3;
 			if((i % 4) == 0)
@@ -4359,35 +4424,35 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		predecessorElement[11] = -1;
 
 
-		int offsetElements = this->elementsNewNew_->numberElements(); 
-		int offsetEdges = this->edgeElementsNew_->numberElements(); 
+		int offsetElements = this->elementsC_->numberElements(); 
+		int offsetEdges = this->edgeElements_->numberElements(); 
 		for( int i=0;i<4; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElementNew feNew(newElements.at(i),0);
+			FiniteElement feNew(newElements.at(i),0);
 			feNew.setFiniteElementRefinementType("regular");	
 			feNew.setPredecessorElement(indexElement);
 			if(i<3)
-				this->elementsNewNew_->addElement(feNew);
+				this->elementsC_->addElement(feNew);
 			else
-				this->elementsNewNew_->switchElement(indexElement,feNew);
+				this->elementsC_->switchElement(indexElement,feNew);
 		}
 
 		for( int i=0;i<12; i++){
 			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
-			FiniteElementNew feNew(newEdges.at(i),edgeFlags[i]);
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
 			feNew.setInterfaceElement(isInterfaceEdge[i]);
 			feNew.setPredecessorElement(predecessorElement[i]);
 			if(i<9){
-				this->edgeElementsNew_->addEdge(feNew,i/3+offsetElements);
+				this->edgeElements_->addEdge(feNew,i/3+offsetElements);
 				if(edgeFlags[i]!=0 && edgeFlags[i]!=10){
-				 	if ( !this->elementsNewNew_->getElement(i/3+offsetElements).subElementsInitialized() )
-						this->elementsNewNew_->getElement(i/3+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(i/3+offsetElements).addSubElement(feNew);		
+				 	if ( !this->elementsC_->getElement(i/3+offsetElements).subElementsInitialized() )
+						this->elementsC_->getElement(i/3+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(i/3+offsetElements).addSubElement(feNew);		
 
 					}		
 			}
 			else
-				this->edgeElementsNew_->addEdge(feNew,indexElement);
+				this->edgeElements_->addEdge(feNew,indexElement);
 			
 		}
 		
@@ -4492,16 +4557,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
 		int entry=0; 
-		if (this->elementsNewNew_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsNewNew_->getElement(indexElement).getSubElements()->numberElements();
+		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
+			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
 			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
+				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
 				for(int j=0; j<4 ; j++){
 					originTriangleTmp = originTriangles[j];
 					sort(triTmp.begin(),triTmp.end());
 					sort(originTriangleTmp.begin(),originTriangleTmp.end());
 					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsNewNew_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
+						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
 					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
                		//entry = distance( originTriangles.begin() , it1 );
 				}
@@ -5380,61 +5445,61 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// Now we add the elements, edges and triangles 
 
 		// Adding Elements
-		int offsetElements = this->elementsNewNew_->numberElements(); 
-		int offsetEdges = this->edgeElementsNew_->numberElements(); 
+		int offsetElements = this->elementsC_->numberElements(); 
+		int offsetEdges = this->edgeElements_->numberElements(); 
 		for( int i=0;i<8; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElementNew feNew(newElements.at(i),10);
+			FiniteElement feNew(newElements.at(i),10);
 			feNew.setFiniteElementRefinementType("regular");	
 			feNew.setPredecessorElement(indexElement);
-			//if(elements->getElement(indexElement).getFiniteElementRefinementType() == "irregular")
-				//feNew.setFiniteElementRefinementType("irregular");	
+			if(elements->getElement(indexElement).getFiniteElementRefinementType() == "irregular")
+				feNew.setFiniteElementRefinementType("irregularRegular");	
 			if(i<7)
-				this->elementsNewNew_->addElement(feNew);
+				this->elementsC_->addElement(feNew);
 			else
-				this->elementsNewNew_->switchElement(indexElement,feNew);
+				this->elementsC_->switchElement(indexElement,feNew);
 		}
 
 		// Adding the edges (they also have to be added to triangles as subelements, but that is not implemented yet)
 		for( int i=0;i<48; i++){
 			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
-			FiniteElementNew feNew(newEdges.at(i),edgeFlags[i]);
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
 			feNew.setInterfaceElement(isInterfaceEdge[i]);
 			feNew.setPredecessorElement(predecessorElement[i]);
 			if(i<42){
-				this->edgeElementsNew_->addEdge(feNew,i/6+offsetElements);
+				this->edgeElements_->addEdge(feNew,i/6+offsetElements);
 			}
 			else
-				this->edgeElementsNew_->addEdge(feNew,indexElement);		
+				this->edgeElements_->addEdge(feNew,indexElement);		
 		}
 
 		// Adding triangles as subelements, if they arent interior triangles
 		int offsetSurface =0;
 		for( int i=0;i<32; i++){
 			sort( newTriangles.at(i).begin(), newTriangles.at(i).end() );
-			FiniteElementNew feNew(newTriangles[i],newTrianglesFlag[i]);
+			FiniteElement feNew(newTriangles[i],newTrianglesFlag[i]);
 			feNew.setInterfaceElement(isInterfaceSurface[i]);
 			if(i<28){
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-					 if ( !this->elementsNewNew_->getElement(i/4+offsetElements).subElementsInitialized() )
-							this->elementsNewNew_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
-						this->elementsNewNew_->getElement(i/4+offsetElements).addSubElement(feNew);	
+					 if ( !this->elementsC_->getElement(i/4+offsetElements).subElementsInitialized() )
+							this->elementsC_->getElement(i/4+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+						this->elementsC_->getElement(i/4+offsetElements).addSubElement(feNew);	
 				}
 				this->surfaceTriangleElements_->addSurface(feNew, i/4+offsetElements);	
 
 			}
 			else{
 				if(newTrianglesFlag[i]!=0 && newTrianglesFlag[i]!=10){
-					if ( !this->elementsNewNew_->getElement(indexElement).subElementsInitialized() )
-						this->elementsNewNew_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
-					this->elementsNewNew_->getElement(indexElement).addSubElement(feNew);	
+					if ( !this->elementsC_->getElement(indexElement).subElementsInitialized() )
+						this->elementsC_->getElement(indexElement).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(indexElement).addSubElement(feNew);	
 				}
 				this->surfaceTriangleElements_->addSurface(feNew, indexElement);				
 			}
 
 			/*this->surfaceTriangleElements_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -2) ;
 			for(int j=0; j< 3 ; j++){
-				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElementsNew_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
+				this->surfaceTriangleElements_->getElement(i).addSubElement(this->edgeElements_->getElement(offsetEdges + newTriangleEdgeIDs[i/4][j+offsetSurface]));	
 			}
 			offsetSurface += 3;
 			if((i % 4) == 0)

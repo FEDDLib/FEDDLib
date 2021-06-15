@@ -1,11 +1,11 @@
-#ifndef ADAPTIVEMESHREFINEMENT_decl_hpp
-#define ADAPTIVEMESHREFINEMENT_decl_hpp
+#ifndef AdaptiveMeshRefinement_decl_hpp
+#define AdaptiveMeshRefinement_decl_hpp
 
 #include "feddlib/core/Utils/FEDDUtils.hpp"
-#include "feddlic/core/Mesh/Mesh.hpp"
-#include "feddlic/core/Mesh/MeshUnstructured.hpp"
-#include "feddlic/core/Mesh/MeshInterface.hpp"
-#include "feddlic/core/Mesh/MeshFileReader.hpp"
+#include "feddlib/core/Mesh/Mesh.hpp"
+#include "feddlib/core/Mesh/MeshUnstructured.hpp"
+#include "feddlib/core/Mesh/MeshInterface.hpp"
+#include "feddlib/core/Mesh/MeshFileReader.hpp"
 #include "feddlib/core/FE/EdgeElements.hpp"
 #include "feddlib/core/FE/TriangleElements.hpp"
 #include "feddlib/core/FE/EdgeElements.hpp"
@@ -18,7 +18,10 @@
 #include "feddlib/core/Mesh/MeshUnstructuredRefinement.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include  <boost/function.hpp>
-#include "feddlib/problem/abstract/problem.hpp'
+#include "feddlib/problems/abstract/Problem.hpp"
+#include "feddlib/amr/ExporterParaViewAMR.hpp"
+#include "feddlib/amr/ErrorEstimation.hpp"
+#include "feddlib/amr/RefinementFactory.hpp"
 
 /*!
  Declaration of Adaptive Mesh Refinement
@@ -36,6 +39,7 @@ class AdaptiveMeshRefinement {
     
 public:
     typedef Mesh<SC,LO,GO,NO> Mesh_Type;
+    typedef MeshUnstructured<SC,LO,GO,NO>  MeshUnstr_Type;
     typedef Teuchos::RCP<MeshUnstructured<SC,LO,GO,NO> > MeshUnstrPtr_Type;
 
     typedef std::vector<MeshUnstrPtr_Type> MeshUnstrPtrArray_Type;
@@ -68,13 +72,13 @@ public:
 	typedef Teuchos::RCP<MultiVectorLO_Type> MultiVectorLOPtr_Type;
     typedef MultiVector<GO,LO,GO,NO> MultiVectorGO_Type;
     typedef Teuchos::RCP<MultiVectorGO_Type> MultiVectorGOPtr_Type;
-	typedef Teuchos::RCP<const MultiVector_Type> MultiVectorPtrConst_Type;
+	typedef Teuchos::RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
     typedef Teuchos::OrdinalTraits<LO> OTLO;
 
 	typedef Matrix<SC,LO,GO,NO> Matrix_Type;
     typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
 
- 	typedef ExporterParaView<SC,LO,GO,NO> Exporter_Type;
+ 	typedef ExporterParaViewAMR<SC,LO,GO,NO> Exporter_Type;
     typedef Teuchos::RCP<Exporter_Type> ExporterPtr_Type;
     typedef Teuchos::RCP<ExporterTxt> ExporterTxtPtr_Type;
 
@@ -90,19 +94,30 @@ public:
 
     AdaptiveMeshRefinement();
     
-    AdaptiveMeshRefinement( CommConstPtr_Type comm, int volumeID=10 );
+    AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll);
 
-	AdaptiveMeshRefinement(string problemType, int dim);
-
-	AdaptiveMeshRefinement(string problemType, int dim, vec_dbl_Type parasDbl, vec_string_type parasString, , ExporterPtr_Type exportSol, ExporterPtr_Type exportError )
+	AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFunc );
     
     ~AdaptiveMeshRefinement();
 
-	void globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP2 MultiVectorPtr_Type solutionP1, MultiVectorPtr_Type solutionP2 );
+	DomainPtr_Type globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP12, MultiVectorConstPtr_Type solutionP1, MultiVectorConstPtr_Type solutionP2 ,  ProblemPtr_Type problem, RhsFunc_Type rhsFunc );
     
-	void exportSolution();
-	void exportError();
+	MultiVectorConstPtr_Type calcExactSolution();
+	//void determineCoarsening();
 
+	void calcErrorNorms(MultiVectorConstPtr_Type exactSolution, MultiVectorConstPtr_Type solutionP12);
+
+	void initExporter( ParameterListPtr_Type parameterListAll);
+
+	void exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolution, MultiVectorConstPtr_Type errorValues);
+
+	void exportError(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type errorElConst, MultiVectorConstPtr_Type vecDecompositionConst );
+
+	void writeRefinementInfo();
+	
+	void buildSurfaceTriangleElements(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceTriangleElements );
+
+	vec_bool_Type checkInterfaceSurface( EdgeElementsPtr_Type edgeElements,vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement);
 
 protected: 
 	
@@ -111,26 +126,37 @@ protected:
 private:
 
 	RhsFunc_Type rhsFunc_;
-	Func_Type exactSol_;
+	Func_Type exactSolFunc_;
 	
 	MeshUnstrPtr_Type inputMeshP1_;
 	MeshUnstrPtr_Type inputMeshP12_;
 	MeshUnstrPtr_Type outputMesh_;
 
 	MultiVectorPtrArray_Type errorEstimationMv_;
+	MultiVectorPtr_Type errorElementsMv_;
+	MultiVectorConstPtr_Type errorNodesMv_;
+
+   	CommConstPtr_Type comm_;
 
 	bool exportWithParaview_ = true;
+	bool initExporter_=false;
 
-	ExporterPtr_Type exportSol_;
-	ExporterPtr_Type exportError_;
+	ExporterPtr_Type exporterSol_;
+	ExporterPtr_Type exporterError_;
 
 	DomainPtrArray_Type domainsP1_;
 	DomainPtrArray_Type domainsP12_;
 
-	string refinementRestrictions_ = "none";
+	DomainPtr_Type domainP1_;
+	DomainPtr_Type domainP12_;
+
+	ProblemPtr_Type problem_;
+	
+	string refinementRestriction_ = "keepRegularity";
 	string markingStrategy_ = "Maximum";
 
 	double theta_ = 0.5;
+	double tol_= 0.001 ;
 
 	bool meshQualityPrint_ = "false";
 	bool timeTablePrint_ = "false";
@@ -139,12 +165,33 @@ private:
 	string problemType_;
 	int dim_;
 
+	int currentIter_;
+	int maxIter_ = 5;
+	int maxRank_;
+
+	string FEType1_;
+	string FEType2_;
+
+	vec_dbl_Type maxErrorEl;
+	vec_dbl_Type maxErrorKn;
+	vec_int_Type numElements;
+	vec_int_Type numElementsProc;
+	vec_dbl_Type relError;
+	vec_dbl_Type eRelError;
+	vec_dbl_Type errorH1;
+	vec_dbl_Type errorL2;
+	vec_int_Type numNodes;
+
+	bool writeRefinementTime_ = true ;
+	bool writeMeshQuality_ = true ;
+
+	ParameterListPtr_Type parameterListAll_ ;
+
 	
 	
 		
 
-    
- 
+  
     
 };
 }

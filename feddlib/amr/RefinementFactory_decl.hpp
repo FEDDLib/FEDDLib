@@ -1,5 +1,5 @@
-#ifndef REFINEMENTFACTORY_decl_hpp
-#define REFINEMENTFACTORY_decl_hpp
+#ifndef RefinementFactory_decl_hpp
+#define RefinementFactory_decl_hpp
 
 #include "feddlib/core/Utils/FEDDUtils.hpp"
 #include "feddlib/core/Mesh/Mesh.hpp"
@@ -13,7 +13,6 @@
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/Mesh/MeshStructured.hpp"
-#include "feddlib/core/Mesh/MeshUnstructured.hpp"
 #include "feddlib/amr/RefinementFactory.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include  <boost/function.hpp>
@@ -34,13 +33,14 @@ class RefinementFactory : public MeshUnstructured<SC,LO,GO,NO> {
     
 public:
    typedef Mesh<SC,LO,GO,NO> Mesh_Type;
+   typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
     typedef Teuchos::RCP<MeshUnstructured<SC,LO,GO,NO> > MeshUnstrPtr_Type;
 
     typedef std::vector<MeshUnstrPtr_Type> MeshUnstrPtrArray_Type;
 
-    typedef MeshUnstructuredRefinement<SC,LO,GO,NO> MeshUnstrRef_Type;
+    /*typedef MeshUnstructuredRefinement<SC,LO,GO,NO> MeshUnstrRef_Type;
     typedef Teuchos::RCP<MeshUnstrRef_Type> MeshUnstrRefPtr_Type;
-    typedef std::vector<MeshUnstrRefPtr_Type> MeshUnstrRefPtrArray_Type; // Array of meshUnstr for meshRefinement
+    typedef std::vector<MeshUnstrRefPtr_Type> MeshUnstrRefPtrArray_Type; // Array of meshUnstr for meshRefinement*/
 
 	typedef typename Mesh_Type::CommPtr_Type CommPtr_Type;
     typedef typename Mesh_Type::CommConstPtr_Type CommConstPtr_Type;
@@ -72,22 +72,18 @@ public:
 	typedef Matrix<SC,LO,GO,NO> Matrix_Type;
     typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
 
- 	typedef ExporterParaView<SC,LO,GO,NO> Exporter_Type;
-    typedef Teuchos::RCP<Exporter_Type> ExporterPtr_Type;
-    typedef Teuchos::RCP<ExporterTxt> ExporterTxtPtr_Type;
-
     RefinementFactory();
     
     RefinementFactory( CommConstPtr_Type comm, int volumeID=10 );
 
-    RefinementFactory( CommConstPtr_Type comm, int volumeID, MeshUnstrPtr_Type meshP1);
+    RefinementFactory( CommConstPtr_Type comm, int volumeID, MeshUnstrPtr_Type meshP1, string refinementRestriction, int refinement3DDiagonal = 0);
     
     ~RefinementFactory();
     
 
-    void refineMesh( MeshUnstrRefPtrArray_Type meshP1, int iteration); // MeshRefinement
+    void refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh); // MeshRefinement
 
-	void assignEdgeFlags( MeshUnstrRefPtr_Type meshP1, EdgeElementsPtr_Type edgeElements);
+	void assignEdgeFlags( MeshUnstrPtr_Type meshP1, EdgeElementsPtr_Type edgeElements);
     	
 	void refineRegular(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements,  int i); // aka red refinement
 	
@@ -116,13 +112,11 @@ public:
 
 	vec_bool_Type checkInterfaceSurface( EdgeElementsPtr_Type edgeElements,vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement);
 
-	void tagArea(vec2D_dbl_Type area);
-
-	void refinementRestrictions(MeshUnstrRefPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction,  int& newElements); // check if Element that is tagged to be refined green has previously been refined green
+	void refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction,  int& newElements); // check if Element that is tagged to be refined green has previously been refined green
 
 	void refineIrregular(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, int& newElements, MapConstPtr_Type edgeMap, SurfaceElementsPtr_Type surfaceTriangleElements);
 
-	void buildSurfaceTriangleElements(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements);
+	void buildSurfaceTriangleElements(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceTriangleElements, MapConstPtr_Type edgeMap, MapConstPtr_Type elementMap );
 
 	void setErrorEstimate(vec_dbl_Type errorElements) { errorEstimation_ = errorElements;};	
 

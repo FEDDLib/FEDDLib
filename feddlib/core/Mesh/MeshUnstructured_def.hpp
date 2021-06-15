@@ -134,9 +134,11 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     this->rankRange_ = meshP1->rankRange_;
     bool verbose( this->comm_->getRank() == 0 );
     this->elementMap_ = meshP1->elementMap_;
+	this->edgeMap_ = meshP1->edgeMap_;
     this->dim_ = meshP1->getDimension();
     this->FEType_ = "P2";
     this->numElementsGlob_ = meshP1->numElementsGlob_;
+	this->surfaceTriangleElements_ = meshP1->surfaceTriangleElements_;
     
     GO P1Offset = meshP1->mapUnique_->getMaxAllGlobalIndex()+1;
     EdgeElementsPtr_Type edgeElements = meshP1->getEdgeElements();
@@ -395,6 +397,8 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
         this->bcFlagUni_->at(i) = this->bcFlagRep_->at(id);
 
     }
+	this->edgeElements_ = edgeElements;
+
     
     if (verbose)
         cout << "done --" << endl;

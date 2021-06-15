@@ -61,6 +61,12 @@ public:
     typedef Teuchos::Comm<int> Comm_Type;
     typedef Teuchos::RCP<const Comm_Type> CommConstPtr_Type;
 
+    typedef Xpetra::Import<LO,GO,NO> XpetraImport_Type;
+    typedef Teuchos::RCP<XpetraImport_Type> XpetraImportPtr_Type;
+
+    typedef Xpetra::Export<LO,GO,NO> XpetraExport_Type;
+    typedef Teuchos::RCP<XpetraExport_Type> XpetraExportPtr_Type;
+
     Matrix();
 
     Matrix( XpetraMatrixPtr_Type& xpetraMatPtrIn );
@@ -128,9 +134,19 @@ public:
     void toMV( MultiVectorPtr_Type& mv );
     
     LO getGlobalMaxNumRowEntries() const;
+
+    void insertLocalValues (LO localRow, const Teuchos::ArrayView< const LO > &cols, const Teuchos::ArrayView< const SC > &vals);
+
+    void importFromVector( MatrixPtr_Type mvIn, bool reuseImport = false, std::string combineMode = "Insert", std::string type="Forward" );
+    void exportFromVector( MatrixPtr_Type mvIn, bool reuseExport = false, std::string combineMode = "Insert", std::string type="Forward" );
+	
+
 private:
 
     XpetraMatrixPtr_Type matrix_;
+    XpetraImportPtr_Type importer_;    
+	XpetraExportPtr_Type exporter_;
+
 };
 }
 

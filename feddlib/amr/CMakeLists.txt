@@ -36,20 +36,45 @@ ENDFOREACH()
 
 TRIBITS_CONFIGURE_FILE(${PACKAGE_NAME}_config.h)
 
-SET(HEADERS "")
-SET(SOURCES "")
+SET(HEADERS ${HEADERS} ${AMR_HEADERS})
+SET(SOURCES ${SOURCES} ${AMR_SOURCES})
 
 SET(HEADERS ${HEADERS}
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_config.h
 )
 
-SET(HEADERS ${HEADERS} RefinementFactory.hpp)
-SET(HEADERS ${HEADERS} AdaptiveMeshRefinement.hpp)
-SET(HEADERS ${HEADERS} ErrorEstimation.hpp)
+SET(AMR_HEADERS
+	AdaptiveMeshRefinement.hpp
+	AdaptiveMeshRefinement_decl.hpp
+	AdaptiveMeshRefinement_def.hpp
+	RefinementFactory.hpp
+	RefinementFactory_decl.hpp
+	RefinementFactory_def.hpp
+	ErrorEstimation.hpp
+	ErrorEstimation_decl.hpp
+	ErrorEstimation_def.hpp
+	ExporterParaViewAMR.hpp
+	ExporterParaViewAMR_decl.hpp
+	ExporterParaViewAMR_def.hpp
+CACHE INTERNAL "")
+SET(AMR_SOURCES
+	AdaptiveMeshRefinement.cpp
+	RefinementFactory.cpp
+	ErrorEstimation.cpp
+	ExporterParaViewAMR.cpp
+CACHE INTERNAL "")
 
-#ADD_SUBDIRECTORY(Exporter)
-SET(HEADERS ${HEADERS} ${ExporterParaViewAMR_HEADERS})
-SET(SOURCES ${SOURCES} ${ExporterParaViewAMR_SOURCES})
+SET(LOCAL_HEADERS)
+FOREACH(INC ${AMR_HEADERS})
+  STRING(REPLACE "amr/ " " " LOCAL_INC ${INC})
+  SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
+ENDFOREACH()
+
+INSTALL(
+  FILES ${LOCAL_HEADERS}
+  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/feddlib/amr"
+  COMPONENT ${PACKAGE_NAME}
+)
 
 TRIBITS_EXCLUDE_AUTOTOOLS_FILES()
 # This is the list of files excluded from the tarball

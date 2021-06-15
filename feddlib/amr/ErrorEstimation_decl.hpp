@@ -2,19 +2,21 @@
 #define ErrorEstimation_decl_hpp
 
 #include "feddlib/core/Utils/FEDDUtils.hpp"
-#include "feddlic/core/Mesh/Mesh.hpp"
-#include "feddlic/core/Mesh/MeshUnstructured.hpp"
-#include "feddlic/core/Mesh/MeshInterface.hpp"
-#include "feddlic/core/Mesh/MeshFileReader.hpp"
+#include "feddlib/core/Mesh/Mesh.hpp"
+#include "feddlib/core/Mesh/MeshUnstructured.hpp"
+#include "feddlib/core/Mesh/MeshInterface.hpp"
+#include "feddlib/core/Mesh/MeshFileReader.hpp"
 #include "feddlib/core/FE/EdgeElements.hpp"
 #include "feddlib/core/FE/TriangleElements.hpp"
-#include "feddlib/core/FE/EdgeElementsNew.hpp"
+#include "feddlib/core/FE/EdgeElements.hpp"
 #include <Tpetra_CrsMatrix.hpp>
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/Mesh/MeshStructured.hpp"
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
-#include "feddlib/core/Mesh/ErrorEstimation.hpp"
+#include "feddlib/amr/ErrorEstimation.hpp"
+#include "feddlib/amr/RefinementFactory.hpp"
+#include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include  <boost/function.hpp>
 
@@ -37,23 +39,15 @@ public:
     typedef Teuchos::RCP<MeshUnstructured<SC,LO,GO,NO> > MeshUnstrPtr_Type;
 
     typedef std::vector<MeshUnstrPtr_Type> MeshUnstrPtrArray_Type;
-
-    typedef ErrorEstimation<SC,LO,GO,NO> MeshUnstrRef_Type;
-    typedef Teuchos::RCP<MeshUnstrRef_Type> MeshUnstrRefPtr_Type;
-    typedef std::vector<MeshUnstrRefPtr_Type> MeshUnstrRefPtrArray_Type; // Array of meshUnstr for meshRefinement
-    
+  
     typedef typename Mesh_Type::CommPtr_Type CommPtr_Type;
     typedef typename Mesh_Type::CommConstPtr_Type CommConstPtr_Type;
     typedef typename Mesh_Type::Elements_Type Elements_Type;
     typedef typename Mesh_Type::ElementsPtr_Type ElementsPtr_Type;
-    typedef typename Mesh_Type::ElementsNew_Type ElementsNew_Type;
-    typedef typename Mesh_Type::ElementsNewPtr_Type ElementsNewPtr_Type;
     typedef EdgeElements EdgeElements_Type;
     typedef Teuchos::RCP<EdgeElements_Type> EdgeElementsPtr_Type;
     typedef SurfaceElements SurfaceElements_Type;
     typedef Teuchos::RCP<SurfaceElements_Type> SurfaceElementsPtr_Type;
-    typedef EdgeElementsNew EdgeElementsNew_Type;
-    typedef Teuchos::RCP<EdgeElementsNew_Type> EdgeElementsNewPtr_Type;
     
     typedef MeshInterface<SC,LO,GO,NO> MeshInterface_Type;
     typedef Teuchos::RCP<MeshInterface_Type> MeshInterfacePtr_Type;
@@ -82,31 +76,33 @@ public:
     ~ErrorEstimation();
     
 	// Error Estimation Functions that will be reallocted soon
-	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type meshUnstr, MultiVectorPtrConst_Type valuesSolution, double theta, string strategy, RhsFunc_Type rhsFunc);
+	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type meshUnstr, MultiVectorPtrConst_Type valuesSolution, double theta, string strategy, RhsFunc_Type rhsFunc, string FEType);
 
 	vec3D_dbl_Type calcDPhiU(MultiVectorPtr_Type valuesSolutionRepeated);
 	vec_dbl_Type calculateJump(MultiVectorPtr_Type valuesSolutionRepeated);
 	vec2D_dbl_Type gradPhi(int dim,int intFE,vec_dbl_Type &p);
 
-	vec_dbl_Type determineCoarseningError(MeshUnstrRefPtr_Type mesh_k, string distribution); // Mesh Coarsening
+	MultiVectorPtr_Type determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta); // Mesh Coarsening
 
-	double determineResElement(FiniteElementNew element, Teuchos::ArrayRCP< SC > valuesSolutionRep, RhsFunc_Type rhsFunc);
+	double determineResElement(FiniteElement element, Teuchos::ArrayRCP< SC > valuesSolutionRep, RhsFunc_Type rhsFunc);
 
 	void markElements(MultiVectorPtr_Type errorElementMv, string strategy, MeshUnstrPtr_Type meshUnstr);
 	
-	vec_dbl_Type determineH_T_min(ElementsNewPtr_Type elements,EdgeElementsNewPtr_Type edgeElements, vec2D_dbl_ptr_Type points, vec_dbl_Type& volTetraeder);
+	vec_dbl_Type determineH_T_min(ElementsPtr_Type elements,EdgeElementsPtr_Type edgeElements, vec2D_dbl_ptr_Type points, vec_dbl_Type& volTetraeder);
 
-	vec_dbl_Type calcDiamElements(ElementsNewPtr_Type elements,vec2D_dbl_ptr_Type points);
+	vec_dbl_Type calcDiamElements(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points);
 
-	vec_dbl_Type determineAreaTriangles(ElementsNewPtr_Type elements,EdgeElementsNewPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceElements, vec2D_dbl_ptr_Type points);
+	vec_dbl_Type determineAreaTriangles(ElementsPtr_Type elements,EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceElements, vec2D_dbl_ptr_Type points);
 
 	void buildTriangleMap();
 
-	void setErrorEstimate(vec_dbl_Type errorElements) { errorEstimation_ = errorElements;};	
+	void updateElementsOfSurfaceLocalAndGlobal(EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceTriangleElements);
 
-	vec_dbl_Type getErrorEstimate() { return errorEstimation_ ; };	
+	void setErrorEstimate(MultiVectorPtr_Type errorElements) { errorEstimation_ = errorElements;};	
 
+	MultiVectorPtr_Type getErrorEstimate() { return errorEstimation_ ; };	
 
+	void tagArea(vec2D_dbl_Type area,MeshUnstrPtr_Type meshUnstr);
 
 	string refinementRestriction_ = "none";
 	string markingStrategy_ = "Maximum";
@@ -121,7 +117,7 @@ public:
 
 protected: 
 	vec_GO_Type globalInterfaceIDs_;
-	vec_dbl_Type errorEstimation_; // error estimated according to A-posteriori Error Estimator. Sorted according to loca Element IDs
+	MultiVectorPtr_Type errorEstimation_; // error estimated according to A-posteriori Error Estimator. Sorted according to loca Element IDs
 
 	vec_dbl_Type areaTriangles_;
 	vec_dbl_Type volTetraeders_;
@@ -129,13 +125,11 @@ protected:
 	vec_dbl_Type h_T_min_;	// Diameter in the 3D Tetraeder Sense
 	
 	MapConstPtr_Type surfaceTriangleMap_;
+	SurfaceElementsPtr_Type surfaceElements_;
 
 
 
 private:
-
-	MapConstPtr_Type surfaceTriangleMap_;
-	
 	MeshUnstrPtr_Type inputMesh_;
 	string FEType1_;
 	string FEType2_;

@@ -1,3 +1,11 @@
+#ifndef MAIN_TIMER_START
+#define MAIN_TIMER_START(A,S) Teuchos::RCP<Teuchos::TimeMonitor> A = Teuchos::rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer(std::string("Main") + std::string(S))));
+#endif
+
+#ifndef MAIN_TIMER_STOP
+#define MAIN_TIMER_STOP(A) A.reset();
+#endif
+
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 
@@ -12,14 +20,15 @@
 #include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "feddlib/problems/specific/Laplace.hpp"
+#include "feddlib/problems/abstract/Problem.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"
-
 #include "feddlib/core/Mesh/Mesh.hpp"
 #include "feddlib/core/Mesh/MeshInterface.hpp"
-# include "feddlib/core/Mesh/MeshFileReader.hpp"
+#include "feddlib/core/Mesh/MeshFileReader.hpp"
+#include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 
 #include <boost/function.hpp>
 #include <chrono> 
@@ -51,6 +60,18 @@ void bc2D(double* x, double* res, double t, const double* parameters){
 
 }
 
+void exactSol(double* x, double* res){
+
+	double r = sqrt(x[0]*x[0] + x[1]*x[1]);
+    double phi;
+    if(x[1] < 0.0)
+		phi = 2.0*M_PI+atan2(x[1],x[0]);
+    else
+		phi = atan2(x[1],x[0]);
+	
+    res[0] =  pow(r,2/3.)*sin(2/3.*phi); 
+
+}
 
 // Function for the rhs
 void rhs2D(double* x, double* res, double* parameters){
@@ -109,14 +130,17 @@ int main(int argc, char *argv[]) {
 	typedef Teuchos::RCP<BlockMatrix_Type> BlockMatrixPtr_Type;
 	typedef EdgeElements EdgeElements_Type;
 	typedef Teuchos::RCP<EdgeElements_Type> EdgeElementsPtr_Type;
-	typedef Mesh<SC,LO,GO,NO> Mesh_Type;
-	typedef Teuchos::RCP<Mesh_Type > MeshPtr_Type;
+	typedef Mesh<SC,LO,GO,NO> MAIN_Type;
+	typedef Teuchos::RCP<MAIN_Type > MeshPtr_Type;
 	typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
 	typedef Teuchos::RCP<MeshUnstr_Type> MeshUnstrPtr_Type;
-	typedef typename Mesh_Type::Elements_Type Elements_Type;
-	typedef typename Mesh_Type::ElementsPtr_Type ElementsPtr_Type;
+	typedef typename MAIN_Type::Elements_Type Elements_Type;
+	typedef typename MAIN_Type::ElementsPtr_Type ElementsPtr_Type;
     typedef Map<LO,GO,NO> Map_Type;
     typedef typename Map_Type::MapPtr_Type MapPtr_Type;
+	typedef Problem<SC,LO,GO,NO> Problem_Type;
+    typedef Teuchos::RCP<Problem_Type> ProblemPtr_Type;
+
 
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
@@ -195,18 +219,8 @@ int main(int argc, char *argv[]) {
 
 		domain = domainP1;
 	
-
+	
 		// MeshRefinement Parameters
-		double tol= parameterListProblem->sublist("Mesh Refinement").get("Toleranz",0.001);
-		double theta = parameterListProblem->sublist("Mesh Refinement").get("Theta",0.35);
-		string strategy = parameterListProblem->sublist("Mesh Refinement").get("RefinementType","Uniform");
-		int maxIter = parameterListProblem->sublist("Mesh Refinement").get("MaxIter",3);
-		bool checkRestrictions = parameterListProblem->sublist("Mesh Refinement").get("Check Restrictions",true);
-		string restriction = parameterListProblem->sublist("Mesh Refinement").get("Restriction Type","keepRegularity");
-
-		vec_dbl_Type maxErrorEl(maxIter+1);
-		vec_int_Type numElements(maxIter+1);
-		vec_int_Type numElementsProc(maxIter+1);
 
 
 	  	MeshPartitioner_Type::DomainPtrArray_Type domainP1RefinedArray(1);
@@ -215,14 +229,9 @@ int main(int argc, char *argv[]) {
 				
 		Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
-		Teuchos::RCP<const MultiVector<SC,LO,GO,NO> >  exportSolution;
-		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara2;
-		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
-		std::chrono::duration<double> elapsed_total;
-		std::chrono::duration<double> elapsed_MeshRef=(std::chrono::duration<double>) 0;
-		std::chrono::duration<double> elapsed_MeshRefTmp =(std::chrono::duration<double>) 0;
-		std::chrono::duration<double> elapsed_Solv=(std::chrono::duration<double>) 0;
+		int maxIter = parameterListProblem->sublist("Mesh Refinement").get("MaxIter",3);
+		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Laplace",parameterListProblem,exactSol);
 		
 		std::vector<std::chrono::duration<double>> meshTiming(maxIter);
 
@@ -232,19 +241,20 @@ int main(int argc, char *argv[]) {
 
 		int maxRank = std::get<1>(domain->getMesh()->rankRange_);
 		int j=0;
+		MAIN_TIMER_START(Total," Step 4:	 Total RefinementAlgorithm");
 		while(j<maxIter+1 ){
 
+			MAIN_TIMER_START(buildP2," Step 0:	 buildP2Mesh");
 			if (FEType=="P2" ) {
 					domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
 					domainP2->buildP2ofP1Domain( domainP1 );
 					domain = domainP2;
 			   		 }
 			else 
-					domain = domainP1; 
+					domain = domainP1; 	
+			MAIN_TIMER_STOP(buildP2);		
 
-			// Initialize meshUnstrRefinement Type for domain
-			domainP1->initMeshRef(domainP1);
-			domain->initMeshRef(domain);
+			MAIN_TIMER_START(Bounds," Step 1:	 bcFactory");
 
 			if(dim == 2){
 				bcFactory.reset( new BCBuilder<SC,LO,GO,NO>( ) );
@@ -252,92 +262,41 @@ int main(int argc, char *argv[]) {
 			}
 			if(dim == 3){
 				bcFactory.reset( new BCBuilder<SC,LO,GO,NO>( ) );
-		   		bcFactory->addBC(bc3D, 1, 0, domain, "Dirichlet", 1);
+		   		bcFactory->addBC(bc2D, 1, 0, domain, "Dirichlet", 1);
 			}
+
+			MAIN_TIMER_STOP(Bounds);	
+			MAIN_TIMER_START(Solver," Step 2:	 solving PDE");
+
 		   
-			auto startSolv = std::chrono::high_resolution_clock::now();
-			Laplace<SC,LO,GO,NO> laplace(domain,FEType,parameterListAll,vL);
+			Teuchos::RCP<Laplace<SC,LO,GO,NO> > laplace(new Laplace<SC,LO,GO,NO>( domain,FEType,parameterListAll,vL));
+			RhsFunc_Type rhs;
 				{
-				laplace.addBoundaries(bcFactory);
-				if(dim==2)
-					laplace.addRhsFunction(rhs2D);
-				if(dim==3)
-					laplace.addRhsFunction(rhs3D);
-		        laplace.initializeProblem();
-				laplace.assemble();
-				laplace.setBoundaries();
-				laplace.solve();
+				laplace->addBoundaries(bcFactory);
+				if(dim==2){
+					laplace->addRhsFunction(rhs2D);
+					rhs=rhs2D;
+					}
+				if(dim==3){
+					laplace->addRhsFunction(rhs2D);
+					rhs=rhs2D;
 				}
+		        laplace->initializeProblem();
+				laplace->assemble();
+				laplace->setBoundaries();
+				laplace->solve();
+				}
+			MAIN_TIMER_STOP(Solver);	
+	
+			MAIN_TIMER_START(Refinement," Step 3:	 meshRefinement");
 
-			auto finishSolv = std::chrono::high_resolution_clock::now();
-			elapsed_Solv = elapsed_Solv + finishSolv- startSolv;
-				
-			const MultiVectorPtrConst_Type valuesSolution = laplace.getSolution()->getBlock(0);
-
-			// Error Estimation and tagging of Elements
-			vec_dbl_Type errorElement  = domainP1->errorEstimation(valuesSolution, theta, strategy);
-
-			// Determine max error of elements on Proc
-			vec_dbl_Type::iterator it;
-			it = max_element(errorElement.begin(), errorElement.end());
-			double maxErrorProc = errorElement.at(distance(errorElement.begin(), it)); // accumulate(errorElement.begin(), errorElement.end(),0.0);
-
-		 	// Export Solution
-			exPara.reset(new ExporterParaView<SC,LO,GO,NO>());
-
-			exportSolution = laplace.getSolution()->getBlock(0);
-
-			if(dim==2)
-                exPara->setup("MeshRefinement2D", domain->getMesh(), FEType, parameterListAll);				
-			else
-                exPara->setup("MeshRefinement3D", domain->getMesh(), FEType, parameterListAll);
-//
-			exPara->addVariable(exportSolution, "u", "Scalar", 1, domain->getMapUnique(), domain->getMapUniqueP2());
-			exPara->save(0.0);
-			
-	 		// Export distribution of elements among processors
-			MultiVectorPtr_Type procNumTmp = Teuchos::rcp( new MultiVector_Type(domain->getMapUnique() , 1 ) );
-			procNumTmp->putScalar(comm->getRank());
-			MultiVectorPtrConst_Type procNum = procNumTmp;
-
-			exPara2.reset(new ExporterParaView<SC,LO,GO,NO>());
-			if(dim==2)
-                exPara2->setup("ElementDistribution2D", domain->getMesh(), FEType, parameterListAll);
-			else
-                exPara2->setup("ElementDistribution3D", domain->getMesh(), FEType, parameterListAll);
-				
-			exPara2->addVariable(procNum, "Procs", "Scalar", 1, domain->getMapUnique(), domain->getMapUniqueP2());
-			exPara2->save(0.0); // 
-			
-			numElements[j]=domain->getElementMap()->getMaxAllGlobalIndex()+1;
-			numElementsProc[j] = domain->getElementsC()->numberElements();
-
-			double errorBreak;
-			// Collect max Error in Elements
-			reduceAll<int, double> (*comm, REDUCE_MAX, maxErrorProc, outArg (errorBreak));
-
-			maxErrorEl[j] = errorBreak;
-
-			if(dim == 2){
-				if(( j==maxIter || errorBreak < tol ) && j>0)
-					break;
-			}
-			if(dim==3){
-				if( j==maxIter)
-					break;
-			}
-						
 			// Refinement
 			domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-			auto startRef = std::chrono::high_resolution_clock::now();
-			{
-				domainRefined->refineMesh(domainP1RefinedArray,j, checkRestrictions, restriction); // always use the P1 domain, P2 Domain has has lost its' edge (höhö)
-			}
-			auto finishRef = std::chrono::high_resolution_clock::now();
-			auto timeTmp = finishRef - startRef;
-			meshTiming[j] = timeTmp;
 
-			elapsed_MeshRef = elapsed_MeshRef + finishRef - startRef;
+			{
+				ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( laplace , true);
+				domainRefined = meshRefiner.globalAlgorithm( domainP1,  domain, laplace->getSolution()->getBlock(0), laplace->getSolution()->getBlock(0), problem, rhs );
+			}
 
 			domainP1RefinedArray.push_back(domainRefined);
 
@@ -345,91 +304,16 @@ int main(int argc, char *argv[]) {
 			domain = domainP1;
 			
 			j++;
+			MAIN_TIMER_STOP(Refinement);				
 			
 		}	
-		auto finishTotal = std::chrono::high_resolution_clock::now();
 
-		elapsed_total = finishTotal - startTotal;
-
-		// Collect the number of elements each processor hold after refinement
-		vec_GO_Type globalProcs(0);
-		for (int i=0; i<= maxRank; i++)
-				globalProcs.push_back(i);
-
-		Teuchos::ArrayView<GO> globalProcArray = Teuchos::arrayViewFromVector( globalProcs);
-
-		vec_GO_Type localProc(0);
-		localProc.push_back(comm->getRank());
-		Teuchos::ArrayView<GO> localProcArray = Teuchos::arrayViewFromVector( localProc);
-
-		MapPtr_Type mapGlobalProc =
-			Teuchos::rcp( new Map_Type( domain->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, comm) );
-
-		// Global IDs of Procs
-		MapPtr_Type mapProc =
-			Teuchos::rcp( new Map_Type( domain->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, comm) );
-		
-		MultiVectorPtr_Type exportLocalEntry = Teuchos::rcp( new MultiVector_Type( mapProc, 1 ) );
-
-		exportLocalEntry->putScalar( (LO) numElementsProc[j] );
-
-		MultiVectorPtr_Type elementList= Teuchos::rcp( new MultiVector_Type( mapGlobalProc, 1 ) );
-		elementList->putScalar( 0 ); 
-		elementList->importFromVector( exportLocalEntry, true, "Insert");
-
-		Teuchos::ArrayRCP<const double > elementProcList = elementList->getData(0);
+			MAIN_TIMER_STOP(Total);	
+   			Teuchos::TimeMonitor::report(cout,"Main");
 
 
-		if(comm->getRank() == 0){	
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Summary Mesh Refinement" << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Marking Strategy:	" << strategy << endl;
-			cout << " Theta:			" << theta << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Tolerance:			" << tol << endl;
-			cout << " Max number of Iterations:	" <<  maxIter << endl;
-			cout << " Number of Processors:		" << maxRank+1 << endl;
-			cout << " Number of Refinements:		" << j << endl;
-			cout << " Checking Restrictions:		" << checkRestrictions << endl;
-			cout << " Restriction Type: 		" << restriction << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Number of elements after Refinement.... " << endl;
-			for(int i=1; i<=j ; i++)
-				cout <<" "<< i << ":	" << numElements[i] << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Errorestimation: max error in Elements according to error Estimator after Refinement.... " << endl;
-			for (int i=1; i<=j ; i++)
-				cout <<" "<< i << ":	" << maxErrorEl[i] << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << "Distribution of elements on .. " << endl;
-			for(int l=0; l<maxRank+1 ; l++)
-				cout <<" Processor "<< l << " carries " << elementProcList[l] << " Elements "<< endl; 
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Elapsed Time of MeshRefinement Step.. " << endl;
-			for (int i=1; i<=j ; i++)
-				cout <<" " << i << ":	" << meshTiming[i-1].count() << " s" << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Elapsed time of Mesh Refinement, sum of refinement steps:	" << elapsed_MeshRef.count() << " s\n";
-			cout << " Elapsed time solving PDE, sum of all loops :			" << elapsed_Solv.count() << " s\n";
-			cout << " Elapsed time of Refinement & Solving:				" << elapsed_total.count() << " s\n";
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			}
-		
-		}
 	 
+	}
  return(EXIT_SUCCESS);
 
 }

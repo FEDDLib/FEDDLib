@@ -18,10 +18,12 @@
  	<ParameterList name="Mesh Refinement">
         <Parameter name="Toleranz" type="double" value="0.001"/>
         <Parameter name="Theta" type="double" value="0.5"/>
-        <Parameter name="MaxIter" type="int" value="3"/>
+        <Parameter name="MaxIter" type="int" value="4"/>
         <Parameter name="RefinementType" type="string" value="Maximum"/>
-        <Parameter name="Check Restrictions" type="bool" value="true"/>
-        <Parameter name="Restriction Type" type="string" value="keepRegularity"/><!-- checkGreenTags, keepRegularity -->
+       	<Parameter name="Write Refinement Time" type="bool" value="true"/>
+        <Parameter name="Write Mesh Quality" type="bool" value="true"/>
+        <Parameter name="3D regular Refinement Diagonal Pick" type="int" value="0"/>
+        <Parameter name="Refinement Restriction" type="string" value="keepRegularity"/>
     </ParameterList>
     
     <ParameterList name="Exporter">

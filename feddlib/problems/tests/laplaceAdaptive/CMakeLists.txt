@@ -45,9 +45,9 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive2D1
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive3D
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-	SOURCE_FILES cube_131.mesh
+	SOURCE_FILES pacman3D.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-        DEST_FILES cube_131.mesh
+        DEST_FILES pacman3D.mesh
 	EXEDEPS laplaceAdaptive
 )
 

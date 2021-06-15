@@ -6,6 +6,7 @@
 #include "MeshInterface.hpp"
 #include "MeshFileReader.hpp"
 #include "feddlib/core/FE/EdgeElements.hpp"
+#include "feddlib/core/FE/TriangleElements.hpp"
 
 /*!
  Declaration of MeshUnstructured
@@ -34,6 +35,9 @@ public:
     
     typedef EdgeElements EdgeElements_Type;
     typedef Teuchos::RCP<EdgeElements_Type> EdgeElementsPtr_Type;
+
+    typedef SurfaceElements SurfaceElements_Type;
+    typedef Teuchos::RCP<SurfaceElements_Type> SurfaceElementsPtr_Type;
     
     typedef MeshInterface<SC,LO,GO,NO> MeshInterface_Type;
     typedef Teuchos::RCP<MeshInterface_Type> MeshInterfacePtr_Type;
@@ -79,6 +83,8 @@ public:
     int determineFlagP2( MeshUnstrPtr_Type meshP1, LO p1ID, LO p2ID,  LO localEdgeID, vec2D_LO_Type& markedPoint );
     
     void getTriangles(int vertex1ID, int vertex2ID, vec_int_Type &vertices3ID);
+
+    SurfaceElementsPtr_Type getSurfaceTriangleElements(){return surfaceTriangleElements_;};
     
     void findSurfaces( const vec_int_Type& elementNodeList, vec_int_Type numbering,  vec2D_int_Type& localSurfaceNodeList_vec, vec_int_Type& locSurfaces, bool critical = false );
 
@@ -118,6 +124,7 @@ public:
 
  	EdgeElementsPtr_Type edgeElements_;    
     ElementsPtr_Type surfaceEdgeElements_;
+	SurfaceElementsPtr_Type surfaceTriangleElements_;
 
  	string meshFileName_;
     string delimiter_;

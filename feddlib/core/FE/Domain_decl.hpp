@@ -129,11 +129,11 @@ public:
 
     void buildP2ofP1Domain( DomainPtr_Type domainP1 );
 
-    void refineMesh( DomainPtrArray_Type domainP1, int j, bool checkRestrictions, string restriction); // Mesh Refinement
+    void initWithDomain(DomainPtr_Type domainsP1); // Mesh Refinement
 
-	vec_dbl_Type errorEstimation(MultiVectorPtrConst_Type valuesSolution, double theta, string strategy);
+	void setMesh(MeshUnstrPtr_Type meshUnstr); 
 
-	void initMeshRef( DomainPtr_Type domainP1 );
+	//vec_dbl_Type errorEstimation(MultiVectorPtrConst_Type valuesSolution, double theta, string strategy);
     
     // Baue unique node- und dof-InterfaceMap in der Interface-Nummerierung
     void buildUniqueInterfaceMaps();
