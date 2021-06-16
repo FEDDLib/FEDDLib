@@ -294,13 +294,21 @@ int main(int argc, char *argv[]) {
 			domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
 
 			{
-				ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( laplace , true);
-				domainRefined = meshRefiner.globalAlgorithm( domainP1,  domain, laplace->getSolution()->getBlock(0), laplace->getSolution()->getBlock(0), problem, rhs );
+				vec2D_dbl_Type area(2,vec_dbl_Type(2));
+				area[0][0] = 0;
+				area[0][1] = 1;
+				area[1][0] = 0;
+				area[1][1] = 1;
+			
+
+				domainP1  = meshRefiner.refineArea(domainP1,area,2);
+
+
+				//ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( laplace , true);
+				//domainRefined = meshRefiner.globalAlgorithm( domainP1,  domain, laplace->getSolution()->getBlock(0), laplace->getSolution()->getBlock(0), problem, rhs );
 			}
 
-			domainP1RefinedArray.push_back(domainRefined);
-
-			domainP1 = domainRefined;
+			//domainP1 = domainRefined;
 			domain = domainP1;
 			
 			j++;

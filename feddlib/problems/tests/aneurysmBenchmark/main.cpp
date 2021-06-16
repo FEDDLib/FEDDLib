@@ -257,7 +257,7 @@ int main(int argc, char *argv[]) {
 				area[2][0] = 0.;
 				area[2][1] = 0.41;*/
 				// Aneurysma
-				vec2D_dbl_Type area(3,vec_dbl_Type(3));
+				vec2D_dbl_Type area(3,vec_dbl_Type(2));
 				area[0][0] = 13;
 				area[0][1] = 22;
 				area[1][0] = 17;
