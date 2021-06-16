@@ -76,7 +76,7 @@ public:
     
     RefinementFactory( CommConstPtr_Type comm, int volumeID=10 );
 
-    RefinementFactory( CommConstPtr_Type comm, int volumeID, MeshUnstrPtr_Type meshP1, string refinementRestriction, int refinement3DDiagonal = 0);
+    RefinementFactory( CommConstPtr_Type comm, int volumeID,  string refinementRestriction, int refinement3DDiagonal = 0);
     
     ~RefinementFactory();
     

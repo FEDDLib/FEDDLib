@@ -134,7 +134,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
     ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ );
 
 	// Refinement Factory object
-	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, inputMeshP1_, refinementRestriction_, refinement3DDiagonal_); 
+	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, refinementRestriction_, refinement3DDiagonal_); 
 
 	// Estimating the error with the Discretizations Mesh.
 	int currentLevel =0;
@@ -206,7 +206,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
     ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ );
 
 	// Refinement Factory object
-	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, inputMeshP1_, refinementRestriction_, refinement3DDiagonal_); 
+	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, refinementRestriction_, refinement3DDiagonal_); 
 
 	if(dim_ ==3){
 		SurfaceElementsPtr_Type surfaceTriangleElements = inputMeshP12_->getSurfaceTriangleElements(); // Surfaces
