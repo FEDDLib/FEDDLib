@@ -114,6 +114,40 @@ AdaptiveMeshRefinement<SC,LO,GO,NO>::~AdaptiveMeshRefinement(){
 
 }
 
+template <class SC, class LO, class GO, class NO>
+typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>:: tagArea(DomainPtr_Type domainP1, vec2D_dbl_Type area, int level ){
+
+	DomainPtr_Type domainRefined(new Domain<SC,LO,GO,NO>( domainP1->getComm() , dim_ ));
+	MeshUnstrPtr_Type outputMesh(new MeshUnstr_Type(domainP1->getComm(),  inputMeshP1_->volumeID_));
+
+	// !!!!! Not yes existing function 
+	domainRefined->initWithDomain(domainP1);
+
+	inputMeshP1_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1->getMesh() , true);
+	inputMeshP1_->FEType_ = domainP1->getFEType();
+
+	// Error Estimation object
+    ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ );
+
+	// Refinement Factory object
+	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, inputMeshP1_, refinementRestriction_, refinement3DDiagonal_); 
+
+	// Estimating the error with the Discretizations Mesh.
+	int currentLevel =0;
+	while(currentLevel < level){		
+		errorEstimator.tagArea(inputMeshP1_,area);
+		refinementFactory.refineMesh(inputMeshP1_,currentLevel, outputMesh);
+
+		inputMeshP1_ = outputMesh;
+		currentLevel++;
+	}
+
+    domainRefined->setMesh(outputMesh);
+	
+	return domainRefined;
+
+}
+
 /*!
 \brief Global Algorithm of Mesh Refinement 
 

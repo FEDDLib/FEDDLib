@@ -101,6 +101,8 @@ public:
     ~AdaptiveMeshRefinement();
 
 	DomainPtr_Type globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP12, MultiVectorConstPtr_Type solutionP1, MultiVectorConstPtr_Type solutionP2 ,  ProblemPtr_Type problem, RhsFunc_Type rhsFunc );
+
+	DomainPtr_Type tagArea(DomainPtr_Type domainP1, vec2D_dbl_Type area, int level);
     
 	MultiVectorConstPtr_Type calcExactSolution();
 	//void determineCoarsening();

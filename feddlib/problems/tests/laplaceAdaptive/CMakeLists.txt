@@ -16,7 +16,7 @@ TRIBITS_ADD_TEST(
     NAME laplaceAdaptive3D
     ARGS 
 	--problemfile=parametersProblem3D.xml
-    NUM_MPI_PROCS 8
+    NUM_MPI_PROCS 4
 )
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_laplaceAdaptive

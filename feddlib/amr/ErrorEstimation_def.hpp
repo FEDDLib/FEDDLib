@@ -213,7 +213,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 // Residualbased A-posteriori ErrorEstimation as proposed in Verfuerths' "A Posteriori Error Estimation Techniques for Finite Element Methods"
 template <class SC, class LO, class GO, class NO>
-void ErrorEstimation<SC,LO,GO,NO>::tagArea(vec2D_dbl_Type area, MeshUnstrPtr_Type meshUnstr){
+void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type meshUnstr,vec2D_dbl_Type area){
 
 	inputMesh_ = meshUnstr;
 

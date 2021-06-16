@@ -29,7 +29,7 @@
     <ParameterList name="Exporter">
         
         <Parameter name="Export coarse functions" type="bool" value="false"/>
-        
+        <Parameter name="Write new mesh" type="bool" value="true"/>
         <Parameter name="Name coarse functions block1" type="string" value="phiUP1"/>
         <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
         

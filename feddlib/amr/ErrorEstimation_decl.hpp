@@ -102,7 +102,7 @@ public:
 
 	MultiVectorPtr_Type getErrorEstimate() { return errorEstimation_ ; };	
 
-	void tagArea(vec2D_dbl_Type area,MeshUnstrPtr_Type meshUnstr);
+	void tagArea(MeshUnstrPtr_Type meshUnstr,vec2D_dbl_Type area);
 
 	string refinementRestriction_ = "none";
 	string markingStrategy_ = "Maximum";
