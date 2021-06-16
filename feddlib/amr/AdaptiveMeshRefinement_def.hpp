@@ -115,7 +115,7 @@ AdaptiveMeshRefinement<SC,LO,GO,NO>::~AdaptiveMeshRefinement(){
 }
 
 template <class SC, class LO, class GO, class NO>
-typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>:: tagArea(DomainPtr_Type domainP1, vec2D_dbl_Type area, int level ){
+typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>:: refineArea(DomainPtr_Type domainP1, vec2D_dbl_Type area, int level ){
 
 	DomainPtr_Type domainRefined(new Domain<SC,LO,GO,NO>( domainP1->getComm() , dim_ ));
 	MeshUnstrPtr_Type outputMesh(new MeshUnstr_Type(domainP1->getComm(),  inputMeshP1_->volumeID_));

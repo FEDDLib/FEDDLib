@@ -7,7 +7,7 @@
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
-
+#include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 #include <Xpetra_DefaultPlatform.hpp>
 
 /*!
@@ -234,6 +234,44 @@ int main(int argc, char *argv[]) {
 		        MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
 		        
 		        partitionerP1.readAndPartition();
+
+
+				// ##############################################################################################
+				// Refining Area
+				// ##############################################################################################
+				// Insert Mesh Refinement Here 
+					// BFS
+					
+				/*area[0][0] = -0.2;
+				area[0][1] =0.4;
+				area[1][0] = -0.2;
+				area[1][1] = 0.4;
+				area[2][0] = 0.;
+				area[2][1] = 1.;
+				
+				// Turek
+				area[0][0] = 0.4;
+				area[0][1] =0.7;
+				area[1][0] = 0.;
+				area[1][1] = 0.41;
+				area[2][0] = 0.;
+				area[2][1] = 0.41;*/
+				// Aneurysma
+				vec2D_dbl_Type area(3,vec_dbl_Type(3));
+				area[0][0] = 13;
+				area[0][1] = 22;
+				area[1][0] = 17;
+				area[1][1] = 23;
+				area[2][0] = -2;
+				area[2][1] = 6;
+
+				AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("NavierStokes",parameterListProblem);
+
+				domainPressure = meshRefiner.refineArea(domainPressure,area,2);
+
+				// ##############################################################################################
+
+
 		        
 		        domainVelocity->buildP2ofP1Domain( domainPressure );
 		        
@@ -242,53 +280,6 @@ int main(int argc, char *argv[]) {
 		        else
 		            domainVelocity = domainPressure;
 
-				// ##############################################################################################
-				// Insert Mesh Refinement Here 
-				/*MeshPartitioner_Type::DomainPtrArray_Type domainP1RefinedArray(1);
-				domainP1RefinedArray[0] = domainPressure;
-				for(int i=0; i<1 ; i++){
-					domainPressure->initMeshRef(domainPressure);
-					vec2D_dbl_Type area(3,vec_dbl_Type(2));
-					// BFS
-					
-					area[0][0] = -0.2;
-					area[0][1] =0.4;
-					area[1][0] = -0.2;
-					area[1][1] = 0.4;
-					area[2][0] = 0.;
-					area[2][1] = 1.;
-					
-					// Turek
-					area[0][0] = 0.4;
-					area[0][1] =0.7;
-					area[1][0] = 0.;
-					area[1][1] = 0.41;
-					area[2][0] = 0.;
-					area[2][1] = 0.41;
-					// Aneurysma
-					/*area[0][0] = 13;
-					area[0][1] = 22;
-					area[1][0] = 17;
-					area[1][1] = 23;
-					area[2][0] = -2;
-					area[2][1] = 6;
-
-					domainPressure->tagArea(area) ; //estimateError(valuesSolution, theta, strategy);
-
-					Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
-					domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-					auto startRef = std::chrono::high_resolution_clock::now();
-					const MultiVectorPtr_Type valuesSolution = Teuchos::RCP<MultiVector_Type>(new MultiVector_Type( domainPressure->getMapUnique() ) );
-					valuesSolution->putScalar(0.);
-					{
-						domainRefined->refineMesh(domainP1RefinedArray,i,"none",0,valuesSolution, 0.35, "Maximum", rhs, false); // always use the P1 domain, P2 Domain has has lost its' edge (höhö)
-					}
-					domainPressure = domainRefined;
-					domainP1RefinedArray.push_back(domainRefined);*/
-
-
-		        
-                
             }
             
             std::vector<double> parameter_vec(1);
