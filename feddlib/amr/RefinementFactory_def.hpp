@@ -45,33 +45,10 @@ MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 }
 
 template <class SC, class LO, class GO, class NO>
-RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID, MeshUnstrPtr_Type meshP1, string refinementRestriction, int refinement3DDiagonal):
+RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID, string refinementRestriction, int refinement3DDiagonal):
 MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 {
-	this->dim_ = meshP1->dim_;
-	this->FEType_=meshP1->FEType_;
-    this->volumeID_ = meshP1->volumeID_;
-	this->rankRange_=meshP1->rankRange_;
-    EdgeElementsPtr_Type edgeElements = meshP1->getEdgeElements(); // Edges
-    ElementsPtr_Type elements = meshP1->getElementsC(); // Elements
-    this->elementMap_ = meshP1->elementMap_;
-	this->mapUnique_ = meshP1->mapUnique_;
-	this->mapRepeated_=meshP1->mapRepeated_;
-	this->edgeMap_ = meshP1->edgeMap_;
-    this->edgeElements_.reset(new EdgeElements(*edgeElements)); // Edges
-    this->elementsC_.reset(new Elements(*elements));    // Elements set with the elements we already have
-    this->pointsRep_.reset(new std::vector<std::vector<double> >(meshP1->pointsRep_->size(),vector<double>(this->dim_,-1.)));
-    *this->pointsRep_ = *meshP1->pointsRep_; // Points
-	this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), vector<double>(this->dim_,-1. ) ) );
-    *this->pointsUni_ = *meshP1->pointsUni_; 
-	this->bcFlagUni_.reset( new std::vector<int> ( this->mapUnique_->getNodeNumElements(), 0 ) );
-    *this->bcFlagUni_ = *meshP1->bcFlagUni_; 
-	this->bcFlagRep_.reset(new vector<int>(meshP1->bcFlagRep_->size())); // Flags
-	*this->bcFlagRep_ = *meshP1->bcFlagRep_;
-	this->edgesElementOrder_=meshP1->getEdgeElementOrder();
-	this->numElementsGlob_ = meshP1->numElementsGlob_; 
-	this->surfaceTriangleElements_=meshP1->surfaceTriangleElements_;
-
+    this->volumeID_ = volumeID;
 	this->refinement3DDiagonal_= refinement3DDiagonal;
 	this->refinementRestriction_ = refinementRestriction;
 }
@@ -335,6 +312,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		if(this->dim_==3){
 			if(surfaceTriangleElements.is_null()){
 				cout << " Building Surface Triangles " << flush ;
+				surfaceTriangleElements.reset(new SurfaceElements()); // Surface
 				this->buildSurfaceTriangleElements(elements,edgeElements, surfaceTriangleElements, this->edgeMap_, this->elementMap_ );
 				surfaceTriangleElements = this->surfaceTriangleElements_;
 	   			this->surfaceTriangleElements_.reset(new SurfaceElements()); // Surface
