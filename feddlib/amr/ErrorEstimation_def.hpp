@@ -45,7 +45,7 @@ ErrorEstimation<SC,LO,GO,NO>::~ErrorEstimation(){
 
 // Residualbased A-posteriori ErrorEstimation as proposed in Verfuerths' "A Posteriori Error Estimation Techniques for Finite Element Methods"
 template <class SC, class LO, class GO, class NO>
-typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::estimateError(MeshUnstrPtr_Type meshUnstr, MultiVectorPtrConst_Type valuesSolution, double theta, string strategy, RhsFunc_Type rhsFunc, string FEType){
+typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::estimateError(MeshUnstrPtr_Type meshUnstr, MultiVectorPtrConst_Type valuesSolution, RhsFunc_Type rhsFunc, string FEType){
 	
 	inputMesh_ = meshUnstr;
 	FEType1_ = FEType;
@@ -53,8 +53,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 	if(FEType1_ != "P1" && FEType1_ != "P2"){ 
    		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Error Estimation only works for Triangular P1 or P2 Elements");
 	}
-	theta_ = theta;
-	markingStrategy_ = strategy;
+
 
 	ElementsPtr_Type elements = inputMesh_->getElementsC();
    	EdgeElementsPtr_Type edgeElements = inputMesh_->getEdgeElements();
@@ -1009,7 +1008,7 @@ vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::gradPhi(int dim,
 
 // Applying a marking strategy to the calculated estimations
 template <class SC, class LO, class GO, class NO>
-void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElementMv, string strategy, MeshUnstrPtr_Type meshP1){
+void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElementMv, double theta, string strategy,  MeshUnstrPtr_Type meshP1){
 
 
 	Teuchos::ArrayRCP<SC> errorEstimation = errorElementMv->getDataNonConst(0);
@@ -1494,7 +1493,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 		}
 	}
 
-	this->markElements(errorElementMv_k_m,this->markingStrategy_, mesh_k_m);
+	this->markElements(errorElementMv_k_m,theta, markingStrategy, mesh_k_m);
 
 
 	cout << " Finished Coarsening Error Estimation " << endl;

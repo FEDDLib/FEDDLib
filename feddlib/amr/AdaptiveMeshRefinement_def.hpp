@@ -235,11 +235,11 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	if(coarsen == false &&  currentIter_ < maxIter_ ){
 				
 		// Estimating the error with the Discretizations Mesh.
-		errorElementsMv_ = errorEstimator.estimateError(inputMeshP12_, solutionP12, theta_, markingStrategy_, rhsFunc_, domainP12->getFEType());
+		errorElementsMv_ = errorEstimator.estimateError(inputMeshP12_, solutionP12, rhsFunc_, domainP12->getFEType());
 
 		errorEstimationMv_.push_back(errorElementsMv_);
 
-		errorEstimator.markElements(errorElementsMv_,markingStrategy_, inputMeshP1_);
+		errorEstimator.markElements(errorElementsMv_,theta_,markingStrategy_, inputMeshP1_);
 
    		refinementFactory.refineMesh(inputMeshP1_,currentIter_, outputMesh);
 
@@ -364,6 +364,8 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::determineCoarsening(){
 template <class SC, class LO, class GO, class NO>
 typename AdaptiveMeshRefinement<SC,LO,GO,NO>:: MultiVectorConstPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>::calcExactSolution(){
 	
+    //if ( !rhsFuncVec_[i].empty() )
+
 	MultiVectorPtr_Type exactSolution = Teuchos::rcp(new MultiVector_Type( domainP12_->getMapUnique() ) ); 
 	Teuchos::ArrayRCP<SC> exactSolA = exactSolution->getDataNonConst(0);
 

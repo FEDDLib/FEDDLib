@@ -314,15 +314,11 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 				cout << " Building Surface Triangles " << flush ;
 				surfaceTriangleElements.reset(new SurfaceElements()); // Surface
 				this->buildSurfaceTriangleElements(elements,edgeElements, surfaceTriangleElements, this->edgeMap_, this->elementMap_ );
-				surfaceTriangleElements = this->surfaceTriangleElements_;
-	   			this->surfaceTriangleElements_.reset(new SurfaceElements()); // Surface
 				//this->buildTriangleMap();
 			}
 			else if(surfaceTriangleElements->numberElements() ==0){
 				cout << " Building surfaceTriangleElemenets " << endl;
 				this->buildSurfaceTriangleElements(elements,edgeElements, surfaceTriangleElements, this->edgeMap_, this->elementMap_ );
-				surfaceTriangleElements = this->surfaceTriangleElements_;
-	   			this->surfaceTriangleElements_.reset(new SurfaceElements()); // Surface
 				cout << " ... done " << endl;
 			} 
 			surfaceTriangleElements->matchSurfacesToElements(this->elementMap_);
@@ -496,9 +492,11 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// -> Two Edges of Element 'i' are tagged for refinement -> blueRefinement
 		// -> Three Edges of Element 'i' are tagged for refinement -> redRefinement / regular Refinement		
 		// ------------------------------------------------------------------------------------------------------
+		cout << " Irregular Refinement.... " << endl;
 		MESH_TIMER_START(irregRefTimer," Step 5:	 Irregular Refinement");		
 		this->refineIrregular(elements, edgeElements, newElements,edgeMap, surfaceTriangleElements);
 		MESH_TIMER_STOP(irregRefTimer);		
+		cout << " ... done " << endl;
 
 		// ------------------------------------------------------------------------------------------------------
 		// Part VI: Updating the Element Map
@@ -1323,7 +1321,6 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 
 	vec2D_dbl_ptr_Type points = meshP1->getPointsRepeated(); // Points
 
-	cout << " RefinementRestriction " << this->refinementRestriction_ << endl;
 
 	if(this->dim_ == 2){
 		// We determine whether a element that is tagged for green refinement has been refined green in the previous refinement
@@ -1507,7 +1504,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 
 	else if(this->dim_== 3){
 		if(refinementRestriction_ != "Bey" && refinementRestriction_ != "BeyIrregular"){
-			cout << " !!! The restriction Type you requested is not available, 'Bey' will be performed instead !!! " << endl; 
+			//cout << " !!! The restriction Type you requested is not available, 'Bey' will be performed instead !!! " << endl; 
 			restriction = "Bey";
 		}
 
@@ -1733,30 +1730,30 @@ void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, 
 				nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
 				nodeTag = nodeInd.size();
 			
-
 				if(nodeTag == 3 && edgeTag ==3){
 					//elements->getElement(i).setFiniteElementRefinementType("Type1");
+					//cout << " Requesting Type 1 Refinement on Processor " << this->comm_->getRank()<< endl;
 					this->refineType1(edgeElements, elements, i);
-					//cout << " Requesting Type 1 Refinement on Processor " << myRank << endl;
 					newElements = newElements+3;
 				}
 				else if(nodeTag == 2 && edgeTag == 1){
 					//elements->getElement(i).setFiniteElementRefinementType("Type2");
+					//cout << " Requesting Type 2 Refinement on Processor " << this->comm_->getRank() << endl;
 					this->refineType2(edgeElements, elements, i);
-					//cout << " Requesting Type 2 Refinement on Processor " << myRank << endl;
 					newElements ++;
 
 				}
 				else if(nodeTag == 3 && edgeTag == 2){
 					//elements->getElement(i).setFiniteElementRefinementType("Type3");
-					this->refineType3(edgeElements, elements, i);
 					//cout << " Requesting Type 3 Refinement on Processor " << this->comm_->getRank() << endl;
+					this->refineType3(edgeElements, elements, i);
+
 					newElements = newElements+2;
 				}
 				else if(nodeTag == 4 && edgeTag == 2){
 					//elements->getElement(i).setFiniteElementRefinementType("Type4");
-					this->refineType4(edgeElements, elements, i);
 					//cout << " Requesting Type 4 Refinement on Processor " << this->comm_->getRank() << endl;
+					this->refineType4(edgeElements, elements, i);
 					newElements = newElements+3;
 				}
 				if(nodeTag >3 && edgeTag >2 ){
@@ -1778,8 +1775,10 @@ void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, 
 						}*/
 
 					}
+
 					vec_int_Type surfacesOfElement = surfaceTriangleElements->getSurfacesOfElement(i);
 					for(int j=0;j<4;j++){
+
 						//surfaceTriangleElements->getElement(surfacesOfElement[j]).setInterfaceElement(surfaceTriangleElements->getElement(surfacesOfElement[j]).isInterfaceElement());
 						this->surfaceTriangleElements_->addSurface(surfaceTriangleElements->getElement(surfacesOfElement[j]),i);
 					}	

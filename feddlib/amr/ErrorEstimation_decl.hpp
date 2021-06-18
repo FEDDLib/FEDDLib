@@ -76,7 +76,7 @@ public:
     ~ErrorEstimation();
     
 	// Error Estimation Functions that will be reallocted soon
-	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type meshUnstr, MultiVectorPtrConst_Type valuesSolution, double theta, string strategy, RhsFunc_Type rhsFunc, string FEType);
+	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type meshUnstr, MultiVectorPtrConst_Type valuesSolution, RhsFunc_Type rhsFunc, string FEType);
 
 	vec3D_dbl_Type calcDPhiU(MultiVectorPtr_Type valuesSolutionRepeated);
 	vec_dbl_Type calculateJump(MultiVectorPtr_Type valuesSolutionRepeated);
@@ -86,7 +86,7 @@ public:
 
 	double determineResElement(FiniteElement element, Teuchos::ArrayRCP< SC > valuesSolutionRep, RhsFunc_Type rhsFunc);
 
-	void markElements(MultiVectorPtr_Type errorElementMv, string strategy, MeshUnstrPtr_Type meshUnstr);
+	void markElements(MultiVectorPtr_Type errorElementMv, double theta, string strategy,  MeshUnstrPtr_Type meshUnstr);
 	
 	vec_dbl_Type determineH_T_min(ElementsPtr_Type elements,EdgeElementsPtr_Type edgeElements, vec2D_dbl_ptr_Type points, vec_dbl_Type& volTetraeder);
 
