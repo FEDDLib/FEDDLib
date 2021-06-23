@@ -91,6 +91,10 @@ public:
 
     typedef std::vector<MultiVectorPtr_Type> MultiVectorPtrArray_Type;
 
+ typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
+    typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
+    typedef Teuchos::RCP<const BlockMultiVector_Type> BlockMultiVectorConstPtr_Type;
+  
 
     AdaptiveMeshRefinement();
     
@@ -100,7 +104,7 @@ public:
     
     ~AdaptiveMeshRefinement();
 
-	DomainPtr_Type globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP12, MultiVectorConstPtr_Type solutionP1, MultiVectorConstPtr_Type solutionP2 ,  ProblemPtr_Type problem, RhsFunc_Type rhsFunc );
+	DomainPtr_Type globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP12, BlockMultiVectorConstPtr_Type solution,ProblemPtr_Type problem, RhsFunc_Type rhsFunc );
 
 	DomainPtr_Type refineArea(DomainPtr_Type domainP1, vec2D_dbl_Type area, int level);
     
@@ -111,7 +115,7 @@ public:
 
 	void initExporter( ParameterListPtr_Type parameterListAll);
 
-	void exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolution, MultiVectorConstPtr_Type errorValues);
+	void exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv);
 
 	void exportError(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type errorElConst, MultiVectorConstPtr_Type vecDecompositionConst );
 

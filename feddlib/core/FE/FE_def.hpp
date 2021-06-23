@@ -4717,6 +4717,10 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
     UN deg = determineDegree( dim, FEType, Std) + degFunc;
 
+	vec2D_dbl_ptr_Type quadPoints;
+    getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values
+
+
     getPhi(phi, weights, dim, FEType, deg);
 
     SC detB;
@@ -4741,13 +4745,24 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
         detB = B.computeDet( );
         absDetB = std::fabs(detB);
 
+		vec2D_dbl_Type quadPointsTrans(weights->size(),vec_dbl_Type(dim));
+		for(int i=0; i< weights->size(); i++){
+			 for(int j=0; j< dim ; j++){
+				for(int k=0; k< dim; k++){
+		 			quadPointsTrans[i][j] += B[j][k]* quadPoints->at(i).at(k) ; 
+				}
+				quadPointsTrans[i][j] += pointsRep->at(elements->getElement(T).getNode(0)).at(j); 
+			 }
+		}
         for (UN i=0; i < phi->at(0).size(); i++) {
             value = Teuchos::ScalarTraits<SC>::zero();
-            for (UN w=0; w<weights->size(); w++)
-                value += weights->at(w) * phi->at(w).at(i);
+            for (UN w=0; w<weights->size(); w++){
+				func(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
+                value += weights->at(w) * phi->at(w).at(i)*valueFunc[0];
+			}
 
             if ( !fieldType.compare("Scalar") ) {
-                value *= absDetB * valueFunc[0];
+                value *= absDetB;
                 LO row = (LO) elements->getElement(T).getNode(i);
                 valuesRhs[row] += value;
             }

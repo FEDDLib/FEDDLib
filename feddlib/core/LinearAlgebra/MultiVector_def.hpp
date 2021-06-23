@@ -209,6 +209,12 @@ void MultiVector<SC,LO,GO,NO>::dot(MultiVectorConstPtr_Type a, const Teuchos::Ar
 }
 
 template <class SC, class LO, class GO, class NO>
+void MultiVector<SC,LO,GO,NO>::abs(MultiVectorConstPtr_Type a) {
+    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in abs is null.");
+    multiVector_->abs( *a->getXpetraMultiVector());
+}
+
+template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::update( const SC& alpha, const MultiVector_Type& A, const SC& beta) {
     TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != A.getNumVectors(), std::logic_error,"MultiVectors for update have different number of vectors.");
 

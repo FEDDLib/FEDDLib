@@ -4,7 +4,7 @@
         <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
         <Parameter name="Discretization Pressure" type="string" value="P1"/>
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
-        <Parameter name="BC Type" type="string"   value="partialCFD"/><!-- parabolic, parabolic_benchmark, partialCFD, parabolic_benchmark_sin-->
+        <Parameter name="BC Type" type="string"   value="parabolic"/><!-- parabolic, parabolic_benchmark, partialCFD, parabolic_benchmark_sin-->
         <Parameter name="Compute Inflow" type="bool" value="true"/>
         <Parameter name="Mesh Delimiter" type="string" value=" "/>
         <Parameter name="H/h" type="int" value="3"/>
@@ -29,7 +29,7 @@
     <ParameterList name="Mesh Partitioner">
         
         <Parameter name="Contiguous" type="bool" value="true"/>        
-        <Parameter name="Mesh 1 Name" type="string" value="aneurysmBenchmark.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="BFS3dC.mesh"/>
     </ParameterList>
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>

@@ -62,11 +62,16 @@ public:
 	typedef Teuchos::RCP<MultiVectorLO_Type> MultiVectorLOPtr_Type;
     typedef MultiVector<GO,LO,GO,NO> MultiVectorGO_Type;
     typedef Teuchos::RCP<MultiVectorGO_Type> MultiVectorGOPtr_Type;
-	typedef Teuchos::RCP<const MultiVector_Type> MultiVectorPtrConst_Type;
+	typedef Teuchos::RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
     typedef Teuchos::OrdinalTraits<LO> OTLO;
 
 	typedef Matrix<SC,LO,GO,NO> Matrix_Type;
     typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
+
+ typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
+    typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
+    typedef Teuchos::RCP<const BlockMultiVector_Type> BlockMultiVectorConstPtr_Type;
+  
 
 
     ErrorEstimation();
@@ -76,15 +81,18 @@ public:
     ~ErrorEstimation();
     
 	// Error Estimation Functions that will be reallocted soon
-	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type meshUnstr, MultiVectorPtrConst_Type valuesSolution, RhsFunc_Type rhsFunc, string FEType);
+	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, string FEType);
 
-	vec3D_dbl_Type calcDPhiU(MultiVectorPtr_Type valuesSolutionRepeated);
-	vec_dbl_Type calculateJump(MultiVectorPtr_Type valuesSolutionRepeated);
+	vec3D_dbl_Type calcNDPhiU(MultiVectorPtr_Type valuesSolutionRepeatedVel);
+	vec3D_dbl_Type calcNP(MultiVectorPtr_Type valuesSolutionRepeatedPr);
+
+	vec_dbl_Type calculateJump(BlockMultiVectorConstPtr_Type valuesSolutionRepeated);
+
 	vec2D_dbl_Type gradPhi(int dim,int intFE,vec_dbl_Type &p);
-
+	vec_dbl_Type phi(int dim,int intFE,vec_dbl_Type &p);
 	MultiVectorPtr_Type determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta); // Mesh Coarsening
 
-	double determineResElement(FiniteElement element, Teuchos::ArrayRCP< SC > valuesSolutionRep, RhsFunc_Type rhsFunc);
+	double determineResElement(FiniteElement element, MultiVectorConstPtr_Type valuesSolutionRepMv, RhsFunc_Type rhsFunc);
 
 	void markElements(MultiVectorPtr_Type errorElementMv, double theta, string strategy,  MeshUnstrPtr_Type meshUnstr);
 	
@@ -127,10 +135,13 @@ protected:
 	MapConstPtr_Type surfaceTriangleMap_;
 	SurfaceElementsPtr_Type surfaceElements_;
 
+	int dofs_;
+	int dofsP_;
 
 
 private:
 	MeshUnstrPtr_Type inputMesh_;
+	MeshUnstrPtr_Type inputMeshP1_;
 	string FEType1_;
 	string FEType2_;
 

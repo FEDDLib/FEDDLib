@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<!DOCTYPE Xdmf SYSTEM "solutionLaplace.xdmf" [
+<!ENTITY DataFile "solutionLaplace.h5">
+]>
+<!-- solutionLaplace.h5  -->
+<Xdmf>
+  <Domain Name="solutionLaplace">
+    <Grid Name="solutionLaplaceGrid" GridType="Collection" CollectionType="Temporal">
+
+<!-- Time 0 Iteration 00000 -->
+    <Grid Name="MeshP2 0">
+      <Time TimeType="Single" Value="0" />
+      <Topology
+         Type="Tet_10"
+         NumberOfElements="110251"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="110251 10"
+                        DataType="Int"
+                        Precision="8">
+             solutionLaplace.h5:/Connections/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="161033"
+                        DataType="Float"
+                        Precision="8">
+             solutionLaplace.h5:/PointsX/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="161033"
+                        DataType="Float"
+                        Precision="8">
+             solutionLaplace.h5:/PointsY/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="161033"
+                        DataType="Float"
+                        Precision="8">
+             solutionLaplace.h5:/PointsZ/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Node"
+         Name="u">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="161033 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               161033 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="161033 1"
+                           DataType="Float"
+                           Precision="8">
+               solutionLaplace.h5:/u.00000/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+
+    </Grid>
+
+  </Domain>
+</Xdmf>

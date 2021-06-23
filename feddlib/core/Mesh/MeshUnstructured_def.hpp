@@ -164,6 +164,8 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     MapConstPtr_Type mapRepeatedP1 = meshP1->getMapRepeated();
     vec2D_LO_Type markedPoints(0);
     // loop over all previously created edges
+	vec_int_Type markedTrue(edgeElements->numberElements());
+
     for (int i=0; i<edgeElements->numberElements(); i++) {
         
         LO p1ID = edgeElements->getElement(i).getNode( 0 );
@@ -177,10 +179,17 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
         
 
        	newFlags[i] = determineFlagP2( meshP1, p1ID, p2ID, i, markedPoints );
-		
-                        
+		                
         const vec_LO_Type elementsOfEdge = edgeElements->getElementsOfEdge( i );
         const vec_GO_Type elementsGlobalOfEdge = edgeElements->getElementsOfEdgeGlobal( i );
+
+		if(newFlags[i] != -1){ // questionable point that were given a flag, but that is not certain yet
+       		for (int j=0; j<elementsOfEdge.size(); j++) {
+           		if ( elementsOfEdge[j] == -1 ) 
+					markedTrue[i] =1;
+			}
+		}	
+
                 
         vec_GO_Type relevantElementsOfEdge(0);
         for (int j=0; j<elementsOfEdge.size(); j++) {
@@ -202,143 +211,116 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
             newElementNodes[ relevantElementsOfEdge[j] ][ positions[j]-factor ] =  i ;
         
     }
-    
-    // ##########################################################
-    // We need to go through all marked points and determine the correct flags
-    // Marked point i holds the following data markedPoints[i]: p1ID, p2ID, localEdgeID(=i of the above loop over all edges).
-    // Idea:    Determine the rank which holds the element of which surface information is needed (if there exists any).
-    //          Do this for all marked points, build a communication pattern based on the elements, and communicate to the relevant ranks.
-    //          On the relevant ranks, determine the flag with the surface information for all edges for an element (some of the information might not be needed - this can be optimized).
-    // Send the information back with the above pattern and set the correct flag.
-    vec_GO_Type globalElements(0);
-    for (int i=0; i<markedPoints.size(); i++) {
-        LO localEdgeID = markedPoints[i][2];
+	// It is possible that a Edge is conencted to two surfaces with different Flags, that are also on different Processors
+	// This Leads to two different Flags for the same Edge
+	// In order to counter that effect we check the interface edges of which we determined the flag via surfaces and check if they have the same flag and if not choose the lower one
+	int maxRank = std::get<1>(this->rankRange_);
+	if(maxRank >0){
+		vec_GO_Type edgeSwitch(0);
+		vec_LO_Type flags(0);
+		for(int i=0; i<edgeElements->numberElements(); i++){
+			if(markedTrue[i]==1){
+				edgeSwitch.push_back(this->edgeMap_->getGlobalElement(i));
+				flags.push_back(newFlags[i]);
+			}
+		}
 
-        LO p1ID = markedPoints[i][0];
-        LO p2ID = markedPoints[i][1];
+		// communticating elements across interface
+		Teuchos::ArrayView<GO> edgeSwitchArray = Teuchos::arrayViewFromVector( edgeSwitch);
 
-        const vec_LO_Type elementsOfEdge = edgeElements->getElementsOfEdge( (int) localEdgeID );
-        const vec_GO_Type elementsGlobalOfEdge = edgeElements->getElementsOfEdgeGlobal( (int) localEdgeID );
-        for (int j=0; j<elementsOfEdge.size(); j++) {
-            if (elementsOfEdge[j] == OTLO::invalid()){
-                globalElements.push_back( elementsGlobalOfEdge[j] );
-            }
-        }
-    }
+		MapPtr_Type mapGlobalInterface =
+			Teuchos::rcp( new Map_Type( this->edgeMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgeSwitchArray, 0, this->comm_) );
+
+		// Global IDs of Procs
+		// Setting newPoints as to be communicated Values
+		MultiVectorLOPtr_Type edgeFlags = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterface, 1 ) );
+		Teuchos::ArrayRCP< LO > edgeFlagsEntries  = edgeFlags->getDataNonConst(0);
+
+		for(int i=0; i< edgeFlagsEntries.size() ; i++){
+			edgeFlagsEntries[i] = flags[i] ;
+		}
+		
+		MapConstPtr_Type mapGlobalInterfaceUnique = mapGlobalInterface;
+
+		if(mapGlobalInterface->getGlobalNumElements()>0){
+			mapGlobalInterfaceUnique = mapGlobalInterface->buildUniqueMap( this->rankRange_ );
+		}
+
+		MultiVectorLOPtr_Type isInterfaceElement_imp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterfaceUnique, 1 ) );
+		isInterfaceElement_imp->putScalar( (LO) 0 ); 
+		isInterfaceElement_imp->importFromVector( edgeFlags, false, "Insert");
+		//isInterfaceElement_imp->print();
+
+		MultiVectorLOPtr_Type isInterfaceElement_exp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterfaceUnique, 1 ) );
+		isInterfaceElement_exp->putScalar( (LO) 0 ); 
+		isInterfaceElement_exp->exportFromVector( edgeFlags, false, "Insert");
+		//isInterfaceElement_exp->print();
+
+		MultiVectorLOPtr_Type isInterfaceElement2_imp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterface, 1 ) );
+		isInterfaceElement2_imp->putScalar( (LO) 0 ); 
+		isInterfaceElement2_imp->importFromVector(isInterfaceElement_imp, false, "Insert");
+		//isInterfaceElement2_imp->print();
+
+		isInterfaceElement2_imp->exportFromVector(isInterfaceElement_exp, false, "Insert");
+		//isInterfaceElement2_imp->print();
+
+		edgeFlagsEntries  = isInterfaceElement2_imp->getDataNonConst(0);
+
+		for(int i=0; i<edgeFlagsEntries.size(); i++){
+			LO entry = this->edgeMap_->getLocalElement(edgeSwitch[i]);
+			if(newFlags[entry] > edgeFlagsEntries[i]){
+				newFlags[entry] = edgeFlagsEntries[i];
+
+			}
+		}
+	}
+	// In the next Step we need to determine the missing Flags of the 'MarkedMissing' Edges
+	// We create a Map of the entries we have and one of the ones we need
+	vec_GO_Type edgesNeeded(0); // For the Flag entries we need
+	vec_GO_Type edgesActive(0);
+	vec_int_Type flagsTmp(0);
+	for(int i=0; i<edgeElements->numberElements(); i++){
+		if(newFlags[i]==-1){
+			edgesNeeded.push_back(this->edgeMap_->getGlobalElement(i));
+		}
+		else{
+			edgesActive.push_back(this->edgeMap_->getGlobalElement(i));
+			flagsTmp.push_back(newFlags[i]);
+			
+		}
+	}
+
+	// communticating elements across interface
+	Teuchos::ArrayView<GO> edgesNeededArray = Teuchos::arrayViewFromVector( edgesNeeded);
+	Teuchos::ArrayView<GO> edgesActiveArray = Teuchos::arrayViewFromVector( edgesActive);
 	
-    make_unique( globalElements );
+	MapPtr_Type mapEdgesNeeded =
+		Teuchos::rcp( new Map_Type( this->edgeMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesNeededArray, 0, this->comm_) );
 
-    Teuchos::ArrayView<GO> globalElementsArray = Teuchos::arrayViewFromVector( globalElements );
+	MapPtr_Type mapEdgesActive =
+		Teuchos::rcp( new Map_Type( this->edgeMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesActiveArray, 0, this->comm_) );
 
-    MapPtr_Type mapElementsNeeded =
-        Teuchos::rcp( new Map_Type( meshP1->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalElementsArray, 0, this->comm_) );
+	MultiVectorLOPtr_Type flagsImport = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesNeeded, 1 ) );
+	flagsImport->putScalar(10);
+
+	MultiVectorLOPtr_Type flagsExport = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesActive, 1 ) );
+	Teuchos::ArrayRCP< LO > flagExportEntries  = flagsExport->getDataNonConst(0);
+	for(int i=0; i< flagExportEntries.size(); i++){
+		flagExportEntries[i] = flagsTmp[i];
+	}
 	
-	
-    MapConstPtr_Type elementMap = meshP1->getElementMap();
+	//flagsExport->print();
+	flagsImport->importFromVector(flagsExport, false, "Insert");
+	//flagsImport->print();
 
-    typedef MultiVector<LO,LO,GO,NO> MultiVectorLO_Type;
-    typedef Teuchos::RCP<MultiVectorLO_Type> MultiVectorLOPtr_Type;
-    // sending a boolean would be enough here
-    MultiVectorLOPtr_Type activateElements = Teuchos::rcp( new MultiVectorLO_Type( mapElementsNeeded, 1 ) );
+    Teuchos::ArrayRCP< LO > flagImportEntries  = flagsImport->getDataNonConst(0);
+	for(int i=0; i<flagImportEntries.size(); i++){
+		LO entry = this->edgeMap_->getLocalElement(edgesNeeded[i]);
+		if(newFlags[entry] ==-1){
+			newFlags[entry] = flagImportEntries[i];
+		}
+	}
 
-    activateElements->putScalar( (LO) 1 );
-
-    MultiVectorLOPtr_Type isActiveElement = Teuchos::rcp( new MultiVectorLO_Type( elementMap, 1 ) );
-    isActiveElement->putScalar( (LO) 0 );
-
-    isActiveElement->importFromVector( activateElements, true, "Add" );
-
-    Teuchos::ArrayRCP< const LO >  data = isActiveElement->getData( 0 );
-    vec_GO_Type activeElements(0);
-    vec_LO_Type activeElementsLocal(0);
-    for (int i=0; i<data.size(); i++) {
-        if (data[i] > 0){
-            activeElements.push_back( elementMap->getGlobalElement( i ) );
-            activeElementsLocal.push_back( i );
-        }
-    }
-
-    Teuchos::ArrayView<GO> activeElementsArray = Teuchos::arrayViewFromVector( activeElements );
-    MapPtr_Type mapActiveElements =
-        Teuchos::rcp( new Map_Type( meshP1->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), activeElementsArray, 0, this->comm_) );
-
-
-
-    // Now every element of activeElements determines the flags for all edges.
-    // We use MultiVectorLO_Type to send the flags back, although the flags are of type int
-    UN numEdges = -1;
-    if (this->dim_ == 2)
-        numEdges = 3;
-    else if (this->dim_ == 3)
-        numEdges = 6;
-
-    MultiVectorLOPtr_Type activeElementsFlags = Teuchos::rcp( new MultiVectorLO_Type( mapActiveElements, numEdges ) );
-    MultiVectorLOPtr_Type neededElementsFlags = Teuchos::rcp( new MultiVectorLO_Type( mapElementsNeeded, numEdges ) );
-
-    typedef MultiVector<GO,LO,GO,NO> MultiVectorGO_Type;
-    typedef Teuchos::RCP<MultiVectorGO_Type> MultiVectorGOPtr_Type;
-
-    // Additionally, we need to communicate the global IDs, which define the edge.
-    // This information is needed to find the correct edge, which needed the flag information in the first place.
-    MultiVectorGOPtr_Type activeElementsEdgeGID1 = Teuchos::rcp( new MultiVectorGO_Type( mapActiveElements, numEdges ) );
-    MultiVectorGOPtr_Type activeElementsEdgeGID2 = Teuchos::rcp( new MultiVectorGO_Type( mapActiveElements, numEdges ) );
-    MultiVectorGOPtr_Type neededElementsEdgeGID1 = Teuchos::rcp( new MultiVectorGO_Type( mapElementsNeeded, numEdges ) );
-    MultiVectorGOPtr_Type neededElementsEdgeGID2 = Teuchos::rcp( new MultiVectorGO_Type( mapElementsNeeded, numEdges ) );
-
-//    vec2D_int_Type edgeCombinations( numEdges, vec_int_Type(2,-1) );
-//    getEdgeCombinations( edgeCombinations );
-
-    vec2D_int_Type edgeCombinations = elements->getElementEdgePermutation();
-
-    for (int i=0; i<activeElementsLocal.size(); i++) {
-        FiniteElement fe = elements->getElement( activeElementsLocal[i] );
-        for (int j=0; j<edgeCombinations.size(); j++) {
-            LO p1ID = fe.getNode( edgeCombinations[j][0] );
-            LO p2ID = fe.getNode( edgeCombinations[j][1] );
-            LO flag = determineFlagP2( fe, p1ID, p2ID, edgeCombinations );
-            activeElementsFlags->getDataNonConst(j)[i] = flag;
-            // We set the smaller index in GID1 vector and the larger index in the GID2 vector
-            GO p1GID = mapRepeatedP1->getGlobalElement( p1ID );
-            GO p2GID = mapRepeatedP1->getGlobalElement( p2ID );
-            if ( p1GID > p2GID ) {
-                activeElementsEdgeGID1->getDataNonConst(j)[i] = p2GID;
-                activeElementsEdgeGID2->getDataNonConst(j)[i] = p1GID;
-            }
-            else{
-                activeElementsEdgeGID1->getDataNonConst(j)[i] = p1GID;
-                activeElementsEdgeGID2->getDataNonConst(j)[i] = p2GID;
-            }
-        }
-    }
-
-    // We build the same Importer/Exporter 3 times. This can be optimized
-    neededElementsFlags->importFromVector( activeElementsFlags, false, "Insert");
-    neededElementsEdgeGID1->importFromVector( activeElementsEdgeGID1, false, "Insert");
-    neededElementsEdgeGID2->importFromVector( activeElementsEdgeGID2, false, "Insert");
-
-    for (int i=0; i<markedPoints.size(); i++) {
-        LO localEdgeID = markedPoints[i][2];
-        GO p1GID = mapRepeatedP1->getGlobalElement( markedPoints[i][0] );
-        GO p2GID = mapRepeatedP1->getGlobalElement( markedPoints[i][1] );
-
-
-        if (p2GID < p1GID) {
-            GO tmp = p1GID;
-            p1GID = p2GID;
-            p2GID = tmp;
-        }
-
-        for (int j=0; j<numEdges; j++) {
-            for (int k=0; k<neededElementsEdgeGID1->getLocalLength(); k++) {
-                if ( neededElementsEdgeGID1->getData(j)[k] == p1GID && neededElementsEdgeGID2->getData(j)[k] == p2GID ){
-                    if (newFlags[ localEdgeID ] == -1)
-                        newFlags[ localEdgeID ] = neededElementsFlags->getData(j)[k];
-                    if (neededElementsFlags->getData(j)[k] < newFlags[ localEdgeID ]) // we use the smallest possible flag
-                        newFlags[ localEdgeID ] = neededElementsFlags->getData(j)[k];
-                }
-            }
-        }
-    }
     
     // ##########################################################
     // Set P2 Elements

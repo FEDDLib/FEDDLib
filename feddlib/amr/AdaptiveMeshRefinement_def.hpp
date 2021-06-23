@@ -166,7 +166,8 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 */
 
 template <class SC, class LO, class GO, class NO>
-typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>::globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP12, MultiVectorConstPtr_Type solutionP1, MultiVectorConstPtr_Type solutionP12, ProblemPtr_Type problem, RhsFunc_Type rhsFunc ){
+typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>::globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP12, BlockMultiVectorConstPtr_Type solution,ProblemPtr_Type problem, RhsFunc_Type rhsFunc ){
+
 
 	currentIter_ = domainsP1_.size() ;
 
@@ -235,7 +236,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	if(coarsen == false &&  currentIter_ < maxIter_ ){
 				
 		// Estimating the error with the Discretizations Mesh.
-		errorElementsMv_ = errorEstimator.estimateError(inputMeshP12_, solutionP12, rhsFunc_, domainP12->getFEType());
+		errorElementsMv_ = errorEstimator.estimateError(inputMeshP12_, inputMeshP1_, solution, rhsFunc_, domainP12->getFEType());
 
 		errorEstimationMv_.push_back(errorElementsMv_);
 
@@ -314,14 +315,14 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 	// Error in Nodes	
 	MultiVectorConstPtr_Type exactSolution = this->calcExactSolution();
-	calcErrorNorms(exactSolution,solutionP12);
+	calcErrorNorms(exactSolution,solution->getBlock(0));
 
 	MultiVectorConstPtr_Type errorValues = 	errorNodesMv_;; // error of exact vs approx sol
 
 	if(this->exportWithParaview_ && initExporter_==false){
 		this->initExporter(  parameterListAll_);
 	}
-	this->exportSolution( inputMeshP12_, exportSolutionMv, errorValues);
+	this->exportSolution( inputMeshP12_, exportSolutionMv, errorValues, exactSolution);
 	this->exportError( inputMeshP12_, errorElConst, vecDecompositionConst );
 	
 	if(currentIter_ == maxIter_){
@@ -393,7 +394,12 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 	MultiVectorPtr_Type errorValues = Teuchos::rcp(new MultiVector_Type( domainP12_->getMapUnique() ) ); 
 
     //this = alpha*A + beta*B + gamma*this
-    errorValues->update( 1., exactSolution, -1. ,solutionP12, 0.);
+        errorValues->update( 1., exactSolution, -1. ,solutionP12, 0.);
+
+	MultiVectorConstPtr_Type errorValuesAbs = Teuchos::rcp(new MultiVector_Type( domainP12_->getMapUnique() ) );
+	errorValuesAbs = errorValues; 
+
+	errorValues->abs(errorValuesAbs);
 
 	errorNodesMv_ = errorValues;
 
@@ -428,15 +434,17 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::initExporter( ParameterListPtr_Type pa
 /// ParaView exporter export of solution on current mesh
 ///
 template <class SC, class LO, class GO, class NO>
-void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues){
+void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv){
 
 	if(currentIter_==0){
-		exporterSol_->addVariable( exportSolutionMv, "u", "Scalar", 1, domainP12_->getMapUnique() );
+		exporterSol_->addVariable( exportSolutionMv, "u_h", "Scalar", 1, domainP12_->getMapUnique() );
+		exporterSol_->addVariable( exactSolutionMv, "u", "Scalar", 1, domainP12_->getMapUnique() );
 		exporterSol_->addVariable( errorValues, "Error |u-u_h|", "Scalar", 1, domainP12_->getMapUnique() );
 	}
 	else{
 		exporterSol_->reSetup(mesh);
-		exporterSol_->updateVariables(exportSolutionMv, "u");
+		exporterSol_->updateVariables(exportSolutionMv, "u_h");
+		exporterSol_->updateVariables( exactSolutionMv, "u" );
 		exporterSol_->updateVariables(errorValues, "Error |u-u_h|");
 	}
 			
