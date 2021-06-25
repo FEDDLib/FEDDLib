@@ -8,14 +8,14 @@
     <Grid Name="solutionLaplaceGrid" GridType="Collection" CollectionType="Temporal">
 
 <!-- Time 0 Iteration 00000 -->
-    <Grid Name="MeshP2 0">
+    <Grid Name="MeshP1 0">
       <Time TimeType="Single" Value="0" />
       <Topology
-         Type="Tet_10"
+         Type="Tetrahedron"
          NumberOfElements="110251"
          BaseOffset="0">
          <DataStructure Format="HDF"
-                        Dimensions="110251 10"
+                        Dimensions="110251 4"
                         DataType="Int"
                         Precision="8">
              solutionLaplace.h5:/Connections/Values
@@ -23,19 +23,19 @@
       </Topology>
       <Geometry Type="X_Y_Z">
          <DataStructure Format="HDF"
-                        Dimensions="161033"
+                        Dimensions="22008"
                         DataType="Float"
                         Precision="8">
              solutionLaplace.h5:/PointsX/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="161033"
+                        Dimensions="22008"
                         DataType="Float"
                         Precision="8">
              solutionLaplace.h5:/PointsY/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="161033"
+                        Dimensions="22008"
                         DataType="Float"
                         Precision="8">
              solutionLaplace.h5:/PointsZ/Values
@@ -48,16 +48,16 @@
          Center="Node"
          Name="u">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="161033 1"
+                        Dimensions="22008 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               161033 1
+               22008 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="161033 1"
+                           Dimensions="22008 1"
                            DataType="Float"
                            Precision="8">
                solutionLaplace.h5:/u.00000/Values

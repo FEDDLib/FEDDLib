@@ -498,7 +498,7 @@ void Problem<SC,LO,GO,NO>::initializeSolverBuilder() const{
 template<class SC,class LO,class GO,class NO>
 double Problem<SC,LO,GO,NO>::calculateL2Norm(MultiVectorConstPtr_Type mv, int domainInd){
 
-    MatrixPtr_Type M;
+  	MatrixPtr_Type M;
 	M = Teuchos::rcp(new Matrix_Type( this->domainPtr_vec_.at(domainInd)->getMapUnique(), this->getDomain(domainInd)->getApproxEntriesPerRow() ) );
 	this->feFactory_->assemblyMass(this->dim_,this->domain_FEType_vec_.at(domainInd),"Scalar", M);
 
@@ -523,8 +523,8 @@ template<class SC,class LO,class GO,class NO>
 double Problem<SC,LO,GO,NO>::calculateH1Norm(MultiVectorConstPtr_Type mv, int blockId1, int blockId2, int domainInd){
 
   	MatrixPtr_Type K  = this->getSystem()->getBlock(blockId1,blockId2);
-
-	Teuchos::RCP<MultiVector<SC,LO,GO,NO> > mvOutput = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(domainInd)->getMapUnique()  )); 
+	
+	Teuchos::RCP<MultiVector<SC,LO,GO,NO> > mvOutput = Teuchos::rcp(new MultiVector_Type( K->getMap() )); 
 
    	K->apply(*mv, *mvOutput ) ; // this represents mvOutput = K * mv ;
 

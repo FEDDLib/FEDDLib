@@ -152,6 +152,31 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 }
 
+template <class SC, class LO, class GO, class NO>
+void AdaptiveMeshRefinement<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution){
+
+	// dofs can be determined by checking the solutions' blocks an comparing the length of the vectors to the number of unique nodes. 
+	// If the length is the same: dofs =1 , if it's twice as long: dofs =2 .. and so on
+
+	// P_12 generally represents the velocity domain:
+	if(inputMeshP12_->getMapUnique()->getNodeNumElements() == valuesSolution->getBlock(0)->getDataNonConst(0).size())
+		dofs_ = 1;
+	else if(2*(inputMeshP12_->getMapUnique()->getNodeNumElements()) == valuesSolution->getBlock(0)->getDataNonConst(0).size())
+		dofs_ = 2;
+	else if(3*(inputMeshP12_->getMapUnique()->getNodeNumElements()) == valuesSolution->getBlock(0)->getDataNonConst(0).size())
+		dofs_ = 3;
+	
+	if(valuesSolution->size() > 1){
+		if(inputMeshP1_->getMapUnique()->getNodeNumElements() == valuesSolution->getBlock(1)->getDataNonConst(0).size())
+			dofsP_ = 1;
+		else if(2*(inputMeshP1_->getMapUnique()->getNodeNumElements()) == valuesSolution->getBlock(1)->getDataNonConst(0).size())
+			dofsP_ = 2;
+		else if(3*(inputMeshP1_->getMapUnique()->getNodeNumElements()) == valuesSolution->getBlock(1)->getDataNonConst(0).size())
+			dofsP_ = 3;
+	}
+
+}
+
 /*!
 \brief Global Algorithm of Mesh Refinement 
 
@@ -168,6 +193,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 template <class SC, class LO, class GO, class NO>
 typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>::globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP12, BlockMultiVectorConstPtr_Type solution,ProblemPtr_Type problem, RhsFunc_Type rhsFunc ){
 
+	solution_ = solution;
 
 	currentIter_ = domainsP1_.size() ;
 
@@ -202,6 +228,8 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 	inputMeshP12_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP12->getMesh() , true);
 	inputMeshP12_->FEType_ = domainP12->getFEType();
+
+	this->identifyProblem(solution);
 
 	// Error Estimation object
     ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ );
@@ -306,7 +334,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	// Exporting current solution and errorEstimation
 	Teuchos::RCP<const MultiVector<SC,LO,GO,NO> >  exportSolutionMv = problem->getSolution()->getBlock(0);
 	// Export distribution of elements among processors
-	MultiVectorPtr_Type procNumTmp = Teuchos::rcp( new MultiVector_Type(domainP12->getMapUnique() , 1 ) );
+	MultiVectorPtr_Type procNumTmp = Teuchos::rcp( new MultiVector_Type(domainP12->getElementMap() , 1 ) );
 
 	procNumTmp->putScalar(comm_->getRank());
 	MultiVectorConstPtr_Type vecDecompositionConst = procNumTmp;
@@ -367,13 +395,18 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>:: MultiVectorConstPtr_Type Adaptive
 	
     //if ( !rhsFuncVec_[i].empty() )
 
-	MultiVectorPtr_Type exactSolution = Teuchos::rcp(new MultiVector_Type( domainP12_->getMapUnique() ) ); 
+	MultiVectorPtr_Type exactSolution = Teuchos::rcp(new MultiVector_Type( solution_->getBlock(0)->getMap() ) ); 
 	Teuchos::ArrayRCP<SC> exactSolA = exactSolution->getDataNonConst(0);
 
 	vec2D_dbl_ptr_Type points = inputMeshP12_->getPointsUnique();
 
-	for(int i=0; i< points->size(); i++)
-		exactSolFunc_(&points->at(i).at(0),&exactSolA[i]);
+	Teuchos::ArrayRCP<SC> exactSol(dofs_);
+	for(int i=0; i< points->size(); i++){
+		exactSolFunc_(&points->at(i).at(0),&exactSol[0]);
+		for(int j=0; j< dofs_ ; j++)
+			exactSolA[i*dofs_+j] = exactSol[j];
+
+	}
 
 	MultiVectorConstPtr_Type exactSolConst = exactSolution;
 
@@ -391,23 +424,57 @@ Calculating error norms. If the exact solution is unknown we use approxmated err
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Type exactSolution, MultiVectorConstPtr_Type solutionP12){
 
-	MultiVectorPtr_Type errorValues = Teuchos::rcp(new MultiVector_Type( domainP12_->getMapUnique() ) ); 
 
+	MultiVectorPtr_Type errorValues = Teuchos::rcp(new MultiVector_Type( solution_->getBlock(0)->getMap() ) ); 
     //this = alpha*A + beta*B + gamma*this
-        errorValues->update( 1., exactSolution, -1. ,solutionP12, 0.);
+    errorValues->update( 1., exactSolution, -1. ,solutionP12, 0.);
 
-	MultiVectorConstPtr_Type errorValuesAbs = Teuchos::rcp(new MultiVector_Type( domainP12_->getMapUnique() ) );
+	MultiVectorConstPtr_Type errorValuesAbs = Teuchos::rcp(new MultiVector_Type(  solution_->getBlock(0)->getMap()) );
 	errorValuesAbs = errorValues; 
 
 	errorValues->abs(errorValuesAbs);
 
 	errorNodesMv_ = errorValues;
 
-	errorH1.push_back(sqrt(problem_->calculateH1Norm(errorValues) + problem_->calculateL2Norm(errorValues)));
-	errorL2.push_back(sqrt(problem_->calculateL2Norm(errorValues)));
+	errorH1.push_back(sqrt(problem_->calculateH1Norm(errorValues)));
 
-	double solElementH1=sqrt(problem_->calculateH1Norm(exactSolution) + problem_->calculateL2Norm(exactSolution));
-	double solhElementH1=sqrt(problem_->calculateH1Norm(solutionP12) + problem_->calculateL2Norm(solutionP12));
+	// L2 Norm is more difficult
+
+	MultiVectorConstPtr_Type exactSolutionTmp = Teuchos::rcp(new MultiVector_Type( domainP12_ ->getMapUnique() ) ); 
+	Teuchos::ArrayRCP<double > exactSolutionTmpA = exactSolutionTmp->getDataNonConst(0);
+
+	MultiVectorConstPtr_Type solutionTmp = Teuchos::rcp(new MultiVector_Type( domainP12_ ->getMapUnique() ) ); 
+	Teuchos::ArrayRCP<double > solutionTmpA = solutionTmp->getDataNonConst(0);
+
+	Teuchos::ArrayRCP<double > exactSolutionA = exactSolution->getDataNonConst(0);
+
+	Teuchos::ArrayRCP<double > solutionP12A = solutionP12->getDataNonConst(0);
+
+	double errorL2Tmp=0;
+	for(int i=0; i< dofs_ ; i++){
+
+		MultiVectorPtr_Type errorValues = Teuchos::rcp(new MultiVector_Type( domainP12_ ->getMapUnique() ) );
+ 		for(int j=0; j< solutionTmpA.size(); j++){
+			solutionTmpA[j] = solutionP12A[j*dofs_+i];
+			exactSolutionTmpA[j] = exactSolutionA[j*dofs_+i];
+		}	 
+
+	    //this = alpha*A + beta*B + gamma*this
+		errorValues->update( 1., exactSolutionTmp, -1. ,solutionTmp, 0.);
+
+		MultiVectorConstPtr_Type errorValuesAbs = Teuchos::rcp(new MultiVector_Type(  domainP12_ ->getMapUnique()) );
+		errorValuesAbs = errorValues; 
+
+		errorValues->abs(errorValuesAbs);
+
+		errorL2Tmp += problem_->calculateL2Norm(errorValues);
+
+	}
+
+	errorL2.push_back(sqrt(errorL2Tmp));
+
+	//double solElementH1=sqrt(problem_->calculateH1Norm(exactSolution) + problem_->calculateL2Norm(exactSolution));
+	//double solhElementH1=sqrt(problem_->calculateH1Norm(solutionP12) + problem_->calculateL2Norm(solutionP12));
 
 }
 
@@ -436,10 +503,15 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::initExporter( ParameterListPtr_Type pa
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv){
 
+	string exporterType = "Scalar";
+	if(dofs_ >1 )
+		exporterType = "Vector";
+
 	if(currentIter_==0){
-		exporterSol_->addVariable( exportSolutionMv, "u_h", "Scalar", 1, domainP12_->getMapUnique() );
-		exporterSol_->addVariable( exactSolutionMv, "u", "Scalar", 1, domainP12_->getMapUnique() );
-		exporterSol_->addVariable( errorValues, "Error |u-u_h|", "Scalar", 1, domainP12_->getMapUnique() );
+		
+		exporterSol_->addVariable( exportSolutionMv, "u_h", exporterType, 1, domainP12_->getMapUnique() );
+		exporterSol_->addVariable( exactSolutionMv, "u", exporterType, 1, domainP12_->getMapUnique() );
+		exporterSol_->addVariable( errorValues, "Error |u-u_h|", exporterType, 1, domainP12_->getMapUnique() );
 	}
 	else{
 		exporterSol_->reSetup(mesh);

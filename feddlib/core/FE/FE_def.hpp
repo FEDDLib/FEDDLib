@@ -4739,6 +4739,8 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     
     func( &x, &valueFunc[0], paras );
     SC value;
+
+	cout << " Assembly RHS ... " << endl;
     for (UN T=0; T<elements->numberElements(); T++) {
 
         buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
@@ -4755,21 +4757,24 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
 			 }
 		}
         for (UN i=0; i < phi->at(0).size(); i++) {
-            value = Teuchos::ScalarTraits<SC>::zero();
-            for (UN w=0; w<weights->size(); w++){
-				func(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
-                value += weights->at(w) * phi->at(w).at(i)*valueFunc[0];
-			}
-
+		    value = Teuchos::ScalarTraits<SC>::zero();
             if ( !fieldType.compare("Scalar") ) {
-                value *= absDetB;
-                LO row = (LO) elements->getElement(T).getNode(i);
-                valuesRhs[row] += value;
+ 				for (UN w=0; w<weights->size(); w++){
+					func(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
+	           		value += weights->at(w) * phi->at(w).at(i)*valueFunc[0];
+				}
+	            value *= absDetB;
+	            LO row = (LO) elements->getElement(T).getNode(i);
+	            valuesRhs[row] += value;
             }
             else if( !fieldType.compare("Vector") ) {
-                value *= absDetB;
                 for (UN d=0; d<dim; d++) {
-                    SC v_i = value*valueFunc[d];
+ 					for (UN w=0; w<weights->size(); w++){
+						func(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
+               			value += weights->at(w) * phi->at(w).at(i)*valueFunc[d];
+					}
+              		value *= absDetB;
+                    SC v_i = value;
                     LO row = (LO) ( dim * elements->getElement(T).getNode(i)  + d );
                     valuesRhs[row] += v_i;
                 }

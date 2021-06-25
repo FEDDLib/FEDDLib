@@ -83,16 +83,25 @@ public:
 	// Error Estimation Functions that will be reallocted soon
 	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, string FEType);
 
-	vec3D_dbl_Type calcNDPhiU(MultiVectorPtr_Type valuesSolutionRepeatedVel);
-	vec3D_dbl_Type calcNP(MultiVectorPtr_Type valuesSolutionRepeatedPr);
+	void identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution);
 
-	vec_dbl_Type calculateJump(BlockMultiVectorConstPtr_Type valuesSolutionRepeated);
+	void makeRepeatedSolution(BlockMultiVectorConstPtr_Type valuesSolution);
+
+	vec3D_dbl_Type calcNPhi(string phiDerivative, int dofsSol, string FEType);
+
+	vec_dbl_Type calculateJump();
 
 	vec2D_dbl_Type gradPhi(int dim,int intFE,vec_dbl_Type &p);
 	vec_dbl_Type phi(int dim,int intFE,vec_dbl_Type &p);
+	vec_dbl_Type divPhi(int dim,int intFE,vec_dbl_Type &p);
+
 	MultiVectorPtr_Type determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta); // Mesh Coarsening
 
-	double determineResElement(FiniteElement element, MultiVectorConstPtr_Type valuesSolutionRepMv, RhsFunc_Type rhsFunc);
+	double determineResElement(FiniteElement element, RhsFunc_Type rhsFunc);
+
+	double determineDivU(FiniteElement element);
+
+	vec2D_dbl_Type getQuadValues(int dim, string FEType, string Type, vec_dbl_Type &QuadW, FiniteElement surface);
 
 	void markElements(MultiVectorPtr_Type errorElementMv, double theta, string strategy,  MeshUnstrPtr_Type meshUnstr);
 	
@@ -137,6 +146,11 @@ protected:
 
 	int dofs_;
 	int dofsP_;
+
+	bool calculatePressure_ = false;
+
+	BlockMultiVectorConstPtr_Type valuesSolutionRepVel_;
+	BlockMultiVectorConstPtr_Type valuesSolutionRepPre_;
 
 
 private:

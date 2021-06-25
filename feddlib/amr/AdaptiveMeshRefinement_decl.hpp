@@ -111,6 +111,8 @@ public:
 	MultiVectorConstPtr_Type calcExactSolution();
 	//void determineCoarsening();
 
+	void identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution);
+
 	void calcErrorNorms(MultiVectorConstPtr_Type exactSolution, MultiVectorConstPtr_Type solutionP12);
 
 	void initExporter( ParameterListPtr_Type parameterListAll);
@@ -141,6 +143,8 @@ private:
 	MultiVectorPtrArray_Type errorEstimationMv_;
 	MultiVectorPtr_Type errorElementsMv_;
 	MultiVectorConstPtr_Type errorNodesMv_;
+
+	BlockMultiVectorConstPtr_Type solution_;
 
    	CommConstPtr_Type comm_;
 
@@ -193,7 +197,8 @@ private:
 
 	ParameterListPtr_Type parameterListAll_ ;
 
-	
+	int dofs_;
+	int dofsP_;
 	
 		
 

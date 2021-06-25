@@ -1,3 +1,11 @@
+#ifndef MAIN_TIMER_START
+#define MAIN_TIMER_START(A,S) Teuchos::RCP<Teuchos::TimeMonitor> A = Teuchos::rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer(std::string("Main") + std::string(S))));
+#endif
+
+#ifndef MAIN_TIMER_STOP
+#define MAIN_TIMER_STOP(A) A.reset();
+#endif
+
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 
@@ -7,10 +15,13 @@
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 
 #include "feddlib/problems/specific/Stokes.hpp"
+#include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 
 #include <Teuchos_TestForException.hpp>
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
+
+#include "feddlib/problems/abstract/Problem.hpp"
 
 /*!
  main of Stokes problem
@@ -21,6 +32,66 @@
  @copyright CH
  */
 
+
+
+// ######################
+// Paper
+// ######################
+void rhsPaper1( double* p, double* res, const double* parameters){
+
+	double x = p[0];
+	double y = p[1];
+	res[0] =-(-4*y*pow((1-x),2)+16*x*y*(1-x)-4*pow(x,2)*y)*(1-3*y+2*pow(y,2))-(-4*pow(x,2)*(-3+4*y)-8*pow(x,2)*y)*pow((1-x),2)+1;
+    res[1] =-(4*pow(y,2)*(-3+4*x)+8*pow(y,2)*x)*pow((1-y),2)-(4*x*pow((1-y),2)-16*x*y*(1-y)+4*pow(y,2)*x)*(1-3*x+2*pow(x,2))+1;
+
+	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
+}
+
+
+void rhsPaper2( double* p, double* res, const double* parameters){
+
+	double x = p[0];
+	double y = p[1];
+
+    res[0] =-(-4*y*pow((1-x),2)+16*x*y*(1-x)-4*pow(x,2)*y)*(1-3*y+2*pow(y,2))-(-4*pow(x,2)*(-3+4*y)-8*pow(x,2)*y)*pow((1-x),2)-sin(M_PI*x)*cos(M_PI*y)*M_PI;
+    res[1] = -(4*pow(y,2)*(-3+4*x)+8*pow(y,2)*x)*pow((1-y),2)-(4*x*pow((1-y),2)-16*x*y*(1-y)+4*pow(y,2)*x)*(1-3*x+2*pow(x,2))-sin(M_PI*y)*cos(M_PI*x)*M_PI;
+}
+
+void exactSolutionPaperU1( double* p, double* res){
+
+	double x = p[0];
+	double y = p[1];
+
+	res[0] =  -2*pow(x,2)*y*pow((1-x),2)*(1-3*y+2*pow(y,2));
+	res[1] =  2*x*pow(y,2)*pow((1-y),2)*(1-3*x+2*pow(x,2));
+}
+
+void exactSolutionPaperP1( double* p, double* res){
+
+	double x = p[0];
+	double y = p[1];
+
+	res[0] =  x+y-1;
+}
+
+void exactSolutionPaperP2( double* p, double* res){
+
+	double x = p[0];
+	double y = p[1];
+
+	res[0] =  cos(x*M_PI) *cos (M_PI *y);	
+}
+
+// ####################################
+// ####################################
+
+void rhs0( double* p, double* res, const double* parameters){
+
+	res[0] =0;
+    res[1] =0;
+
+	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
+}
 
 void one(double* x, double* res, double t, const double* parameters){
     
@@ -105,6 +176,10 @@ int main(int argc, char *argv[]) {
     typedef MeshPartitioner<SC,LO,GO,NO> MeshPartitioner_Type;
     typedef Teuchos::RCP<Domain<SC,LO,GO,NO> > DomainPtr_Type;
 
+	typedef Problem<SC,LO,GO,NO> Problem_Type;
+    typedef Teuchos::RCP<Problem_Type> ProblemPtr_Type;
+
+
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
     
@@ -167,6 +242,8 @@ int main(int argc, char *argv[]) {
         int			inflowBCID      = parameterListProblem->sublist("Parameter").get("InflowBC ID",-1);
         string      bcType          = parameterListProblem->sublist("Parameter").get("BC Type","parabolic");
         string      precMethod      = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
+		int 		maxIter 		= parameterListProblem->sublist("Mesh Refinement").get("MaxIter",5);
+		double maxVel 				= parameterListProblem->sublist("Parameter").get("MaxVelocity",2.);
 
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem));
         if (precMethod == "Monolithic")
@@ -196,116 +273,137 @@ int main(int argc, char *argv[]) {
         Teuchos::RCP<Teuchos::Time> solveTime(Teuchos::TimeMonitor::getNewCounter("main: Solve problem time"));
         DomainPtr_Type domainPressure;
         DomainPtr_Type domainVelocity;
-        {
-            Teuchos::TimeMonitor totalTimeMonitor(*totalTime);
-            {
-                Teuchos::TimeMonitor buildMeshMonitor(*buildMesh);
+  
+		domainPressure.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+		domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+		
+		MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
+		domainP1Array[0] = domainPressure;
+		
+		ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );
+		MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
+		
+		partitionerP1.readAndPartition();
+		
+		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
 
-                    domainPressure.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-                    domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-                    
-                    MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
-                    domainP1Array[0] = domainPressure;
-                    
-                    ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );
-                    MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
-                    
-                    partitionerP1.readAndPartition();
-                    
-                    domainVelocity->buildP2ofP1Domain( domainPressure );
-                    
-                    if (discVelocity=="P2")
-                        domainVelocity->buildP2ofP1Domain( domainPressure );
-                    else
-                        domainVelocity = domainPressure;
+		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Stokes",parameterListProblem,exactSolutionPaperU1); // exactLShape
+		
+		std::vector<double> parameter_vec(0);
+		parameter_vec.push_back(maxVel);//height of inflow region
+		parameter_vec.push_back(0.41);//height of inflow region
 
-            }
-            
-            std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
-            
-            // ####################
+		int j=0;
+		MAIN_TIMER_START(Total," Step 4:	 Total RefinementAlgorithm");
+		while(j<maxIter+1 ){
+
+			MAIN_TIMER_START(buildP2," Step 0:	 buildP2Mesh");
+			if (discVelocity=="P2" ) {
+				domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
+		        domainVelocity->buildP2ofP1Domain( domainPressure );
+				}
+		    else
+		        domainVelocity = domainPressure;
+			
+			MAIN_TIMER_STOP(buildP2);		
+
+			MAIN_TIMER_START(Bounds," Step 1:	 bcFactory");
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+
+			if (dim==2) {
+				bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
+				bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+				bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
+	//                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
+	//                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
+			}
+			else if(dim==3){
+				bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
+				bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+				bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
+	//                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
+	//                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
+			}
+
+			MAIN_TIMER_STOP(Bounds);	
+			MAIN_TIMER_START(Solver," Step 2:	 solving PDE");
+
+			
+            Teuchos::RCP<Stokes<SC,LO,GO,NO> > stokes( new Stokes<SC,LO,GO,NO>(domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll ));
+
+			//domainVelocity->info();
+			//domainPressure->info();
+			//stokes->info();
+			
+			{
+				Teuchos::TimeMonitor solveTimeMonitor(*solveTime);
+				
+				stokes->addBoundaries(bcFactory);
+				stokes->addRhsFunction(rhs0);						    
+				stokes->initializeProblem();						    
+				stokes->assemble();
+				stokes->setBoundaries();             
+				stokes->solve();
+
+			}
+			MAIN_TIMER_STOP(Solver);	
+
+						
+			
+	
+            Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());
+            Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaPressure(new ExporterParaView<SC,LO,GO,NO>());
             
+            Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = stokes->getSolution()->getBlock(0);
+            Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = stokes->getSolution()->getBlock(1);
 
-            parameter_vec.push_back(1.5);//height of inflow region
-            if (dim==2) {
-                bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
-                bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-//                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
-//                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
-            }
-            else if(dim==3){
-                bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
-                bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-//                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
-//                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
-            }
-
+            DomainPtr_Type dom = domainVelocity;
             
-            Stokes<SC,LO,GO,NO> stokes( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
-
-            domainVelocity->info();
-            domainPressure->info();
-            stokes.info();
+            exParaVelocity->setup("velocity", dom->getMesh(), dom->getFEType());
             
-            {
-                Teuchos::TimeMonitor solveTimeMonitor(*solveTime);
-                
-                stokes.addBoundaries(bcFactory);
-                
-                stokes.initializeProblem();
-                
-                stokes.assemble();
+            UN dofsPerNode = dim;
+            exParaVelocity->addVariable(exportSolutionV, "u", "Vector", dofsPerNode, dom->getMapUnique());
+            
+            dom = domainPressure;
+            exParaPressure->setup("pressure", dom->getMesh(), dom->getFEType());
+            
+            if (dom->getFEType()=="P0")
+                exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getElementMap());
+            else
+                exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getMapUnique());
 
-                stokes.setBoundaries();
-                                
-                stokes.solve();
+            exParaVelocity->save(0.0);
+            exParaPressure->save(0.0);
+            
+            exParaVelocity->closeExporter();
+            exParaPressure->closeExporter();
 
-            }
+			MAIN_TIMER_START(Refinement," Step 3:	 meshRefinement");
 
-            if ( parameterListAll->sublist("General").get("ParaViewExport",false) ) {
-                Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());
-                Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaPressure(new ExporterParaView<SC,LO,GO,NO>());
-                
-                Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = stokes.getSolution()->getBlock(0);
-                Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = stokes.getSolution()->getBlock(1);
+			// Refinement
+			domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
 
-		Teuchos::ArrayRCP<SC> exportArray = exportSolutionV->getDataNonConst(0);
-		Teuchos::ArrayRCP<SC> exportArray2 = exportSolutionV->getDataNonConst(1);
-		cout<< " Array Size " << exportArray.size() << " zeilen size " << exportArray2.size() << " " << exportSolutionV->getNumVectors()<< endl;
-		exportSolutionV->print();
-		exportSolutionV->getMap()->print();
+			{
 
-		domainVelocity->getMapRepeated()->print();
-		/*for(int i=0; i< exportArray.size() ; i++){
-			cout << " i=" << i << " " << exportArray[i] << " " << exportArray2[i] << endl;
-		}*/
+				ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( stokes , true);
+				domainRefined = meshRefiner.globalAlgorithm( domainPressure,  domainVelocity, stokes->getSolution(), problem, rhsPaper1 );
+			}
 
-                DomainPtr_Type dom = domainVelocity;
-                
-                exParaVelocity->setup("velocity", dom->getMesh(), dom->getFEType());
-                
-                UN dofsPerNode = dim;
-                exParaVelocity->addVariable(exportSolutionV, "u", "Vector", dofsPerNode, dom->getMapUnique());
-                
-                dom = domainPressure;
-                exParaPressure->setup("pressure", dom->getMesh(), dom->getFEType());
-                
-                if (dom->getFEType()=="P0")
-                    exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getElementMap());
-                else
-                    exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getMapUnique());
-
-                exParaVelocity->save(0.0);
-                exParaPressure->save(0.0);
-                
-                exParaVelocity->closeExporter();
-                exParaPressure->closeExporter();
-                
-            }
+			domainPressure = domainRefined;
+			domainVelocity = domainPressure;
+			
+			j++;
+			MAIN_TIMER_STOP(Refinement);	
+        
+        // ####################
+       
+            
         }
+
+		MAIN_TIMER_STOP(Total);	
+		Teuchos::TimeMonitor::report(cout,"Main");
+   
     }
-    Teuchos::TimeMonitor::report(cout);
 
     return(EXIT_SUCCESS);
 }

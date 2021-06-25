@@ -98,25 +98,6 @@ void inflowParabolic3D(double* x, double* res, double t, const double* parameter
     return;
 }
 
-void inflow3DRichter(double* x, double* res, double t, const double* parameters)
-{
-    double H = parameters[1];
-    
-    if(t < 1.)
-    {
-        res[0] = 9./8 * parameters[0] *x[1]*(H-x[1])*(H*H-x[2]*x[2])/( H*H*(H/2.)*(H/2.) ) * ((1 - cos(2.0*M_PI*t))/2.0);
-        res[1] = 0.;
-        res[2] = 0.;
-    }
-    else
-    {
-        res[0] = 9./8 * parameters[0] *x[1]*(H-x[1])*(H*H-x[2]*x[2])/( H*H*(H/2.)*(H/2.) );
-        res[1] = 0.;
-        res[2] = 0.;
-    }
-    
-    return;
-}
 
 void dummyFunc(double* x, double* res, double t, const double* parameters){
 
@@ -127,6 +108,22 @@ void rhs3D(double* x, double* res, double* parameters){
     
     res[0] = 1.;
 
+
+    return;
+}
+
+void parabolicInflow3D(double* x, double* res, double t, const double* parameters)
+{
+    // parameters[0] is the maxium desired velocity
+    // parameters[1] end of ramp
+    // parameters[2] is the maxium solution value of the laplacian parabolic inflow problme
+    // we use x[0] for the laplace solution in the considered point. Therefore, point coordinates are missing
+
+    res[0] = (parameters[0] / parameters[1]) * x[0];
+    res[1] = 0.;
+    res[2] = 0.;
+    
+	//cout << " parameter[0] " << parameters[0] << " parameters[1] " << parameters[1] << " ergebniss " << res[0]<< endl;
 
     return;
 }
@@ -226,6 +223,8 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
         bool computeInflow = parameterListProblem->sublist("Parameter").get("Compute Inflow",false);
         int         n;
 
+        std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",15));
+        //parameter_vec.push_back(1.);
 
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
         if (!precMethod.compare("Monolithic"))
@@ -286,12 +285,12 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 			// Insert Mesh Refinement Here 
 				// BFS
 			vec2D_dbl_Type area(3,vec_dbl_Type(2));
-			area[0][0] = -0.2;
+			/*area[0][0] = -0.2;
 			area[0][1] =0.4;
 			area[1][0] = -0.2;
 			area[1][1] = 0.4;
 			area[2][0] = 0.;
-			area[2][1] = 1.;
+			area[2][1] = 1.;*/
 			
 			/*// Turek
 			area[0][0] = 0.4;
@@ -302,12 +301,12 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 			area[2][1] = 0.41;*/
 			// Aneurysma
 			
-			/*area[0][0] = 13;
+			area[0][0] = 13;
 			area[0][1] = 22;
 			area[1][0] = 17;
 			area[1][1] = 23;
 			area[2][0] = -2;
-			area[2][1] = 6;*/
+			area[2][1] = 6;
 
 			AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Laplace",parameterListProblem);
 
@@ -326,7 +325,7 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 
 			// Apply Boundary conditions - laplace at inlet
 			bcFactoryL->addBC(zeroDirichlet, 1, 0, domainVelocity, "Dirichlet", 1);
-			//bcFactoryL->addBC(zeroDirichlet, 2, 0, domainVelocity, "Dirichlet", 1);
+			//bcFactoryL->addBC(zeroDirichlet, 2, 0, domainVelocity, "Neumann", 1);
 
 			Laplace<SC,LO,GO,NO> laplace(domainVelocity,feTypeV,parameterListAllL,false);
 			{
@@ -339,8 +338,8 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 			}
 				bcFactoryL->addBC(zeroBC, 3, 0, domainVelocity, "Dirichlet", 1);
                 bcFactoryL->addBC(zeroBC, 10, 0, domainVelocity, "Dirichlet", 1);
-                bcFactoryL->addBC(zeroBC, 0, 0, domainVelocity, "Dirichlet", 1);
-                bcFactoryL->setRHS( laplace.getSolution(), 0./*time; does not matter here*/ );
+
+                bcFactoryL->setRHS( laplace.getSolution(), 0.);
 
 
 			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
@@ -357,18 +356,21 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 			// Setting up and solving Navier-Stokes Problem 
 			// #################################################		    
 		        
-            std::vector<double> parameter_vec(1);
  			SC maxValue = exportSolution->getMax();
                 
             parameter_vec.push_back(maxValue);
+
             //parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MaxVelocity",1.5);
-                 
+			MultiVectorConstPtr_Type inletSol = laplace.getSolution()->getBlock(0);               
+
 			Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
-            bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
-           // bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-			MultiVectorConstPtr_Type inletSol = laplace.getSolution()->getBlock(0);
-            bcFactory->addBC(zeroDirichlet3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
-            bcFactory->addBC(zeroDirichlet3D, 3, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol); // outflow ring
+
+            bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+
+            bcFactory->addBC(parabolicInflow3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
+
+			//bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
+            //bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
             
             int timeDisc = parameterListProblem->sublist("Timestepping Parameter").get("Butcher table",0);
 

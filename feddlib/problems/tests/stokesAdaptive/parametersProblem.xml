@@ -1,6 +1,6 @@
 <ParameterList name="Stokes">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension" type="int"   	value="2"/>
+        <Parameter name="Dimension" type="int"   	value="3"/>
         <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
         <Parameter name="Discretization Pressure" type="string" value="P1"/>
         <Parameter name="Use single matrix" type="bool" value="true"/>
@@ -11,17 +11,33 @@
         <Parameter name="H/h" type="int"   	value="4"/>
         <Parameter name="Symmetric gradient" type="bool" value="false"/>        
         <Parameter name="Viscosity" type="double"   value="1.e-0"/>
-        <Parameter name="MaxVelocity" type="double"   value="1."/>
+        <Parameter name="MaxVelocity" type="double"   value="3."/>
+<!-- Fehlerschätzer -->
+ 	</ParameterList>
+ 	<ParameterList name="Mesh Refinement">
+        <Parameter name="Toleranz" type="double" value="0.001"/>
+        <Parameter name="Theta" type="double" value="0.35"/>
+        <Parameter name="MaxIter" type="int" value="3"/>
+        <Parameter name="RefinementType" type="string" value="Maximum"/>
+       	<Parameter name="Write Refinement Time" type="bool" value="true"/>
+        <Parameter name="Write Mesh Quality" type="bool" value="true"/>
+        <Parameter name="3D regular Refinement Diagonal Pick" type="int" value="0"/>
+        <Parameter name="Refinement Restriction" type="string" value="keepRegularity"/>
+    </ParameterList>   
+    <ParameterList name="Exporter">
+        <Parameter name="Write new mesh" type="bool" value="true"/>
     </ParameterList>
+
     <ParameterList name="Mesh Partitioner">
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="circle2D_1800.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="Turek3DCylinder_1k.mesh"/> <!--Turek3DCylinder_1k.mesh, circle2D_1800.mesh --> 
     </ParameterList>
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
         <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="Write new mesh" type="bool" value="true"/>
         <Parameter name="ParaViewCoarse" type="bool" value="false"/>
         <Parameter name="Preconditioner Method" type="string" value="Teko"/><!-- Monolithic, Teko, Diagonal, Triangular -->
         <Parameter name="Scale mass matrix" type="bool" value="true"/>

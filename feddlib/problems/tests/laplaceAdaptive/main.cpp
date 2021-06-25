@@ -320,8 +320,6 @@ int main(int argc, char *argv[]) {
 				domainRefined = meshRefiner.globalAlgorithm( domainP1,  domain, laplace->getSolution(), problem, rhs );
 			}
 
-			domainP1RefinedArray.push_back(domainRefined);
-
 			domainP1 = domainRefined;
 			domain = domainP1;
 			

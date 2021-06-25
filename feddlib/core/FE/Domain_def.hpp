@@ -176,13 +176,13 @@ template <class SC, class LO, class GO, class NO>
 LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
     if (this->dim_ == 2) {
         if ( this->FEType_ == "P1" ) {
-            return 20;
+            return 200;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 30;
+            return 300;
         }
         else {
-            return 40;
+            return 400;
         }
     } else {
         if ( this->FEType_ == "P1" ) {
