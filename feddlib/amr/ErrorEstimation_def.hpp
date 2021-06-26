@@ -1136,7 +1136,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 
 	double divB=0;
 	for(int i=0; i< dim_ ; i++){
-		divB += Binv1[d][d] ;
+		divB += Binv1[i][i] ;
 	}
 	divB = 1/2. * divB;
 
