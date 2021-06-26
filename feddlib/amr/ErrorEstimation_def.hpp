@@ -1134,6 +1134,12 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 	if(this->FEType2_ == "P2")
 		intFE =2;
 
+	double divB=0;
+	for(int i=0; i< dim_ ; i++){
+		divB += Binv1[d][d] ;
+	}
+	divB = 1/2. * divB;
+
 	vec_dbl_Type divPhiV;
 	for (UN w=0; w< QuadW.size(); w++){
 		divPhiV = divPhi(dim, intFE, quadPointsTrans[w]);
@@ -1143,7 +1149,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 			for(int i=0; i< divPhiV.size(); i++){
 				uTmp[j] += valuesSolutionRep[nodeList[i]]*divPhiV[i];
 			}
-	   		resElement += pow((Binv1[0][0]+Binv1[1][1])*uTmp[j] ,2);
+	   		resElement += pow(divB*uTmp[j] ,2);
 		}
 		resElement *= QuadW[w];
 
