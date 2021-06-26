@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['refinement3ddiagonal_5f',['refinement3DDiagonal_',['../classFEDD_1_1ErrorEstimation.html#a3695b55e1703c3c03077bbc17a44fae9',1,'FEDD::ErrorEstimation::refinement3DDiagonal_()'],['../classFEDD_1_1RefinementFactory.html#a7466053f06c1d52d6fb2c58db06b7a71',1,'FEDD::RefinementFactory::refinement3DDiagonal_()']]],
-  ['refinementrestriction_5f',['refinementRestriction_',['../classFEDD_1_1ErrorEstimation.html#ae187dd8db953862a2395d897e1317117',1,'FEDD::ErrorEstimation::refinementRestriction_()'],['../classFEDD_1_1RefinementFactory.html#a2dda98963313023311f044d248befd40',1,'FEDD::RefinementFactory::refinementRestriction_()']]]
+  ['h_5ft_5fdiam_5fe_5f',['h_T_diam_E_',['../classFEDD_1_1ErrorEstimation.html#a984034d2b0306ed7c194c6ca5dbfbc40',1,'FEDD::ErrorEstimation::h_T_diam_E_()'],['../classFEDD_1_1RefinementFactory.html#ad1c44661ff740905f2b3634ea285e1a7',1,'FEDD::RefinementFactory::h_T_diam_E_()']]],
+  ['h_5ft_5fmin_5f',['h_T_min_',['../classFEDD_1_1ErrorEstimation.html#a641cf149d34e2423bf9cbba020cb234a',1,'FEDD::ErrorEstimation::h_T_min_()'],['../classFEDD_1_1RefinementFactory.html#add2c3dc6ee30afaf225baed853475e06',1,'FEDD::RefinementFactory::h_T_min_()']]]
 ];

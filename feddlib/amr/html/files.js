@@ -12,6 +12,12 @@ var files =
       [ "ErrorEstimation", "classFEDD_1_1ErrorEstimation.html", "classFEDD_1_1ErrorEstimation" ]
     ] ],
     [ "ErrorEstimation_def.hpp", "ErrorEstimation__def_8hpp.html", "ErrorEstimation__def_8hpp" ],
+    [ "ExporterParaViewAMR.cpp", "ExporterParaViewAMR_8cpp.html", null ],
+    [ "ExporterParaViewAMR.hpp", "ExporterParaViewAMR_8hpp.html", null ],
+    [ "ExporterParaViewAMR_decl.hpp", "ExporterParaViewAMR__decl_8hpp.html", [
+      [ "ExporterParaViewAMR", "classFEDD_1_1ExporterParaViewAMR.html", "classFEDD_1_1ExporterParaViewAMR" ]
+    ] ],
+    [ "ExporterParaViewAMR_def.hpp", "ExporterParaViewAMR__def_8hpp.html", null ],
     [ "RefinementFactory.cpp", "RefinementFactory_8cpp.html", null ],
     [ "RefinementFactory.hpp", "RefinementFactory_8hpp.html", null ],
     [ "RefinementFactory_decl.hpp", "RefinementFactory__decl_8hpp.html", [

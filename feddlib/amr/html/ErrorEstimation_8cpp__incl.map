@@ -1,3 +1,10 @@
 <map id="ErrorEstimation.cpp" name="ErrorEstimation.cpp">
-<area shape="rect" id="node2" href="$ErrorEstimation__decl_8hpp.html" title="ErrorEstimation_decl.hpp" alt="" coords="1661,80,1829,107"/>
+<area shape="rect" id="node2" href="$ErrorEstimation__decl_8hpp.html" title="ErrorEstimation_decl.hpp" alt="" coords="1099,80,1267,107"/>
+<area shape="rect" id="node14" href="$ErrorEstimation_8hpp.html" title="feddlib/amr/ErrorEstimation.hpp" alt="" coords="536,341,741,367"/>
+<area shape="rect" id="node15" href="$RefinementFactory_8hpp.html" title="feddlib/amr/RefinementFactory.hpp" alt="" coords="1069,341,1296,367"/>
+<area shape="rect" id="node19" href="$AdaptiveMeshRefinement_8hpp.html" title="feddlib/amr/AdaptiveMesh\lRefinement.hpp" alt="" coords="1371,155,1544,196"/>
+<area shape="rect" id="node16" href="$RefinementFactory__decl_8hpp.html" title="RefinementFactory_decl.hpp" alt="" coords="1107,430,1296,457"/>
+<area shape="rect" id="node20" href="$AdaptiveMeshRefinement__decl_8hpp.html" title="AdaptiveMeshRefinement\l_decl.hpp" alt="" coords="1430,244,1602,285"/>
+<area shape="rect" id="node24" href="$ExporterParaViewAMR_8hpp.html" title="feddlib/amr/ExporterPara\lViewAMR.hpp" alt="" coords="1918,333,2085,375"/>
+<area shape="rect" id="node25" href="$ExporterParaViewAMR__decl_8hpp.html" title="ExporterParaViewAMR\l_decl.hpp" alt="" coords="3343,423,3500,464"/>
 </map>

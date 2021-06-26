@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['_7eerrorestimation',['~ErrorEstimation',['../classFEDD_1_1ErrorEstimation.html#a98bcec4b2275c1f1a32607f9b427e884',1,'FEDD::ErrorEstimation']]],
-  ['_7erefinementfactory',['~RefinementFactory',['../classFEDD_1_1RefinementFactory.html#ae9b8ba9b12e35db03ef1b6363c1b9200',1,'FEDD::RefinementFactory']]]
+  ['tagarea',['tagArea',['../classFEDD_1_1ErrorEstimation.html#a49f28452f08ee5a75220089b1d9c4b61',1,'FEDD::ErrorEstimation']]]
 ];

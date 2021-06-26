@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['seterrorestimate',['setErrorEstimate',['../classFEDD_1_1ErrorEstimation.html#a9e2db66d1ec69da791d2facdcb1ccaf9',1,'FEDD::ErrorEstimation::setErrorEstimate()'],['../classFEDD_1_1RefinementFactory.html#a4532ed5c403d767f316e922a3d769853',1,'FEDD::RefinementFactory::setErrorEstimate()']]]
+  ['phi',['phi',['../classFEDD_1_1ErrorEstimation.html#a54af187cc5c349977b9881507f2c7067',1,'FEDD::ErrorEstimation']]]
 ];

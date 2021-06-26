@@ -12,6 +12,8 @@ class \hyperlink{classFEDD_1_1AdaptiveMeshRefinement}{Adaptive\+Mesh\+Refinement
 \item 
 class \hyperlink{classFEDD_1_1ErrorEstimation}{Error\+Estimation}
 \item 
+class \hyperlink{classFEDD_1_1ExporterParaViewAMR}{Exporter\+Para\+View\+A\+MR}
+\item 
 class \hyperlink{classFEDD_1_1RefinementFactory}{Refinement\+Factory}
 \end{DoxyCompactItemize}
 
@@ -20,6 +22,8 @@ class \hyperlink{classFEDD_1_1RefinementFactory}{Refinement\+Factory}
 Mesh\+Unstructured\+Refinement. 
 
 \hyperlink{classFEDD_1_1RefinementFactory}{Refinement\+Factory}.
+
+Exporter\+Para\+View.
 
 \hyperlink{classFEDD_1_1ErrorEstimation}{Error\+Estimation}.
 
@@ -45,6 +49,19 @@ Lea Saßmannshausen
 \begin{DoxyCopyright}{Copyright}
 CH
 \end{DoxyCopyright}
+Declaration of Exporter\+Para\+View
+
+\begin{DoxyAuthor}{Author}
+Christian Hochmuth 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+\begin{DoxyCopyright}{Copyright}
+CH
+\end{DoxyCopyright}
+Moving mesh are possible, here connections are constant but coordinates can be shifted between exports. Use set the following paramter in your parameter list in order to export updated mesh points sublist(\char`\"{}\+Exporter\char`\"{})-\/$>$get(\char`\"{}\+Write new mesh\char`\"{}) = true
+
 Declaration of \hyperlink{classFEDD_1_1RefinementFactory}{Refinement\+Factory}
 
 \begin{DoxyAuthor}{Author}

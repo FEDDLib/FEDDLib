@@ -89,6 +89,7 @@ void rhs0( double* p, double* res, const double* parameters){
 
 	res[0] =0;
     res[1] =0;
+	res[2] =0;
 
 	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
 }
@@ -287,7 +288,7 @@ int main(int argc, char *argv[]) {
 		
 		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
 
-		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Stokes",parameterListProblem,exactSolutionPaperU1); // exactLShape
+		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Stokes",parameterListProblem,exactSolutionPaperU1); 
 		
 		std::vector<double> parameter_vec(0);
 		parameter_vec.push_back(maxVel);//height of inflow region
@@ -386,7 +387,7 @@ int main(int argc, char *argv[]) {
 			{
 
 				ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( stokes , true);
-				domainRefined = meshRefiner.globalAlgorithm( domainPressure,  domainVelocity, stokes->getSolution(), problem, rhsPaper1 );
+				domainRefined = meshRefiner.globalAlgorithm( domainPressure,  domainVelocity, stokes->getSolution(), problem, rhs0 );
 			}
 
 			domainPressure = domainRefined;

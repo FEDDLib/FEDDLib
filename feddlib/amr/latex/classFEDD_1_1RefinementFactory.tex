@@ -27,15 +27,11 @@ Collaboration diagram for F\+E\+DD\+:\+:Refinement\+Factory$<$ SC, LO, GO, NO $>
 \item 
 typedef Mesh$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1RefinementFactory_a19f6ea9d9d873657041004fa12f76ac5}{Mesh\+\_\+\+Type}
 \item 
+typedef Mesh\+Unstructured$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1RefinementFactory_af03eee08be24542da73ba33195f14aba}{Mesh\+Unstr\+\_\+\+Type}
+\item 
 typedef Teuchos\+::\+R\+CP$<$ Mesh\+Unstructured$<$ SC, LO, GO, NO $>$ $>$ \hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type}
 \item 
 typedef std\+::vector$<$ \hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1RefinementFactory_a772a738296d703be721b9b1c877f1a9e}{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}
-\item 
-typedef Mesh\+Unstructured\+Refinement$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1RefinementFactory_a22aea92d236fb822fef9557c22834062}{Mesh\+Unstr\+Ref\+\_\+\+Type}
-\item 
-typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1RefinementFactory_a22aea92d236fb822fef9557c22834062}{Mesh\+Unstr\+Ref\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}
-\item 
-typedef std\+::vector$<$ \hyperlink{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1RefinementFactory_af6e25bbcc6f5e8d6ee70a1c5aab1e3eb}{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}
 \item 
 typedef Mesh\+\_\+\+Type\+::\+Comm\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory_ad2163b2c380d83b6b28a695f6f8e8a56}{Comm\+Ptr\+\_\+\+Type}
 \item 
@@ -82,12 +78,6 @@ typedef Teuchos\+::\+Ordinal\+Traits$<$ LO $>$ \hyperlink{classFEDD_1_1Refinemen
 typedef Matrix$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1RefinementFactory_ab04c3bb37b70c0524f46b050aaec1914}{Matrix\+\_\+\+Type}
 \item 
 typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1RefinementFactory_ab04c3bb37b70c0524f46b050aaec1914}{Matrix\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1RefinementFactory_a52d5a6625f207bc4df2c5ae3362e8ced}{Matrix\+Ptr\+\_\+\+Type}
-\item 
-typedef Exporter\+Para\+View$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1RefinementFactory_a268cb28ca6c68a4c32a912068c643933}{Exporter\+\_\+\+Type}
-\item 
-typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1RefinementFactory_a268cb28ca6c68a4c32a912068c643933}{Exporter\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1RefinementFactory_ae74a8143ddf273f2a13df4055233759c}{Exporter\+Ptr\+\_\+\+Type}
-\item 
-typedef Teuchos\+::\+R\+CP$<$ Exporter\+Txt $>$ \hyperlink{classFEDD_1_1RefinementFactory_a08c0a0d5b375af33c924f90005302f91}{Exporter\+Txt\+Ptr\+\_\+\+Type}
 \end{DoxyCompactItemize}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
@@ -96,13 +86,13 @@ typedef Teuchos\+::\+R\+CP$<$ Exporter\+Txt $>$ \hyperlink{classFEDD_1_1Refineme
 \item 
 \hyperlink{classFEDD_1_1RefinementFactory_a0815e8208b193e64c26e64d94691a967}{Refinement\+Factory} (\hyperlink{classFEDD_1_1RefinementFactory_a58381e0786c65ec61d11bc73c224b45a}{Comm\+Const\+Ptr\+\_\+\+Type} comm, int volume\+ID=10)
 \item 
-\hyperlink{classFEDD_1_1RefinementFactory_a59e3730c7f4ee1769e34da85250d0d86}{Refinement\+Factory} (\hyperlink{classFEDD_1_1RefinementFactory_a58381e0786c65ec61d11bc73c224b45a}{Comm\+Const\+Ptr\+\_\+\+Type} comm, int volume\+ID, \hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type} mesh\+P1)
+\hyperlink{classFEDD_1_1RefinementFactory_a0abc83a680e6002dab5ee53c16f5e4f1}{Refinement\+Factory} (\hyperlink{classFEDD_1_1RefinementFactory_a58381e0786c65ec61d11bc73c224b45a}{Comm\+Const\+Ptr\+\_\+\+Type} comm, int volume\+ID, string refinement\+Restriction, int refinement3\+D\+Diagonal=0)
 \item 
 \hyperlink{classFEDD_1_1RefinementFactory_ae9b8ba9b12e35db03ef1b6363c1b9200}{$\sim$\+Refinement\+Factory} ()
 \item 
-void \hyperlink{classFEDD_1_1RefinementFactory_aec49fcc71406ba48eb7d6766653914d5}{refine\+Mesh} (\hyperlink{classFEDD_1_1RefinementFactory_af6e25bbcc6f5e8d6ee70a1c5aab1e3eb}{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type} mesh\+P1, int iteration)
+void \hyperlink{classFEDD_1_1RefinementFactory_afeed9a01eee8623f5136e07449f3f35d}{refine\+Mesh} (\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type} mesh\+P1, int iteration, \hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type} output\+Mesh)
 \item 
-void \hyperlink{classFEDD_1_1RefinementFactory_af7a24f2ea3ebe601eb6359b1b0bbc9a7}{assign\+Edge\+Flags} (\hyperlink{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type} mesh\+P1, \hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements)
+void \hyperlink{classFEDD_1_1RefinementFactory_af0154ebdd6c904d62715d11fcd063259}{assign\+Edge\+Flags} (\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type} mesh\+P1, \hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements)
 \item 
 void \hyperlink{classFEDD_1_1RefinementFactory_a530ccd6a31c259515ab1900d544eb813}{refine\+Regular} (\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements, \hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type} elements, int i)
 \item 
@@ -128,21 +118,17 @@ void \hyperlink{classFEDD_1_1RefinementFactory_a4294d0901e6691203b9043bb2f9c6ac6
 \item 
 void \hyperlink{classFEDD_1_1RefinementFactory_abeca9755a1bd393c36c792a78c6779e9}{build\+Node\+Map} (\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements, \hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type} map\+Global\+Proc, \hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type} map\+Proc, int new\+Points, int new\+Points\+Repeated)
 \item 
-void \hyperlink{classFEDD_1_1RefinementFactory_a39c950be5d386f7a75f6d7392a9a2bc8}{build\+Triangle\+Map} ()
-\item 
 void \hyperlink{classFEDD_1_1RefinementFactory_a2ebf82a5deb92e26a48805fd470f6840}{update\+Elements\+Of\+Edges\+Local\+And\+Global} (int max\+Rank, \hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type} edge\+Map)
 \item 
 void \hyperlink{classFEDD_1_1RefinementFactory_a8f295b405de2c056298b695bea51887b}{update\+Elements\+Of\+Surface\+Local\+And\+Global} (\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements)
 \item 
 vec\+\_\+bool\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory_a97003a4445b40ac91728639de432a449}{check\+Interface\+Surface} (\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements, vec\+\_\+int\+\_\+\+Type origin\+Flag, vec\+\_\+int\+\_\+\+Type edge\+Numbers, int index\+Element)
 \item 
-void \hyperlink{classFEDD_1_1RefinementFactory_a8f76b86ec161e405857e5c4a51aea968}{tag\+Area} (vec2\+D\+\_\+dbl\+\_\+\+Type area)
-\item 
-void \hyperlink{classFEDD_1_1RefinementFactory_a7099db47add1a0f9e431fc960860db2d}{refinement\+Restrictions} (\hyperlink{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type} mesh\+P1, \hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type} elements, \hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements, int iteration, int \&new\+Points, int \&new\+Points\+Common, vec\+\_\+\+G\+O\+\_\+\+Type \&global\+Interface\+I\+Ds\+Tagged, \hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type} map\+Interface\+Edges, string restriction, int \&new\+Elements)
+void \hyperlink{classFEDD_1_1RefinementFactory_a6fa94c91b750950e2bbe53c3540eda08}{refinement\+Restrictions} (\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type} mesh\+P1, \hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type} elements, \hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements, int iteration, int \&new\+Points, int \&new\+Points\+Common, vec\+\_\+\+G\+O\+\_\+\+Type \&global\+Interface\+I\+Ds\+Tagged, \hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type} map\+Interface\+Edges, string restriction, int \&new\+Elements)
 \item 
 void \hyperlink{classFEDD_1_1RefinementFactory_ae4401ece866b918923322d46d0c5e33e}{refine\+Irregular} (\hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type} elements, \hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements, int \&new\+Elements, \hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type} edge\+Map, \hyperlink{classFEDD_1_1RefinementFactory_a1067ba23325b19eae16a864f25f7d68f}{Surface\+Elements\+Ptr\+\_\+\+Type} surface\+Triangle\+Elements)
 \item 
-void \hyperlink{classFEDD_1_1RefinementFactory_acc422779a3cf6ca5a4c916acf7708418}{build\+Surface\+Triangle\+Elements} (\hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type} elements, \hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements)
+void \hyperlink{classFEDD_1_1RefinementFactory_a0393fc1497f3b0e02380af00b93e96d6}{build\+Surface\+Triangle\+Elements} (\hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type} elements, \hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type} edge\+Elements, \hyperlink{classFEDD_1_1RefinementFactory_a1067ba23325b19eae16a864f25f7d68f}{Surface\+Elements\+Ptr\+\_\+\+Type} surface\+Triangle\+Elements, \hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type} edge\+Map, \hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type} element\+Map)
 \item 
 void \hyperlink{classFEDD_1_1RefinementFactory_a4532ed5c403d767f316e922a3d769853}{set\+Error\+Estimate} (vec\+\_\+dbl\+\_\+\+Type error\+Elements)
 \item 
@@ -187,224 +173,189 @@ vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory_add2c3dc6ee30
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Comm\+Const\+Ptr\+\_\+\+Type@{Comm\+Const\+Ptr\+\_\+\+Type}}
 \index{Comm\+Const\+Ptr\+\_\+\+Type@{Comm\+Const\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Comm\+Const\+Ptr\+\_\+\+Type}{CommConstPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Mesh\+\_\+\+Type\+::\+Comm\+Const\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a58381e0786c65ec61d11bc73c224b45a}{Comm\+Const\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ad2163b2c380d83b6b28a695f6f8e8a56}\label{classFEDD_1_1RefinementFactory_ad2163b2c380d83b6b28a695f6f8e8a56}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Comm\+Ptr\+\_\+\+Type@{Comm\+Ptr\+\_\+\+Type}}
 \index{Comm\+Ptr\+\_\+\+Type@{Comm\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Comm\+Ptr\+\_\+\+Type}{CommPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Mesh\+\_\+\+Type\+::\+Comm\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_ad2163b2c380d83b6b28a695f6f8e8a56}{Comm\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a11b30196ff403358f3540117f09b6963}\label{classFEDD_1_1RefinementFactory_a11b30196ff403358f3540117f09b6963}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Edge\+Elements\+\_\+\+Type@{Edge\+Elements\+\_\+\+Type}}
 \index{Edge\+Elements\+\_\+\+Type@{Edge\+Elements\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Edge\+Elements\+\_\+\+Type}{EdgeElements\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Edge\+Elements \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a11b30196ff403358f3540117f09b6963}{Edge\+Elements\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}\label{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Edge\+Elements\+Ptr\+\_\+\+Type@{Edge\+Elements\+Ptr\+\_\+\+Type}}
 \index{Edge\+Elements\+Ptr\+\_\+\+Type@{Edge\+Elements\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Edge\+Elements\+Ptr\+\_\+\+Type}{EdgeElementsPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_a11b30196ff403358f3540117f09b6963}{Edge\+Elements\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a0879b04ac1b1830fae7d6a7e29d36000}\label{classFEDD_1_1RefinementFactory_a0879b04ac1b1830fae7d6a7e29d36000}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Elements\+\_\+\+Type@{Elements\+\_\+\+Type}}
 \index{Elements\+\_\+\+Type@{Elements\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Elements\+\_\+\+Type}{Elements\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Elements \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a0879b04ac1b1830fae7d6a7e29d36000}{Elements\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}\label{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Elements\+Ptr\+\_\+\+Type@{Elements\+Ptr\+\_\+\+Type}}
 \index{Elements\+Ptr\+\_\+\+Type@{Elements\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Elements\+Ptr\+\_\+\+Type}{ElementsPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_a0879b04ac1b1830fae7d6a7e29d36000}{Elements\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type}}
-
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a268cb28ca6c68a4c32a912068c643933}\label{classFEDD_1_1RefinementFactory_a268cb28ca6c68a4c32a912068c643933}} 
-\index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Exporter\+\_\+\+Type@{Exporter\+\_\+\+Type}}
-\index{Exporter\+\_\+\+Type@{Exporter\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
-\subsubsection{\texorpdfstring{Exporter\+\_\+\+Type}{Exporter\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
-typedef Exporter\+Para\+View$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a268cb28ca6c68a4c32a912068c643933}{Exporter\+\_\+\+Type}}
-
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ae74a8143ddf273f2a13df4055233759c}\label{classFEDD_1_1RefinementFactory_ae74a8143ddf273f2a13df4055233759c}} 
-\index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Exporter\+Ptr\+\_\+\+Type@{Exporter\+Ptr\+\_\+\+Type}}
-\index{Exporter\+Ptr\+\_\+\+Type@{Exporter\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
-\subsubsection{\texorpdfstring{Exporter\+Ptr\+\_\+\+Type}{ExporterPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
-typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_a268cb28ca6c68a4c32a912068c643933}{Exporter\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_ae74a8143ddf273f2a13df4055233759c}{Exporter\+Ptr\+\_\+\+Type}}
-
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a08c0a0d5b375af33c924f90005302f91}\label{classFEDD_1_1RefinementFactory_a08c0a0d5b375af33c924f90005302f91}} 
-\index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Exporter\+Txt\+Ptr\+\_\+\+Type@{Exporter\+Txt\+Ptr\+\_\+\+Type}}
-\index{Exporter\+Txt\+Ptr\+\_\+\+Type@{Exporter\+Txt\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
-\subsubsection{\texorpdfstring{Exporter\+Txt\+Ptr\+\_\+\+Type}{ExporterTxtPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
-typedef Teuchos\+::\+R\+CP$<$Exporter\+Txt$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a08c0a0d5b375af33c924f90005302f91}{Exporter\+Txt\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ae3b9a462f8534ab43ce0dbf0d44b3bc5}\label{classFEDD_1_1RefinementFactory_ae3b9a462f8534ab43ce0dbf0d44b3bc5}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Map\+\_\+\+Type@{Map\+\_\+\+Type}}
 \index{Map\+\_\+\+Type@{Map\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Map\+\_\+\+Type}{Map\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Map$<$LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_ae3b9a462f8534ab43ce0dbf0d44b3bc5}{Map\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}\label{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Map\+Const\+Ptr\+\_\+\+Type@{Map\+Const\+Ptr\+\_\+\+Type}}
 \index{Map\+Const\+Ptr\+\_\+\+Type@{Map\+Const\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Map\+Const\+Ptr\+\_\+\+Type}{MapConstPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Map\+\_\+\+Type\+::\+Map\+Const\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a554f7a4c5f5014e2ddec03a2e667016c}\label{classFEDD_1_1RefinementFactory_a554f7a4c5f5014e2ddec03a2e667016c}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Map\+Ptr\+\_\+\+Type@{Map\+Ptr\+\_\+\+Type}}
 \index{Map\+Ptr\+\_\+\+Type@{Map\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Map\+Ptr\+\_\+\+Type}{MapPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Map\+\_\+\+Type\+::\+Map\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a554f7a4c5f5014e2ddec03a2e667016c}{Map\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ab04c3bb37b70c0524f46b050aaec1914}\label{classFEDD_1_1RefinementFactory_ab04c3bb37b70c0524f46b050aaec1914}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Matrix\+\_\+\+Type@{Matrix\+\_\+\+Type}}
 \index{Matrix\+\_\+\+Type@{Matrix\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Matrix\+\_\+\+Type}{Matrix\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Matrix$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_ab04c3bb37b70c0524f46b050aaec1914}{Matrix\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a52d5a6625f207bc4df2c5ae3362e8ced}\label{classFEDD_1_1RefinementFactory_a52d5a6625f207bc4df2c5ae3362e8ced}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Matrix\+Ptr\+\_\+\+Type@{Matrix\+Ptr\+\_\+\+Type}}
 \index{Matrix\+Ptr\+\_\+\+Type@{Matrix\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Matrix\+Ptr\+\_\+\+Type}{MatrixPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_ab04c3bb37b70c0524f46b050aaec1914}{Matrix\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a52d5a6625f207bc4df2c5ae3362e8ced}{Matrix\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a19f6ea9d9d873657041004fa12f76ac5}\label{classFEDD_1_1RefinementFactory_a19f6ea9d9d873657041004fa12f76ac5}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Mesh\+\_\+\+Type@{Mesh\+\_\+\+Type}}
 \index{Mesh\+\_\+\+Type@{Mesh\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Mesh\+\_\+\+Type}{Mesh\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Mesh$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a19f6ea9d9d873657041004fa12f76ac5}{Mesh\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_aff8bb4cd3896a419c36d4baabccbf28a}\label{classFEDD_1_1RefinementFactory_aff8bb4cd3896a419c36d4baabccbf28a}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Mesh\+Interface\+\_\+\+Type@{Mesh\+Interface\+\_\+\+Type}}
 \index{Mesh\+Interface\+\_\+\+Type@{Mesh\+Interface\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Mesh\+Interface\+\_\+\+Type}{MeshInterface\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Mesh\+Interface$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_aff8bb4cd3896a419c36d4baabccbf28a}{Mesh\+Interface\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a2217802fcbb1342b135d33ea70411089}\label{classFEDD_1_1RefinementFactory_a2217802fcbb1342b135d33ea70411089}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Mesh\+Interface\+Ptr\+\_\+\+Type@{Mesh\+Interface\+Ptr\+\_\+\+Type}}
 \index{Mesh\+Interface\+Ptr\+\_\+\+Type@{Mesh\+Interface\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Mesh\+Interface\+Ptr\+\_\+\+Type}{MeshInterfacePtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_aff8bb4cd3896a419c36d4baabccbf28a}{Mesh\+Interface\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a2217802fcbb1342b135d33ea70411089}{Mesh\+Interface\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_af03eee08be24542da73ba33195f14aba}\label{classFEDD_1_1RefinementFactory_af03eee08be24542da73ba33195f14aba}} 
+\index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Mesh\+Unstr\+\_\+\+Type@{Mesh\+Unstr\+\_\+\+Type}}
+\index{Mesh\+Unstr\+\_\+\+Type@{Mesh\+Unstr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
+\subsubsection{\texorpdfstring{Mesh\+Unstr\+\_\+\+Type}{MeshUnstr\_Type}}
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
+typedef Mesh\+Unstructured$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_af03eee08be24542da73ba33195f14aba}{Mesh\+Unstr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}\label{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Mesh\+Unstr\+Ptr\+\_\+\+Type@{Mesh\+Unstr\+Ptr\+\_\+\+Type}}
 \index{Mesh\+Unstr\+Ptr\+\_\+\+Type@{Mesh\+Unstr\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Mesh\+Unstr\+Ptr\+\_\+\+Type}{MeshUnstrPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$Mesh\+Unstructured$<$SC,LO,GO,NO$>$ $>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a772a738296d703be721b9b1c877f1a9e}\label{classFEDD_1_1RefinementFactory_a772a738296d703be721b9b1c877f1a9e}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type@{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}}
 \index{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type@{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}{MeshUnstrPtrArray\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef std\+::vector$<$\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a772a738296d703be721b9b1c877f1a9e}{Mesh\+Unstr\+Ptr\+Array\+\_\+\+Type}}
-
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a22aea92d236fb822fef9557c22834062}\label{classFEDD_1_1RefinementFactory_a22aea92d236fb822fef9557c22834062}} 
-\index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Mesh\+Unstr\+Ref\+\_\+\+Type@{Mesh\+Unstr\+Ref\+\_\+\+Type}}
-\index{Mesh\+Unstr\+Ref\+\_\+\+Type@{Mesh\+Unstr\+Ref\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
-\subsubsection{\texorpdfstring{Mesh\+Unstr\+Ref\+\_\+\+Type}{MeshUnstrRef\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
-typedef Mesh\+Unstructured\+Refinement$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a22aea92d236fb822fef9557c22834062}{Mesh\+Unstr\+Ref\+\_\+\+Type}}
-
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}\label{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}} 
-\index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type@{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}}
-\index{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type@{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
-\subsubsection{\texorpdfstring{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}{MeshUnstrRefPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
-typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_a22aea92d236fb822fef9557c22834062}{Mesh\+Unstr\+Ref\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}}
-
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_af6e25bbcc6f5e8d6ee70a1c5aab1e3eb}\label{classFEDD_1_1RefinementFactory_af6e25bbcc6f5e8d6ee70a1c5aab1e3eb}} 
-\index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type@{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}}
-\index{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type@{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
-\subsubsection{\texorpdfstring{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}{MeshUnstrRefPtrArray\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
-typedef std\+::vector$<$\hyperlink{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_af6e25bbcc6f5e8d6ee70a1c5aab1e3eb}{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_af7c4cb285d95e61820d63b9344a90976}\label{classFEDD_1_1RefinementFactory_af7c4cb285d95e61820d63b9344a90976}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Multi\+Vector\+\_\+\+Type@{Multi\+Vector\+\_\+\+Type}}
 \index{Multi\+Vector\+\_\+\+Type@{Multi\+Vector\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Multi\+Vector\+\_\+\+Type}{MultiVector\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Multi\+Vector$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_af7c4cb285d95e61820d63b9344a90976}{Multi\+Vector\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a433fd79c1903a3771cffbaed6f5dbd71}\label{classFEDD_1_1RefinementFactory_a433fd79c1903a3771cffbaed6f5dbd71}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Multi\+Vector\+G\+O\+\_\+\+Type@{Multi\+Vector\+G\+O\+\_\+\+Type}}
 \index{Multi\+Vector\+G\+O\+\_\+\+Type@{Multi\+Vector\+G\+O\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Multi\+Vector\+G\+O\+\_\+\+Type}{MultiVectorGO\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Multi\+Vector$<$GO,LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a433fd79c1903a3771cffbaed6f5dbd71}{Multi\+Vector\+G\+O\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a9e4318c3bc9a63b25f6283955ff80d49}\label{classFEDD_1_1RefinementFactory_a9e4318c3bc9a63b25f6283955ff80d49}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type@{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type}}
 \index{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type@{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type}{MultiVectorGOPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_a433fd79c1903a3771cffbaed6f5dbd71}{Multi\+Vector\+G\+O\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a9e4318c3bc9a63b25f6283955ff80d49}{Multi\+Vector\+G\+O\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ae731f05f6a28d13f917230f914f29037}\label{classFEDD_1_1RefinementFactory_ae731f05f6a28d13f917230f914f29037}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Multi\+Vector\+L\+O\+\_\+\+Type@{Multi\+Vector\+L\+O\+\_\+\+Type}}
 \index{Multi\+Vector\+L\+O\+\_\+\+Type@{Multi\+Vector\+L\+O\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Multi\+Vector\+L\+O\+\_\+\+Type}{MultiVectorLO\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Multi\+Vector$<$LO,LO,GO,NO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_ae731f05f6a28d13f917230f914f29037}{Multi\+Vector\+L\+O\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a002c7179ca2f22db4505da2db0f798e9}\label{classFEDD_1_1RefinementFactory_a002c7179ca2f22db4505da2db0f798e9}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type@{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type}}
 \index{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type@{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type}{MultiVectorLOPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_ae731f05f6a28d13f917230f914f29037}{Multi\+Vector\+L\+O\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a002c7179ca2f22db4505da2db0f798e9}{Multi\+Vector\+L\+O\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a0592bb145b1f5b1daac2e69a96c23cb5}\label{classFEDD_1_1RefinementFactory_a0592bb145b1f5b1daac2e69a96c23cb5}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Multi\+Vector\+Ptr\+\_\+\+Type@{Multi\+Vector\+Ptr\+\_\+\+Type}}
 \index{Multi\+Vector\+Ptr\+\_\+\+Type@{Multi\+Vector\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Multi\+Vector\+Ptr\+\_\+\+Type}{MultiVectorPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_af7c4cb285d95e61820d63b9344a90976}{Multi\+Vector\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a0592bb145b1f5b1daac2e69a96c23cb5}{Multi\+Vector\+Ptr\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_af904cdbfa726de22dcea9dfcc891114b}\label{classFEDD_1_1RefinementFactory_af904cdbfa726de22dcea9dfcc891114b}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Multi\+Vector\+Ptr\+Const\+\_\+\+Type@{Multi\+Vector\+Ptr\+Const\+\_\+\+Type}}
 \index{Multi\+Vector\+Ptr\+Const\+\_\+\+Type@{Multi\+Vector\+Ptr\+Const\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Multi\+Vector\+Ptr\+Const\+\_\+\+Type}{MultiVectorPtrConst\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$const \hyperlink{classFEDD_1_1RefinementFactory_af7c4cb285d95e61820d63b9344a90976}{Multi\+Vector\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_af904cdbfa726de22dcea9dfcc891114b}{Multi\+Vector\+Ptr\+Const\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a266b4b5a15cabb39df492db6e4f53e3e}\label{classFEDD_1_1RefinementFactory_a266b4b5a15cabb39df492db6e4f53e3e}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!O\+T\+LO@{O\+T\+LO}}
 \index{O\+T\+LO@{O\+T\+LO}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{O\+T\+LO}{OTLO}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+Ordinal\+Traits$<$LO$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a266b4b5a15cabb39df492db6e4f53e3e}{O\+T\+LO}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ac050bc27156fc5a1e8bf0e01381c33c4}\label{classFEDD_1_1RefinementFactory_ac050bc27156fc5a1e8bf0e01381c33c4}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Surface\+Elements\+\_\+\+Type@{Surface\+Elements\+\_\+\+Type}}
 \index{Surface\+Elements\+\_\+\+Type@{Surface\+Elements\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Surface\+Elements\+\_\+\+Type}{SurfaceElements\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Surface\+Elements \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_ac050bc27156fc5a1e8bf0e01381c33c4}{Surface\+Elements\+\_\+\+Type}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a1067ba23325b19eae16a864f25f7d68f}\label{classFEDD_1_1RefinementFactory_a1067ba23325b19eae16a864f25f7d68f}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Surface\+Elements\+Ptr\+\_\+\+Type@{Surface\+Elements\+Ptr\+\_\+\+Type}}
 \index{Surface\+Elements\+Ptr\+\_\+\+Type@{Surface\+Elements\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Surface\+Elements\+Ptr\+\_\+\+Type}{SurfaceElementsPtr\_Type}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_ac050bc27156fc5a1e8bf0e01381c33c4}{Surface\+Elements\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory_a1067ba23325b19eae16a864f25f7d68f}{Surface\+Elements\+Ptr\+\_\+\+Type}}
 
 
@@ -424,12 +375,12 @@ typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_ac050bc27
 {\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
 \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory}{Refinement\+Factory} (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_a58381e0786c65ec61d11bc73c224b45a}{Comm\+Const\+Ptr\+\_\+\+Type}}]{comm,  }\item[{int}]{volume\+ID = {\ttfamily 10} }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a59e3730c7f4ee1769e34da85250d0d86}\label{classFEDD_1_1RefinementFactory_a59e3730c7f4ee1769e34da85250d0d86}} 
+\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a0abc83a680e6002dab5ee53c16f5e4f1}\label{classFEDD_1_1RefinementFactory_a0abc83a680e6002dab5ee53c16f5e4f1}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!Refinement\+Factory@{Refinement\+Factory}}
 \index{Refinement\+Factory@{Refinement\+Factory}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{Refinement\+Factory()}{RefinementFactory()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
 {\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
-\hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory}{Refinement\+Factory} (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_a58381e0786c65ec61d11bc73c224b45a}{Comm\+Const\+Ptr\+\_\+\+Type}}]{comm,  }\item[{int}]{volume\+ID,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type}}]{mesh\+P1 }\end{DoxyParamCaption})}
+\hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1RefinementFactory}{Refinement\+Factory} (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_a58381e0786c65ec61d11bc73c224b45a}{Comm\+Const\+Ptr\+\_\+\+Type}}]{comm,  }\item[{int}]{volume\+ID,  }\item[{string}]{refinement\+Restriction,  }\item[{int}]{refinement3\+D\+Diagonal = {\ttfamily 0} }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ae9b8ba9b12e35db03ef1b6363c1b9200}\label{classFEDD_1_1RefinementFactory_ae9b8ba9b12e35db03ef1b6363c1b9200}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!````~Refinement\+Factory@{$\sim$\+Refinement\+Factory}}
@@ -448,12 +399,12 @@ typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1RefinementFactory_ac050bc27
 {\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
 void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::add\+Midpoint (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements,  }\item[{int}]{i }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_af7a24f2ea3ebe601eb6359b1b0bbc9a7}\label{classFEDD_1_1RefinementFactory_af7a24f2ea3ebe601eb6359b1b0bbc9a7}} 
+\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_af0154ebdd6c904d62715d11fcd063259}\label{classFEDD_1_1RefinementFactory_af0154ebdd6c904d62715d11fcd063259}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!assign\+Edge\+Flags@{assign\+Edge\+Flags}}
 \index{assign\+Edge\+Flags@{assign\+Edge\+Flags}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{assign\+Edge\+Flags()}{assignEdgeFlags()}}
 {\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
-void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::assign\+Edge\+Flags (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}}]{mesh\+P1,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements }\end{DoxyParamCaption})}
+void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::assign\+Edge\+Flags (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type}}]{mesh\+P1,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a4294d0901e6691203b9043bb2f9c6ac6}\label{classFEDD_1_1RefinementFactory_a4294d0901e6691203b9043bb2f9c6ac6}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!build\+Edge\+Map@{build\+Edge\+Map}}
@@ -469,19 +420,12 @@ void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Fact
 {\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
 void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::build\+Node\+Map (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type}}]{map\+Global\+Proc,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type}}]{map\+Proc,  }\item[{int}]{new\+Points,  }\item[{int}]{new\+Points\+Repeated }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_acc422779a3cf6ca5a4c916acf7708418}\label{classFEDD_1_1RefinementFactory_acc422779a3cf6ca5a4c916acf7708418}} 
+\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a0393fc1497f3b0e02380af00b93e96d6}\label{classFEDD_1_1RefinementFactory_a0393fc1497f3b0e02380af00b93e96d6}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!build\+Surface\+Triangle\+Elements@{build\+Surface\+Triangle\+Elements}}
 \index{build\+Surface\+Triangle\+Elements@{build\+Surface\+Triangle\+Elements}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{build\+Surface\+Triangle\+Elements()}{buildSurfaceTriangleElements()}}
 {\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
-void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::build\+Surface\+Triangle\+Elements (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type}}]{elements,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements }\end{DoxyParamCaption})}
-
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a39c950be5d386f7a75f6d7392a9a2bc8}\label{classFEDD_1_1RefinementFactory_a39c950be5d386f7a75f6d7392a9a2bc8}} 
-\index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!build\+Triangle\+Map@{build\+Triangle\+Map}}
-\index{build\+Triangle\+Map@{build\+Triangle\+Map}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
-\subsubsection{\texorpdfstring{build\+Triangle\+Map()}{buildTriangleMap()}}
-{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
-void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::build\+Triangle\+Map (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::build\+Surface\+Triangle\+Elements (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type}}]{elements,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a1067ba23325b19eae16a864f25f7d68f}{Surface\+Elements\+Ptr\+\_\+\+Type}}]{surface\+Triangle\+Elements,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type}}]{edge\+Map,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type}}]{element\+Map }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a97003a4445b40ac91728639de432a449}\label{classFEDD_1_1RefinementFactory_a97003a4445b40ac91728639de432a449}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!check\+Interface\+Surface@{check\+Interface\+Surface}}
@@ -501,7 +445,7 @@ int \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Facto
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!get\+Error\+Estimate@{get\+Error\+Estimate}}
 \index{get\+Error\+Estimate@{get\+Error\+Estimate}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{get\+Error\+Estimate()}{getErrorEstimate()}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::get\+Error\+Estimate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_aeeebbc6bfb22dfb14470cf628400733a}\label{classFEDD_1_1RefinementFactory_aeeebbc6bfb22dfb14470cf628400733a}} 
@@ -525,19 +469,19 @@ void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Fact
 {\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
 void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::refine\+Irregular (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type}}]{elements,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements,  }\item[{int \&}]{new\+Elements,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type}}]{edge\+Map,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a1067ba23325b19eae16a864f25f7d68f}{Surface\+Elements\+Ptr\+\_\+\+Type}}]{surface\+Triangle\+Elements }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a7099db47add1a0f9e431fc960860db2d}\label{classFEDD_1_1RefinementFactory_a7099db47add1a0f9e431fc960860db2d}} 
+\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a6fa94c91b750950e2bbe53c3540eda08}\label{classFEDD_1_1RefinementFactory_a6fa94c91b750950e2bbe53c3540eda08}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!refinement\+Restrictions@{refinement\+Restrictions}}
 \index{refinement\+Restrictions@{refinement\+Restrictions}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{refinement\+Restrictions()}{refinementRestrictions()}}
 {\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
-void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::refinement\+Restrictions (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_aea0fab96821387bc772333299102b2c9}{Mesh\+Unstr\+Ref\+Ptr\+\_\+\+Type}}]{mesh\+P1,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type}}]{elements,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements,  }\item[{int}]{iteration,  }\item[{int \&}]{new\+Points,  }\item[{int \&}]{new\+Points\+Common,  }\item[{vec\+\_\+\+G\+O\+\_\+\+Type \&}]{global\+Interface\+I\+Ds\+Tagged,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type}}]{map\+Interface\+Edges,  }\item[{string}]{restriction,  }\item[{int \&}]{new\+Elements }\end{DoxyParamCaption})}
+void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::refinement\+Restrictions (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type}}]{mesh\+P1,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a0994b5b7b6d080048673941251999f2e}{Elements\+Ptr\+\_\+\+Type}}]{elements,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements,  }\item[{int}]{iteration,  }\item[{int \&}]{new\+Points,  }\item[{int \&}]{new\+Points\+Common,  }\item[{vec\+\_\+\+G\+O\+\_\+\+Type \&}]{global\+Interface\+I\+Ds\+Tagged,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type}}]{map\+Interface\+Edges,  }\item[{string}]{restriction,  }\item[{int \&}]{new\+Elements }\end{DoxyParamCaption})}
 
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_aec49fcc71406ba48eb7d6766653914d5}\label{classFEDD_1_1RefinementFactory_aec49fcc71406ba48eb7d6766653914d5}} 
+\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_afeed9a01eee8623f5136e07449f3f35d}\label{classFEDD_1_1RefinementFactory_afeed9a01eee8623f5136e07449f3f35d}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!refine\+Mesh@{refine\+Mesh}}
 \index{refine\+Mesh@{refine\+Mesh}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{refine\+Mesh()}{refineMesh()}}
 {\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
-void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::refine\+Mesh (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_af6e25bbcc6f5e8d6ee70a1c5aab1e3eb}{Mesh\+Unstr\+Ref\+Ptr\+Array\+\_\+\+Type}}]{mesh\+P1,  }\item[{int}]{iteration }\end{DoxyParamCaption})}
+void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::refine\+Mesh (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type}}]{mesh\+P1,  }\item[{int}]{iteration,  }\item[{\hyperlink{classFEDD_1_1RefinementFactory_a1a278d01c278972af01f2996247af8ac}{Mesh\+Unstr\+Ptr\+\_\+\+Type}}]{output\+Mesh }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ad8bc07f5d6bfe7f7180bd32d7cc4ea0c}\label{classFEDD_1_1RefinementFactory_ad8bc07f5d6bfe7f7180bd32d7cc4ea0c}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!refine\+Red@{refine\+Red}}
@@ -585,15 +529,8 @@ void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Fact
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!set\+Error\+Estimate@{set\+Error\+Estimate}}
 \index{set\+Error\+Estimate@{set\+Error\+Estimate}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{set\+Error\+Estimate()}{setErrorEstimate()}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::set\+Error\+Estimate (\begin{DoxyParamCaption}\item[{vec\+\_\+dbl\+\_\+\+Type}]{error\+Elements }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-\mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a8f76b86ec161e405857e5c4a51aea968}\label{classFEDD_1_1RefinementFactory_a8f76b86ec161e405857e5c4a51aea968}} 
-\index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!tag\+Area@{tag\+Area}}
-\index{tag\+Area@{tag\+Area}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
-\subsubsection{\texorpdfstring{tag\+Area()}{tagArea()}}
-{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
-void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::tag\+Area (\begin{DoxyParamCaption}\item[{vec2\+D\+\_\+dbl\+\_\+\+Type}]{area }\end{DoxyParamCaption})}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a2ebf82a5deb92e26a48805fd470f6840}\label{classFEDD_1_1RefinementFactory_a2ebf82a5deb92e26a48805fd470f6840}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!update\+Elements\+Of\+Edges\+Local\+And\+Global@{update\+Elements\+Of\+Edges\+Local\+And\+Global}}
@@ -606,7 +543,7 @@ void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Fact
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!update\+Elements\+Of\+Surface\+Local\+And\+Global@{update\+Elements\+Of\+Surface\+Local\+And\+Global}}
 \index{update\+Elements\+Of\+Surface\+Local\+And\+Global@{update\+Elements\+Of\+Surface\+Local\+And\+Global}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{update\+Elements\+Of\+Surface\+Local\+And\+Global()}{updateElementsOfSurfaceLocalAndGlobal()}}
-{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::update\+Elements\+Of\+Surface\+Local\+And\+Global (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1RefinementFactory_ae5285e990ec4632d6188a1280627ad13}{Edge\+Elements\+Ptr\+\_\+\+Type}}]{edge\+Elements }\end{DoxyParamCaption})}
 
 
@@ -616,91 +553,91 @@ void \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Fact
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!area\+Triangles\+\_\+@{area\+Triangles\+\_\+}}
 \index{area\+Triangles\+\_\+@{area\+Triangles\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{area\+Triangles\+\_\+}{areaTriangles\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::area\+Triangles\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ae04f877455828ca9d2328b6b29a72652}\label{classFEDD_1_1RefinementFactory_ae04f877455828ca9d2328b6b29a72652}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!error\+Estimation\+\_\+@{error\+Estimation\+\_\+}}
 \index{error\+Estimation\+\_\+@{error\+Estimation\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{error\+Estimation\+\_\+}{errorEstimation\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::error\+Estimation\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ae71ae7a6d0586a37cdc2aadfafeb00c4}\label{classFEDD_1_1RefinementFactory_ae71ae7a6d0586a37cdc2aadfafeb00c4}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!global\+Interface\+I\+Ds\+\_\+@{global\+Interface\+I\+Ds\+\_\+}}
 \index{global\+Interface\+I\+Ds\+\_\+@{global\+Interface\+I\+Ds\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{global\+Interface\+I\+Ds\+\_\+}{globalInterfaceIDs\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 vec\+\_\+\+G\+O\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::global\+Interface\+I\+Ds\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ad1c44661ff740905f2b3634ea285e1a7}\label{classFEDD_1_1RefinementFactory_ad1c44661ff740905f2b3634ea285e1a7}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!h\+\_\+\+T\+\_\+diam\+\_\+\+E\+\_\+@{h\+\_\+\+T\+\_\+diam\+\_\+\+E\+\_\+}}
 \index{h\+\_\+\+T\+\_\+diam\+\_\+\+E\+\_\+@{h\+\_\+\+T\+\_\+diam\+\_\+\+E\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{h\+\_\+\+T\+\_\+diam\+\_\+\+E\+\_\+}{h\_T\_diam\_E\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::h\+\_\+\+T\+\_\+diam\+\_\+\+E\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_add2c3dc6ee30afaf225baed853475e06}\label{classFEDD_1_1RefinementFactory_add2c3dc6ee30afaf225baed853475e06}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!h\+\_\+\+T\+\_\+min\+\_\+@{h\+\_\+\+T\+\_\+min\+\_\+}}
 \index{h\+\_\+\+T\+\_\+min\+\_\+@{h\+\_\+\+T\+\_\+min\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{h\+\_\+\+T\+\_\+min\+\_\+}{h\_T\_min\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::h\+\_\+\+T\+\_\+min\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_aa499fe1f4daaed1c19fd1744d73c3706}\label{classFEDD_1_1RefinementFactory_aa499fe1f4daaed1c19fd1744d73c3706}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!marking\+Strategy\+\_\+@{marking\+Strategy\+\_\+}}
 \index{marking\+Strategy\+\_\+@{marking\+Strategy\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{marking\+Strategy\+\_\+}{markingStrategy\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 string \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::marking\+Strategy\+\_\+ = \char`\"{}Maximum\char`\"{}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a74d0dd46b30f83f868cd749d28375a42}\label{classFEDD_1_1RefinementFactory_a74d0dd46b30f83f868cd749d28375a42}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!mesh\+Quality\+Print\+\_\+@{mesh\+Quality\+Print\+\_\+}}
 \index{mesh\+Quality\+Print\+\_\+@{mesh\+Quality\+Print\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{mesh\+Quality\+Print\+\_\+}{meshQualityPrint\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 bool \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::mesh\+Quality\+Print\+\_\+ = \char`\"{}false\char`\"{}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a7466053f06c1d52d6fb2c58db06b7a71}\label{classFEDD_1_1RefinementFactory_a7466053f06c1d52d6fb2c58db06b7a71}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!refinement3\+D\+Diagonal\+\_\+@{refinement3\+D\+Diagonal\+\_\+}}
 \index{refinement3\+D\+Diagonal\+\_\+@{refinement3\+D\+Diagonal\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{refinement3\+D\+Diagonal\+\_\+}{refinement3DDiagonal\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 int \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::refinement3\+D\+Diagonal\+\_\+ = 0}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a2dda98963313023311f044d248befd40}\label{classFEDD_1_1RefinementFactory_a2dda98963313023311f044d248befd40}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!refinement\+Restriction\+\_\+@{refinement\+Restriction\+\_\+}}
 \index{refinement\+Restriction\+\_\+@{refinement\+Restriction\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{refinement\+Restriction\+\_\+}{refinementRestriction\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 string \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::refinement\+Restriction\+\_\+ = \char`\"{}none\char`\"{}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ae21de28f0848c556b0c90cf6f912de25}\label{classFEDD_1_1RefinementFactory_ae21de28f0848c556b0c90cf6f912de25}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!surface\+Triangle\+Map\+\_\+@{surface\+Triangle\+Map\+\_\+}}
 \index{surface\+Triangle\+Map\+\_\+@{surface\+Triangle\+Map\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{surface\+Triangle\+Map\+\_\+}{surfaceTriangleMap\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 \hyperlink{classFEDD_1_1RefinementFactory_a8256ccdf1b2a5c977ddc011f4e8eb8d3}{Map\+Const\+Ptr\+\_\+\+Type} \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::surface\+Triangle\+Map\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_aac84121e72b1c2c6ff1691dc91acc9b1}\label{classFEDD_1_1RefinementFactory_aac84121e72b1c2c6ff1691dc91acc9b1}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!theta\+\_\+@{theta\+\_\+}}
 \index{theta\+\_\+@{theta\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{theta\+\_\+}{theta\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 double \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::theta\+\_\+ = 0.\+5}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_ad7ff86aebffde685089d462f2d04203e}\label{classFEDD_1_1RefinementFactory_ad7ff86aebffde685089d462f2d04203e}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!time\+Table\+Print\+\_\+@{time\+Table\+Print\+\_\+}}
 \index{time\+Table\+Print\+\_\+@{time\+Table\+Print\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{time\+Table\+Print\+\_\+}{timeTablePrint\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 bool \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::time\+Table\+Print\+\_\+ = \char`\"{}false\char`\"{}}
 
 \mbox{\Hypertarget{classFEDD_1_1RefinementFactory_a7043a525164368b18359a399dede06c3}\label{classFEDD_1_1RefinementFactory_a7043a525164368b18359a399dede06c3}} 
 \index{F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}!vol\+Tetraeders\+\_\+@{vol\+Tetraeders\+\_\+}}
 \index{vol\+Tetraeders\+\_\+@{vol\+Tetraeders\+\_\+}!F\+E\+D\+D\+::\+Refinement\+Factory@{F\+E\+D\+D\+::\+Refinement\+Factory}}
 \subsubsection{\texorpdfstring{vol\+Tetraeders\+\_\+}{volTetraeders\_}}
-{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+{\footnotesize\ttfamily template$<$class SC = default\+\_\+sc, class LO = default\+\_\+lo, class GO = default\+\_\+go, class NO = default\+\_\+no$>$ \\
 vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+::\+Refinement\+Factory}$<$ SC, LO, GO, NO $>$\+::vol\+Tetraeders\+\_\+\hspace{0.3cm}{\ttfamily [protected]}}
 
 
@@ -708,5 +645,4 @@ vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1RefinementFactory}{F\+E\+D\+D\+
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 
 \hyperlink{RefinementFactory__decl_8hpp}{Refinement\+Factory\+\_\+decl.\+hpp}\item 
-\hyperlink{ErrorEstimation__def_8hpp}{Error\+Estimation\+\_\+def.\+hpp}\item 
 \hyperlink{RefinementFactory__def_8hpp}{Refinement\+Factory\+\_\+def.\+hpp}\end{DoxyCompactItemize}

@@ -1,7 +1,7 @@
 <ParameterList name="unsteady Navier-Stokes">
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="3"/>
-        <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
+        <Parameter name="Discretization Velocity" type="string" value="P1"/><!--P1, P2; velocity -->
         <Parameter name="Discretization Pressure" type="string" value="P1"/>
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
         <Parameter name="BC Type" type="string"   value="parabolic"/><!-- parabolic, parabolic_benchmark, partialCFD, parabolic_benchmark_sin-->
@@ -10,7 +10,7 @@
         <Parameter name="H/h" type="int" value="3"/>
         <Parameter name="Viscosity" type="double" value=".001"/>
         <Parameter name="Density" type="double" value="1."/>
-        <Parameter name="MaxVelocity" type="double" value="1.5"/>
+        <Parameter name="MaxVelocity" type="double" value="30."/>
         <Parameter name="MeanVelocity"  type="double" value="1.0"/>
         
         <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
@@ -29,8 +29,24 @@
     <ParameterList name="Mesh Partitioner">
         
         <Parameter name="Contiguous" type="bool" value="true"/>        
-        <Parameter name="Mesh 1 Name" type="string" value="BFS3dC.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="aneurysmBenchmark.mesh"/>
     </ParameterList>
+    </ParameterList>
+ 	<ParameterList name="Mesh Refinement">
+        <Parameter name="Toleranz" type="double" value="0.001"/>
+        <Parameter name="Theta" type="double" value="0.35"/>
+        <Parameter name="MaxIter" type="int" value="3"/>
+        <Parameter name="RefinementType" type="string" value="Maximum"/>
+       	<Parameter name="Write Refinement Time" type="bool" value="true"/>
+        <Parameter name="Write Mesh Quality" type="bool" value="true"/>
+        <Parameter name="3D regular Refinement Diagonal Pick" type="int" value="0"/>
+        <Parameter name="Refinement Restriction" type="string" value="keepRegularity"/>
+    </ParameterList>   
+    <ParameterList name="Exporter">
+        <Parameter name="Write new mesh" type="bool" value="true"/>
+    </ParameterList>
+
+
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
         <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, Extrapolation, NOX-->
@@ -48,8 +64,8 @@
         <Parameter name="Correct pressure"                      type="bool"         value="false"/>
         <Parameter name="Semi implicit pressure"                type="bool"         value="false"/>
         <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
-        <Parameter name="Final time"	                    	type="double"   	value="0.02"/>
-        <Parameter name="dt"			                    	type="double"   	value="0.01"/>
+        <Parameter name="Final time"	                    	type="double"   	value="20"/>
+        <Parameter name="dt"			                    	type="double"   	value="0.1"/>
         <!-- adaptive variables -->
         <Parameter name="Print Solution Short" type="bool" value="true"/>
         <Parameter name="Adaptive error" type="int" value="0"/><!--0:euclidian, 1:L2-->

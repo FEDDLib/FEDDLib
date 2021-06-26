@@ -72,8 +72,8 @@ void ErrorEstimation<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstPtr_Type
 
 }
 ///
-/// @brief We split the solution from the BlockMultiVector valuesSolution into to one or two seperate blocks, where the blocks represen the different dimensions
-
+/// @brief We split the solution from the BlockMultiVector valuesSolution into one or two seperate blocks, where the blocks represen the different dimensions
+///
 
 template <class SC, class LO, class GO, class NO>
 void ErrorEstimation<SC,LO,GO,NO>::makeRepeatedSolution(BlockMultiVectorConstPtr_Type valuesSolution){
@@ -306,12 +306,15 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 }
 
 
-
-// Residualbased A-posteriori ErrorEstimation as proposed in Verfuerths' "A Posteriori Error Estimation Techniques for Finite Element Methods"
+/*!
+@brief Tags only a certain Area for refinement and is independent of any error estimation
+@param[in] inputMeshP1 the P1 Mesh that is used for later refinement
+@param[in] the area, that is suppose to be refined. If is a vector defining the area as follows: row1:[x_0,x_1] x-limits, row2: [y_0,y_1] y-limits, row3: [z_0,z_1] z-limits 
+*/
 template <class SC, class LO, class GO, class NO>
-void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type meshUnstr,vec2D_dbl_Type area){
+void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type inputMeshP1,vec2D_dbl_Type area){
 
-	inputMesh_ = meshUnstr;
+	inputMesh_ = inputMeshP1;
 
 	ElementsPtr_Type elements = inputMesh_->getElementsC();
    	EdgeElementsPtr_Type edgeElements = inputMesh_->getEdgeElements();
@@ -325,7 +328,7 @@ void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type meshUnstr,vec2D_db
 
 	int taggedElements=0;
 
-	if(meshUnstr->getComm()->getRank() == 0){
+	if(inputMesh_->getComm()->getRank() == 0){
 		cout << "__________________________________________________________________________________________________________ " << endl;
 		cout << " " << endl;
 		cout << " The area you requested for Refinement is :" << endl ;
@@ -396,9 +399,9 @@ void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type meshUnstr,vec2D_db
 		}
 
 	}
-	reduceAll<int, int> (*meshUnstr->getComm(), REDUCE_MAX, taggedElements, outArg (taggedElements));
+	reduceAll<int, int> (*inputMesh_->getComm(), REDUCE_MAX, taggedElements, outArg (taggedElements));
 
-	if(meshUnstr->getComm()->getRank()==0){
+	if(inputMesh_->getComm()->getRank()==0){
 		cout << "__________________________________________________________________________________________________________ " << endl;
 		cout << " " << endl;
 		cout << " With the 'tagArea tool' " << taggedElements << " Elements were tagged for Refinement " << endl;
@@ -407,17 +410,19 @@ void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type meshUnstr,vec2D_db
 
 }
 
-// As part of the errorEstimation we calculate the Jump for certain parts of out PDE
-// We need to calculate a surface Intergral and for that matter need to parametrize our surfaces 'edges' in 2D and 'triangles' in 3D 
-// and integrate over them
+/*!
+@brief Part of the error estimator that calculates the jump part of the estimation
 
+@param[in] none, as all necessary parameters for the calculation are already part of the Error estimation class.
+
+@brief What kind of jump is calculated depends on the problemType we have at hand.
+*/
 template <class SC, class LO, class GO, class NO>
 vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 
-	int dim = this->dim_;
-	int surfaceNumbers = dim+1 ; // Number of (dim-1) - dimensional surfaces of Element (triangle has 3 edges)	
+	int surfaceNumbers = dim_+1 ; // Number of (dim-1) - dimensional surfaces of Element (triangle has 3 edges)	
 
-	
+	// Necessary mesh objects
 	ElementsPtr_Type elements = inputMesh_->getElementsC();
     EdgeElementsPtr_Type edgeElements = inputMesh_->getEdgeElements();
 	MapConstPtr_Type elementMap = inputMesh_->getElementMap();
@@ -425,13 +430,11 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 	SurfaceElementsPtr_Type surfaceTriangleElements = this->surfaceElements_;
 	vec2D_dbl_ptr_Type points = inputMesh_->pointsRep_;
 
-	vec_int_Type surfaceElementsIds(surfaceNumbers);
-
 	int numberSurfaceElements=0;
-	if(dim==2){
+	if(dim_==2){
 		numberSurfaceElements = edgeElements->numberElements();
 	}
-	else if(dim==3){
+	else if(dim_==3){
 		numberSurfaceElements = surfaceTriangleElements->numberElements();
 		
 	}
@@ -470,7 +473,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 					if(	calculatePressure_ == false)
 						jumpQuad += pow(u_El[k][i][j],2);
 					if(calculatePressure_ == true)
-						jumpQuad += pow(u_El[k][i][j] - p_El[k][i][j],2);
+						jumpQuad += pow(u_El[k][i][j] - p_El[k][i][0],2);
 				}
 			}
 
@@ -488,7 +491,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 
 	if(this->dim_==3){
 		// Edge Numbers of Element
-		vec_int_Type surfaceNumbers(4);
+		vec_int_Type surfaceElementsIds(surfaceNumbers);
 
 		// h_E,min defined as in "A posteriori error estimation for anisotropic tetrahedral and triangular finite element meshes"
 		// This is the minimal per element, later we also need the adjacent elements' minimal height in order to determine h_E
@@ -498,8 +501,6 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 
 		vec_dbl_Type h_E_min(surfaceTriangleElements->numberElements());
 		vec_dbl_Type h_E(surfaceTriangleElements->numberElements());
-		//MultiVectorPtr_Type h_E_minMv = Teuchos::rcp( new MultiVector_Type( elementMap, 1 ) );	
-		//Teuchos::ArrayRCP< SC > valuesSolutionRep  = valuesSolutionRepeated->getDataNonConst(0);
 
 		int elTmp1,elTmp2;
 
@@ -602,16 +603,13 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 
 
 		for(int k=0; k< surfaceTriangleElements->numberElements();k++){
-			
-
-	
 			double jumpQuad=0.;
 			for(int j=0; j<dofs_ ; j++){
 				for(int i=0; i<u_El[k].size();i++){
 					if(	calculatePressure_ == false)
 						jumpQuad += pow(u_El[k][i][j],2);
 					if(calculatePressure_ == true)
-						jumpQuad += pow(u_El[k][i][j] - p_El[k][i][j],2);
+						jumpQuad += pow(u_El[k][i][j] - p_El[k][i][0],2);
 				}
 			}
 			if(this->FEType2_ =="P2")
@@ -621,7 +619,8 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 
 
 			surfaceElementsError[k] = (1./h_E[k])*jumpQuad*quadWeightConst;
-			//cout << " Jump Quad " << " k " << k << " " << jumpQuad << " h_E " << h_E[k] << endl;
+
+			cout << " Jump Quad " << " k " << k << " " << jumpQuad << " h_E " << h_E[k] << endl;
 		}
 						
 	}
@@ -629,14 +628,20 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 
 }
 
+/*!
+@brief Function that calculates the jump part for nabla u or p 
 
+@param[in] phiDerivative is either 'Gradient' or 'None' and what kind of jump is calculated depends on the problemType we have at hand. If phiDerivative is 'Gradient' the nabla u jump part is caluculated and if its 'None' then the p-
+@param[in] dofsSol is the degree of freedom of the caluclated jump part. p's dof is typically 1 whereas u's dof can vary depending on the problem
+@param[in] FEType of the calculated jump part. 
+ 
+*/
 template <class SC, class LO, class GO, class NO>
 vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int dofsSol, string FEType){
 
-	// tmp values u_1,u_2 of gradient u of two elements corresponing with edge 	
-	int dim = this->dim_;
-	int surfaceNumbers = dim+1 ; // Number of (dim-1) - dimensional surfaces of Element (triangle has 3 edges)		
+	int surfaceNumbers = dim_+1 ; // Number of (dim-1) - dimensional surfaces of Element (triangle has 3 edges)		
 
+	// necessary mesh objects
 	vec2D_dbl_ptr_Type points = inputMesh_->pointsRep_;
 	ElementsPtr_Type elements = inputMesh_->getElementsC();	
     EdgeElementsPtr_Type edgeElements = inputMesh_->getEdgeElements();
@@ -645,19 +650,20 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	vec_int_Type surfaceElementsIds(surfaceNumbers);
 	MapConstPtr_Type surfaceMap;
 
+	// number of surface elements depending on dimension
 	int numberSurfaceElements=0;
-	if(dim==2){
+	if(dim_==2){
 		numberSurfaceElements = edgeElements->numberElements();
 		surfaceMap= inputMesh_->edgeMap_;
 	}
-	else if(dim==3){
+	else if(dim_==3){
 		numberSurfaceElements = surfaceTriangleElements->numberElements();
 		surfaceMap= this->surfaceTriangleMap_;
 	}
 	
-
+	// the int-version of the fe discretisation
 	int intFE = 1;
-	int numNodes= dim+1;
+	int numNodes= dim_+1;
 	int quadPSize = 1;
 	if(FEType2_ == "P2"){
 		quadPSize=3; // Number of Surface Quadrature Points
@@ -665,19 +671,20 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	if(FEType == "P2"){
 		numNodes=6;
 		intFE =2;
-		if(dim ==3){
+		if(dim_ ==3){
 			numNodes=10;
 		}
 	}
 
 	// We determine u for each Quad Point, so we need to determine how many Points we have
-	vec3D_dbl_Type vec_El(numberSurfaceElements,vec2D_dbl_Type(quadPSize,vec_dbl_Type(dofsSol)));
-	vec3D_dbl_Type vec_El1(numberSurfaceElements,vec2D_dbl_Type(quadPSize,vec_dbl_Type(dofsSol)));
+	vec3D_dbl_Type vec_El(numberSurfaceElements,vec2D_dbl_Type(quadPSize,vec_dbl_Type(dofsSol))); // return value
+	vec3D_dbl_Type vec_El1(numberSurfaceElements,vec2D_dbl_Type(quadPSize,vec_dbl_Type(dofsSol))); // as we calculate a jump over a surface we generally have two solutions for each side
 	vec3D_dbl_Type vec_El2(numberSurfaceElements,vec2D_dbl_Type(quadPSize,vec_dbl_Type(dofsSol)));
 
-	vec3D_dbl_Type vec_El_Exp(numberSurfaceElements,vec2D_dbl_Type(quadPSize,vec_dbl_Type(dofsSol)));
+	vec3D_dbl_Type vec_El_Exp(numberSurfaceElements,vec2D_dbl_Type(quadPSize,vec_dbl_Type(dofsSol))); // the values of our elements as procs we communicate
 
-	vec_GO_Type elementImportIDs(0);
+	// vectors for late map building
+	vec_GO_Type elementImportIDs(0); 
 	vec_GO_Type elementExportIDs(0);
 	vec_LO_Type surfaceIDsLocal(0);
 
@@ -685,35 +692,33 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	vec_LO_Type kn1(numNodes);
 
     SC detB1;
-    SC detB2;
     SC absDetB1;
-    SmallMatrix<SC> B1(dim);
-    SmallMatrix<SC> Binv1(dim);  
-    SmallMatrix<SC> B2(dim);
-    SmallMatrix<SC> Binv2(dim);
+    SmallMatrix<SC> B1(dim_);
+    SmallMatrix<SC> Binv1(dim_);  
 	int index0,index;
 
 
 	edgeElements->matchEdgesToElements(elementMap);
+
+	// elementsOfSurfaceGlobal and -Local for determining the communication
 	vec2D_GO_Type elementsOfSurfaceGlobal; 
 	vec2D_LO_Type elementsOfSurfaceLocal;
 
-	if(dim==2){
+	if(dim_==2){
 		elementsOfSurfaceGlobal = edgeElements->getElementsOfEdgeGlobal();	
  		elementsOfSurfaceLocal = edgeElements->getElementsOfEdgeLocal();
 	}
-	else if(dim ==3){
+	else if(dim_ ==3){
 		elementsOfSurfaceGlobal = surfaceTriangleElements->getElementsOfSurfaceGlobal();
 		elementsOfSurfaceLocal	= surfaceTriangleElements->getElementsOfSurfaceLocal();
 	}
 
-	int elTmp1,elTmp2;
-
-	vec_dbl_Type v_E(dim);
+	// the normal vector and its norm
+	vec_dbl_Type v_E(dim_);
 	double norm_v_E=1.;
 
-	// We loop through all edges in order to calculate nabla u on each edge depending on which element we look at.
-	// The Jump is calculatet via two edges or surfaces. Consequently we have two values per edge/surface which we either have or need to import/export.
+	// We loop through all surfaces in order to calculate nabla u or p on each surface depending on which element we look at.
+	// The jump is calculated via two surfaces. Consequently we have two values per edge/surface which we either have or need to import/export.
 
 	for(int k=0; k< numberSurfaceElements;k++){
 		// We only need to calculate the jump for interior egdes/surfaces, which are characetrized by the fact that they are connected to two elements
@@ -722,14 +727,14 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 			vec_dbl_Type quadWeights(quadPSize);
 			vec2D_dbl_Type quadPoints; 
 		
-			if(dim == 2){ 
-				quadPoints = getQuadValues(dim, FEType2_ , "Surface", quadWeights, edgeElements->getElement(k));
+			if(dim_ == 2){ 
+				quadPoints = getQuadValues(dim_, FEType2_ , "Surface", quadWeights, edgeElements->getElement(k));
 				v_E.at(0) = points->at(edgeElements->getElement(k).getNode(0)).at(1) - points->at(edgeElements->getElement(k).getNode(1)).at(1);
 				v_E.at(1) = -(points->at(edgeElements->getElement(k).getNode(0)).at(0) - points->at(edgeElements->getElement(k).getNode(1)).at(0));
 				norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
 			}
-			else if(dim == 3){
-				quadPoints = getQuadValues(dim, FEType2_ , "Surface", quadWeights, surfaceTriangleElements->getElement(k));
+			else if(dim_ == 3){
+				quadPoints = getQuadValues(dim_, FEType2_ , "Surface", quadWeights, surfaceTriangleElements->getElement(k));
 				// Normalenvektor bestimmen:
 				vec_dbl_Type p1(3),p2(3);
 				p1[0] = points->at(surfaceTriangleElements->getElement(k).getNode(0)).at(0) - points->at(surfaceTriangleElements->getElement(k).getNode(1)).at(0);
@@ -759,47 +764,50 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 			}
 			for(int i=0; i<elementsIDs.size(); i++){
 
+				// We extract the nodes of the elements the surface is connected to
 				for (int l=0; l< numNodes; l++){
 					kn1[l]= elements->getElement(elementsIDs[i]).getNode(l);
 				}
 				
 				// Transformation Matrices
-				// We need this inverse Matrix to also transform the quad Points of on edge back to the reference element
+				// We need this inverse Matrix to also transform the quadrature points of our surface back to the reference element
 				 index0 = kn1[0];
-				 for (int s=0; s<dim; s++) {
+				 for (int s=0; s<dim_; s++) {
 					index = kn1[s+1];
-					for (int t=0; t<dim; t++) {
+					for (int t=0; t<dim_; t++) {
 						B1[t][s] = points->at(index).at(t) -points->at(index0).at(t);
 					}
 				}
 
 				detB1 = B1.computeInverse(Binv1);
 				detB1 = std::fabs(detB1);
-				vec2D_dbl_Type quadPointsT1(quadPSize,vec_dbl_Type(dim));
+				vec2D_dbl_Type quadPointsT1(quadPSize,vec_dbl_Type(dim_));
 				for(int l=0; l< quadPSize; l++){
 
-					 for(int p=0; p< dim ; p++){
-						for(int q=0; q< dim; q++){
+					 for(int p=0; p< dim_ ; p++){
+						for(int q=0; q< dim_; q++){
 				 			quadPointsT1[l][p] += Binv1[p][q]* (quadPoints[l][q] - points->at(elements->getElement(elementsIDs[i]).getNode(0)).at(q))  ; 
 						}
 					}
 										
 				}
+				// We make the destinction between a gradient jump calculation or a simple jump calculation 
+
 				for(int l=0; l< quadPSize; l++){
 					if(phiDerivative == "Gradient"){
-						vec2D_dbl_Type deriPhi1 = gradPhi(dim, intFE, quadPointsT1[l]);
+						vec2D_dbl_Type deriPhi1 = gradPhi(dim_, intFE, quadPointsT1[l]);
 						vec2D_dbl_Type deriPhiT1(numNodes,vec_dbl_Type(dofsSol));
-						for(int q=0; q<dim; q++){
+						for(int q=0; q<dim_; q++){
 							for(int p=0;p<numNodes; p++){
-								for(int s=0; s< dim ; s++)
+								for(int s=0; s< dim_ ; s++)
 									deriPhiT1[p][q] += (deriPhi1[p][s]*Binv1[s][q]);
 							}
 						}
-						vec2D_dbl_Type u1_Tmp(dim, vec_dbl_Type(dofsSol));
+						vec2D_dbl_Type u1_Tmp(dim_, vec_dbl_Type(dofsSol));
 						Teuchos::ArrayRCP< SC > valuesSolRep;	
 						for( int d =0; d < dofsSol ; d++){
 							valuesSolRep = valuesSolutionRepVel_->getBlock(d)->getDataNonConst(0);
-							for(int s=0; s<dim; s++){
+							for(int s=0; s<dim_; s++){
 								for(int t=0; t< numNodes ; t++){
 					 				u1_Tmp[s][d] += valuesSolRep[kn1[t]]*deriPhiT1[t][s] ;
 								}
@@ -807,7 +815,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 						}
 						if(i==0){
 							for( int d =0; d < dofsSol ; d++){
-								for(int s=0; s<dim; s++){
+								for(int s=0; s<dim_; s++){
 									vec_El1[k][l][d] += (u1_Tmp[s][d])*(v_E[s]/norm_v_E);
 								}
 								vec_El1[k][l][d] = sqrt(quadWeights[l])* vec_El1[k][l][d];
@@ -816,7 +824,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 						}
 						else {
 							for( int d =0; d < dofsSol ; d++){
-								for(int s=0; s<dim; s++){
+								for(int s=0; s<dim_; s++){
 									vec_El2[k][l][d] += (u1_Tmp[s][d])*(v_E[s]/norm_v_E);
 								}
 								vec_El2[k][l][d] = sqrt(quadWeights[l])* vec_El2[k][l][d];
@@ -826,7 +834,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 					}
 
 					if(phiDerivative == "None"){
-						vec_dbl_Type phiV = phi(dim, intFE, quadPointsT1[l]);
+						vec_dbl_Type phiV = phi(dim_, intFE, quadPointsT1[l]);
 						vec_dbl_Type vec_Tmp(dofsSol);
 						Teuchos::ArrayRCP< SC > valuesSolRep;	
 						for( int d =0; d < dofsSol ; d++){
@@ -837,7 +845,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 						}
 						if(i==0){
 							for( int d =0; d < dofsSol ; d++){
-								for(int s=0; s<dim; s++){
+								for(int s=0; s<dim_; s++){
 									vec_El1[k][l][d] += (vec_Tmp[d])*(v_E[s]/norm_v_E);
 								}
 								vec_El1[k][l][d] = sqrt(quadWeights[l])* vec_El1[k][l][d];
@@ -845,8 +853,8 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 							}
 						}
 						else {
-							for( int d =0; d < dofsP_ ; d++){
-								for(int s=0; s<dim; s++){
+							for( int d =0; d < dofsSol ; d++){
+								for(int s=0; s<dim_; s++){
 									vec_El2[k][l][d] += (vec_Tmp[d])*(v_E[s]/norm_v_E);
 								}
 								vec_El2[k][l][d] = sqrt(quadWeights[l])* vec_El2[k][l][d];
@@ -857,19 +865,20 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	
 				}
 			}
+			// If one of out local elementsOfSurface is -1 it means, that one element connected to the surface is on another processor an we later need to exchange information
 			if(elementsOfSurfaceLocal.at(k).at(0) == -1  || elementsOfSurfaceLocal.at(k).at(1) == -1){
 
 				elementImportIDs.push_back(surfaceMap->getGlobalElement(k));
 		
-				for(int l=0; l< vec_El1[k].size() ;l++)
-						vec_El_Exp[k][l][0] = vec_El1[k][l][0];
-			}
+				for(int l=0; l< vec_El1[k].size() ;l++){
+					for( int d =0; d < dofsSol ; d++)
+						vec_El_Exp[k][l][d] = vec_El1[k][l][d];
+				}	
+			}	
 		}
 	}
-	// Here we need a new Approach as in the 3D case surface are not a efficiently divided up as in the 2D case, leading to a not unqiue 
-	// map for elements and surfaces switch. 
-	// We do need to build a surface map.
 	
+	// We construct map from the previously extracted elementImportIDs
 	sort(elementImportIDs.begin(),elementImportIDs.end());
 
 	vec_GO_Type::iterator ip = unique( elementImportIDs.begin(), elementImportIDs.end());
@@ -877,7 +886,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	Teuchos::ArrayView<GO> globalElementArrayImp = Teuchos::arrayViewFromVector( elementImportIDs);
 
 
-	// global Ids of Elements' Nodes
+	// Map which represents the surface ids that need to import element information
 	MapPtr_Type mapElementImport =
 		Teuchos::rcp( new Map_Type( elementMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalElementArrayImp, 0, inputMesh_->getComm()) );
 
@@ -887,6 +896,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	if(maxRank>0)
 		mapElementsUnique = mapElementImport->buildUniqueMap( inputMesh_->rankRange_ );
 
+	// In case of a vector values solution we need to import/export dofs-many entries and all of those entries for each of the quadpoints
 
 	MultiVectorPtr_Type valuesU_x_expU = Teuchos::rcp( new MultiVector_Type( mapElementsUnique, 1 ) );	
 	MultiVectorPtr_Type valuesU_y_expU = Teuchos::rcp( new MultiVector_Type( mapElementsUnique, 1 ) );
@@ -897,37 +907,32 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	MultiVectorPtr_Type valuesU_z_impU = Teuchos::rcp( new MultiVector_Type( mapElementsUnique, 1 ) );
 
 
-
 	MultiVectorPtr_Type valuesU_x_imp = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );	
 	MultiVectorPtr_Type valuesU_y_imp = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );
 	MultiVectorPtr_Type valuesU_z_imp = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );
-
 
 	MultiVectorPtr_Type valuesU_x_impF = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );	
 	MultiVectorPtr_Type valuesU_y_impF = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );
 	MultiVectorPtr_Type valuesU_z_impF = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );
 
 
-	// We exchange the nabla u quadpoint values.
+	// Array Pointers which will contain the to be exchanges information
 	Teuchos::ArrayRCP< SC > entriesU_x_imp  = valuesU_x_imp->getDataNonConst(0);
 	Teuchos::ArrayRCP< SC > entriesU_y_imp  = valuesU_y_imp->getDataNonConst(0);
 	Teuchos::ArrayRCP< SC > entriesU_z_imp  = valuesU_z_imp->getDataNonConst(0);
-
 
 	Teuchos::ArrayRCP< SC > entriesU_x_impF  = valuesU_x_impF->getDataNonConst(0);
 	Teuchos::ArrayRCP< SC > entriesU_y_impF  = valuesU_y_impF->getDataNonConst(0);
 	Teuchos::ArrayRCP< SC > entriesU_z_impF  = valuesU_z_impF->getDataNonConst(0);
 
 
-
+	// We exchange values per quad point
 	for(int i=0; i<quadPSize; i++){
 		for(int j=0; j<elementImportIDs.size(); j++){
-			for(int k=0; k<dofsSol ; k++){
 			entriesU_x_imp[j] = vec_El_Exp[surfaceMap->getLocalElement(elementImportIDs[j])][i][0] ;
 			entriesU_y_imp[j] = vec_El_Exp[surfaceMap->getLocalElement(elementImportIDs[j])][i][1] ;
 			if(dofsSol == 3)
 				entriesU_z_imp[j] = vec_El_Exp[surfaceMap->getLocalElement(elementImportIDs[j])][i][2] ;
-			}
 		}
 
 		valuesU_x_impU->importFromVector(valuesU_x_imp, false, "Insert");
@@ -949,7 +954,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 		for(int j=0; j<elementImportIDs.size(); j++){
 			vec_El2[surfaceMap->getLocalElement(elementImportIDs[j])][i][0] =entriesU_x_impF[j];
 			vec_El2[surfaceMap->getLocalElement(elementImportIDs[j])][i][1] =entriesU_y_impF[j];
-			if(dim==3)
+			if(dofsSol ==3)
 				vec_El2[surfaceMap->getLocalElement(elementImportIDs[j])][i][2] = entriesU_z_impF[j];
 		}	
 	}
@@ -967,10 +972,17 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 
 }
 
+/*!
+@brief Function that marks the elements for refinement 
 
+@param[in] errorElementMv is the MultiVector that contains the estimated error for each element
+@param[in] theta is a parameter determining a certain error bound for marking
+@param[in] markingStrategy is the strategy with which the elements are marked. Implemented Strategies 'Doerfler' or 'Maximum'  
+@param[in] meshP1 is the P1 mesh which is used for later refinement and has to be the one beeing marked
 
+@brief !! it is essential that the meshP1 mesh inserted here is the mesh that will be used for mesh refinement, as it contains the elementwise-information determining refinement. !!
+*/
 
-// Applying a marking strategy to the calculated estimations
 template <class SC, class LO, class GO, class NO>
 void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElementMv, double theta, string strategy,  MeshUnstrPtr_Type meshP1){
 
@@ -986,6 +998,7 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
 	auto it = max_element(errorEstimation.begin(), errorEstimation.end()); // c++11
 	double maxErrorEl= errorEstimation[distance(errorEstimation.begin(), it)];
 
+	// Maximum-strategy for marking the elements as proposed by Verfürth in "A posterio error estimation"
     reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxErrorEl, outArg (maxErrorEl));
 	int flagCount=0;
 	if( markingStrategy_ == "Maximum"){
@@ -996,7 +1009,7 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
 				}
 			}
 	}
-
+	// Equilibirum/Doerfler-strategy  for marking the elements as proposed by Verfürth in "A posterio error estimation"
 	else if(markingStrategy_ == "Doerfler"){
 		double thetaSumTmp=0.;
 		double thetaSum=0.;
@@ -1034,7 +1047,7 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
 
 	}	
 		
-	// Uniform Refinement
+ 	// If no strategy is chosen or we choose uniform refinement ourselves, all elements are marked for refinement
 	else{ 
 		 for(int k=0; k< elements->numberElements() ; k++){
 				elements->getElement(k).tagForRefinement();
@@ -1052,9 +1065,12 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
   
 }
 
-// This Function determines the Resiuum on an Element ||\Delta u_h - f ||_(L2(T)) for element T in triangulation
-// In the P1 Element case this function only calculates the L2-Norm of function f 
-// For Now: Only works in P1 Case
+/*!
+@brief Function that that determines || div(u) ||_T for a Element T
+
+@param[in] FiniteElement element where ||div(u)||_T is calculated on
+
+*/
 template <class SC, class LO, class GO, class NO>
 double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 	//cout << "Calculating residual " << endl;
@@ -1140,9 +1156,15 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 
 
 }
-// This Function determines the Resiuum on an Element ||\Delta u_h - f ||_(L2(T)) for element T in triangulation
-// In the P1 Element case this function only calculates the L2-Norm of function f 
-// For Now: Only works in P1 Case
+
+/*!
+@brief Function that that determines ||\Delta u_h + f ||_(L2(T)) or || \Delta u_h + f - \nabla p ||_T for a Element T
+
+@param[in] FiniteElement element where ||div(u)||_T is calculated on
+@param[in] RhsFunc_Type rhsFunc which is the function used for the rhs of the pde
+
+*/
+
 template <class SC, class LO, class GO, class NO>
 double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, RhsFunc_Type rhsFunc){
 	//cout << "Calculating residual " << endl;
@@ -1251,10 +1273,15 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 
 
 }
-/*
+/*!
 
 @brief Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information
 
+@param[in] dim for which the quadrature points are needed
+@param[in] FEType for which the quadrature points are needed
+@param[in] Type of quadrature points are need. Either 'Element' if you integrate over an element or 'Surface' if you need to integrate over a surface (i.e. for calculating the jump)
+@param[in] QuadW Vector to be filled with the quadrature weights accordingly
+@param[in] FiniteElement surface for which you need the quadrature points in case if 'Surface' type, as it is needed for figuring out the quadrature points
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -1384,7 +1411,15 @@ vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::getQuadValues(int dim, string FETyp
 	return QuadPts;	
 
 }
+/*!
+@brief function, that determines h_T as the shortest vector inside a tetraeder as propose in...
 
+@param[in] elements
+@param[in] edgeelements
+@param[in] points
+@param[in] volTetraeder is calulated along the way and also usefull at another part of 3D jump calculation
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineH_T_min(ElementsPtr_Type elements,EdgeElementsPtr_Type edgeElements, vec2D_dbl_ptr_Type points, vec_dbl_Type& volTetraeder){
@@ -1548,7 +1583,14 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineH_T_min(ElementsPtr_Type ele
 	}
 	return h_T_min;
 }
-// Diameter of Elements (Umkreisdurchmesser)
+/*!
+@brief Calculating the diameter of elements. This is necessary for 2D A-posteriori error estimation
+
+@param[in] elements
+@param[in] points
+
+*/
+
 template <class SC, class LO, class GO, class NO>
 vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamElements(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points){
 	
@@ -1581,6 +1623,16 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamElements(ElementsPtr_Type ele
 	return diamElements;
 }
 
+/*!
+@brief Calculating the area of the triangle elements of tetrahedra
+
+@param[in] elements
+@param[in] edgeElements
+@param[in] surfaceElements
+@param[in] points
+
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineAreaTriangles(ElementsPtr_Type elements,EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceElements, vec2D_dbl_ptr_Type points){
@@ -1618,8 +1670,21 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineAreaTriangles(ElementsPtr_Ty
 
 
 
-// We execute this function with an estimated error from the above 'estimateCoarseningError' function. With this error, we mark the elements according to that error and refine afterwards
-// If we decide to coarsen a certain mesh level, we take that level, look at the k-m level and refine that to the point where we are at the same level we wanted to perform the coarsening on
+/*!
+@brief determineCoarseningError is the essential part of the mesh coarsening process.
+@brief instead of calulating a error of mesh level k, we redestribute it to lower mesh levels and defining those.// We execute this function with an estimated error from the above 'estimateCoarseningError' function. With this error, we mark the elements according to that error and refine afterwards
+ If we decide to coarsen a certain mesh level, we take that level, look at the k-m level and refine that to the point where we are at the same level we wanted to perform the coarsening on
+
+
+@param[in] mesh_k the current mesh of level k
+@param[in] mesh_k_m the mesh of refinement level k-m
+@param[in] errorElementMv_k as the error estimation of mesh level k
+@param[in] distribution is either 'forwards' or 'backwards'. We determine the error estimate in level k-m with redistributing backwards. if we are in level k-m we calculate the k-m+1 mesh level error estimation via redistributing the k-m error forward. 
+@param[in] markingStrategy the strategy with which element are marked
+@param[in] theta as the a marking threshold
+
+
+*/
 template <class SC, class LO, class GO, class NO>
 typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta){
 
@@ -1664,6 +1729,14 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 
 }
+
+/*!
+@brief updateElementsOfSurfaceLocalAndGlobal is performed here instead of in meshRefinement, as the information is only needed in case of error estimation
+
+@param[in] edgeElements
+@param[in] surfaceTriangleElements
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 void ErrorEstimation<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceTriangleElements){

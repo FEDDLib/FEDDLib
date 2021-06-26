@@ -1,0 +1,344 @@
+\hypertarget{classFEDD_1_1ExporterParaViewAMR}{}\section{F\+E\+DD\+:\+:Exporter\+Para\+View\+A\+MR$<$ SC, LO, GO, NO $>$ Class Template Reference}
+\label{classFEDD_1_1ExporterParaViewAMR}\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+M\+R$<$ S\+C, L\+O, G\+O, N\+O $>$@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+M\+R$<$ S\+C, L\+O, G\+O, N\+O $>$}}
+
+
+{\ttfamily \#include $<$Exporter\+Para\+View\+A\+M\+R\+\_\+decl.\+hpp$>$}
+
+
+
+Inheritance diagram for F\+E\+DD\+:\+:Exporter\+Para\+View\+A\+MR$<$ SC, LO, GO, NO $>$\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=232pt]{classFEDD_1_1ExporterParaViewAMR__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for F\+E\+DD\+:\+:Exporter\+Para\+View\+A\+MR$<$ SC, LO, GO, NO $>$\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=232pt]{classFEDD_1_1ExporterParaViewAMR__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef std\+::vector$<$ double $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a40cb07542819da8787f6326b973488e1}{vec\+\_\+dbl}
+\item 
+typedef std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a0f12f69d4a09396adfd3204eaff68547}{vec2\+D\+\_\+dbl}
+\item 
+typedef std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a7b4b80f7055a9b668338811a95fe60a9}{vec2\+D\+\_\+int}
+\item 
+typedef std\+::vector$<$ std\+::vector$<$ long long $>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a82b93635433d181e29755ccf170b09c2}{vec2\+D\+\_\+longlong}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ std\+::vector$<$ int $>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a45e7db5ec3faf02fd1e2501ea28ba3dd}{vec\+\_\+int\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ std\+::vector$<$ long long $>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a48d0c5c5de711255407680b44226ce70}{vec\+\_\+longlong\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a40cb07542819da8787f6326b973488e1}{vec\+\_\+dbl} $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_af14032ec6d32d3bef9ecf62bd31591a0}{vec\+\_\+dbl\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a01fe5fb6093914c1a246219c8c8db248}{vec2\+D\+\_\+dbl\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ std\+::vector$<$ std\+::vector$<$ int $>$ $>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a6cdd4907c293ad65ad49fe42f9d4f77b}{vec2\+D\+\_\+int\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a82b93635433d181e29755ccf170b09c2}{vec2\+D\+\_\+longlong} $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_aed19e265c08b5c593ba39b5ab0999da4}{vec2\+D\+\_\+longlong\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ Epetra\+\_\+\+Vector $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_abfc9203b3f170a56305f5c8cac3692d7}{Epetra\+Vec\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ Epetra\+\_\+\+Mpi\+Comm $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a640af1b8a2d7978df32dd6574a176d16}{Epetra\+Comm\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ Epetra\+\_\+\+Int\+Vector $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a16211cc24d4d126bed0cd83c1dce6986}{Epetra\+Vec\+Int\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ Epetra\+\_\+\+Long\+Long\+Vector $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_aefdbeefcdd8ef6c5a441cc6d964aea59}{Epetra\+Vec\+Long\+Long\+\_\+ptr}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ Epetra\+\_\+\+Multi\+Vector $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a2ae7eacc031d9088ac7d9855bd829600}{Epetra\+M\+V\+Ptr\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ Epetra\+\_\+\+Map $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_aec66ce374c6eea21bfeeddfe76043c5f}{Epetra\+Map\+Ptr\+\_\+\+Type}
+\item 
+typedef Epetra\+Ext\+::\+H\+D\+F5 \hyperlink{classFEDD_1_1ExporterParaViewAMR_a8fb291b4121b12ae97c3e1e2f7fb0200}{H\+D\+F5\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a8fb291b4121b12ae97c3e1e2f7fb0200}{H\+D\+F5\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_aaf76d7e242edf55a27da762fb8c75bc6}{H\+D\+F5\+Ptr\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+Comm$<$ int $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a344240d46d7bee09b67e50de26a00526}{Comm\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a344240d46d7bee09b67e50de26a00526}{Comm\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a240ffec17fbe910bc5530fb23fe8ab41}{Comm\+Const\+Ptr\+\_\+\+Type}
+\item 
+typedef const Teuchos\+::\+R\+CP$<$ const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a344240d46d7bee09b67e50de26a00526}{Comm\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a77750330c4c65121bf2172b7179327bc}{Comm\+Const\+Ptr\+Const\+\_\+\+Type}
+\item 
+typedef Map$<$ LO, GO, NO $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_af41df2bf6463c9a21437f359062cd566}{Map\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ const \hyperlink{classFEDD_1_1ExporterParaViewAMR_af41df2bf6463c9a21437f359062cd566}{Map\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a0b62499b70ea553b391b3436b292a84b}{Map\+Const\+Ptr\+\_\+\+Type}
+\item 
+typedef const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a0b62499b70ea553b391b3436b292a84b}{Map\+Const\+Ptr\+\_\+\+Type} \hyperlink{classFEDD_1_1ExporterParaViewAMR_afb5f7cf35a4a4f028bda4ed0e8ac348c}{Map\+Const\+Ptr\+Const\+\_\+\+Type}
+\item 
+typedef Multi\+Vector$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a644ed3c9ba0ffabd9f1f5ebfbe8cef37}{Multi\+Vector\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a644ed3c9ba0ffabd9f1f5ebfbe8cef37}{Multi\+Vector\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a6be568ff4943f421566c689db311cdd3}{Multi\+Vector\+Const\+Ptr\+\_\+\+Type}
+\item 
+typedef const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a6be568ff4943f421566c689db311cdd3}{Multi\+Vector\+Const\+Ptr\+\_\+\+Type} \hyperlink{classFEDD_1_1ExporterParaViewAMR_a8cde0bbf33cda8c311ffebf847823717}{Multi\+Vector\+Const\+Ptr\+Const\+\_\+\+Type}
+\item 
+typedef Mesh$<$ SC, LO, GO, NO $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a78bd1d686f0a39bec2918939789bfe70}{Mesh\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_a78bd1d686f0a39bec2918939789bfe70}{Mesh\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR_abdb6338dbd32c5ac33078c866e03bdae}{Mesh\+Ptr\+\_\+\+Type}
+\item 
+typedef Mesh\+\_\+\+Type\+::\+Elements\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1ExporterParaViewAMR_a9056e87edd95835c1c4bd81e14aaaf28}{Elements\+Ptr\+\_\+\+Type}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFEDD_1_1ExporterParaViewAMR_aef1563dbd4a39229e953528d096f46f7}{Exporter\+Para\+View\+A\+MR} ()
+\item 
+void \hyperlink{classFEDD_1_1ExporterParaViewAMR_a491f740253489d8496666fc8bb2cb248}{update\+Variables} (\hyperlink{classFEDD_1_1ExporterParaViewAMR_a6be568ff4943f421566c689db311cdd3}{Multi\+Vector\+Const\+Ptr\+\_\+\+Type} \&u, std\+::string var\+Name)
+\item 
+void \hyperlink{classFEDD_1_1ExporterParaViewAMR_af09a245685a0f2b4e7c7972edce4043d}{re\+Setup} (\hyperlink{classFEDD_1_1ExporterParaViewAMR_abdb6338dbd32c5ac33078c866e03bdae}{Mesh\+Ptr\+\_\+\+Type} mesh)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a344240d46d7bee09b67e50de26a00526}\label{classFEDD_1_1ExporterParaViewAMR_a344240d46d7bee09b67e50de26a00526}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Comm\+\_\+\+Type@{Comm\+\_\+\+Type}}
+\index{Comm\+\_\+\+Type@{Comm\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Comm\+\_\+\+Type}{Comm\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+Comm$<$int$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a344240d46d7bee09b67e50de26a00526}{Comm\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a240ffec17fbe910bc5530fb23fe8ab41}\label{classFEDD_1_1ExporterParaViewAMR_a240ffec17fbe910bc5530fb23fe8ab41}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Comm\+Const\+Ptr\+\_\+\+Type@{Comm\+Const\+Ptr\+\_\+\+Type}}
+\index{Comm\+Const\+Ptr\+\_\+\+Type@{Comm\+Const\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Comm\+Const\+Ptr\+\_\+\+Type}{CommConstPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a344240d46d7bee09b67e50de26a00526}{Comm\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a240ffec17fbe910bc5530fb23fe8ab41}{Comm\+Const\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a77750330c4c65121bf2172b7179327bc}\label{classFEDD_1_1ExporterParaViewAMR_a77750330c4c65121bf2172b7179327bc}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Comm\+Const\+Ptr\+Const\+\_\+\+Type@{Comm\+Const\+Ptr\+Const\+\_\+\+Type}}
+\index{Comm\+Const\+Ptr\+Const\+\_\+\+Type@{Comm\+Const\+Ptr\+Const\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Comm\+Const\+Ptr\+Const\+\_\+\+Type}{CommConstPtrConst\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef const Teuchos\+::\+R\+CP$<$const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a344240d46d7bee09b67e50de26a00526}{Comm\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a77750330c4c65121bf2172b7179327bc}{Comm\+Const\+Ptr\+Const\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a9056e87edd95835c1c4bd81e14aaaf28}\label{classFEDD_1_1ExporterParaViewAMR_a9056e87edd95835c1c4bd81e14aaaf28}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Elements\+Ptr\+\_\+\+Type@{Elements\+Ptr\+\_\+\+Type}}
+\index{Elements\+Ptr\+\_\+\+Type@{Elements\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Elements\+Ptr\+\_\+\+Type}{ElementsPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Mesh\+\_\+\+Type\+::\+Elements\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a9056e87edd95835c1c4bd81e14aaaf28}{Elements\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a640af1b8a2d7978df32dd6574a176d16}\label{classFEDD_1_1ExporterParaViewAMR_a640af1b8a2d7978df32dd6574a176d16}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Epetra\+Comm\+\_\+ptr@{Epetra\+Comm\+\_\+ptr}}
+\index{Epetra\+Comm\+\_\+ptr@{Epetra\+Comm\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Epetra\+Comm\+\_\+ptr}{EpetraComm\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$Epetra\+\_\+\+Mpi\+Comm$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a640af1b8a2d7978df32dd6574a176d16}{Epetra\+Comm\+\_\+ptr}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_aec66ce374c6eea21bfeeddfe76043c5f}\label{classFEDD_1_1ExporterParaViewAMR_aec66ce374c6eea21bfeeddfe76043c5f}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Epetra\+Map\+Ptr\+\_\+\+Type@{Epetra\+Map\+Ptr\+\_\+\+Type}}
+\index{Epetra\+Map\+Ptr\+\_\+\+Type@{Epetra\+Map\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Epetra\+Map\+Ptr\+\_\+\+Type}{EpetraMapPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$Epetra\+\_\+\+Map$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_aec66ce374c6eea21bfeeddfe76043c5f}{Epetra\+Map\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a2ae7eacc031d9088ac7d9855bd829600}\label{classFEDD_1_1ExporterParaViewAMR_a2ae7eacc031d9088ac7d9855bd829600}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Epetra\+M\+V\+Ptr\+\_\+\+Type@{Epetra\+M\+V\+Ptr\+\_\+\+Type}}
+\index{Epetra\+M\+V\+Ptr\+\_\+\+Type@{Epetra\+M\+V\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Epetra\+M\+V\+Ptr\+\_\+\+Type}{EpetraMVPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$Epetra\+\_\+\+Multi\+Vector$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a2ae7eacc031d9088ac7d9855bd829600}{Epetra\+M\+V\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_abfc9203b3f170a56305f5c8cac3692d7}\label{classFEDD_1_1ExporterParaViewAMR_abfc9203b3f170a56305f5c8cac3692d7}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Epetra\+Vec\+\_\+ptr@{Epetra\+Vec\+\_\+ptr}}
+\index{Epetra\+Vec\+\_\+ptr@{Epetra\+Vec\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Epetra\+Vec\+\_\+ptr}{EpetraVec\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$Epetra\+\_\+\+Vector$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_abfc9203b3f170a56305f5c8cac3692d7}{Epetra\+Vec\+\_\+ptr}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a16211cc24d4d126bed0cd83c1dce6986}\label{classFEDD_1_1ExporterParaViewAMR_a16211cc24d4d126bed0cd83c1dce6986}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Epetra\+Vec\+Int\+\_\+ptr@{Epetra\+Vec\+Int\+\_\+ptr}}
+\index{Epetra\+Vec\+Int\+\_\+ptr@{Epetra\+Vec\+Int\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Epetra\+Vec\+Int\+\_\+ptr}{EpetraVecInt\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$Epetra\+\_\+\+Int\+Vector$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a16211cc24d4d126bed0cd83c1dce6986}{Epetra\+Vec\+Int\+\_\+ptr}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_aefdbeefcdd8ef6c5a441cc6d964aea59}\label{classFEDD_1_1ExporterParaViewAMR_aefdbeefcdd8ef6c5a441cc6d964aea59}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Epetra\+Vec\+Long\+Long\+\_\+ptr@{Epetra\+Vec\+Long\+Long\+\_\+ptr}}
+\index{Epetra\+Vec\+Long\+Long\+\_\+ptr@{Epetra\+Vec\+Long\+Long\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Epetra\+Vec\+Long\+Long\+\_\+ptr}{EpetraVecLongLong\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$Epetra\+\_\+\+Long\+Long\+Vector$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_aefdbeefcdd8ef6c5a441cc6d964aea59}{Epetra\+Vec\+Long\+Long\+\_\+ptr}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a8fb291b4121b12ae97c3e1e2f7fb0200}\label{classFEDD_1_1ExporterParaViewAMR_a8fb291b4121b12ae97c3e1e2f7fb0200}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!H\+D\+F5\+\_\+\+Type@{H\+D\+F5\+\_\+\+Type}}
+\index{H\+D\+F5\+\_\+\+Type@{H\+D\+F5\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{H\+D\+F5\+\_\+\+Type}{HDF5\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Epetra\+Ext\+::\+H\+D\+F5 \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a8fb291b4121b12ae97c3e1e2f7fb0200}{H\+D\+F5\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_aaf76d7e242edf55a27da762fb8c75bc6}\label{classFEDD_1_1ExporterParaViewAMR_aaf76d7e242edf55a27da762fb8c75bc6}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!H\+D\+F5\+Ptr\+\_\+\+Type@{H\+D\+F5\+Ptr\+\_\+\+Type}}
+\index{H\+D\+F5\+Ptr\+\_\+\+Type@{H\+D\+F5\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{H\+D\+F5\+Ptr\+\_\+\+Type}{HDF5Ptr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1ExporterParaViewAMR_a8fb291b4121b12ae97c3e1e2f7fb0200}{H\+D\+F5\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_aaf76d7e242edf55a27da762fb8c75bc6}{H\+D\+F5\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_af41df2bf6463c9a21437f359062cd566}\label{classFEDD_1_1ExporterParaViewAMR_af41df2bf6463c9a21437f359062cd566}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Map\+\_\+\+Type@{Map\+\_\+\+Type}}
+\index{Map\+\_\+\+Type@{Map\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Map\+\_\+\+Type}{Map\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Map$<$LO,GO,NO$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_af41df2bf6463c9a21437f359062cd566}{Map\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a0b62499b70ea553b391b3436b292a84b}\label{classFEDD_1_1ExporterParaViewAMR_a0b62499b70ea553b391b3436b292a84b}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Map\+Const\+Ptr\+\_\+\+Type@{Map\+Const\+Ptr\+\_\+\+Type}}
+\index{Map\+Const\+Ptr\+\_\+\+Type@{Map\+Const\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Map\+Const\+Ptr\+\_\+\+Type}{MapConstPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$const \hyperlink{classFEDD_1_1ExporterParaViewAMR_af41df2bf6463c9a21437f359062cd566}{Map\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a0b62499b70ea553b391b3436b292a84b}{Map\+Const\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_afb5f7cf35a4a4f028bda4ed0e8ac348c}\label{classFEDD_1_1ExporterParaViewAMR_afb5f7cf35a4a4f028bda4ed0e8ac348c}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Map\+Const\+Ptr\+Const\+\_\+\+Type@{Map\+Const\+Ptr\+Const\+\_\+\+Type}}
+\index{Map\+Const\+Ptr\+Const\+\_\+\+Type@{Map\+Const\+Ptr\+Const\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Map\+Const\+Ptr\+Const\+\_\+\+Type}{MapConstPtrConst\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a0b62499b70ea553b391b3436b292a84b}{Map\+Const\+Ptr\+\_\+\+Type} \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_afb5f7cf35a4a4f028bda4ed0e8ac348c}{Map\+Const\+Ptr\+Const\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a78bd1d686f0a39bec2918939789bfe70}\label{classFEDD_1_1ExporterParaViewAMR_a78bd1d686f0a39bec2918939789bfe70}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Mesh\+\_\+\+Type@{Mesh\+\_\+\+Type}}
+\index{Mesh\+\_\+\+Type@{Mesh\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Mesh\+\_\+\+Type}{Mesh\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Mesh$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a78bd1d686f0a39bec2918939789bfe70}{Mesh\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_abdb6338dbd32c5ac33078c866e03bdae}\label{classFEDD_1_1ExporterParaViewAMR_abdb6338dbd32c5ac33078c866e03bdae}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Mesh\+Ptr\+\_\+\+Type@{Mesh\+Ptr\+\_\+\+Type}}
+\index{Mesh\+Ptr\+\_\+\+Type@{Mesh\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Mesh\+Ptr\+\_\+\+Type}{MeshPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1ExporterParaViewAMR_a78bd1d686f0a39bec2918939789bfe70}{Mesh\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_abdb6338dbd32c5ac33078c866e03bdae}{Mesh\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a644ed3c9ba0ffabd9f1f5ebfbe8cef37}\label{classFEDD_1_1ExporterParaViewAMR_a644ed3c9ba0ffabd9f1f5ebfbe8cef37}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Multi\+Vector\+\_\+\+Type@{Multi\+Vector\+\_\+\+Type}}
+\index{Multi\+Vector\+\_\+\+Type@{Multi\+Vector\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+\_\+\+Type}{MultiVector\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Multi\+Vector$<$SC,LO,GO,NO$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a644ed3c9ba0ffabd9f1f5ebfbe8cef37}{Multi\+Vector\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a6be568ff4943f421566c689db311cdd3}\label{classFEDD_1_1ExporterParaViewAMR_a6be568ff4943f421566c689db311cdd3}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Multi\+Vector\+Const\+Ptr\+\_\+\+Type@{Multi\+Vector\+Const\+Ptr\+\_\+\+Type}}
+\index{Multi\+Vector\+Const\+Ptr\+\_\+\+Type@{Multi\+Vector\+Const\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+Const\+Ptr\+\_\+\+Type}{MultiVectorConstPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a644ed3c9ba0ffabd9f1f5ebfbe8cef37}{Multi\+Vector\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a6be568ff4943f421566c689db311cdd3}{Multi\+Vector\+Const\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a8cde0bbf33cda8c311ffebf847823717}\label{classFEDD_1_1ExporterParaViewAMR_a8cde0bbf33cda8c311ffebf847823717}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Multi\+Vector\+Const\+Ptr\+Const\+\_\+\+Type@{Multi\+Vector\+Const\+Ptr\+Const\+\_\+\+Type}}
+\index{Multi\+Vector\+Const\+Ptr\+Const\+\_\+\+Type@{Multi\+Vector\+Const\+Ptr\+Const\+\_\+\+Type}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+Const\+Ptr\+Const\+\_\+\+Type}{MultiVectorConstPtrConst\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef const \hyperlink{classFEDD_1_1ExporterParaViewAMR_a6be568ff4943f421566c689db311cdd3}{Multi\+Vector\+Const\+Ptr\+\_\+\+Type} \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a8cde0bbf33cda8c311ffebf847823717}{Multi\+Vector\+Const\+Ptr\+Const\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a0f12f69d4a09396adfd3204eaff68547}\label{classFEDD_1_1ExporterParaViewAMR_a0f12f69d4a09396adfd3204eaff68547}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec2\+D\+\_\+dbl@{vec2\+D\+\_\+dbl}}
+\index{vec2\+D\+\_\+dbl@{vec2\+D\+\_\+dbl}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec2\+D\+\_\+dbl}{vec2D\_dbl}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef std\+::vector$<$std\+::vector$<$double$>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a0f12f69d4a09396adfd3204eaff68547}{vec2\+D\+\_\+dbl}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a01fe5fb6093914c1a246219c8c8db248}\label{classFEDD_1_1ExporterParaViewAMR_a01fe5fb6093914c1a246219c8c8db248}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec2\+D\+\_\+dbl\+\_\+ptr@{vec2\+D\+\_\+dbl\+\_\+ptr}}
+\index{vec2\+D\+\_\+dbl\+\_\+ptr@{vec2\+D\+\_\+dbl\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec2\+D\+\_\+dbl\+\_\+ptr}{vec2D\_dbl\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$std\+::vector$<$std\+::vector$<$double$>$ $>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a01fe5fb6093914c1a246219c8c8db248}{vec2\+D\+\_\+dbl\+\_\+ptr}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a7b4b80f7055a9b668338811a95fe60a9}\label{classFEDD_1_1ExporterParaViewAMR_a7b4b80f7055a9b668338811a95fe60a9}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec2\+D\+\_\+int@{vec2\+D\+\_\+int}}
+\index{vec2\+D\+\_\+int@{vec2\+D\+\_\+int}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec2\+D\+\_\+int}{vec2D\_int}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef std\+::vector$<$std\+::vector$<$int$>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a7b4b80f7055a9b668338811a95fe60a9}{vec2\+D\+\_\+int}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a6cdd4907c293ad65ad49fe42f9d4f77b}\label{classFEDD_1_1ExporterParaViewAMR_a6cdd4907c293ad65ad49fe42f9d4f77b}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec2\+D\+\_\+int\+\_\+ptr@{vec2\+D\+\_\+int\+\_\+ptr}}
+\index{vec2\+D\+\_\+int\+\_\+ptr@{vec2\+D\+\_\+int\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec2\+D\+\_\+int\+\_\+ptr}{vec2D\_int\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$std\+::vector$<$std\+::vector$<$int$>$ $>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a6cdd4907c293ad65ad49fe42f9d4f77b}{vec2\+D\+\_\+int\+\_\+ptr}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a82b93635433d181e29755ccf170b09c2}\label{classFEDD_1_1ExporterParaViewAMR_a82b93635433d181e29755ccf170b09c2}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec2\+D\+\_\+longlong@{vec2\+D\+\_\+longlong}}
+\index{vec2\+D\+\_\+longlong@{vec2\+D\+\_\+longlong}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec2\+D\+\_\+longlong}{vec2D\_longlong}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef std\+::vector$<$std\+::vector$<$long long$>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a82b93635433d181e29755ccf170b09c2}{vec2\+D\+\_\+longlong}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_aed19e265c08b5c593ba39b5ab0999da4}\label{classFEDD_1_1ExporterParaViewAMR_aed19e265c08b5c593ba39b5ab0999da4}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec2\+D\+\_\+longlong\+\_\+ptr@{vec2\+D\+\_\+longlong\+\_\+ptr}}
+\index{vec2\+D\+\_\+longlong\+\_\+ptr@{vec2\+D\+\_\+longlong\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec2\+D\+\_\+longlong\+\_\+ptr}{vec2D\_longlong\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1ExporterParaViewAMR_a82b93635433d181e29755ccf170b09c2}{vec2\+D\+\_\+longlong} $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_aed19e265c08b5c593ba39b5ab0999da4}{vec2\+D\+\_\+longlong\+\_\+ptr}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a40cb07542819da8787f6326b973488e1}\label{classFEDD_1_1ExporterParaViewAMR_a40cb07542819da8787f6326b973488e1}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec\+\_\+dbl@{vec\+\_\+dbl}}
+\index{vec\+\_\+dbl@{vec\+\_\+dbl}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec\+\_\+dbl}{vec\_dbl}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef std\+::vector$<$double$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a40cb07542819da8787f6326b973488e1}{vec\+\_\+dbl}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_af14032ec6d32d3bef9ecf62bd31591a0}\label{classFEDD_1_1ExporterParaViewAMR_af14032ec6d32d3bef9ecf62bd31591a0}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec\+\_\+dbl\+\_\+ptr@{vec\+\_\+dbl\+\_\+ptr}}
+\index{vec\+\_\+dbl\+\_\+ptr@{vec\+\_\+dbl\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec\+\_\+dbl\+\_\+ptr}{vec\_dbl\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1ExporterParaViewAMR_a40cb07542819da8787f6326b973488e1}{vec\+\_\+dbl}$>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_af14032ec6d32d3bef9ecf62bd31591a0}{vec\+\_\+dbl\+\_\+ptr}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a45e7db5ec3faf02fd1e2501ea28ba3dd}\label{classFEDD_1_1ExporterParaViewAMR_a45e7db5ec3faf02fd1e2501ea28ba3dd}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec\+\_\+int\+\_\+ptr@{vec\+\_\+int\+\_\+ptr}}
+\index{vec\+\_\+int\+\_\+ptr@{vec\+\_\+int\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec\+\_\+int\+\_\+ptr}{vec\_int\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$std\+::vector$<$int$>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a45e7db5ec3faf02fd1e2501ea28ba3dd}{vec\+\_\+int\+\_\+ptr}}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a48d0c5c5de711255407680b44226ce70}\label{classFEDD_1_1ExporterParaViewAMR_a48d0c5c5de711255407680b44226ce70}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!vec\+\_\+longlong\+\_\+ptr@{vec\+\_\+longlong\+\_\+ptr}}
+\index{vec\+\_\+longlong\+\_\+ptr@{vec\+\_\+longlong\+\_\+ptr}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{vec\+\_\+longlong\+\_\+ptr}{vec\_longlong\_ptr}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$std\+::vector$<$long long$>$ $>$ \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR_a48d0c5c5de711255407680b44226ce70}{vec\+\_\+longlong\+\_\+ptr}}
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_aef1563dbd4a39229e953528d096f46f7}\label{classFEDD_1_1ExporterParaViewAMR_aef1563dbd4a39229e953528d096f46f7}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!Exporter\+Para\+View\+A\+MR@{Exporter\+Para\+View\+A\+MR}}
+\index{Exporter\+Para\+View\+A\+MR@{Exporter\+Para\+View\+A\+MR}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{Exporter\+Para\+View\+A\+M\+R()}{ExporterParaViewAMR()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+\hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::\hyperlink{classFEDD_1_1ExporterParaViewAMR}{Exporter\+Para\+View\+A\+MR} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_af09a245685a0f2b4e7c7972edce4043d}\label{classFEDD_1_1ExporterParaViewAMR_af09a245685a0f2b4e7c7972edce4043d}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!re\+Setup@{re\+Setup}}
+\index{re\+Setup@{re\+Setup}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{re\+Setup()}{reSetup()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::re\+Setup (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1ExporterParaViewAMR_abdb6338dbd32c5ac33078c866e03bdae}{Mesh\+Ptr\+\_\+\+Type}}]{mesh }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classFEDD_1_1ExporterParaViewAMR_a491f740253489d8496666fc8bb2cb248}\label{classFEDD_1_1ExporterParaViewAMR_a491f740253489d8496666fc8bb2cb248}} 
+\index{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}!update\+Variables@{update\+Variables}}
+\index{update\+Variables@{update\+Variables}!F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR@{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}}
+\subsubsection{\texorpdfstring{update\+Variables()}{updateVariables()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1ExporterParaViewAMR}{F\+E\+D\+D\+::\+Exporter\+Para\+View\+A\+MR}$<$ SC, LO, GO, NO $>$\+::update\+Variables (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1ExporterParaViewAMR_a6be568ff4943f421566c689db311cdd3}{Multi\+Vector\+Const\+Ptr\+\_\+\+Type} \&}]{u,  }\item[{std\+::string}]{var\+Name }\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ExporterParaViewAMR__decl_8hpp}{Exporter\+Para\+View\+A\+M\+R\+\_\+decl.\+hpp}\item 
+\hyperlink{ExporterParaViewAMR__def_8hpp}{Exporter\+Para\+View\+A\+M\+R\+\_\+def.\+hpp}\end{DoxyCompactItemize}

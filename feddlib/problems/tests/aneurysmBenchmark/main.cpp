@@ -8,6 +8,7 @@
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
 #include "feddlib/problems/specific/Laplace.hpp"
+#include "feddlib/problems/specific/Stokes.hpp"
 #include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 #include <Xpetra_DefaultPlatform.hpp>
 
@@ -69,6 +70,14 @@ void inflowPartialCFD(double* x, double* res, double t, const double* parameters
 
     return;
 }
+void rhs0( double* p, double* res, const double* parameters){
+
+	res[0] =0;
+    res[1] =0;
+	res[2] =0;
+
+	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
+}
 
 void inflowParabolic2D(double* x, double* res, double t, const double* parameters){
 
@@ -111,22 +120,45 @@ void rhs3D(double* x, double* res, double* parameters){
 
     return;
 }
-
 void parabolicInflow3D(double* x, double* res, double t, const double* parameters)
 {
     // parameters[0] is the maxium desired velocity
     // parameters[1] end of ramp
     // parameters[2] is the maxium solution value of the laplacian parabolic inflow problme
     // we use x[0] for the laplace solution in the considered point. Therefore, point coordinates are missing
-
-    res[0] = (parameters[0] / parameters[1]) * x[0];
-    res[1] = 0.;
-    res[2] = 0.;
     
-	//cout << " parameter[0] " << parameters[0] << " parameters[1] " << parameters[1] << " ergebniss " << res[0]<< endl;
+    if(t < parameters[1])
+    {
+        res[0] = 0.;
+        res[1] = 0.;
+        res[2] = parameters[0] / parameters[2] * x[0] * t / parameters[1];
+    }
+    else
+    {
+        res[0] = parameters[0] / parameters[2] * x[0];
+        res[1] = 0.;
+        res[2] = 0.;
+    }
 
     return;
 }
+void parabolicInflow3DStokes(double* x, double* res, double t, const double* parameters)
+{
+    // parameters[0] is the maxium desired velocity
+    // parameters[1] end of ramp
+    // parameters[2] is the maxium solution value of the laplacian parabolic inflow problme
+    // we use x[0] for the laplace solution in the considered point. Therefore, point coordinates are missing
+    
+
+    res[0] = parameters[0] / parameters[2] * x[0];
+    res[1] = 0.;
+    res[2] = 0.;
+    
+
+    return;
+}
+
+
 
 typedef unsigned UN;
 typedef default_sc SC;
@@ -141,6 +173,8 @@ int main(int argc, char *argv[]) {
 typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 	typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
 	typedef Teuchos::RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
+	typedef Problem<SC,LO,GO,NO> Problem_Type;
+    typedef Teuchos::RCP<Problem_Type> ProblemPtr_Type;
 
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
@@ -223,7 +257,8 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
         bool computeInflow = parameterListProblem->sublist("Parameter").get("Compute Inflow",false);
         int         n;
 
-        std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",15));
+        std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",30));
+        parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Max Ramp Time",3.) );
         //parameter_vec.push_back(1.);
 
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
@@ -237,15 +272,6 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
         std::string bcType = parameterListProblem->sublist("Parameter").get("BC Type","parabolic");
 
         int minNumberSubdomains;
-        if (!meshType.compare("structured")) {
-            minNumberSubdomains = 1;
-        }
-        else if(!meshType.compare("structured_rec")){
-            minNumberSubdomains = length;
-        }
-        else if(!meshType.compare("structured_bfs")){
-            minNumberSubdomains = (int) 2*length+1;
-        }
 
         int numProcsCoarseSolve = parameterListProblem->sublist("General").get("Mpi Ranks Coarse",0);
         int size = comm->getSize() - numProcsCoarseSolve;
@@ -259,6 +285,8 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
         {
             DomainPtr_Type domainPressure;
             DomainPtr_Type domainVelocity;
+
+            DomainPtr_Type domainRefined;
 
             Teuchos::TimeMonitor totalTimeMonitor(*totalTime);
             
@@ -308,19 +336,116 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 			area[2][0] = -2;
 			area[2][1] = 6;
 
-			AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Laplace",parameterListProblem);
+			AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Stokes",parameterListProblem);
 
-			domainPressure = meshRefiner.refineArea(domainPressure,area,1);
-	
-		   if (feTypeV=="P2")
-		       domainVelocity->buildP2ofP1Domain( domainPressure );
-		   else
-		       domainVelocity = domainPressure;
-            
+			//domainPressure = meshRefiner.refineArea(domainPressure,area,1);
+
+
+			// #####################################################################
+			// Solving Stokes Problem on Geometry
+			// #####################################################################
+			int maxIter =2;
+			int j=0;
+			while(j<maxIter){
+
+				// #####################################
+				// Genereating Vector for inlet
+				// #####################################
+				Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryL(new BCBuilder<SC,LO,GO,NO>( ));
+
+				// Apply Boundary conditions - laplace at inlet
+				bcFactoryL->addBC(zeroDirichlet, 1, 0, domainVelocity, "Dirichlet", 1);
+				//bcFactoryL->addBC(zeroDirichlet, 2, 0, domainVelocity, "Neumann", 1);
+
+				Laplace<SC,LO,GO,NO> laplace(domainVelocity,feTypeV,parameterListAllL,false);
+				{
+					laplace.addBoundaries(bcFactoryL);
+					laplace.addRhsFunction(rhs3D);
+					laplace.initializeProblem();
+		       		laplace.assemble();
+		       		laplace.setBoundaries();
+		       		laplace.solve();
+				}
+					bcFactoryL->addBC(zeroBC, 3, 0, domainVelocity, "Dirichlet", 1);
+		            bcFactoryL->addBC(zeroBC, 10, 0, domainVelocity, "Dirichlet", 1);
+
+		            bcFactoryL->setRHS( laplace.getSolution(), 0.);
+
+			   if (feTypeV=="P2")
+				   domainVelocity->buildP2ofP1Domain( domainPressure );
+			   else
+				   domainVelocity = domainPressure;
+
+            	Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+				bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
+				MultiVectorConstPtr_Type inletSol = laplace.getSolution()->getBlock(0);               
+		        bcFactory->addBC(parabolicInflow3DStokes, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
 				
-			// #####################################
-			// Genereating Vector for inlet
-			// #####################################
+		        Teuchos::RCP<Stokes<SC,LO,GO,NO> > stokes( new Stokes<SC,LO,GO,NO>(domainVelocity,feTypeV, domainPressure, feTypeP, parameterListAll ));
+				
+				{
+					
+					stokes->addBoundaries(bcFactory);
+					stokes->addRhsFunction(rhs0);						    
+					stokes->initializeProblem();						    
+					stokes->assemble();
+					stokes->setBoundaries();             
+					stokes->solve();
+
+				}
+
+				// #########
+				// Exporter
+				// #########			
+			
+		        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());
+		        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaPressure(new ExporterParaView<SC,LO,GO,NO>());
+		        
+		        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = stokes->getSolution()->getBlock(0);
+		        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = stokes->getSolution()->getBlock(1);
+
+		        DomainPtr_Type dom = domainVelocity;
+		        
+		        exParaVelocity->setup("velocity", dom->getMesh(), dom->getFEType());
+		        
+		        UN dofsPerNode = dim;
+		        exParaVelocity->addVariable(exportSolutionV, "u", "Vector", dofsPerNode, dom->getMapUnique());
+		        
+		        dom = domainPressure;
+		        exParaPressure->setup("pressure", dom->getMesh(), dom->getFEType());
+		        
+		        if (dom->getFEType()=="P0")
+		            exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getElementMap());
+		        else
+		            exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getMapUnique());
+
+		        exParaVelocity->save(0.0);
+		        exParaPressure->save(0.0);
+		        
+		        exParaVelocity->closeExporter();
+		        exParaPressure->closeExporter();
+
+
+				// Refinement
+				domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+				{
+					ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( stokes , true);
+					domainRefined = meshRefiner.globalAlgorithm( domainPressure,  domainVelocity, stokes->getSolution(), problem, rhs0 );
+				}
+				domainPressure = domainRefined;
+	
+				j++;
+			}
+
+	
+			// ############################################################
+			// Genereating Vector for inlet again, as Mesh is different
+			// ############################################################
+			if (feTypeV=="P2")
+			  domainVelocity->buildP2ofP1Domain( domainPressure );
+			else
+			  domainVelocity = domainPressure;
+
 			Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryL(new BCBuilder<SC,LO,GO,NO>( ));
 
 			// Apply Boundary conditions - laplace at inlet
@@ -351,6 +476,7 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 	        exPara->addVariable(exportSolution, "u", "Scalar", 1, domainVelocity->getMapUnique(), domainVelocity->getMapUniqueP2());
 
 	        exPara->save(0.0);
+            
 
 			// #################################################
 			// Setting up and solving Navier-Stokes Problem 
