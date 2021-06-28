@@ -15,7 +15,7 @@
  Definition of AdaptiveMeshRefinement
  
  @brief  AdaptiveMeshRefinement
- @version 1.0
+ @author Lea Saßmannshausen
 
  */
 
@@ -352,13 +352,6 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	}
 	this->exportSolution( inputMeshP12_, exportSolutionMv, errorValues, exactSolution);
 	this->exportError( inputMeshP12_, errorElConst, vecDecompositionConst );
-	
-	if(currentIter_ == maxIter_){
-		writeRefinementInfo();	
-		exporterSol_->closeExporter();
-	    exporterError_->closeExporter();
-	}
-
 
 
 	// Determine all essential values
@@ -369,6 +362,12 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	relError.push_back(0);
 	eRelError.push_back(0);
 	numNodes.push_back(domainP12_->getMapUnique()->getMaxAllGlobalIndex()+1);
+
+	if(currentIter_ == maxIter_){
+		writeRefinementInfo();	
+		exporterSol_->closeExporter();
+	    exporterError_->closeExporter();
+	}
 
     domainRefined->setMesh(outputMesh);
 	
@@ -600,28 +599,28 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
 			cout << " Number of elements after Refinement.... " << endl;
-			for(int i=1; i< currentIter_; i++)
+			for(int i=1; i<= currentIter_; i++)
 				cout <<" "<< i << ":	" << numElements[i] << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
 			cout << " Number of Nodes after Refinement.... " << endl;
-			for(int i=1; i<currentIter_ ; i++)
+			for(int i=1; i<=currentIter_ ; i++)
 				cout <<" "<< i << ":	" << numNodes[i] << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " Errorestimation: max error in Elements according to error Estimator after Refinement.... " << endl;
-			for (int i=1; i<currentIter_ ; i++)
+			cout << " Errorestimation: max error in Elements according to error Estimator in Refinement.... " << endl;
+			for (int i=0; i<currentIter_ ; i++)
 				cout <<" "<< i << ":	" << maxErrorEl[i] << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
 			cout << " Maximal error in nodes after Refinement. " << endl;
-			for (int i=1; i<currentIter_ ; i++)
+			for (int i=1; i<=currentIter_ ; i++)
 				cout <<" "<< i << ":	" << maxErrorKn[i] << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 
 			cout << " ||u-u_h||_H1 / ||u ||_H1 	||  eta / ||u_h ||_H1	||	|| u-u_h ||_H1	||	|| u-u_h ||_L2	...." << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
-			for (int i=1; i<currentIter_ ; i++)
+			for (int i=1; i<=currentIter_ ; i++)
 				cout <<" "<< i << ":	" << relError[i] << " 		||	" << eRelError[i] << "  	||	" << errorH1[i]<< "	||	" << errorL2[i] << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;

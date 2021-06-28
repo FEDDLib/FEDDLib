@@ -26,10 +26,9 @@
 /*!
  Declaration of Adaptive Mesh Refinement
  
- @brief  MeshUnstructuredRefinement
+ @brief  Adaptive Mesh Refinement
  @author Lea Saßmannshausen
- @version 1.0
- @copyright CH
+
  */
 
 namespace FEDD {

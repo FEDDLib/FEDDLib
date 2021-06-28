@@ -85,7 +85,7 @@ public:
 
 	void assignEdgeFlags( MeshUnstrPtr_Type meshP1, EdgeElementsPtr_Type edgeElements);
     	
-	void refineRegular(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements,  int i); // aka red refinement
+	void refineRegular(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements,  int i, SurfaceElementsPtr_Type surfaceTriangleElements); // aka red refinement
 	
 	void refineGreen( EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements,  int i); // green refinement
 
@@ -93,10 +93,10 @@ public:
 
 	void refineRed(  EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements,  int i); // red refinement
 
-	void refineType1( EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement);
-	void refineType2( EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement);
-	void refineType3( EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement);
-	void refineType4(  EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement);
+	void refineType1( EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements);
+	void refineType2( EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements);
+	void refineType3( EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements);
+	void refineType4(  EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements);
 
 	void addMidpoint(EdgeElementsPtr_Type edgeElements, int i); // Adding midpoint on edge
 
@@ -112,7 +112,7 @@ public:
 
 	vec_bool_Type checkInterfaceSurface( EdgeElementsPtr_Type edgeElements,vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement);
 
-	void refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction,  int& newElements); // check if Element that is tagged to be refined green has previously been refined green
+	void refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements,SurfaceElementsPtr_Type surfaceTriangleElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction,  int& newElements); // check if Element that is tagged to be refined green has previously been refined green
 
 	void refineIrregular(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, int& newElements, MapConstPtr_Type edgeMap, SurfaceElementsPtr_Type surfaceTriangleElements);
 

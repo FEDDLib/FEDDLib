@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: FEDD::AdaptiveMeshRefinement&lt; SC, LO, GO, NO &gt; Class Template Reference</title>
+<title>Adaptive Mesh Refinement: AdaptiveMeshRefinement&lt; SC, LO, GO, NO &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -28,7 +28,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">My Project
+   <div id="projectname">Adaptive Mesh Refinement
    </div>
   </td>
  </tr>
@@ -81,839 +81,329 @@ $(document).ready(function(){initNavTree('classFEDD_1_1AdaptiveMeshRefinement.ht
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
-<a href="#pub-methods">Public Member Functions</a>  </div>
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a>  </div>
   <div class="headertitle">
-<div class="title">FEDD::AdaptiveMeshRefinement&lt; SC, LO, GO, NO &gt; Class Template Reference</div>  </div>
+<div class="title">AdaptiveMeshRefinement&lt; SC, LO, GO, NO &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="AdaptiveMeshRefinement__decl_8hpp_source.html">AdaptiveMeshRefinement_decl.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a7d24de886f92d012c43fbe13d884f08b"><td class="memItemLeft" align="right" valign="top">typedef Mesh&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a7d24de886f92d012c43fbe13d884f08b">Mesh_Type</a></td></tr>
-<tr class="separator:a7d24de886f92d012c43fbe13d884f08b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5319bc1d767943b4746128c4392679a"><td class="memItemLeft" align="right" valign="top">typedef MeshUnstructured&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad5319bc1d767943b4746128c4392679a">MeshUnstr_Type</a></td></tr>
-<tr class="separator:ad5319bc1d767943b4746128c4392679a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc927c0c0253b094c3c53338f9128d20"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; MeshUnstructured&lt; SC, LO, GO, NO &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abc927c0c0253b094c3c53338f9128d20">MeshUnstrPtr_Type</a></td></tr>
-<tr class="separator:abc927c0c0253b094c3c53338f9128d20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae5b66cd506467dbeff01795c41cafcb"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abc927c0c0253b094c3c53338f9128d20">MeshUnstrPtr_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#aae5b66cd506467dbeff01795c41cafcb">MeshUnstrPtrArray_Type</a></td></tr>
-<tr class="separator:aae5b66cd506467dbeff01795c41cafcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade0625d6a1aa9c3586f3b04abb0a9e5e"><td class="memItemLeft" align="right" valign="top">typedef MeshUnstructuredRefinement&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ade0625d6a1aa9c3586f3b04abb0a9e5e">MeshUnstrRef_Type</a></td></tr>
-<tr class="separator:ade0625d6a1aa9c3586f3b04abb0a9e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad166d4fc2a5e64ed6c4b5ee3941c77bf"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ade0625d6a1aa9c3586f3b04abb0a9e5e">MeshUnstrRef_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad166d4fc2a5e64ed6c4b5ee3941c77bf">MeshUnstrRefPtr_Type</a></td></tr>
-<tr class="separator:ad166d4fc2a5e64ed6c4b5ee3941c77bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d1410723e7af7a2835cc294934fba65"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad166d4fc2a5e64ed6c4b5ee3941c77bf">MeshUnstrRefPtr_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a9d1410723e7af7a2835cc294934fba65">MeshUnstrRefPtrArray_Type</a></td></tr>
-<tr class="separator:a9d1410723e7af7a2835cc294934fba65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28759ffaba5c0900ad9ad3b7b185d504"><td class="memItemLeft" align="right" valign="top">typedef Mesh_Type::CommPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a28759ffaba5c0900ad9ad3b7b185d504">CommPtr_Type</a></td></tr>
-<tr class="separator:a28759ffaba5c0900ad9ad3b7b185d504"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6bd5089532bd8dac39bebc4a92e33c40"><td class="memItemLeft" align="right" valign="top">typedef Mesh_Type::CommConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a6bd5089532bd8dac39bebc4a92e33c40">CommConstPtr_Type</a></td></tr>
-<tr class="separator:a6bd5089532bd8dac39bebc4a92e33c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae08f7ca72876c1aba944120b3ca088d3"><td class="memItemLeft" align="right" valign="top">typedef Elements&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae08f7ca72876c1aba944120b3ca088d3">Elements_Type</a></td></tr>
-<tr class="separator:ae08f7ca72876c1aba944120b3ca088d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a08c5e3801ff9f9f3dff7997f9f4b1b"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae08f7ca72876c1aba944120b3ca088d3">Elements_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a9a08c5e3801ff9f9f3dff7997f9f4b1b">ElementsPtr_Type</a></td></tr>
-<tr class="separator:a9a08c5e3801ff9f9f3dff7997f9f4b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa6eaf74293132701460f9107ce0c070"><td class="memItemLeft" align="right" valign="top">typedef SurfaceElements&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afa6eaf74293132701460f9107ce0c070">SurfaceElements_Type</a></td></tr>
-<tr class="separator:afa6eaf74293132701460f9107ce0c070"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabda3ef3658f8847265104c6cf9a3877"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afa6eaf74293132701460f9107ce0c070">SurfaceElements_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#aabda3ef3658f8847265104c6cf9a3877">SurfaceElementsPtr_Type</a></td></tr>
-<tr class="separator:aabda3ef3658f8847265104c6cf9a3877"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a891870bd161746dd633e1c8126d8fea1"><td class="memItemLeft" align="right" valign="top">typedef EdgeElements&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a891870bd161746dd633e1c8126d8fea1">EdgeElements_Type</a></td></tr>
-<tr class="separator:a891870bd161746dd633e1c8126d8fea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a495f60e86da92289b7fe1c15e291660d"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a891870bd161746dd633e1c8126d8fea1">EdgeElements_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a495f60e86da92289b7fe1c15e291660d">EdgeElementsPtr_Type</a></td></tr>
-<tr class="separator:a495f60e86da92289b7fe1c15e291660d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d24dca5502ca055019d31c569bf003e"><td class="memItemLeft" align="right" valign="top">typedef MeshInterface&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a2d24dca5502ca055019d31c569bf003e">MeshInterface_Type</a></td></tr>
-<tr class="separator:a2d24dca5502ca055019d31c569bf003e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d1f62bff0822daa8f0b7caf3e3b4311"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a2d24dca5502ca055019d31c569bf003e">MeshInterface_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a5d1f62bff0822daa8f0b7caf3e3b4311">MeshInterfacePtr_Type</a></td></tr>
-<tr class="separator:a5d1f62bff0822daa8f0b7caf3e3b4311"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af60419a5ef8a4785991b704d1ad7aacb"><td class="memItemLeft" align="right" valign="top">typedef Map&lt; LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#af60419a5ef8a4785991b704d1ad7aacb">Map_Type</a></td></tr>
-<tr class="separator:af60419a5ef8a4785991b704d1ad7aacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a751bcbe2e4fddcdcde836067b776d42d"><td class="memItemLeft" align="right" valign="top">typedef Map_Type::MapPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a751bcbe2e4fddcdcde836067b776d42d">MapPtr_Type</a></td></tr>
-<tr class="separator:a751bcbe2e4fddcdcde836067b776d42d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a584bfb3398e9072ddf188bfa3c04c926"><td class="memItemLeft" align="right" valign="top">typedef Map_Type::MapConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a584bfb3398e9072ddf188bfa3c04c926">MapConstPtr_Type</a></td></tr>
-<tr class="separator:a584bfb3398e9072ddf188bfa3c04c926"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afba165f2caa97c6de40654b1ee51e38d"><td class="memItemLeft" align="right" valign="top">typedef MultiVector&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afba165f2caa97c6de40654b1ee51e38d">MultiVector_Type</a></td></tr>
-<tr class="separator:afba165f2caa97c6de40654b1ee51e38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4fb11adbdf1bba9bcaf8952324d32f2"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afba165f2caa97c6de40654b1ee51e38d">MultiVector_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#af4fb11adbdf1bba9bcaf8952324d32f2">MultiVectorPtr_Type</a></td></tr>
-<tr class="separator:af4fb11adbdf1bba9bcaf8952324d32f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae48fff0bc9a94bc0332516f1d1e05d92"><td class="memItemLeft" align="right" valign="top">typedef MultiVector&lt; LO, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae48fff0bc9a94bc0332516f1d1e05d92">MultiVectorLO_Type</a></td></tr>
-<tr class="separator:ae48fff0bc9a94bc0332516f1d1e05d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a838fdef10af2d85bf1259037b821019e"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae48fff0bc9a94bc0332516f1d1e05d92">MultiVectorLO_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a838fdef10af2d85bf1259037b821019e">MultiVectorLOPtr_Type</a></td></tr>
-<tr class="separator:a838fdef10af2d85bf1259037b821019e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a582403f1b9f5ba542a6269e1b00a9031"><td class="memItemLeft" align="right" valign="top">typedef MultiVector&lt; GO, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a582403f1b9f5ba542a6269e1b00a9031">MultiVectorGO_Type</a></td></tr>
-<tr class="separator:a582403f1b9f5ba542a6269e1b00a9031"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2378e2061f0df4ec2df4a44af300996"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a582403f1b9f5ba542a6269e1b00a9031">MultiVectorGO_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ab2378e2061f0df4ec2df4a44af300996">MultiVectorGOPtr_Type</a></td></tr>
-<tr class="separator:ab2378e2061f0df4ec2df4a44af300996"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8871639b0a35039184611ce286a446c"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; const <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afba165f2caa97c6de40654b1ee51e38d">MultiVector_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a></td></tr>
-<tr class="separator:ad8871639b0a35039184611ce286a446c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5926fc86d008bfd69ae52e9190197eb0"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::OrdinalTraits&lt; LO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a5926fc86d008bfd69ae52e9190197eb0">OTLO</a></td></tr>
-<tr class="separator:a5926fc86d008bfd69ae52e9190197eb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a607791df1d84bc4ea9fc08acd31225c7"><td class="memItemLeft" align="right" valign="top">typedef Matrix&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a607791df1d84bc4ea9fc08acd31225c7">Matrix_Type</a></td></tr>
-<tr class="separator:a607791df1d84bc4ea9fc08acd31225c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a862a72ab4878d57a61b746f5ac8d0b6c"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a607791df1d84bc4ea9fc08acd31225c7">Matrix_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a862a72ab4878d57a61b746f5ac8d0b6c">MatrixPtr_Type</a></td></tr>
-<tr class="separator:a862a72ab4878d57a61b746f5ac8d0b6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f493149d664db5c1024f27f87f0ac15"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classFEDD_1_1ExporterParaViewAMR.html">ExporterParaViewAMR</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a3f493149d664db5c1024f27f87f0ac15">Exporter_Type</a></td></tr>
-<tr class="separator:a3f493149d664db5c1024f27f87f0ac15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8cda8533e68f9049ede0208be2175d6"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a3f493149d664db5c1024f27f87f0ac15">Exporter_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ac8cda8533e68f9049ede0208be2175d6">ExporterPtr_Type</a></td></tr>
-<tr class="separator:ac8cda8533e68f9049ede0208be2175d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc81b6919eb7756e16e696631e0d666b"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; ExporterTxt &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afc81b6919eb7756e16e696631e0d666b">ExporterTxtPtr_Type</a></td></tr>
-<tr class="separator:afc81b6919eb7756e16e696631e0d666b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88c7a8713a81d90ff9d82a08ba596cda"><td class="memItemLeft" align="right" valign="top">typedef Problem&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a88c7a8713a81d90ff9d82a08ba596cda">Problem_Type</a></td></tr>
-<tr class="separator:a88c7a8713a81d90ff9d82a08ba596cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a442c6ca5dc4d866e3b1c6cdb613e2281"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a88c7a8713a81d90ff9d82a08ba596cda">Problem_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a442c6ca5dc4d866e3b1c6cdb613e2281">ProblemPtr_Type</a></td></tr>
-<tr class="separator:a442c6ca5dc4d866e3b1c6cdb613e2281"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a894158e6863753ca565eabb915e25d9a"><td class="memItemLeft" align="right" valign="top">typedef Domain&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a894158e6863753ca565eabb915e25d9a">Domain_Type</a></td></tr>
-<tr class="separator:a894158e6863753ca565eabb915e25d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98b097661d0e4c38e4182582078e2cd6"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a894158e6863753ca565eabb915e25d9a">Domain_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a></td></tr>
-<tr class="separator:a98b097661d0e4c38e4182582078e2cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a581823e939bbec9e9a52a23d59d5c06a"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a581823e939bbec9e9a52a23d59d5c06a">DomainPtrArray_Type</a></td></tr>
-<tr class="separator:a581823e939bbec9e9a52a23d59d5c06a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab682c21b2aedae4d190d83018fa93df0"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#af4fb11adbdf1bba9bcaf8952324d32f2">MultiVectorPtr_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ab682c21b2aedae4d190d83018fa93df0">MultiVectorPtrArray_Type</a></td></tr>
-<tr class="separator:ab682c21b2aedae4d190d83018fa93df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace60cfe1caf8767564c40edef5ca8b0b"><td class="memItemLeft" align="right" valign="top">typedef BlockMultiVector&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ace60cfe1caf8767564c40edef5ca8b0b">BlockMultiVector_Type</a></td></tr>
-<tr class="separator:ace60cfe1caf8767564c40edef5ca8b0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba249beb6c7ef61bd78d2f4ad3be68fe"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ace60cfe1caf8767564c40edef5ca8b0b">BlockMultiVector_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#aba249beb6c7ef61bd78d2f4ad3be68fe">BlockMultiVectorPtr_Type</a></td></tr>
-<tr class="separator:aba249beb6c7ef61bd78d2f4ad3be68fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62f59092ab4dee90885c4d38b123ca9c"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; const <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ace60cfe1caf8767564c40edef5ca8b0b">BlockMultiVector_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a62f59092ab4dee90885c4d38b123ca9c">BlockMultiVectorConstPtr_Type</a></td></tr>
-<tr class="separator:a62f59092ab4dee90885c4d38b123ca9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e469aabe3952e2cd5797236ba2d80b7"><td class="memItemLeft" align="right" valign="top"><a id="a1e469aabe3952e2cd5797236ba2d80b7"></a>
+typedef Mesh&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Mesh_Type</b></td></tr>
+<tr class="separator:a1e469aabe3952e2cd5797236ba2d80b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa284ad39ff56f20f0e0fb1736a706ed7"><td class="memItemLeft" align="right" valign="top"><a id="aa284ad39ff56f20f0e0fb1736a706ed7"></a>
+typedef MeshUnstructured&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstr_Type</b></td></tr>
+<tr class="separator:aa284ad39ff56f20f0e0fb1736a706ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dfa0d2bb61c7c09eb7b752b8353cf16"><td class="memItemLeft" align="right" valign="top"><a id="a5dfa0d2bb61c7c09eb7b752b8353cf16"></a>
+typedef Teuchos::RCP&lt; MeshUnstructured&lt; SC, LO, GO, NO &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstrPtr_Type</b></td></tr>
+<tr class="separator:a5dfa0d2bb61c7c09eb7b752b8353cf16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a049d8b7e6d1b66326cb5f7576e94a517"><td class="memItemLeft" align="right" valign="top"><a id="a049d8b7e6d1b66326cb5f7576e94a517"></a>
+typedef std::vector&lt; MeshUnstrPtr_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstrPtrArray_Type</b></td></tr>
+<tr class="separator:a049d8b7e6d1b66326cb5f7576e94a517"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47782b5df3098ee9e0a10ac3fc9e0af5"><td class="memItemLeft" align="right" valign="top"><a id="a47782b5df3098ee9e0a10ac3fc9e0af5"></a>
+typedef MeshUnstructuredRefinement&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstrRef_Type</b></td></tr>
+<tr class="separator:a47782b5df3098ee9e0a10ac3fc9e0af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aacfeb1017dfaed95ea0ac573f94bd8"><td class="memItemLeft" align="right" valign="top"><a id="a2aacfeb1017dfaed95ea0ac573f94bd8"></a>
+typedef Teuchos::RCP&lt; MeshUnstrRef_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstrRefPtr_Type</b></td></tr>
+<tr class="separator:a2aacfeb1017dfaed95ea0ac573f94bd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4324c72b3d23a9921152217fbedc161"><td class="memItemLeft" align="right" valign="top"><a id="ad4324c72b3d23a9921152217fbedc161"></a>
+typedef std::vector&lt; MeshUnstrRefPtr_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstrRefPtrArray_Type</b></td></tr>
+<tr class="separator:ad4324c72b3d23a9921152217fbedc161"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7b0ab20b8659e451330976480944e37"><td class="memItemLeft" align="right" valign="top"><a id="aa7b0ab20b8659e451330976480944e37"></a>
+typedef Mesh_Type::CommPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>CommPtr_Type</b></td></tr>
+<tr class="separator:aa7b0ab20b8659e451330976480944e37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e4037869de7d2d55b318fac0dd68fe"><td class="memItemLeft" align="right" valign="top"><a id="a96e4037869de7d2d55b318fac0dd68fe"></a>
+typedef Mesh_Type::CommConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>CommConstPtr_Type</b></td></tr>
+<tr class="separator:a96e4037869de7d2d55b318fac0dd68fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b053e56590f8e148fb1b3f48c68141b"><td class="memItemLeft" align="right" valign="top"><a id="a0b053e56590f8e148fb1b3f48c68141b"></a>
+typedef Elements&#160;</td><td class="memItemRight" valign="bottom"><b>Elements_Type</b></td></tr>
+<tr class="separator:a0b053e56590f8e148fb1b3f48c68141b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a655120e9571ded2c66d441c9a1552038"><td class="memItemLeft" align="right" valign="top"><a id="a655120e9571ded2c66d441c9a1552038"></a>
+typedef Teuchos::RCP&lt; Elements_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ElementsPtr_Type</b></td></tr>
+<tr class="separator:a655120e9571ded2c66d441c9a1552038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a240b95cf08c5e92bbe1a03555dc6f519"><td class="memItemLeft" align="right" valign="top"><a id="a240b95cf08c5e92bbe1a03555dc6f519"></a>
+typedef SurfaceElements&#160;</td><td class="memItemRight" valign="bottom"><b>SurfaceElements_Type</b></td></tr>
+<tr class="separator:a240b95cf08c5e92bbe1a03555dc6f519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f79f50fb173e3acc3167279a7f1345a"><td class="memItemLeft" align="right" valign="top"><a id="a0f79f50fb173e3acc3167279a7f1345a"></a>
+typedef Teuchos::RCP&lt; SurfaceElements_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>SurfaceElementsPtr_Type</b></td></tr>
+<tr class="separator:a0f79f50fb173e3acc3167279a7f1345a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ecf8fe210fc6060b24b37d1955d9a41"><td class="memItemLeft" align="right" valign="top"><a id="a4ecf8fe210fc6060b24b37d1955d9a41"></a>
+typedef EdgeElements&#160;</td><td class="memItemRight" valign="bottom"><b>EdgeElements_Type</b></td></tr>
+<tr class="separator:a4ecf8fe210fc6060b24b37d1955d9a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d86e0d3a5fbf66548b2919590a80342"><td class="memItemLeft" align="right" valign="top"><a id="a8d86e0d3a5fbf66548b2919590a80342"></a>
+typedef Teuchos::RCP&lt; EdgeElements_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>EdgeElementsPtr_Type</b></td></tr>
+<tr class="separator:a8d86e0d3a5fbf66548b2919590a80342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00302cf977be058f72385dd6687344cb"><td class="memItemLeft" align="right" valign="top"><a id="a00302cf977be058f72385dd6687344cb"></a>
+typedef MeshInterface&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshInterface_Type</b></td></tr>
+<tr class="separator:a00302cf977be058f72385dd6687344cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab247d74ce40f3b9ca72334ed61052cf6"><td class="memItemLeft" align="right" valign="top"><a id="ab247d74ce40f3b9ca72334ed61052cf6"></a>
+typedef Teuchos::RCP&lt; MeshInterface_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshInterfacePtr_Type</b></td></tr>
+<tr class="separator:ab247d74ce40f3b9ca72334ed61052cf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c51bc6fe3a5ab13cd4e4fb44bff78c9"><td class="memItemLeft" align="right" valign="top"><a id="a3c51bc6fe3a5ab13cd4e4fb44bff78c9"></a>
+typedef Map&lt; LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Map_Type</b></td></tr>
+<tr class="separator:a3c51bc6fe3a5ab13cd4e4fb44bff78c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56971c3f5c10a56a42c694676f52d3c1"><td class="memItemLeft" align="right" valign="top"><a id="a56971c3f5c10a56a42c694676f52d3c1"></a>
+typedef Map_Type::MapPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>MapPtr_Type</b></td></tr>
+<tr class="separator:a56971c3f5c10a56a42c694676f52d3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc2c8e7ecacdf0992be92861366de188"><td class="memItemLeft" align="right" valign="top"><a id="acc2c8e7ecacdf0992be92861366de188"></a>
+typedef Map_Type::MapConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>MapConstPtr_Type</b></td></tr>
+<tr class="separator:acc2c8e7ecacdf0992be92861366de188"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae656c560626c10f5fc6722f43e4281fc"><td class="memItemLeft" align="right" valign="top"><a id="ae656c560626c10f5fc6722f43e4281fc"></a>
+typedef MultiVector&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVector_Type</b></td></tr>
+<tr class="separator:ae656c560626c10f5fc6722f43e4281fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae422943f76cfe9ada609671de16eb9c8"><td class="memItemLeft" align="right" valign="top"><a id="ae422943f76cfe9ada609671de16eb9c8"></a>
+typedef Teuchos::RCP&lt; MultiVector_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorPtr_Type</b></td></tr>
+<tr class="separator:ae422943f76cfe9ada609671de16eb9c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adad31caec4b769abf8658c67001f977b"><td class="memItemLeft" align="right" valign="top"><a id="adad31caec4b769abf8658c67001f977b"></a>
+typedef MultiVector&lt; LO, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorLO_Type</b></td></tr>
+<tr class="separator:adad31caec4b769abf8658c67001f977b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d82d2ea10ef7ec6d16da19105a29a57"><td class="memItemLeft" align="right" valign="top"><a id="a9d82d2ea10ef7ec6d16da19105a29a57"></a>
+typedef Teuchos::RCP&lt; MultiVectorLO_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorLOPtr_Type</b></td></tr>
+<tr class="separator:a9d82d2ea10ef7ec6d16da19105a29a57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9c88666e02916392baafb0f6f32a9ed"><td class="memItemLeft" align="right" valign="top"><a id="aa9c88666e02916392baafb0f6f32a9ed"></a>
+typedef MultiVector&lt; GO, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorGO_Type</b></td></tr>
+<tr class="separator:aa9c88666e02916392baafb0f6f32a9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5593f5b047bcd78698da8d9d6c4a7e44"><td class="memItemLeft" align="right" valign="top"><a id="a5593f5b047bcd78698da8d9d6c4a7e44"></a>
+typedef Teuchos::RCP&lt; MultiVectorGO_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorGOPtr_Type</b></td></tr>
+<tr class="separator:a5593f5b047bcd78698da8d9d6c4a7e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8caa4d56423da54bdfa117997252a400"><td class="memItemLeft" align="right" valign="top"><a id="a8caa4d56423da54bdfa117997252a400"></a>
+typedef Teuchos::RCP&lt; const MultiVector_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorConstPtr_Type</b></td></tr>
+<tr class="separator:a8caa4d56423da54bdfa117997252a400"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2ca2ac7d7bb5251e9546a8a81077a34"><td class="memItemLeft" align="right" valign="top"><a id="ad2ca2ac7d7bb5251e9546a8a81077a34"></a>
+typedef Teuchos::OrdinalTraits&lt; LO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>OTLO</b></td></tr>
+<tr class="separator:ad2ca2ac7d7bb5251e9546a8a81077a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57f322063d7692248463f5f4fe859a25"><td class="memItemLeft" align="right" valign="top"><a id="a57f322063d7692248463f5f4fe859a25"></a>
+typedef Matrix&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Matrix_Type</b></td></tr>
+<tr class="separator:a57f322063d7692248463f5f4fe859a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc9db004cde1ce278146dceb3533f2a9"><td class="memItemLeft" align="right" valign="top"><a id="afc9db004cde1ce278146dceb3533f2a9"></a>
+typedef Teuchos::RCP&lt; Matrix_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MatrixPtr_Type</b></td></tr>
+<tr class="separator:afc9db004cde1ce278146dceb3533f2a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a53ee35aa20a5844f6cc3c4d35317f8"><td class="memItemLeft" align="right" valign="top"><a id="a0a53ee35aa20a5844f6cc3c4d35317f8"></a>
+typedef <a class="el" href="classFEDD_1_1ExporterParaViewAMR.html">ExporterParaViewAMR</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Exporter_Type</b></td></tr>
+<tr class="separator:a0a53ee35aa20a5844f6cc3c4d35317f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33d84d4a54886d5e8b58c90500130107"><td class="memItemLeft" align="right" valign="top"><a id="a33d84d4a54886d5e8b58c90500130107"></a>
+typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1ExporterParaViewAMR.html">Exporter_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ExporterPtr_Type</b></td></tr>
+<tr class="separator:a33d84d4a54886d5e8b58c90500130107"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ea29617a7415329e9b410f9243714fc"><td class="memItemLeft" align="right" valign="top"><a id="a2ea29617a7415329e9b410f9243714fc"></a>
+typedef Teuchos::RCP&lt; ExporterTxt &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ExporterTxtPtr_Type</b></td></tr>
+<tr class="separator:a2ea29617a7415329e9b410f9243714fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ee2f7c049cf9cf895bdb06b7a561d91"><td class="memItemLeft" align="right" valign="top"><a id="a4ee2f7c049cf9cf895bdb06b7a561d91"></a>
+typedef Problem&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Problem_Type</b></td></tr>
+<tr class="separator:a4ee2f7c049cf9cf895bdb06b7a561d91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a516137f79f1c9ea2675e015c01f9b375"><td class="memItemLeft" align="right" valign="top"><a id="a516137f79f1c9ea2675e015c01f9b375"></a>
+typedef Teuchos::RCP&lt; Problem_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ProblemPtr_Type</b></td></tr>
+<tr class="separator:a516137f79f1c9ea2675e015c01f9b375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad711f7d9830636eace6c103e6c689f5b"><td class="memItemLeft" align="right" valign="top"><a id="ad711f7d9830636eace6c103e6c689f5b"></a>
+typedef Domain&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Domain_Type</b></td></tr>
+<tr class="separator:ad711f7d9830636eace6c103e6c689f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26fe510a0281fd8f837110cf471410c0"><td class="memItemLeft" align="right" valign="top"><a id="a26fe510a0281fd8f837110cf471410c0"></a>
+typedef Teuchos::RCP&lt; Domain_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>DomainPtr_Type</b></td></tr>
+<tr class="separator:a26fe510a0281fd8f837110cf471410c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebc0627ef139b217812c8f471145dae3"><td class="memItemLeft" align="right" valign="top"><a id="aebc0627ef139b217812c8f471145dae3"></a>
+typedef std::vector&lt; DomainPtr_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>DomainPtrArray_Type</b></td></tr>
+<tr class="separator:aebc0627ef139b217812c8f471145dae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8979f9f92c0664bbc0789403106ed59b"><td class="memItemLeft" align="right" valign="top"><a id="a8979f9f92c0664bbc0789403106ed59b"></a>
+typedef std::vector&lt; MultiVectorPtr_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorPtrArray_Type</b></td></tr>
+<tr class="separator:a8979f9f92c0664bbc0789403106ed59b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e1b21d4d97f898a4f6b06f5a889c249"><td class="memItemLeft" align="right" valign="top"><a id="a2e1b21d4d97f898a4f6b06f5a889c249"></a>
+typedef BlockMultiVector&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>BlockMultiVector_Type</b></td></tr>
+<tr class="separator:a2e1b21d4d97f898a4f6b06f5a889c249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa78abbd0cc3c375c1b4482971e28cdea"><td class="memItemLeft" align="right" valign="top"><a id="aa78abbd0cc3c375c1b4482971e28cdea"></a>
+typedef Teuchos::RCP&lt; BlockMultiVector_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>BlockMultiVectorPtr_Type</b></td></tr>
+<tr class="separator:aa78abbd0cc3c375c1b4482971e28cdea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a906e91e900ed67e5559e4d40053b443f"><td class="memItemLeft" align="right" valign="top"><a id="a906e91e900ed67e5559e4d40053b443f"></a>
+typedef Teuchos::RCP&lt; const BlockMultiVector_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>BlockMultiVectorConstPtr_Type</b></td></tr>
+<tr class="separator:a906e91e900ed67e5559e4d40053b443f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a259e41c282b1db70f233ac94854ba8bd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a259e41c282b1db70f233ac94854ba8bd">AdaptiveMeshRefinement</a> ()</td></tr>
-<tr class="separator:a259e41c282b1db70f233ac94854ba8bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6331efe29307723fb532acea922d8489"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a6331efe29307723fb532acea922d8489">AdaptiveMeshRefinement</a> (string problemType, ParameterListPtr_Type parameterListAll)</td></tr>
-<tr class="separator:a6331efe29307723fb532acea922d8489"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf48e548d006ada2f7bec61fb2bc1d36"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#acf48e548d006ada2f7bec61fb2bc1d36">AdaptiveMeshRefinement</a> (string problemType, ParameterListPtr_Type parameterListAll, Func_Type exactSolFunc)</td></tr>
-<tr class="separator:acf48e548d006ada2f7bec61fb2bc1d36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9fa1b37f179d6d82c6e0b2bd8e898ec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae9fa1b37f179d6d82c6e0b2bd8e898ec">~AdaptiveMeshRefinement</a> ()</td></tr>
-<tr class="separator:ae9fa1b37f179d6d82c6e0b2bd8e898ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10f773edf498ea2bcc21c5b1dc36a32e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a10f773edf498ea2bcc21c5b1dc36a32e">globalAlgorithm</a> (<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a> domainP1, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a> domainP12, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a62f59092ab4dee90885c4d38b123ca9c">BlockMultiVectorConstPtr_Type</a> solution, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a442c6ca5dc4d866e3b1c6cdb613e2281">ProblemPtr_Type</a> problem, RhsFunc_Type rhsFunc)</td></tr>
-<tr class="memdesc:a10f773edf498ea2bcc21c5b1dc36a32e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global Algorithm of Mesh Refinement.  <a href="#a10f773edf498ea2bcc21c5b1dc36a32e">More...</a><br /></td></tr>
-<tr class="separator:a10f773edf498ea2bcc21c5b1dc36a32e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbff0752b1d6febdb36194e379e8b876"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abbff0752b1d6febdb36194e379e8b876">refineArea</a> (<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a> domainP1, vec2D_dbl_Type area, int level)</td></tr>
-<tr class="separator:abbff0752b1d6febdb36194e379e8b876"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a006a35028c7c627a1dd885df67204084"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a006a35028c7c627a1dd885df67204084">calcExactSolution</a> ()</td></tr>
-<tr class="memdesc:a006a35028c7c627a1dd885df67204084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculating exact solution if possible with exactSolFunc_.  <a href="#a006a35028c7c627a1dd885df67204084">More...</a><br /></td></tr>
-<tr class="separator:a006a35028c7c627a1dd885df67204084"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acce59127908a270c29318f32d0010513"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#acce59127908a270c29318f32d0010513">identifyProblem</a> (<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a62f59092ab4dee90885c4d38b123ca9c">BlockMultiVectorConstPtr_Type</a> valuesSolution)</td></tr>
-<tr class="separator:acce59127908a270c29318f32d0010513"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43e57f7bf39f588491888ebdde7b4010"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a43e57f7bf39f588491888ebdde7b4010">calcErrorNorms</a> (<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a> exactSolution, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a> solutionP12)</td></tr>
-<tr class="separator:a43e57f7bf39f588491888ebdde7b4010"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abad839ae02aaa2a4fe5f2bdb661e4dab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abad839ae02aaa2a4fe5f2bdb661e4dab">initExporter</a> (ParameterListPtr_Type parameterListAll)</td></tr>
-<tr class="separator:abad839ae02aaa2a4fe5f2bdb661e4dab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfbce243e105dff484cc3a516ced0019"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#adfbce243e105dff484cc3a516ced0019">exportSolution</a> (<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abc927c0c0253b094c3c53338f9128d20">MeshUnstrPtr_Type</a> mesh, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a> exportSolutionMv, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a> errorValues, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a> exactSolutionMv)</td></tr>
-<tr class="separator:adfbce243e105dff484cc3a516ced0019"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac428fd84d745170b6b83c5f3ec07fead"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ac428fd84d745170b6b83c5f3ec07fead">exportError</a> (<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abc927c0c0253b094c3c53338f9128d20">MeshUnstrPtr_Type</a> mesh, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a> errorElConst, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a> vecDecompositionConst)</td></tr>
-<tr class="separator:ac428fd84d745170b6b83c5f3ec07fead"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7103d3aaea99021774a69bb80a6b0044"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a7103d3aaea99021774a69bb80a6b0044">writeRefinementInfo</a> ()</td></tr>
-<tr class="separator:a7103d3aaea99021774a69bb80a6b0044"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac17385ec3b84fd7c285b5442476f40a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ac17385ec3b84fd7c285b5442476f40a9">buildSurfaceTriangleElements</a> (<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a9a08c5e3801ff9f9f3dff7997f9f4b1b">ElementsPtr_Type</a> elements, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a495f60e86da92289b7fe1c15e291660d">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#aabda3ef3658f8847265104c6cf9a3877">SurfaceElementsPtr_Type</a> surfaceTriangleElements)</td></tr>
-<tr class="separator:ac17385ec3b84fd7c285b5442476f40a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35ec26c4ed6ccbf878ce35cf86a6b455"><td class="memItemLeft" align="right" valign="top">vec_bool_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a35ec26c4ed6ccbf878ce35cf86a6b455">checkInterfaceSurface</a> (<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a495f60e86da92289b7fe1c15e291660d">EdgeElementsPtr_Type</a> edgeElements, vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement)</td></tr>
-<tr class="separator:a35ec26c4ed6ccbf878ce35cf86a6b455"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad736272ed2b7eec557fe50b49de6654e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad736272ed2b7eec557fe50b49de6654e">AdaptiveMeshRefinement</a> (string problemType, ParameterListPtr_Type parameterListAll)</td></tr>
+<tr class="separator:ad736272ed2b7eec557fe50b49de6654e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5f475f6ca3eb55635d9838b1c641ca8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad5f475f6ca3eb55635d9838b1c641ca8">AdaptiveMeshRefinement</a> (string problemType, ParameterListPtr_Type parameterListAll, Func_Type exactSolFunc)</td></tr>
+<tr class="separator:ad5f475f6ca3eb55635d9838b1c641ca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac695e101f66364a347d05451ec3e1a26"><td class="memItemLeft" align="right" valign="top">DomainPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ac695e101f66364a347d05451ec3e1a26">globalAlgorithm</a> (DomainPtr_Type domainP1, DomainPtr_Type domainP12, BlockMultiVectorConstPtr_Type solution, ProblemPtr_Type problem, RhsFunc_Type rhsFunc)</td></tr>
+<tr class="separator:ac695e101f66364a347d05451ec3e1a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00adcb9d7cbdbc0e5a901662fbf8a9e4"><td class="memItemLeft" align="right" valign="top"><a id="a00adcb9d7cbdbc0e5a901662fbf8a9e4"></a>
+DomainPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>refineArea</b> (DomainPtr_Type domainP1, vec2D_dbl_Type area, int level)</td></tr>
+<tr class="separator:a00adcb9d7cbdbc0e5a901662fbf8a9e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab99e4f813aff9a485ad0f64211cfb0fa"><td class="memItemLeft" align="right" valign="top"><a id="ab99e4f813aff9a485ad0f64211cfb0fa"></a>
+MultiVectorConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ab99e4f813aff9a485ad0f64211cfb0fa">calcExactSolution</a> ()</td></tr>
+<tr class="separator:ab99e4f813aff9a485ad0f64211cfb0fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1249c5ae853284c90a95a6ed7e1ae76"><td class="memItemLeft" align="right" valign="top"><a id="ae1249c5ae853284c90a95a6ed7e1ae76"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>identifyProblem</b> (BlockMultiVectorConstPtr_Type valuesSolution)</td></tr>
+<tr class="separator:ae1249c5ae853284c90a95a6ed7e1ae76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec6233132c77e92c78ab820acb7c523c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#aec6233132c77e92c78ab820acb7c523c">calcErrorNorms</a> (MultiVectorConstPtr_Type exactSolution, MultiVectorConstPtr_Type solutionP12)</td></tr>
+<tr class="separator:aec6233132c77e92c78ab820acb7c523c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29b6de9d13d734aa86669bc0add28c25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a29b6de9d13d734aa86669bc0add28c25">initExporter</a> (ParameterListPtr_Type parameterListAll)</td></tr>
+<tr class="separator:a29b6de9d13d734aa86669bc0add28c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aef7d351efdf637713d5c34c2898672"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a2aef7d351efdf637713d5c34c2898672">exportSolution</a> (MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv)</td></tr>
+<tr class="separator:a2aef7d351efdf637713d5c34c2898672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b52ea69beece0eb7a11fec246bd5ef3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a1b52ea69beece0eb7a11fec246bd5ef3">exportError</a> (MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type errorElConst, MultiVectorConstPtr_Type vecDecompositionConst)</td></tr>
+<tr class="separator:a1b52ea69beece0eb7a11fec246bd5ef3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0480d80e226050e4a73cab5bb15b16d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae0480d80e226050e4a73cab5bb15b16d">writeRefinementInfo</a> ()</td></tr>
+<tr class="separator:ae0480d80e226050e4a73cab5bb15b16d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cdd9b68e15a5a3d3408fdbf933e2beb"><td class="memItemLeft" align="right" valign="top"><a id="a4cdd9b68e15a5a3d3408fdbf933e2beb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>buildSurfaceTriangleElements</b> (ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceTriangleElements)</td></tr>
+<tr class="separator:a4cdd9b68e15a5a3d3408fdbf933e2beb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dcc6cb8430ece1eaf52f560f8466d92"><td class="memItemLeft" align="right" valign="top"><a id="a2dcc6cb8430ece1eaf52f560f8466d92"></a>
+vec_bool_Type&#160;</td><td class="memItemRight" valign="bottom"><b>checkInterfaceSurface</b> (EdgeElementsPtr_Type edgeElements, vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement)</td></tr>
+<tr class="separator:a2dcc6cb8430ece1eaf52f560f8466d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a347fafd7bf8f3c54c74919b19f701c77"><td class="memItemLeft" align="right" valign="top"><a id="a347fafd7bf8f3c54c74919b19f701c77"></a>
+RhsFunc_Type&#160;</td><td class="memItemRight" valign="bottom"><b>rhsFunc_</b></td></tr>
+<tr class="separator:a347fafd7bf8f3c54c74919b19f701c77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2e17f636c551f4aa4583f942e77c698"><td class="memItemLeft" align="right" valign="top"><a id="aa2e17f636c551f4aa4583f942e77c698"></a>
+Func_Type&#160;</td><td class="memItemRight" valign="bottom"><b>exactSolFunc_</b></td></tr>
+<tr class="separator:aa2e17f636c551f4aa4583f942e77c698"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90c33276bcf41ed2a921df17167c8a46"><td class="memItemLeft" align="right" valign="top"><a id="a90c33276bcf41ed2a921df17167c8a46"></a>
+MeshUnstrPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>inputMeshP1_</b></td></tr>
+<tr class="separator:a90c33276bcf41ed2a921df17167c8a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a035449fbb3bab9f4a858b93c0cf455d9"><td class="memItemLeft" align="right" valign="top"><a id="a035449fbb3bab9f4a858b93c0cf455d9"></a>
+MeshUnstrPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>inputMeshP12_</b></td></tr>
+<tr class="separator:a035449fbb3bab9f4a858b93c0cf455d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1450ca463347e63ed8952d0f0670f68"><td class="memItemLeft" align="right" valign="top"><a id="af1450ca463347e63ed8952d0f0670f68"></a>
+MeshUnstrPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>outputMesh_</b></td></tr>
+<tr class="separator:af1450ca463347e63ed8952d0f0670f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0de90509111fc1d5c9f892d9625b5bf7"><td class="memItemLeft" align="right" valign="top"><a id="a0de90509111fc1d5c9f892d9625b5bf7"></a>
+MultiVectorPtrArray_Type&#160;</td><td class="memItemRight" valign="bottom"><b>errorEstimationMv_</b></td></tr>
+<tr class="separator:a0de90509111fc1d5c9f892d9625b5bf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab766e119b248f9d40108c01febe25944"><td class="memItemLeft" align="right" valign="top"><a id="ab766e119b248f9d40108c01febe25944"></a>
+MultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>errorElementsMv_</b></td></tr>
+<tr class="separator:ab766e119b248f9d40108c01febe25944"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeec52a29a93b90b7f31b9276eec51b22"><td class="memItemLeft" align="right" valign="top"><a id="aeec52a29a93b90b7f31b9276eec51b22"></a>
+MultiVectorConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>errorNodesMv_</b></td></tr>
+<tr class="separator:aeec52a29a93b90b7f31b9276eec51b22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a535535dd7ec7edde1b497a126a802786"><td class="memItemLeft" align="right" valign="top"><a id="a535535dd7ec7edde1b497a126a802786"></a>
+BlockMultiVectorConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>solution_</b></td></tr>
+<tr class="separator:a535535dd7ec7edde1b497a126a802786"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b9f2de6c317ee24cdd95361944b3d6d"><td class="memItemLeft" align="right" valign="top"><a id="a4b9f2de6c317ee24cdd95361944b3d6d"></a>
+CommConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>comm_</b></td></tr>
+<tr class="separator:a4b9f2de6c317ee24cdd95361944b3d6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a237d660159c637e7bffb9cba3019be69"><td class="memItemLeft" align="right" valign="top"><a id="a237d660159c637e7bffb9cba3019be69"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>exportWithParaview_</b> = true</td></tr>
+<tr class="separator:a237d660159c637e7bffb9cba3019be69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d26a5231bb397c8ed7f787a8f4e8983"><td class="memItemLeft" align="right" valign="top"><a id="a4d26a5231bb397c8ed7f787a8f4e8983"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>initExporter_</b> =false</td></tr>
+<tr class="separator:a4d26a5231bb397c8ed7f787a8f4e8983"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a953326524dea111a35b260dfaeaeb94d"><td class="memItemLeft" align="right" valign="top"><a id="a953326524dea111a35b260dfaeaeb94d"></a>
+ExporterPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>exporterSol_</b></td></tr>
+<tr class="separator:a953326524dea111a35b260dfaeaeb94d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa66e8417419524015241d01250871d80"><td class="memItemLeft" align="right" valign="top"><a id="aa66e8417419524015241d01250871d80"></a>
+ExporterPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>exporterError_</b></td></tr>
+<tr class="separator:aa66e8417419524015241d01250871d80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a382608993ba40ba41cbed1d9255eb066"><td class="memItemLeft" align="right" valign="top"><a id="a382608993ba40ba41cbed1d9255eb066"></a>
+DomainPtrArray_Type&#160;</td><td class="memItemRight" valign="bottom"><b>domainsP1_</b></td></tr>
+<tr class="separator:a382608993ba40ba41cbed1d9255eb066"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a675d8e6179db3dcb73bdb85124377ad5"><td class="memItemLeft" align="right" valign="top"><a id="a675d8e6179db3dcb73bdb85124377ad5"></a>
+DomainPtrArray_Type&#160;</td><td class="memItemRight" valign="bottom"><b>domainsP12_</b></td></tr>
+<tr class="separator:a675d8e6179db3dcb73bdb85124377ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9af23aeea23acd30d61a342e6067f69e"><td class="memItemLeft" align="right" valign="top"><a id="a9af23aeea23acd30d61a342e6067f69e"></a>
+DomainPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>domainP1_</b></td></tr>
+<tr class="separator:a9af23aeea23acd30d61a342e6067f69e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4b9898c530cedbe707af310e145b82b"><td class="memItemLeft" align="right" valign="top"><a id="ae4b9898c530cedbe707af310e145b82b"></a>
+DomainPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>domainP12_</b></td></tr>
+<tr class="separator:ae4b9898c530cedbe707af310e145b82b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a139043ec0e090acefe0840b0d159fada"><td class="memItemLeft" align="right" valign="top"><a id="a139043ec0e090acefe0840b0d159fada"></a>
+ProblemPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>problem_</b></td></tr>
+<tr class="separator:a139043ec0e090acefe0840b0d159fada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f628fe0b946dc70f36bd7295a8211db"><td class="memItemLeft" align="right" valign="top"><a id="a2f628fe0b946dc70f36bd7295a8211db"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>refinementRestriction_</b> = &quot;keepRegularity&quot;</td></tr>
+<tr class="separator:a2f628fe0b946dc70f36bd7295a8211db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc05afe32a57a439f0abe9938c467e78"><td class="memItemLeft" align="right" valign="top"><a id="abc05afe32a57a439f0abe9938c467e78"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>markingStrategy_</b> = &quot;Maximum&quot;</td></tr>
+<tr class="separator:abc05afe32a57a439f0abe9938c467e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c7abbd8213424c9fdf9fd9d39fc8e67"><td class="memItemLeft" align="right" valign="top"><a id="a7c7abbd8213424c9fdf9fd9d39fc8e67"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>theta_</b> = 0.5</td></tr>
+<tr class="separator:a7c7abbd8213424c9fdf9fd9d39fc8e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9890c5a15a3b5f040cbe0175c35ea929"><td class="memItemLeft" align="right" valign="top"><a id="a9890c5a15a3b5f040cbe0175c35ea929"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>tol_</b> = 0.001</td></tr>
+<tr class="separator:a9890c5a15a3b5f040cbe0175c35ea929"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac154f51ad3788ae2527bf44a421a4834"><td class="memItemLeft" align="right" valign="top"><a id="ac154f51ad3788ae2527bf44a421a4834"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>meshQualityPrint_</b> = &quot;false&quot;</td></tr>
+<tr class="separator:ac154f51ad3788ae2527bf44a421a4834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f6f3b61263c544d860ff5086cd04f0c"><td class="memItemLeft" align="right" valign="top"><a id="a2f6f3b61263c544d860ff5086cd04f0c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>timeTablePrint_</b> = &quot;false&quot;</td></tr>
+<tr class="separator:a2f6f3b61263c544d860ff5086cd04f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af36738c6f988a6d564281b04e4e739f1"><td class="memItemLeft" align="right" valign="top"><a id="af36738c6f988a6d564281b04e4e739f1"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>refinement3DDiagonal_</b> = 0</td></tr>
+<tr class="separator:af36738c6f988a6d564281b04e4e739f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48d4a97411247d70bc2be09d9acaa2d"><td class="memItemLeft" align="right" valign="top"><a id="ab48d4a97411247d70bc2be09d9acaa2d"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>problemType_</b></td></tr>
+<tr class="separator:ab48d4a97411247d70bc2be09d9acaa2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a844805bf936642eb8849d76b506abf8d"><td class="memItemLeft" align="right" valign="top"><a id="a844805bf936642eb8849d76b506abf8d"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>dim_</b></td></tr>
+<tr class="separator:a844805bf936642eb8849d76b506abf8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a370febf343df49883f6504ff9327cc81"><td class="memItemLeft" align="right" valign="top"><a id="a370febf343df49883f6504ff9327cc81"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>currentIter_</b></td></tr>
+<tr class="separator:a370febf343df49883f6504ff9327cc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f67e467b943d72543be435facb25dee"><td class="memItemLeft" align="right" valign="top"><a id="a7f67e467b943d72543be435facb25dee"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>maxIter_</b> = 5</td></tr>
+<tr class="separator:a7f67e467b943d72543be435facb25dee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae566d1a1764a0f0db455e3124c476de3"><td class="memItemLeft" align="right" valign="top"><a id="ae566d1a1764a0f0db455e3124c476de3"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>maxRank_</b></td></tr>
+<tr class="separator:ae566d1a1764a0f0db455e3124c476de3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57d325582be58d2efcdd996e4cabb2ce"><td class="memItemLeft" align="right" valign="top"><a id="a57d325582be58d2efcdd996e4cabb2ce"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>FEType1_</b></td></tr>
+<tr class="separator:a57d325582be58d2efcdd996e4cabb2ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28cc586b6ee293e677b46fb8dce23c09"><td class="memItemLeft" align="right" valign="top"><a id="a28cc586b6ee293e677b46fb8dce23c09"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>FEType2_</b></td></tr>
+<tr class="separator:a28cc586b6ee293e677b46fb8dce23c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b7fa65a6799f3e5633b50a7e57a6888"><td class="memItemLeft" align="right" valign="top"><a id="a8b7fa65a6799f3e5633b50a7e57a6888"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>maxErrorEl</b></td></tr>
+<tr class="separator:a8b7fa65a6799f3e5633b50a7e57a6888"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c4852c7e04dbc0662858e79ae34cf67"><td class="memItemLeft" align="right" valign="top"><a id="a8c4852c7e04dbc0662858e79ae34cf67"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>maxErrorKn</b></td></tr>
+<tr class="separator:a8c4852c7e04dbc0662858e79ae34cf67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a658b602c2ae3806870faf2d48338976a"><td class="memItemLeft" align="right" valign="top"><a id="a658b602c2ae3806870faf2d48338976a"></a>
+vec_int_Type&#160;</td><td class="memItemRight" valign="bottom"><b>numElements</b></td></tr>
+<tr class="separator:a658b602c2ae3806870faf2d48338976a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa59155003c034924a33a180e6bc40d2e"><td class="memItemLeft" align="right" valign="top"><a id="aa59155003c034924a33a180e6bc40d2e"></a>
+vec_int_Type&#160;</td><td class="memItemRight" valign="bottom"><b>numElementsProc</b></td></tr>
+<tr class="separator:aa59155003c034924a33a180e6bc40d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ff53dcc1eba79c03578d07ae90031f1"><td class="memItemLeft" align="right" valign="top"><a id="a3ff53dcc1eba79c03578d07ae90031f1"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>relError</b></td></tr>
+<tr class="separator:a3ff53dcc1eba79c03578d07ae90031f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4324a44d541c363f2f9356e8300c2fcb"><td class="memItemLeft" align="right" valign="top"><a id="a4324a44d541c363f2f9356e8300c2fcb"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>eRelError</b></td></tr>
+<tr class="separator:a4324a44d541c363f2f9356e8300c2fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af86e3a8d7fa5574f5cd514fcfd825bcb"><td class="memItemLeft" align="right" valign="top"><a id="af86e3a8d7fa5574f5cd514fcfd825bcb"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>errorH1</b></td></tr>
+<tr class="separator:af86e3a8d7fa5574f5cd514fcfd825bcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e13f313907423f0e22fe0c68db31c0d"><td class="memItemLeft" align="right" valign="top"><a id="a0e13f313907423f0e22fe0c68db31c0d"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>errorL2</b></td></tr>
+<tr class="separator:a0e13f313907423f0e22fe0c68db31c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0111f108d23ed64fc02f4689d7266de"><td class="memItemLeft" align="right" valign="top"><a id="ad0111f108d23ed64fc02f4689d7266de"></a>
+vec_int_Type&#160;</td><td class="memItemRight" valign="bottom"><b>numNodes</b></td></tr>
+<tr class="separator:ad0111f108d23ed64fc02f4689d7266de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21c35d3bdf5c503642ec8a87102e11c4"><td class="memItemLeft" align="right" valign="top"><a id="a21c35d3bdf5c503642ec8a87102e11c4"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>writeRefinementTime_</b> = true</td></tr>
+<tr class="separator:a21c35d3bdf5c503642ec8a87102e11c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a996ada99237e86b0d80b5e2fcbe02c"><td class="memItemLeft" align="right" valign="top"><a id="a7a996ada99237e86b0d80b5e2fcbe02c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>writeMeshQuality_</b> = true</td></tr>
+<tr class="separator:a7a996ada99237e86b0d80b5e2fcbe02c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adac0e4356667cbc53fe4d21d302dfaf6"><td class="memItemLeft" align="right" valign="top"><a id="adac0e4356667cbc53fe4d21d302dfaf6"></a>
+ParameterListPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>parameterListAll_</b></td></tr>
+<tr class="separator:adac0e4356667cbc53fe4d21d302dfaf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48a0ad621664c3936d775ad1a38555a"><td class="memItemLeft" align="right" valign="top"><a id="ab48a0ad621664c3936d775ad1a38555a"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>dofs_</b></td></tr>
+<tr class="separator:ab48a0ad621664c3936d775ad1a38555a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c642b8ce3bd9fc44d991a5c179d8ffb"><td class="memItemLeft" align="right" valign="top"><a id="a0c642b8ce3bd9fc44d991a5c179d8ffb"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>dofsP_</b></td></tr>
+<tr class="separator:a0c642b8ce3bd9fc44d991a5c179d8ffb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="ace60cfe1caf8767564c40edef5ca8b0b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ace60cfe1caf8767564c40edef5ca8b0b">&#9670;&nbsp;</a></span>BlockMultiVector_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef BlockMultiVector&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ace60cfe1caf8767564c40edef5ca8b0b">BlockMultiVector_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a62f59092ab4dee90885c4d38b123ca9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62f59092ab4dee90885c4d38b123ca9c">&#9670;&nbsp;</a></span>BlockMultiVectorConstPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;const <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ace60cfe1caf8767564c40edef5ca8b0b">BlockMultiVector_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a62f59092ab4dee90885c4d38b123ca9c">BlockMultiVectorConstPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aba249beb6c7ef61bd78d2f4ad3be68fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba249beb6c7ef61bd78d2f4ad3be68fe">&#9670;&nbsp;</a></span>BlockMultiVectorPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ace60cfe1caf8767564c40edef5ca8b0b">BlockMultiVector_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#aba249beb6c7ef61bd78d2f4ad3be68fe">BlockMultiVectorPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a6bd5089532bd8dac39bebc4a92e33c40"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6bd5089532bd8dac39bebc4a92e33c40">&#9670;&nbsp;</a></span>CommConstPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Mesh_Type::CommConstPtr_Type <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a6bd5089532bd8dac39bebc4a92e33c40">CommConstPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a28759ffaba5c0900ad9ad3b7b185d504"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28759ffaba5c0900ad9ad3b7b185d504">&#9670;&nbsp;</a></span>CommPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Mesh_Type::CommPtr_Type <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a28759ffaba5c0900ad9ad3b7b185d504">CommPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a894158e6863753ca565eabb915e25d9a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a894158e6863753ca565eabb915e25d9a">&#9670;&nbsp;</a></span>Domain_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Domain&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a894158e6863753ca565eabb915e25d9a">Domain_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a98b097661d0e4c38e4182582078e2cd6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a98b097661d0e4c38e4182582078e2cd6">&#9670;&nbsp;</a></span>DomainPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a894158e6863753ca565eabb915e25d9a">Domain_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a581823e939bbec9e9a52a23d59d5c06a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a581823e939bbec9e9a52a23d59d5c06a">&#9670;&nbsp;</a></span>DomainPtrArray_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::vector&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a581823e939bbec9e9a52a23d59d5c06a">DomainPtrArray_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a891870bd161746dd633e1c8126d8fea1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a891870bd161746dd633e1c8126d8fea1">&#9670;&nbsp;</a></span>EdgeElements_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef EdgeElements <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a891870bd161746dd633e1c8126d8fea1">EdgeElements_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a495f60e86da92289b7fe1c15e291660d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a495f60e86da92289b7fe1c15e291660d">&#9670;&nbsp;</a></span>EdgeElementsPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a891870bd161746dd633e1c8126d8fea1">EdgeElements_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a495f60e86da92289b7fe1c15e291660d">EdgeElementsPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae08f7ca72876c1aba944120b3ca088d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae08f7ca72876c1aba944120b3ca088d3">&#9670;&nbsp;</a></span>Elements_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Elements <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae08f7ca72876c1aba944120b3ca088d3">Elements_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a9a08c5e3801ff9f9f3dff7997f9f4b1b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9a08c5e3801ff9f9f3dff7997f9f4b1b">&#9670;&nbsp;</a></span>ElementsPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae08f7ca72876c1aba944120b3ca088d3">Elements_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a9a08c5e3801ff9f9f3dff7997f9f4b1b">ElementsPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a3f493149d664db5c1024f27f87f0ac15"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3f493149d664db5c1024f27f87f0ac15">&#9670;&nbsp;</a></span>Exporter_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef <a class="el" href="classFEDD_1_1ExporterParaViewAMR.html">ExporterParaViewAMR</a>&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a3f493149d664db5c1024f27f87f0ac15">Exporter_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac8cda8533e68f9049ede0208be2175d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8cda8533e68f9049ede0208be2175d6">&#9670;&nbsp;</a></span>ExporterPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a3f493149d664db5c1024f27f87f0ac15">Exporter_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ac8cda8533e68f9049ede0208be2175d6">ExporterPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="afc81b6919eb7756e16e696631e0d666b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc81b6919eb7756e16e696631e0d666b">&#9670;&nbsp;</a></span>ExporterTxtPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;ExporterTxt&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afc81b6919eb7756e16e696631e0d666b">ExporterTxtPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af60419a5ef8a4785991b704d1ad7aacb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af60419a5ef8a4785991b704d1ad7aacb">&#9670;&nbsp;</a></span>Map_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Map&lt;LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#af60419a5ef8a4785991b704d1ad7aacb">Map_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a584bfb3398e9072ddf188bfa3c04c926"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a584bfb3398e9072ddf188bfa3c04c926">&#9670;&nbsp;</a></span>MapConstPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Map_Type::MapConstPtr_Type <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a584bfb3398e9072ddf188bfa3c04c926">MapConstPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a751bcbe2e4fddcdcde836067b776d42d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a751bcbe2e4fddcdcde836067b776d42d">&#9670;&nbsp;</a></span>MapPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Map_Type::MapPtr_Type <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a751bcbe2e4fddcdcde836067b776d42d">MapPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a607791df1d84bc4ea9fc08acd31225c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a607791df1d84bc4ea9fc08acd31225c7">&#9670;&nbsp;</a></span>Matrix_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Matrix&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a607791df1d84bc4ea9fc08acd31225c7">Matrix_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a862a72ab4878d57a61b746f5ac8d0b6c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a862a72ab4878d57a61b746f5ac8d0b6c">&#9670;&nbsp;</a></span>MatrixPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a607791df1d84bc4ea9fc08acd31225c7">Matrix_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a862a72ab4878d57a61b746f5ac8d0b6c">MatrixPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a7d24de886f92d012c43fbe13d884f08b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d24de886f92d012c43fbe13d884f08b">&#9670;&nbsp;</a></span>Mesh_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Mesh&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a7d24de886f92d012c43fbe13d884f08b">Mesh_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2d24dca5502ca055019d31c569bf003e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d24dca5502ca055019d31c569bf003e">&#9670;&nbsp;</a></span>MeshInterface_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MeshInterface&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a2d24dca5502ca055019d31c569bf003e">MeshInterface_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a5d1f62bff0822daa8f0b7caf3e3b4311"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d1f62bff0822daa8f0b7caf3e3b4311">&#9670;&nbsp;</a></span>MeshInterfacePtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a2d24dca5502ca055019d31c569bf003e">MeshInterface_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a5d1f62bff0822daa8f0b7caf3e3b4311">MeshInterfacePtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad5319bc1d767943b4746128c4392679a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5319bc1d767943b4746128c4392679a">&#9670;&nbsp;</a></span>MeshUnstr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MeshUnstructured&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad5319bc1d767943b4746128c4392679a">MeshUnstr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="abc927c0c0253b094c3c53338f9128d20"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abc927c0c0253b094c3c53338f9128d20">&#9670;&nbsp;</a></span>MeshUnstrPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;MeshUnstructured&lt;SC,LO,GO,NO&gt; &gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abc927c0c0253b094c3c53338f9128d20">MeshUnstrPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aae5b66cd506467dbeff01795c41cafcb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae5b66cd506467dbeff01795c41cafcb">&#9670;&nbsp;</a></span>MeshUnstrPtrArray_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::vector&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abc927c0c0253b094c3c53338f9128d20">MeshUnstrPtr_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#aae5b66cd506467dbeff01795c41cafcb">MeshUnstrPtrArray_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ade0625d6a1aa9c3586f3b04abb0a9e5e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade0625d6a1aa9c3586f3b04abb0a9e5e">&#9670;&nbsp;</a></span>MeshUnstrRef_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MeshUnstructuredRefinement&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ade0625d6a1aa9c3586f3b04abb0a9e5e">MeshUnstrRef_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad166d4fc2a5e64ed6c4b5ee3941c77bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad166d4fc2a5e64ed6c4b5ee3941c77bf">&#9670;&nbsp;</a></span>MeshUnstrRefPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ade0625d6a1aa9c3586f3b04abb0a9e5e">MeshUnstrRef_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad166d4fc2a5e64ed6c4b5ee3941c77bf">MeshUnstrRefPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a9d1410723e7af7a2835cc294934fba65"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9d1410723e7af7a2835cc294934fba65">&#9670;&nbsp;</a></span>MeshUnstrRefPtrArray_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::vector&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad166d4fc2a5e64ed6c4b5ee3941c77bf">MeshUnstrRefPtr_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a9d1410723e7af7a2835cc294934fba65">MeshUnstrRefPtrArray_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="afba165f2caa97c6de40654b1ee51e38d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afba165f2caa97c6de40654b1ee51e38d">&#9670;&nbsp;</a></span>MultiVector_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MultiVector&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afba165f2caa97c6de40654b1ee51e38d">MultiVector_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad8871639b0a35039184611ce286a446c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad8871639b0a35039184611ce286a446c">&#9670;&nbsp;</a></span>MultiVectorConstPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;const <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afba165f2caa97c6de40654b1ee51e38d">MultiVector_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a582403f1b9f5ba542a6269e1b00a9031"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a582403f1b9f5ba542a6269e1b00a9031">&#9670;&nbsp;</a></span>MultiVectorGO_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MultiVector&lt;GO,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a582403f1b9f5ba542a6269e1b00a9031">MultiVectorGO_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab2378e2061f0df4ec2df4a44af300996"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2378e2061f0df4ec2df4a44af300996">&#9670;&nbsp;</a></span>MultiVectorGOPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a582403f1b9f5ba542a6269e1b00a9031">MultiVectorGO_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ab2378e2061f0df4ec2df4a44af300996">MultiVectorGOPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae48fff0bc9a94bc0332516f1d1e05d92"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae48fff0bc9a94bc0332516f1d1e05d92">&#9670;&nbsp;</a></span>MultiVectorLO_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MultiVector&lt;LO,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae48fff0bc9a94bc0332516f1d1e05d92">MultiVectorLO_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a838fdef10af2d85bf1259037b821019e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a838fdef10af2d85bf1259037b821019e">&#9670;&nbsp;</a></span>MultiVectorLOPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ae48fff0bc9a94bc0332516f1d1e05d92">MultiVectorLO_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a838fdef10af2d85bf1259037b821019e">MultiVectorLOPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af4fb11adbdf1bba9bcaf8952324d32f2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4fb11adbdf1bba9bcaf8952324d32f2">&#9670;&nbsp;</a></span>MultiVectorPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afba165f2caa97c6de40654b1ee51e38d">MultiVector_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#af4fb11adbdf1bba9bcaf8952324d32f2">MultiVectorPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab682c21b2aedae4d190d83018fa93df0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab682c21b2aedae4d190d83018fa93df0">&#9670;&nbsp;</a></span>MultiVectorPtrArray_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::vector&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#af4fb11adbdf1bba9bcaf8952324d32f2">MultiVectorPtr_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ab682c21b2aedae4d190d83018fa93df0">MultiVectorPtrArray_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a5926fc86d008bfd69ae52e9190197eb0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5926fc86d008bfd69ae52e9190197eb0">&#9670;&nbsp;</a></span>OTLO</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::OrdinalTraits&lt;LO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a5926fc86d008bfd69ae52e9190197eb0">OTLO</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a88c7a8713a81d90ff9d82a08ba596cda"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88c7a8713a81d90ff9d82a08ba596cda">&#9670;&nbsp;</a></span>Problem_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Problem&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a88c7a8713a81d90ff9d82a08ba596cda">Problem_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a442c6ca5dc4d866e3b1c6cdb613e2281"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a442c6ca5dc4d866e3b1c6cdb613e2281">&#9670;&nbsp;</a></span>ProblemPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a88c7a8713a81d90ff9d82a08ba596cda">Problem_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a442c6ca5dc4d866e3b1c6cdb613e2281">ProblemPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="afa6eaf74293132701460f9107ce0c070"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa6eaf74293132701460f9107ce0c070">&#9670;&nbsp;</a></span>SurfaceElements_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef SurfaceElements <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afa6eaf74293132701460f9107ce0c070">SurfaceElements_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aabda3ef3658f8847265104c6cf9a3877"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabda3ef3658f8847265104c6cf9a3877">&#9670;&nbsp;</a></span>SurfaceElementsPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#afa6eaf74293132701460f9107ce0c070">SurfaceElements_Type</a>&gt; <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#aabda3ef3658f8847265104c6cf9a3877">SurfaceElementsPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a259e41c282b1db70f233ac94854ba8bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a259e41c282b1db70f233ac94854ba8bd">&#9670;&nbsp;</a></span>AdaptiveMeshRefinement() <span class="overload">[1/3]</span></h2>
+<a id="ad736272ed2b7eec557fe50b49de6654e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad736272ed2b7eec557fe50b49de6654e">&#9670;&nbsp;</a></span>AdaptiveMeshRefinement() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a> </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a6331efe29307723fb532acea922d8489"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6331efe29307723fb532acea922d8489">&#9670;&nbsp;</a></span>AdaptiveMeshRefinement() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a> </td>
+          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a> </td>
           <td>(</td>
           <td class="paramtype">string&#160;</td>
           <td class="paramname"><em>problemType</em>, </td>
@@ -940,16 +430,14 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
 
 </div>
 </div>
-<a id="acf48e548d006ada2f7bec61fb2bc1d36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf48e548d006ada2f7bec61fb2bc1d36">&#9670;&nbsp;</a></span>AdaptiveMeshRefinement() <span class="overload">[3/3]</span></h2>
+<a id="ad5f475f6ca3eb55635d9838b1c641ca8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5f475f6ca3eb55635d9838b1c641ca8">&#9670;&nbsp;</a></span>AdaptiveMeshRefinement() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a> </td>
+          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a> </td>
           <td>(</td>
           <td class="paramtype">string&#160;</td>
           <td class="paramname"><em>problemType</em>, </td>
@@ -977,80 +465,23 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
 
 </div>
 </div>
-<a id="ae9fa1b37f179d6d82c6e0b2bd8e898ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9fa1b37f179d6d82c6e0b2bd8e898ec">&#9670;&nbsp;</a></span>~AdaptiveMeshRefinement()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::~<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a> </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ac17385ec3b84fd7c285b5442476f40a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac17385ec3b84fd7c285b5442476f40a9">&#9670;&nbsp;</a></span>buildSurfaceTriangleElements()</h2>
+<a id="aec6233132c77e92c78ab820acb7c523c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec6233132c77e92c78ab820acb7c523c">&#9670;&nbsp;</a></span>calcErrorNorms()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::buildSurfaceTriangleElements </td>
+          <td class="memname">void calcErrorNorms </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a9a08c5e3801ff9f9f3dff7997f9f4b1b">ElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>elements</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a495f60e86da92289b7fe1c15e291660d">EdgeElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>edgeElements</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#aabda3ef3658f8847265104c6cf9a3877">SurfaceElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>surfaceTriangleElements</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a43e57f7bf39f588491888ebdde7b4010"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a43e57f7bf39f588491888ebdde7b4010">&#9670;&nbsp;</a></span>calcErrorNorms()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::calcErrorNorms </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MultiVectorConstPtr_Type&#160;</td>
           <td class="paramname"><em>exactSolution</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MultiVectorConstPtr_Type&#160;</td>
           <td class="paramname"><em>solutionP12</em>&#160;</td>
         </tr>
         <tr>
@@ -1071,93 +502,28 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
 
 </div>
 </div>
-<a id="a006a35028c7c627a1dd885df67204084"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a006a35028c7c627a1dd885df67204084">&#9670;&nbsp;</a></span>calcExactSolution()</h2>
+<a id="a1b52ea69beece0eb7a11fec246bd5ef3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b52ea69beece0eb7a11fec246bd5ef3">&#9670;&nbsp;</a></span>exportError()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a> <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::calcExactSolution </td>
+          <td class="memname">void exportError </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Calculating exact solution if possible with exactSolFunc_. </p>
-
-</div>
-</div>
-<a id="a35ec26c4ed6ccbf878ce35cf86a6b455"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a35ec26c4ed6ccbf878ce35cf86a6b455">&#9670;&nbsp;</a></span>checkInterfaceSurface()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">vec_bool_Type <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::checkInterfaceSurface </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a495f60e86da92289b7fe1c15e291660d">EdgeElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>edgeElements</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">vec_int_Type&#160;</td>
-          <td class="paramname"><em>originFlag</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">vec_int_Type&#160;</td>
-          <td class="paramname"><em>edgeNumbers</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>indexElement</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac428fd84d745170b6b83c5f3ec07fead"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac428fd84d745170b6b83c5f3ec07fead">&#9670;&nbsp;</a></span>exportError()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::exportError </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abc927c0c0253b094c3c53338f9128d20">MeshUnstrPtr_Type</a>&#160;</td>
+          <td class="paramtype">MeshUnstrPtr_Type&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MultiVectorConstPtr_Type&#160;</td>
           <td class="paramname"><em>errorElConst</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MultiVectorConstPtr_Type&#160;</td>
           <td class="paramname"><em>vecDecompositionConst</em>&#160;</td>
         </tr>
         <tr>
@@ -1171,36 +537,34 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
 
 </div>
 </div>
-<a id="adfbce243e105dff484cc3a516ced0019"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adfbce243e105dff484cc3a516ced0019">&#9670;&nbsp;</a></span>exportSolution()</h2>
+<a id="a2aef7d351efdf637713d5c34c2898672"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aef7d351efdf637713d5c34c2898672">&#9670;&nbsp;</a></span>exportSolution()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::exportSolution </td>
+          <td class="memname">void exportSolution </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#abc927c0c0253b094c3c53338f9128d20">MeshUnstrPtr_Type</a>&#160;</td>
+          <td class="paramtype">MeshUnstrPtr_Type&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MultiVectorConstPtr_Type&#160;</td>
           <td class="paramname"><em>exportSolutionMv</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MultiVectorConstPtr_Type&#160;</td>
           <td class="paramname"><em>errorValues</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#ad8871639b0a35039184611ce286a446c">MultiVectorConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MultiVectorConstPtr_Type&#160;</td>
           <td class="paramname"><em>exactSolutionMv</em>&#160;</td>
         </tr>
         <tr>
@@ -1214,36 +578,34 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
 
 </div>
 </div>
-<a id="a10f773edf498ea2bcc21c5b1dc36a32e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a10f773edf498ea2bcc21c5b1dc36a32e">&#9670;&nbsp;</a></span>globalAlgorithm()</h2>
+<a id="ac695e101f66364a347d05451ec3e1a26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac695e101f66364a347d05451ec3e1a26">&#9670;&nbsp;</a></span>globalAlgorithm()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a> <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::globalAlgorithm </td>
+          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::DomainPtr_Type globalAlgorithm </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a>&#160;</td>
+          <td class="paramtype">DomainPtr_Type&#160;</td>
           <td class="paramname"><em>domainP1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a>&#160;</td>
+          <td class="paramtype">DomainPtr_Type&#160;</td>
           <td class="paramname"><em>domainP12</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a62f59092ab4dee90885c4d38b123ca9c">BlockMultiVectorConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">BlockMultiVectorConstPtr_Type&#160;</td>
           <td class="paramname"><em>solution</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a442c6ca5dc4d866e3b1c6cdb613e2281">ProblemPtr_Type</a>&#160;</td>
+          <td class="paramtype">ProblemPtr_Type&#160;</td>
           <td class="paramname"><em>problem</em>, </td>
         </tr>
         <tr>
@@ -1275,36 +637,14 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
 
 </div>
 </div>
-<a id="acce59127908a270c29318f32d0010513"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acce59127908a270c29318f32d0010513">&#9670;&nbsp;</a></span>identifyProblem()</h2>
+<a id="a29b6de9d13d734aa86669bc0add28c25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29b6de9d13d734aa86669bc0add28c25">&#9670;&nbsp;</a></span>initExporter()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::identifyProblem </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a62f59092ab4dee90885c4d38b123ca9c">BlockMultiVectorConstPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>valuesSolution</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="abad839ae02aaa2a4fe5f2bdb661e4dab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abad839ae02aaa2a4fe5f2bdb661e4dab">&#9670;&nbsp;</a></span>initExporter()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::initExporter </td>
+          <td class="memname">void initExporter </td>
           <td>(</td>
           <td class="paramtype">ParameterListPtr_Type&#160;</td>
           <td class="paramname"><em>parameterListAll</em></td><td>)</td>
@@ -1316,52 +656,14 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
 
 </div>
 </div>
-<a id="abbff0752b1d6febdb36194e379e8b876"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abbff0752b1d6febdb36194e379e8b876">&#9670;&nbsp;</a></span>refineArea()</h2>
+<a id="ae0480d80e226050e4a73cab5bb15b16d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0480d80e226050e4a73cab5bb15b16d">&#9670;&nbsp;</a></span>writeRefinementInfo()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a> <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::refineArea </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html#a98b097661d0e4c38e4182582078e2cd6">DomainPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>domainP1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">vec2D_dbl_Type&#160;</td>
-          <td class="paramname"><em>area</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>level</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a7103d3aaea99021774a69bb80a6b0044"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7103d3aaea99021774a69bb80a6b0044">&#9670;&nbsp;</a></span>writeRefinementInfo()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1AdaptiveMeshRefinement.html">FEDD::AdaptiveMeshRefinement</a>&lt; SC, LO, GO, NO &gt;::writeRefinementInfo </td>
+          <td class="memname">void writeRefinementInfo </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

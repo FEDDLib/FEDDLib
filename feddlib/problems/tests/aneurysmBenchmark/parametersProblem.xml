@@ -31,7 +31,7 @@
         <Parameter name="Contiguous" type="bool" value="true"/>        
         <Parameter name="Mesh 1 Name" type="string" value="aneurysmBenchmark.mesh"/>
     </ParameterList>
-    </ParameterList>
+
  	<ParameterList name="Mesh Refinement">
         <Parameter name="Toleranz" type="double" value="0.001"/>
         <Parameter name="Theta" type="double" value="0.35"/>
@@ -45,7 +45,6 @@
     <ParameterList name="Exporter">
         <Parameter name="Write new mesh" type="bool" value="true"/>
     </ParameterList>
-
 
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>

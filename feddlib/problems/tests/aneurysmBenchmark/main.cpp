@@ -210,6 +210,16 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
     string xmlSolverFileLaplace = "parametersSolver_Laplace.xml";
     myCLP.setOption("solverfile",&xmlSolverFileLaplace,".xml file with Inputparameters.");
 
+
+    string xmlProblemFileStokes = "parametersProblem_Stokes.xml";
+    myCLP.setOption("problemfile",&xmlProblemFileStokes,".xml file with Inputparameters.");
+    string xmlPrecFileStokes = "parametersPrec_Stokes.xml";
+    myCLP.setOption("precfile",&xmlPrecFileStokes,".xml file with Inputparameters.");
+    string xmlSolverFileStokes = "parametersSolver_Stokes.xml";
+    myCLP.setOption("solverfile",&xmlSolverFileStokes,".xml file with Inputparameters.");
+ string xmlTekoPrecFileStokes = "parametersTeko_Stokes.xml";
+    myCLP.setOption("tekoprecfile",&xmlTekoPrecFileStokes,".xml file with Inputparameters.");
+
  	myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
     Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = myCLP.parse(argc,argv);
@@ -227,15 +237,16 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
     parameterListAllL->setParameters(*parameterListPrecL);
     parameterListAllL->setParameters(*parameterListSolverL);
 
-   
-    
-    ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
-    ParameterListPtr_Type parameterListPrec = Teuchos::getParametersFromXmlFile(xmlPrecFile);
-    ParameterListPtr_Type parameterListSolver = Teuchos::getParametersFromXmlFile(xmlSolverFile);
+    ParameterListPtr_Type parameterListProblemStokes = Teuchos::getParametersFromXmlFile(xmlProblemFileStokes);
+    ParameterListPtr_Type parameterListPrecStokes = Teuchos::getParametersFromXmlFile(xmlPrecFileStokes);
+    ParameterListPtr_Type parameterListSolverStokes = Teuchos::getParametersFromXmlFile(xmlSolverFileStokes);
+        ParameterListPtr_Type parameterListPrecTekoStokes = Teuchos::getParametersFromXmlFile(xmlTekoPrecFileStokes);
 
-    ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
-    parameterListAll->setParameters(*parameterListPrec);
-    parameterListAll->setParameters(*parameterListSolver);
+    ParameterListPtr_Type parameterListAllStokes(new Teuchos::ParameterList(*parameterListProblemStokes)) ;
+    parameterListAllStokes->setParameters(*parameterListPrecStokes);
+    parameterListAllStokes->setParameters(*parameterListSolverStokes);
+    parameterListAllStokes->setParameters(*parameterListPrecTekoStokes);
+
 
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
@@ -336,7 +347,7 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 			area[2][0] = -2;
 			area[2][1] = 6;
 
-			AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Stokes",parameterListProblem);
+			AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Stokes",parameterListAllStokes);
 
 			//domainPressure = meshRefiner.refineArea(domainPressure,area,1);
 
@@ -351,6 +362,12 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 				// #####################################
 				// Genereating Vector for inlet
 				// #####################################
+			   if (feTypeV=="P2")
+				   domainVelocity->buildP2ofP1Domain( domainPressure );
+			   else
+				   domainVelocity = domainPressure;
+
+
 				Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryL(new BCBuilder<SC,LO,GO,NO>( ));
 
 				// Apply Boundary conditions - laplace at inlet
@@ -371,28 +388,27 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 
 		            bcFactoryL->setRHS( laplace.getSolution(), 0.);
 
-			   if (feTypeV=="P2")
-				   domainVelocity->buildP2ofP1Domain( domainPressure );
-			   else
-				   domainVelocity = domainPressure;
 
-            	Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
-				bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
-				MultiVectorConstPtr_Type inletSol = laplace.getSolution()->getBlock(0);               
-		        bcFactory->addBC(parabolicInflow3DStokes, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
-				
-		        Teuchos::RCP<Stokes<SC,LO,GO,NO> > stokes( new Stokes<SC,LO,GO,NO>(domainVelocity,feTypeV, domainPressure, feTypeP, parameterListAll ));
-				
-				{
+					Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+					MultiVectorConstPtr_Type inletSol = laplace.getSolution()->getBlock(0);               
+
+
+					bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
+
+					bcFactory->addBC(parabolicInflow3DStokes, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
 					
-					stokes->addBoundaries(bcFactory);
-					stokes->addRhsFunction(rhs0);						    
-					stokes->initializeProblem();						    
-					stokes->assemble();
-					stokes->setBoundaries();             
-					stokes->solve();
+					Teuchos::RCP<Stokes<SC,LO,GO,NO> > stokes( new Stokes<SC,LO,GO,NO>(domainVelocity,feTypeV, domainPressure, feTypeP, parameterListAllStokes ));
+					
+					{
+						
+						stokes->addBoundaries(bcFactory);
+						stokes->addRhsFunction(rhs0);						    
+						stokes->initializeProblem();						    
+						stokes->assemble();
+						stokes->setBoundaries();             
+						stokes->solve();
 
-				}
+					}
 
 				// #########
 				// Exporter
@@ -436,6 +452,7 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 	
 				j++;
 			}
+			cout << " Finished Stokes Refinement " << endl;
 
 	
 			// ############################################################

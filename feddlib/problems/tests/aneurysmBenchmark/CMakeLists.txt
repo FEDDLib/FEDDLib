@@ -12,9 +12,9 @@ TRIBITS_ADD_TEST(
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_aneurysmBenchmark
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-	SOURCE_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml parametersProblem_Laplace.xml parametersSolver_Laplace.xml parametersPrec_Laplace.xml
+	SOURCE_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml parametersProblem_Laplace.xml parametersSolver_Laplace.xml parametersPrec_Laplace.xml  parametersPrec_Stokes.xml parametersProblem_Stokes.xml parametersSolver_Stokes.xml parametersTeko_Stokes.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml parametersProblem_Laplace.xml parametersSolver_Laplace.xml parametersPrec_Laplace.xml
+	DEST_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml parametersProblem_Laplace.xml parametersSolver_Laplace.xml parametersPrec_Laplace.xml parametersPrec_Stokes.xml parametersProblem_Stokes.xml parametersSolver_Stokes.xml parametersTeko_Stokes.xml
 	EXEDEPS aneurysmBenchmark
 )
 

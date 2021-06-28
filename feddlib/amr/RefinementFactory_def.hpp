@@ -16,7 +16,7 @@
  Definition of RefinementFactory
  
  @brief  RefinementFactory
- @version 1.0
+ @author Lea Saßmannshausen
 
  */
 
@@ -36,6 +36,12 @@ MeshUnstructured<SC,LO,GO,NO>()
 
   
 }
+/*!
+
+@param[in] comm 
+@param[in] volumeID
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID):
@@ -43,6 +49,15 @@ MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 {
 
 }
+
+/*!
+
+@param[in] comm 
+@param[in] volumeID
+@param[in] refinementRestriction for repeated refinement steps
+@param[in] refinement3DDiagonal
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID, string refinementRestriction, int refinement3DDiagonal):
@@ -57,9 +72,14 @@ template <class SC, class LO, class GO, class NO>
 RefinementFactory<SC,LO,GO,NO>::~RefinementFactory(){
 }
 
-// Not all edges are marked with a flag in the beginning. In order to set the correct flags to new points we assign the edge flag of the edge they originated from
-// This safes us some steps along the way
-// This is similar to the function determineEdgeFlagP2New, but uses the edgeMap 
+
+/*!
+
+@brief Not all edges are marked with a flag in the beginning. In order to set the correct flags to new points we assign the edge flag of the edge they originated from, similar to the function determineEdgeFlagP2New, but uses the edgeMap 
+@param[in] meshP1 inputMesh
+@param[in] edgeElements that receive flags
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::assignEdgeFlags( MeshUnstrPtr_Type meshP1, EdgeElementsPtr_Type edgeElements){
@@ -200,8 +220,15 @@ void RefinementFactory<SC,LO,GO,NO>::assignEdgeFlags( MeshUnstrPtr_Type meshP1, 
 
 }
 
+/*!
 
-// Mesh Refinement 
+@brief main function of RefinementFactory, performs one complete mesh refinement
+
+@param[in] meshP1 inputMesh
+@param[in] iteration current Iteration
+@param[in] outputMesh refined mesh
+
+*/
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh){
 	MESH_TIMER_START(totalTime," Total Time for Mesh Refinement of this Step ");		
@@ -354,7 +381,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		for(int i=0; i<elements->numberElements();i++){
 			if(elements->getElement(i).isTaggedForRefinement()){
 				numPoints= this->pointsRep_->size();
-				this->refineRegular( edgeElements, elements, i);
+				this->refineRegular( edgeElements, elements, i, surfaceTriangleElements);
 				newPoints=newPoints + this->pointsRep_->size()-numPoints;
 				newElements = newElements +dimRegRef;
 			}
@@ -434,7 +461,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// ------------------------------------------------------------------------------------------------------
 
 		MESH_TIMER_START(checkTimer," Step 3:	 Checking Restrictions");		
-		this->refinementRestrictions(meshP1, elements ,edgeElements, iteration, newPoints, newPointsRepeated, globalInterfaceIDsTagged, mapInterfaceEdges, refinementRestriction_, newElements);
+		this->refinementRestrictions(meshP1, elements ,edgeElements, surfaceTriangleElements,iteration, newPoints, newPointsRepeated, globalInterfaceIDsTagged, mapInterfaceEdges, refinementRestriction_, newElements);
 
 		sort(globalInterfaceIDsTagged.begin(), globalInterfaceIDsTagged.end());
 
@@ -555,7 +582,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		vec2D_GO_Type combinedEdgeElements;
 		this->edgeElements_->sortUniqueAndSetGlobalIDsParallel(this->elementMap_,combinedEdgeElements);
 		MESH_TIMER_STOP(uniqueEdgesTimer);		
-		this->comm_->barrier();
+		//this->comm_->barrier();
 		// ------------------------------------------------------------------------------------------------------
 
 		// ------------------------------------------------------------------------------------------------------
@@ -576,7 +603,6 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// we started the setup before (sortUniqueAndSetGlobalIDsParallel) an now finalize it with the information of other processors
 		// the edges on the interface need the global element number of the neighbouring processor
 		// ------------------------------------------------------------------------------------------------------
-
 		MESH_TIMER_START(elementsOfEdgeTimer," Step 9:	 Updating ElementsOfEdgeLocal/Global");		
 		this->edgeElements_->setElementsEdges( combinedEdgeElements );
 
@@ -687,6 +713,7 @@ template <class SC, class LO, class GO, class NO>
 vec_bool_Type RefinementFactory<SC,LO,GO,NO>::checkInterfaceSurface( EdgeElementsPtr_Type edgeElements,vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement){
 
 		vec_bool_Type interfaceSurface(4);
+		
 		if(edgeElements->getElement(edgeNumbers[0]).isInterfaceElement() && edgeElements->getElement(edgeNumbers[1]).isInterfaceElement() && edgeElements->getElement(edgeNumbers[3]).isInterfaceElement() && (originFlag[0] == 10))
 					interfaceSurface[0] = true;
 		if(edgeElements->getElement(edgeNumbers[0]).isInterfaceElement() && edgeElements->getElement(edgeNumbers[2]).isInterfaceElement() && edgeElements->getElement(edgeNumbers[4]).isInterfaceElement() && (originFlag[1] == 10 ))
@@ -741,7 +768,18 @@ vec_bool_Type RefinementFactory<SC,LO,GO,NO>::checkInterfaceSurface( EdgeElement
 
 }
 
-// Build Node Map
+/*!
+
+@brief building nodemap after refinement
+
+@param[in] edgeElements
+@param[in] mapGlobalProc
+@param[in] mapProc
+@param[in] newPoints
+@param[in] newPointsRepeated
+
+
+*/
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeElements, MapConstPtr_Type mapGlobalProc, MapConstPtr_Type mapProc, int newPoints, int newPointsRepeated){
 		int maxRank = std::get<1>(this->rankRange_);
@@ -973,7 +1011,18 @@ void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeEleme
 
 }
 
-// Mesh Refinement 
+/*!
+
+@brief building surface triangle elements, as they are not originally part of the mesh information provided by mesh partitioner
+
+@param[in] elements
+@param[in] edgeElements
+@param[in] surfaceTriangleElements pointer which will be filled with surfaceTriangleElements
+@param[in] edgeMap
+@param[in] elementMap
+
+
+*/
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceTriangleElements, MapConstPtr_Type edgeMap, MapConstPtr_Type elementMap ){
     TEUCHOS_TEST_FOR_EXCEPTION( elements.is_null(), std::runtime_error, "Elements not initialized!");
@@ -1102,7 +1151,14 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 
 
 
-// Build Edge Map
+/*!
+
+@brief building edgeMap after refinement
+
+@param[in] mapGlobalProc
+@param[in] mapProc
+
+*/
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc,MapConstPtr_Type mapProc){
 
@@ -1303,21 +1359,39 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 }
 
 
+/*!
 
-// ------------------------------------------------------------------------------------------------------
-// Refinement Restrictions
-// In 2D we can add some Restrictions to the Mesh Refinement:
-// KeepRegularity:	this will keep the regularity of the Mesh by only refining whith a irregular strategy 
-//				  	when the longest edge is involved. If not we add a node to the longest edge, whereby 
-//					the irregular refinement strategy is changed
-// CheckGreenTags:	this will only check in green Elements, if its irregular refinement tag from the previous
-//					refinement is 'green' and if so not refine it green again but add a node to the longest
-//					edge and thus refine it blue
-// In the 3D Case we simply never refine an element irregularly twice. Furthermore if there is no fitting
-// irrregular refinement strategy (Type(1)-Type(4) don't fit) we refine regular instead.
-// ------------------------------------------------------------------------------------------------------
+@brief 
+Refinement Restrictions
+In 2D we can add some Restrictions to the Mesh Refinement:
+KeepRegularity:	this will keep the regularity of the Mesh by only refining whith a irregular strategy 
+			  	when the longest edge is involved. If not we add a node to the longest edge, whereby 
+					the irregular refinement strategy is changed
+CheckGreenTags:	this will only check tagged green Elements, if its irregular refinement tag from the previous
+					refinement is 'green' and if so not refine it green again but add a node to the longest
+					edge and thus refine it blue
+In the 3D Case we simply never refine an element irregularly twice, this strategy is called simply 'Bey'.
+If an element is refined regular, its refinement tag changes from eventually 'irregular' to regular. If those elements
+should still not be refined irregular we use the strategy 'BeyIrreuglar.
+
+Furthermore if there is no fitting irrregular refinement strategy (Type(1)-Type(4) don't fit) we refine regular instead.
+
+
+@param[in] meshP1
+@param[in] elements
+@param[in] edgeElements
+@param[in] iteration
+@param[in] newPoints
+@param[in] newPointsCommon
+@param[in] globalInterfaceIDsTagged
+@param[in] mapInterfaceEdges
+@param[in] restriction
+@param[in] newElements
+
+*/
+
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction, int& newElements){
+void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements,SurfaceElementsPtr_Type surfaceTriangleElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction, int& newElements){
 
 	vec2D_dbl_ptr_Type points = meshP1->getPointsRepeated(); // Points
 
@@ -1541,7 +1615,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
 							elements->getElement(i).setFiniteElementRefinementType("irregular");
-							this->refineRegular( edgeElements, elements, i);
+							this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
 							newElements = newElements +7;
 							alright=0;
@@ -1552,7 +1626,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 						else if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							this->refineRegular( edgeElements, elements, i);
+							this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
 							newElements = newElements +7;
 							alright=0;
@@ -1563,7 +1637,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 						else  if(nodeTag >3 && edgeTag >2){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							this->refineRegular(edgeElements, elements, i);
+							this->refineRegular(edgeElements, elements, i,surfaceTriangleElements);
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
 							newElements = newElements +7;
 							alright=0;
@@ -1575,7 +1649,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							this->refineRegular( edgeElements, elements, i);
+							this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
 							newElements = newElements +7;
 							alright=0;
@@ -1586,7 +1660,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 						else  if(nodeTag >3 && edgeTag >2){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							this->refineRegular(edgeElements, elements, i);
+							this->refineRegular(edgeElements, elements, i,surfaceTriangleElements);
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
 							newElements = newElements +7;
 							alright=0;
@@ -1598,7 +1672,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 						if(nodeTag >3 && edgeTag >2){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							this->refineRegular(edgeElements, elements, i);
+							this->refineRegular(edgeElements, elements, i,surfaceTriangleElements);
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
 							newElements = newElements +7;
 							alright=0;
@@ -1656,7 +1730,18 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 	}	
 }
 
-// ----------------------------------------------------------------------------------
+/*!
+
+@brief irregular refinement performed according to set rules determined by Bey or Verfürth
+
+@param[in] elements
+@param[in] edgeElements
+@param[in] newElements
+@param[in] edgeMap
+@param[in] surfaceTriangleElements
+
+*/
+
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, int& newElements,MapConstPtr_Type edgeMap, SurfaceElementsPtr_Type surfaceTriangleElements) 
 {
@@ -1733,27 +1818,27 @@ void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, 
 				if(nodeTag == 3 && edgeTag ==3){
 					//elements->getElement(i).setFiniteElementRefinementType("Type1");
 					//cout << " Requesting Type 1 Refinement on Processor " << this->comm_->getRank()<< endl;
-					this->refineType1(edgeElements, elements, i);
+					this->refineType1(edgeElements, elements, i,surfaceTriangleElements);
 					newElements = newElements+3;
 				}
 				else if(nodeTag == 2 && edgeTag == 1){
 					//elements->getElement(i).setFiniteElementRefinementType("Type2");
 					//cout << " Requesting Type 2 Refinement on Processor " << this->comm_->getRank() << endl;
-					this->refineType2(edgeElements, elements, i);
+					this->refineType2(edgeElements, elements, i,surfaceTriangleElements);
 					newElements ++;
 
 				}
 				else if(nodeTag == 3 && edgeTag == 2){
 					//elements->getElement(i).setFiniteElementRefinementType("Type3");
 					//cout << " Requesting Type 3 Refinement on Processor " << this->comm_->getRank() << endl;
-					this->refineType3(edgeElements, elements, i);
+					this->refineType3(edgeElements, elements, i,surfaceTriangleElements);
 
 					newElements = newElements+2;
 				}
 				else if(nodeTag == 4 && edgeTag == 2){
 					//elements->getElement(i).setFiniteElementRefinementType("Type4");
 					//cout << " Requesting Type 4 Refinement on Processor " << this->comm_->getRank() << endl;
-					this->refineType4(edgeElements, elements, i);
+					this->refineType4(edgeElements, elements, i,surfaceTriangleElements);
 					newElements = newElements+3;
 				}
 				if(nodeTag >3 && edgeTag >2 ){
@@ -1797,10 +1882,15 @@ void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, 
 }
 
 
+/*!
 
-// -----------------------------------------------------------------------------------
-// Updating ElementsOfEdgesLocal and ElementsOfEdgesGlobal
-// -----------------------------------------------------------------------------------
+@brief Updating ElementsOfEdgesLocal and ElementsOfEdgesGlobal
+
+@param[in] maxRank
+@param[in] edgeMap
+
+*/
+
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int maxRank,  MapConstPtr_Type edgeMap){
 
@@ -2059,11 +2149,17 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 
 }
 
-// -----------------------------------------------------------------------------------
-// adding a Midpoint on an edge
-// -----------------------------------------------------------------------------------
+/*!
+
+@brief adding a Midpoint on an edge
+
+@param[in] edgeElements
+@param[in] edgeID
+
+*/
+
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::addMidpoint(EdgeElementsPtr_Type edgeElements, int i){
+void RefinementFactory<SC,LO,GO,NO>::addMidpoint(EdgeElementsPtr_Type edgeElements, int edgeID){
 
 	int midPointInd; // indices of midpoints of edges of soon to be refined element
 	int dim = this->dim_;
@@ -2072,8 +2168,8 @@ void RefinementFactory<SC,LO,GO,NO>::addMidpoint(EdgeElementsPtr_Type edgeElemen
 
 	vec_dbl_Type P1(dim),P2(dim); // points we extract from pointsRep_ in order to determine midPoints
 
-	LO p1ID =edgeElements->getElement(i).getNode(0);
-	LO p2ID =edgeElements->getElement(i).getNode(1);
+	LO p1ID =edgeElements->getElement(edgeID).getNode(0);
+	LO p2ID =edgeElements->getElement(edgeID).getNode(1);
 	P1 = this->pointsRep_->at(p1ID);
 	P2 = this->pointsRep_->at(p2ID);
 
@@ -2082,20 +2178,32 @@ void RefinementFactory<SC,LO,GO,NO>::addMidpoint(EdgeElementsPtr_Type edgeElemen
 	}   
 	points2.push_back(point); 
 
-	if(edgeElements->getElement(i).getFlag() == -1)
-		cout << " auf Kante " << this->edgeMap_->getGlobalElement(i) << " ist Flag " << edgeElements->getElement(i).getFlag() << endl;
+	if(edgeElements->getElement(edgeID).getFlag() == -1)
+		cout << " auf Kante " << this->edgeMap_->getGlobalElement(edgeID) << " ist Flag " << edgeElements->getElement(edgeID).getFlag() << endl;
 
 	// New Flags:
-	this->bcFlagRep_->push_back(edgeElements->getElement(i).getFlag());
+	this->bcFlagRep_->push_back(edgeElements->getElement(edgeID).getFlag());
 		
 	// Mittelpunkte der Kanten setzen
-	edgeElements->setMidpoint(i, this->pointsRep_->size());
+	edgeElements->setMidpoint(edgeID, this->pointsRep_->size());
 
 	// We have to keep in mind, that the new added points need to be maped to the associated points
 	this->pointsRep_->insert( this->pointsRep_->end(), points2.begin(), points2.end() );
 }
 
-// Function to determine longest edge in triangle
+/*!
+
+@brief determine longest edge in triangle
+
+@param[in] edgeElements
+@param[in] edgeVec
+@param[in] points
+
+@param[out] local edgeID of the longest edge
+
+*/
+
+
 template <class SC, class LO, class GO, class NO>
 int RefinementFactory<SC,LO,GO,NO>::determineLongestEdge( EdgeElementsPtr_Type edgeElements, vec_int_Type edgeVec, vec2D_dbl_ptr_Type points){
 	// We have to determine which edge is longer, as we use the opposite node of the longer edge for the element construction
@@ -2123,8 +2231,16 @@ int RefinementFactory<SC,LO,GO,NO>::determineLongestEdge( EdgeElementsPtr_Type e
 	return edgeVec[maxEntry];
 	
 }
-// Blue Refinement
-// refining element according to blue refinement scheme - connecting nodes of shorter edge with midpoint of longer tagged edge and connect that with opposite corner
+
+/*!
+
+@brief 2D blue refinement: refining element according to blue refinement scheme - connecting nodes of shorter edge with midpoint of longer tagged edge and connect that with opposite corner
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+
+*/
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refineBlue(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement){
 	if(this->dim_ == 2){
@@ -2341,8 +2457,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineBlue(EdgeElementsPtr_Type edgeElement
 
 
 }
-// Green Refinement 
-// refining the element according to green scheme - connecting node on refined edge with the opposite node (2D)
+/*!
+
+@brief 2D green refinement: refining the element according to green scheme - connecting node on refined edge with the opposite node 
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+
+*/
+
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refineGreen(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement){
 
@@ -2523,9 +2647,15 @@ void RefinementFactory<SC,LO,GO,NO>::refineGreen(EdgeElementsPtr_Type edgeElemen
 
 
 }
+/*!
 
-// Red Refinement 
-// refining the element regularly, aka red -> one element is refined into 4 (2D) 
+@brief 2D red refinement: refining the element red by connecting all tagged edges midpoints. one element is refined into 4 
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refineRed(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement){
@@ -2685,8 +2815,19 @@ void RefinementFactory<SC,LO,GO,NO>::refineRed(EdgeElementsPtr_Type edgeElements
 		
 }
 
+/*!
+
+@brief 3D Type(4) refinement
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+@param[in] surfaceTriangleElements
+
+*/
+
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement){
+void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements){
 
 // ##########################################################################################################################################
 // Implementation of Type (4) Refinement Type
@@ -2769,41 +2910,33 @@ void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElemen
 
 
 		// We check if one or more of these triangles are part of the boundary surface and determine there flag
+		vec_int_Type surfaceElementsIDs = surfaceTriangleElements->getSurfacesOfElement(indexElement); // surfaces of Element k
 		vec2D_int_Type originTriangles(4,vec_int_Type(3));
+
 		originTriangles[0] = {nodeInd[0], nodeInd[1], nodeInd[2] };
 		originTriangles[1] = {nodeInd[0], nodeInd[1], nodeInd[3] };
 		originTriangles[2] = {nodeInd[0], nodeInd[2], nodeInd[3] };
 		originTriangles[3] = {nodeInd[1], nodeInd[2], nodeInd[3] };
-		
+	
 		vec_int_Type originFlag(4,10); // Triangle Flag
 
-		int numberSubElSurf=0;
+		vec_bool_Type interfaceSurface(4);
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
-		int entry; 
-		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
-			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
-				for(int j=0; j<4 ; j++){
-					originTriangleTmp = originTriangles[j];
-					sort(triTmp.begin(),triTmp.end());
-					sort(originTriangleTmp.begin(),originTriangleTmp.end());
-					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
-					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
-               		//entry = distance( originTriangles.begin() , it1 );
+
+		for(int i=0; i< 4 ; i++){
+			originTriangleTmp = originTriangles[i];
+			sort(originTriangleTmp.begin(),originTriangleTmp.end());
+			for(int j=0; j<4 ; j++){
+				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
+				triTmp = surfaceTmp.getVectorNodeList();
+				//sort(triTmp.begin(),triTmp.end());
+				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
+					originFlag[i] = surfaceTmp.getFlag();
+					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
 				}
 			}
 		}
-
-
-		// Furthermore we have to determine whether the triangles are part of the interface between processors, as we need this information to determine if edges
-		// that emerge on the triangles are part of the interface
-		// A triangle is part of the interface if all of its edges are part of the interface (the information if edges are part of the interface was determined
-		// in the beginning of the Mesh Refinement by 'determineInterfaceEdges')
-		
-		vec_bool_Type interfaceSurface = checkInterfaceSurface(edgeElements,originFlag, edgeNumbers,indexElement);
 
 		// Finally we need to determine or extract the indices of the edges midpoints. As in the describe algorithm the midpoints are set as follows:
 		// Edge 0 = [x_0,x_1] -> x_01
@@ -3104,10 +3237,19 @@ void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElemen
 
   
 }
+/*!
 
+@brief 3D Type(3) refinement
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+@param[in] surfaceTriangleElements
+
+*/
 
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement){
+void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements){
 
 // ##########################################################################################################################################
 // Implementation of Type (3) Refinement Type
@@ -3230,41 +3372,35 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 
 
 		// We check if one or more of these triangles are part of the boundary surface and determine there flag
+		vec_int_Type surfaceElementsIDs = surfaceTriangleElements->getSurfacesOfElement(indexElement); // surfaces of Element k
 		vec2D_int_Type originTriangles(4,vec_int_Type(3));
+
 		originTriangles[0] = {nodeInd[0], nodeInd[1], nodeInd[2] };
 		originTriangles[1] = {nodeInd[0], nodeInd[1], nodeInd[3] };
 		originTriangles[2] = {nodeInd[0], nodeInd[2], nodeInd[3] };
 		originTriangles[3] = {nodeInd[1], nodeInd[2], nodeInd[3] };
 		
+		
+	
 		vec_int_Type originFlag(4,10); // Triangle Flag
 
-		int numberSubElSurf=0;
+		vec_bool_Type interfaceSurface(4);
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
-		int entry; 
-		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
-			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
-				for(int j=0; j<4 ; j++){
-					originTriangleTmp = originTriangles[j];
-					sort(triTmp.begin(),triTmp.end());
-					sort(originTriangleTmp.begin(),originTriangleTmp.end());
-					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
-					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
-               		//entry = distance( originTriangles.begin() , it1 );
+
+		for(int i=0; i< 4 ; i++){
+			originTriangleTmp = originTriangles[i];
+			sort(originTriangleTmp.begin(),originTriangleTmp.end());
+			for(int j=0; j<4 ; j++){
+				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
+				triTmp = surfaceTmp.getVectorNodeList();
+				//sort(triTmp.begin(),triTmp.end());
+				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
+					originFlag[i] = surfaceTmp.getFlag();
+					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
 				}
 			}
 		}
-
-
-		// Furthermore we have to determine whether the triangles are part of the interface between processors, as we need this information to determine if edges
-		// that emerge on the triangles are part of the interface
-		// A triangle is part of the interface if all of its edges are part of the interface (the information if edges are part of the interface was determined
-		// in the beginning of the Mesh Refinement by 'determineInterfaceEdges')
-
-		vec_bool_Type interfaceSurface = checkInterfaceSurface(edgeElements,originFlag, edgeNumbers,indexElement);
 
 		// Finally we need to determine or extract the indices of the edges midpoints. As in the describe algorithm the midpoints are set as follows:
 		// Edge 0 = [x_0,x_1] -> x_01
@@ -3517,10 +3653,19 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 }
 
 
+/*!
 
+@brief 3D Type(2) refinement
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+@param[in] surfaceTriangleElements
+
+*/
 
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement){
+void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements){
 
 // ##########################################################################################################################################
 // Implementation of Type (2) Refinement Type
@@ -3612,41 +3757,35 @@ void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElemen
 
 
 		// We check if one or more of these triangles are part of the boundary surface and determine there flag
+		vec_int_Type surfaceElementsIDs = surfaceTriangleElements->getSurfacesOfElement(indexElement); // surfaces of Element k
 		vec2D_int_Type originTriangles(4,vec_int_Type(3));
+
 		originTriangles[0] = {nodeInd[0], nodeInd[1], nodeInd[2] };
 		originTriangles[1] = {nodeInd[0], nodeInd[1], nodeInd[3] };
 		originTriangles[2] = {nodeInd[0], nodeInd[2], nodeInd[3] };
 		originTriangles[3] = {nodeInd[1], nodeInd[2], nodeInd[3] };
 		
+		
+	
 		vec_int_Type originFlag(4,10); // Triangle Flag
 
-		int numberSubElSurf=0;
+		vec_bool_Type interfaceSurface(4);
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
-		int entry; 
-		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
-			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
-				for(int j=0; j<4 ; j++){
-					originTriangleTmp = originTriangles[j];
-					sort(triTmp.begin(),triTmp.end());
-					sort(originTriangleTmp.begin(),originTriangleTmp.end());
-					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
-					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
-               		//entry = distance( originTriangles.begin() , it1 );
+
+		for(int i=0; i< 4 ; i++){
+			originTriangleTmp = originTriangles[i];
+			sort(originTriangleTmp.begin(),originTriangleTmp.end());
+			for(int j=0; j<4 ; j++){
+				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
+				triTmp = surfaceTmp.getVectorNodeList();
+				//sort(triTmp.begin(),triTmp.end());
+				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
+					originFlag[i] = surfaceTmp.getFlag();
+					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
 				}
 			}
 		}
-
-
-		// Furthermore we have to determine whether the triangles are part of the interface between processors, as we need this information to determine if edges
-		// that emerge on the triangles are part of the interface
-		// A triangle is part of the interface if all of its edges are part of the interface (the information if edges are part of the interface was determined
-		// in the beginning of the Mesh Refinement by 'determineInterfaceEdges')
-
-		vec_bool_Type interfaceSurface = checkInterfaceSurface(edgeElements,originFlag, edgeNumbers,indexElement);
 
 		// Finally we need to determine or extract the indices of the edges midpoints. As in the describe algorithm the midpoints are set as follows:
 		// Edge 0 = [x_0,x_1] -> x_01
@@ -3849,8 +3988,19 @@ void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElemen
   
 }
 
+/*!
+
+@brief 3D Type(1) refinement
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+@param[in] surfaceTriangleElements
+
+*/
+
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement){
+void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements){
 
 // ##########################################################################################################################################
 // Implementation of Type (1) Refinement Type
@@ -3932,42 +4082,33 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
 
 		// We check if one or more of these triangles are part of the boundary surface and determine there flag
 
+		vec_int_Type surfaceElementsIDs = surfaceTriangleElements->getSurfacesOfElement(indexElement); // surfaces of Element k
 		vec2D_int_Type originTriangles(4,vec_int_Type(3));
+
 		originTriangles[0] = {nodeInd[0], nodeInd[1], nodeInd[2] };
 		originTriangles[1] = {nodeInd[0], nodeInd[1], nodeInd[3] };
 		originTriangles[2] = {nodeInd[0], nodeInd[2], nodeInd[3] };
 		originTriangles[3] = {nodeInd[1], nodeInd[2], nodeInd[3] };
 		
-		
 		vec_int_Type originFlag(4,10); // Triangle Flag
 
-		int numberSubElSurf=0;
+		vec_bool_Type interfaceSurface(4);
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
-		int entry; 
-		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
-			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
-				for(int j=0; j<4 ; j++){
-					originTriangleTmp = originTriangles[j];
-					sort(triTmp.begin(),triTmp.end());
-					sort(originTriangleTmp.begin(),originTriangleTmp.end());
-					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
-					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
-               		//entry = distance( originTriangles.begin() , it1 );
+
+		for(int i=0; i< 4 ; i++){
+			originTriangleTmp = originTriangles[i];
+			sort(originTriangleTmp.begin(),originTriangleTmp.end());
+			for(int j=0; j<4 ; j++){
+				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
+				triTmp = surfaceTmp.getVectorNodeList();
+				//sort(triTmp.begin(),triTmp.end());
+				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
+					originFlag[i] = surfaceTmp.getFlag();
+					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
 				}
 			}
-		}
-
-
-		// Furthermore we have to determine whether the triangles are part of the interface between processors, as we need this information to determine if edges
-		// that emerge on the triangles are part of the interface
-		// A triangle is part of the interface if all of its edges are part of the interface (the information if edges are part of the interface was determined
-		// in the beginning of the Mesh Refinement by 'determineInterfaceEdges')
-
-		vec_bool_Type interfaceSurface = checkInterfaceSurface(edgeElements,originFlag, edgeNumbers,indexElement);
+		}		
 		// Finally we need to determine or extract the indices of the edges midpoints. As in the describe algorithm the midpoints are set as follows:
 		// Edge 0 = [x_0,x_1] -> x_01
 		// Edge 1 = [x_0,x_2] -> x_02
@@ -4270,11 +4411,18 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
   
 }
     
-// Regular Refinement 
-// refining the element regularly, aka red -> one element is refined into 4 (2D) 
+/*!
 
+@brief 2D and 3D regular refinement. Chosen by error estimator or otherwise elements are refined regular by connecting edge midpoints.
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+@param[in] surfaceTriangleElements
+
+*/
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement){
+void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements){
 
 	if(this->dim_ == 2){
         vec_int_Type midPointInd( 3 ); // indices of midpoints of edges of soon to be refined element
@@ -4448,6 +4596,8 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// The way we refine the Tetrahedron is defined by how we order the nodes of the tetrahedron
 		// (For the algorithm see "Tetrahedral Grid Refinement" by J. Bey 'Algorithm Regular Refinement' in Computing, Springer Verlag 1955)
 
+		MESH_TIMER_START(regref1," Step 1a: RegRef");
+		
         vec_int_Type midPointInd( 6 ); // indices of midpoints of edges of soon to be refined element
 		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
 
@@ -4460,16 +4610,18 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		sort( nodeInd.begin(), nodeInd.end() );
 		nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
 		
+
+		vec2D_dbl_ptr_Type pointsRep = this->pointsRep_;
 		// Right now the Nodes are ordered by the local Indices, which differ depending on the number of Processors. Hence the refinements are not
 		// 100% equal when using a different number of processors.
 		// If we sort the nodes by their values and not their local Indices, we can solve that problem, as these values don't change
 		// This can also be done by using the global IDs of nodes
 
 		vec2D_dbl_Type points(4,vec_dbl_Type(4));
-		points[0] = {this->pointsRep_->at(nodeInd[0]).at(0),this->pointsRep_->at(nodeInd[0]).at(1),this->pointsRep_->at(nodeInd[0]).at(2), (double) nodeInd[0]};
-		points[1] = {this->pointsRep_->at(nodeInd[1]).at(0),this->pointsRep_->at(nodeInd[1]).at(1),this->pointsRep_->at(nodeInd[1]).at(2), (double) nodeInd[1]};
-		points[2] = {this->pointsRep_->at(nodeInd[2]).at(0),this->pointsRep_->at(nodeInd[2]).at(1),this->pointsRep_->at(nodeInd[2]).at(2), (double) nodeInd[2]};
-		points[3] = {this->pointsRep_->at(nodeInd[3]).at(0),this->pointsRep_->at(nodeInd[3]).at(1),this->pointsRep_->at(nodeInd[3]).at(2), (double) nodeInd[3]};
+		points[0] = {pointsRep->at(nodeInd[0]).at(0),pointsRep->at(nodeInd[0]).at(1),pointsRep->at(nodeInd[0]).at(2), (double) nodeInd[0]};
+		points[1] = {pointsRep->at(nodeInd[1]).at(0),pointsRep->at(nodeInd[1]).at(1),pointsRep->at(nodeInd[1]).at(2), (double) nodeInd[1]};
+		points[2] = {pointsRep->at(nodeInd[2]).at(0),pointsRep->at(nodeInd[2]).at(1),pointsRep->at(nodeInd[2]).at(2), (double) nodeInd[2]};
+		points[3] = {pointsRep->at(nodeInd[3]).at(0),pointsRep->at(nodeInd[3]).at(1),pointsRep->at(nodeInd[3]).at(2), (double) nodeInd[3]};
 
 		sort(points.begin(), points.end());
 
@@ -4486,6 +4638,10 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// Edge_3 = [x_1,x_2]
 		// Edge_4 = [x_1,x_3]	 
 		// Edge_5 = [x_2,x_3]
+
+		MESH_TIMER_STOP(regref1);	
+		MESH_TIMER_START(regref2," Step 1b: RegRef");
+	
 
 		vec_int_Type edgeNumbersTmp = edgeNumbers;
 		for(int i=0; i<6; i++){
@@ -4519,43 +4675,51 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// Tri_3 = [x_1,x_2,x_3]
 
 
-		// We check if one or more of these triangles are part of the boundary surface and determine there flag
-
+		MESH_TIMER_STOP(regref2);	
+		MESH_TIMER_START(regref3," Step 1c: RegRef");
+		// We check if one or more of these triangles are part of the boundary surface and determine their flag
+		vec_int_Type surfaceElementsIDs = surfaceTriangleElements->getSurfacesOfElement(indexElement); // surfaces of Element k
 		vec2D_int_Type originTriangles(4,vec_int_Type(3));
+
 		originTriangles[0] = {nodeInd[0], nodeInd[1], nodeInd[2] };
 		originTriangles[1] = {nodeInd[0], nodeInd[1], nodeInd[3] };
 		originTriangles[2] = {nodeInd[0], nodeInd[2], nodeInd[3] };
 		originTriangles[3] = {nodeInd[1], nodeInd[2], nodeInd[3] };
 		
 		
+	
 		vec_int_Type originFlag(4,10); // Triangle Flag
 
-		int numberSubElSurf=0;
+		vec_bool_Type interfaceSurface(4);
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
-		int entry=0; 
-		if (this->elementsC_->getElement(indexElement).subElementsInitialized() ){
-			numberSubElSurf = this->elementsC_->getElement(indexElement).getSubElements()->numberElements();
-			for(int i=0; i< numberSubElSurf ; i++){
-				triTmp = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getVectorNodeList();
-				for(int j=0; j<4 ; j++){
-					originTriangleTmp = originTriangles[j];
-					sort(triTmp.begin(),triTmp.end());
-					sort(originTriangleTmp.begin(),originTriangleTmp.end());
-					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) 
-						originFlag[j] = this->elementsC_->getElement(indexElement).getSubElements()->getElement(i).getFlag();
-					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
-               		//entry = distance( originTriangles.begin() , it1 );
+
+		for(int i=0; i< 4 ; i++){
+			originTriangleTmp = originTriangles[i];
+			sort(originTriangleTmp.begin(),originTriangleTmp.end());
+			for(int j=0; j<4 ; j++){
+				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
+				triTmp = surfaceTmp.getVectorNodeList();
+				//sort(triTmp.begin(),triTmp.end());
+				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
+					originFlag[i] = surfaceTmp.getFlag();
+					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
 				}
 			}
 		}
-		
+
+
+	
+
+		MESH_TIMER_STOP(regref3);	
+		MESH_TIMER_START(regref4," Step 1d: RegRef");
+
 		// Furthermore we have to determine whether the triangles are part of the interface between processors, as we need this information to determine if edges
 		// that emerge on the triangles are part of the interface
 		// A triangle is part of the interface if all of its edges are part of the interface (the information if edges are part of the interface was determined
-		// in the beginning of the Mesh Refinement by 'determineInterfaceEdges')
+		// at the beginning of the Mesh Refinement by 'determineInterfaceEdges')
 
-		vec_bool_Type interfaceSurface = checkInterfaceSurface(edgeElements,originFlag, edgeNumbers,indexElement);
+
 
 		// Finally we need to determine or extract the indices of the edges midpoints. As in the describe algorithm the midpoints are set as follows:
 		// Edge 0 = [x_0,x_1] -> x_01
@@ -4564,6 +4728,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// Edge 3 = [x_1,x_2] -> x_12
 		// Edge 4 = [x_1,x_3] -> x_13
 		// Edge 5 = [x_2,x_3] -> x_23
+		MESH_TIMER_STOP(regref4);	
+		MESH_TIMER_START(regref5," Step 1e: RegRef");
+
 
 		for(int i=0; i<6; i++)	{
 			if(!edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement()) // we tag every edge, after we refine an element -> no tag - no refinement on that edge so far
@@ -4577,6 +4744,8 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 			}
 	
 		}
+		
+			MESH_TIMER_STOP(regref5);	
 	
 		// Now we construct the new Elements as proposed by Bey's Regular Refinement Algorithm
 
@@ -4799,11 +4968,11 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 		int diaInd=0;
 
-		lengthDia[0] = sqrt(pow(this->pointsRep_->at(midPointInd[1]).at(0) - this->pointsRep_->at(midPointInd[4]).at(0),2) + pow(this->pointsRep_->at(midPointInd[1]).at(1) - this->pointsRep_->at(midPointInd[4]).at(1),2) +pow(this->pointsRep_->at(midPointInd[1]).at(2) - this->pointsRep_->at(midPointInd[4]).at(2),2) );
+		lengthDia[0] = sqrt(pow(pointsRep->at(midPointInd[1]).at(0) - pointsRep->at(midPointInd[4]).at(0),2) + pow(pointsRep->at(midPointInd[1]).at(1) - pointsRep->at(midPointInd[4]).at(1),2) +pow(pointsRep->at(midPointInd[1]).at(2) - pointsRep->at(midPointInd[4]).at(2),2) );
 
-		lengthDia[1] = sqrt(pow(this->pointsRep_->at(midPointInd[0]).at(0) - this->pointsRep_->at(midPointInd[5]).at(0),2) + pow(this->pointsRep_->at(midPointInd[0]).at(1) - this->pointsRep_->at(midPointInd[5]).at(1),2) +pow(this->pointsRep_->at(midPointInd[0]).at(2) - this->pointsRep_->at(midPointInd[5]).at(2),2) );
+		lengthDia[1] = sqrt(pow(pointsRep->at(midPointInd[0]).at(0) - pointsRep->at(midPointInd[5]).at(0),2) + pow(pointsRep->at(midPointInd[0]).at(1) - pointsRep->at(midPointInd[5]).at(1),2) +pow(pointsRep->at(midPointInd[0]).at(2) - pointsRep->at(midPointInd[5]).at(2),2) );
 
-		lengthDia[2] = sqrt(pow(this->pointsRep_->at(midPointInd[2]).at(0) - this->pointsRep_->at(midPointInd[3]).at(0),2) + pow(this->pointsRep_->at(midPointInd[2]).at(1) - this->pointsRep_->at(midPointInd[3]).at(1),2) +pow(this->pointsRep_->at(midPointInd[2]).at(2) - this->pointsRep_->at(midPointInd[3]).at(2),2) );
+		lengthDia[2] = sqrt(pow(pointsRep->at(midPointInd[2]).at(0) - pointsRep->at(midPointInd[3]).at(0),2) + pow(pointsRep->at(midPointInd[2]).at(1) - pointsRep->at(midPointInd[3]).at(1),2) +pow(pointsRep->at(midPointInd[2]).at(2) - pointsRep->at(midPointInd[3]).at(2),2) );
 
 		//cout << " Längen der Diagonalen: dia1 (normale Wahl)=" << lengthDia[0] << " dia2=" << lengthDia[1] << " dia3=" << lengthDia[2] << endl; 
 
@@ -5486,7 +5655,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 									
 		}
 		
-		
+	
 		// tagging the Edges for refinement
 	   	for (int d=0; d<6; d++){
 			// now we tag the edge as 'refined'

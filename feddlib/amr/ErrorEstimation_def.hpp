@@ -16,7 +16,7 @@
  Definition of ErrorEstimation
  
  @brief  ErrorEstimation
- @version 1.0
+ @author Lea Saßsmannshausen
 
  */
 
@@ -69,6 +69,8 @@ void ErrorEstimation<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstPtr_Type
 		
 		calculatePressure_ = true;
 	}
+	else
+		dofsP_=0;
 
 }
 ///
@@ -144,6 +146,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 	// Identifying the Problem with respect to the dofs_ and splitting the Solution
 	this->identifyProblem(valuesSolution);
 	this->makeRepeatedSolution(valuesSolution);
+
 
 	// Setting FETypes
 	FEType1_ = "P1"; // Pressure FEType
@@ -273,7 +276,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			if(maxErrorElLoc < errorElement[k] )
 					maxErrorElLoc = errorElement[k];
 
-			cout << " Error Element " << k << " " << errorElement[k] << " Jumps: " << u_Jump[surfaceNumbers[0]] << " " << u_Jump[surfaceNumbers[1]] << " " << u_Jump[surfaceNumbers[2]] << " " << u_Jump[surfaceNumbers[3]]  << " h_T " << h_T_min[k] << "divUElement " << divUElement << " res " << resElement << endl;
+			//cout << " Error Element " << k << " " << errorElement[k] << " Jumps: " << u_Jump[surfaceNumbers[0]] << " " << u_Jump[surfaceNumbers[1]] << " " << u_Jump[surfaceNumbers[2]] << " " << u_Jump[surfaceNumbers[3]]  << " h_T " << h_T_min[k] << "divUElement " << divUElement << " res " << resElement << endl;
 			
 		}	
 		
@@ -620,7 +623,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 
 			surfaceElementsError[k] = (1./h_E[k])*jumpQuad*quadWeightConst;
 
-			cout << " Jump Quad " << " k " << k << " " << jumpQuad << " h_E " << h_E[k] << endl;
+			//cout << " Jump Quad " << " k " << k << " " << jumpQuad << " h_E " << h_E[k] << endl;
 		}
 						
 	}
@@ -665,6 +668,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	int intFE = 1;
 	int numNodes= dim_+1;
 	int quadPSize = 1;
+
 	if(FEType2_ == "P2"){
 		quadPSize=3; // Number of Surface Quadrature Points
 	}
@@ -796,7 +800,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 				for(int l=0; l< quadPSize; l++){
 					if(phiDerivative == "Gradient"){
 						vec2D_dbl_Type deriPhi1 = gradPhi(dim_, intFE, quadPointsT1[l]);
-						vec2D_dbl_Type deriPhiT1(numNodes,vec_dbl_Type(dofsSol));
+						vec2D_dbl_Type deriPhiT1(numNodes,vec_dbl_Type(dim_));
 						for(int q=0; q<dim_; q++){
 							for(int p=0;p<numNodes; p++){
 								for(int s=0; s< dim_ ; s++)
@@ -930,8 +934,9 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	for(int i=0; i<quadPSize; i++){
 		for(int j=0; j<elementImportIDs.size(); j++){
 			entriesU_x_imp[j] = vec_El_Exp[surfaceMap->getLocalElement(elementImportIDs[j])][i][0] ;
-			entriesU_y_imp[j] = vec_El_Exp[surfaceMap->getLocalElement(elementImportIDs[j])][i][1] ;
-			if(dofsSol == 3)
+			if(dofsSol == 2)
+				entriesU_y_imp[j] = vec_El_Exp[surfaceMap->getLocalElement(elementImportIDs[j])][i][1] ;
+			else if(dofsSol == 3)
 				entriesU_z_imp[j] = vec_El_Exp[surfaceMap->getLocalElement(elementImportIDs[j])][i][2] ;
 		}
 
@@ -953,8 +958,9 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 
 		for(int j=0; j<elementImportIDs.size(); j++){
 			vec_El2[surfaceMap->getLocalElement(elementImportIDs[j])][i][0] =entriesU_x_impF[j];
-			vec_El2[surfaceMap->getLocalElement(elementImportIDs[j])][i][1] =entriesU_y_impF[j];
-			if(dofsSol ==3)
+			if(dofsSol == 2)
+				vec_El2[surfaceMap->getLocalElement(elementImportIDs[j])][i][1] =entriesU_y_impF[j];
+			else if(dofsSol ==3)
 				vec_El2[surfaceMap->getLocalElement(elementImportIDs[j])][i][2] = entriesU_z_impF[j];
 		}	
 	}

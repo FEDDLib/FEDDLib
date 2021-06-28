@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: FEDD::RefinementFactory&lt; SC, LO, GO, NO &gt; Class Template Reference</title>
+<title>Adaptive Mesh Refinement: RefinementFactory&lt; SC, LO, GO, NO &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -28,7 +28,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">My Project
+   <div id="projectname">Adaptive Mesh Refinement
    </div>
   </td>
  </tr>
@@ -85,631 +85,215 @@ $(document).ready(function(){initNavTree('classFEDD_1_1RefinementFactory.html','
 <a href="#pub-attribs">Data Fields</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a>  </div>
   <div class="headertitle">
-<div class="title">FEDD::RefinementFactory&lt; SC, LO, GO, NO &gt; Class Template Reference</div>  </div>
+<div class="title">RefinementFactory&lt; SC, LO, GO, NO &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="RefinementFactory__decl_8hpp_source.html">RefinementFactory_decl.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for FEDD::RefinementFactory&lt; SC, LO, GO, NO &gt;:</div>
+Inheritance diagram for RefinementFactory&lt; SC, LO, GO, NO &gt;:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1RefinementFactory__inherit__graph.png" border="0" usemap="#FEDD_1_1RefinementFactory_3_01SC_00_01LO_00_01GO_00_01NO_01_4_inherit__map" alt="Inheritance graph"/></div>
+<div class="center"><img src="classFEDD_1_1RefinementFactory__inherit__graph.png" border="0" usemap="#RefinementFactory_3_01SC_00_01LO_00_01GO_00_01NO_01_4_inherit__map" alt="Inheritance graph"/></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
-Collaboration diagram for FEDD::RefinementFactory&lt; SC, LO, GO, NO &gt;:</div>
+Collaboration diagram for RefinementFactory&lt; SC, LO, GO, NO &gt;:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1RefinementFactory__coll__graph.png" border="0" usemap="#FEDD_1_1RefinementFactory_3_01SC_00_01LO_00_01GO_00_01NO_01_4_coll__map" alt="Collaboration graph"/></div>
+<div class="center"><img src="classFEDD_1_1RefinementFactory__coll__graph.png" border="0" usemap="#RefinementFactory_3_01SC_00_01LO_00_01GO_00_01NO_01_4_coll__map" alt="Collaboration graph"/></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a19f6ea9d9d873657041004fa12f76ac5"><td class="memItemLeft" align="right" valign="top">typedef Mesh&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a19f6ea9d9d873657041004fa12f76ac5">Mesh_Type</a></td></tr>
-<tr class="separator:a19f6ea9d9d873657041004fa12f76ac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af03eee08be24542da73ba33195f14aba"><td class="memItemLeft" align="right" valign="top">typedef MeshUnstructured&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#af03eee08be24542da73ba33195f14aba">MeshUnstr_Type</a></td></tr>
-<tr class="separator:af03eee08be24542da73ba33195f14aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a278d01c278972af01f2996247af8ac"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; MeshUnstructured&lt; SC, LO, GO, NO &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a></td></tr>
-<tr class="separator:a1a278d01c278972af01f2996247af8ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a772a738296d703be721b9b1c877f1a9e"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; <a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a772a738296d703be721b9b1c877f1a9e">MeshUnstrPtrArray_Type</a></td></tr>
-<tr class="separator:a772a738296d703be721b9b1c877f1a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2163b2c380d83b6b28a695f6f8e8a56"><td class="memItemLeft" align="right" valign="top">typedef Mesh_Type::CommPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ad2163b2c380d83b6b28a695f6f8e8a56">CommPtr_Type</a></td></tr>
-<tr class="separator:ad2163b2c380d83b6b28a695f6f8e8a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58381e0786c65ec61d11bc73c224b45a"><td class="memItemLeft" align="right" valign="top">typedef Mesh_Type::CommConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a58381e0786c65ec61d11bc73c224b45a">CommConstPtr_Type</a></td></tr>
-<tr class="separator:a58381e0786c65ec61d11bc73c224b45a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0879b04ac1b1830fae7d6a7e29d36000"><td class="memItemLeft" align="right" valign="top">typedef Elements&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0879b04ac1b1830fae7d6a7e29d36000">Elements_Type</a></td></tr>
-<tr class="separator:a0879b04ac1b1830fae7d6a7e29d36000"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0994b5b7b6d080048673941251999f2e"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1RefinementFactory.html#a0879b04ac1b1830fae7d6a7e29d36000">Elements_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a></td></tr>
-<tr class="separator:a0994b5b7b6d080048673941251999f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac050bc27156fc5a1e8bf0e01381c33c4"><td class="memItemLeft" align="right" valign="top">typedef SurfaceElements&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ac050bc27156fc5a1e8bf0e01381c33c4">SurfaceElements_Type</a></td></tr>
-<tr class="separator:ac050bc27156fc5a1e8bf0e01381c33c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1067ba23325b19eae16a864f25f7d68f"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1RefinementFactory.html#ac050bc27156fc5a1e8bf0e01381c33c4">SurfaceElements_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a1067ba23325b19eae16a864f25f7d68f">SurfaceElementsPtr_Type</a></td></tr>
-<tr class="separator:a1067ba23325b19eae16a864f25f7d68f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11b30196ff403358f3540117f09b6963"><td class="memItemLeft" align="right" valign="top">typedef EdgeElements&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a11b30196ff403358f3540117f09b6963">EdgeElements_Type</a></td></tr>
-<tr class="separator:a11b30196ff403358f3540117f09b6963"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5285e990ec4632d6188a1280627ad13"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1RefinementFactory.html#a11b30196ff403358f3540117f09b6963">EdgeElements_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a></td></tr>
-<tr class="separator:ae5285e990ec4632d6188a1280627ad13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff8bb4cd3896a419c36d4baabccbf28a"><td class="memItemLeft" align="right" valign="top">typedef MeshInterface&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#aff8bb4cd3896a419c36d4baabccbf28a">MeshInterface_Type</a></td></tr>
-<tr class="separator:aff8bb4cd3896a419c36d4baabccbf28a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2217802fcbb1342b135d33ea70411089"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1RefinementFactory.html#aff8bb4cd3896a419c36d4baabccbf28a">MeshInterface_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a2217802fcbb1342b135d33ea70411089">MeshInterfacePtr_Type</a></td></tr>
-<tr class="separator:a2217802fcbb1342b135d33ea70411089"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3b9a462f8534ab43ce0dbf0d44b3bc5"><td class="memItemLeft" align="right" valign="top">typedef Map&lt; LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae3b9a462f8534ab43ce0dbf0d44b3bc5">Map_Type</a></td></tr>
-<tr class="separator:ae3b9a462f8534ab43ce0dbf0d44b3bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a554f7a4c5f5014e2ddec03a2e667016c"><td class="memItemLeft" align="right" valign="top">typedef Map_Type::MapPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a554f7a4c5f5014e2ddec03a2e667016c">MapPtr_Type</a></td></tr>
-<tr class="separator:a554f7a4c5f5014e2ddec03a2e667016c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8256ccdf1b2a5c977ddc011f4e8eb8d3"><td class="memItemLeft" align="right" valign="top">typedef Map_Type::MapConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a></td></tr>
-<tr class="separator:a8256ccdf1b2a5c977ddc011f4e8eb8d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7c4cb285d95e61820d63b9344a90976"><td class="memItemLeft" align="right" valign="top">typedef MultiVector&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#af7c4cb285d95e61820d63b9344a90976">MultiVector_Type</a></td></tr>
-<tr class="separator:af7c4cb285d95e61820d63b9344a90976"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0592bb145b1f5b1daac2e69a96c23cb5"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1RefinementFactory.html#af7c4cb285d95e61820d63b9344a90976">MultiVector_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0592bb145b1f5b1daac2e69a96c23cb5">MultiVectorPtr_Type</a></td></tr>
-<tr class="separator:a0592bb145b1f5b1daac2e69a96c23cb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae731f05f6a28d13f917230f914f29037"><td class="memItemLeft" align="right" valign="top">typedef MultiVector&lt; LO, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae731f05f6a28d13f917230f914f29037">MultiVectorLO_Type</a></td></tr>
-<tr class="separator:ae731f05f6a28d13f917230f914f29037"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a002c7179ca2f22db4505da2db0f798e9"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1RefinementFactory.html#ae731f05f6a28d13f917230f914f29037">MultiVectorLO_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a002c7179ca2f22db4505da2db0f798e9">MultiVectorLOPtr_Type</a></td></tr>
-<tr class="separator:a002c7179ca2f22db4505da2db0f798e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a433fd79c1903a3771cffbaed6f5dbd71"><td class="memItemLeft" align="right" valign="top">typedef MultiVector&lt; GO, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a433fd79c1903a3771cffbaed6f5dbd71">MultiVectorGO_Type</a></td></tr>
-<tr class="separator:a433fd79c1903a3771cffbaed6f5dbd71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e4318c3bc9a63b25f6283955ff80d49"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1RefinementFactory.html#a433fd79c1903a3771cffbaed6f5dbd71">MultiVectorGO_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a9e4318c3bc9a63b25f6283955ff80d49">MultiVectorGOPtr_Type</a></td></tr>
-<tr class="separator:a9e4318c3bc9a63b25f6283955ff80d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af904cdbfa726de22dcea9dfcc891114b"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; const <a class="el" href="classFEDD_1_1RefinementFactory.html#af7c4cb285d95e61820d63b9344a90976">MultiVector_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#af904cdbfa726de22dcea9dfcc891114b">MultiVectorPtrConst_Type</a></td></tr>
-<tr class="separator:af904cdbfa726de22dcea9dfcc891114b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a266b4b5a15cabb39df492db6e4f53e3e"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::OrdinalTraits&lt; LO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a266b4b5a15cabb39df492db6e4f53e3e">OTLO</a></td></tr>
-<tr class="separator:a266b4b5a15cabb39df492db6e4f53e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab04c3bb37b70c0524f46b050aaec1914"><td class="memItemLeft" align="right" valign="top">typedef Matrix&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ab04c3bb37b70c0524f46b050aaec1914">Matrix_Type</a></td></tr>
-<tr class="separator:ab04c3bb37b70c0524f46b050aaec1914"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52d5a6625f207bc4df2c5ae3362e8ced"><td class="memItemLeft" align="right" valign="top">typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1RefinementFactory.html#ab04c3bb37b70c0524f46b050aaec1914">Matrix_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a52d5a6625f207bc4df2c5ae3362e8ced">MatrixPtr_Type</a></td></tr>
-<tr class="separator:a52d5a6625f207bc4df2c5ae3362e8ced"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e469aabe3952e2cd5797236ba2d80b7"><td class="memItemLeft" align="right" valign="top"><a id="a1e469aabe3952e2cd5797236ba2d80b7"></a>
+typedef Mesh&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Mesh_Type</b></td></tr>
+<tr class="separator:a1e469aabe3952e2cd5797236ba2d80b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa284ad39ff56f20f0e0fb1736a706ed7"><td class="memItemLeft" align="right" valign="top"><a id="aa284ad39ff56f20f0e0fb1736a706ed7"></a>
+typedef MeshUnstructured&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstr_Type</b></td></tr>
+<tr class="separator:aa284ad39ff56f20f0e0fb1736a706ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dfa0d2bb61c7c09eb7b752b8353cf16"><td class="memItemLeft" align="right" valign="top"><a id="a5dfa0d2bb61c7c09eb7b752b8353cf16"></a>
+typedef Teuchos::RCP&lt; MeshUnstructured&lt; SC, LO, GO, NO &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstrPtr_Type</b></td></tr>
+<tr class="separator:a5dfa0d2bb61c7c09eb7b752b8353cf16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a049d8b7e6d1b66326cb5f7576e94a517"><td class="memItemLeft" align="right" valign="top"><a id="a049d8b7e6d1b66326cb5f7576e94a517"></a>
+typedef std::vector&lt; MeshUnstrPtr_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstrPtrArray_Type</b></td></tr>
+<tr class="separator:a049d8b7e6d1b66326cb5f7576e94a517"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7b0ab20b8659e451330976480944e37"><td class="memItemLeft" align="right" valign="top"><a id="aa7b0ab20b8659e451330976480944e37"></a>
+typedef Mesh_Type::CommPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>CommPtr_Type</b></td></tr>
+<tr class="separator:aa7b0ab20b8659e451330976480944e37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96e4037869de7d2d55b318fac0dd68fe"><td class="memItemLeft" align="right" valign="top"><a id="a96e4037869de7d2d55b318fac0dd68fe"></a>
+typedef Mesh_Type::CommConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>CommConstPtr_Type</b></td></tr>
+<tr class="separator:a96e4037869de7d2d55b318fac0dd68fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b053e56590f8e148fb1b3f48c68141b"><td class="memItemLeft" align="right" valign="top"><a id="a0b053e56590f8e148fb1b3f48c68141b"></a>
+typedef Elements&#160;</td><td class="memItemRight" valign="bottom"><b>Elements_Type</b></td></tr>
+<tr class="separator:a0b053e56590f8e148fb1b3f48c68141b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a655120e9571ded2c66d441c9a1552038"><td class="memItemLeft" align="right" valign="top"><a id="a655120e9571ded2c66d441c9a1552038"></a>
+typedef Teuchos::RCP&lt; Elements_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ElementsPtr_Type</b></td></tr>
+<tr class="separator:a655120e9571ded2c66d441c9a1552038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a240b95cf08c5e92bbe1a03555dc6f519"><td class="memItemLeft" align="right" valign="top"><a id="a240b95cf08c5e92bbe1a03555dc6f519"></a>
+typedef SurfaceElements&#160;</td><td class="memItemRight" valign="bottom"><b>SurfaceElements_Type</b></td></tr>
+<tr class="separator:a240b95cf08c5e92bbe1a03555dc6f519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f79f50fb173e3acc3167279a7f1345a"><td class="memItemLeft" align="right" valign="top"><a id="a0f79f50fb173e3acc3167279a7f1345a"></a>
+typedef Teuchos::RCP&lt; SurfaceElements_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>SurfaceElementsPtr_Type</b></td></tr>
+<tr class="separator:a0f79f50fb173e3acc3167279a7f1345a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ecf8fe210fc6060b24b37d1955d9a41"><td class="memItemLeft" align="right" valign="top"><a id="a4ecf8fe210fc6060b24b37d1955d9a41"></a>
+typedef EdgeElements&#160;</td><td class="memItemRight" valign="bottom"><b>EdgeElements_Type</b></td></tr>
+<tr class="separator:a4ecf8fe210fc6060b24b37d1955d9a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d86e0d3a5fbf66548b2919590a80342"><td class="memItemLeft" align="right" valign="top"><a id="a8d86e0d3a5fbf66548b2919590a80342"></a>
+typedef Teuchos::RCP&lt; EdgeElements_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>EdgeElementsPtr_Type</b></td></tr>
+<tr class="separator:a8d86e0d3a5fbf66548b2919590a80342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00302cf977be058f72385dd6687344cb"><td class="memItemLeft" align="right" valign="top"><a id="a00302cf977be058f72385dd6687344cb"></a>
+typedef MeshInterface&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshInterface_Type</b></td></tr>
+<tr class="separator:a00302cf977be058f72385dd6687344cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab247d74ce40f3b9ca72334ed61052cf6"><td class="memItemLeft" align="right" valign="top"><a id="ab247d74ce40f3b9ca72334ed61052cf6"></a>
+typedef Teuchos::RCP&lt; MeshInterface_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MeshInterfacePtr_Type</b></td></tr>
+<tr class="separator:ab247d74ce40f3b9ca72334ed61052cf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c51bc6fe3a5ab13cd4e4fb44bff78c9"><td class="memItemLeft" align="right" valign="top"><a id="a3c51bc6fe3a5ab13cd4e4fb44bff78c9"></a>
+typedef Map&lt; LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Map_Type</b></td></tr>
+<tr class="separator:a3c51bc6fe3a5ab13cd4e4fb44bff78c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56971c3f5c10a56a42c694676f52d3c1"><td class="memItemLeft" align="right" valign="top"><a id="a56971c3f5c10a56a42c694676f52d3c1"></a>
+typedef Map_Type::MapPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>MapPtr_Type</b></td></tr>
+<tr class="separator:a56971c3f5c10a56a42c694676f52d3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc2c8e7ecacdf0992be92861366de188"><td class="memItemLeft" align="right" valign="top"><a id="acc2c8e7ecacdf0992be92861366de188"></a>
+typedef Map_Type::MapConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>MapConstPtr_Type</b></td></tr>
+<tr class="separator:acc2c8e7ecacdf0992be92861366de188"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae656c560626c10f5fc6722f43e4281fc"><td class="memItemLeft" align="right" valign="top"><a id="ae656c560626c10f5fc6722f43e4281fc"></a>
+typedef MultiVector&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVector_Type</b></td></tr>
+<tr class="separator:ae656c560626c10f5fc6722f43e4281fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae422943f76cfe9ada609671de16eb9c8"><td class="memItemLeft" align="right" valign="top"><a id="ae422943f76cfe9ada609671de16eb9c8"></a>
+typedef Teuchos::RCP&lt; MultiVector_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorPtr_Type</b></td></tr>
+<tr class="separator:ae422943f76cfe9ada609671de16eb9c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adad31caec4b769abf8658c67001f977b"><td class="memItemLeft" align="right" valign="top"><a id="adad31caec4b769abf8658c67001f977b"></a>
+typedef MultiVector&lt; LO, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorLO_Type</b></td></tr>
+<tr class="separator:adad31caec4b769abf8658c67001f977b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d82d2ea10ef7ec6d16da19105a29a57"><td class="memItemLeft" align="right" valign="top"><a id="a9d82d2ea10ef7ec6d16da19105a29a57"></a>
+typedef Teuchos::RCP&lt; MultiVectorLO_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorLOPtr_Type</b></td></tr>
+<tr class="separator:a9d82d2ea10ef7ec6d16da19105a29a57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9c88666e02916392baafb0f6f32a9ed"><td class="memItemLeft" align="right" valign="top"><a id="aa9c88666e02916392baafb0f6f32a9ed"></a>
+typedef MultiVector&lt; GO, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorGO_Type</b></td></tr>
+<tr class="separator:aa9c88666e02916392baafb0f6f32a9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5593f5b047bcd78698da8d9d6c4a7e44"><td class="memItemLeft" align="right" valign="top"><a id="a5593f5b047bcd78698da8d9d6c4a7e44"></a>
+typedef Teuchos::RCP&lt; MultiVectorGO_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorGOPtr_Type</b></td></tr>
+<tr class="separator:a5593f5b047bcd78698da8d9d6c4a7e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1104aa640a212baca89d8193713bbafc"><td class="memItemLeft" align="right" valign="top"><a id="a1104aa640a212baca89d8193713bbafc"></a>
+typedef Teuchos::RCP&lt; const MultiVector_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVectorPtrConst_Type</b></td></tr>
+<tr class="separator:a1104aa640a212baca89d8193713bbafc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2ca2ac7d7bb5251e9546a8a81077a34"><td class="memItemLeft" align="right" valign="top"><a id="ad2ca2ac7d7bb5251e9546a8a81077a34"></a>
+typedef Teuchos::OrdinalTraits&lt; LO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>OTLO</b></td></tr>
+<tr class="separator:ad2ca2ac7d7bb5251e9546a8a81077a34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57f322063d7692248463f5f4fe859a25"><td class="memItemLeft" align="right" valign="top"><a id="a57f322063d7692248463f5f4fe859a25"></a>
+typedef Matrix&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Matrix_Type</b></td></tr>
+<tr class="separator:a57f322063d7692248463f5f4fe859a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc9db004cde1ce278146dceb3533f2a9"><td class="memItemLeft" align="right" valign="top"><a id="afc9db004cde1ce278146dceb3533f2a9"></a>
+typedef Teuchos::RCP&lt; Matrix_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MatrixPtr_Type</b></td></tr>
+<tr class="separator:afc9db004cde1ce278146dceb3533f2a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a45a83da1b5be5f4bcb091cf56caca25e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a45a83da1b5be5f4bcb091cf56caca25e">RefinementFactory</a> ()</td></tr>
-<tr class="separator:a45a83da1b5be5f4bcb091cf56caca25e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0815e8208b193e64c26e64d94691a967"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0815e8208b193e64c26e64d94691a967">RefinementFactory</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#a58381e0786c65ec61d11bc73c224b45a">CommConstPtr_Type</a> comm, int volumeID=10)</td></tr>
-<tr class="separator:a0815e8208b193e64c26e64d94691a967"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0abc83a680e6002dab5ee53c16f5e4f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0abc83a680e6002dab5ee53c16f5e4f1">RefinementFactory</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#a58381e0786c65ec61d11bc73c224b45a">CommConstPtr_Type</a> comm, int volumeID, string refinementRestriction, int refinement3DDiagonal=0)</td></tr>
-<tr class="separator:a0abc83a680e6002dab5ee53c16f5e4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9b8ba9b12e35db03ef1b6363c1b9200"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae9b8ba9b12e35db03ef1b6363c1b9200">~RefinementFactory</a> ()</td></tr>
-<tr class="separator:ae9b8ba9b12e35db03ef1b6363c1b9200"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afeed9a01eee8623f5136e07449f3f35d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#afeed9a01eee8623f5136e07449f3f35d">refineMesh</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a> meshP1, int iteration, <a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a> outputMesh)</td></tr>
-<tr class="separator:afeed9a01eee8623f5136e07449f3f35d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0154ebdd6c904d62715d11fcd063259"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#af0154ebdd6c904d62715d11fcd063259">assignEdgeFlags</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a> meshP1, <a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements)</td></tr>
-<tr class="separator:af0154ebdd6c904d62715d11fcd063259"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a530ccd6a31c259515ab1900d544eb813"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a530ccd6a31c259515ab1900d544eb813">refineRegular</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, int i)</td></tr>
-<tr class="separator:a530ccd6a31c259515ab1900d544eb813"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a130f21212d5edaad2dc8f809a2628f2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a130f21212d5edaad2dc8f809a2628f2a">refineGreen</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, int i)</td></tr>
-<tr class="separator:a130f21212d5edaad2dc8f809a2628f2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeeebbc6bfb22dfb14470cf628400733a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#aeeebbc6bfb22dfb14470cf628400733a">refineBlue</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, int i)</td></tr>
-<tr class="separator:aeeebbc6bfb22dfb14470cf628400733a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8bc07f5d6bfe7f7180bd32d7cc4ea0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ad8bc07f5d6bfe7f7180bd32d7cc4ea0c">refineRed</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, int i)</td></tr>
-<tr class="separator:ad8bc07f5d6bfe7f7180bd32d7cc4ea0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89b2f7d45585b804e32b278b83954153"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a89b2f7d45585b804e32b278b83954153">refineType1</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, int indexElement)</td></tr>
-<tr class="separator:a89b2f7d45585b804e32b278b83954153"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac43c76ce4137963ac5aac1355d38dbac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ac43c76ce4137963ac5aac1355d38dbac">refineType2</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, int indexElement)</td></tr>
-<tr class="separator:ac43c76ce4137963ac5aac1355d38dbac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a282ee48e155d2f3f0e0a3faa0fa275d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a282ee48e155d2f3f0e0a3faa0fa275d2">refineType3</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, int indexElement)</td></tr>
-<tr class="separator:a282ee48e155d2f3f0e0a3faa0fa275d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb0db07f3517256e51e05380467c9782"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#acb0db07f3517256e51e05380467c9782">refineType4</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, int indexElement)</td></tr>
-<tr class="separator:acb0db07f3517256e51e05380467c9782"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af40b1acc9353be1408fed4d6a61ed2ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#af40b1acc9353be1408fed4d6a61ed2ae">addMidpoint</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, int i)</td></tr>
-<tr class="separator:af40b1acc9353be1408fed4d6a61ed2ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a383adbeffceada793b6805fb02fa5568"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a383adbeffceada793b6805fb02fa5568">determineLongestEdge</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, vec_int_Type edgeVec, vec2D_dbl_ptr_Type points)</td></tr>
-<tr class="separator:a383adbeffceada793b6805fb02fa5568"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4294d0901e6691203b9043bb2f9c6ac6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a4294d0901e6691203b9043bb2f9c6ac6">buildEdgeMap</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> mapGlobalProc, <a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> mapProc)</td></tr>
-<tr class="separator:a4294d0901e6691203b9043bb2f9c6ac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abeca9755a1bd393c36c792a78c6779e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#abeca9755a1bd393c36c792a78c6779e9">buildNodeMap</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> mapGlobalProc, <a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> mapProc, int newPoints, int newPointsRepeated)</td></tr>
-<tr class="separator:abeca9755a1bd393c36c792a78c6779e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ebf82a5deb92e26a48805fd470f6840"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a2ebf82a5deb92e26a48805fd470f6840">updateElementsOfEdgesLocalAndGlobal</a> (int maxRank, <a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> edgeMap)</td></tr>
-<tr class="separator:a2ebf82a5deb92e26a48805fd470f6840"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f295b405de2c056298b695bea51887b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8f295b405de2c056298b695bea51887b">updateElementsOfSurfaceLocalAndGlobal</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements)</td></tr>
-<tr class="separator:a8f295b405de2c056298b695bea51887b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97003a4445b40ac91728639de432a449"><td class="memItemLeft" align="right" valign="top">vec_bool_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a97003a4445b40ac91728639de432a449">checkInterfaceSurface</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement)</td></tr>
-<tr class="separator:a97003a4445b40ac91728639de432a449"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fa94c91b750950e2bbe53c3540eda08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a6fa94c91b750950e2bbe53c3540eda08">refinementRestrictions</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a> meshP1, <a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, <a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, int iteration, int &amp;newPoints, int &amp;newPointsCommon, vec_GO_Type &amp;globalInterfaceIDsTagged, <a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> mapInterfaceEdges, string restriction, int &amp;newElements)</td></tr>
-<tr class="separator:a6fa94c91b750950e2bbe53c3540eda08"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4401ece866b918923322d46d0c5e33e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae4401ece866b918923322d46d0c5e33e">refineIrregular</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, <a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, int &amp;newElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> edgeMap, <a class="el" href="classFEDD_1_1RefinementFactory.html#a1067ba23325b19eae16a864f25f7d68f">SurfaceElementsPtr_Type</a> surfaceTriangleElements)</td></tr>
-<tr class="separator:ae4401ece866b918923322d46d0c5e33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0393fc1497f3b0e02380af00b93e96d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0393fc1497f3b0e02380af00b93e96d6">buildSurfaceTriangleElements</a> (<a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a> elements, <a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a> edgeElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a1067ba23325b19eae16a864f25f7d68f">SurfaceElementsPtr_Type</a> surfaceTriangleElements, <a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> edgeMap, <a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> elementMap)</td></tr>
-<tr class="separator:a0393fc1497f3b0e02380af00b93e96d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4532ed5c403d767f316e922a3d769853"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a4532ed5c403d767f316e922a3d769853">setErrorEstimate</a> (vec_dbl_Type errorElements)</td></tr>
-<tr class="separator:a4532ed5c403d767f316e922a3d769853"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecc0c9142abed8227daa43fc5db6ae1c"><td class="memItemLeft" align="right" valign="top">vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#aecc0c9142abed8227daa43fc5db6ae1c">getErrorEstimate</a> ()</td></tr>
-<tr class="separator:aecc0c9142abed8227daa43fc5db6ae1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f60708ffc7693357aa56cf5717c1127"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a3f60708ffc7693357aa56cf5717c1127">RefinementFactory</a> (CommConstPtr_Type comm, int volumeID=10)</td></tr>
+<tr class="separator:a3f60708ffc7693357aa56cf5717c1127"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5207ece9582aa02b221b48b89cddfab9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a5207ece9582aa02b221b48b89cddfab9">RefinementFactory</a> (CommConstPtr_Type comm, int volumeID, string refinementRestriction, int refinement3DDiagonal=0)</td></tr>
+<tr class="separator:a5207ece9582aa02b221b48b89cddfab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a974e093ee5ef9989bc496392ad5b3c41"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a974e093ee5ef9989bc496392ad5b3c41">refineMesh</a> (MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh)</td></tr>
+<tr class="separator:a974e093ee5ef9989bc496392ad5b3c41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecd11b1eb2352b22948e1440e3b969d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#aecd11b1eb2352b22948e1440e3b969d2">assignEdgeFlags</a> (MeshUnstrPtr_Type meshP1, EdgeElementsPtr_Type edgeElements)</td></tr>
+<tr class="separator:aecd11b1eb2352b22948e1440e3b969d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34555e97248bb30957744deed34ef317"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a34555e97248bb30957744deed34ef317">refineRegular</a> (EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int i)</td></tr>
+<tr class="separator:a34555e97248bb30957744deed34ef317"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96a9486491ea7d16bfbfaaa5849f794c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a96a9486491ea7d16bfbfaaa5849f794c">refineGreen</a> (EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int i)</td></tr>
+<tr class="separator:a96a9486491ea7d16bfbfaaa5849f794c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07319ad66d1bcce639f74e12524cfb93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a07319ad66d1bcce639f74e12524cfb93">refineBlue</a> (EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int i)</td></tr>
+<tr class="separator:a07319ad66d1bcce639f74e12524cfb93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a7da256870f3d9ccdd7801a1ce06a46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0a7da256870f3d9ccdd7801a1ce06a46">refineRed</a> (EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int i)</td></tr>
+<tr class="separator:a0a7da256870f3d9ccdd7801a1ce06a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6cec217483b91da00bf36d35b05e312"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ad6cec217483b91da00bf36d35b05e312">refineType1</a> (EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement)</td></tr>
+<tr class="separator:ad6cec217483b91da00bf36d35b05e312"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d2675c0ef3f45d58c0b69cbc977b175"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a3d2675c0ef3f45d58c0b69cbc977b175">refineType2</a> (EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement)</td></tr>
+<tr class="separator:a3d2675c0ef3f45d58c0b69cbc977b175"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7d30ce942e7f4d2ac06cace8a3c8984"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ab7d30ce942e7f4d2ac06cace8a3c8984">refineType3</a> (EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement)</td></tr>
+<tr class="separator:ab7d30ce942e7f4d2ac06cace8a3c8984"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc45634db04fda3d86f19be57d1b0ec4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#adc45634db04fda3d86f19be57d1b0ec4">refineType4</a> (EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement)</td></tr>
+<tr class="separator:adc45634db04fda3d86f19be57d1b0ec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07c49ebd314357418d93aeb8bf2ac666"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a07c49ebd314357418d93aeb8bf2ac666">addMidpoint</a> (EdgeElementsPtr_Type edgeElements, int i)</td></tr>
+<tr class="separator:a07c49ebd314357418d93aeb8bf2ac666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5112e8af74f71275fe3a90669b966b3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ad5112e8af74f71275fe3a90669b966b3">determineLongestEdge</a> (EdgeElementsPtr_Type edgeElements, vec_int_Type edgeVec, vec2D_dbl_ptr_Type points)</td></tr>
+<tr class="separator:ad5112e8af74f71275fe3a90669b966b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89cb811b8014461cf78e7579e711a8b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a89cb811b8014461cf78e7579e711a8b4">buildEdgeMap</a> (MapConstPtr_Type mapGlobalProc, MapConstPtr_Type mapProc)</td></tr>
+<tr class="separator:a89cb811b8014461cf78e7579e711a8b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe582bf6848a69e8cd678c4234a41cd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#afe582bf6848a69e8cd678c4234a41cd6">buildNodeMap</a> (EdgeElementsPtr_Type edgeElements, MapConstPtr_Type mapGlobalProc, MapConstPtr_Type mapProc, int newPoints, int newPointsRepeated)</td></tr>
+<tr class="separator:afe582bf6848a69e8cd678c4234a41cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa94ef9d255a71b12409a6bfef6456aef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#aa94ef9d255a71b12409a6bfef6456aef">updateElementsOfEdgesLocalAndGlobal</a> (int maxRank, MapConstPtr_Type edgeMap)</td></tr>
+<tr class="separator:aa94ef9d255a71b12409a6bfef6456aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82ecf13ea678ae2ba822104d85182a3f"><td class="memItemLeft" align="right" valign="top"><a id="a82ecf13ea678ae2ba822104d85182a3f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>updateElementsOfSurfaceLocalAndGlobal</b> (EdgeElementsPtr_Type edgeElements)</td></tr>
+<tr class="separator:a82ecf13ea678ae2ba822104d85182a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dcc6cb8430ece1eaf52f560f8466d92"><td class="memItemLeft" align="right" valign="top"><a id="a2dcc6cb8430ece1eaf52f560f8466d92"></a>
+vec_bool_Type&#160;</td><td class="memItemRight" valign="bottom"><b>checkInterfaceSurface</b> (EdgeElementsPtr_Type edgeElements, vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement)</td></tr>
+<tr class="separator:a2dcc6cb8430ece1eaf52f560f8466d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8bf5e8cc4819d8caf544708d63248d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ad8bf5e8cc4819d8caf544708d63248d9">refinementRestrictions</a> (MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, int iteration, int &amp;newPoints, int &amp;newPointsCommon, vec_GO_Type &amp;globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction, int &amp;newElements)</td></tr>
+<tr class="separator:ad8bf5e8cc4819d8caf544708d63248d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf15bebdf004e62ff59a4753dc1fa89b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#adf15bebdf004e62ff59a4753dc1fa89b">refineIrregular</a> (ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, int &amp;newElements, MapConstPtr_Type edgeMap, SurfaceElementsPtr_Type surfaceTriangleElements)</td></tr>
+<tr class="separator:adf15bebdf004e62ff59a4753dc1fa89b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42faaf05d60e9438f6d3ffc9e8731fff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a42faaf05d60e9438f6d3ffc9e8731fff">buildSurfaceTriangleElements</a> (ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceTriangleElements, MapConstPtr_Type edgeMap, MapConstPtr_Type elementMap)</td></tr>
+<tr class="separator:a42faaf05d60e9438f6d3ffc9e8731fff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43778220c3a80a2e2a69b27aca372d4c"><td class="memItemLeft" align="right" valign="top"><a id="a43778220c3a80a2e2a69b27aca372d4c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setErrorEstimate</b> (vec_dbl_Type errorElements)</td></tr>
+<tr class="separator:a43778220c3a80a2e2a69b27aca372d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13006996d92dd964037bbac7768702f4"><td class="memItemLeft" align="right" valign="top"><a id="a13006996d92dd964037bbac7768702f4"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>getErrorEstimate</b> ()</td></tr>
+<tr class="separator:a13006996d92dd964037bbac7768702f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a2dda98963313023311f044d248befd40"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a2dda98963313023311f044d248befd40">refinementRestriction_</a> = &quot;none&quot;</td></tr>
-<tr class="separator:a2dda98963313023311f044d248befd40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa499fe1f4daaed1c19fd1744d73c3706"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#aa499fe1f4daaed1c19fd1744d73c3706">markingStrategy_</a> = &quot;Maximum&quot;</td></tr>
-<tr class="separator:aa499fe1f4daaed1c19fd1744d73c3706"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac84121e72b1c2c6ff1691dc91acc9b1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#aac84121e72b1c2c6ff1691dc91acc9b1">theta_</a> = 0.5</td></tr>
-<tr class="separator:aac84121e72b1c2c6ff1691dc91acc9b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74d0dd46b30f83f868cd749d28375a42"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a74d0dd46b30f83f868cd749d28375a42">meshQualityPrint_</a> = &quot;false&quot;</td></tr>
-<tr class="separator:a74d0dd46b30f83f868cd749d28375a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7ff86aebffde685089d462f2d04203e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ad7ff86aebffde685089d462f2d04203e">timeTablePrint_</a> = &quot;false&quot;</td></tr>
-<tr class="separator:ad7ff86aebffde685089d462f2d04203e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7466053f06c1d52d6fb2c58db06b7a71"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a7466053f06c1d52d6fb2c58db06b7a71">refinement3DDiagonal_</a> = 0</td></tr>
-<tr class="separator:a7466053f06c1d52d6fb2c58db06b7a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f628fe0b946dc70f36bd7295a8211db"><td class="memItemLeft" align="right" valign="top"><a id="a2f628fe0b946dc70f36bd7295a8211db"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>refinementRestriction_</b> = &quot;none&quot;</td></tr>
+<tr class="separator:a2f628fe0b946dc70f36bd7295a8211db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc05afe32a57a439f0abe9938c467e78"><td class="memItemLeft" align="right" valign="top"><a id="abc05afe32a57a439f0abe9938c467e78"></a>
+string&#160;</td><td class="memItemRight" valign="bottom"><b>markingStrategy_</b> = &quot;Maximum&quot;</td></tr>
+<tr class="separator:abc05afe32a57a439f0abe9938c467e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c7abbd8213424c9fdf9fd9d39fc8e67"><td class="memItemLeft" align="right" valign="top"><a id="a7c7abbd8213424c9fdf9fd9d39fc8e67"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>theta_</b> = 0.5</td></tr>
+<tr class="separator:a7c7abbd8213424c9fdf9fd9d39fc8e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac154f51ad3788ae2527bf44a421a4834"><td class="memItemLeft" align="right" valign="top"><a id="ac154f51ad3788ae2527bf44a421a4834"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>meshQualityPrint_</b> = &quot;false&quot;</td></tr>
+<tr class="separator:ac154f51ad3788ae2527bf44a421a4834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f6f3b61263c544d860ff5086cd04f0c"><td class="memItemLeft" align="right" valign="top"><a id="a2f6f3b61263c544d860ff5086cd04f0c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>timeTablePrint_</b> = &quot;false&quot;</td></tr>
+<tr class="separator:a2f6f3b61263c544d860ff5086cd04f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af36738c6f988a6d564281b04e4e739f1"><td class="memItemLeft" align="right" valign="top"><a id="af36738c6f988a6d564281b04e4e739f1"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>refinement3DDiagonal_</b> = 0</td></tr>
+<tr class="separator:af36738c6f988a6d564281b04e4e739f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:ae71ae7a6d0586a37cdc2aadfafeb00c4"><td class="memItemLeft" align="right" valign="top">vec_GO_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae71ae7a6d0586a37cdc2aadfafeb00c4">globalInterfaceIDs_</a></td></tr>
-<tr class="separator:ae71ae7a6d0586a37cdc2aadfafeb00c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae04f877455828ca9d2328b6b29a72652"><td class="memItemLeft" align="right" valign="top">vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae04f877455828ca9d2328b6b29a72652">errorEstimation_</a></td></tr>
-<tr class="separator:ae04f877455828ca9d2328b6b29a72652"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8f78b4bd97729d0ca0a3a36097da107"><td class="memItemLeft" align="right" valign="top">vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ac8f78b4bd97729d0ca0a3a36097da107">areaTriangles_</a></td></tr>
-<tr class="separator:ac8f78b4bd97729d0ca0a3a36097da107"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7043a525164368b18359a399dede06c3"><td class="memItemLeft" align="right" valign="top">vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#a7043a525164368b18359a399dede06c3">volTetraeders_</a></td></tr>
-<tr class="separator:a7043a525164368b18359a399dede06c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1c44661ff740905f2b3634ea285e1a7"><td class="memItemLeft" align="right" valign="top">vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ad1c44661ff740905f2b3634ea285e1a7">h_T_diam_E_</a></td></tr>
-<tr class="separator:ad1c44661ff740905f2b3634ea285e1a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add2c3dc6ee30afaf225baed853475e06"><td class="memItemLeft" align="right" valign="top">vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#add2c3dc6ee30afaf225baed853475e06">h_T_min_</a></td></tr>
-<tr class="separator:add2c3dc6ee30afaf225baed853475e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae21de28f0848c556b0c90cf6f912de25"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae21de28f0848c556b0c90cf6f912de25">surfaceTriangleMap_</a></td></tr>
-<tr class="separator:ae21de28f0848c556b0c90cf6f912de25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae002a5a1ec8fc3bb73732ff2352c4862"><td class="memItemLeft" align="right" valign="top"><a id="ae002a5a1ec8fc3bb73732ff2352c4862"></a>
+vec_GO_Type&#160;</td><td class="memItemRight" valign="bottom"><b>globalInterfaceIDs_</b></td></tr>
+<tr class="separator:ae002a5a1ec8fc3bb73732ff2352c4862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae302e2206ae316c35a867102d138e87b"><td class="memItemLeft" align="right" valign="top"><a id="ae302e2206ae316c35a867102d138e87b"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>errorEstimation_</b></td></tr>
+<tr class="separator:ae302e2206ae316c35a867102d138e87b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c183c92df6290b33e3be93586da892"><td class="memItemLeft" align="right" valign="top"><a id="a71c183c92df6290b33e3be93586da892"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>areaTriangles_</b></td></tr>
+<tr class="separator:a71c183c92df6290b33e3be93586da892"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a264fd2f5a2f96d46c7dcf162662507a1"><td class="memItemLeft" align="right" valign="top"><a id="a264fd2f5a2f96d46c7dcf162662507a1"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>volTetraeders_</b></td></tr>
+<tr class="separator:a264fd2f5a2f96d46c7dcf162662507a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52229723b27f7c4c1ca2d17228940753"><td class="memItemLeft" align="right" valign="top"><a id="a52229723b27f7c4c1ca2d17228940753"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>h_T_diam_E_</b></td></tr>
+<tr class="separator:a52229723b27f7c4c1ca2d17228940753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f0bb022d2c263689079e59c8300fd5"><td class="memItemLeft" align="right" valign="top"><a id="aa9f0bb022d2c263689079e59c8300fd5"></a>
+vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>h_T_min_</b></td></tr>
+<tr class="separator:aa9f0bb022d2c263689079e59c8300fd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cca7914bcb8c88bb72ba704a1406444"><td class="memItemLeft" align="right" valign="top"><a id="a6cca7914bcb8c88bb72ba704a1406444"></a>
+MapConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>surfaceTriangleMap_</b></td></tr>
+<tr class="separator:a6cca7914bcb8c88bb72ba704a1406444"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a58381e0786c65ec61d11bc73c224b45a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a58381e0786c65ec61d11bc73c224b45a">&#9670;&nbsp;</a></span>CommConstPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Mesh_Type::CommConstPtr_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a58381e0786c65ec61d11bc73c224b45a">CommConstPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad2163b2c380d83b6b28a695f6f8e8a56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2163b2c380d83b6b28a695f6f8e8a56">&#9670;&nbsp;</a></span>CommPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Mesh_Type::CommPtr_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#ad2163b2c380d83b6b28a695f6f8e8a56">CommPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a11b30196ff403358f3540117f09b6963"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11b30196ff403358f3540117f09b6963">&#9670;&nbsp;</a></span>EdgeElements_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef EdgeElements <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a11b30196ff403358f3540117f09b6963">EdgeElements_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae5285e990ec4632d6188a1280627ad13"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae5285e990ec4632d6188a1280627ad13">&#9670;&nbsp;</a></span>EdgeElementsPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1RefinementFactory.html#a11b30196ff403358f3540117f09b6963">EdgeElements_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0879b04ac1b1830fae7d6a7e29d36000"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0879b04ac1b1830fae7d6a7e29d36000">&#9670;&nbsp;</a></span>Elements_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Elements <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a0879b04ac1b1830fae7d6a7e29d36000">Elements_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0994b5b7b6d080048673941251999f2e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0994b5b7b6d080048673941251999f2e">&#9670;&nbsp;</a></span>ElementsPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1RefinementFactory.html#a0879b04ac1b1830fae7d6a7e29d36000">Elements_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae3b9a462f8534ab43ce0dbf0d44b3bc5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3b9a462f8534ab43ce0dbf0d44b3bc5">&#9670;&nbsp;</a></span>Map_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Map&lt;LO,GO,NO&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#ae3b9a462f8534ab43ce0dbf0d44b3bc5">Map_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a8256ccdf1b2a5c977ddc011f4e8eb8d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8256ccdf1b2a5c977ddc011f4e8eb8d3">&#9670;&nbsp;</a></span>MapConstPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Map_Type::MapConstPtr_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a554f7a4c5f5014e2ddec03a2e667016c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a554f7a4c5f5014e2ddec03a2e667016c">&#9670;&nbsp;</a></span>MapPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Map_Type::MapPtr_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a554f7a4c5f5014e2ddec03a2e667016c">MapPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab04c3bb37b70c0524f46b050aaec1914"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab04c3bb37b70c0524f46b050aaec1914">&#9670;&nbsp;</a></span>Matrix_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Matrix&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#ab04c3bb37b70c0524f46b050aaec1914">Matrix_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a52d5a6625f207bc4df2c5ae3362e8ced"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a52d5a6625f207bc4df2c5ae3362e8ced">&#9670;&nbsp;</a></span>MatrixPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1RefinementFactory.html#ab04c3bb37b70c0524f46b050aaec1914">Matrix_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a52d5a6625f207bc4df2c5ae3362e8ced">MatrixPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a19f6ea9d9d873657041004fa12f76ac5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19f6ea9d9d873657041004fa12f76ac5">&#9670;&nbsp;</a></span>Mesh_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Mesh&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a19f6ea9d9d873657041004fa12f76ac5">Mesh_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aff8bb4cd3896a419c36d4baabccbf28a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff8bb4cd3896a419c36d4baabccbf28a">&#9670;&nbsp;</a></span>MeshInterface_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MeshInterface&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#aff8bb4cd3896a419c36d4baabccbf28a">MeshInterface_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2217802fcbb1342b135d33ea70411089"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2217802fcbb1342b135d33ea70411089">&#9670;&nbsp;</a></span>MeshInterfacePtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1RefinementFactory.html#aff8bb4cd3896a419c36d4baabccbf28a">MeshInterface_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a2217802fcbb1342b135d33ea70411089">MeshInterfacePtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af03eee08be24542da73ba33195f14aba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af03eee08be24542da73ba33195f14aba">&#9670;&nbsp;</a></span>MeshUnstr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MeshUnstructured&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#af03eee08be24542da73ba33195f14aba">MeshUnstr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a1a278d01c278972af01f2996247af8ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a278d01c278972af01f2996247af8ac">&#9670;&nbsp;</a></span>MeshUnstrPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;MeshUnstructured&lt;SC,LO,GO,NO&gt; &gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a772a738296d703be721b9b1c877f1a9e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a772a738296d703be721b9b1c877f1a9e">&#9670;&nbsp;</a></span>MeshUnstrPtrArray_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::vector&lt;<a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a772a738296d703be721b9b1c877f1a9e">MeshUnstrPtrArray_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af7c4cb285d95e61820d63b9344a90976"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7c4cb285d95e61820d63b9344a90976">&#9670;&nbsp;</a></span>MultiVector_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MultiVector&lt;SC,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#af7c4cb285d95e61820d63b9344a90976">MultiVector_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a433fd79c1903a3771cffbaed6f5dbd71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a433fd79c1903a3771cffbaed6f5dbd71">&#9670;&nbsp;</a></span>MultiVectorGO_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MultiVector&lt;GO,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a433fd79c1903a3771cffbaed6f5dbd71">MultiVectorGO_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a9e4318c3bc9a63b25f6283955ff80d49"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e4318c3bc9a63b25f6283955ff80d49">&#9670;&nbsp;</a></span>MultiVectorGOPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1RefinementFactory.html#a433fd79c1903a3771cffbaed6f5dbd71">MultiVectorGO_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a9e4318c3bc9a63b25f6283955ff80d49">MultiVectorGOPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae731f05f6a28d13f917230f914f29037"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae731f05f6a28d13f917230f914f29037">&#9670;&nbsp;</a></span>MultiVectorLO_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef MultiVector&lt;LO,LO,GO,NO&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#ae731f05f6a28d13f917230f914f29037">MultiVectorLO_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a002c7179ca2f22db4505da2db0f798e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a002c7179ca2f22db4505da2db0f798e9">&#9670;&nbsp;</a></span>MultiVectorLOPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1RefinementFactory.html#ae731f05f6a28d13f917230f914f29037">MultiVectorLO_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a002c7179ca2f22db4505da2db0f798e9">MultiVectorLOPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0592bb145b1f5b1daac2e69a96c23cb5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0592bb145b1f5b1daac2e69a96c23cb5">&#9670;&nbsp;</a></span>MultiVectorPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1RefinementFactory.html#af7c4cb285d95e61820d63b9344a90976">MultiVector_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a0592bb145b1f5b1daac2e69a96c23cb5">MultiVectorPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af904cdbfa726de22dcea9dfcc891114b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af904cdbfa726de22dcea9dfcc891114b">&#9670;&nbsp;</a></span>MultiVectorPtrConst_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;const <a class="el" href="classFEDD_1_1RefinementFactory.html#af7c4cb285d95e61820d63b9344a90976">MultiVector_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#af904cdbfa726de22dcea9dfcc891114b">MultiVectorPtrConst_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a266b4b5a15cabb39df492db6e4f53e3e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a266b4b5a15cabb39df492db6e4f53e3e">&#9670;&nbsp;</a></span>OTLO</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::OrdinalTraits&lt;LO&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a266b4b5a15cabb39df492db6e4f53e3e">OTLO</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac050bc27156fc5a1e8bf0e01381c33c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac050bc27156fc5a1e8bf0e01381c33c4">&#9670;&nbsp;</a></span>SurfaceElements_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef SurfaceElements <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#ac050bc27156fc5a1e8bf0e01381c33c4">SurfaceElements_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a1067ba23325b19eae16a864f25f7d68f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1067ba23325b19eae16a864f25f7d68f">&#9670;&nbsp;</a></span>SurfaceElementsPtr_Type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef Teuchos::RCP&lt;<a class="el" href="classFEDD_1_1RefinementFactory.html#ac050bc27156fc5a1e8bf0e01381c33c4">SurfaceElements_Type</a>&gt; <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html#a1067ba23325b19eae16a864f25f7d68f">SurfaceElementsPtr_Type</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a45a83da1b5be5f4bcb091cf56caca25e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45a83da1b5be5f4bcb091cf56caca25e">&#9670;&nbsp;</a></span>RefinementFactory() <span class="overload">[1/3]</span></h2>
+<a id="a3f60708ffc7693357aa56cf5717c1127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f60708ffc7693357aa56cf5717c1127">&#9670;&nbsp;</a></span>RefinementFactory() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html">RefinementFactory</a> </td>
+          <td class="memname"><a class="el" href="classFEDD_1_1RefinementFactory.html">RefinementFactory</a> </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0815e8208b193e64c26e64d94691a967"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0815e8208b193e64c26e64d94691a967">&#9670;&nbsp;</a></span>RefinementFactory() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html">RefinementFactory</a> </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a58381e0786c65ec61d11bc73c224b45a">CommConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">CommConstPtr_Type&#160;</td>
           <td class="paramname"><em>comm</em>, </td>
         </tr>
         <tr>
@@ -725,21 +309,26 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">comm</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">volumeID</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a id="a0abc83a680e6002dab5ee53c16f5e4f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0abc83a680e6002dab5ee53c16f5e4f1">&#9670;&nbsp;</a></span>RefinementFactory() <span class="overload">[3/3]</span></h2>
+<a id="a5207ece9582aa02b221b48b89cddfab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5207ece9582aa02b221b48b89cddfab9">&#9670;&nbsp;</a></span>RefinementFactory() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::<a class="el" href="classFEDD_1_1RefinementFactory.html">RefinementFactory</a> </td>
+          <td class="memname"><a class="el" href="classFEDD_1_1RefinementFactory.html">RefinementFactory</a> </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a58381e0786c65ec61d11bc73c224b45a">CommConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">CommConstPtr_Type&#160;</td>
           <td class="paramname"><em>comm</em>, </td>
         </tr>
         <tr>
@@ -767,48 +356,36 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae9b8ba9b12e35db03ef1b6363c1b9200"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9b8ba9b12e35db03ef1b6363c1b9200">&#9670;&nbsp;</a></span>~RefinementFactory()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::~<a class="el" href="classFEDD_1_1RefinementFactory.html">RefinementFactory</a> </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">comm</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">volumeID</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refinementRestriction</td><td>for repeated refinement steps </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refinement3DDiagonal</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="af40b1acc9353be1408fed4d6a61ed2ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af40b1acc9353be1408fed4d6a61ed2ae">&#9670;&nbsp;</a></span>addMidpoint()</h2>
+<a id="a07c49ebd314357418d93aeb8bf2ac666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07c49ebd314357418d93aeb8bf2ac666">&#9670;&nbsp;</a></span>addMidpoint()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::addMidpoint </td>
+          <td class="memname">void addMidpoint </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>i</em>&#160;</td>
+          <td class="paramname"><em>edgeID</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -818,26 +395,33 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>adding a Midpoint on an edge </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeID</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="af0154ebdd6c904d62715d11fcd063259"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af0154ebdd6c904d62715d11fcd063259">&#9670;&nbsp;</a></span>assignEdgeFlags()</h2>
+<a id="aecd11b1eb2352b22948e1440e3b969d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecd11b1eb2352b22948e1440e3b969d2">&#9670;&nbsp;</a></span>assignEdgeFlags()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::assignEdgeFlags </td>
+          <td class="memname">void assignEdgeFlags </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a>&#160;</td>
+          <td class="paramtype">MeshUnstrPtr_Type&#160;</td>
           <td class="paramname"><em>meshP1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>&#160;</td>
         </tr>
         <tr>
@@ -848,26 +432,33 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>Not all edges are marked with a flag in the beginning. In order to set the correct flags to new points we assign the edge flag of the edge they originated from, similar to the function determineEdgeFlagP2New, but uses the edgeMap. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshP1</td><td>inputMesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td>that receive flags </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="a4294d0901e6691203b9043bb2f9c6ac6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4294d0901e6691203b9043bb2f9c6ac6">&#9670;&nbsp;</a></span>buildEdgeMap()</h2>
+<a id="a89cb811b8014461cf78e7579e711a8b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89cb811b8014461cf78e7579e711a8b4">&#9670;&nbsp;</a></span>buildEdgeMap()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::buildEdgeMap </td>
+          <td class="memname">void buildEdgeMap </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MapConstPtr_Type&#160;</td>
           <td class="paramname"><em>mapGlobalProc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MapConstPtr_Type&#160;</td>
           <td class="paramname"><em>mapProc</em>&#160;</td>
         </tr>
         <tr>
@@ -878,32 +469,39 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>building edgeMap after refinement </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mapGlobalProc</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mapProc</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="abeca9755a1bd393c36c792a78c6779e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abeca9755a1bd393c36c792a78c6779e9">&#9670;&nbsp;</a></span>buildNodeMap()</h2>
+<a id="afe582bf6848a69e8cd678c4234a41cd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe582bf6848a69e8cd678c4234a41cd6">&#9670;&nbsp;</a></span>buildNodeMap()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::buildNodeMap </td>
+          <td class="memname">void buildNodeMap </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MapConstPtr_Type&#160;</td>
           <td class="paramname"><em>mapGlobalProc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MapConstPtr_Type&#160;</td>
           <td class="paramname"><em>mapProc</em>, </td>
         </tr>
         <tr>
@@ -926,44 +524,54 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>building nodemap after refinement </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mapGlobalProc</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mapProc</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">newPoints</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">newPointsRepeated</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="a0393fc1497f3b0e02380af00b93e96d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0393fc1497f3b0e02380af00b93e96d6">&#9670;&nbsp;</a></span>buildSurfaceTriangleElements()</h2>
+<a id="a42faaf05d60e9438f6d3ffc9e8731fff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42faaf05d60e9438f6d3ffc9e8731fff">&#9670;&nbsp;</a></span>buildSurfaceTriangleElements()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::buildSurfaceTriangleElements </td>
+          <td class="memname">void buildSurfaceTriangleElements </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a1067ba23325b19eae16a864f25f7d68f">SurfaceElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">SurfaceElementsPtr_Type&#160;</td>
           <td class="paramname"><em>surfaceTriangleElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MapConstPtr_Type&#160;</td>
           <td class="paramname"><em>edgeMap</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MapConstPtr_Type&#160;</td>
           <td class="paramname"><em>elementMap</em>&#160;</td>
         </tr>
         <tr>
@@ -974,62 +582,30 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>building surface triangle elements, as they are not originally part of the mesh information provided by mesh partitioner </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">surfaceTriangleElements</td><td>pointer which will be filled with surfaceTriangleElements </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeMap</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elementMap</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="a97003a4445b40ac91728639de432a449"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97003a4445b40ac91728639de432a449">&#9670;&nbsp;</a></span>checkInterfaceSurface()</h2>
+<a id="ad5112e8af74f71275fe3a90669b966b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5112e8af74f71275fe3a90669b966b3">&#9670;&nbsp;</a></span>determineLongestEdge()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">vec_bool_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::checkInterfaceSurface </td>
+          <td class="memname">int determineLongestEdge </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>edgeElements</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">vec_int_Type&#160;</td>
-          <td class="paramname"><em>originFlag</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">vec_int_Type&#160;</td>
-          <td class="paramname"><em>edgeNumbers</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>indexElement</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a383adbeffceada793b6805fb02fa5568"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a383adbeffceada793b6805fb02fa5568">&#9670;&nbsp;</a></span>determineLongestEdge()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">int <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::determineLongestEdge </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
@@ -1052,60 +628,42 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>determine longest edge in triangle </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeVec</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">points</td><td></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">local</td><td>edgeID of the longest edge </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="aecc0c9142abed8227daa43fc5db6ae1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecc0c9142abed8227daa43fc5db6ae1c">&#9670;&nbsp;</a></span>getErrorEstimate()</h2>
+<a id="a07319ad66d1bcce639f74e12524cfb93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07319ad66d1bcce639f74e12524cfb93">&#9670;&nbsp;</a></span>refineBlue()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">vec_dbl_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::getErrorEstimate </td>
+          <td class="memname">void refineBlue </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aeeebbc6bfb22dfb14470cf628400733a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeeebbc6bfb22dfb14470cf628400733a">&#9670;&nbsp;</a></span>refineBlue()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineBlue </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>i</em>&#160;</td>
+          <td class="paramname"><em>indexElement</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1115,33 +673,41 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>2D blue refinement: refining element according to blue refinement scheme - connecting nodes of shorter edge with midpoint of longer tagged edge and connect that with opposite corner </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexELement</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="a130f21212d5edaad2dc8f809a2628f2a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a130f21212d5edaad2dc8f809a2628f2a">&#9670;&nbsp;</a></span>refineGreen()</h2>
+<a id="a96a9486491ea7d16bfbfaaa5849f794c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96a9486491ea7d16bfbfaaa5849f794c">&#9670;&nbsp;</a></span>refineGreen()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineGreen </td>
+          <td class="memname">void refineGreen </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>i</em>&#160;</td>
+          <td class="paramname"><em>indexElement</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1151,26 +717,34 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>2D green refinement: refining the element according to green scheme - connecting node on refined edge with the opposite node </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexELement</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="ae4401ece866b918923322d46d0c5e33e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae4401ece866b918923322d46d0c5e33e">&#9670;&nbsp;</a></span>refineIrregular()</h2>
+<a id="adf15bebdf004e62ff59a4753dc1fa89b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf15bebdf004e62ff59a4753dc1fa89b">&#9670;&nbsp;</a></span>refineIrregular()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineIrregular </td>
+          <td class="memname">void refineIrregular </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
@@ -1182,13 +756,13 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MapConstPtr_Type&#160;</td>
           <td class="paramname"><em>edgeMap</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a1067ba23325b19eae16a864f25f7d68f">SurfaceElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">SurfaceElementsPtr_Type&#160;</td>
           <td class="paramname"><em>surfaceTriangleElements</em>&#160;</td>
         </tr>
         <tr>
@@ -1199,32 +773,42 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>irregular refinement performed according to set rules determined by Bey or Verfürth </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">newElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeMap</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">surfaceTriangleElements</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="a6fa94c91b750950e2bbe53c3540eda08"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6fa94c91b750950e2bbe53c3540eda08">&#9670;&nbsp;</a></span>refinementRestrictions()</h2>
+<a id="ad8bf5e8cc4819d8caf544708d63248d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8bf5e8cc4819d8caf544708d63248d9">&#9670;&nbsp;</a></span>refinementRestrictions()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refinementRestrictions </td>
+          <td class="memname">void refinementRestrictions </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a>&#160;</td>
+          <td class="paramtype">MeshUnstrPtr_Type&#160;</td>
           <td class="paramname"><em>meshP1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
@@ -1254,7 +838,7 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MapConstPtr_Type&#160;</td>
           <td class="paramname"><em>mapInterfaceEdges</em>, </td>
         </tr>
         <tr>
@@ -1277,20 +861,36 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>Refinement Restrictions In 2D we can add some Restrictions to the Mesh Refinement: KeepRegularity: this will keep the regularity of the Mesh by only refining whith a irregular strategy when the longest edge is involved. If not we add a node to the longest edge, whereby the irregular refinement strategy is changed CheckGreenTags: this will only check tagged green Elements, if its irregular refinement tag from the previous refinement is 'green' and if so not refine it green again but add a node to the longest edge and thus refine it blue In the 3D Case we simply never refine an element irregularly twice, this strategy is called simply 'Bey'. If an element is refined regular, its refinement tag changes from eventually 'irregular' to regular. If those elements should still not be refined irregular we use the strategy 'BeyIrreuglar. </p>
+<p>Furthermore if there is no fitting irrregular refinement strategy (Type(1)-Type(4) don't fit) we refine regular instead.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshP1</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">iteration</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">newPoints</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">newPointsCommon</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">globalInterfaceIDsTagged</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mapInterfaceEdges</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">restriction</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">newElements</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="afeed9a01eee8623f5136e07449f3f35d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afeed9a01eee8623f5136e07449f3f35d">&#9670;&nbsp;</a></span>refineMesh()</h2>
+<a id="a974e093ee5ef9989bc496392ad5b3c41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a974e093ee5ef9989bc496392ad5b3c41">&#9670;&nbsp;</a></span>refineMesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineMesh </td>
+          <td class="memname">void refineMesh </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a>&#160;</td>
+          <td class="paramtype">MeshUnstrPtr_Type&#160;</td>
           <td class="paramname"><em>meshP1</em>, </td>
         </tr>
         <tr>
@@ -1302,7 +902,7 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a1a278d01c278972af01f2996247af8ac">MeshUnstrPtr_Type</a>&#160;</td>
+          <td class="paramtype">MeshUnstrPtr_Type&#160;</td>
           <td class="paramname"><em>outputMesh</em>&#160;</td>
         </tr>
         <tr>
@@ -1313,98 +913,34 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>main function of RefinementFactory, performs one complete mesh refinement </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshP1</td><td>inputMesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">iteration</td><td>current Iteration </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">outputMesh</td><td>refined mesh </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="ad8bc07f5d6bfe7f7180bd32d7cc4ea0c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad8bc07f5d6bfe7f7180bd32d7cc4ea0c">&#9670;&nbsp;</a></span>refineRed()</h2>
+<a id="a0a7da256870f3d9ccdd7801a1ce06a46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a7da256870f3d9ccdd7801a1ce06a46">&#9670;&nbsp;</a></span>refineRed()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineRed </td>
+          <td class="memname">void refineRed </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>elements</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>i</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a530ccd6a31c259515ab1900d544eb813"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a530ccd6a31c259515ab1900d544eb813">&#9670;&nbsp;</a></span>refineRegular()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineRegular </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>edgeElements</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>elements</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>i</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a89b2f7d45585b804e32b278b83954153"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a89b2f7d45585b804e32b278b83954153">&#9670;&nbsp;</a></span>refineType1()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineType1 </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>edgeElements</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
@@ -1421,26 +957,34 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>2D red refinement: refining the element red by connecting all tagged edges midpoints. one element is refined into 4 </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexELement</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="ac43c76ce4137963ac5aac1355d38dbac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac43c76ce4137963ac5aac1355d38dbac">&#9670;&nbsp;</a></span>refineType2()</h2>
+<a id="a34555e97248bb30957744deed34ef317"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34555e97248bb30957744deed34ef317">&#9670;&nbsp;</a></span>refineRegular()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineType2 </td>
+          <td class="memname">void refineRegular </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
@@ -1457,26 +1001,34 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>2D and 3D regular refinement. Chosen by error estimator or otherwise elements are refined regular by connecting edge midpoints. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexELement</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="a282ee48e155d2f3f0e0a3faa0fa275d2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a282ee48e155d2f3f0e0a3faa0fa275d2">&#9670;&nbsp;</a></span>refineType3()</h2>
+<a id="ad6cec217483b91da00bf36d35b05e312"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6cec217483b91da00bf36d35b05e312">&#9670;&nbsp;</a></span>refineType1()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineType3 </td>
+          <td class="memname">void refineType1 </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
@@ -1493,26 +1045,34 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>3D Type(1) refinement </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexELement</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="acb0db07f3517256e51e05380467c9782"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acb0db07f3517256e51e05380467c9782">&#9670;&nbsp;</a></span>refineType4()</h2>
+<a id="a3d2675c0ef3f45d58c0b69cbc977b175"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d2675c0ef3f45d58c0b69cbc977b175">&#9670;&nbsp;</a></span>refineType2()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refineType4 </td>
+          <td class="memname">void refineType2 </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
           <td class="paramname"><em>edgeElements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a0994b5b7b6d080048673941251999f2e">ElementsPtr_Type</a>&#160;</td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
@@ -1529,46 +1089,114 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>3D Type(2) refinement </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexELement</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="a4532ed5c403d767f316e922a3d769853"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4532ed5c403d767f316e922a3d769853">&#9670;&nbsp;</a></span>setErrorEstimate()</h2>
+<a id="ab7d30ce942e7f4d2ac06cace8a3c8984"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7d30ce942e7f4d2ac06cace8a3c8984">&#9670;&nbsp;</a></span>refineType3()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::setErrorEstimate </td>
+          <td class="memname">void refineType3 </td>
           <td>(</td>
-          <td class="paramtype">vec_dbl_Type&#160;</td>
-          <td class="paramname"><em>errorElements</em></td><td>)</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
+          <td class="paramname"><em>edgeElements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
+          <td class="paramname"><em>elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>indexElement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
+
+<p>3D Type(3) refinement </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexELement</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a id="a2ebf82a5deb92e26a48805fd470f6840"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2ebf82a5deb92e26a48805fd470f6840">&#9670;&nbsp;</a></span>updateElementsOfEdgesLocalAndGlobal()</h2>
+<a id="adc45634db04fda3d86f19be57d1b0ec4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc45634db04fda3d86f19be57d1b0ec4">&#9670;&nbsp;</a></span>refineType4()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class SC , class LO , class GO , class NO &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::updateElementsOfEdgesLocalAndGlobal </td>
+          <td class="memname">void refineType4 </td>
+          <td>(</td>
+          <td class="paramtype">EdgeElementsPtr_Type&#160;</td>
+          <td class="paramname"><em>edgeElements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ElementsPtr_Type&#160;</td>
+          <td class="paramname"><em>elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>indexElement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>3D Type(4) refinement </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeElements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">elements</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indexELement</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa94ef9d255a71b12409a6bfef6456aef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa94ef9d255a71b12409a6bfef6456aef">&#9670;&nbsp;</a></span>updateElementsOfEdgesLocalAndGlobal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void updateElementsOfEdgesLocalAndGlobal </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>maxRank</em>, </td>
@@ -1576,7 +1204,7 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a>&#160;</td>
+          <td class="paramtype">MapConstPtr_Type&#160;</td>
           <td class="paramname"><em>edgeMap</em>&#160;</td>
         </tr>
         <tr>
@@ -1587,290 +1215,14 @@ template&lt;class SC , class LO , class GO , class NO &gt; </div>
       </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a id="a8f295b405de2c056298b695bea51887b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f295b405de2c056298b695bea51887b">&#9670;&nbsp;</a></span>updateElementsOfSurfaceLocalAndGlobal()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::updateElementsOfSurfaceLocalAndGlobal </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classFEDD_1_1RefinementFactory.html#ae5285e990ec4632d6188a1280627ad13">EdgeElementsPtr_Type</a>&#160;</td>
-          <td class="paramname"><em>edgeElements</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Field Documentation</h2>
-<a id="ac8f78b4bd97729d0ca0a3a36097da107"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8f78b4bd97729d0ca0a3a36097da107">&#9670;&nbsp;</a></span>areaTriangles_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">vec_dbl_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::areaTriangles_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae04f877455828ca9d2328b6b29a72652"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae04f877455828ca9d2328b6b29a72652">&#9670;&nbsp;</a></span>errorEstimation_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">vec_dbl_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::errorEstimation_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae71ae7a6d0586a37cdc2aadfafeb00c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae71ae7a6d0586a37cdc2aadfafeb00c4">&#9670;&nbsp;</a></span>globalInterfaceIDs_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">vec_GO_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::globalInterfaceIDs_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad1c44661ff740905f2b3634ea285e1a7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad1c44661ff740905f2b3634ea285e1a7">&#9670;&nbsp;</a></span>h_T_diam_E_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">vec_dbl_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::h_T_diam_E_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="add2c3dc6ee30afaf225baed853475e06"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add2c3dc6ee30afaf225baed853475e06">&#9670;&nbsp;</a></span>h_T_min_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">vec_dbl_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::h_T_min_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aa499fe1f4daaed1c19fd1744d73c3706"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa499fe1f4daaed1c19fd1744d73c3706">&#9670;&nbsp;</a></span>markingStrategy_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">string <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::markingStrategy_ = &quot;Maximum&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a74d0dd46b30f83f868cd749d28375a42"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a74d0dd46b30f83f868cd749d28375a42">&#9670;&nbsp;</a></span>meshQualityPrint_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::meshQualityPrint_ = &quot;false&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a7466053f06c1d52d6fb2c58db06b7a71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7466053f06c1d52d6fb2c58db06b7a71">&#9670;&nbsp;</a></span>refinement3DDiagonal_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">int <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refinement3DDiagonal_ = 0</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2dda98963313023311f044d248befd40"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2dda98963313023311f044d248befd40">&#9670;&nbsp;</a></span>refinementRestriction_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">string <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::refinementRestriction_ = &quot;none&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae21de28f0848c556b0c90cf6f912de25"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae21de28f0848c556b0c90cf6f912de25">&#9670;&nbsp;</a></span>surfaceTriangleMap_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classFEDD_1_1RefinementFactory.html#a8256ccdf1b2a5c977ddc011f4e8eb8d3">MapConstPtr_Type</a> <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::surfaceTriangleMap_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aac84121e72b1c2c6ff1691dc91acc9b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac84121e72b1c2c6ff1691dc91acc9b1">&#9670;&nbsp;</a></span>theta_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">double <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::theta_ = 0.5</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ad7ff86aebffde685089d462f2d04203e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad7ff86aebffde685089d462f2d04203e">&#9670;&nbsp;</a></span>timeTablePrint_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::timeTablePrint_ = &quot;false&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a7043a525164368b18359a399dede06c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7043a525164368b18359a399dede06c3">&#9670;&nbsp;</a></span>volTetraeders_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">vec_dbl_Type <a class="el" href="classFEDD_1_1RefinementFactory.html">FEDD::RefinementFactory</a>&lt; SC, LO, GO, NO &gt;::volTetraeders_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
+<p>Updating ElementsOfEdgesLocal and ElementsOfEdgesGlobal. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">maxRank</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeMap</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['adaptivemeshrefinement',['AdaptiveMeshRefinement',['../classFEDD_1_1AdaptiveMeshRefinement.html#a259e41c282b1db70f233ac94854ba8bd',1,'FEDD::AdaptiveMeshRefinement::AdaptiveMeshRefinement()'],['../classFEDD_1_1AdaptiveMeshRefinement.html#a6331efe29307723fb532acea922d8489',1,'FEDD::AdaptiveMeshRefinement::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll)'],['../classFEDD_1_1AdaptiveMeshRefinement.html#acf48e548d006ada2f7bec61fb2bc1d36',1,'FEDD::AdaptiveMeshRefinement::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll, Func_Type exactSolFunc)']]],
-  ['addmidpoint',['addMidpoint',['../classFEDD_1_1RefinementFactory.html#af40b1acc9353be1408fed4d6a61ed2ae',1,'FEDD::RefinementFactory']]],
-  ['assignedgeflags',['assignEdgeFlags',['../classFEDD_1_1RefinementFactory.html#af0154ebdd6c904d62715d11fcd063259',1,'FEDD::RefinementFactory']]]
+  ['adaptivemeshrefinement',['AdaptiveMeshRefinement',['../classFEDD_1_1AdaptiveMeshRefinement.html#ad736272ed2b7eec557fe50b49de6654e',1,'FEDD::AdaptiveMeshRefinement::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll)'],['../classFEDD_1_1AdaptiveMeshRefinement.html#ad5f475f6ca3eb55635d9838b1c641ca8',1,'FEDD::AdaptiveMeshRefinement::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll, Func_Type exactSolFunc)']]],
+  ['addmidpoint',['addMidpoint',['../classFEDD_1_1RefinementFactory.html#a07c49ebd314357418d93aeb8bf2ac666',1,'FEDD::RefinementFactory']]],
+  ['assignedgeflags',['assignEdgeFlags',['../classFEDD_1_1RefinementFactory.html#aecd11b1eb2352b22948e1440e3b969d2',1,'FEDD::RefinementFactory']]]
 ];

@@ -30,16 +30,13 @@
 #include <hdf5.h>
 
 /*!
- Declaration of ExporterParaView
+ Declaration of ExporterParaViewAMR
  
  @brief  ExporterParaView
- @author Christian Hochmuth
- @version 1.0
- @copyright CH
- 
- Moving mesh are possible, here connections are constant but coordinates can be shifted between exports.
- Use set the following paramter in your parameter list in order to export updated mesh points sublist("Exporter")->get("Write new mesh") = true
- */
+ @author Lea Saßmannshausen
+
+
+  */
 
 namespace FEDD {
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>

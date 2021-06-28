@@ -251,7 +251,7 @@ int main(int argc, char *argv[]) {
 
 		int maxIter = parameterListProblem->sublist("Mesh Refinement").get("MaxIter",3);
 
-		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Laplace",parameterListProblem,exactSolPaper); // exactLShape
+		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Laplace",parameterListProblem,exactSolLShape); // exactLShape
 		std::vector<std::chrono::duration<double>> meshTiming(maxIter);
 
 		Teuchos::RCP<Teuchos::Time> buildMesh(Teuchos::TimeMonitor::getNewCounter("main: Refine Mesh"));
@@ -277,7 +277,7 @@ int main(int argc, char *argv[]) {
 
 			if(dim == 2){
 				bcFactory.reset( new BCBuilder<SC,LO,GO,NO>( ) );
-		   		bcFactory->addBC(zeroBC, 1, 0, domain, "Dirichlet", 1); // bcLShape
+		   		bcFactory->addBC(bcLShape, 1, 0, domain, "Dirichlet", 1); // bcLShape
 			}
 			if(dim == 3){
 				bcFactory.reset( new BCBuilder<SC,LO,GO,NO>( ) );
@@ -293,7 +293,7 @@ int main(int argc, char *argv[]) {
 				{
 				laplace->addBoundaries(bcFactory);
 				if(dim==2){
-					rhs=rhsPaper; // rhsZero
+					rhs=rhsZero; // rhsZero
 					laplace->addRhsFunction(rhs);
 
 					}

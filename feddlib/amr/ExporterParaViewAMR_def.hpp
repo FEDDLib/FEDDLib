@@ -7,9 +7,8 @@
  Definition of ExporterParaView
 
  @brief  ExporterParaView
- @author Christian Hochmuth
- @version 1.0
- @copyright CH
+ @author Lea Saßmannshausen
+
  */
 
 using namespace std;

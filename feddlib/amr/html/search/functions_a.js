@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['seterrorestimate',['setErrorEstimate',['../classFEDD_1_1ErrorEstimation.html#af4e754a90d825e98bdeb9fd66d79ae40',1,'FEDD::ErrorEstimation::setErrorEstimate()'],['../classFEDD_1_1RefinementFactory.html#a4532ed5c403d767f316e922a3d769853',1,'FEDD::RefinementFactory::setErrorEstimate()']]]
+  ['updateelementsofedgeslocalandglobal',['updateElementsOfEdgesLocalAndGlobal',['../classFEDD_1_1RefinementFactory.html#aa94ef9d255a71b12409a6bfef6456aef',1,'FEDD::RefinementFactory']]],
+  ['updateelementsofsurfacelocalandglobal',['updateElementsOfSurfaceLocalAndGlobal',['../classFEDD_1_1ErrorEstimation.html#a7c5f51c68832bb8ec28480139a68d81f',1,'FEDD::ErrorEstimation']]]
 ];
