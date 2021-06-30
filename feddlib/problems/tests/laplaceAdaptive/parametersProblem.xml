@@ -24,6 +24,7 @@
         <Parameter name="Write Mesh Quality" type="bool" value="true"/>
         <Parameter name="3D regular Refinement Diagonal Pick" type="int" value="0"/>
         <Parameter name="Refinement Restriction" type="string" value="keepRegularity"/>
+        <Parameter name="Modell Problem" type="string" value="Paper"/>
     </ParameterList>
     
     <ParameterList name="Exporter">

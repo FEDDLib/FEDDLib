@@ -106,6 +106,41 @@ void zeroBC(double* x, double* res, double t, const double* parameters){
 }
 
 // ##################################################################################
+// Rhs, ExactSolution and zeroBC for second Modellproblem 3D
+// ##################################################################################
+void exactSolPaper3D(double* x, double* res){
+    
+	double alpha = -100*(pow(x[0]-1./4,2) +pow(x[1]-1./4 ,2)+pow(x[2]-1./4 ,2));
+
+	double x2 = (pow(x[0],2)-x[0]);
+	double y2 = (pow(x[1],2)-x[1]);
+	double z2 = (pow(x[2],2)-x[2]);
+
+    res[0] = x2*y2*z2*exp(alpha);
+
+	//cout << " Value of RHS in Func" << res[0] << " und x[0] trans " << x[0] << " und x[1] " << x[1]   <<  endl;
+
+    return;
+}
+
+
+void rhsPaper3D(double* x, double* res, double* parameters){
+
+	double alpha = -100*(pow(x[0]-1./4,2) +pow(x[1]-1./4,2)+pow(x[2]-1./4 ,2));
+
+	double x2 = (pow(x[0],2)-x[0]);
+	double y2 = (pow(x[1],2)-x[1]);
+	double z2 = (pow(x[2],2)-x[2]);
+
+	double deltaX = 2 * y2 * z2 * exp(alpha)+ 2*(2*x[0]-1) * y2 * z2 * exp(alpha)+ (40000 *pow(x[0]-1/4,2)-200)*x2*y2*z2*exp(alpha);
+	double deltaY = 2 * x2 * z2 * exp(alpha)+ 2*(2*x[1]-1) * x2 * z2 * exp(alpha)+ (40000 *pow(x[1]-1/4,2)-200)*x2*y2*z2*exp(alpha);
+	double deltaZ = 2 * x2 * y2 * exp(alpha)+ 2*(2*x[2]-1) * y2 * x2 * exp(alpha)+ (40000 *pow(x[2]-1/4,2)-200)*x2*y2*z2*exp(alpha);
+
+	res[0]= deltaX + deltaY + deltaZ;
+}
+
+
+// ##################################################################################
 // Function for the rhs
 void rhs3D(double* x, double* res, double* parameters){
     
@@ -159,7 +194,7 @@ int main(int argc, char *argv[]) {
     typedef typename Map_Type::MapPtr_Type MapPtr_Type;
 	typedef Problem<SC,LO,GO,NO> Problem_Type;
     typedef Teuchos::RCP<Problem_Type> ProblemPtr_Type;
-
+	typedef boost::function<void(double* x, double* res, double t, const double* parameters)>   BCFunc_Type;  
 
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
@@ -251,7 +286,40 @@ int main(int argc, char *argv[]) {
 
 		int maxIter = parameterListProblem->sublist("Mesh Refinement").get("MaxIter",3);
 
-		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Laplace",parameterListProblem,exactSolLShape); // exactLShape
+		string modellProblem = parameterListProblem->sublist("Mesh Refinement").get("Modell Problem","Seminar1");
+
+
+		// Parameters determined by Modell Problem
+		RhsFunc_Type rhs;
+		Func_Type exactSol;
+		BCFunc_Type flag1Func;
+
+		if(modellProblem == "lShape" && dim ==2){
+			rhs = rhsZero;
+			exactSol= exactSolLShape;
+			flag1Func = bcLShape;
+		}
+		else if(modellProblem == "lShape" && dim == 3){
+			rhs = rhsZero;
+			exactSol= exactSolLShape;
+			flag1Func = bcLShape;
+		}
+		else if(modellProblem == "Paper" && dim ==2){
+			rhs = rhsPaper;
+			exactSol = exactSolPaper;
+			flag1Func = zeroBC;
+		}
+		else if(modellProblem == "Paper" && dim == 3){
+			rhs = rhsPaper3D;
+			exactSol = exactSolPaper3D;
+			flag1Func = zeroBC;
+			
+		}
+		
+
+	
+
+		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Laplace",parameterListProblem,exactSol); // exactSolLShape
 		std::vector<std::chrono::duration<double>> meshTiming(maxIter);
 
 		Teuchos::RCP<Teuchos::Time> buildMesh(Teuchos::TimeMonitor::getNewCounter("main: Refine Mesh"));
@@ -275,34 +343,19 @@ int main(int argc, char *argv[]) {
 
 			MAIN_TIMER_START(Bounds," Step 1:	 bcFactory");
 
-			if(dim == 2){
-				bcFactory.reset( new BCBuilder<SC,LO,GO,NO>( ) );
-		   		bcFactory->addBC(bcLShape, 1, 0, domain, "Dirichlet", 1); // bcLShape
-			}
-			if(dim == 3){
-				bcFactory.reset( new BCBuilder<SC,LO,GO,NO>( ) );
-		   		bcFactory->addBC(bcLShape, 1, 0, domain, "Dirichlet", 1);
-			}
+
+			bcFactory.reset( new BCBuilder<SC,LO,GO,NO>( ) );
+	   		bcFactory->addBC(flag1Func, 1, 0, domain, "Dirichlet", 1); // bcLShape
 
 			MAIN_TIMER_STOP(Bounds);	
 			MAIN_TIMER_START(Solver," Step 2:	 solving PDE");
 
 		   
 			Teuchos::RCP<Laplace<SC,LO,GO,NO> > laplace(new Laplace<SC,LO,GO,NO>( domain,FEType,parameterListAll,vL));
-			RhsFunc_Type rhs;
 				{
 				laplace->addBoundaries(bcFactory);
-				if(dim==2){
-					rhs=rhsZero; // rhsZero
-					laplace->addRhsFunction(rhs);
-
-					}
-				if(dim==3){
-					rhs=rhsZero;
-					laplace->addRhsFunction(rhs);
-
-				}
-		        laplace->initializeProblem();
+				laplace->addRhsFunction(rhs);
+				laplace->initializeProblem();
 				laplace->assemble();
 				laplace->setBoundaries();
 				laplace->solve();

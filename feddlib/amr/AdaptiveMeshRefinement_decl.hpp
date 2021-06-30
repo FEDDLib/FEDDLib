@@ -198,6 +198,8 @@ private:
 
 	int dofs_;
 	int dofsP_;
+
+	bool exactSolInput_ = false ;
 	
 		
 

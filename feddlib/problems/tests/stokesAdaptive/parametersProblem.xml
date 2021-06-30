@@ -1,6 +1,6 @@
 <ParameterList name="Stokes">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension" type="int"   	value="3"/>
+        <Parameter name="Dimension" type="int"   	value="2"/>
         <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
         <Parameter name="Discretization Pressure" type="string" value="P1"/>
         <Parameter name="Use single matrix" type="bool" value="true"/>
@@ -23,6 +23,7 @@
         <Parameter name="Write Mesh Quality" type="bool" value="true"/>
         <Parameter name="3D regular Refinement Diagonal Pick" type="int" value="0"/>
         <Parameter name="Refinement Restriction" type="string" value="keepRegularity"/>
+        <Parameter name="Modell Problem" type="string" value="LDC"/>
     </ParameterList>   
     <ParameterList name="Exporter">
         <Parameter name="Write new mesh" type="bool" value="true"/>
@@ -32,7 +33,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="Turek3DCylinder_1k.mesh"/> <!--Turek3DCylinder_1k.mesh, circle2D_1800.mesh --> 
+        <Parameter name="Mesh 1 Name" type="string" value="tpm_square_h01.mesh"/> <!--Turek3DCylinder_1k.mesh, circle2D_1800.mesh, tpm_square_h01 --> 
     </ParameterList>
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>

@@ -198,7 +198,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 		
 		// Calculating diameter of elements	
-		vec_dbl_Type h_T = calcDiamElements(elements,points);
+		vec_dbl_Type h_T =  calcDiamTriangles(elements,points);
 
 		// The divU Part and residual of the Element are calculated elementwise, as the are independet of other processors
 		double divUElement=0;
@@ -241,6 +241,8 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 		vec_dbl_Type volTetraeder(elements->numberElements());
 		vec_dbl_Type h_T_min = determineH_T_min(elements,edgeElements, points, volTetraeder);
 
+		vec_dbl_Type h_T = calcDiamTetraeder(elements,points,volTetraeder); // Circumradius of tetrahedra
+		vec_dbl_Type rho = calcRhoTetraeder(elements, surfaceElements, volTetraeder,areaTriangles); // Incircumradius of tetrahedra
 		vec_dbl_Type h_E_min = vec_dbl_Type(surfaceElements->numberElements());
 		vec_dbl_Type h_E(surfaceElements->numberElements());
 		//MultiVectorPtr_Type h_E_minMv = Teuchos::rcp( new MultiVector_Type( elementMap, 1 ) );	
@@ -271,12 +273,13 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			if(problemType_ == "Stokes") // If the Problem is a Stokes Problem we calculate divU (maybe start a hierarchy
 				divUElement = determineDivU(elements->getElement(k));
 		
-			errorElement[k] = h_T_min[k]*sqrt((u_Jump[surfaceNumbers[0]]+u_Jump[surfaceNumbers[1]]+u_Jump[surfaceNumbers[2]]+u_Jump[surfaceNumbers[3]]+resElement+divUElement)); 
-
+			//cout<< " H_T_Min " << h_T_min[k] << " h_T " << h_T[k] << " rho " << 2*rho[k] << endl;
+			//errorElement[k] = sqrt((u_Jump[surfaceNumbers[0]]+u_Jump[surfaceNumbers[1]]+u_Jump[surfaceNumbers[2]]+u_Jump[surfaceNumbers[3]]+resElement+divUElement)); 
+			errorElement[k] = sqrt(1./2*(u_Jump[surfaceNumbers[0]]+u_Jump[surfaceNumbers[1]]+u_Jump[surfaceNumbers[2]]+u_Jump[surfaceNumbers[3]])+divUElement +h_T[k]*h_T[k]*resElement );
 			if(maxErrorElLoc < errorElement[k] )
 					maxErrorElLoc = errorElement[k];
 
-			//cout << " Error Element " << k << " " << errorElement[k] << " Jumps: " << u_Jump[surfaceNumbers[0]] << " " << u_Jump[surfaceNumbers[1]] << " " << u_Jump[surfaceNumbers[2]] << " " << u_Jump[surfaceNumbers[3]]  << " h_T " << h_T_min[k] << "divUElement " << divUElement << " res " << resElement << endl;
+			//cout << " Error Element " << k << " " << errorElement[k] << " Jumps: " << u_Jump[surfaceNumbers[0]] << " " << u_Jump[surfaceNumbers[1]] << " " << u_Jump[surfaceNumbers[2]] << " " << u_Jump[surfaceNumbers[3]]  << " h_T " << h_T_min[k] << " divUElement " << divUElement << " res " << resElement << endl;
 			
 		}	
 		
@@ -603,7 +606,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 		vec_dbl_Type v_E(3); // normal Vector of Surface
 		double norm_v_E;
 
-
+		vec_dbl_Type h_E2 =  calcDiamTriangles3D(surfaceTriangleElements,points);
 
 		for(int k=0; k< surfaceTriangleElements->numberElements();k++){
 			double jumpQuad=0.;
@@ -621,9 +624,9 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 				quadWeightConst = areaTriangles[k];
 
 
-			surfaceElementsError[k] = (1./h_E[k])*jumpQuad*quadWeightConst;
+			surfaceElementsError[k] = h_E2[k]*jumpQuad*quadWeightConst; // (1./h_E[k])
 
-			//cout << " Jump Quad " << " k " << k << " " << jumpQuad << " h_E " << h_E[k] << endl;
+			//cout << " Jump Quad " << " k " << k << " " << jumpQuad << " h_E " << h_E2[k] << endl;
 		}
 						
 	}
@@ -918,7 +921,6 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	MultiVectorPtr_Type valuesU_x_impF = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );	
 	MultiVectorPtr_Type valuesU_y_impF = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );
 	MultiVectorPtr_Type valuesU_z_impF = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );
-
 
 	// Array Pointers which will contain the to be exchanges information
 	Teuchos::ArrayRCP< SC > entriesU_x_imp  = valuesU_x_imp->getDataNonConst(0);
@@ -1269,15 +1271,15 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 				deltaU[j] += deltaPhi[i]*valuesSolutionRep[nodeList[i]];	
 			}
 		}
+		for (UN w=0; w< QuadW.size(); w++){
+				rhsFunc(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
+				for(int j=0 ; j< dofs_; j++){
+			   		resElement += QuadW[w] * pow(valueFunc[j] + deltaU[j] + nablaP[j] ,2);
+			}
+		}
+   		resElement =  resElement *detB1;
 	}
 
-	for (UN w=0; w< QuadW.size(); w++){
-			rhsFunc(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
-			for(int j=0 ; j< dofs_; j++){
-		   		resElement += QuadW[w] * pow(valueFunc[j] + deltaU[j] + nablaP[j] ,2);
-		}
-	}
-   	resElement =  resElement *detB1;
 
 	//cout<< " ... done " << endl;
 
@@ -1596,7 +1598,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineH_T_min(ElementsPtr_Type ele
 	return h_T_min;
 }
 /*!
-@brief Calculating the diameter of elements. This is necessary for 2D A-posteriori error estimation
+@brief Calculating the diameter of tetraeder. This is necessary for 2D A-posteriori error estimation
 
 @param[in] elements
 @param[in] points
@@ -1604,32 +1606,143 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineH_T_min(ElementsPtr_Type ele
 */
 
 template <class SC, class LO, class GO, class NO>
-vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamElements(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points){
+vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamTetraeder(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points, vec_dbl_Type volTet){
+	
+	vec_dbl_Type diamElements(elements->numberElements());
+
+	double a,b,c,A,B,C;
+
+	vec2D_dbl_Type p(4,vec_dbl_Type(this->dim_));
+	for(int k=0; k< elements->numberElements() ; k++){	
+		// Calculating edges of Tetraeder
+		vec_LO_Type nodeList = 	elements->getElement(k).getVectorNodeListNonConst();
+		
+		for(int i=0; i<4; i++){
+			p[i] = points->at(nodeList[i]);
+		}
+
+		a = sqrt(pow(p[0][0] - p[1][0],2)+ pow(p[0][1] - p[1][1],2) +pow(p[0][2] - p[1][2],2));
+		b = sqrt(pow(p[0][0] - p[2][0],2)+ pow(p[0][1] - p[2][1],2) +pow(p[0][2] - p[2][2],2));
+		c = sqrt(pow(p[0][0] - p[3][0],2)+ pow(p[0][1] - p[3][1],2) +pow(p[0][2] - p[3][2],2));
+
+		A = sqrt(pow(p[1][0] - p[2][0],2)+ pow(p[1][1] - p[2][1],2) +pow(p[1][2] - p[2][2],2));
+		B = sqrt(pow(p[1][0] - p[3][0],2)+ pow(p[1][1] - p[3][1],2) +pow(p[1][2] - p[3][2],2));
+		C = sqrt(pow(p[2][0] - p[3][0],2)+ pow(p[2][1] - p[3][1],2) +pow(p[2][2] - p[3][2],2));		
+
+
+		diamElements[k] = 2*sqrt(fabs((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C)) / (24*volTet[k]) );
+		
+		//cout << " Diam Element " << diamElements[k] << " mit zähler " << ((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C)) << " nenner " << volTet[k] <<   endl;
+	}
+
+
+	return diamElements;
+}
+
+template <class SC, class LO, class GO, class NO>
+vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcRhoTetraeder(ElementsPtr_Type elements,SurfaceElementsPtr_Type surfaceTriangleElements, vec_dbl_Type volTet, vec_dbl_Type areaTriangles){
+	vec_dbl_Type rhoElements(elements->numberElements());
+	
+	
+	vec_LO_Type surfaceOfEl(4);
+	
+	for(int k=0; k< elements->numberElements() ; k++){	
+		// Calculating edges of Tetraeder
+		surfaceOfEl = surfaceTriangleElements->getSurfacesOfElement(k);
+
+		rhoElements[k] = (3*volTet[k]) / (areaTriangles[surfaceOfEl[0]] + areaTriangles[surfaceOfEl[1]] +areaTriangles[surfaceOfEl[2]] +areaTriangles[surfaceOfEl[3]]);
+
+	}
+
+
+	return rhoElements;
+}
+/*!
+@brief Calculating the diameter of triangles. This is necessary for 2D A-posteriori error estimation
+
+@param[in] elements
+@param[in] points
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamTriangles3D(SurfaceElementsPtr_Type surfaceTriangleElements,vec2D_dbl_ptr_Type points){
+	
+	vec_dbl_Type diamElements(surfaceTriangleElements->numberElements());
+	
+	vec_dbl_Type P1(3),P2(3),P3(3);
+	 
+	FiniteElement elementTmp;
+
+	vec_dbl_Type vecTmp(2),vecTmp1(2),vecTmp2(2);
+	for(int k=0; k< surfaceTriangleElements->numberElements() ; k++){
+		double lengthA, lengthB, lengthC,s1;
+
+		elementTmp = surfaceTriangleElements->getElement(k);
+
+		vecTmp[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(1)).at(0);
+		vecTmp[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(1)).at(1);
+		vecTmp[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(1)).at(2);
+		lengthA = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2)+pow(vecTmp[2],2));
+	
+
+		vecTmp1[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(2)).at(0);
+		vecTmp1[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(2)).at(1);
+		vecTmp1[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(2)).at(2);
+		lengthB = sqrt(pow(vecTmp1[0],2)+pow(vecTmp1[1],2)+pow(vecTmp1[2],2));
+
+		vecTmp2[0] = points->at(elementTmp.getNode(1)).at(0) - points->at(elementTmp.getNode(2)).at(0);
+		vecTmp2[1] = points->at(elementTmp.getNode(1)).at(1) - points->at(elementTmp.getNode(2)).at(1);
+		vecTmp2[2] = points->at(elementTmp.getNode(1)).at(2) - points->at(elementTmp.getNode(2)).at(2);
+		lengthC = sqrt(pow(vecTmp2[0],2)+pow(vecTmp2[1],2)+pow(vecTmp2[2],2));
+
+		s1 = (lengthA+lengthB+lengthC)/2.;
+		double area = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));	
+
+		diamElements[k] = 2*(lengthA *lengthB *lengthC)/(4*area);		
+	}
+	return diamElements;
+}
+
+/*!
+@brief Calculating the diameter of triangles. This is necessary for 2D A-posteriori error estimation
+
+@param[in] elements
+@param[in] points
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>:: calcDiamTriangles(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points){
 	
 	vec_dbl_Type diamElements(elements->numberElements());
 	
-	vec_dbl_Type areaTriangles(elements->numberElements());
-	vec_dbl_Type P1(2),P2(2),P3(2);
 	 
 	FiniteElement elementTmp;
-	vec_dbl_Type circPoints(2);
+
+	vec_dbl_Type vecTmp(2),vecTmp1(2),vecTmp2(2);
 	for(int k=0; k< elements->numberElements() ; k++){
+
+
+		double lengthA, lengthB, lengthC,s1;
 		elementTmp = elements->getElement(k);
-		P1[0] = points->at(elementTmp.getNode(0)).at(0);
-		P1[1] = points->at(elementTmp.getNode(0)).at(1);
-		P2[0] = points->at(elementTmp.getNode(1)).at(0);
-		P2[1] = points->at(elementTmp.getNode(1)).at(1);
-		P3[0] = points->at(elementTmp.getNode(2)).at(0);
-		P3[1] = points->at(elementTmp.getNode(2)).at(1);
-		
-		double d = 2*(P1[0]*(P2[1]-P3[1])+P2[0]*(P3[1]-P1[1])+P3[0]*(P1[1]-P2[1]));
+		vecTmp[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(1)).at(0);
+		vecTmp[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(1)).at(1);
+		lengthA = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2));
+	
 
-		circPoints[0] = ((P1[0]*P1[0]+P1[1]*P1[1])*(P2[1]-P3[1])+(P2[0]*P2[0]+P2[1]*P2[1])*(P3[1]-P1[1])+(P3[0]*P3[0]+P3[1]*P3[1])*(P1[1]-P2[1]))/d;
+		vecTmp1[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(2)).at(0);
+		vecTmp1[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(2)).at(1);
+		lengthB = sqrt(pow(vecTmp1[0],2)+pow(vecTmp1[1],2));
 
-		circPoints[1] = ((P1[0]*P1[0]+P1[1]*P1[1])*(P3[0]-P2[0])+(P2[0]*P2[0]+P2[1]*P2[1])*(P1[0]-P3[0])+(P3[0]*P3[0]+P3[1]*P3[1])*(P2[0]-P1[0]))/d;
+		vecTmp2[0] = points->at(elementTmp.getNode(1)).at(0) - points->at(elementTmp.getNode(2)).at(0);
+		vecTmp2[1] = points->at(elementTmp.getNode(1)).at(1) - points->at(elementTmp.getNode(2)).at(1);
+		lengthC = sqrt(pow(vecTmp2[0],2)+pow(vecTmp2[1],2));
 
-		diamElements[k] = 2*sqrt(pow(P1[0]-circPoints[0],2)+pow(P1[1]-circPoints[1],2));
+		s1 = (lengthA+lengthB+lengthC)/2.;
+		double area = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));	
 
+		diamElements[k] = 2*(lengthA *lengthB *lengthC)/(4*area);
 		
 	}
 	return diamElements;

@@ -97,21 +97,48 @@ void rhs0( double* p, double* res, const double* parameters){
 void one(double* x, double* res, double t, const double* parameters){
     
     res[0] = 1.;
-    res[1] = 1.;
+    res[1] = 0.;
+    res[2] = 0.;
     
     return;
 }
 void two(double* x, double* res, double t, const double* parameters){
     
     res[0] = 2.;
-    res[1] = 2.;
+    res[1] = 0.;
+    res[2] = 0.;
     
     return;
 }
 void three(double* x, double* res, double t, const double* parameters){
     
     res[0] = 3.;
-    res[1] = 3.;
+    res[1] = 0.;
+	res[2] = 0.;
+    
+    return;
+}
+void four(double* x, double* res, double t, const double* parameters){
+    
+    res[0] = 1.;
+    res[1] = 0.;
+    res[2] = 0.;
+    
+    return;
+}
+void five(double* x, double* res, double t, const double* parameters){
+    
+    res[0] = 2.;
+    res[1] = 0.;
+    res[2] = 0.;
+    
+    return;
+}
+void six(double* x, double* res, double t, const double* parameters){
+    
+    res[0] = 6.;
+    res[1] = 0.;
+    res[2] = 0.;
     
     return;
 }
@@ -161,6 +188,13 @@ void inflowParabolic3D(double* x, double* res, double t, const double* parameter
 
 void dummyFunc(double* x, double* res, double t, const double* parameters){
     
+    return ;
+}
+
+void dummyFuncSol(double* x, double* res){
+    
+	res[0] = 0.;
+
     return;
 }
 
@@ -180,6 +214,7 @@ int main(int argc, char *argv[]) {
 	typedef Problem<SC,LO,GO,NO> Problem_Type;
     typedef Teuchos::RCP<Problem_Type> ProblemPtr_Type;
 
+	typedef boost::function<void(double* x, double* res, double t, const double* parameters)>   BCFunc_Type;  
 
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
@@ -246,6 +281,67 @@ int main(int argc, char *argv[]) {
 		int 		maxIter 		= parameterListProblem->sublist("Mesh Refinement").get("MaxIter",5);
 		double maxVel 				= parameterListProblem->sublist("Parameter").get("MaxVelocity",2.);
 
+		string modellProblem = parameterListProblem->sublist("Mesh Refinement").get("Modell Problem","Seminar1");
+
+
+		// Parameters determined by Modell Problem
+		RhsFunc_Type rhs;
+		Func_Type exactSol;
+		BCFunc_Type flag1Func;
+		BCFunc_Type flag2Func;
+		BCFunc_Type flag3Func;
+		BCFunc_Type flag4Func;
+		BCFunc_Type flag5Func;
+		BCFunc_Type flag6Func;
+
+		if(modellProblem == "Seminar1" && dim ==2){
+			rhs = rhsPaper1;
+			exactSol= exactSolutionPaperU1;
+			flag1Func = zeroDirichlet2D;
+		}
+		else if(modellProblem == "Seminar2" && dim == 2){
+			rhs = rhsPaper2;
+			exactSol= exactSolutionPaperU1;
+			flag1Func = zeroDirichlet2D;
+		}
+		else if(modellProblem == "Turek" && dim ==2){
+			rhs = rhs0;
+			exactSol = dummyFuncSol;
+			flag1Func = zeroDirichlet2D;
+			flag2Func = inflowParabolic2D;
+			flag4Func = zeroDirichlet2D;
+		}
+		else if(modellProblem == "Turek" && dim == 3){
+			rhs = rhs0;
+			exactSol = dummyFuncSol;
+			flag1Func = zeroDirichlet3D;
+			flag2Func = inflowParabolic3D;
+			flag4Func = zeroDirichlet3D;
+			
+		}
+		else if(modellProblem == "LDC" && dim ==2){
+			rhs = rhs0;
+			exactSol = dummyFuncSol;
+			flag1Func = zeroDirichlet2D;
+			flag2Func = zeroDirichlet2D; //two;
+			flag3Func = zeroDirichlet2D; //three;
+			flag4Func = four;
+			flag5Func = five;
+			//flag6Func = six;
+
+		}
+		else if(modellProblem == "LDC" && dim ==3){
+			rhs = rhs0;
+			exactSol = dummyFuncSol;
+			flag1Func = zeroDirichlet3D;
+			flag2Func = zeroDirichlet2D; //two;
+			flag3Func = zeroDirichlet2D; //three;
+			flag4Func = four;
+			flag5Func = five;
+			//flag6Func = six;
+		}
+
+
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem));
         if (precMethod == "Monolithic")
             parameterListAll->setParameters(*parameterListPrec);
@@ -288,7 +384,7 @@ int main(int argc, char *argv[]) {
 		
 		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
 
-		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Stokes",parameterListProblem,exactSolutionPaperU1); 
+		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Stokes",parameterListProblem,exactSol); 
 		
 		std::vector<double> parameter_vec(0);
 		parameter_vec.push_back(maxVel);//height of inflow region
@@ -311,21 +407,13 @@ int main(int argc, char *argv[]) {
 			MAIN_TIMER_START(Bounds," Step 1:	 bcFactory");
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
-			if (dim==2) {
-				bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
-				bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-				bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
-	//                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
-	//                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
-			}
-			else if(dim==3){
-				bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
-				bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-				bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
-	//                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
-	//                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
-			}
+			bcFactory->addBC(flag1Func, 1, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+			bcFactory->addBC(flag2Func, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+			bcFactory->addBC(flag3Func, 3, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+			bcFactory->addBC(flag4Func, 4, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+			bcFactory->addBC(flag5Func, 5, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 
+      
 			MAIN_TIMER_STOP(Bounds);	
 			MAIN_TIMER_START(Solver," Step 2:	 solving PDE");
 
@@ -340,7 +428,7 @@ int main(int argc, char *argv[]) {
 				Teuchos::TimeMonitor solveTimeMonitor(*solveTime);
 				
 				stokes->addBoundaries(bcFactory);
-				stokes->addRhsFunction(rhs0);						    
+				stokes->addRhsFunction(rhs);						    
 				stokes->initializeProblem();						    
 				stokes->assemble();
 				stokes->setBoundaries();             
@@ -387,7 +475,7 @@ int main(int argc, char *argv[]) {
 			{
 
 				ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( stokes , true);
-				domainRefined = meshRefiner.globalAlgorithm( domainPressure,  domainVelocity, stokes->getSolution(), problem, rhs0 );
+				domainRefined = meshRefiner.globalAlgorithm( domainPressure,  domainVelocity, stokes->getSolution(), problem, rhs );
 			}
 
 			domainPressure = domainRefined;

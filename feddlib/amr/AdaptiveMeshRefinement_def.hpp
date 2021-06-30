@@ -72,6 +72,9 @@ domainsP1_(0)
 	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
 	writeMeshQuality_ = parameterListAll->sublist("Mesh Refinement").get("Write Mesh Quality",true);
 
+	// If no exact solution is given, we use a dummy function == 0 !!!
+
+
 
 }
 /// 
@@ -94,6 +97,7 @@ domainsP1_(0)
 	this->FEType2_ = parameterListAll->sublist("Parameter").get("Discretization","P1");
 
 	exactSolFunc_ = exactSolFunc;
+	exactSolInput_ = true;
 
 	tol_= parameterListAll->sublist("Mesh Refinement").get("Toleranz",0.001);
 	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
@@ -359,8 +363,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	maxErrorKn.push_back(errorNodesMv_->getMax());
 	numElements.push_back(domainP12_->getElementMap()->getMaxAllGlobalIndex()+1);
 	numElementsProc.push_back(domainP12_->getElementsC()->numberElements());
-	relError.push_back(0);
-	eRelError.push_back(0);
+	
 	numNodes.push_back(domainP12_->getMapUnique()->getMaxAllGlobalIndex()+1);
 
 	if(currentIter_ == maxIter_){
@@ -425,8 +428,8 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 
 
 	MultiVectorPtr_Type errorValues = Teuchos::rcp(new MultiVector_Type( solution_->getBlock(0)->getMap() ) ); 
-    //this = alpha*A + beta*B + gamma*this
-    errorValues->update( 1., exactSolution, -1. ,solutionP12, 0.);
+	//this = alpha*A + beta*B + gamma*this
+	errorValues->update( 1., exactSolution, -1. ,solutionP12, 0.);
 
 	MultiVectorConstPtr_Type errorValuesAbs = Teuchos::rcp(new MultiVector_Type(  solution_->getBlock(0)->getMap()) );
 	errorValuesAbs = errorValues; 
@@ -471,6 +474,23 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 	}
 
 	errorL2.push_back(sqrt(errorL2Tmp));
+
+	// Calculating Error bound epsilon
+	if(exactSolInput_ == true){
+		relError.push_back(sqrt(problem_->calculateH1Norm(errorValues)) / sqrt(problem_->calculateH1Norm(exactSolution)));
+	}
+
+	if(exactSolInput_ == true){
+		double eta = 0.;
+	    Teuchos::ArrayRCP<const double > errorElement = errorElementsMv_->getData(0);
+		for(int i=0; i < errorElement.size() ; i++)
+			eta += errorElement[i];	
+		reduceAll<int, double> (*comm_, REDUCE_SUM, eta, outArg (eta));
+		eta = pow(eta,2);
+		eRelError.push_back(sqrt(eta)/ sqrt(problem_->calculateH1Norm(solutionP12)));
+	}
+
+
 
 	//double solElementH1=sqrt(problem_->calculateH1Norm(exactSolution) + problem_->calculateL2Norm(exactSolution));
 	//double solhElementH1=sqrt(problem_->calculateH1Norm(solutionP12) + problem_->calculateL2Norm(solutionP12));

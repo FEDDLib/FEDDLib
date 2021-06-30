@@ -107,7 +107,12 @@ public:
 	
 	vec_dbl_Type determineH_T_min(ElementsPtr_Type elements,EdgeElementsPtr_Type edgeElements, vec2D_dbl_ptr_Type points, vec_dbl_Type& volTetraeder);
 
-	vec_dbl_Type calcDiamElements(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points);
+	vec_dbl_Type calcDiamTriangles(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points);
+	vec_dbl_Type calcDiamTriangles3D(SurfaceElementsPtr_Type surfaceTriangleElements,vec2D_dbl_ptr_Type points);
+
+	vec_dbl_Type calcDiamTetraeder(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points, vec_dbl_Type volTet);
+
+	vec_dbl_Type calcRhoTetraeder(ElementsPtr_Type elements,SurfaceElementsPtr_Type surfaceTriangleElements, vec_dbl_Type volTet, vec_dbl_Type areaTriangles);
 
 	vec_dbl_Type determineAreaTriangles(ElementsPtr_Type elements,EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceElements, vec2D_dbl_ptr_Type points);
 
