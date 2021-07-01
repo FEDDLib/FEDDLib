@@ -200,6 +200,8 @@ private:
 	int dofsP_;
 
 	bool exactSolInput_ = false ;
+
+	int restrictionLayer_=2;
 	
 		
 

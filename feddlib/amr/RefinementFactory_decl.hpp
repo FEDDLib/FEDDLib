@@ -76,7 +76,7 @@ public:
     
     RefinementFactory( CommConstPtr_Type comm, int volumeID=10 );
 
-    RefinementFactory( CommConstPtr_Type comm, int volumeID,  string refinementRestriction, int refinement3DDiagonal = 0);
+    RefinementFactory( CommConstPtr_Type comm, int volumeID,  string refinementRestriction, int refinement3DDiagonal = 0, int restrictionLayer_ =2);
     
     ~RefinementFactory();
     
@@ -112,7 +112,7 @@ public:
 
 	vec_bool_Type checkInterfaceSurface( EdgeElementsPtr_Type edgeElements,vec_int_Type originFlag, vec_int_Type edgeNumbers, int indexElement);
 
-	void refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements,SurfaceElementsPtr_Type surfaceTriangleElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction,  int& newElements); // check if Element that is tagged to be refined green has previously been refined green
+	void refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements,SurfaceElementsPtr_Type surfaceTriangleElements, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, int& newElements); // check if Element that is tagged to be refined green has previously been refined green
 
 	void refineIrregular(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, int& newElements, MapConstPtr_Type edgeMap, SurfaceElementsPtr_Type surfaceTriangleElements);
 
@@ -132,6 +132,8 @@ public:
 	bool timeTablePrint_ = "false";
 	int refinement3DDiagonal_ = 0; // 0 beeing the shortest interior Diagonal, 1 the second shortest and 2 the longest interior Diagonal 
 
+	int currentIter_ = 0;
+	int restrictionLayer_ = 0;
 
 protected: 
 	vec_GO_Type globalInterfaceIDs_;

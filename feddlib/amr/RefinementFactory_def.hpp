@@ -60,12 +60,14 @@ MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 */
 
 template <class SC, class LO, class GO, class NO>
-RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID, string refinementRestriction, int refinement3DDiagonal):
+RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID, string refinementRestriction, int refinement3DDiagonal, int restrictionLayer):
 MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 {
     this->volumeID_ = volumeID;
 	this->refinement3DDiagonal_= refinement3DDiagonal;
 	this->refinementRestriction_ = refinementRestriction;
+	this->restrictionLayer_ = restrictionLayer;
+
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -237,7 +239,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 	if(meshP1->FEType_ != "P1" && meshP1->FEType_ != "P2"){ 
    		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Mesh Refinement only works for Triangular Elements");
 	}
-    
+    currentIter_ = iteration;
 	
 	this->dim_ = meshP1->getDimension();
 	this->FEType_ =meshP1->FEType_;
@@ -461,7 +463,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// ------------------------------------------------------------------------------------------------------
 
 		MESH_TIMER_START(checkTimer," Step 3:	 Checking Restrictions");		
-		this->refinementRestrictions(meshP1, elements ,edgeElements, surfaceTriangleElements,iteration, newPoints, newPointsRepeated, globalInterfaceIDsTagged, mapInterfaceEdges, refinementRestriction_, newElements);
+		this->refinementRestrictions(meshP1, elements ,edgeElements, surfaceTriangleElements, newPoints, newPointsRepeated, globalInterfaceIDsTagged, mapInterfaceEdges, newElements);
 
 		sort(globalInterfaceIDsTagged.begin(), globalInterfaceIDsTagged.end());
 
@@ -519,11 +521,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// -> Two Edges of Element 'i' are tagged for refinement -> blueRefinement
 		// -> Three Edges of Element 'i' are tagged for refinement -> redRefinement / regular Refinement		
 		// ------------------------------------------------------------------------------------------------------
-		cout << " Irregular Refinement.... " << endl;
 		MESH_TIMER_START(irregRefTimer," Step 5:	 Irregular Refinement");		
 		this->refineIrregular(elements, edgeElements, newElements,edgeMap, surfaceTriangleElements);
 		MESH_TIMER_STOP(irregRefTimer);		
-		cout << " ... done " << endl;
 
 		// ------------------------------------------------------------------------------------------------------
 		// Part VI: Updating the Element Map
@@ -1391,10 +1391,10 @@ Furthermore if there is no fitting irrregular refinement strategy (Type(1)-Type(
 */
 
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements,SurfaceElementsPtr_Type surfaceTriangleElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction, int& newElements){
+void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements,SurfaceElementsPtr_Type surfaceTriangleElements,int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges,int& newElements){
 
 	vec2D_dbl_ptr_Type points = meshP1->getPointsRepeated(); // Points
-
+	string restriction = refinementRestriction_;
 
 	if(this->dim_ == 2){
 		// We determine whether a element that is tagged for green refinement has been refined green in the previous refinement
@@ -1516,12 +1516,6 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 			}
 
 			reduceAll<int, int> (*this->comm_, REDUCE_SUM, layer, outArg (layer));
-			if(this->comm_->getRank() ==0 && layer >0){
-				cout << "__________________________________________________________________________________________________________ " << endl;
-				cout << " " << endl;
-				cout << " Refinement Tag switched in " << layer << " Elements " << endl;
-				cout << "__________________________________________________________________________________________________________ " << endl;
-			}
 
 			// Constructing a map of the global IDs of the tagged Edges	
 			Teuchos::ArrayView<GO> globalEdgesArray = Teuchos::arrayViewFromVector( globalEdges);
@@ -1577,17 +1571,24 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 
 
 	else if(this->dim_== 3){
-		if(refinementRestriction_ != "Bey" && refinementRestriction_ != "BeyIrregular"){
-			//cout << " !!! The restriction Type you requested is not available, 'Bey' will be performed instead !!! " << endl; 
-			restriction = "Bey";
-		}
-
+		restriction = refinementRestriction_;
 		int alright = 0;
 		MapConstPtr_Type edgeMap = meshP1->getEdgeMap();
 		int numPoints=0;
+		int layer =0;
+		int inputLayer = (restrictionLayer_ + 2 - currentIter_);
+		if(inputLayer <= restrictionLayer_ )
+			inputLayer =restrictionLayer_;
+		cout << " Layer " << inputLayer << endl;
 		while(alright==0){
 			alright=1;
-
+			if(layer == inputLayer){
+				restriction = "Bey";			
+			}
+			else if( layer == inputLayer +1)
+				restriction = "None";
+			cout << " Restriction " << restriction << endl;
+			layer++;
 			vec_GO_Type untaggedIDs(0);
 			for(int i=0;i<elements->numberElements() ;i++){
 				vec_int_Type nodeInd(0);
@@ -1610,7 +1611,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 					sort( nodeInd.begin(), nodeInd.end() );
 					nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
 					nodeTag = nodeInd.size();
-					if(refinementRestriction_ == "BeyIrregular") {
+					if(restriction == "BeyIrregular") {
 						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregularRegular" ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
@@ -1645,7 +1646,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
 						}
 				    }
-					else if(refinementRestriction_ == "Bey") {
+					else if(restriction== "Bey") {
 						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
@@ -4596,7 +4597,6 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// The way we refine the Tetrahedron is defined by how we order the nodes of the tetrahedron
 		// (For the algorithm see "Tetrahedral Grid Refinement" by J. Bey 'Algorithm Regular Refinement' in Computing, Springer Verlag 1955)
 
-		MESH_TIMER_START(regref1," Step 1a: RegRef");
 		
         vec_int_Type midPointInd( 6 ); // indices of midpoints of edges of soon to be refined element
 		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
@@ -4638,9 +4638,6 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// Edge_3 = [x_1,x_2]
 		// Edge_4 = [x_1,x_3]	 
 		// Edge_5 = [x_2,x_3]
-
-		MESH_TIMER_STOP(regref1);	
-		MESH_TIMER_START(regref2," Step 1b: RegRef");
 	
 
 		vec_int_Type edgeNumbersTmp = edgeNumbers;
@@ -4674,9 +4671,6 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// Tri_2 = [x_0,x_2,x_3]
 		// Tri_3 = [x_1,x_2,x_3]
 
-
-		MESH_TIMER_STOP(regref2);	
-		MESH_TIMER_START(regref3," Step 1c: RegRef");
 		// We check if one or more of these triangles are part of the boundary surface and determine their flag
 		vec_int_Type surfaceElementsIDs = surfaceTriangleElements->getSurfacesOfElement(indexElement); // surfaces of Element k
 		vec2D_int_Type originTriangles(4,vec_int_Type(3));
@@ -4709,11 +4703,6 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		}
 
 
-	
-
-		MESH_TIMER_STOP(regref3);	
-		MESH_TIMER_START(regref4," Step 1d: RegRef");
-
 		// Furthermore we have to determine whether the triangles are part of the interface between processors, as we need this information to determine if edges
 		// that emerge on the triangles are part of the interface
 		// A triangle is part of the interface if all of its edges are part of the interface (the information if edges are part of the interface was determined
@@ -4728,8 +4717,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// Edge 3 = [x_1,x_2] -> x_12
 		// Edge 4 = [x_1,x_3] -> x_13
 		// Edge 5 = [x_2,x_3] -> x_23
-		MESH_TIMER_STOP(regref4);	
-		MESH_TIMER_START(regref5," Step 1e: RegRef");
+
 
 
 		for(int i=0; i<6; i++)	{
@@ -4745,7 +4733,6 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 	
 		}
 		
-			MESH_TIMER_STOP(regref5);	
 	
 		// Now we construct the new Elements as proposed by Bey's Regular Refinement Algorithm
 

@@ -72,6 +72,8 @@ domainsP1_(0)
 	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
 	writeMeshQuality_ = parameterListAll->sublist("Mesh Refinement").get("Write Mesh Quality",true);
 
+	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
+
 	// If no exact solution is given, we use a dummy function == 0 !!!
 
 
@@ -109,6 +111,8 @@ domainsP1_(0)
 	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
 	writeMeshQuality_ = parameterListAll->sublist("Mesh Refinement").get("Write Mesh Quality",true);
 
+	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
+
 		
 	
 }
@@ -138,7 +142,8 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
     ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ );
 
 	// Refinement Factory object
-	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, refinementRestriction_, refinement3DDiagonal_); 
+
+	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, refinementRestriction_, refinement3DDiagonal_, restrictionLayer_); 
 
 	// Estimating the error with the Discretizations Mesh.
 	int currentLevel =0;
@@ -239,7 +244,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
     ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ );
 
 	// Refinement Factory object
-	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, refinementRestriction_, refinement3DDiagonal_); 
+	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, refinementRestriction_, refinement3DDiagonal_,restrictionLayer_); 
 
 	if(dim_ ==3){
 		SurfaceElementsPtr_Type surfaceTriangleElements = inputMeshP12_->getSurfaceTriangleElements(); // Surfaces

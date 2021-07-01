@@ -123,7 +123,6 @@ void exactSolPaper3D(double* x, double* res){
     return;
 }
 
-
 void rhsPaper3D(double* x, double* res, double* parameters){
 
 	double alpha = -100*(pow(x[0]-1./4,2) +pow(x[1]-1./4,2)+pow(x[2]-1./4 ,2));
@@ -136,7 +135,48 @@ void rhsPaper3D(double* x, double* res, double* parameters){
 	double deltaY = 2 * x2 * z2 * exp(alpha)+ 2*(2*x[1]-1) * x2 * z2 * exp(alpha)+ (40000 *pow(x[1]-1/4,2)-200)*x2*y2*z2*exp(alpha);
 	double deltaZ = 2 * x2 * y2 * exp(alpha)+ 2*(2*x[2]-1) * y2 * x2 * exp(alpha)+ (40000 *pow(x[2]-1/4,2)-200)*x2*y2*z2*exp(alpha);
 
-	res[0]= deltaX + deltaY + deltaZ;
+	//res[0]= deltaX + deltaY + deltaZ;
+	
+	res[0] = -(40000 *pow(x[0],4) *(x[1] - 1)* x[1] *(x[2] - 1)* x[2] - 60000*  pow(x[0],3)* (x[1] - 1)* x[1]* (x[2] - 1)* x[2] + pow(x[0],2)* (40000*pow(x[1],4)* (x[2] - 1)* x[2] - 60000* pow(x[1],3)* (x[2] - 1)* x[2] + pow(x[1],2)* (40000 *pow(x[2],4) - 60000 * pow(x[2],3) + 64500*pow(x[2],2) - 44700* x[2] - 98) + x[1]* (-40000*pow(x[2],4) + 60000*pow(x[2],3) - 44700*pow(x[2],2) + 24900*x[2] + 98) - 98*(x[2] - 1)* x[2]) + x[0] *(-40000*pow(x[1],4) *(x[2] - 1)* x[2] + 60000 *pow(x[1],3)* (x[2] - 1)* x[2] + pow(x[1],2)* (-40000*pow(x[2],4) + 60000 *pow(x[2],3) - 44700*pow(x[2],2) + 24900* x[2] + 98) + x[1] *(40000*pow(x[2],4) - 60000*pow(x[2],3) + 24900*pow(x[2],2) - 5100* x[2] - 98) + 98* (x[2] - 1)* x[2]) - 98*(x[1] - 1)* x[1]* (x[2] - 1)* x[2])*exp(alpha);
+
+//(40000 x^4 (y - 1) y (z - 1) z - 60000 x^3 (y - 1) y (z - 1) z + x^2 (40000 y^4 (z - 1) z - 60000 y^3 (z - 1) z + y^2 (40000 z^4 - 60000 z^3 + 64500 z^2 - 44700 z - 98) + y (-40000 z^4 + 60000 z^3 - 44700 z^2 + 24900 z + 98) - 98 (z - 1) z) + x (-40000 y^4 (z - 1) z + 60000 y^3 (z - 1) z + y^2 (-40000 z^4 + 60000 z^3 - 44700 z^2 + 24900 z + 98) + y (40000 z^4 - 60000 z^3 + 24900 z^2 - 5100 z - 98) + 98 (z - 1) z) - 98 (y - 1) y (z - 1) z) exp(-100 ((x - 1/4)^2 + (y - 1/4)^2 + (z - 1/4)^2))
+
+	return;
+}
+
+// #########################################################################
+void exactSolPaper3D2(double* x, double* res){
+    
+	double alpha = 10000;
+
+    res[0] = exp(-x[0]/alpha)+ exp(-x[1]/alpha) +exp(-x[2]/alpha);
+
+	//cout << " Value of RHS in Func" << res[0] << " und x[0] trans " << x[0] << " und x[1] " << x[1]   <<  endl;
+
+    return;
+}
+
+
+void rhsPaper3D2(double* x, double* res, double* parameters){
+
+	double alpha = 100000;
+
+	double x2 = (-x[0]/alpha);
+	double y2 = (-x[1]/alpha);
+	double z2 = (-x[2]/alpha);
+
+	res[0]= -1/(pow(alpha,2))*(exp(x2)+exp(y2)+exp(z2));
+
+	return;
+}
+
+void bcPaper3D2(double* x, double* res, double t, const double* parameters){
+   
+	double alpha = 10000;
+
+    res[0] = exp(-x[0]/alpha)+ exp(-x[1]/alpha) +exp(-x[2]/alpha);
+
+	return;
 }
 
 
@@ -159,6 +199,50 @@ void dummyFuncExactSol(double* x, double* res){
 
     return;
 }
+// #################################################################################
+
+void bcLShape3D(double* x, double* res, double t, const double* parameters){
+
+	double r = sqrt(x[0]*x[0] + x[1]*x[1]);
+    double phi;
+    if(x[1] < 0.0)
+		phi = 2.0*M_PI+atan2(x[1],x[0]);
+    else
+		phi = atan2(x[1],x[0]);
+		
+    res[0] =  pow(r,2/3.)*sin(2/3.*phi)*pow(x[2],3); 
+
+}
+
+void exactSolLShape3D(double* x, double* res){
+
+	double r = sqrt(x[0]*x[0] + x[1]*x[1]);
+    double phi;
+    if(x[1] < 0.0)
+		phi = 2.0*M_PI+atan2(x[1],x[0]);
+    else
+		phi = atan2(x[1],x[0]);
+		
+    res[0] =  pow(r,2/3.)*sin(2/3.*phi)*pow(x[2],3); 
+}
+
+void rhsLShape3D(double* x, double* res, double* parameters){
+    
+    double r = sqrt(x[0]*x[0] + x[1]*x[1]);
+    double phi;
+	double t=1.;
+    if(x[1] < 0.0)
+		phi = 2.0*M_PI+atan2(x[1],x[0]);
+    else
+		phi = atan2(x[1],x[0]);
+	
+    res[0] =  -pow(r,2/3.)*sin(2/3.*phi)*(6*x[2]);
+
+
+    return;
+}
+
+//############################################################################
 
 typedef unsigned UN;
 typedef default_sc SC;
@@ -304,6 +388,11 @@ int main(int argc, char *argv[]) {
 			exactSol= exactSolLShape;
 			flag1Func = bcLShape;
 		}
+		else if(modellProblem == "lShape3D" && dim == 3){
+			rhs = rhsLShape3D;
+			exactSol= exactSolLShape3D;
+			flag1Func = bcLShape3D;
+		}
 		else if(modellProblem == "Paper" && dim ==2){
 			rhs = rhsPaper;
 			exactSol = exactSolPaper;
@@ -313,6 +402,12 @@ int main(int argc, char *argv[]) {
 			rhs = rhsPaper3D;
 			exactSol = exactSolPaper3D;
 			flag1Func = zeroBC;
+			
+		}
+		else if(modellProblem == "Paper2" && dim == 3){
+			rhs = rhsPaper3D2;
+			exactSol = exactSolPaper3D2;
+			flag1Func = bcPaper3D2;
 			
 		}
 		

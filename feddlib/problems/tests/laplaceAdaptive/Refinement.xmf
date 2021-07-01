@@ -12,10 +12,10 @@
       <Time TimeType="Single" Value="0" />
       <Topology
          Type="Tetrahedron"
-         NumberOfElements="4032"
+         NumberOfElements="63"
          BaseOffset="0">
          <DataStructure Format="HDF"
-                        Dimensions="4032 4"
+                        Dimensions="63 4"
                         DataType="Int"
                         Precision="8">
              Refinement.h5:/Connections/Values
@@ -23,19 +23,19 @@
       </Topology>
       <Geometry Type="X_Y_Z">
          <DataStructure Format="HDF"
-                        Dimensions="915"
+                        Dimensions="30"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsX0/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="915"
+                        Dimensions="30"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsY0/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="915"
+                        Dimensions="30"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsZ0/Values
@@ -48,16 +48,16 @@
          Center="Node"
          Name="u_h">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="915 1"
+                        Dimensions="30 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               915 1
+               30 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="915 1"
+                           Dimensions="30 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/u_h.00000/Values
@@ -70,16 +70,16 @@
          Center="Node"
          Name="u">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="915 1"
+                        Dimensions="30 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               915 1
+               30 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="915 1"
+                           Dimensions="30 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/u.00000/Values
@@ -92,16 +92,16 @@
          Center="Node"
          Name="Error |u-u_h|">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="915 1"
+                        Dimensions="30 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               915 1
+               30 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="915 1"
+                           Dimensions="30 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/Error |u-u_h|.00000/Values
@@ -116,10 +116,10 @@
       <Time TimeType="Single" Value="1" />
       <Topology
          Type="Tetrahedron"
-         NumberOfElements="32256"
+         NumberOfElements="106"
          BaseOffset="0">
          <DataStructure Format="HDF"
-                        Dimensions="32256 4"
+                        Dimensions="106 4"
                         DataType="Int"
                         Precision="8">
              Refinement.h5:/Connections1/Values
@@ -127,19 +127,19 @@
       </Topology>
       <Geometry Type="X_Y_Z">
          <DataStructure Format="HDF"
-                        Dimensions="6309"
+                        Dimensions="40"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsX1/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="6309"
+                        Dimensions="40"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsY1/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="6309"
+                        Dimensions="40"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsZ1/Values
@@ -152,16 +152,16 @@
          Center="Node"
          Name="u_h">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="6309 1"
+                        Dimensions="40 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               6309 1
+               40 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="6309 1"
+                           Dimensions="40 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/u_h.00001/Values
@@ -174,16 +174,16 @@
          Center="Node"
          Name="u">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="6309 1"
+                        Dimensions="40 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               6309 1
+               40 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="6309 1"
+                           Dimensions="40 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/u.00001/Values
@@ -196,16 +196,16 @@
          Center="Node"
          Name="Error |u-u_h|">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="6309 1"
+                        Dimensions="40 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               6309 1
+               40 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="6309 1"
+                           Dimensions="40 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/Error |u-u_h|.00001/Values
@@ -220,10 +220,10 @@
       <Time TimeType="Single" Value="2" />
       <Topology
          Type="Tetrahedron"
-         NumberOfElements="258048"
+         NumberOfElements="549"
          BaseOffset="0">
          <DataStructure Format="HDF"
-                        Dimensions="258048 4"
+                        Dimensions="549 4"
                         DataType="Int"
                         Precision="8">
              Refinement.h5:/Connections2/Values
@@ -231,19 +231,19 @@
       </Topology>
       <Geometry Type="X_Y_Z">
          <DataStructure Format="HDF"
-                        Dimensions="46665"
+                        Dimensions="141"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsX2/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="46665"
+                        Dimensions="141"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsY2/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="46665"
+                        Dimensions="141"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsZ2/Values
@@ -256,16 +256,16 @@
          Center="Node"
          Name="u_h">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="46665 1"
+                        Dimensions="141 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               46665 1
+               141 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="46665 1"
+                           Dimensions="141 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/u_h.00002/Values
@@ -278,16 +278,16 @@
          Center="Node"
          Name="u">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="46665 1"
+                        Dimensions="141 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               46665 1
+               141 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="46665 1"
+                           Dimensions="141 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/u.00002/Values
@@ -300,16 +300,16 @@
          Center="Node"
          Name="Error |u-u_h|">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="46665 1"
+                        Dimensions="141 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               46665 1
+               141 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="46665 1"
+                           Dimensions="141 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/Error |u-u_h|.00002/Values
@@ -324,10 +324,10 @@
       <Time TimeType="Single" Value="3" />
       <Topology
          Type="Tetrahedron"
-         NumberOfElements="2064384"
+         NumberOfElements="4316"
          BaseOffset="0">
          <DataStructure Format="HDF"
-                        Dimensions="2064384 4"
+                        Dimensions="4316 4"
                         DataType="Int"
                         Precision="8">
              Refinement.h5:/Connections3/Values
@@ -335,19 +335,19 @@
       </Topology>
       <Geometry Type="X_Y_Z">
          <DataStructure Format="HDF"
-                        Dimensions="358545"
+                        Dimensions="903"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsX3/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="358545"
+                        Dimensions="903"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsY3/Values
          </DataStructure>
          <DataStructure Format="HDF"
-                        Dimensions="358545"
+                        Dimensions="903"
                         DataType="Float"
                         Precision="8">
              Refinement.h5:/PointsZ3/Values
@@ -360,16 +360,16 @@
          Center="Node"
          Name="u_h">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="358545 1"
+                        Dimensions="903 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               358545 1
+               903 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="358545 1"
+                           Dimensions="903 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/u_h.00003/Values
@@ -382,16 +382,16 @@
          Center="Node"
          Name="u">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="358545 1"
+                        Dimensions="903 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               358545 1
+               903 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="358545 1"
+                           Dimensions="903 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/u.00003/Values
@@ -404,19 +404,227 @@
          Center="Node"
          Name="Error |u-u_h|">
          <DataStructure ItemType="HyperSlab"
-                        Dimensions="358545 1"
+                        Dimensions="903 1"
                         Type="HyperSlab">
            <DataStructure  Dimensions="3 2"
                            Format="XML">
                0    0
                1    1
-               358545 1
+               903 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="358545 1"
+                           Dimensions="903 1"
                            DataType="Float"
                            Precision="8">
                Refinement.h5:/Error |u-u_h|.00003/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+<!-- Time 4 Iteration 00004 -->
+    <Grid Name="MeshP1 4">
+      <Time TimeType="Single" Value="4" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="32592"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="32592 4"
+                        DataType="Int"
+                        Precision="8">
+             Refinement.h5:/Connections4/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="6101"
+                        DataType="Float"
+                        Precision="8">
+             Refinement.h5:/PointsX4/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="6101"
+                        DataType="Float"
+                        Precision="8">
+             Refinement.h5:/PointsY4/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="6101"
+                        DataType="Float"
+                        Precision="8">
+             Refinement.h5:/PointsZ4/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Node"
+         Name="u_h">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="6101 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               6101 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="6101 1"
+                           DataType="Float"
+                           Precision="8">
+               Refinement.h5:/u_h.00004/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Node"
+         Name="u">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="6101 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               6101 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="6101 1"
+                           DataType="Float"
+                           Precision="8">
+               Refinement.h5:/u.00004/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Node"
+         Name="Error |u-u_h|">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="6101 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               6101 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="6101 1"
+                           DataType="Float"
+                           Precision="8">
+               Refinement.h5:/Error |u-u_h|.00004/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+<!-- Time 5 Iteration 00005 -->
+    <Grid Name="MeshP1 5">
+      <Time TimeType="Single" Value="5" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="256886"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="256886 4"
+                        DataType="Int"
+                        Precision="8">
+             Refinement.h5:/Connections5/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="45402"
+                        DataType="Float"
+                        Precision="8">
+             Refinement.h5:/PointsX5/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="45402"
+                        DataType="Float"
+                        Precision="8">
+             Refinement.h5:/PointsY5/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="45402"
+                        DataType="Float"
+                        Precision="8">
+             Refinement.h5:/PointsZ5/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Node"
+         Name="u_h">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="45402 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               45402 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="45402 1"
+                           DataType="Float"
+                           Precision="8">
+               Refinement.h5:/u_h.00005/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Node"
+         Name="u">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="45402 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               45402 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="45402 1"
+                           DataType="Float"
+                           Precision="8">
+               Refinement.h5:/u.00005/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Node"
+         Name="Error |u-u_h|">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="45402 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               45402 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="45402 1"
+                           DataType="Float"
+                           Precision="8">
+               Refinement.h5:/Error |u-u_h|.00005/Values
            </DataStructure>
          </DataStructure>
       </Attribute>
