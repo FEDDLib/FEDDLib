@@ -82,6 +82,15 @@ void exactSolutionPaperP2( double* p, double* res){
 	res[0] =  cos(x*M_PI) *cos (M_PI *y);	
 }
 
+void bcPaper( double* p, double* res, double t, const double* parameters){
+
+	double x = p[0];
+	double y = p[1];
+
+	res[0] =  -2*pow(x,2)*y*pow((1-x),2)*(1-3*y+2*pow(y,2));
+	res[1] =  2*x*pow(y,2)*pow((1-y),2)*(1-3*x+2*pow(x,2));
+}
+
 // ####################################
 // ####################################
 
@@ -297,12 +306,12 @@ int main(int argc, char *argv[]) {
 		if(modellProblem == "Seminar1" && dim ==2){
 			rhs = rhsPaper1;
 			exactSol= exactSolutionPaperU1;
-			flag1Func = zeroDirichlet2D;
+			flag1Func = bcPaper;
 		}
 		else if(modellProblem == "Seminar2" && dim == 2){
 			rhs = rhsPaper2;
 			exactSol= exactSolutionPaperU1;
-			flag1Func = zeroDirichlet2D;
+			flag1Func = bcPaper;
 		}
 		else if(modellProblem == "Turek" && dim ==2){
 			rhs = rhs0;
