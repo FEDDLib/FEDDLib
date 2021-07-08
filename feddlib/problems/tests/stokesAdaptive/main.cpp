@@ -42,7 +42,7 @@ void rhsPaper1( double* p, double* res, const double* parameters){
 	double x = p[0];
 	double y = p[1];
 	res[0] =-(-4*y*pow((1-x),2)+16*x*y*(1-x)-4*pow(x,2)*y)*(1-3*y+2*pow(y,2))-(-4*pow(x,2)*(-3+4*y)-8*pow(x,2)*y)*pow((1-x),2)+1;
-    res[1] =-(4*pow(y,2)*(-3+4*x)+8*pow(y,2)*x)*pow((1-y),2)-(4*x*pow((1-y),2)-16*x*y*(1-y)+4*pow(y,2)*x)*(1-3*x+2*pow(x,2))+1;
+   	 res[1] =-(4*pow(y,2)*(-3+4*x)+8*pow(y,2)*x)*pow((1-y),2)-(4*x*pow((1-y),2)-16*x*y*(1-y)+4*pow(y,2)*x)*(1-3*x+2*pow(x,2))+1;
 
 	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
 }
@@ -53,8 +53,8 @@ void rhsPaper2( double* p, double* res, const double* parameters){
 	double x = p[0];
 	double y = p[1];
 
-    res[0] =-(-4*y*pow((1-x),2)+16*x*y*(1-x)-4*pow(x,2)*y)*(1-3*y+2*pow(y,2))-(-4*pow(x,2)*(-3+4*y)-8*pow(x,2)*y)*pow((1-x),2)-sin(M_PI*x)*cos(M_PI*y)*M_PI;
-    res[1] = -(4*pow(y,2)*(-3+4*x)+8*pow(y,2)*x)*pow((1-y),2)-(4*x*pow((1-y),2)-16*x*y*(1-y)+4*pow(y,2)*x)*(1-3*x+2*pow(x,2))-sin(M_PI*y)*cos(M_PI*x)*M_PI;
+    res[0] =-(-4*y*pow((1-x),2)+16*x*y*(1-x)-4*pow(x,2)*y)*(1-3*y+2*pow(y,2))-(-4*pow(x,2)*(-3+4*y)-8*pow(x,2)*y)*pow((1-x),2)+sin(M_PI*x)*cos(M_PI*y)*M_PI;
+    res[1] = -(4*pow(y,2)*(-3+4*x)+8*pow(y,2)*x)*pow((1-y),2)-(4*x*pow((1-y),2)-16*x*y*(1-y)+4*pow(y,2)*x)*(1-3*x+2*pow(x,2))+sin(M_PI*y)*cos(M_PI*x)*M_PI;
 }
 
 void exactSolutionPaperU1( double* p, double* res){
@@ -92,6 +92,180 @@ void bcPaper( double* p, double* res, double t, const double* parameters){
 }
 
 // ####################################
+// ######################
+// Paper
+// ######################
+void rhsPaperSin( double* p, double* res, const double* parameters){
+
+	double x = M_PI*p[0];
+	double y = M_PI*p[1];
+
+	res[0] = -1*(4*pow(M_PI,3)*cos(y)*sin(y)*(pow(cos(x),2)-pow(sin(x),2)) - 8*pow(M_PI,3)*pow(sin(x),2)*cos(y)*sin(y) )- M_PI*sin(x)*cos(y);
+        res[1] = -1*(-4*pow(M_PI,3)*cos(x)*sin(x)*(pow(cos(y),2)-pow(sin(y),2)) + 8*pow(M_PI,3)*pow(sin(y),2)*cos(x)*sin(x)) - M_PI*cos(x)*sin(y);
+
+	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
+}
+
+
+void exactSolutionPaperSinU( double* p, double* res){
+
+	double x = M_PI*p[0];
+	double y = M_PI*p[1];
+
+	res[0] =  2*M_PI*sin(x)*sin(x)*cos(y)*sin(y);
+	res[1] =  -2*M_PI*sin(x)*sin(y)*cos(x)*sin(y);
+}
+
+void exactSolutionPaperSinP( double* p, double* res){
+
+	double x = M_PI*p[0];
+	double y = M_PI*p[1];
+
+	res[0] =  cos(x)*cos(y);
+}
+
+void bcPaperSin( double* p, double* res, double t, const double* parameters){
+
+	double x = p[0];
+	double y = p[1];
+
+	res[0] =  0.; //-2*pow(x,2)*y*pow((1-x),2)*(1-3*y+2*pow(y,2));
+	res[1] =  0.; //2*x*pow(y,2)*pow((1-y),2)*(1-3*x+2*pow(x,2));
+}
+
+// ####################################
+// ######################
+// Paper
+// ######################
+void rhsVer( double* x, double* res, const double* parameters){
+
+	double r = sqrt(x[0]*x[0] + x[1]*x[1]);
+    double phi;
+    if(x[1] < 0.0)
+		phi = 2.0*M_PI+atan2(x[1],x[0]);
+    else
+		phi = atan2(x[1],x[0]);
+
+
+	double psi = 3*sin(0.5*phi)-sin(1.5*phi);
+	double dPsi = 1.5*cos(0.5*phi)-1.5*cos(1.5*phi);
+	double ddPsi = -0.75*sin(0.5*phi)+2.25*sin(1.5*phi);
+	double dddPsi = -0.375*cos(0.5*phi)+3.375*cos(1.5*phi);
+	double ddddPsi = 0.1875*sin(0.5*phi)-5.0625*sin(1.5*phi);
+
+	double alpha= 0.5;
+	double omega= 2*M_PI;
+
+	res[0] = 	0.75*pow(r,-3./2)* (1.5*sin(phi)*psi+cos(phi)*dPsi) + pow(r,-3./2) *(sin(phi)*(-1.5*psi-0.5*ddPsi)+cos(phi)*(2*dPsi+dddPsi)) +1./2 *pow(r,-1.5)*(2.25*dPsi+dddPsi);
+	res[1] = 	0.75*pow(r,-3./2)* (sin(phi)*dPsi+ 1.5*cos(phi)*psi) + pow(r,-3./2) *(cos(phi)*(1.5*psi+ 0.5*ddPsi)+sin(phi)*(2*dPsi+dddPsi))- 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi);
+
+}
+
+
+void exactSolutionUVer( double* x, double* res){
+
+	double r = sqrt(x[0]*x[0] + x[1]*x[1]);
+    double phi;
+    if(x[1] < 0.0)
+		phi = 2.0*M_PI+atan2(x[1],x[0]);
+    else
+		phi = atan2(x[1],x[0]);
+
+	double psi = 3*sin(0.5*phi)-sin(1.5*phi);
+	double deriPsi = 1.5*cos(0.5*phi)-1.5*cos(1.5*phi);
+
+	double alpha= 0.5;
+	double omega= 2*M_PI;
+
+	res[0] = 	pow(r,alpha)*((1+alpha)*sin(phi)*psi + cos(phi)*deriPsi);
+	res[1] = 	pow(r,alpha)*(sin(phi)*deriPsi -(1+alpha)* cos(phi)*psi);
+}
+
+void exactSolutionPVer( double* x, double* res){
+
+	double r = sqrt(x[0]*x[0] + x[1]*x[1]);
+    double phi;
+    if(x[1] < 0.0)
+		phi = 2.0*M_PI+atan2(x[1],x[0]);
+    else
+		phi = atan2(x[1],x[0]);
+
+	double psi = 3*sin(0.5*phi)-sin(1.5*phi);
+	double deriPsi = 1.5*cos(0.5*phi)-1.5*cos(1.5*phi);
+
+	double alpha= 0.5;
+	double omega= 2*M_PI;
+
+	res[0] = 	pow(r,alpha)*((1+alpha)*sin(phi)*psi + cos(phi)*deriPsi);
+	res[1] = 	pow(r,alpha)*(sin(phi)*deriPsi -(1+alpha)* cos(phi)*psi);
+}
+
+void bcVer( double* x, double* res, double t, const double* parameters){
+
+	double r = sqrt(x[0]*x[0] + x[1]*x[1]);
+    double phi;
+    if(x[1] < 0.0)
+		phi = 2.0*M_PI+atan2(x[1],x[0]);
+    else
+		phi = atan2(x[1],x[0]);
+
+	double psi = 3*sin(0.5*phi)-sin(1.5*phi);
+	double deriPsi = 1.5*cos(0.5*phi)-1.5*cos(1.5*phi);
+
+	double alpha= 0.5;
+	double omega= 2*M_PI;
+
+	res[0] = 	pow(r,alpha)*((1+alpha)*sin(phi)*psi + cos(phi)*deriPsi);
+	res[1] = 	pow(r,alpha)*(sin(phi)*deriPsi -(1+alpha)* cos(phi)*psi);
+
+}
+
+// ####################################
+// ######################
+// Paper
+// ######################
+void rhsPaperExp( double* p, double* res, const double* parameters){
+
+	double x = 2*M_PI*p[0];
+	double y = 2*M_PI*p[1];
+
+	double R = 20;
+
+	double lambda = R/2. - sqrt(pow(R,2)/4.+4.*M_PI*M_PI);
+
+	res[0] = -1*(-lambda*lambda*exp(lambda*p[0]) *cos(y) + exp(lambda*p[0])*4*M_PI*M_PI*cos(y)) +lambda*exp(2*lambda*p[0]);
+        res[1] = -1*(pow(lambda,3)/(2*M_PI)*exp(lambda*p[0]) *sin(y)-lambda*exp(lambda*p[0])*2*M_PI*sin(y));
+
+	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
+}
+
+
+void exactSolutionPaperExp( double* p, double* res){
+
+	double x = 2*M_PI*p[0];
+	double y = 2*M_PI*p[1];
+
+
+	double R = 20;
+
+	double lambda = R/2. - sqrt(pow(R,2)/4.+4.*M_PI*M_PI);
+
+	res[0] =  1-exp(lambda*p[0])*cos(y);
+	res[1] =  lambda/(2*M_PI) * exp(lambda*p[0])*sin(y);
+}
+
+void bcPaperExp( double* p, double* res, double t, const double* parameters){
+
+	double x = 2*M_PI*p[0];
+	double y = 2*M_PI*p[1];
+
+	double R = 20;
+
+	double lambda = R/2. - sqrt(pow(R,2)/4.+4.*M_PI*M_PI);
+
+	res[0] =  1-exp(lambda*p[0])*cos(y);
+	res[1] =  lambda/(2*M_PI) * exp(lambda*p[0])*sin(y);
+}
 // ####################################
 
 void rhs0( double* p, double* res, const double* parameters){
@@ -137,7 +311,7 @@ void four(double* x, double* res, double t, const double* parameters){
 }
 void five(double* x, double* res, double t, const double* parameters){
     
-    res[0] = 2.;
+    res[0] = 1.;
     res[1] = 0.;
     res[2] = 0.;
     
@@ -313,6 +487,21 @@ int main(int argc, char *argv[]) {
 			exactSol= exactSolutionPaperU1;
 			flag1Func = bcPaper;
 		}
+		else if(modellProblem == "Paper" && dim == 2){
+			rhs = rhsPaperExp;
+			exactSol= exactSolutionPaperExp;
+			flag1Func = bcPaperExp;
+		}
+		else if(modellProblem == "Verfuerth" && dim == 2){
+			rhs = rhsVer;
+			exactSol= exactSolutionUVer;
+			flag1Func = bcVer;
+		}
+		else if(modellProblem == "PaperSin" && dim == 2){
+			rhs = rhsPaperSin;
+			exactSol= exactSolutionPaperSinU;
+			flag1Func = bcPaperSin;
+		}
 		else if(modellProblem == "Turek" && dim ==2){
 			rhs = rhs0;
 			exactSol = dummyFuncSol;
@@ -418,7 +607,7 @@ int main(int argc, char *argv[]) {
 
 			bcFactory->addBC(flag1Func, 1, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 			bcFactory->addBC(flag2Func, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-			bcFactory->addBC(flag3Func, 3, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+			//bcFactory->addBC(flag3Func, 3, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 			bcFactory->addBC(flag4Func, 4, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 			bcFactory->addBC(flag5Func, 5, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 

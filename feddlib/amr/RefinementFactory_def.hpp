@@ -1582,7 +1582,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 		cout << " Layer " << inputLayer << endl;
 		while(alright==0){
 			alright=1;
-			if(layer == inputLayer){
+			if(layer == inputLayer && restriction != "None"){
 				restriction = "Bey";			
 			}
 			else if( layer == inputLayer +1)
@@ -4969,7 +4969,11 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		dia[2] = { lengthDia[2],2.};
 		sort(dia.begin(),dia.end());		
 
-		diaInd = (int) dia[refinement3DDiagonal_][1];
+
+		if(refinement3DDiagonal_>2 || refinement3DDiagonal_ < 0)
+			diaInd =0;
+		else 
+			diaInd = (int) dia[refinement3DDiagonal_][1];
 
 		
 
@@ -5585,7 +5589,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 			FiniteElement feNew(newElements.at(i),10);
 			feNew.setFiniteElementRefinementType("regular");	
 			feNew.setPredecessorElement(indexElement);
-			if(elements->getElement(indexElement).getFiniteElementRefinementType() == "irregular")
+			if(elements->getElement(indexElement).getFiniteElementRefinementType() == "irregular" || elements->getElement(indexElement).getFiniteElementRefinementType() == "irregularRegular" )
 				feNew.setFiniteElementRefinementType("irregularRegular");	
 			if(i<7)
 				this->elementsC_->addElement(feNew);

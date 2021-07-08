@@ -1,0 +1,430 @@
+<?xml version="1.0" ?>
+<!DOCTYPE Xdmf SYSTEM "Error_and_Dist.xdmf" [
+<!ENTITY DataFile "Error_and_Dist.h5">
+]>
+<!-- Error_and_Dist.h5  -->
+<Xdmf>
+  <Domain Name="Error_and_Dist">
+    <Grid Name="Error_and_DistGrid" GridType="Collection" CollectionType="Temporal">
+
+<!-- Time 0 Iteration 00000 -->
+    <Grid Name="MeshP0 0">
+      <Time TimeType="Single" Value="0" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="504"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="504 4"
+                        DataType="Int"
+                        Precision="8">
+             Error_and_Dist.h5:/Connections/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="150"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsX0/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="150"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsY0/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="150"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsZ0/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="eta_T">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="504 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               504 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="504 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/eta_T.00000/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="|u-u_h|_H1(T)">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="504 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               504 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="504 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/|u-u_h|_H1(T).00000/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="Proc">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="504 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               504 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="504 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/Proc.00000/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+<!-- Time 1 Iteration 00001 -->
+    <Grid Name="MeshP0 1">
+      <Time TimeType="Single" Value="1" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="4032"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="4032 4"
+                        DataType="Int"
+                        Precision="8">
+             Error_and_Dist.h5:/Connections1/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="915"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsX1/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="915"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsY1/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="915"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsZ1/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="eta_T">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="4032 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               4032 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="4032 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/eta_T.00001/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="|u-u_h|_H1(T)">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="4032 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               4032 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="4032 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/|u-u_h|_H1(T).00001/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="Proc">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="4032 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               4032 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="4032 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/Proc.00001/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+<!-- Time 2 Iteration 00002 -->
+    <Grid Name="MeshP0 2">
+      <Time TimeType="Single" Value="2" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="32256"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="32256 4"
+                        DataType="Int"
+                        Precision="8">
+             Error_and_Dist.h5:/Connections2/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="6309"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsX2/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="6309"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsY2/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="6309"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsZ2/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="eta_T">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="32256 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               32256 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="32256 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/eta_T.00002/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="|u-u_h|_H1(T)">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="32256 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               32256 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="32256 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/|u-u_h|_H1(T).00002/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="Proc">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="32256 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               32256 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="32256 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/Proc.00002/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+<!-- Time 3 Iteration 00003 -->
+    <Grid Name="MeshP0 3">
+      <Time TimeType="Single" Value="3" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="258048"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="258048 4"
+                        DataType="Int"
+                        Precision="8">
+             Error_and_Dist.h5:/Connections3/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="46665"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsX3/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="46665"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsY3/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="46665"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsZ3/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="eta_T">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="258048 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               258048 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="258048 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/eta_T.00003/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="|u-u_h|_H1(T)">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="258048 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               258048 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="258048 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/|u-u_h|_H1(T).00003/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="Proc">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="258048 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               258048 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="258048 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/Proc.00003/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+
+    </Grid>
+
+  </Domain>
+</Xdmf>

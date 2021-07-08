@@ -454,7 +454,6 @@ template<class SC,class LO,class GO,class NO>
 void Problem<SC,LO,GO,NO>::addToRhs(BlockMultiVectorPtr_Type x) const{
 
     rhs_->update( 1. , *x , 1. );
-
 }
 
 template<class SC,class LO,class GO,class NO>

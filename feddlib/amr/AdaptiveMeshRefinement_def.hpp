@@ -350,9 +350,12 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 	MultiVectorConstPtr_Type errorElConst  = errorElementsMv_ ;
 
+
 	// Error in Nodes	
 	MultiVectorConstPtr_Type exactSolution = this->calcExactSolution();
 	calcErrorNorms(exactSolution,solution->getBlock(0));
+
+	MultiVectorConstPtr_Type errorElConstH1  = errorH1ElementsMv_ ;
 
 	MultiVectorConstPtr_Type errorValues = 	errorNodesMv_;; // error of exact vs approx sol
 
@@ -360,7 +363,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 		this->initExporter(  parameterListAll_);
 	}
 	this->exportSolution( inputMeshP12_, exportSolutionMv, errorValues, exactSolution);
-	this->exportError( inputMeshP12_, errorElConst, vecDecompositionConst );
+	this->exportError( inputMeshP12_, errorElConst, errorElConstH1, vecDecompositionConst );
 
 
 	// Determine all essential values
@@ -431,22 +434,25 @@ Calculating error norms. If the exact solution is unknown we use approxmated err
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Type exactSolution, MultiVectorConstPtr_Type solutionP12){
 
-
+	// Calculating the error per node
 	MultiVectorPtr_Type errorValues = Teuchos::rcp(new MultiVector_Type( solution_->getBlock(0)->getMap() ) ); 
 	//this = alpha*A + beta*B + gamma*this
 	errorValues->update( 1., exactSolution, -1. ,solutionP12, 0.);
 
+	// Taking abs norm
 	MultiVectorConstPtr_Type errorValuesAbs = Teuchos::rcp(new MultiVector_Type(  solution_->getBlock(0)->getMap()) );
 	errorValuesAbs = errorValues; 
-
 	errorValues->abs(errorValuesAbs);
 
+	// Absolute Error in nodes
 	errorNodesMv_ = errorValues;
 
+	// ---------------------------
+	// Calculating H1 Norm
 	errorH1.push_back(sqrt(problem_->calculateH1Norm(errorValues)));
 
-	// L2 Norm is more difficult
-
+	// ---------------------------
+	// L2 Norm 
 	MultiVectorConstPtr_Type exactSolutionTmp = Teuchos::rcp(new MultiVector_Type( domainP12_ ->getMapUnique() ) ); 
 	Teuchos::ArrayRCP<double > exactSolutionTmpA = exactSolutionTmp->getDataNonConst(0);
 
@@ -480,6 +486,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 
 	errorL2.push_back(sqrt(errorL2Tmp));
 
+	// -------------------------------
 	// Calculating Error bound epsilon
 	if(exactSolInput_ == true){
 		relError.push_back(sqrt(problem_->calculateH1Norm(errorValues)) / sqrt(problem_->calculateH1Norm(exactSolution)));
@@ -495,11 +502,83 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 		eRelError.push_back(sqrt(eta)/ sqrt(problem_->calculateH1Norm(solutionP12)));
 	}
 
+	// -------------------------------
+	// Calculating H1 Norm elementwise
+	// First we need a repeated map that is compatible with a vector solution and error
+
+	errorH1ElementsMv_ =  Teuchos::rcp( new MultiVector_Type( domainP12_ ->getElementMap(), 1 ) );
+	errorH1ElementsMv_->putScalar(0.);
+	Teuchos::ArrayRCP<SC> errorH1ElementsA = errorH1ElementsMv_->getDataNonConst(0);
+	
+	if(domainP12_->getElementMap()->getMaxAllGlobalIndex()< 15000){
+		ElementsPtr_Type elements = domainP12_->getElementsC();
+		MapConstPtr_Type elementMap = domainP12_->getElementMap();
+		MapConstPtr_Type mapUnique = domainP12_->getMapUnique();
+		MapConstPtr_Type mapRep = domainP12_->getMapRepeated();
+
+		vec_GO_Type repIDsVec(0);
+		for(int i=0; i<mapRep->getMaxLocalIndex()+1; i++){
+			GO gID = mapRep->getGlobalElement(i);
+			for(int d=0; d < dofs_ ; d++)
+				repIDsVec.push_back(gID*dofs_+d);
+		}
+		Teuchos::ArrayView<GO> repIDsVecArray = Teuchos::arrayViewFromVector(repIDsVec);
+		// global Ids of Elements' Nodes
+		MapPtr_Type mapRepSystem =
+				Teuchos::rcp( new Map_Type( elementMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), repIDsVecArray , 0, domainP12_->getComm()) );
+
+		MultiVectorPtr_Type mvValuesError =  Teuchos::rcp( new MultiVector_Type( mapRepSystem, 1 ) );
+		Teuchos::ArrayRCP< SC > mvValuesErrorA  = mvValuesError->getDataNonConst(0);	
+
+		MultiVectorPtr_Type mvValuesErrorUnique =  Teuchos::rcp( new MultiVector_Type( solution_->getBlock(0)->getMap(), 1 ) );
+		//Teuchos::ArrayRCP< SC > mvValuesErrorA  = mvValuesError->getDataNonConst(0);	
 
 
-	//double solElementH1=sqrt(problem_->calculateH1Norm(exactSolution) + problem_->calculateL2Norm(exactSolution));
-	//double solhElementH1=sqrt(problem_->calculateH1Norm(solutionP12) + problem_->calculateL2Norm(solutionP12));
+		MultiVectorPtr_Type errorNodesRep =  Teuchos::rcp( new MultiVector_Type( mapRepSystem, 1 ) );
+		Teuchos::ArrayRCP< SC > errorNodesRepA  = errorNodesRep->getDataNonConst(0);	
+		errorNodesRep->importFromVector(errorNodesMv_,false,"Insert");
 
+
+		for(int k=0; k< elementMap->getMaxAllGlobalIndex()+1; k++){
+			mvValuesError->putScalar(0.);	
+			vec_GO_Type notOnMyProc(0);
+			vec_dbl_Type notOnMyProcValue(0);
+			if(elementMap->getLocalElement(k) != -1){
+				vec_int_Type nodeList = elements->getElement(elementMap->getLocalElement(k)).getVectorNodeList();
+				for(int j=0; j< nodeList.size(); j++){
+					for(int d=0; d < dofs_ ; d++){
+						if(mapUnique->getLocalElement(mapRep->getGlobalElement(nodeList[j])) == -1){
+							GO gID = mapRep->getGlobalElement(nodeList[j]);
+							notOnMyProc.push_back(gID*dofs_+d);
+							notOnMyProcValue.push_back(errorNodesRepA[dofs_*nodeList[j]+d]);
+						}
+
+						mvValuesErrorA[dofs_*nodeList[j]+d] = errorNodesRepA[dofs_*nodeList[j]+d];
+					}
+				}
+			}
+			Teuchos::ArrayView<GO> globalNodeArray = Teuchos::arrayViewFromVector( notOnMyProc);
+
+			// global Ids of Elements' Nodes
+			MapPtr_Type mapNodeExport =
+				Teuchos::rcp( new Map_Type( elementMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalNodeArray, 0, domainP12_->getComm()) );
+					
+			MultiVectorPtr_Type notMV  =  Teuchos::rcp( new MultiVector_Type( mapNodeExport, 1 ) );
+			Teuchos::ArrayRCP<SC> notMVA = notMV->getDataNonConst(0);
+			for(int i=0; i< notMVA.size(); i++)
+				notMVA[i] = notOnMyProcValue[i];
+			
+			mvValuesErrorUnique->importFromVector(mvValuesError,false,"Insert");
+			mvValuesErrorUnique->importFromVector(notMV,false,"Insert");
+		
+			double value = sqrt(problem_->calculateH1Norm(mvValuesErrorUnique));
+			if(elementMap->getLocalElement(k) != -1){
+				errorH1ElementsA[elementMap->getLocalElement(k)]=value;
+			}
+		
+		}
+	}
+	
 }
 
 
@@ -533,9 +612,9 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh,
 
 	if(currentIter_==0){
 		
-		exporterSol_->addVariable( exportSolutionMv, "u_h", exporterType, 1, domainP12_->getMapUnique() );
-		exporterSol_->addVariable( exactSolutionMv, "u", exporterType, 1, domainP12_->getMapUnique() );
-		exporterSol_->addVariable( errorValues, "Error |u-u_h|", exporterType, 1, domainP12_->getMapUnique() );
+		exporterSol_->addVariable( exportSolutionMv, "u_h", exporterType, dofs_, domainP12_->getMapUnique() );
+		exporterSol_->addVariable( exactSolutionMv, "u", exporterType, dofs_, domainP12_->getMapUnique() );
+		exporterSol_->addVariable( errorValues, "Error |u-u_h|", exporterType, dofs_, domainP12_->getMapUnique() );
 	}
 	else{
 		exporterSol_->reSetup(mesh);
@@ -553,16 +632,18 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh,
 /// ParaView exporter export of error values and element distribution on current mesh
 ///
 template <class SC, class LO, class GO, class NO>
-void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportError(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type errorElConst, MultiVectorConstPtr_Type vecDecompositionConst ){
+void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportError(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type errorElConst, MultiVectorConstPtr_Type errorElConstH1 ,MultiVectorConstPtr_Type vecDecompositionConst ){
 
 	if(currentIter_==0){
-		exporterError_->addVariable( errorElConst, "ErrorEstimate", "Scalar", 1, domainP1_->getElementMap());
+		exporterError_->addVariable( errorElConst, "eta_T", "Scalar", 1, domainP1_->getElementMap());
+		exporterError_->addVariable( errorElConstH1, "|u-u_h|_H1(T)", "Scalar", 1, domainP1_->getElementMap());
 		exporterError_->addVariable( vecDecompositionConst, "Proc", "Scalar", 1, domainP1_->getElementMap());
 	}
 	else{
 		exporterError_->reSetup(mesh);
 
-		exporterError_->updateVariables(errorElConst,"ErrorEstimate");
+		exporterError_->updateVariables(errorElConst,"eta_T");
+		exporterError_->updateVariables(errorElConstH1,"|u-u_h|_H1(T)");
 		exporterError_->updateVariables(vecDecompositionConst,"Proc");
 	}
 

@@ -212,12 +212,15 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			resElement = determineResElement(elements->getElement(k), rhsFunc); // calculating the residual of element k
 			if(problemType_ == "Stokes") // If the Problem is a Stokes Problem we calculate divU (maybe start a hierarchy
 				divUElement = determineDivU(elements->getElement(k));
-			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+divUElement +h_T[k]*h_T[k]*resElement );
+			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+divUElement +h_T[k]*h_T[k]*resElement ); //; 
 
 			if(maxErrorElLoc < errorElement[k] )
 					maxErrorElLoc = errorElement[k];
-			//cout << " Error Element [k] " << errorElement[k] << " with resElement " << resElement << " divU " << divUElement << endl;
+			if(resElement > 1000)
+				cout << " Error Element [k] " << errorElement[k] << " with resElement " << resElement << " divU " << divUElement << " and Jumps "<< u_Jump[edgeNumbers[0]] << " " << u_Jump[edgeNumbers[1]]<< " " << u_Jump[edgeNumbers[2]] << endl;
 		}
+
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxErrorElLoc, outArg (maxErrorElLoc));
 
 		// We asses the Mesh Quality 
 		double maxh_T, minh_T;
@@ -334,6 +337,8 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			//cout << " Error Element " << k << " " << errorElement[k] << " Jumps: " << u_Jump[surfaceNumbers[0]] << " " << u_Jump[surfaceNumbers[1]] << " " << u_Jump[surfaceNumbers[2]] << " " << u_Jump[surfaceNumbers[3]]  << " h_T " << h_T_min[k] << " divUElement " << divUElement << " res " << resElement << endl;
 			
 		}	
+
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxErrorElLoc, outArg (maxErrorElLoc));
 		
 		double maxh_T, minh_T;
 		double maxC_T, minC_T;
@@ -579,7 +584,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 					if(	calculatePressure_ == false)
 						jumpQuad += pow(u_El[k][i][j],2);
 					if(calculatePressure_ == true)
-						jumpQuad += pow(u_El[k][i][j] - p_El[k][i][0],2);
+						jumpQuad += pow( u_El[k][i][j] -p_El[k][i][0],2); 
 				}
 			}
 
@@ -605,99 +610,12 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 		vec_dbl_Type volTetraeder(elements->numberElements());
 		vec_dbl_Type h_T_min = determineH_T_min(elements,edgeElements, points, volTetraeder);
 
-		vec_dbl_Type h_E_min(surfaceTriangleElements->numberElements());
-		vec_dbl_Type h_E(surfaceTriangleElements->numberElements());
-
 		int elTmp1,elTmp2;
 
 		vec2D_GO_Type elementsOfSurfaceGlobal = surfaceTriangleElements->getElementsOfSurfaceGlobal();
 		vec2D_LO_Type elementsOfSurfaceLocal  = surfaceTriangleElements->getElementsOfSurfaceLocal();
 
-		vec_GO_Type elementImportMap(0);
-		
-		int sizetmp=0;
-		for(int i=0; i<surfaceTriangleElements->numberElements(); i++){
-			sizetmp = elementsOfSurfaceLocal.at(i).size();
-			if(sizetmp > 1){
-				if(elementsOfSurfaceLocal.at(i).at(0) == -1){
-					elementImportMap.push_back(elementsOfSurfaceGlobal.at(i).at(0));
-				}
-				if(elementsOfSurfaceLocal.at(i).at(1) == -1){
-					elementImportMap.push_back(elementsOfSurfaceGlobal.at(i).at(1));
-				}
-			}
-		}
-		sort(elementImportMap.begin(),elementImportMap.end());
-		vec_GO_Type::iterator ip = unique( elementImportMap.begin(), elementImportMap.end());
-		elementImportMap.resize(distance(elementImportMap.begin(), ip)); 
-		Teuchos::ArrayView<GO> globalElementArrayImp = Teuchos::arrayViewFromVector( elementImportMap);
 
-		// global Ids of Elements' Nodes
-		MapPtr_Type mapElementImport =
-			Teuchos::rcp( new Map_Type( elementMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalElementArrayImp, 0, inputMesh_->getComm()) );
-
-		MultiVectorPtr_Type h_T_min_MV = Teuchos::rcp( new MultiVector_Type(elementMap, 1 ) );	
-		MultiVectorPtr_Type volTet_MV = Teuchos::rcp( new MultiVector_Type( elementMap, 1 ) );
-		Teuchos::ArrayRCP< SC > entriesh_T_min  = h_T_min_MV->getDataNonConst(0);
-		Teuchos::ArrayRCP< SC > entriesVolTet  = volTet_MV->getDataNonConst(0);
-
-		for(int l=0; l<elements->numberElements(); l++){
-			entriesh_T_min[l] = h_T_min[l];
-			entriesVolTet[l] = volTetraeder[l];
-		}
-
-		MultiVectorPtr_Type h_T_min_MVImport = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );	
-		MultiVectorPtr_Type volTet_MVImport = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );
-	
-		h_T_min_MVImport->putScalar(0);
-		volTet_MVImport->putScalar(0);
-		
-		h_T_min_MVImport->importFromVector(h_T_min_MV,true,"Insert");
-		volTet_MVImport->importFromVector(volTet_MV,true,"Insert");
-
-	
-		Teuchos::ArrayRCP< SC > h_T_min_Entries  = h_T_min_MVImport->getDataNonConst(0);
-		Teuchos::ArrayRCP< SC > volTet_Entries  = volTet_MVImport->getDataNonConst(0);
-
-		// Then we determine the jump over the edges, if the element we need for this is not on our proc, we import the solution u
-		for(int k=0; k< elements->numberElements();k++){
-			surfaceElementsIds = surfaceTriangleElements->getSurfacesOfElement(k); // surfaces of Element k
-			for(int i=0;i<4;i++){
-				h_E_min[surfaceElementsIds[i]] = h_T_min[k];
-				h_E[surfaceElementsIds[i]] = 3. * (volTetraeder[k] ) /areaTriangles[surfaceElementsIds[i]];
-				if(elementsOfSurfaceGlobal.at(surfaceElementsIds[i]).size() > 1){  // not a boundary edge
-					// Case that both necessary element are on the same Proc
-					if(elementsOfSurfaceLocal.at(surfaceElementsIds[i]).at(0) != -1   &&  elementsOfSurfaceLocal.at(surfaceElementsIds[i]).at(1) != -1){
-						elTmp1 = elementsOfSurfaceLocal.at(surfaceElementsIds[i]).at(0);
-						elTmp2 = elementsOfSurfaceLocal.at(surfaceElementsIds[i]).at(1);
-
-						h_E_min[surfaceElementsIds[i]] = 1./2* (h_T_min[elTmp1] + h_T_min[elTmp2]);
-						h_E[surfaceElementsIds[i]] = 3./2. * (volTetraeder[elTmp1] + volTetraeder[elTmp2] ) /areaTriangles[surfaceElementsIds[i]];
-
-					}
-					// if one of the necessary elements is not on our proc, we need to import the corresponding value of u
-					else{
-						vec_GO_Type elementInq(2); // the element in question is the one missing on our proc at entry 0
-						elTmp1 = elementsOfSurfaceGlobal.at(surfaceElementsIds[i]).at(0);
-						elTmp2 = elementsOfSurfaceGlobal.at(surfaceElementsIds[i]).at(1);
-
-						if(elementMap->getLocalElement(elTmp1) !=  -1){
-								elementInq[0]=elTmp2;
-								elementInq[1]=elTmp1;
-			
-							}
-						else {
-								elementInq[0]=elTmp1;
-								elementInq[1]=elTmp2;
-							}
-
-						h_E_min[surfaceElementsIds[i]] = 1./2* (h_T_min[elementMap->getLocalElement(elementInq[1])] + h_T_min_Entries[mapElementImport->getLocalElement(elementInq[0])]);
-						h_E[surfaceElementsIds[i]] = 3./2. * (volTetraeder[elementMap->getLocalElement(elementInq[1])] + volTet_Entries[mapElementImport->getLocalElement(elementInq[0])] ) /areaTriangles[surfaceElementsIds[i]];
-
-					}
-				}
-			}
-		}
 		//MultiVectorPtr_Type h_E_minMv = Teuchos::rcp( new MultiVector_Type( elementMap, 1 ) );	
 		//Teuchos::ArrayRCP< SC > valuesSolutionRep  = valuesSolutionRepeated->getDataNonConst(0);
 
@@ -709,13 +627,21 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 		vec_dbl_Type h_E2 =  calcDiamTriangles3D(surfaceTriangleElements,points);
 
 		for(int k=0; k< surfaceTriangleElements->numberElements();k++){
+			FiniteElement surfaceTmp = surfaceTriangleElements->getElement(k);
+			double h_E = 0.;
+			for(int i =1; i< 3 ; i++){
+				double length = sqrt(pow(points->at(surfaceTmp.getNode(i)).at(0)-points->at(surfaceTmp.getNode(i-1)).at(0),2)+ pow(points->at(surfaceTmp.getNode(i)).at(1)-points->at(surfaceTmp.getNode(i-1)).at(1),2)+pow(points->at(surfaceTmp.getNode(i)).at(2)-points->at(surfaceTmp.getNode(i-1)).at(2),2));
+				if(length > h_E)
+					h_E = length;
+
+			}
 			double jumpQuad=0.;
 			for(int j=0; j<dofs_ ; j++){
 				for(int i=0; i<u_El[k].size();i++){
 					if(	calculatePressure_ == false)
 						jumpQuad += pow(u_El[k][i][j],2);
 					if(calculatePressure_ == true)
-						jumpQuad += pow(u_El[k][i][j] - p_El[k][i][0],2);
+						jumpQuad += pow(u_El[k][i][j]-p_El[k][i][0],2);
 				}
 			}
 			if(this->FEType2_ =="P2")
@@ -724,7 +650,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 				quadWeightConst = areaTriangles[k];
 
 
-			surfaceElementsError[k] = h_E2[k]*jumpQuad*quadWeightConst; // (1./h_E[k])
+			surfaceElementsError[k] = h_E*jumpQuad*quadWeightConst; // (1./h_E[k])
 
 			//cout << " Jump Quad " << " k " << k << " " << jumpQuad << " h_E " << h_E2[k] << endl;
 		}
@@ -910,20 +836,20 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 									deriPhiT1[p][q] += (deriPhi1[p][s]*Binv1[s][q]);
 							}
 						}
-						vec2D_dbl_Type u1_Tmp(dim_, vec_dbl_Type(dofsSol));
+						vec2D_dbl_Type u1_Tmp(dofsSol, vec_dbl_Type(dim_));
 						Teuchos::ArrayRCP< SC > valuesSolRep;	
 						for( int d =0; d < dofsSol ; d++){
 							valuesSolRep = valuesSolutionRepVel_->getBlock(d)->getDataNonConst(0);
 							for(int s=0; s<dim_; s++){
 								for(int t=0; t< numNodes ; t++){
-					 				u1_Tmp[s][d] += valuesSolRep[kn1[t]]*deriPhiT1[t][s] ;
+					 				u1_Tmp[d][s] += valuesSolRep[kn1[t]]*deriPhiT1[t][s] ;
 								}
 							}
 						}
 						if(i==0){
 							for( int d =0; d < dofsSol ; d++){
 								for(int s=0; s<dim_; s++){
-									vec_El1[k][l][d] += (u1_Tmp[s][d])*(v_E[s]/norm_v_E);
+									vec_El1[k][l][d] += (u1_Tmp[d][s])*(v_E[s]/norm_v_E);
 								}
 								vec_El1[k][l][d] = sqrt(quadWeights[l])* vec_El1[k][l][d];
 
@@ -932,7 +858,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 						else {
 							for( int d =0; d < dofsSol ; d++){
 								for(int s=0; s<dim_; s++){
-									vec_El2[k][l][d] += (u1_Tmp[s][d])*(v_E[s]/norm_v_E);
+									vec_El2[k][l][d] += (u1_Tmp[d][s])*(v_E[s]/norm_v_E);
 								}
 								vec_El2[k][l][d] = sqrt(quadWeights[l])* vec_El2[k][l][d];
 							}
