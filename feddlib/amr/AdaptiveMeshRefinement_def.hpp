@@ -74,8 +74,10 @@ domainsP1_(0)
 
 	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
 
+	coarseningCycle_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening Cycle",0);
+	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
+	coarseningN_  = parameterListAll->sublist("Mesh Refinement").get("Coarsening n" ,1);
 	// If no exact solution is given, we use a dummy function == 0 !!!
-
 
 
 }
@@ -101,6 +103,8 @@ domainsP1_(0)
 	exactSolFunc_ = exactSolFunc;
 	exactSolInput_ = true;
 
+	exactSolPInput_ = false;
+
 	tol_= parameterListAll->sublist("Mesh Refinement").get("Toleranz",0.001);
 	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
 	markingStrategy_ = parameterListAll->sublist("Mesh Refinement").get("RefinementType","Uniform");
@@ -113,10 +117,57 @@ domainsP1_(0)
 
 	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
 
+	coarseningCycle_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening Cycle",0);
+	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
+	coarseningN_  = parameterListAll->sublist("Mesh Refinement").get("Coarsening n" ,1);
+
+}
+
+/// 
+/// Initializing problem with the kind of problem, dimension and refinement spectific parameters
+///
+template <class SC, class LO, class GO, class NO>
+AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFuncU ,Func_Type exactSolFuncP ):
+inputMeshP1_(),
+inputMeshP12_(),
+outputMesh_(),
+errorElementsMv_(),
+errorEstimationMv_(0),
+domainsP1_(0)
+{
+	parameterListAll_ = parameterListAll;
+	this->dim_ = parameterListAll->sublist("Parameter").get("Dimension",2);;
+	this->problemType_ = problemType;
+
+	this->FEType1_ = "P1";
+	this->FEType2_ = parameterListAll->sublist("Parameter").get("Discretization","P1");
+
+	exactSolFunc_ = exactSolFuncU;
+	exactSolPFunc_ = exactSolFuncP;
+
+	exactSolInput_ = true;
+	exactSolPInput_ = true;
+	calculatePressure_ = true;
+
+	tol_= parameterListAll->sublist("Mesh Refinement").get("Toleranz",0.001);
+	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
+	markingStrategy_ = parameterListAll->sublist("Mesh Refinement").get("RefinementType","Uniform");
+	maxIter_ = parameterListAll->sublist("Mesh Refinement").get("MaxIter",3);
+	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","keepRegularity");
+	refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
+
+	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
+	writeMeshQuality_ = parameterListAll->sublist("Mesh Refinement").get("Write Mesh Quality",true);
+
+	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
+
+	coarseningCycle_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening Cycle",0);
+	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
+	coarseningN_  = parameterListAll->sublist("Mesh Refinement").get("Coarsening n" ,1);
+
 		
 	
 }
-
 template <class SC, class LO, class GO, class NO>
 AdaptiveMeshRefinement<SC,LO,GO,NO>::~AdaptiveMeshRefinement(){
 
@@ -182,6 +233,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstP
 			dofsP_ = 2;
 		else if(3*(inputMeshP1_->getMapUnique()->getNodeNumElements()) == valuesSolution->getBlock(1)->getDataNonConst(0).size())
 			dofsP_ = 3;
+		calculatePressure_=true;
 	}
 
 }
@@ -232,7 +284,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	// Output Mesh
 	MeshUnstrPtr_Type outputMesh(new MeshUnstr_Type(domainP1->getComm(),  inputMeshP1_->volumeID_));
 
-	// !!!!! Not yes existing function 
+	// Init to be refined domain with inputDomain
 	domainRefined->initWithDomain(domainP1);
 
 	inputMeshP12_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP12->getMesh() , true);
@@ -250,28 +302,91 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 		SurfaceElementsPtr_Type surfaceTriangleElements = inputMeshP12_->getSurfaceTriangleElements(); // Surfaces
 		if(surfaceTriangleElements.is_null()){
 			surfaceTriangleElements.reset(new SurfaceElements()); // Surface
-			cout << " Building surfaceTriangleElemenets ... " << endl;
 			refinementFactory.buildSurfaceTriangleElements( inputMeshP12_->getElementsC(),inputMeshP12_->getEdgeElements(),surfaceTriangleElements, inputMeshP12_->getEdgeMap(),inputMeshP12_->getElementMap() );
 			inputMeshP12_->surfaceTriangleElements_ = surfaceTriangleElements;
 			inputMeshP1_->surfaceTriangleElements_ = surfaceTriangleElements;
-			cout << " ... done " << endl;
 		}
 		else if(surfaceTriangleElements->numberElements() ==0){
-			cout << " Building surfaceTriangleElemenets " << endl;
 			refinementFactory.buildSurfaceTriangleElements( inputMeshP12_->getElementsC(),inputMeshP12_->getEdgeElements(),inputMeshP12_->getSurfaceTriangleElements() , inputMeshP12_->getEdgeMap(),inputMeshP12_->getElementMap() );
 			inputMeshP12_->surfaceTriangleElements_ = surfaceTriangleElements;
 			inputMeshP1_->surfaceTriangleElements_ = surfaceTriangleElements;
-	
-			cout << " ... done " << endl;
 		}
 	}
+		
+	// If coarsen Mesh is false, so consequently we refine the Mesh we go about as folows:	
+	bool coarsening= false;
+	if(coarseningCycle_ > 0 && currentIter_>0){
+		if(currentIter_ % coarseningCycle_ == 0)
+			coarsening = true;
+	}
 
-	// MESH COARSENING
-	bool coarsen = false;
+	if( coarsening== true &&  currentIter_ < maxIter_ ){
 
-	// If coarsen Mesh is false, so consequently we refine the Mesh we go about as folows:
-	if(coarsen == false &&  currentIter_ < maxIter_ ){
-				
+		// We start by calculating the error of the current mesh. As this is out starting point for mesh coarsening. In the previous iteration we calculated the error estimation beforehand.
+		errorElementsMv_ = errorEstimator.estimateError(inputMeshP12_, inputMeshP1_, solution, rhsFunc_, domainP12->getFEType());
+
+		errorEstimationMv_.push_back(errorElementsMv_);
+
+		int m= coarseningM_;
+		int n= coarseningN_;
+		int k = currentIter_;
+		int iterC;
+		MeshUnstrPtrArray_Type meshUnstructuredP1(currentIter_+n);
+
+		for(int i=0; i<currentIter_+1-m; i++)
+			meshUnstructuredP1[i] = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainsP1_[i]->getMesh() , true);
+			
+		// We extract the error estimation of the mesh iter
+
+		MultiVectorPtr_Type errorElements; // = meshUnstructuredRefined_k->mesh_->getErrorEstimate();
+		MeshUnstrPtr_Type meshUnstructuredRefined_k ;
+		MeshUnstrPtr_Type meshUnstructuredRefined_k_1;
+		MeshUnstrPtr_Type meshUnstructuredRefined_k_m_1;
+		for(int i=0; i<m-1 ; i++){
+			meshUnstructuredRefined_k = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainsP1_[currentIter_-i]->getMesh() , true); 
+			meshUnstructuredRefined_k_1 = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainsP1_[currentIter_-1-i]->getMesh() , true); 
+
+			errorElements = errorEstimator.determineCoarseningError(meshUnstructuredRefined_k,meshUnstructuredRefined_k_1,errorEstimationMv_[currentIter_-i],"backwards",markingStrategy_,theta_); 
+
+			errorEstimationMv_[currentIter_-1-i]= errorElements;
+
+		}
+
+		// Setting error of: Mesh_(k-m+1) with the previous error ->downscaling errors
+		if(m>1)
+			meshUnstructuredRefined_k_m_1 = meshUnstructuredRefined_k_1; 
+		else
+			meshUnstructuredRefined_k_m_1 =Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainsP1_[currentIter_]->getMesh() , true); 
+
+		// Error of Level l is at l-1
+		for(int i=0; i< n; i++){
+			iterC = k-m+i;
+			if(i==0){
+				errorElements = errorEstimator.determineCoarseningError(meshUnstructuredRefined_k_m_1,meshUnstructuredP1[iterC],errorEstimationMv_[iterC+1],"backwards",markingStrategy_,theta_); 
+			}
+			else{
+				errorElements = errorEstimator.determineCoarseningError(meshUnstructuredP1[iterC-1],meshUnstructuredP1[iterC],errorEstimationMv_[iterC-1],"forwards",markingStrategy_,theta_); 
+			}
+			if(iterC > errorEstimationMv_.size())
+				errorEstimationMv_.push_back(errorElements);
+			else 
+				errorEstimationMv_[iterC]=errorElements;
+
+			//meshUnstructuredRefined->setErrorEstimate(errorElements); 
+			//meshUnstructuredRefined->refineMesh(meshUnstructuredP1, iterC);
+
+			errorEstimator.markElements(errorElements,theta_,markingStrategy_, meshUnstructuredP1[iterC]);
+
+   			refinementFactory.refineMesh(meshUnstructuredP1[iterC],iterC, outputMesh);
+
+			meshUnstructuredP1[iterC+1] = outputMesh;
+			outputMesh.reset(new MeshUnstr_Type(domainP1->getComm(),  inputMeshP1_->volumeID_));
+		}
+		
+		outputMesh = meshUnstructuredP1[iterC+1];
+	}
+
+	else if( currentIter_ < maxIter_ ){			
 		// Estimating the error with the Discretizations Mesh.
 		errorElementsMv_ = errorEstimator.estimateError(inputMeshP12_, inputMeshP1_, solution, rhsFunc_, domainP12->getFEType());
 
@@ -280,90 +395,36 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 		errorEstimator.markElements(errorElementsMv_,theta_,markingStrategy_, inputMeshP1_);
 
    		refinementFactory.refineMesh(inputMeshP1_,currentIter_, outputMesh);
-
-
 	}
-	/*else if(maxIter_ != currentIter_){
-		int m=1;
-		int n=m+1;
-		int k = iter;
-		int iterC;
-		MeshUnstrRefPtrArray_Type meshUnstructuredP1(iter+1-m);
-
-		for(int i=0; i<iter+1-m; i++)
-			meshUnstructuredP1[i] = Teuchos::rcp_dynamic_cast<MeshUnstrRef_Type>( domainsP1[i]->mesh_ , true);
-			
-		// We extract the error estimation of the mesh iter
-
-		vec_dbl_Type errorElements; // = meshUnstructuredRefined_k->mesh_->getErrorEstimate();
-		MeshUnstrRefPtr_Type meshUnstructuredRefined_k ;
-		MeshUnstrRefPtr_Type meshUnstructuredRefined_k_1;
-		MeshUnstrRefPtr_Type meshUnstructuredRefined_k_m_1;
-		for(int i=0; i<m-1 ; i++){
-			meshUnstructuredRefined_k = Teuchos::rcp_dynamic_cast<MeshUnstrRef_Type>( domainsP1[iter-i]->mesh_ , true); 
-			meshUnstructuredRefined_k_1 = Teuchos::rcp_dynamic_cast<MeshUnstrRef_Type>( domainsP1[iter-1-i]->mesh_ , true); 
-
-			errorElements = meshUnstructuredRefined_k_1->determineCoarseningError(meshUnstructuredRefined_k,"backwards"); // (MeshUnstrPtr_Type mesh_k,MeshUnstrPtr_Type mesh_k_m,MultiVectorPtr_Type errorElementMv_k,  string distribution)
-
-			meshUnstructuredRefined_k_1->setErrorEstimate(errorElements);
-
-		}
-
-		// Setting error of: Mesh_(k-m+1) with the previous error ->downscaling errors
-		if(m>1)
-			meshUnstructuredRefined_k_m_1 = meshUnstructuredRefined_k_1; 
-		else
-			meshUnstructuredRefined_k_m_1 =Teuchos::rcp_dynamic_cast<MeshUnstrRef_Type>( domainsP1[iter]->mesh_ , true); 
 
 
-		for(int i=0; i< n; i++){
-			iterC = k-m+i;
-			if(i==0){
-				errorElements = meshUnstructuredP1[k-m]->determineCoarseningError(meshUnstructuredRefined_k_m_1,"backwards");				
-			}
-			else
-				errorElements = meshUnstructuredP1[k-m+i]->determineCoarseningError(meshUnstructuredP1[k-m+i-1],"forwards");
-
-			meshUnstructuredRefined->setErrorEstimate(errorElements); 
-			meshUnstructuredRefined->refineMesh(meshUnstructuredP1, iterC);
-
-			meshUnstructuredP1.push_back(meshUnstructuredRefined);
-
-			meshUnstructuredRefined.reset( new MeshUnstrRef_Type( comm_,  meshUnstructuredP1[0]->volumeID_) );
-
-			meshUnstructuredRefined->refinementRestriction_ = restriction;
-			meshUnstructuredRefined->meshQualityPrint_ = writeMeshQuality;
-			meshUnstructuredRefined->timeTablePrint_ =writeTime;
-			meshUnstructuredRefined->refinement3DDiagonal_ = diagonal;
-
-		}
-		meshUnstructuredRefined = meshUnstructuredP1[iter+1];
-	}*/
-
-	// Exporting current solution and errorEstimation
-	Teuchos::RCP<const MultiVector<SC,LO,GO,NO> >  exportSolutionMv = problem->getSolution()->getBlock(0);
 	// Export distribution of elements among processors
 	MultiVectorPtr_Type procNumTmp = Teuchos::rcp( new MultiVector_Type(domainP12->getElementMap() , 1 ) );
 
 	procNumTmp->putScalar(comm_->getRank());
 	MultiVectorConstPtr_Type vecDecompositionConst = procNumTmp;
 
-	MultiVectorConstPtr_Type errorElConst  = errorElementsMv_ ;
-
-
 	// Error in Nodes	
 	MultiVectorConstPtr_Type exactSolution = this->calcExactSolution();
-	calcErrorNorms(exactSolution,solution->getBlock(0));
 
-	MultiVectorConstPtr_Type errorElConstH1  = errorH1ElementsMv_ ;
+	MultiVectorConstPtr_Type exactSolutionP;
+	MultiVectorConstPtr_Type  exportSolutionPMv;
+	
+	if( calculatePressure_ ){
+		exportSolutionPMv = problem->getSolution()->getBlock(1);
+		if(exactSolPInput_){
+			exactSolutionP = this->calcExactSolutionP();
+		}
+	}
 
-	MultiVectorConstPtr_Type errorValues = 	errorNodesMv_;; // error of exact vs approx sol
+	calcErrorNorms(exactSolution,solution->getBlock(0), exactSolutionP);
 
 	if(this->exportWithParaview_ && initExporter_==false){
 		this->initExporter(  parameterListAll_);
 	}
-	this->exportSolution( inputMeshP12_, exportSolutionMv, errorValues, exactSolution);
-	this->exportError( inputMeshP12_, errorElConst, errorElConstH1, vecDecompositionConst );
+	this->exportSolution( inputMeshP12_, problem->getSolution()->getBlock(0), errorNodesMv_, exactSolution, exportSolutionPMv, exactSolutionP);
+	if( currentIter_< maxIter_)
+		this->exportError( inputMeshP12_, errorElementsMv_, errorH1ElementsMv_, vecDecompositionConst );
 
 
 	// Determine all essential values
@@ -423,6 +484,31 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>:: MultiVectorConstPtr_Type Adaptive
 	return exactSolConst;
 }
 
+/*!
+\brief Calculating exact solution if possible with exactSolPFunc_
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+typename AdaptiveMeshRefinement<SC,LO,GO,NO>:: MultiVectorConstPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>::calcExactSolutionP(){
+	
+    //if ( !rhsFuncVec_[i].empty() )
+
+	MultiVectorPtr_Type exactSolution = Teuchos::rcp(new MultiVector_Type( domainP1_->getMapUnique())); 
+	Teuchos::ArrayRCP<SC> exactSolA = exactSolution->getDataNonConst(0);
+
+	vec2D_dbl_ptr_Type points = domainP1_->getPointsUnique();
+
+	Teuchos::ArrayRCP<SC> exactSol(dofsP_);
+	for(int i=0; i< points->size(); i++){
+		exactSolPFunc_(&points->at(i).at(0),&exactSol[0]);
+		exactSolA[i] = exactSol[0];
+	}
+
+	MultiVectorConstPtr_Type exactSolConst = exactSolution;
+
+	return exactSolConst;
+}
 
 /*!
 Calculating error norms. If the exact solution is unknown we use approxmated errorNorm and error indicators
@@ -432,7 +518,7 @@ Calculating error norms. If the exact solution is unknown we use approxmated err
 */
 
 template <class SC, class LO, class GO, class NO>
-void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Type exactSolution, MultiVectorConstPtr_Type solutionP12){
+void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Type exactSolution, MultiVectorConstPtr_Type solutionP12,MultiVectorConstPtr_Type exactSolutionP){
 
 	// Calculating the error per node
 	MultiVectorPtr_Type errorValues = Teuchos::rcp(new MultiVector_Type( solution_->getBlock(0)->getMap() ) ); 
@@ -495,10 +581,15 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 	if(exactSolInput_ == true){
 		double eta = 0.;
 	    Teuchos::ArrayRCP<const double > errorElement = errorElementsMv_->getData(0);
-		for(int i=0; i < errorElement.size() ; i++)
-			eta += errorElement[i];	
-		reduceAll<int, double> (*comm_, REDUCE_SUM, eta, outArg (eta));
-		eta = pow(eta,2);
+		for(int i=0; i < errorElement.size() ; i++){
+			//eta += errorElement[i];
+			if(eta < errorElement[i])
+				eta=errorElement[i];		
+		}
+		reduceAll<int, double> (*comm_, REDUCE_MAX, eta, outArg (eta));
+		//eta = pow(eta,2);
+
+
 		eRelError.push_back(sqrt(eta)/ sqrt(problem_->calculateH1Norm(solutionP12)));
 	}
 
@@ -578,6 +669,26 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 		
 		}
 	}
+	if( calculatePressure_== true  && exactSolPInput_ == true  ){
+		// Calculating the error per node
+		MultiVectorPtr_Type errorValuesP = Teuchos::rcp(new MultiVector_Type( domainP1_->getMapUnique() ) ); 
+
+		//this = alpha*A + beta*B + gamma*this
+		errorValuesP->update( 1., exactSolutionP, -1. ,solution_->getBlock(1), 0.);
+
+		// Taking abs norm
+		MultiVectorConstPtr_Type errorValuesPAbs = Teuchos::rcp(new MultiVector_Type( domainP1_->getMapUnique() ) );
+		errorValuesPAbs = errorValuesP; 
+		errorValuesP->abs(errorValuesPAbs);
+
+		errorNodesPMv_ = errorValuesP;
+
+		double errorL2Tmp = problem_->calculateL2Norm(errorValuesP,1);
+
+		errorL2P.push_back(errorL2Tmp);
+	}
+
+
 	
 }
 
@@ -592,9 +703,14 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::initExporter( ParameterListPtr_Type pa
 	exporterSol_.reset(new ExporterParaViewAMR<SC,LO,GO,NO>());
 	exporterError_.reset(new ExporterParaViewAMR<SC,LO,GO,NO>());
 
-	exporterSol_->setup( "Refinement" , domainP12_->getMesh(),  domainP12_->getFEType(), parameterListAll );
+	exporterSol_->setup( "RefinementU" , domainP12_->getMesh(),  domainP12_->getFEType(), parameterListAll );
 
-	exporterError_->setup("Error_and_Dist", domainP1_->getMesh(), "P0",parameterListAll );
+	if(calculatePressure_ ){
+		exporterSolP_.reset(new ExporterParaViewAMR<SC,LO,GO,NO>());
+		exporterSolP_->setup( "RefinementP" , domainP1_->getMesh(),  domainP1_->getFEType(), parameterListAll );
+	}
+
+	exporterError_->setup("ErrorEstimation", domainP1_->getMesh(), "P0",parameterListAll );
 
 	initExporter_=true;
 
@@ -604,7 +720,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::initExporter( ParameterListPtr_Type pa
 /// ParaView exporter export of solution on current mesh
 ///
 template <class SC, class LO, class GO, class NO>
-void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv){
+void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv,MultiVectorConstPtr_Type exportSolutionPMv,MultiVectorConstPtr_Type exactSolutionPMv){
 
 	string exporterType = "Scalar";
 	if(dofs_ >1 )
@@ -615,12 +731,34 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh,
 		exporterSol_->addVariable( exportSolutionMv, "u_h", exporterType, dofs_, domainP12_->getMapUnique() );
 		exporterSol_->addVariable( exactSolutionMv, "u", exporterType, dofs_, domainP12_->getMapUnique() );
 		exporterSol_->addVariable( errorValues, "Error |u-u_h|", exporterType, dofs_, domainP12_->getMapUnique() );
+
+
+		if( calculatePressure_ ){
+			exporterSolP_->addVariable( exportSolutionPMv, "p_h", "Scalar", dofsP_, domainP1_->getMapUnique() );
+			if(exactSolPInput_){
+				exporterSolP_->addVariable( exactSolutionPMv, "p", "Scalar", dofsP_, domainP1_->getMapUnique() );
+				exporterSolP_->addVariable( errorNodesPMv_, "|p-p_h|", "Scalar", dofsP_, domainP1_->getMapUnique() );
+			}
+			exporterSolP_->save( (double) currentIter_);
+		}
+		
 	}
 	else{
 		exporterSol_->reSetup(mesh);
 		exporterSol_->updateVariables(exportSolutionMv, "u_h");
 		exporterSol_->updateVariables( exactSolutionMv, "u" );
 		exporterSol_->updateVariables(errorValues, "Error |u-u_h|");
+
+		if( calculatePressure_ ){
+			exporterSolP_->reSetup(domainP1_->getMesh());
+			exporterSolP_->updateVariables( exportSolutionPMv, "p_h");
+			if(exactSolPInput_ ){
+				exporterSolP_->updateVariables( exactSolutionPMv, "p");
+				exporterSolP_->updateVariables( errorNodesPMv_, "|p-p_h|");
+			}
+
+		exporterSolP_->save( (double) currentIter_);
+		}
 	}
 			
 	exporterSol_->save( (double) currentIter_);
@@ -677,7 +815,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 	
 	MultiVectorPtr_Type exportLocalEntry = Teuchos::rcp( new MultiVector_Type( mapProc, 1 ) );
 
-	exportLocalEntry->putScalar( (LO) numElementsProc[currentIter_-1] );
+	exportLocalEntry->putScalar( (LO) numElementsProc[currentIter_] );
 
 	MultiVectorPtr_Type elementList= Teuchos::rcp( new MultiVector_Type( mapGlobalProc, 1 ) );
 	elementList->putScalar( 0 ); 
@@ -723,12 +861,28 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 			for (int i=1; i<=currentIter_ ; i++)
 				cout <<" "<< i << ":	" << maxErrorKn[i] << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
+			cout << " || u-u_h ||_H1	||	|| u-u_h ||_L2  ||" ;
+			if( calculatePressure_== true  && exactSolPInput_ == true  ){
+				cout << " 	|| p-p_h||_L2 " << endl;
+			}
+			else
+				cout << endl;
+			cout << "__________________________________________________________________________________________________________ " << endl;
+			for (int i=1; i<=currentIter_ ; i++){
+				cout <<" "<< i << ":	"  << errorH1[i]<< "	||	" << errorL2[i] ;
+				if( calculatePressure_== true  && exactSolPInput_ == true  ){
+					cout << "  	||	" <<  errorL2P[i] << endl;
+				}
+				else
+					cout << endl;
+			}
+			cout << "__________________________________________________________________________________________________________ " << endl;
 
-			cout << " ||u-u_h||_H1 / ||u ||_H1 	||  eta / ||u_h ||_H1	||	|| u-u_h ||_H1	||	|| u-u_h ||_L2	...." << endl;
+			cout << " ||u-u_h||_H1 / ||u ||_H1 	||  eta / ||u_h ||_H1	" << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
-			for (int i=1; i<=currentIter_ ; i++)
-				cout <<" "<< i << ":	" << relError[i] << " 		||	" << eRelError[i] << "  	||	" << errorH1[i]<< "	||	" << errorL2[i] << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			for (int i=1; i<=currentIter_ ; i++){
+				cout <<" "<< i << ":	" << relError[i] << " 		||	" << eRelError[i]  << endl;
+			}
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
 			cout << "Distribution of elements on .. " << endl;

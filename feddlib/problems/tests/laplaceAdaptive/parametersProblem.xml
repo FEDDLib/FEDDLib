@@ -25,6 +25,9 @@
         <Parameter name="3D regular Refinement Diagonal Pick" type="int" value="0"/>
         <Parameter name="Refinement Restriction" type="string" value="keepRegularity"/>
         <Parameter name="Modell Problem" type="string" value="Paper"/>
+	<Parameter name="Coarsening Cycle" type="int" value="3"/>
+	<Parameter name="Coarsening m" type="int" value="3"/>
+	<Parameter name="Coarsening n" type="int" value="3"/>
     </ParameterList>
     
     <ParameterList name="Exporter">

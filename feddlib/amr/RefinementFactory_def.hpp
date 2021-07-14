@@ -340,15 +340,12 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		
 		if(this->dim_==3){
 			if(surfaceTriangleElements.is_null()){
-				cout << " Building Surface Triangles " << flush ;
 				surfaceTriangleElements.reset(new SurfaceElements()); // Surface
 				this->buildSurfaceTriangleElements(elements,edgeElements, surfaceTriangleElements, this->edgeMap_, this->elementMap_ );
 				//this->buildTriangleMap();
 			}
 			else if(surfaceTriangleElements->numberElements() ==0){
-				cout << " Building surfaceTriangleElemenets " << endl;
 				this->buildSurfaceTriangleElements(elements,edgeElements, surfaceTriangleElements, this->edgeMap_, this->elementMap_ );
-				cout << " ... done " << endl;
 			} 
 			surfaceTriangleElements->matchSurfacesToElements(this->elementMap_);
 		}
@@ -1579,15 +1576,13 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 		int inputLayer = (restrictionLayer_ + 2 - currentIter_);
 		if(inputLayer <= restrictionLayer_ )
 			inputLayer =restrictionLayer_;
-		cout << " Layer " << inputLayer << endl;
 		while(alright==0){
 			alright=1;
-			if(layer == inputLayer && restriction != "None"){
+			if(layer == inputLayer &&( restriction == "Bey" || restriction == "BeyIrregular") ){
 				restriction = "Bey";			
 			}
 			else if( layer == inputLayer +1)
 				restriction = "None";
-			cout << " Restriction " << restriction << endl;
 			layer++;
 			vec_GO_Type untaggedIDs(0);
 			for(int i=0;i<elements->numberElements() ;i++){

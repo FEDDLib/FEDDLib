@@ -100,6 +100,7 @@ public:
     AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll);
 
 	AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFunc );
+	AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFuncU,Func_Type exactSolFuncP );
     
     ~AdaptiveMeshRefinement();
 
@@ -108,15 +109,16 @@ public:
 	DomainPtr_Type refineArea(DomainPtr_Type domainP1, vec2D_dbl_Type area, int level);
     
 	MultiVectorConstPtr_Type calcExactSolution();
+	MultiVectorConstPtr_Type calcExactSolutionP();
 	//void determineCoarsening();
 
 	void identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution);
 
-	void calcErrorNorms(MultiVectorConstPtr_Type exactSolution, MultiVectorConstPtr_Type solutionP12);
+	void calcErrorNorms(MultiVectorConstPtr_Type exactSolution, MultiVectorConstPtr_Type solutionP12,MultiVectorConstPtr_Type exactSolutionP);
 
 	void initExporter( ParameterListPtr_Type parameterListAll);
 
-	void exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv);
+	void exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv,MultiVectorConstPtr_Type exportSolutionPMv, MultiVectorConstPtr_Type exactSolutionPMv);
 
 	void exportError(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type errorElConst,MultiVectorConstPtr_Type errorElConstH1, MultiVectorConstPtr_Type vecDecompositionConst );
 
@@ -134,6 +136,8 @@ private:
 
 	RhsFunc_Type rhsFunc_;
 	Func_Type exactSolFunc_;
+
+	Func_Type exactSolPFunc_;
 	
 	MeshUnstrPtr_Type inputMeshP1_;
 	MeshUnstrPtr_Type inputMeshP12_;
@@ -145,6 +149,7 @@ private:
 	MultiVectorPtr_Type errorH1ElementsMv_;
 
 	MultiVectorConstPtr_Type errorNodesMv_;
+	MultiVectorConstPtr_Type errorNodesPMv_;
 
 	BlockMultiVectorConstPtr_Type solution_;
 
@@ -154,6 +159,7 @@ private:
 	bool initExporter_=false;
 
 	ExporterPtr_Type exporterSol_;
+	ExporterPtr_Type exporterSolP_;
 	ExporterPtr_Type exporterError_;
 
 	DomainPtrArray_Type domainsP1_;
@@ -192,6 +198,7 @@ private:
 	vec_dbl_Type eRelError;
 	vec_dbl_Type errorH1;
 	vec_dbl_Type errorL2;
+	vec_dbl_Type errorL2P;
 	vec_int_Type numNodes;
 
 	bool writeRefinementTime_ = true ;
@@ -203,9 +210,15 @@ private:
 	int dofsP_;
 
 	bool exactSolInput_ = false ;
+	bool exactSolPInput_ = false ;
+
+	bool calculatePressure_=false;
 
 	int restrictionLayer_=2;
 	
+	int coarseningCycle_=0 ;
+	int coarseningM_ =  1;
+	int coarseningN_  = 1;
 		
 
   

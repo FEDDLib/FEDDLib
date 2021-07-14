@@ -4716,8 +4716,10 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     // last parameter should alwayss be the degree
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
     UN deg = determineDegree( dim, FEType, Std) + degFunc;
+	cout << " Degree " << deg << endl;
+	deg = deg+2;
 
-	vec2D_dbl_ptr_Type quadPoints;
+    vec2D_dbl_ptr_Type quadPoints;
     getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values
 
 
@@ -4757,8 +4759,8 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
 			 }
 		}
         for (UN i=0; i < phi->at(0).size(); i++) {
-		    value = Teuchos::ScalarTraits<SC>::zero();
             if ( !fieldType.compare("Scalar") ) {
+		  	    value = Teuchos::ScalarTraits<SC>::zero();
  				for (UN w=0; w<weights->size(); w++){
 					func(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
 	           		value += weights->at(w) * phi->at(w).at(i)*valueFunc[0];
@@ -4769,6 +4771,7 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
             }
             else if( !fieldType.compare("Vector") ) {
                 for (UN d=0; d<dim; d++) {
+		    		value = Teuchos::ScalarTraits<SC>::zero();
  					for (UN w=0; w<weights->size(); w++){
 						func(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
                			value += weights->at(w) * phi->at(w).at(i)*valueFunc[d];

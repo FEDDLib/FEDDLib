@@ -131,7 +131,7 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
         this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
     }
 
- 	this->assembleSourceTerm( 0. );
+    this->assembleSourceTerm( 0. );
     this->addToRhs( this->sourceTerm_ );
 
     
