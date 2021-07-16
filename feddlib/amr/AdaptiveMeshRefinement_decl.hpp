@@ -220,6 +220,7 @@ private:
 	int coarseningM_ =  1;
 	int coarseningN_  = 1;
 		
+	string refinementMode_ = "Regular";
 
   
     

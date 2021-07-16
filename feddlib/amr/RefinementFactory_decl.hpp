@@ -81,7 +81,7 @@ public:
     ~RefinementFactory();
     
 
-    void refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh); // MeshRefinement
+    void refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh, string refinementMode); // MeshRefinement
 
 	void assignEdgeFlags( MeshUnstrPtr_Type meshP1, EdgeElementsPtr_Type edgeElements);
     	
@@ -122,7 +122,9 @@ public:
 
 	vec_dbl_Type getErrorEstimate() { return errorEstimation_ ; };	
 
+	void bisectEdges(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements, string mode = "default");
 
+	void bisectElement3(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElementp);
 
 	string refinementRestriction_ = "none";
 	string markingStrategy_ = "Maximum";
@@ -134,6 +136,8 @@ public:
 
 	int currentIter_ = 0;
 	int restrictionLayer_ = 0;
+
+	string refinementMode_ = "Regular";
 
 protected: 
 	vec_GO_Type globalInterfaceIDs_;

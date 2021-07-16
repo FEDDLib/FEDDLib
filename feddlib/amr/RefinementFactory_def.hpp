@@ -232,15 +232,20 @@ void RefinementFactory<SC,LO,GO,NO>::assignEdgeFlags( MeshUnstrPtr_Type meshP1, 
 
 */
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh){
+void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh, string refinementMode){
 	MESH_TIMER_START(totalTime," Total Time for Mesh Refinement of this Step ");		
 
 
 	if(meshP1->FEType_ != "P1" && meshP1->FEType_ != "P2"){ 
    		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Mesh Refinement only works for Triangular Elements");
 	}
+
     currentIter_ = iteration;
-	
+
+	refinementMode_ = refinementMode;
+	if(refinementMode_ == "Bisection")
+		this->refinementRestriction_ = "Bisection";
+
 	this->dim_ = meshP1->getDimension();
 	this->FEType_ =meshP1->FEType_;
     this->volumeID_ = meshP1->volumeID_;
@@ -372,17 +377,23 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 
 		MESH_TIMER_START(regularRefinementTimer," Step 1:	 Regular Refinement");
 		// Depending on dimension we add a certain number of elements in the 2D case it's 3, in the 3D it's 7
-		int dimRegRef=0;
-		if(this->dim_ == 2)
+		/*int dimRegRef=0;
+		refinementMode_ = "Bisection";
+		if(this->dim_ == 2){
 			dimRegRef = 3;
-		if(this->dim_ == 3)
+			if(refinementMode_ == "Bisection")
+				dimRegRef = 0;
+		}
+		if(this->dim_ == 3){
 			dimRegRef = 7;
+		}*/
 		for(int i=0; i<elements->numberElements();i++){
 			if(elements->getElement(i).isTaggedForRefinement()){
 				numPoints= this->pointsRep_->size();
-				this->refineRegular( edgeElements, elements, i, surfaceTriangleElements);
+				this->bisectEdges( edgeElements, elements, i, surfaceTriangleElements);
+			 	//this->refineRegular( edgeElements, elements, i, surfaceTriangleElements);
 				newPoints=newPoints + this->pointsRep_->size()-numPoints;
-				newElements = newElements +dimRegRef;
+				//newElements = newElements +dimRegRef;
 			}
 		}
 
@@ -1361,10 +1372,10 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 @brief 
 Refinement Restrictions
 In 2D we can add some Restrictions to the Mesh Refinement:
-KeepRegularity:	this will keep the regularity of the Mesh by only refining whith a irregular strategy 
+Bisection:	this will keep the regularity of the Mesh by only refining whith a irregular strategy 
 			  	when the longest edge is involved. If not we add a node to the longest edge, whereby 
 					the irregular refinement strategy is changed
-CheckGreenTags:	this will only check tagged green Elements, if its irregular refinement tag from the previous
+GreenTags:	this will only check tagged green Elements, if its irregular refinement tag from the previous
 					refinement is 'green' and if so not refine it green again but add a node to the longest
 					edge and thus refine it blue
 In the 3D Case we simply never refine an element irregularly twice, this strategy is called simply 'Bey'.
@@ -1406,7 +1417,6 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 		vec2D_GO_Type elementsOfEdgesGlobal = edgeElements->getElementsOfEdgeGlobal();
 		vec2D_LO_Type elementsOfEdgesLocal = edgeElements->getElementsOfEdgeLocal();
 		
-		int greenGen=3;//Indicator for our greenCheckSearch-> as we add Points for blue refinement, new to be green refined elements might accur-> nextGenGreen Elements-> how many Generations do we check?
 		int entry;
 
 
@@ -1423,7 +1433,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 		while(layer >0){
 			vec_GO_Type globalEdges(0);
 			layer=0;
-			if(refinementRestriction_ == "keepRegularity"){
+			if(refinementRestriction_ == "Bisection"){
 				for(int i=0;i<elements->numberElements() ;i++){
 					if(elements->getElement(i).isTaggedForRefinement()==false){ // only looking at the untagged Elements
 						if(tagCounter[i]==1){
@@ -1479,7 +1489,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 				}
 			}
 
-			else if (refinementRestriction_ == "checkGreenTags"){
+			else if (refinementRestriction_ == "GreenTags"){
 				for(int i=0;i<elements->numberElements() ;i++){
 				
 					if(elements->getElement(i).isTaggedForRefinement()==false){ // only looking at the untagged Elements
@@ -1574,9 +1584,11 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 		int numPoints=0;
 		int layer =0;
 		int inputLayer = (restrictionLayer_ + 2 - currentIter_);
+		vec_bool_Type bisectedAll(elements->numberElements());
 		if(inputLayer <= restrictionLayer_ )
 			inputLayer =restrictionLayer_;
 		while(alright==0){
+			cout << " in while " << restriction << " " << refinementMode_ << endl;
 			alright=1;
 			if(layer == inputLayer &&( restriction == "Bey" || restriction == "BeyIrregular") ){
 				restriction = "Bey";			
@@ -1590,7 +1602,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 				int nodeTag=0;
 				int edgeTag=0;
 				vec_GO_Type untaggedIDsTmp(0);
-				if(elements->getElement(i).isTaggedForRefinement()==false){ // only looking at the untagged Elements
+				//if(elements->getElement(i).isTaggedForRefinement()==false){ // only looking at the untagged Elements
 					for(int j=0;j<6;j++){
 						int edgeNum = edgeElements->getEdgesOfElement(i).at(j);
 						if(edgeElements->getElement(edgeNum).isTaggedForRefinement()){
@@ -1607,78 +1619,89 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 					nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
 					nodeTag = nodeInd.size();
 					if(restriction == "BeyIrregular") {
-						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregularRegular" ){
+						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregularRegular" && bisectedAll[i] == false ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
 							elements->getElement(i).setFiniteElementRefinementType("irregular");
-							this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
+							//this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
+							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
+							bisectedAll[i] = true;
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							newElements = newElements +7;
+							//newElements = newElements +7;
 							alright=0;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
 				
 						}
-						else if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" ){
+						else if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" && bisectedAll[i] == false ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
+							//this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
+							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							newElements = newElements +7;
+							//newElements = newElements +7;
 							alright=0;
+							bisectedAll[i] = true;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
 				
-						}
-						else  if(nodeTag >3 && edgeTag >2){
-							numPoints= this->pointsRep_->size();
-							elements->getElement(i).tagForRefinement();
-							this->refineRegular(edgeElements, elements, i,surfaceTriangleElements);
-							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							newElements = newElements +7;
-							alright=0;
-							for(int j=0; j<untaggedIDsTmp.size(); j++)
-								untaggedIDs.push_back(untaggedIDsTmp[j]);
 						}
 				    }
 					else if(restriction== "Bey") {
-						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" ){
+						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" && bisectedAll[i] == false ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
+							//this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
+							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							newElements = newElements +7;
+							//newElements = newElements +7;
+							bisectedAll[i] = true;
 							alright=0;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
 				
 						}
-						else  if(nodeTag >3 && edgeTag >2){
+				    }
+					else if(restriction == "Bisection"){
+						/*if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregularRegular" && bisectedAll[i] == false ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							this->refineRegular(edgeElements, elements, i,surfaceTriangleElements);
+							elements->getElement(i).setFiniteElementRefinementType("irregular");
+							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							newElements = newElements +7;
+							bisectedAll[i] = true;
 							alright=0;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
+				
 						}
-				    }
-					else {
-						if(nodeTag >3 && edgeTag >2){
+						else if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" && bisectedAll[i] == false ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							this->refineRegular(edgeElements, elements, i,surfaceTriangleElements);
+							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							newElements = newElements +7;
+							bisectedAll[i] = true;
+							alright=0;
+							for(int j=0; j<untaggedIDsTmp.size(); j++)
+								untaggedIDs.push_back(untaggedIDsTmp[j]);
+				
+						}*/
+					}
+					if(nodeTag >3 && edgeTag >2 && bisectedAll[i] == false){
+							numPoints= this->pointsRep_->size();
+							elements->getElement(i).tagForRefinement();
+							//this->refineRegular(edgeElements, elements, i,surfaceTriangleElements);
+							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
+							newPoints=newPoints + this->pointsRep_->size()-numPoints;
+							//newElements = newElements +7;
+							bisectedAll[i] = true;
 							alright=0;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
 						}
 		
-					}
 				}
-			}
+			//}
 
 			
 			sort(untaggedIDs.begin(),untaggedIDs.end());
@@ -1745,45 +1768,46 @@ void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, 
 		int edgeNum=0;
 		vec_int_Type tagCounter2(elements->numberElements());
 		for(int i=0;i<elements->numberElements() ;i++){
-			if(elements->getElement(i).isTaggedForRefinement()==false){ // only looking at the untagged Elements
-				for(int j=0;j<3;j++){
-					edgeNum = edgeElements->getEdgesOfElement(i).at(j);
-					if(edgeElements->getElement(edgeNum).isTaggedForRefinement())
-						tagCounter2[i] ++;
+			for(int j=0;j<3;j++){
+				edgeNum = edgeElements->getEdgesOfElement(i).at(j);
+				if(edgeElements->getElement(edgeNum).isTaggedForRefinement())
+					tagCounter2[i] ++;
+			}
+			if(tagCounter2[i] == 1){
+				elements->getElement(i).setFiniteElementRefinementType("green");
+				this->refineGreen(edgeElements, elements, i);
+				newElements ++;
+			}
+			else if(tagCounter2[i] == 2){
+				elements->getElement(i).setFiniteElementRefinementType("blue");
+				this->refineBlue(edgeElements, elements, i);
+				newElements= newElements+2;
+				}	
+			else if(tagCounter2[i] == 3){
+				elements->getElement(i).setFiniteElementRefinementType("regular");
+				if(refinementMode_ == "Bisection"){
+					this->bisectElement3(edgeElements, elements, i);
 				}
-				if(tagCounter2[i] == 1){
-					elements->getElement(i).setFiniteElementRefinementType("green");
-					this->refineGreen(edgeElements, elements, i);
-					newElements ++;
-				}
-				else if(tagCounter2[i] == 2){
-					elements->getElement(i).setFiniteElementRefinementType("blue");
-					this->refineBlue(edgeElements, elements, i);
-					newElements= newElements+2;
-					}	
-				else if(tagCounter2[i] == 3){
-					elements->getElement(i).setFiniteElementRefinementType("red");
-					this->refineRed(edgeElements, elements, i);
+				else	
+					this->refineRegular(edgeElements, elements, i, surfaceTriangleElements);
 					newElements= newElements+3;
-					}
-				else {
-					// the element in question has not been refined, nor its neighbour -> add edges to edge list
-					vec_int_Type edgesOfElement = edgeElements->getEdgesOfElement(i);
-					for(int j=0;j<3;j++){
-						edgeElements->getElement(edgesOfElement[j]).setFiniteElementRefinementType("unrefined");
-						edgeElements->getElement(edgesOfElement[j]).setPredecessorElement(edgeMap->getGlobalElement(edgesOfElement[j]));
-						edgeElements->getElement(edgesOfElement[j]).setInterfaceElement( edgeElements->getElement(edgesOfElement[j]).isInterfaceElement());
-						this->edgeElements_->addEdge(edgeElements->getElement(edgesOfElement[j]),i);
-						
-						if(edgeElements->getElement(edgesOfElement[j]).getFlag() !=0 && edgeElements->getElement(edgesOfElement[j]).getFlag() !=10){
-							if ( !this->elementsC_->getElement(i).subElementsInitialized() )
-								this->elementsC_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -1) ;
-							this->elementsC_->getElement(i).addSubElement(edgeElements->getElement(edgesOfElement[j]));	
-						}
-
-					}	
-
 				}
+			else {
+				// the element in question has not been refined, nor its neighbour -> add edges to edge list
+				vec_int_Type edgesOfElement = edgeElements->getEdgesOfElement(i);
+				for(int j=0;j<3;j++){
+					edgeElements->getElement(edgesOfElement[j]).setFiniteElementRefinementType("unrefined");
+					edgeElements->getElement(edgesOfElement[j]).setPredecessorElement(edgeMap->getGlobalElement(edgesOfElement[j]));
+					edgeElements->getElement(edgesOfElement[j]).setInterfaceElement( edgeElements->getElement(edgesOfElement[j]).isInterfaceElement());
+					this->edgeElements_->addEdge(edgeElements->getElement(edgesOfElement[j]),i);
+					
+					if(edgeElements->getElement(edgesOfElement[j]).getFlag() !=0 && edgeElements->getElement(edgesOfElement[j]).getFlag() !=10){
+						if ( !this->elementsC_->getElement(i).subElementsInitialized() )
+							this->elementsC_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -1) ;
+						this->elementsC_->getElement(i).addSubElement(edgeElements->getElement(edgesOfElement[j]));	
+					}
+
+				}	
 
 			}
 		}
@@ -1798,75 +1822,78 @@ void RefinementFactory<SC,LO,GO,NO>::refineIrregular(ElementsPtr_Type elements, 
 			vec_int_Type nodeInd(0);
 			nodeTag=0;
 			edgeTag=0;
-			if(elements->getElement(i).isTaggedForRefinement()==false){ // only looking at the untagged Elements
-				for(int j=0;j<6;j++){
-					edgeNum = edgeElements->getEdgesOfElement(i).at(j);
-					if(edgeElements->getElement(edgeNum).isTaggedForRefinement()){
-						nodeInd.push_back(edgeElements->getElement(edgeNum).getNode(0));
-						nodeInd.push_back(edgeElements->getElement(edgeNum).getNode(1));
-						edgeTag++;
-					}
-				}
-				sort( nodeInd.begin(), nodeInd.end() );
-				nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
-				nodeTag = nodeInd.size();
-			
-				if(nodeTag == 3 && edgeTag ==3){
-					//elements->getElement(i).setFiniteElementRefinementType("Type1");
-					//cout << " Requesting Type 1 Refinement on Processor " << this->comm_->getRank()<< endl;
-					this->refineType1(edgeElements, elements, i,surfaceTriangleElements);
-					newElements = newElements+3;
-				}
-				else if(nodeTag == 2 && edgeTag == 1){
-					//elements->getElement(i).setFiniteElementRefinementType("Type2");
-					//cout << " Requesting Type 2 Refinement on Processor " << this->comm_->getRank() << endl;
-					this->refineType2(edgeElements, elements, i,surfaceTriangleElements);
-					newElements ++;
-
-				}
-				else if(nodeTag == 3 && edgeTag == 2){
-					//elements->getElement(i).setFiniteElementRefinementType("Type3");
-					//cout << " Requesting Type 3 Refinement on Processor " << this->comm_->getRank() << endl;
-					this->refineType3(edgeElements, elements, i,surfaceTriangleElements);
-
-					newElements = newElements+2;
-				}
-				else if(nodeTag == 4 && edgeTag == 2){
-					//elements->getElement(i).setFiniteElementRefinementType("Type4");
-					//cout << " Requesting Type 4 Refinement on Processor " << this->comm_->getRank() << endl;
-					this->refineType4(edgeElements, elements, i,surfaceTriangleElements);
-					newElements = newElements+3;
-				}
-				if(nodeTag >3 && edgeTag >2 ){
-					cout << " still requesting regular refinement ? " << endl;
-				}
-
-				else if(edgeTag ==0){
-					vec_int_Type edgesOfElement = edgeElements->getEdgesOfElement(i);
-					for(int j=0;j<6;j++){
-						edgeElements->getElement(edgesOfElement[j]).setFiniteElementRefinementType("unrefined");
-						edgeElements->getElement(edgesOfElement[j]).setPredecessorElement(edgeMap->getGlobalElement(edgesOfElement[j]));
-						//edgeElements->getElement(edgesOfElement[j]).setInterfaceElement( edgeElements->getElement(edgesOfElement[j]).isInterfaceElement());
-						this->edgeElements_->addEdge(edgeElements->getElement(edgesOfElement[j]),i);
-						
-						/*if(edgeElements->getElement(edgesOfElement[j]).getFlag() !=0 && edgeElements->getElement(edgesOfElement[j]).getFlag() !=10){
-							if ( !this->elementsC_->getElement(i).subElementsInitialized() )
-								this->elementsC_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -1) ;
-							this->elementsC_->getElement(i).addSubElement(edgeElements->getElement(edgesOfElement[j]));	
-						}*/
-
-					}
-
-					vec_int_Type surfacesOfElement = surfaceTriangleElements->getSurfacesOfElement(i);
-					for(int j=0;j<4;j++){
-
-						//surfaceTriangleElements->getElement(surfacesOfElement[j]).setInterfaceElement(surfaceTriangleElements->getElement(surfacesOfElement[j]).isInterfaceElement());
-						this->surfaceTriangleElements_->addSurface(surfaceTriangleElements->getElement(surfacesOfElement[j]),i);
-					}	
+			for(int j=0;j<6;j++){
+				edgeNum = edgeElements->getEdgesOfElement(i).at(j);
+				if(edgeElements->getElement(edgeNum).isTaggedForRefinement()){
+					nodeInd.push_back(edgeElements->getElement(edgeNum).getNode(0));
+					nodeInd.push_back(edgeElements->getElement(edgeNum).getNode(1));
+					edgeTag++;
 				}
 			}
-							
+			sort( nodeInd.begin(), nodeInd.end() );
+			nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
+			nodeTag = nodeInd.size();
+		
+			if(nodeTag == 3 && edgeTag ==3){
+				//elements->getElement(i).setFiniteElementRefinementType("Type1");
+				//cout << " Requesting Type 1 Refinement on Processor " << this->comm_->getRank()<< endl;
+				this->refineType1(edgeElements, elements, i,surfaceTriangleElements);
+				newElements = newElements+3;
+			}
+			else if(nodeTag == 2 && edgeTag == 1){
+				//elements->getElement(i).setFiniteElementRefinementType("Type2");
+				//cout << " Requesting Type 2 Refinement on Processor " << this->comm_->getRank() << endl;
+				this->refineType2(edgeElements, elements, i,surfaceTriangleElements);
+				newElements ++;
+
+			}
+			else if(nodeTag == 3 && edgeTag == 2){
+				//elements->getElement(i).setFiniteElementRefinementType("Type3");
+				//cout << " Requesting Type 3 Refinement on Processor " << this->comm_->getRank() << endl;
+				this->refineType3(edgeElements, elements, i,surfaceTriangleElements);
+
+				newElements = newElements+2;
+			}
+			else if(nodeTag == 4 && edgeTag == 2){
+				//elements->getElement(i).setFiniteElementRefinementType("Type4");
+				//cout << " Requesting Type 4 Refinement on Processor " << this->comm_->getRank() << endl;
+				this->refineType4(edgeElements, elements, i,surfaceTriangleElements);
+				newElements = newElements+3;
+			}
+			else if(nodeTag == 4 && edgeTag == 6 ){
+				this->refineRegular(edgeElements, elements, i, surfaceTriangleElements);
+				newElements = newElements+7;
+			}
+			else if(nodeTag >3 && edgeTag >2){
+					cout << "bad shit" << endl;
+			}
+
+			else if(edgeTag ==0){
+				vec_int_Type edgesOfElement = edgeElements->getEdgesOfElement(i);
+				for(int j=0;j<6;j++){
+					edgeElements->getElement(edgesOfElement[j]).setFiniteElementRefinementType("unrefined");
+					edgeElements->getElement(edgesOfElement[j]).setPredecessorElement(edgeMap->getGlobalElement(edgesOfElement[j]));
+					//edgeElements->getElement(edgesOfElement[j]).setInterfaceElement( edgeElements->getElement(edgesOfElement[j]).isInterfaceElement());
+					this->edgeElements_->addEdge(edgeElements->getElement(edgesOfElement[j]),i);
+					
+					/*if(edgeElements->getElement(edgesOfElement[j]).getFlag() !=0 && edgeElements->getElement(edgesOfElement[j]).getFlag() !=10){
+						if ( !this->elementsC_->getElement(i).subElementsInitialized() )
+							this->elementsC_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -1) ;
+						this->elementsC_->getElement(i).addSubElement(edgeElements->getElement(edgesOfElement[j]));	
+					}*/
+
+				}
+
+				vec_int_Type surfacesOfElement = surfaceTriangleElements->getSurfacesOfElement(i);
+				for(int j=0;j<4;j++){
+
+					//surfaceTriangleElements->getElement(surfacesOfElement[j]).setInterfaceElement(surfaceTriangleElements->getElement(surfacesOfElement[j]).isInterfaceElement());
+					this->surfaceTriangleElements_->addSurface(surfaceTriangleElements->getElement(surfacesOfElement[j]),i);
+				}	
+			}
 		}
+						
+	
 
 	}
 	for(int j=0;j<this->edgeElements_->numberElements();j++){
@@ -2203,12 +2230,13 @@ void RefinementFactory<SC,LO,GO,NO>::addMidpoint(EdgeElementsPtr_Type edgeElemen
 template <class SC, class LO, class GO, class NO>
 int RefinementFactory<SC,LO,GO,NO>::determineLongestEdge( EdgeElementsPtr_Type edgeElements, vec_int_Type edgeVec, vec2D_dbl_ptr_Type points){
 	// We have to determine which edge is longer, as we use the opposite node of the longer edge for the element construction
-	vec_dbl_Type length(this->dim_+1);
+	vec_dbl_Type length(edgeVec.size());
 	vec_dbl_Type P1(this->dim_),P2(this->dim_);
 	double maxLength=0.0;
 	int maxEntry=0;
 	LO p1ID,p2ID;
-	for(int i=0;i<length.size();i++){
+	vec2D_dbl_Type nodeInd(0,vec_dbl_Type(this->dim_+2));
+	for(int i=0;i<edgeVec.size();i++){
 		p1ID =edgeElements->getElement(edgeVec[i]).getNode(0);
 		p2ID =edgeElements->getElement(edgeVec[i]).getNode(1);
 		P1 = points->at(p1ID);
@@ -2218,12 +2246,25 @@ int RefinementFactory<SC,LO,GO,NO>::determineLongestEdge( EdgeElementsPtr_Type e
 			sum += pow(P1[j]-P2[j],2);
 
 		length[i] = sqrt(sum);
-
-		if(length[i] > maxLength){
-			maxLength = length[i];
-			maxEntry= i;
+	
+		vec2D_dbl_Type tmpN(0,vec_dbl_Type(this->dim_));
+		tmpN.push_back(P1);
+		tmpN.push_back(P2);
+		sort(tmpN.begin(),tmpN.end());
+		tmpN[0].push_back(i);
+		tmpN[0].push_back(length[i]);
+		nodeInd.push_back(tmpN[0]);
+	}
+	sort(nodeInd.begin(), nodeInd.end());
+	int lInd = nodeInd[0].size()-1;
+	for(int i=0; i< nodeInd.size(); i++){
+		if(nodeInd[i][lInd] > maxLength){
+			maxLength = nodeInd[i][lInd];
+			maxEntry= (int) nodeInd[i][lInd-1];
 		}
 	}
+			
+
 	return edgeVec[maxEntry];
 	
 }
@@ -3923,7 +3964,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElemen
 		for( int i=0;i<2; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
 			FiniteElement feNew(newElements.at(i),10);
-			feNew.setFiniteElementRefinementType("irregular");	
+			feNew.setFiniteElementRefinementType("irregular");
+			if(refinementMode_ == "Bisection")
+				feNew.setFiniteElementRefinementType("regular");
 			feNew.setPredecessorElement(indexElement);
 			if(i<1)
 				this->elementsC_->addElement(feNew);
@@ -4426,14 +4469,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
 		int k=0;
 		for(int i=0; i<3; i++)	{
-			if(!edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement()) // we tag every edge, after we refine an element -> no tag - no refinement on that edge so far
-				{   			
-				this->addMidpoint(edgeElements,edgeNumbers[i]);
-				midPointInd[i] = edgeElements->getMidpoint(edgeNumbers[i]); 
-			}
-
-			else
-				midPointInd[i] = edgeElements->getMidpoint(edgeNumbers[i]);
+			midPointInd[i] = edgeElements->getMidpoint(edgeNumbers[i]);
 		}
 
 		// Mutal Node of two edges
@@ -4549,7 +4585,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		int offsetEdges = this->edgeElements_->numberElements(); 
 		for( int i=0;i<4; i++){
 			sort( newElements.at(i).begin(), newElements.at(i).end() );
-			FiniteElement feNew(newElements.at(i),0);
+			FiniteElement feNew(newElements.at(i),10);
 			feNew.setFiniteElementRefinementType("regular");	
 			feNew.setPredecessorElement(indexElement);
 			if(i<3)
@@ -4575,12 +4611,6 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 			else
 				this->edgeElements_->addEdge(feNew,indexElement);
 			
-		}
-		
-		// tagging the Edges for refinement
-	   	for (int d=0; d<3; d++){
-			// now we tag the edge as 'refined'
-			edgeElements->getElement(edgeNumbers[d]).tagForRefinement();	   
 		}
 	
 	}	
@@ -5653,6 +5683,285 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
        	TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "The Refinement Algorithm for the Dimension at hand is not available");
   }
 
+/*!
+
+@brief 2D and 3D refinement by bisection of tagged Elements. Chosen by error estimator or otherwise elements are refined regular by connecting edge midpoints.
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+@param[in] surfaceTriangleElements
+
+*/
+template <class SC, class LO, class GO, class NO>
+void RefinementFactory<SC,LO,GO,NO>::bisectEdges(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements, string mode){
+	
+	if(refinementMode_ == "Bisection"){
+
+		if(this->dim_ == 2){
+			vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
+
+			int entry = this->determineLongestEdge(edgeElements,edgeNumbers,this->pointsRep_); // we determine the edge, we would choose for blue Refinement
+
+			if(!edgeElements->getElement(entry).isTaggedForRefinement()) // we tag every edge, after we refine an element -> no tag - no refinement on that edge so far
+			{   			
+				this->addMidpoint(edgeElements,entry);
+				edgeElements->getElement(entry).tagForRefinement();
+			}
+		}
+		else if(this->dim_ == 3){
+			// First tag longest edge as refinement edge
+			vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
+
+			int entry = this->determineLongestEdge(edgeElements,edgeNumbers,this->pointsRep_); // we determine the edge, we would choose for blue Refinement
+
+			if(!edgeElements->getElement(entry).isTaggedForRefinement()) // we tag every edge, after we refine an element -> no tag - no refinement on that edge so far
+			{   			
+				this->addMidpoint(edgeElements,entry);
+				edgeElements->getElement(entry).tagForRefinement();
+			}
+			// all other edges make up the non refinement faces.
+			vec_int_Type surfaceNumbers = surfaceTriangleElements->getSurfacesOfElement(indexElement); // indeces of edges belonging to element
+			vec_int_Type nonRefFaces(0);
+			FiniteElement refEdge = edgeElements->getElement(entry);
+			for(int i=0; i< 4; i++){
+				FiniteElement surfTmp = surfaceTriangleElements->getElement(surfaceNumbers[i]);
+				if(surfTmp.getNode(0) != refEdge.getNode(0) &&  surfTmp.getNode(1) != refEdge.getNode(0) && surfTmp.getNode(2) != refEdge.getNode(0))
+					nonRefFaces.push_back(surfaceNumbers[i]);
+				if(surfTmp.getNode(0) != refEdge.getNode(1) &&  surfTmp.getNode(1) != refEdge.getNode(1) && surfTmp.getNode(2) != refEdge.getNode(1))
+					nonRefFaces.push_back(surfaceNumbers[i]);
+			}
+		
+			vec2D_int_Type faceEdgeIDs(2,vec_int_Type(0));
+			vec2D_int_Type edgesTmp(3,vec_int_Type(2));
+			for(int k=0; k<2 ; k++){
+				FiniteElement face = surfaceTriangleElements->getElement(nonRefFaces[k]);
+				edgesTmp[0]= { face.getNode(0) ,face.getNode(1)};
+				edgesTmp[1]= { face.getNode(0) ,face.getNode(2)};
+				edgesTmp[2]= { face.getNode(1) ,face.getNode(2)};
+ 
+				for(int i=0; i<6; i++){
+					vec_int_Type edgeTmp = edgeElements->getElement(edgeNumbers[i]).getVectorNodeListNonConst();
+					
+					auto it1 = find( edgesTmp.begin(),edgesTmp.end() , edgeTmp );
+               		int edgeID = distance(edgesTmp.begin() , it1 );
+					//cout<< "EdgeID " << edgeID << endl;
+					if(edgeID < 3){
+						faceEdgeIDs[k].push_back(edgeNumbers[i]);
+					}
+
+				}
+				int entry = this->determineLongestEdge(edgeElements,faceEdgeIDs[k],this->pointsRep_); // we determine the edge, we would choose for blue Refinement
+				if(!edgeElements->getElement(entry).isTaggedForRefinement()) // we tag every edge, after we refine an element -> no tag - no refinement on that edge so far
+				{   			
+					this->addMidpoint(edgeElements,entry);
+					edgeElements->getElement(entry).tagForRefinement();
+				}
+
+			}
+
+		}
+	}
+	else{
+		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
+		
+		for(int i=0; i<edgeNumbers.size(); i++){
+			if(!edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement()) // we tag every edge, after we refine an element -> no tag - no refinement on that edge so far
+			{   			
+				this->addMidpoint(edgeElements,edgeNumbers[i]);
+				edgeElements->getElement(edgeNumbers[i]).tagForRefinement();
+			}
+		}
+	}	
+
+	if(mode == "all"){
+		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
+		
+		for(int i=0; i<edgeNumbers.size(); i++){
+			if(!edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement()) // we tag every edge, after we refine an element -> no tag - no refinement on that edge so far
+			{   			
+				this->addMidpoint(edgeElements,edgeNumbers[i]);
+				edgeElements->getElement(edgeNumbers[i]).tagForRefinement();
+			}
+		}
+	}
+
 
 }
+/*!
+
+@brief 2D and 3D refinement by bisection of tagged Elements. Chosen by error estimator or otherwise elements are refined regular by connecting edge midpoints.
+
+@param[in] edgeElements
+@param[in] elements
+@param[in] indexELement
+@param[in] surfaceTriangleElements
+
+*/
+template <class SC, class LO, class GO, class NO>
+void RefinementFactory<SC,LO,GO,NO>::bisectElement3(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement){
+
+	if(this->dim_ == 2){
+		
+        // The necessary Point was already added to the nodelist
+		// now we have to figure out, which node it is -> check the tagged edge for midpoint
+		vec_int_Type edgeNumbersTmp = edgeElements->getEdgesOfElement(indexElement);
+
+
+		int entry = this->determineLongestEdge(edgeElements,edgeNumbersTmp,this->pointsRep_); // we determine the edge, we would choose for blue Refinement
+
+		int midPointEntry=0;
+		// midpoint index
+		vec_int_Type midPointInd(3);
+		vec_int_Type edgeNumbers(3);	
+		vec_int_Type mutualNode(3);
+
+				
+		// -> longest Edge: Edge 1: midPoint[0] - mutualNode[0] = mutualNode of Edge 1 and 2 
+		// -> 				Edge 2: midPoint[1] - mutualNode[1] = mutualNode of Edge 1 and 3
+		// -> 				Edge 3: midpoint[2] - mutualNode[2] = mutualNode of Edge 2 and 3
+
+		for(int i=0; i<3; i++){	
+			if(edgeNumbersTmp[i] == entry)	{
+				midPointInd[0] = edgeElements->getMidpoint(edgeNumbersTmp[i]);
+				edgeNumbers[0] = edgeNumbersTmp[i];
+				mutualNode[0] = edgeElements->getElement(entry).getNode(0);
+				mutualNode[2] = edgeElements->getElement(entry).getNode(1);
+			}
+		}
+		int tmp=1;
+		for(int i=0; i<3; i++){	
+			if(edgeNumbersTmp[i] != entry)	{
+				midPointInd[tmp] = edgeElements->getMidpoint(edgeNumbersTmp[i]);
+				edgeNumbers[tmp] = edgeNumbersTmp[i];
+				tmp++;
+				if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(0) == mutualNode[0])
+					mutualNode[1] = edgeElements->getElement(edgeNumbersTmp[i]).getNode(1);
+				else if(edgeElements->getElement(edgeNumbersTmp[i]).getNode(1) == mutualNode[0])
+					mutualNode[1] = edgeElements->getElement(edgeNumbersTmp[i]).getNode(0);
+			}
+		}
+
+
+		// Adding Elements and the corresponding Edges
+		vec2D_int_Type newElements(4, vec_int_Type( 0 )); // vector for the new elements
+		vec2D_int_Type newEdges(12,vec_int_Type(0)); // vector for the new edges
+		vec_int_Type edgeFlags(12); // vector for the new flags
+		vec_bool_Type isInterfaceEdge(12); // bool vectot for interfaceEdges
+		vec_GO_Type predecessorElement(12);
+		// Edgeflags are determined by the midpoints flag or by the fact, that they are inside a triangle, which consequently makes them interior edges (flag =10)
+
+		// Element 1
+		(newElements)[0]={mutualNode[0],midPointInd[0],midPointInd[1]};
+
+		(newEdges)[0] = {mutualNode[0] ,midPointInd[0]}; 
+		(newEdges)[1] = {mutualNode[0] ,midPointInd[1]}; 
+		(newEdges)[2] = {midPointInd[0] ,midPointInd[1]}; 
+
+		edgeFlags[0]=this->bcFlagRep_->at(midPointInd[0]);
+		edgeFlags[1]=this->bcFlagRep_->at(midPointInd[1]);
+		edgeFlags[2]=10;
+
+		isInterfaceEdge[0] = edgeElements->getElement(edgeNumbers[0]).isInterfaceElement();
+		isInterfaceEdge[1] = edgeElements->getElement(edgeNumbers[1]).isInterfaceElement();
+		isInterfaceEdge[2] = false;
+
+		predecessorElement[0] = this->edgeMap_->getGlobalElement(edgeNumbers[0]);
+		predecessorElement[1] = this->edgeMap_->getGlobalElement(edgeNumbers[1]);
+		predecessorElement[2] = -1;
+
+		// Element 2
+		newElements[1]={mutualNode[1],midPointInd[0],midPointInd[1]};
+
+		(newEdges)[3] = {mutualNode[1] ,midPointInd[0]}; 
+		(newEdges)[4] = {mutualNode[1] ,midPointInd[1]}; 
+		(newEdges)[5] = {midPointInd[0] ,midPointInd[1]}; 
+
+		edgeFlags[3]=10;
+		edgeFlags[4]=this->bcFlagRep_->at(midPointInd[1]);
+		edgeFlags[5]=10;
+
+		isInterfaceEdge[3] = false;
+		isInterfaceEdge[4] = edgeElements->getElement(edgeNumbers[1]).isInterfaceElement();
+		isInterfaceEdge[5] = false;
+
+		predecessorElement[3] = -1;
+		predecessorElement[4] = this->edgeMap_->getGlobalElement(edgeNumbers[1]);
+		predecessorElement[5] = -1;
+
+		// Element 3
+		(newElements)[2]={mutualNode[1] , midPointInd[0] ,midPointInd[2]};
+
+		(newEdges)[6] = {mutualNode[1] ,midPointInd[0]}; 
+		(newEdges)[7] = {mutualNode[1] ,midPointInd[2]}; 
+		(newEdges)[8] = {midPointInd[0] ,midPointInd[2]}; 
+
+		edgeFlags[6]=10;
+		edgeFlags[7]=this->bcFlagRep_->at(midPointInd[2]);
+		edgeFlags[8]=10;
+
+		isInterfaceEdge[6] = false;
+		isInterfaceEdge[7] = edgeElements->getElement(edgeNumbers[2]).isInterfaceElement();
+		isInterfaceEdge[8] = false;
+
+		predecessorElement[6] = -1;
+		predecessorElement[7] = this->edgeMap_->getGlobalElement(edgeNumbers[2]);
+		predecessorElement[8] = -1;
+
+		// Element 4
+		(newElements)[3]={midPointInd[0],midPointInd[2],mutualNode[2]};	
+
+		(newEdges)[9] = {midPointInd[0] ,midPointInd[2]}; 
+		(newEdges)[10] = {midPointInd[0] ,mutualNode[2]}; 
+		(newEdges)[11] = {midPointInd[2] ,mutualNode[2]}; 
+
+		edgeFlags[9]=10;
+		edgeFlags[10]=this->bcFlagRep_->at(midPointInd[0]);;
+		edgeFlags[11]=this->bcFlagRep_->at(midPointInd[2]);;
+
+		isInterfaceEdge[9] = false;
+		isInterfaceEdge[10] = edgeElements->getElement(edgeNumbers[0]).isInterfaceElement();
+		isInterfaceEdge[11] = edgeElements->getElement(edgeNumbers[2]).isInterfaceElement();
+
+		predecessorElement[9] = -1;
+		predecessorElement[10] =  this->edgeMap_->getGlobalElement(edgeNumbers[0]);;
+		predecessorElement[11] =  this->edgeMap_->getGlobalElement(edgeNumbers[2]);;
+
+		int offsetElements = this->elementsC_->numberElements(); 
+		int offsetEdges = this->edgeElements_->numberElements(); 
+		for( int i=0;i<4; i++){
+			sort( newElements.at(i).begin(), newElements.at(i).end() );
+			FiniteElement feNew(newElements.at(i),10);
+			feNew.setFiniteElementRefinementType("regular");
+			feNew.setPredecessorElement(indexElement);
+			if(i<3)
+				this->elementsC_->addElement(feNew);
+			else
+				this->elementsC_->switchElement(indexElement,feNew);
+		}
+
+		for( int i=0;i<12; i++){
+			sort( newEdges.at(i).begin(), newEdges.at(i).end() );
+			FiniteElement feNew(newEdges.at(i),edgeFlags[i]);
+			feNew.setInterfaceElement(isInterfaceEdge[i]);
+			feNew.setPredecessorElement(predecessorElement[i]);
+			if(i<9){
+				this->edgeElements_->addEdge(feNew,i/3+offsetElements);
+				if(edgeFlags[i]!=0 && edgeFlags[i]!=10){
+					if ( !this->elementsC_->getElement(i/3+offsetElements).subElementsInitialized() )
+						this->elementsC_->getElement(i/3+offsetElements).initializeSubElements( this->FEType_, this->dim_ -1) ;
+					this->elementsC_->getElement(i/3+offsetElements).addSubElement(feNew);	
+					}
+				}
+			else
+				this->edgeElements_->addEdge(feNew,indexElement);
+			
+		}
+    }
+	else        	
+		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "The red irregular Refinement Method you requested is only applicable to a 2 dimensional Mesh.");
+	
+ }
+}
+
 #endif

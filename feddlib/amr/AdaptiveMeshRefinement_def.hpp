@@ -66,7 +66,7 @@ domainsP1_(0)
 	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
 	markingStrategy_ = parameterListAll->sublist("Mesh Refinement").get("RefinementType","Uniform");
 	maxIter_ = parameterListAll->sublist("Mesh Refinement").get("MaxIter",3);
-	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("RefinementRestriction","keepRegularity");
+	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");
 	refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
 
 	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
@@ -77,6 +77,8 @@ domainsP1_(0)
 	coarseningCycle_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening Cycle",0);
 	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
 	coarseningN_  = parameterListAll->sublist("Mesh Refinement").get("Coarsening n" ,1);
+
+	refinementMode_  = parameterListAll->sublist("Mesh Refinement").get("Refinement Mode" ,"Regular");
 	// If no exact solution is given, we use a dummy function == 0 !!!
 
 
@@ -109,7 +111,7 @@ domainsP1_(0)
 	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
 	markingStrategy_ = parameterListAll->sublist("Mesh Refinement").get("RefinementType","Uniform");
 	maxIter_ = parameterListAll->sublist("Mesh Refinement").get("MaxIter",3);
-	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","keepRegularity");
+	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");
 	refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
 
 	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
@@ -120,6 +122,8 @@ domainsP1_(0)
 	coarseningCycle_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening Cycle",0);
 	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
 	coarseningN_  = parameterListAll->sublist("Mesh Refinement").get("Coarsening n" ,1);
+
+	refinementMode_  = parameterListAll->sublist("Mesh Refinement").get("Refinement Mode" ,"Regular");
 
 }
 
@@ -153,7 +157,7 @@ domainsP1_(0)
 	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
 	markingStrategy_ = parameterListAll->sublist("Mesh Refinement").get("RefinementType","Uniform");
 	maxIter_ = parameterListAll->sublist("Mesh Refinement").get("MaxIter",3);
-	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","keepRegularity");
+	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");
 	refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
 
 	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
@@ -165,6 +169,7 @@ domainsP1_(0)
 	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
 	coarseningN_  = parameterListAll->sublist("Mesh Refinement").get("Coarsening n" ,1);
 
+	refinementMode_  = parameterListAll->sublist("Mesh Refinement").get("Refinement Mode" ,"Regular");
 		
 	
 }
@@ -200,7 +205,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	int currentLevel =0;
 	while(currentLevel < level){		
 		errorEstimator.tagArea(inputMeshP1_,area);
-		refinementFactory.refineMesh(inputMeshP1_,currentLevel, outputMesh);
+		refinementFactory.refineMesh(inputMeshP1_,currentLevel, outputMesh, refinementMode_);
 
 		inputMeshP1_ = outputMesh;
 		currentLevel++;
@@ -372,12 +377,10 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 			else 
 				errorEstimationMv_[iterC]=errorElements;
 
-			//meshUnstructuredRefined->setErrorEstimate(errorElements); 
-			//meshUnstructuredRefined->refineMesh(meshUnstructuredP1, iterC);
 
 			errorEstimator.markElements(errorElements,theta_,markingStrategy_, meshUnstructuredP1[iterC]);
 
-   			refinementFactory.refineMesh(meshUnstructuredP1[iterC],iterC, outputMesh);
+   			refinementFactory.refineMesh(meshUnstructuredP1[iterC],iterC, outputMesh, refinementMode_);
 
 			meshUnstructuredP1[iterC+1] = outputMesh;
 			outputMesh.reset(new MeshUnstr_Type(domainP1->getComm(),  inputMeshP1_->volumeID_));
@@ -394,7 +397,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 		errorEstimator.markElements(errorElementsMv_,theta_,markingStrategy_, inputMeshP1_);
 
-   		refinementFactory.refineMesh(inputMeshP1_,currentIter_, outputMesh);
+   		refinementFactory.refineMesh(inputMeshP1_,currentIter_, outputMesh, refinementMode_);
 	}
 
 
