@@ -120,7 +120,7 @@ public:
 
 	void exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv,MultiVectorConstPtr_Type exportSolutionPMv, MultiVectorConstPtr_Type exactSolutionPMv);
 
-	void exportError(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type errorElConst,MultiVectorConstPtr_Type errorElConstH1, MultiVectorConstPtr_Type vecDecompositionConst );
+	void exportError(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type errorElConst, MultiVectorConstPtr_Type errorElConstH1 , MultiVectorConstPtr_Type difH1Eta ,MultiVectorConstPtr_Type vecDecompositionConst );
 
 	void writeRefinementInfo();
 	
@@ -147,6 +147,7 @@ private:
 
 	MultiVectorPtr_Type errorElementsMv_;
 	MultiVectorPtr_Type errorH1ElementsMv_;
+	MultiVectorPtr_Type difH1EtaElementsMv_;
 
 	MultiVectorConstPtr_Type errorNodesMv_;
 	MultiVectorConstPtr_Type errorNodesPMv_;

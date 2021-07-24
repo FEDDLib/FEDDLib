@@ -297,12 +297,12 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 	    // Calculating diameter of elements	
 		vec_dbl_Type areaTriangles(surfaceElements->numberElements());
-		vec_dbl_Type rho_T(surfaceElements->numberElements());
-		vec_dbl_Type C_T(surfaceElements->numberElements());
-		vec_dbl_Type h_Tri =  calcDiamTriangles3D(surfaceElements,points, areaTriangles, rho_T, C_T);
+		vec_dbl_Type rho_Tri(surfaceElements->numberElements());
+		vec_dbl_Type C_Tri(surfaceElements->numberElements());
+		vec_dbl_Type h_Tri =  calcDiamTriangles3D(surfaceElements,points, areaTriangles, rho_Tri, C_Tri);
 
 		vec_dbl_Type h_T = calcDiamTetraeder(elements,points, volTetraeder);
-
+		vec_dbl_Type rho_T = calcRhoTetraeder(elements,surfaceElements, volTetraeder, areaTriangles);
 
 		// necessary entities
 		vec_dbl_Type p1(3),p2(3); // normal Vector of Surface
@@ -335,19 +335,39 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxErrorElLoc, outArg (maxErrorElLoc));
 		
-		double maxh_T, minh_T;
-		double maxC_T, minC_T;
-		double maxrho_T, minrho_T;
+		double maxh_T, minh_T, maxh_Tri, minh_Tri;
+		double maxC_T, minC_T, maxC_Tri, minC_Tri;
+		double maxrho_T, minrho_T, maxrho_Tri, minrho_Tri;
 		double maxArea_T, minArea_T;
 		double maxVol_T, minVol_T;
 
+		// h_Triangles
 		auto it = max_element(h_Tri.begin(), h_Tri.end()); // 
-		maxh_T =  h_Tri[distance(h_Tri.begin(), it)];
+		maxh_Tri =  h_Tri[distance(h_Tri.begin(), it)];
 		it = min_element(h_Tri.begin(), h_Tri.end()); // 
-		minh_T =  h_Tri[distance(h_Tri.begin(), it)];
+
+		minh_Tri =  h_Tri[distance(h_Tri.begin(), it)];
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxh_Tri, outArg (maxh_Tri));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minh_Tri, outArg (minh_Tri));
+
+		// h_Tetraeder
+		it = max_element(h_T.begin(), h_T.end()); // 
+		maxh_T =  h_T[distance(h_T.begin(), it)];
+		it = min_element(h_T.begin(), h_T.end()); // 
+
+		minh_T =  h_T[distance(h_T.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxh_T, outArg (maxh_T));
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minh_T, outArg (minh_T));
 
+		// rho_Tri
+		it = max_element(rho_Tri.begin(), rho_Tri.end()); // 
+		maxrho_Tri =  rho_Tri[distance(rho_Tri.begin(), it)];
+		it = min_element(rho_Tri.begin(), rho_Tri.end()); // 
+		minrho_Tri =  rho_Tri[distance(rho_Tri.begin(), it)];
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxrho_Tri, outArg (maxrho_Tri));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minrho_Tri, outArg (minrho_Tri));
+
+		// rho_Tetraeder
 		it = max_element(rho_T.begin(), rho_T.end()); // 
 		maxrho_T =  rho_T[distance(rho_T.begin(), it)];
 		it = min_element(rho_T.begin(), rho_T.end()); // 
@@ -355,6 +375,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxrho_T, outArg (maxrho_T));
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minrho_T, outArg (minrho_T));
 
+		// Area Triangles
 		it = max_element(areaTriangles.begin(), areaTriangles.end()); // 
 		maxArea_T = areaTriangles[distance(areaTriangles.begin(), it)];
 		it = min_element(areaTriangles.begin(), areaTriangles.end()); // 
@@ -362,6 +383,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxArea_T, outArg (maxArea_T));
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minArea_T, outArg (minArea_T));
 
+		// Volume Tetraeder
 		it = max_element(volTetraeder.begin(), volTetraeder.end()); // 
 		maxVol_T = volTetraeder[distance(volTetraeder.begin(), it)];
 
@@ -371,6 +393,21 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxVol_T, outArg (maxVol_T));
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minVol_T, outArg (minVol_T));
 
+		// C_Tri
+		it = max_element(C_Tri.begin(), C_Tri.end()); // 
+		maxC_Tri =  C_Tri[distance(C_Tri.begin(), it)];
+
+		it = min_element(C_Tri.begin(), C_Tri.end()); // 
+		minC_Tri =  C_Tri[distance(C_Tri.begin(), it)];
+
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxC_Tri, outArg (maxC_Tri));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minC_Tri, outArg (minC_Tri));
+
+		// C_T
+		vec_dbl_Type C_T(elements->numberElements());
+		for(int i=0; i< h_T.size(); i++){
+			C_T[i] = h_T[i] / rho_T[i];
+		}
 		it = max_element(C_T.begin(), C_T.end()); // 
 		maxC_T =  C_T[distance(C_T.begin(), it)];
 
@@ -380,15 +417,19 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxC_T, outArg (maxC_T));
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minC_T, outArg (minC_T));
 
+
 		if(inputMesh_->getComm()->getRank() == 0){
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " Mesh Quality Assesment 2D " << endl;
-			cout << " Circumdiameter h_T:		" <<"max. = " << maxh_T << " min. = " << minh_T  << endl;
-			cout << " Incircumdiameter rho_T:	" <<"max. = " << maxrho_T << " min. = " << minrho_T  << endl;
-			cout << " Area of Triangles: 		" <<"max. = " << maxArea_T << " min. = " << minArea_T  << endl;
-			cout << " Volume of Tetraeder: 		" <<"max. = " << maxVol_T << " min. = " << minVol_T  << endl;
-			cout << " Shape parameter: 			" <<"max. = " <<  maxC_T << " min. = " << minC_T << endl;
+			cout << " Mesh Quality Assesment 2D 	" << endl;
+			cout << " Circumdiameter h_T:			" <<"max. = " << maxh_T << " min. = " << minh_T  << endl;
+			cout << " Incircumdiameter rho_T:		" <<"max. = " << maxrho_T << " min. = " << minrho_T  << endl;
+			cout << " Circumdiameter h_Tri:			" <<"max. = " << maxh_Tri << " min. = " << minh_Tri  << endl;
+			cout << " Incircumdiameter rho_Tri:		" <<"max. = " << maxrho_Tri << " min. = " << minrho_Tri  << endl;
+			cout << " Area of Triangles: 			" <<"max. = " << maxArea_T << " min. = " << minArea_T  << endl;
+			cout << " Volume of Tetraeder: 			" <<"max. = " << maxVol_T << " min. = " << minVol_T  << endl;
+			cout << " Shape parameter Tetraeder: 		" <<"max. = " <<  maxC_T << " min. = " << minC_T << endl;
+			cout << " Shape parameter Triangles: 		" <<"max. = " <<  maxC_Tri << " min. = " << minC_Tri << endl;
 			cout << " The maximal Error of Elements is 	"  << maxErrorElLoc << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 		}
@@ -1617,6 +1658,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamTetraeder(ElementsPtr_Type el
 
 	vec2D_dbl_Type p(4,vec_dbl_Type(this->dim_));
 	for(int k=0; k< elements->numberElements() ; k++){	
+		
 		// Calculating edges of Tetraeder
 		vec_LO_Type nodeList = 	elements->getElement(k).getVectorNodeListNonConst();
 		
@@ -1628,14 +1670,13 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamTetraeder(ElementsPtr_Type el
 		b = sqrt(pow(p[0][0] - p[2][0],2)+ pow(p[0][1] - p[2][1],2) +pow(p[0][2] - p[2][2],2));
 		c = sqrt(pow(p[0][0] - p[3][0],2)+ pow(p[0][1] - p[3][1],2) +pow(p[0][2] - p[3][2],2));
 
-		A = sqrt(pow(p[1][0] - p[2][0],2)+ pow(p[1][1] - p[2][1],2) +pow(p[1][2] - p[2][2],2));
+		A = sqrt(pow(p[3][0] - p[2][0],2)+ pow(p[3][1] - p[2][1],2) +pow(p[3][2] - p[2][2],2));
 		B = sqrt(pow(p[1][0] - p[3][0],2)+ pow(p[1][1] - p[3][1],2) +pow(p[1][2] - p[3][2],2));
-		C = sqrt(pow(p[2][0] - p[3][0],2)+ pow(p[2][1] - p[3][1],2) +pow(p[2][2] - p[3][2],2));		
+		C = sqrt(pow(p[1][0] - p[2][0],2)+ pow(p[1][1] - p[2][1],2) +pow(p[1][2] - p[2][2],2));		
 
 
-		diamElements[k] = 2*sqrt(fabs((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C)) / (24*volTet[k]) );
-		
-		//cout << " Diam Element " << diamElements[k] << " mit zähler " << ((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C)) << " nenner " << volTet[k] <<   endl;
+		diamElements[k] = 2*sqrt(((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C)) / (24*volTet[k]) );	
+
 	}
 
 
@@ -1653,7 +1694,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcRhoTetraeder(ElementsPtr_Type ele
 		// Calculating edges of Tetraeder
 		surfaceOfEl = surfaceTriangleElements->getSurfacesOfElement(k);
 
-		rhoElements[k] = (3*volTet[k]) / (areaTriangles[surfaceOfEl[0]] + areaTriangles[surfaceOfEl[1]] +areaTriangles[surfaceOfEl[2]] +areaTriangles[surfaceOfEl[3]]);
+		rhoElements[k] = (6*volTet[k]) / (areaTriangles[surfaceOfEl[0]] + areaTriangles[surfaceOfEl[1]] +areaTriangles[surfaceOfEl[2]] +areaTriangles[surfaceOfEl[3]]);
 
 	}
 

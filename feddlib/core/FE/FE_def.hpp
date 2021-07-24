@@ -4716,9 +4716,9 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     // last parameter should alwayss be the degree
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
     UN deg = determineDegree( dim, FEType, Std) + degFunc;
-	cout << " Degree " << deg << endl;
-	deg = deg+2;
 
+	deg = deg+3;
+	cout<< " Deg " << deg << endl;
     vec2D_dbl_ptr_Type quadPoints;
     getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values
 
@@ -4742,7 +4742,6 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     func( &x, &valueFunc[0], paras );
     SC value;
 
-	cout << " Assembly RHS ... " << endl;
     for (UN T=0; T<elements->numberElements(); T++) {
 
         buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);

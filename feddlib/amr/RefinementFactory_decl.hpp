@@ -98,6 +98,7 @@ public:
 	void refineType3( EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements);
 	void refineType4(  EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements);
 
+
 	void addMidpoint(EdgeElementsPtr_Type edgeElements, int i); // Adding midpoint on edge
 
 	int determineLongestEdge( EdgeElementsPtr_Type edgeElements, vec_int_Type edgeVec, vec2D_dbl_ptr_Type points); // Determines longest edge in triangle

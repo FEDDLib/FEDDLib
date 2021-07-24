@@ -122,24 +122,25 @@ void exactSolPaper3D(double* x, double* res){
 
     return;
 }
-
-void rhsPaper3D(double* x, double* res, double* parameters){
-
-	double alpha = -100*(pow(x[0]-1./4,2) +pow(x[1]-1./4,2)+pow(x[2]-1./4 ,2));
+void paperBC(double* x, double* res, double t, const double* parameters){
+    
+	double alpha = -100*(pow(x[0]-1./4,2) +pow(x[1]-1./4 ,2)+pow(x[2]-1./4 ,2));
 
 	double x2 = (pow(x[0],2)-x[0]);
 	double y2 = (pow(x[1],2)-x[1]);
 	double z2 = (pow(x[2],2)-x[2]);
 
-	double deltaX = 2 * y2 * z2 * exp(alpha)+ 2*(2*x[0]-1) * y2 * z2 * exp(alpha)+ (40000 *pow(x[0]-1/4,2)-200)*x2*y2*z2*exp(alpha);
-	double deltaY = 2 * x2 * z2 * exp(alpha)+ 2*(2*x[1]-1) * x2 * z2 * exp(alpha)+ (40000 *pow(x[1]-1/4,2)-200)*x2*y2*z2*exp(alpha);
-	double deltaZ = 2 * x2 * y2 * exp(alpha)+ 2*(2*x[2]-1) * y2 * x2 * exp(alpha)+ (40000 *pow(x[2]-1/4,2)-200)*x2*y2*z2*exp(alpha);
+    res[0] = x2*y2*z2*exp(alpha);
 
-	//res[0]= deltaX + deltaY + deltaZ;
+	//cout << " Value of RHS in Func" << res[0] << " und x[0] trans " << x[0] << " und x[1] " << x[1]   <<  endl;
+
+    return;
+}
+void rhsPaper3D(double* x, double* res, double* parameters){
+
+	double alpha = -100*(pow(x[0]-1./4,2) +pow(x[1]-1./4,2)+pow(x[2]-1./4 ,2));
 	
 	res[0] = -(40000 *pow(x[0],4) *(x[1] - 1)* x[1] *(x[2] - 1)* x[2] - 60000*  pow(x[0],3)* (x[1] - 1)* x[1]* (x[2] - 1)* x[2] + pow(x[0],2)* (40000*pow(x[1],4)* (x[2] - 1)* x[2] - 60000* pow(x[1],3)* (x[2] - 1)* x[2] + pow(x[1],2)* (40000 *pow(x[2],4) - 60000 * pow(x[2],3) + 64500*pow(x[2],2) - 44700* x[2] - 98) + x[1]* (-40000*pow(x[2],4) + 60000*pow(x[2],3) - 44700*pow(x[2],2) + 24900*x[2] + 98) - 98*(x[2] - 1)* x[2]) + x[0] *(-40000*pow(x[1],4) *(x[2] - 1)* x[2] + 60000 *pow(x[1],3)* (x[2] - 1)* x[2] + pow(x[1],2)* (-40000*pow(x[2],4) + 60000 *pow(x[2],3) - 44700*pow(x[2],2) + 24900* x[2] + 98) + x[1] *(40000*pow(x[2],4) - 60000*pow(x[2],3) + 24900*pow(x[2],2) - 5100* x[2] - 98) + 98* (x[2] - 1)* x[2]) - 98*(x[1] - 1)* x[1]* (x[2] - 1)* x[2])*exp(alpha);
-
-//(40000 x^4 (y - 1) y (z - 1) z - 60000 x^3 (y - 1) y (z - 1) z + x^2 (40000 y^4 (z - 1) z - 60000 y^3 (z - 1) z + y^2 (40000 z^4 - 60000 z^3 + 64500 z^2 - 44700 z - 98) + y (-40000 z^4 + 60000 z^3 - 44700 z^2 + 24900 z + 98) - 98 (z - 1) z) + x (-40000 y^4 (z - 1) z + 60000 y^3 (z - 1) z + y^2 (-40000 z^4 + 60000 z^3 - 44700 z^2 + 24900 z + 98) + y (40000 z^4 - 60000 z^3 + 24900 z^2 - 5100 z - 98) + 98 (z - 1) z) - 98 (y - 1) y (z - 1) z) exp(-100 ((x - 1/4)^2 + (y - 1/4)^2 + (z - 1/4)^2))
 
 	return;
 }
@@ -401,7 +402,7 @@ int main(int argc, char *argv[]) {
 		else if(modellProblem == "Paper" && dim == 3){
 			rhs = rhsPaper3D;
 			exactSol = exactSolPaper3D;
-			flag1Func = zeroBC;
+			flag1Func = paperBC;
 			
 		}
 		else if(modellProblem == "Paper2" && dim == 3){
