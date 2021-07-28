@@ -212,7 +212,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			resElement = determineResElement(elements->getElement(k), rhsFunc); // calculating the residual of element k
 			if(problemType_ == "Stokes") // If the Problem is a Stokes Problem we calculate divU (maybe start a hierarchy
 				divUElement = determineDivU(elements->getElement(k));
-			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+divUElement +h_T[k]*h_T[k]*resElement ); //; 
+			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+ divUElement +h_T[k]*h_T[k]*resElement ); //; 
 
 			if(maxErrorElLoc < errorElement[k] )
 					maxErrorElLoc = errorElement[k];
@@ -261,10 +261,10 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
 			cout << " Mesh Quality Assesment 2D " << endl;
-			cout << " Circumdiameter h_T:		" <<"max. = " << maxh_T << " min. = " << minh_T  << endl;
-			cout << " Incircumdiameter rho_T:	" <<"max. = " << maxrho_T << " min. = " << minrho_T  << endl;
-			cout << " Area of Triangles: 		" <<"max. = " << maxArea_T << " min. = " << minArea_T  << endl;
-			cout << " Shape parameter: 			" <<"max. = " <<  maxC_T << " min. = " << minC_T << endl;
+			cout << " Circumdiameter h_T:			" <<"max. = " << maxh_T << " 	min. = " << minh_T  << endl;
+			cout << " Incircumdiameter rho_T:		" <<"max. = " << maxrho_T << " 	min. = " << minrho_T  << endl;
+			cout << " Area of Triangles: 			" <<"max. = " << maxArea_T << " min. = " << minArea_T  << endl;
+			cout << " Shape parameter: 			" <<"max. = " <<  maxC_T << " 	min. = " << minC_T << endl;
 			cout << " The maximal Error of Elements is 	"  << maxErrorElLoc << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 		}
@@ -771,7 +771,16 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 
 	for(int k=0; k< numberSurfaceElements;k++){
 		// We only need to calculate the jump for interior egdes/surfaces, which are characetrized by the fact that they are connected to two elements
-		if(elementsOfSurfaceGlobal.at(k).size() > 1){  
+		bool interiorElement= false;
+		if(dim_ == 2){
+			if(edgeElements->getElement(k).getFlag() == 10 || edgeElements->getElement(k).getFlag() == 0)
+				interiorElement=true;
+		}  
+		else if(dim_ == 3){
+			if(surfaceTriangleElements->getElement(k).getFlag() == 10 || surfaceTriangleElements->getElement(k).getFlag() == 0)
+				interiorElement=true;
+		}  
+		if(interiorElement == true){  
 		// Per edge we have depending on discretization quadrature points and weights
 			vec_dbl_Type quadWeights(quadPSize);
 			vec2D_dbl_Type quadPoints; 
@@ -1123,9 +1132,8 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
 */
 template <class SC, class LO, class GO, class NO>
 double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
-	//cout << "Calculating residual " << endl;
-// Quad Points and weights of third order
 
+// Quad Points and weights of third order
 	double resElement =0.;
 
 	int dim = this->dim_;
@@ -1188,7 +1196,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 	for(int i=0; i< dim_ ; i++){
 		divB += Binv1[i][i] ;
 	}
-	divB = 1/2. * divB;
+	divB = 1./2; //1/2. * divB;
 
 	vec_dbl_Type divPhiV;
 	for (UN w=0; w< QuadW.size(); w++){
@@ -1199,7 +1207,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 			for(int i=0; i< divPhiV.size(); i++){
 				uTmp[j] += valuesSolutionRep[nodeList[i]]*divPhiV[i];
 			}
-	   		resElement += pow(divB*uTmp[j] ,2);
+	   		resElement += pow(Binv1[j][j]*divB*uTmp[j] ,2);
 		}
 		resElement *= QuadW[w];
 

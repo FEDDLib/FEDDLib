@@ -317,14 +317,19 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 			inputMeshP1_->surfaceTriangleElements_ = surfaceTriangleElements;
 		}
 	}
-		
+	if(currentIter_ == 0){
+		refinementFactory.assignEdgeFlags( inputMeshP12_,inputMeshP12_->getEdgeElements());
+		refinementFactory.assignEdgeFlags( inputMeshP1_,inputMeshP1_->getEdgeElements());
+
+	}
 	// If coarsen Mesh is false, so consequently we refine the Mesh we go about as folows:	
 	bool coarsening= false;
 	if(coarseningCycle_ > 0 && currentIter_>0){
 		if(currentIter_ % coarseningCycle_ == 0)
 			coarsening = true;
 	}
-
+	errorElementsMv_ =Teuchos::rcp( new MultiVector_Type( domainP12_ ->getElementMap(), 1 ) );
+	errorElementsMv_->putScalar(0.);
 	if( coarsening== true &&  currentIter_ < maxIter_ ){
 
 		// We start by calculating the error of the current mesh. As this is out starting point for mesh coarsening. In the previous iteration we calculated the error estimation beforehand.
@@ -607,7 +612,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 	difH1EtaElementsMv_ =  Teuchos::rcp( new MultiVector_Type( domainP12_ ->getElementMap(), 1 ) );
 	difH1EtaElementsMv_->putScalar(0.);
 
-	if(domainP12_->getElementMap()->getMaxAllGlobalIndex()< 150){
+	if(domainP12_->getElementMap()->getMaxAllGlobalIndex()< 1500){
 		ElementsPtr_Type elements = domainP12_->getElementsC();
 		MapConstPtr_Type elementMap = domainP12_->getElementMap();
 		MapConstPtr_Type mapUnique = domainP12_->getMapUnique();
@@ -669,16 +674,18 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 			mvValuesErrorUnique->importFromVector(notMV,false,"Insert");
 		
 			double valueH1 = problem_->calculateH1Norm(mvValuesErrorUnique);
-			double valueL2 = problem_->calculateL2Norm(mvValuesErrorUnique);
+			double valueL2 = 0; // problem_->calculateL2Norm(mvValuesErrorUnique);
 			if(elementMap->getLocalElement(k) != -1){
 				errorH1ElementsA[elementMap->getLocalElement(k)]= sqrt(valueH1 + valueL2);
 			}
 		
 		}
 
-	MultiVectorConstPtr_Type errorH1 = errorH1ElementsMv_;
-	MultiVectorConstPtr_Type errorElements = errorElementsMv_;
-	difH1EtaElementsMv_->update( 1., errorElements , -1. , errorH1, 0.);
+		MultiVectorConstPtr_Type errorH1 = errorH1ElementsMv_;
+		
+		MultiVectorConstPtr_Type errorElements = errorElementsMv_;
+
+		difH1EtaElementsMv_->update( 1., errorElements , -1. , errorH1, 0.);
 	}
 	if( calculatePressure_== true  && exactSolPInput_ == true  ){
 		// Calculating the error per node
