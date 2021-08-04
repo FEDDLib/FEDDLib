@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<!DOCTYPE Xdmf SYSTEM "velocity.xdmf" [
+<!ENTITY DataFile "velocity.h5">
+]>
+<!-- velocity.h5  -->
+<Xdmf>
+  <Domain Name="velocity">
+    <Grid Name="velocityGrid" GridType="Collection" CollectionType="Temporal">
+
+<!-- Time 0 Iteration 00000 -->
+    <Grid Name="MeshP1 0">
+      <Time TimeType="Single" Value="0" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="380121"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="380121 4"
+                        DataType="Int"
+                        Precision="8">
+             velocity.h5:/Connections/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="86863"
+                        DataType="Float"
+                        Precision="8">
+             velocity.h5:/PointsX/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="86863"
+                        DataType="Float"
+                        Precision="8">
+             velocity.h5:/PointsY/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="86863"
+                        DataType="Float"
+                        Precision="8">
+             velocity.h5:/PointsZ/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Vector"
+         Center="Node"
+         Name="u">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="86863 3"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               86863 3
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="86863 3"
+                           DataType="Float"
+                           Precision="8">
+               velocity.h5:/u.00000/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+
+    </Grid>
+
+  </Domain>
+</Xdmf>

@@ -317,10 +317,9 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 			inputMeshP1_->surfaceTriangleElements_ = surfaceTriangleElements;
 		}
 	}
-	if(currentIter_ == 0){
-		refinementFactory.assignEdgeFlags( inputMeshP12_,inputMeshP12_->getEdgeElements());
+	if(currentIter_ == 0 && dim_ == 2){
+		refinementFactory.assignEdgeFlags( inputMeshP1_,inputMeshP12_->getEdgeElements());
 		refinementFactory.assignEdgeFlags( inputMeshP1_,inputMeshP1_->getEdgeElements());
-
 	}
 	// If coarsen Mesh is false, so consequently we refine the Mesh we go about as folows:	
 	bool coarsening= false;

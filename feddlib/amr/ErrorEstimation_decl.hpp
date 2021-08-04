@@ -105,7 +105,7 @@ public:
 
 	void markElements(MultiVectorPtr_Type errorElementMv, double theta, string strategy,  MeshUnstrPtr_Type meshUnstr);
 	
-	vec_dbl_Type determineH_T_min(ElementsPtr_Type elements,EdgeElementsPtr_Type edgeElements, vec2D_dbl_ptr_Type points, vec_dbl_Type& volTetraeder);
+	vec_dbl_Type determineVolTet(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points);
 
 	vec_dbl_Type calcDiamTriangles(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points, vec_dbl_Type& areaTriangles, vec_dbl_Type& rho_T,vec_dbl_Type& C_T);
 	vec_dbl_Type calcDiamTriangles3D(SurfaceElementsPtr_Type surfaceTriangleElements,vec2D_dbl_ptr_Type points,vec_dbl_Type& areaTriangles, vec_dbl_Type& rho_T,vec_dbl_Type& C_T);

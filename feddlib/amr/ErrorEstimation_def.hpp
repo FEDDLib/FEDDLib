@@ -42,7 +42,7 @@ ErrorEstimation<SC,LO,GO,NO>::~ErrorEstimation(){
 }
 
 ///
-/// @brief We need to identify the problem with respect to the DegreesOfFreedom(dofs) of u or velocity and if necessary p or pressure
+/// @brief We need to identify the problem with respect to the DegreesOfFreedom(dofs) of u our velocity and if necessary p our pressure
 ///
 template <class SC, class LO, class GO, class NO>
 void ErrorEstimation<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution){
@@ -212,7 +212,8 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			resElement = determineResElement(elements->getElement(k), rhsFunc); // calculating the residual of element k
 			if(problemType_ == "Stokes") // If the Problem is a Stokes Problem we calculate divU (maybe start a hierarchy
 				divUElement = determineDivU(elements->getElement(k));
-			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+ divUElement +h_T[k]*h_T[k]*resElement ); //; 
+
+			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+divUElement+ h_T[k]*h_T[k]*resElement );; //divUElement ; 
 
 			if(maxErrorElLoc < errorElement[k] )
 					maxErrorElLoc = errorElement[k];
@@ -292,8 +293,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 		// h_E,min defined as in "A posteriori error estimation for anisotropic tetrahedral and triangular finite element meshes"
 		// This is the minimal per element, later we also need the adjacent elements' minimal height in order to determine h_E
-		vec_dbl_Type volTetraeder(elements->numberElements());
-		vec_dbl_Type h_T_min = determineH_T_min(elements,edgeElements, points, volTetraeder);
+		vec_dbl_Type volTetraeder = determineVolTet(elements, points);
 
 	    // Calculating diameter of elements	
 		vec_dbl_Type areaTriangles(surfaceElements->numberElements());
@@ -438,9 +438,6 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 	}
 		
 	errorEstimation_ = errorElementMv;
-	//this->markElements(errorElement);
-
-	//cout << " done " << endl;
 	
 	MESH_TIMER_STOP(errorEstimation);
 
@@ -584,14 +581,13 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 
 	vec_dbl_Type surfaceElementsError(numberSurfaceElements);
 
-	// For each Edge or Triangle we can determine deriPhi with the necessary dim-1 Quad Points.
-	//vec3D_dbl_Type deriPhi(numberSurfaceElements,vec2D_dbl_Type(numRowsDPhi, vec_dbl_Type(dim))) // calcDPih();
-
+	// We calculate the Gradient for all edges or surfaces in direction of N. This is done for the gradient of the velocity u or the pressure p.
 	vec3D_dbl_Type u_El = calcNPhi("Gradient",  dofs_, FEType2_);
 	
+	// We generally do not need to calculate this part of the jump as the pressure is steady over the edges resulting in a zero pressure Jump.
 	vec3D_dbl_Type p_El;
-	if(calculatePressure_ == true)
-		p_El = calcNPhi("None",  dofsP_, FEType1_);
+	//if(calculatePressure_ == true)
+		//p_El = calcNPhi("None",  dofsP_, FEType1_);
 
 	double quadWeightConst =1.;
 	
@@ -615,8 +611,9 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 				for(int i=0; i<u_El[k].size();i++){
 					if(	calculatePressure_ == false)
 						jumpQuad += pow(u_El[k][i][j],2);
-					if(calculatePressure_ == true)
-						jumpQuad += pow( u_El[k][i][j] -p_El[k][i][0],2); 
+					if(calculatePressure_ == true){
+						jumpQuad += pow( u_El[k][i][j] - p_El[k][i][0] ,2) ; //u_El[k][i][j] - p_El[k][i][0],2)
+					}
 				}
 			}
 
@@ -627,8 +624,9 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 			else 	
 				quadWeightConst = h_E;
 
-
 			surfaceElementsError[k] =h_E *quadWeightConst*jumpQuad;
+
+
 		}
 	}
 
@@ -768,7 +766,6 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 
 	// We loop through all surfaces in order to calculate nabla u or p on each surface depending on which element we look at.
 	// The jump is calculated via two surfaces. Consequently we have two values per edge/surface which we either have or need to import/export.
-
 	for(int k=0; k< numberSurfaceElements;k++){
 		// We only need to calculate the jump for interior egdes/surfaces, which are characetrized by the fact that they are connected to two elements
 		bool interiorElement= false;
@@ -823,9 +820,8 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 			for(int i=0; i<elementsIDs.size(); i++){
 
 				// We extract the nodes of the elements the surface is connected to
-				for (int l=0; l< numNodes; l++){
-					kn1[l]= elements->getElement(elementsIDs[i]).getNode(l);
-				}
+
+				kn1= elements->getElement(elementsIDs[i]).getVectorNodeListNonConst();
 				
 				// Transformation Matrices
 				// We need this inverse Matrix to also transform the quadrature points of our surface back to the reference element
@@ -849,8 +845,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 					}
 										
 				}
-				// We make the destinction between a gradient jump calculation or a simple jump calculation 
-
+				// We make the distinction between a gradient jump calculation or a simple jump calculation 
 				for(int l=0; l< quadPSize; l++){
 					if(phiDerivative == "Gradient"){
 						vec2D_dbl_Type deriPhi1 = gradPhi(dim_, intFE, quadPointsT1[l]);
@@ -870,6 +865,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 					 				u1_Tmp[d][s] += valuesSolRep[kn1[t]]*deriPhiT1[t][s] ;
 								}
 							}
+
 						}
 						if(i==0){
 							for( int d =0; d < dofsSol ; d++){
@@ -877,7 +873,6 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 									vec_El1[k][l][d] += (u1_Tmp[d][s])*(v_E[s]/norm_v_E);
 								}
 								vec_El1[k][l][d] = sqrt(quadWeights[l])* vec_El1[k][l][d];
-
 							}
 						}
 						else {
@@ -887,7 +882,8 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 								}
 								vec_El2[k][l][d] = sqrt(quadWeights[l])* vec_El2[k][l][d];
 							}
-						}			
+						}	
+
 
 					}
 
@@ -897,7 +893,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 						Teuchos::ArrayRCP< SC > valuesSolRep;	
 						for( int d =0; d < dofsSol ; d++){
 							valuesSolRep = valuesSolutionRepPre_->getBlock(d)->getDataNonConst(0);
-							for(int t=0; t< numNodes ; t++){
+							for(int t=0; t< phiV.size() ; t++){
 				 				vec_Tmp[d] += valuesSolRep[kn1[t]]*phiV[t] ;
 							}
 						}
@@ -907,7 +903,6 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 									vec_El1[k][l][d] += (vec_Tmp[d])*(v_E[s]/norm_v_E);
 								}
 								vec_El1[k][l][d] = sqrt(quadWeights[l])* vec_El1[k][l][d];
-
 							}
 						}
 						else {
@@ -1020,9 +1015,10 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	
 	for(int i=0; i< numberSurfaceElements ; i++){
 		for(int j=0; j<quadPSize; j++){
-			for(int k=0; k< dofsSol ; k++)
+			for(int k=0; k< dofsSol ; k++){
 				vec_El[i][j][k] = fabs(vec_El1[i][j][k]) - fabs(vec_El2[i][j][k]); 
-
+			
+			}
 		}
 	}
 
@@ -1172,7 +1168,6 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 
 	detB1 = B1.computeInverse(Binv1);
 	detB1 = std::fabs(detB1);
-	//cout << " DetB1 " << detB1 << endl;
 	vec_dbl_Type valueFunc(dofs_);
 
 	vec2D_dbl_Type quadPointsTrans(QuadW.size(),vec_dbl_Type(dim));
@@ -1186,35 +1181,39 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 		 }
 	}
 
-	
-	
 	int intFE = 1;
 	if(this->FEType2_ == "P2")
 		intFE =2;
 
-	double divB=0;
-	for(int i=0; i< dim_ ; i++){
-		divB += Binv1[i][i] ;
-	}
-	divB = 1./2; //1/2. * divB;
-
-	vec_dbl_Type divPhiV;
+	vec2D_dbl_Type divPhiV;
+	double resElementTmp;
 	for (UN w=0; w< QuadW.size(); w++){
-		divPhiV = divPhi(dim, intFE, quadPointsTrans[w]);
-		vec_dbl_Type uTmp(dofs_);
-		for(int j=0; j< dofs_ ; j++){
-			Teuchos::ArrayRCP<SC> valuesSolutionRep = valuesSolutionRepVel_->getBlock(j)->getDataNonConst(0);
-			for(int i=0; i< divPhiV.size(); i++){
-				uTmp[j] += valuesSolutionRep[nodeList[i]]*divPhiV[i];
+		divPhiV =gradPhi(dim, intFE, quadPointsTrans[w]);// divPhi(dim, intFE, quadPointsTrans[w]);//
+		vec2D_dbl_Type divPhiT(divPhiV.size(),vec_dbl_Type(dim));
+		for(int q=0; q<dim; q++){
+			for(int p=0;p<dim+1; p++){
+				for(int s=0; s< dim ; s++)
+					divPhiT[p][q] += (divPhiV[p][s]*Binv1[s][q]);
+				
 			}
-	   		resElement += pow(Binv1[j][j]*divB*uTmp[j] ,2);
 		}
-		resElement *= QuadW[w];
+		vec_dbl_Type uTmp(divPhiV.size());
+		for(int i=0; i< divPhiV.size(); i++){
+			resElementTmp=0.;
+			for(int j=0; j< dofs_ ; j++){
+				Teuchos::ArrayRCP<SC> valuesSolutionRep = valuesSolutionRepVel_->getBlock(j)->getDataNonConst(0);
+				uTmp[i] += valuesSolutionRep[nodeList[i]]*divPhiT[i][j];
+			}
+		   	resElementTmp += pow(uTmp[i],2); // Binv1[j][j]*
+		}
+		//resElementTmp = pow(resElementTmp,2);
+		resElementTmp *= QuadW[w];
 
+		resElement += resElementTmp;
 	}
    	resElement =  resElement *detB1;
 
-	//cout<< " ... done " << endl;
+
 
 	return resElement;
 
@@ -1222,7 +1221,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 }
 
 /*!
-@brief Function that that determines ||\Delta u_h + f ||_(L2(T)) or || \Delta u_h + f - \nabla p ||_T for a Element T
+@brief Function that that determines ||\Delta u_h + f ||_(L2(T)) or || \Delta u_h + f - \nabla p ||_T for an Element T
 
 @param[in] FiniteElement element where ||div(u)||_T is calculated on
 @param[in] RhsFunc_Type rhsFunc which is the function used for the rhs of the pde
@@ -1231,7 +1230,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 
 template <class SC, class LO, class GO, class NO>
 double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, RhsFunc_Type rhsFunc){
-	//cout << "Calculating residual " << endl;
+
 // Quad Points and weights of third order
 
 	vec_dbl_Type resElement(dofs_);
@@ -1271,7 +1270,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 
 	detB1 = B1.computeInverse(Binv1);
 	detB1 = std::fabs(detB1);
-	//cout << " DetB1 " << detB1 << endl;
+
 	vec_dbl_Type valueFunc(dofs_);
 
 	vec2D_dbl_Type quadPointsTrans(QuadW.size(),vec_dbl_Type(dim));
@@ -1323,7 +1322,6 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	for (UN w=0; w< QuadW.size(); w++){
 			rhsFunc(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
 			for(int j=0 ; j< dofs_; j++){
-				//cout << " ResElement Func " << valueFunc[j] << " delta " << deltaU[j] << " p " << nablaP[j] << endl; 
 		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] - nablaP[j] ,2);
 		}
 	}
@@ -1331,9 +1329,6 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	for(int j=0; j< dofs_ ; j++)
 		resElementValue += resElement[j] *detB1;
 
-
-
-	//cout<< " ... done " << endl;
 
 	return resElementValue;
 
@@ -1478,182 +1473,65 @@ vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::getQuadValues(int dim, string FETyp
 
 }
 /*!
-@brief function, that determines h_T as the shortest vector inside a tetraeder as propose in...
+@brief function, that determines volume of tetrahedra
 
 @param[in] elements
-@param[in] edgeelements
+@param[in] edgeElements
 @param[in] points
-@param[in] volTetraeder is calulated along the way and also usefull at another part of 3D jump calculation
+
 
 */
 
 template <class SC, class LO, class GO, class NO>
-vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineH_T_min(ElementsPtr_Type elements,EdgeElementsPtr_Type edgeElements, vec2D_dbl_ptr_Type points, vec_dbl_Type& volTetraeder){
+vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineVolTet(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points){
 	
-	vec_dbl_Type h_T_min(elements->numberElements());
-	vec_int_Type edgeNumbers(4);
+	vec_dbl_Type volumeTetraeder(elements->numberElements());
 
-	// We define P0P1 as the length the longest edge
-	int P0,P1;
-	int P0P1;
-	// The triangle containing P0P1 with the largest area is P0P1P2
-	int P2, P2Tmp1, P2Tmp2;
+	vec_dbl_Type p1(3),p2(3), p3(3), v_K(3);
 
-	double area1,area2,area;
-	// P0P2 is the shortest edge of P0P1P2, the remaining node is P3
-	int P3;
-	// We define three vectors in our tetrahedra
-	// rho1 = P0P1;
-	double rho1 =0;
-	// rho2 is the orthogonal Vector on P0P1 connecting it with P2
-	double rho2,rho2Tmp1,rho2Tmp2;
-	// rho3 is the vector to P3 that is perpendicular to P0P1P2 
-	double rho3; 
+	vec2D_dbl_Type p(4,vec_dbl_Type(3));
 
-	vec_dbl_Type vecTmp(3),vecTmp0(3),vecTmp1(3),vecTmp2(3),vecTmp11(3), vecTmp12(3), vecTmp21(3), vecTmp22(3),v_E(3);
-	double norm_v_E;
-	 
-	FiniteElement edgeTmp;
 	for(int k=0; k< elements->numberElements() ; k++){
-		bool found=false;
-		edgeNumbers = edgeElements->getEdgesOfElement(k); // edges of Element k
-		rho1 =0;
-		vec_dbl_Type length(6);
-		P0= -1, P1 =-1, P2 =-1, P3 =-1;
-		P2Tmp1=-1, P2Tmp2=-1;
-		// First determine longest Edge
-		for(int i=0; i<6; i++){
-			edgeTmp= edgeElements->getElement(edgeNumbers[i]);
-			vecTmp[0] = points->at(edgeTmp.getNode(0)).at(0) - points->at(edgeTmp.getNode(1)).at(0);
-			vecTmp[1] = points->at(edgeTmp.getNode(0)).at(1) - points->at(edgeTmp.getNode(1)).at(1);
-			vecTmp[2] = points->at(edgeTmp.getNode(0)).at(2) - points->at(edgeTmp.getNode(1)).at(2);
-			length[i] = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2)+pow(vecTmp[2],2));
-			if(length[i] > rho1){
-				rho1 = length[i];
-				P0P1 = i;
-				P0 = edgeTmp.getNode(0);
-				P1 = edgeTmp.getNode(1);
-				vecTmp0=vecTmp;
 
-			}
-		}
-		// Calculating the areas
-		for(int i=0; i<6; i++){
-			if(i != P0P1){
-				edgeTmp= edgeElements->getElement(edgeNumbers[i]);
-				if(!found ){
-					if(edgeTmp.getNode(0) == P0 ) {				
-						P2Tmp1 = edgeTmp.getNode(1);
-						found=true;
-					}
-					else if(edgeTmp.getNode(1) == P0){
-						P2Tmp1 = edgeTmp.getNode(0);
-						found=true;
-
-					}
-					else if(edgeTmp.getNode(0) == P1){
-						P2Tmp1 = edgeTmp.getNode(1);
-						found=true;
-					}
-					else if(edgeTmp.getNode(1) == P1){
-						P2Tmp1 = edgeTmp.getNode(0);
-						found=true;
-
-					}
-				}
-				else if(found){
-					if(edgeTmp.getNode(0) == P0 && edgeTmp.getNode(1) != P2Tmp1  ) {				
-						P2Tmp2 = edgeTmp.getNode(1);
-					}
-					else if(edgeTmp.getNode(1) == P0 && edgeTmp.getNode(0) != P2Tmp1){
-						P2Tmp2 = edgeTmp.getNode(0);
-					}
-					else if(edgeTmp.getNode(0) == P1 && edgeTmp.getNode(1) != P2Tmp1){
-						P2Tmp2 = edgeTmp.getNode(1);
-					}
-					else if(edgeTmp.getNode(1) == P1 && edgeTmp.getNode(0) != P2Tmp1){
-						P2Tmp2 = edgeTmp.getNode(0);
-					}
-
-				}
-				
-			}
-		}
-		double lengthA, lengthB, lengthC,s1,s2,s;
-		lengthA = rho1;
-		edgeTmp = edgeElements->getElement(edgeNumbers[P0P1]);
-
-		vecTmp11[0] = points->at(P0).at(0) - points->at(P2Tmp1).at(0);
-		vecTmp11[1] = points->at(P0).at(1) - points->at(P2Tmp1).at(1);
-		vecTmp11[2] = points->at(P0).at(2) - points->at(P2Tmp1).at(2);
-		lengthB = sqrt(pow(vecTmp11[0],2)+pow(vecTmp11[1],2)+pow(vecTmp11[2],2));
-
-		vecTmp12[0] = points->at(P1).at(0) - points->at(P2Tmp1).at(0);
-		vecTmp12[1] = points->at(P1).at(1) - points->at(P2Tmp1).at(1);
-		vecTmp12[2] = points->at(P1).at(2) - points->at(P2Tmp1).at(2);
-		lengthC = sqrt(pow(vecTmp12[0],2)+pow(vecTmp12[1],2)+pow(vecTmp12[2],2));
-
-		s1 = (lengthA+lengthB+lengthC)/2.;
-		area1 = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));
-		rho2Tmp1 = (2./lengthA)*area1;
-
-		vecTmp21[0] = points->at(P0).at(0) - points->at(P2Tmp2).at(0);
-		vecTmp21[1] = points->at(P0).at(1) - points->at(P2Tmp2).at(1);
-		vecTmp21[2] = points->at(P0).at(2) - points->at(P2Tmp2).at(2);
-		lengthB = sqrt(pow(vecTmp21[0],2)+pow(vecTmp21[1],2)+pow(vecTmp21[2],2));
-
-		vecTmp22[0] = points->at(P1).at(0) - points->at(P2Tmp2).at(0);
-		vecTmp22[1] = points->at(P1).at(1) - points->at(P2Tmp2).at(1);
-		vecTmp22[2] = points->at(P1).at(2) - points->at(P2Tmp2).at(2);
-		lengthC = sqrt(pow(vecTmp22[0],2)+pow(vecTmp22[1],2)+pow(vecTmp22[2],2));
-
-		s2 = (lengthA+lengthB+lengthC)/2.;
-		area2 = sqrt(s2*(s2-lengthA)*(s2-lengthB)*(s2-lengthC));
-		rho2Tmp2 = (2./lengthA)*area2;
-
-		if(area1 >= area2){
-			P2 = P2Tmp1;
-			P3 = P2Tmp2;
-			rho2 = rho2Tmp1;
-			vecTmp1=vecTmp11;
-			vecTmp2=vecTmp12;
-			area = area1;
-
+		// Calculating edges of Tetraeder
+		vec_LO_Type nodeList = 	elements->getElement(k).getVectorNodeListNonConst();
+		
+		for(int i=0; i<4; i++){
+			p[i] = points->at(nodeList[i]);
 		}
 
-		else if(area1 < area2){
-			P2 = P2Tmp2;
-			P3 = P2Tmp1;
-			rho2 = rho2Tmp2;
-			vecTmp1=vecTmp21;
-			vecTmp2=vecTmp22;
-			area=area2;
+		p1[0] = p[0][0] - p[1][0];
+		p1[1] = p[0][1] - p[1][1];
+		p1[2] =	p[0][2] - p[1][2];
 
-		}
+		p2[0] = p[0][0] - p[2][0];
+		p2[1] = p[0][1] - p[2][1];
+		p2[2] =	p[0][2] - p[2][2];
 
-		// Now we have to determine the distance between P3 and P0P1P2:	
-		v_E[0] = vecTmp1[1]*vecTmp0[2] - vecTmp1[2]*vecTmp0[1];
-		v_E[1] = vecTmp1[2]*vecTmp0[0] - vecTmp1[0]*vecTmp0[2];
-		v_E[2] = vecTmp1[0]*vecTmp0[1] - vecTmp1[1]*vecTmp0[0];
+		p3[0] = p[0][0] - p[3][0];
+		p3[1] = p[0][1] - p[3][1];
+		p3[2] =	p[0][2] - p[3][2];
 
-		norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));	 
-  
-		rho3 = fabs((v_E[0] *(points->at(P3)[0]-points->at(P0)[0] ) + v_E[1] *(points->at(P3)[1] - points->at(P0)[1]) +v_E[2] *(points->at(P3)[2] -points->at(P0)[2]) ))/norm_v_E ;		
+		
+		v_K[0] = p1[1]*p2[2] - p1[2]*p2[1];
+		v_K[1] = p1[2]*p2[0] - p1[0]*p2[2];
+		v_K[2] = p1[0]*p2[1] - p1[1]*p2[0];
 
-		volTetraeder[k] = 1./3. * (area * rho3);
-
-		h_T_min[k] = min(rho1,rho2);
-		h_T_min[k] = min(h_T_min[k],rho3);
-		//cout << "h_e_min["<< k << "] " << h_E_min[k] << " aus rho1=" << rho1 << " rho2=" << rho2 << " rho3="<< rho3 << endl;
-	
+		
+		volumeTetraeder[k] = fabs(p3[0] * v_K[0] + p3[1] * v_K[1] +p3[2] * v_K[2]) / 6. ;
 	}
-	return h_T_min;
+
+		
+		
+	return volumeTetraeder;
 }
+
 /*!
-@brief Calculating the diameter of tetraeder. This is necessary for 2D A-posteriori error estimation
+@brief Calculating the circumdiameter of tetraeder
 
 @param[in] elements
 @param[in] points
+@param[in] volTet Volume of tetrahedra
 
 */
 
@@ -1683,13 +1561,23 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamTetraeder(ElementsPtr_Type el
 		C = sqrt(pow(p[1][0] - p[2][0],2)+ pow(p[1][1] - p[2][1],2) +pow(p[1][2] - p[2][2],2));		
 
 
-		diamElements[k] = 2*sqrt(((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C)) / (24*volTet[k]) );	
+		diamElements[k] = sqrt(((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C))) / (12*volTet[k]) ;	
 
 	}
 
 
 	return diamElements;
 }
+
+/*!
+@brief Calcutlating the incircumdiameter of tetrahedra
+
+@param[in] elements
+@param[in] surfaceTriangleElements
+@param[in] volTet Volume of tetrahedra
+@param[in] areaTriangles Area of faces of tetrahedra
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcRhoTetraeder(ElementsPtr_Type elements,SurfaceElementsPtr_Type surfaceTriangleElements, vec_dbl_Type volTet, vec_dbl_Type areaTriangles){
@@ -1873,7 +1761,6 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>:: calcDiamTriangles(ElementsPtr_Type e
 template <class SC, class LO, class GO, class NO>
 typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta){
 
-	cout << " Coarsening Error "<<  endl;
 	theta_ =theta;
 	markingStrategy_ = markingStrategy;
 
@@ -1899,12 +1786,6 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			errorElement_k_m[i] = errorElement_k[elements_k_m->getElement(i).getPredecessorElement()];
 		}
 	}
-
-	//this->markElements(errorElementMv_k_m,theta, markingStrategy, mesh_k_m);
-
-
-	cout << " Finished Coarsening Error Estimation " << endl;
-
 	return errorElementMv_k_m;
 
 	// As a result we coarsened the mesh at level k= iteration with the factor 'm'
@@ -1942,7 +1823,7 @@ void ErrorEstimation<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeEle
 	for(int i=0; i < surfaceTriangleElements->numberElements() ; i++){
 		FiniteElement surfaceTmp = surfaceTriangleElements->getElement(i);
 		if(surfaceTmp.isInterfaceElement()){
-			//cout << " Surface " << i << ": " <<  surfaceTmp.getNode(0) << " " << surfaceTmp.getNode(1) << " " << surfaceTmp.getNode(2) << endl;
+
 			vec_int_Type tmpElements(0);
 			//this->surfaceTriangleElements_->setElementsOfSurfaceLocalEntry(i,-1);
 
@@ -1990,10 +1871,15 @@ void ErrorEstimation<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeEle
 	elementsOfSurfaceGlobal = surfaceTriangleElements->getElementsOfSurfaceGlobal();
 }
 
+/*!
+@brief Build Surface Map
+ Contrary to building the edge map, building the surface map is somewhat simpler as elementsOfSurfaceGlobal and elementsOfSurfaceLocal already exist.
+ Via elementsOfSurface global each surface can be uniquely determined by the two elements it connects.
 
-// Build Surface Map
-// Contrary to building the edge map, building the surface map is somewhat simpler as elementsOfSurfaceGlobal and elementsOfSurfaceLocal already exist.
-// Via elementsOfSurface global each surface can be uniquely determined by the two elements it connects.
+	The surfacemap is only used for error estimation. Thus it is only build here and not in the refinementFactory
+
+*/
+
 template <class SC, class LO, class GO, class NO>
 void ErrorEstimation<SC,LO,GO,NO>::buildTriangleMap(){
 
@@ -2086,11 +1972,11 @@ void ErrorEstimation<SC,LO,GO,NO>::buildTriangleMap(){
 			col[0] = inzidenzIndices[i][1];
 			inzidenzMatrix->insertGlobalValues(index[0], col(), value());
 		 }
-   		inzidenzMatrix->fillComplete(); //mapInterfaceNodesUnique,mapInterfaceNodesUnique);
+   		inzidenzMatrix->fillComplete();
 
 	
 		// ---------------------------------------------------
-		// 2 .Set unique edges IDs ---------------------------
+		// 2. Set unique edges IDs ---------------------------
 		// Setting the IDs of Edges that are uniquely on one
 		// Processor
 		// ---------------------------------------------------
@@ -2171,18 +2057,12 @@ void ErrorEstimation<SC,LO,GO,NO>::buildTriangleMap(){
 			Teuchos::Array<SC> value2(1,uniqueInterfaceIDsList_[i]);
 			indMatrix->insertGlobalValues(index[0], col(), value2());
 		}
-   		indMatrix->fillComplete(); //mapUniqueInterfaceNodes,mapUniqueInterfaceNodes);
-		//sindMatrix->print();
-		//indMatrix->writeMM();
+   		indMatrix->fillComplete();
 
 		MatrixPtr_Type importMatrix = Teuchos::rcp( new Matrix_Type(elementMapRep, 40 ) );
    		
 		importMatrix->importFromVector(indMatrix,false,"Insert");
-		importMatrix->fillComplete(); // mapInterfaceNodesRep, mapInterfaceNodesUnique); //mapScaledInterfaceNodesGlobalID,mapScaledInterfaceNodesGlobalID);
-		
-		//importMatrix->print(Teuchos::VERB_EXTREME);
-
-		//importMatrix->writeMM();
+		importMatrix->fillComplete(); 
 
 		// Determine global indices
 		GO surfaceID=0;
@@ -2204,7 +2084,7 @@ void ErrorEstimation<SC,LO,GO,NO>::buildTriangleMap(){
 				indTmp[1] = values[j];
 				indicesTmp.push_back(indTmp);	// vector with the indices and values belonging to node i
 			}
-			//sort(indicesTmp.begin(),indicesTmp.end());
+
 			found = false;
 			for(int k=0; k<indicesTmp.size();k++){
 				if(inzidenzIndices[i][1] == indicesTmp[k][0]){
@@ -2224,9 +2104,17 @@ void ErrorEstimation<SC,LO,GO,NO>::buildTriangleMap(){
 		Teuchos::ArrayView<GO> surfacesGlobMappingArray = Teuchos::arrayViewFromVector( *surfacesGlobMapping);
 
 		this->surfaceTriangleMap_.reset(new Map<LO,GO,NO>(inputMesh_->getElementMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingArray, 0, inputMesh_->getComm()) );
-		//this->surfaceTriangleMap_->print();
-
 }
+
+/*!
+@brief Calcutlating the gradient of phi depending on quad points p
+
+@param[in] dim
+@param[in] intFE integer value of discretisation P1 (1) or P2(2)
+@param[in] p Quadpoints or other points for which phi is suppose to be evaluated
+
+*/
+
 template <class SC, class LO, class GO, class NO>
 vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::gradPhi(int dim,
                 int intFE,
@@ -2348,6 +2236,15 @@ vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::gradPhi(int dim,
 
 }
 
+/*!
+@brief Calcutlating phi depending on quad points p
+
+@param[in] dim
+@param[in] intFE integer value of discretisation P1 (1) or P2(2)
+@param[in] p Quadpoints or other points for which phi is to be evaluated
+
+*/
+
 template <class SC, class LO, class GO, class NO>
 vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::phi(int dim,
                 int intFE,
@@ -2365,9 +2262,8 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::phi(int dim,
     if (dim==2) {
         switch (intFE) {
             case 1://P1
-                value[0]=  p[0];
+                value[0]= p[0];
                 value[1]= p[1];
-
                 value[2]= 1-p[0]-p[1];
                 
                 break;

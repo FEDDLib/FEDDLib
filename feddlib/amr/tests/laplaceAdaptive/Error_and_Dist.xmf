@@ -1,0 +1,424 @@
+<?xml version="1.0" ?>
+<!DOCTYPE Xdmf SYSTEM "Error_and_Dist.xdmf" [
+<!ENTITY DataFile "Error_and_Dist.h5">
+]>
+<!-- Error_and_Dist.h5  -->
+<Xdmf>
+  <Domain Name="Error_and_Dist">
+    <Grid Name="Error_and_DistGrid" GridType="Collection" CollectionType="Temporal">
+
+<!-- Time 0 Iteration 00000 -->
+    <Grid Name="MeshP0 0">
+      <Time TimeType="Single" Value="0" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="42"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="42 4"
+                        DataType="Int"
+                        Precision="8">
+             Error_and_Dist.h5:/Connections/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="24"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsX0/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="24"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsY0/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="24"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsZ0/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="ErrorEstimate">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="42 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               42 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="42 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/ErrorEstimate.00000/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="Proc">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="42 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               42 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="42 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/Proc.00000/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+<!-- Time 1 Iteration 00001 -->
+    <Grid Name="MeshP0 1">
+      <Time TimeType="Single" Value="1" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="102"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="102 4"
+                        DataType="Int"
+                        Precision="8">
+             Error_and_Dist.h5:/Connections1/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="36"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsX1/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="36"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsY1/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="36"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsZ1/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="ErrorEstimate">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="102 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               102 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="102 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/ErrorEstimate.00001/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="Proc">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="102 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               102 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="102 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/Proc.00001/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+<!-- Time 2 Iteration 00002 -->
+    <Grid Name="MeshP0 2">
+      <Time TimeType="Single" Value="2" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="736"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="736 4"
+                        DataType="Int"
+                        Precision="8">
+             Error_and_Dist.h5:/Connections2/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="168"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsX2/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="168"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsY2/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="168"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsZ2/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="ErrorEstimate">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="736 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               736 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="736 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/ErrorEstimate.00002/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="Proc">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="736 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               736 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="736 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/Proc.00002/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+<!-- Time 3 Iteration 00003 -->
+    <Grid Name="MeshP0 3">
+      <Time TimeType="Single" Value="3" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="5216"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="5216 4"
+                        DataType="Int"
+                        Precision="8">
+             Error_and_Dist.h5:/Connections3/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="1034"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsX3/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="1034"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsY3/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="1034"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsZ3/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="ErrorEstimate">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="5216 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               5216 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="5216 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/ErrorEstimate.00003/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="Proc">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="5216 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               5216 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="5216 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/Proc.00003/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+<!-- Time 4 Iteration 00004 -->
+    <Grid Name="MeshP0 4">
+      <Time TimeType="Single" Value="4" />
+      <Topology
+         Type="Tetrahedron"
+         NumberOfElements="41488"
+         BaseOffset="0">
+         <DataStructure Format="HDF"
+                        Dimensions="41488 4"
+                        DataType="Int"
+                        Precision="8">
+             Error_and_Dist.h5:/Connections4/Values
+         </DataStructure>
+      </Topology>
+      <Geometry Type="X_Y_Z">
+         <DataStructure Format="HDF"
+                        Dimensions="7513"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsX4/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="7513"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsY4/Values
+         </DataStructure>
+         <DataStructure Format="HDF"
+                        Dimensions="7513"
+                        DataType="Float"
+                        Precision="8">
+             Error_and_Dist.h5:/PointsZ4/Values
+         </DataStructure>
+      </Geometry>
+
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="ErrorEstimate">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="41488 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               41488 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="41488 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/ErrorEstimate.00004/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+      <Attribute
+         Type="Scalar"
+         Center="Cell"
+         Name="Proc">
+         <DataStructure ItemType="HyperSlab"
+                        Dimensions="41488 1"
+                        Type="HyperSlab">
+           <DataStructure  Dimensions="3 2"
+                           Format="XML">
+               0    0
+               1    1
+               41488 1
+           </DataStructure>
+           <DataStructure  Format="HDF"
+                           Dimensions="41488 1"
+                           DataType="Float"
+                           Precision="8">
+               Error_and_Dist.h5:/Proc.00004/Values
+           </DataStructure>
+         </DataStructure>
+      </Attribute>
+
+    </Grid>
+
+
+    </Grid>
+
+  </Domain>
+</Xdmf>
