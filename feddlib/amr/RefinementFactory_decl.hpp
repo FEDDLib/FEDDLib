@@ -115,7 +115,7 @@ public:
 
 	void refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements,SurfaceElementsPtr_Type surfaceTriangleElements, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, int& newElements); // check if Element that is tagged to be refined green has previously been refined green
 
-	void refineIrregular(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, int& newElements, MapConstPtr_Type edgeMap, SurfaceElementsPtr_Type surfaceTriangleElements);
+	void refineMeshRegIreg(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, int& newElements, MapConstPtr_Type edgeMap, SurfaceElementsPtr_Type surfaceTriangleElements);
 
 	void buildSurfaceTriangleElements(ElementsPtr_Type elements, EdgeElementsPtr_Type edgeElements, SurfaceElementsPtr_Type surfaceTriangleElements, MapConstPtr_Type edgeMap, MapConstPtr_Type elementMap );
 

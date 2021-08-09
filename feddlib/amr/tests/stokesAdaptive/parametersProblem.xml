@@ -25,7 +25,7 @@
         <Parameter name="Write Mesh Quality" type="bool" value="true"/>
         <Parameter name="3D regular Refinement Diagonal Pick" type="int" value="0"/>
         <Parameter name="Refinement Restriction" type="string" value="Bisection"/>
-        <Parameter name="Modell Problem" type="string" value="LDC"/>
+        <Parameter name="Modell Problem" type="string" value="Verfuerth"/>
         <Parameter name="Restriction Layer" type="int" value="3"/>
 		<Parameter name="Coarsening Cycle" type="int" value="0"/>
 		<Parameter name="Coarsening m" type="int" value="2"/>
@@ -40,7 +40,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="tpm_square_h01.mesh"/> <!--Turek3DCylinder_1k.mesh, circle2D_1800.mesh, tpm_square_h01 --> 
+        <Parameter name="Mesh 1 Name" type="string" value="Verfuerth2.mesh"/> <!--Turek3DCylinder_1k.mesh, circle2D_1800.mesh, tpm_square_h01 --> 
     </ParameterList>
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>

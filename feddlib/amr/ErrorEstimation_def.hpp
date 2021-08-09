@@ -612,7 +612,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 					if(	calculatePressure_ == false)
 						jumpQuad += pow(u_El[k][i][j],2);
 					if(calculatePressure_ == true){
-						jumpQuad += pow( u_El[k][i][j] - p_El[k][i][0] ,2) ; //u_El[k][i][j] - p_El[k][i][0],2)
+						jumpQuad += pow( u_El[k][i][j] ,2) ; //u_El[k][i][j] - p_El[k][i][0],2)
 					}
 				}
 			}
@@ -1185,24 +1185,24 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 	if(this->FEType2_ == "P2")
 		intFE =2;
 
-	vec2D_dbl_Type divPhiV;
+	vec2D_dbl_Type gradPhiV;
 	double resElementTmp;
 	for (UN w=0; w< QuadW.size(); w++){
-		divPhiV =gradPhi(dim, intFE, quadPointsTrans[w]);// divPhi(dim, intFE, quadPointsTrans[w]);//
-		vec2D_dbl_Type divPhiT(divPhiV.size(),vec_dbl_Type(dim));
+		gradPhiV =gradPhi(dim, intFE, quadPointsTrans[w]);
+		vec2D_dbl_Type gradPhiT(gradPhiV.size(),vec_dbl_Type(dim));
 		for(int q=0; q<dim; q++){
 			for(int p=0;p<dim+1; p++){
 				for(int s=0; s< dim ; s++)
-					divPhiT[p][q] += (divPhiV[p][s]*Binv1[s][q]);
+					gradPhiT[p][q] += (gradPhiV[p][s]*Binv1[s][q]);
 				
 			}
 		}
-		vec_dbl_Type uTmp(divPhiV.size());
-		for(int i=0; i< divPhiV.size(); i++){
+		vec_dbl_Type uTmp(gradPhiV.size());
+		for(int i=0; i< gradPhiV.size(); i++){
 			resElementTmp=0.;
 			for(int j=0; j< dofs_ ; j++){
 				Teuchos::ArrayRCP<SC> valuesSolutionRep = valuesSolutionRepVel_->getBlock(j)->getDataNonConst(0);
-				uTmp[i] += valuesSolutionRep[nodeList[i]]*divPhiT[i][j];
+				uTmp[i] += valuesSolutionRep[nodeList[i]]*gradPhiT[i][j];
 			}
 		   	resElementTmp += pow(uTmp[i],2); // Binv1[j][j]*
 		}
@@ -1853,17 +1853,21 @@ void ErrorEstimation<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeEle
 
 			//cout << "Surface Element da " << elementsOfSurfaceGlobal[i][0] << " tmp elements in question "  << tmpElements[0] << " " ;
 			for(int j=0; j< tmpElements.size()-1; j++){
-				//cout << tmpElements[j+1] << " " ;
 				if((tmpElements[j] == tmpElements[j+1] )&& (tmpElements[j] != elementsOfSurfaceGlobal[i][0]) && (found==false)) { 
-					//cout << " Update: tmp1=" << tmpElements[j] << " tmp2=" << tmpElements[j+1] << " und element schon da=" << elementsOfSurfaceGlobal[i][0] << endl;
 					nEl = tmpElements[j];
   					surfaceTriangleElements->setElementsOfSurfaceGlobalEntry(i,nEl);
 					found = true;
 				}
-			}
-			//cout << endl;
-			if(found == false)
-				cout << " No Element Found for edges " << id1 << " " << id2 << " on Proc " << inputMesh_->getComm()->getRank() << endl;
+				if(found == false && j==tmpElements.size()-2 ){
+					cout << " No Element Found for edges " << id1 << " " << id2 << " on Proc " << inputMesh_->getComm()->getRank() << " und element schon da=" << elementsOfSurfaceGlobal[i][0] << endl;
+					cout << " Tmp1= ";
+					for(int j=0; j< tmpElements.size()-1; j++){
+						cout << " " << tmpElements[j];
+					}
+					cout   << endl;
+	
+				}
+			}			
 		}
 	}
 
@@ -2307,82 +2311,6 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::phi(int dim,
 	return value;
 
 }
-
-template <class SC, class LO, class GO, class NO>
-vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::divPhi(int dim,
-                int intFE,
-                vec_dbl_Type &p){
-
-	int numNodes = dim+1;
-	if(intFE == 2){
-		numNodes=6;
-		if(dim==3)
-			numNodes=10;
-	}
-		
-	vec_dbl_Type value(numNodes);
-
-    if (dim==2) {
-        switch (intFE) {
-            case 1://P1
-                value[0]=  1;
-                value[1]= 1;
-
-                value[2]= -2;
-                
-                break;
-          
-            case 2://P2
-               
-                value[0]= (1. - 4.*(1 - p[0] - p[1]))*2;             
-                value[1] = 4.*p[0] - 1;               
-                value[2] = 4.*p[1] - 1;               
-                value[3] = 4 * (1. - 2*p[0] - p[1])-4 * p[0];               
-                value[4] = 4*p[0]+4*p[1]; //done                
-                value[5] = -4*p[1]+4-4*p[0]-8*p[1];   // done                    
-                break;
-
-              
-                
- 
-          
-             
-        }
-    }
-	else if(dim ==3){
-    	switch (intFE) {
-            case 1://P1
-               
-                value[0]= -3.;            
-                value[1]= 1.;               
-                value[2]= 1.;
-                value[3]= 1.;
-              
-      			break;
-
-            case 2://P2
-              
-		        value[0]= -9. + 12.*p[0] + 12.*p[1] + 12.*p[2];
-		        value[1]= 4.*p[0] - 1;
-		        value[2]= 4.*p[1] - 1;
-		        value[3] = 4.*p[2] - 1;
-		        value[4]= 4. - 16.*p[0] - 4.*p[1] - 4.*p[2];
-		        value[5]= 4.*p[1]+ 4.*p[0];
-		        value[6]= 4. - 4.*p[0] - 16.*p[1] - 4.*p[2];
-		        value[7]= 4. - 4.*p[0] - 4.*p[1] - 16.*p[2];
-		        value[8]= 4.*p[2]+ 4.*p[0];		       
-		        value[9]= 4.*p[2] + 4.*p[1];
-			
-				break;
-			}
-
-		}
-			
-	return value;
-
-}
-
-
 
 
 }

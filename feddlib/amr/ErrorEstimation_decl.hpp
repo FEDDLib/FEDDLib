@@ -26,7 +26,7 @@
  @brief  ErrorEstimation
  @author Lea Saßmannshausen
  @version 1.0
- @copyright CH
+
  */
 
 namespace FEDD {
@@ -35,22 +35,17 @@ template <class SC = default_sc, class LO = default_lo, class GO = default_go, c
 class ErrorEstimation {
     
 public:
-    typedef Mesh<SC,LO,GO,NO> Mesh_Type;
     typedef Teuchos::RCP<MeshUnstructured<SC,LO,GO,NO> > MeshUnstrPtr_Type;
-
-    typedef std::vector<MeshUnstrPtr_Type> MeshUnstrPtrArray_Type;
   
-    typedef typename Mesh_Type::CommPtr_Type CommPtr_Type;
-    typedef typename Mesh_Type::CommConstPtr_Type CommConstPtr_Type;
-    typedef typename Mesh_Type::Elements_Type Elements_Type;
-    typedef typename Mesh_Type::ElementsPtr_Type ElementsPtr_Type;
+ 	typedef Elements Elements_Type;
+    typedef Teuchos::RCP<Elements_Type> ElementsPtr_Type;
     typedef EdgeElements EdgeElements_Type;
     typedef Teuchos::RCP<EdgeElements_Type> EdgeElementsPtr_Type;
     typedef SurfaceElements SurfaceElements_Type;
     typedef Teuchos::RCP<SurfaceElements_Type> SurfaceElementsPtr_Type;
     
-    typedef MeshInterface<SC,LO,GO,NO> MeshInterface_Type;
-    typedef Teuchos::RCP<MeshInterface_Type> MeshInterfacePtr_Type;
+   // typedef MeshInterface<SC,LO,GO,NO> MeshInterface_Type;
+   // typedef Teuchos::RCP<MeshInterface_Type> MeshInterfacePtr_Type;
     
     typedef Map<LO,GO,NO> Map_Type;
     typedef typename Map_Type::MapPtr_Type MapPtr_Type;
@@ -60,27 +55,22 @@ public:
 	typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
 	typedef MultiVector<LO,LO,GO,NO> MultiVectorLO_Type;
 	typedef Teuchos::RCP<MultiVectorLO_Type> MultiVectorLOPtr_Type;
-    typedef MultiVector<GO,LO,GO,NO> MultiVectorGO_Type;
-    typedef Teuchos::RCP<MultiVectorGO_Type> MultiVectorGOPtr_Type;
 	typedef Teuchos::RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
     typedef Teuchos::OrdinalTraits<LO> OTLO;
 
 	typedef Matrix<SC,LO,GO,NO> Matrix_Type;
     typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
 
- typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
+	typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
     typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
     typedef Teuchos::RCP<const BlockMultiVector_Type> BlockMultiVectorConstPtr_Type;
   
-
-
     ErrorEstimation();
     
     ErrorEstimation(int dim, string problemType);
     
     ~ErrorEstimation();
     
-	// Error Estimation Functions that will be reallocted soon
 	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, string FEType);
 
 	void identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution);
@@ -93,9 +83,8 @@ public:
 
 	vec2D_dbl_Type gradPhi(int dim,int intFE,vec_dbl_Type &p);
 	vec_dbl_Type phi(int dim,int intFE,vec_dbl_Type &p);
-	vec_dbl_Type divPhi(int dim,int intFE,vec_dbl_Type &p);
 
-	MultiVectorPtr_Type determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta); // Mesh Coarsening
+	MultiVectorPtr_Type determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta); 
 
 	double determineResElement(FiniteElement element, RhsFunc_Type rhsFunc);
 
@@ -138,14 +127,8 @@ public:
 	string problemType_;
 
 protected: 
-	vec_GO_Type globalInterfaceIDs_;
 	MultiVectorPtr_Type errorEstimation_; // error estimated according to A-posteriori Error Estimator. Sorted according to loca Element IDs
 
-	vec_dbl_Type areaTriangles_;
-	vec_dbl_Type volTetraeders_;
-	vec_dbl_Type h_T_diam_E_; // Diameter of 2D Triangular Elements
-	vec_dbl_Type h_T_min_;	// Diameter in the 3D Tetraeder Sense
-	
 	MapConstPtr_Type surfaceTriangleMap_;
 	SurfaceElementsPtr_Type surfaceElements_;
 
@@ -156,7 +139,6 @@ protected:
 
 	BlockMultiVectorConstPtr_Type valuesSolutionRepVel_;
 	BlockMultiVectorConstPtr_Type valuesSolutionRepPre_;
-
 
 private:
 	MeshUnstrPtr_Type inputMesh_;
