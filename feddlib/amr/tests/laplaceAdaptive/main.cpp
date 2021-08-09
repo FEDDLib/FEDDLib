@@ -133,7 +133,7 @@ void paperBC(double* x, double* res, double t, const double* parameters){
 	double y2 = (pow(x[1],2)-x[1]);
 	double z2 = (pow(x[2],2)-x[2]);
 
-    res[0] = x2*y2*z2*exp(alpha);
+    res[0] = beta*x2*y2*z2*exp(alpha);
 
 	//cout << " Value of RHS in Func" << res[0] << " und x[0] trans " << x[0] << " und x[1] " << x[1]   <<  endl;
 
