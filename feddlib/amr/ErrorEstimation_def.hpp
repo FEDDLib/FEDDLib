@@ -139,6 +139,12 @@ void ErrorEstimation<SC,LO,GO,NO>::makeRepeatedSolution(BlockMultiVectorConstPtr
 template <class SC, class LO, class GO, class NO>
 typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, string FETypeV){
 	
+	if(inputMeshP12->getComm()->getRank() == 0){
+		cout << "__________________________________________________________________________________________________________ " << endl;
+		cout << " " << endl;
+		cout << " A-posteriori Error Estimation for " << problemType_ << endl;
+		cout << "__________________________________________________________________________________________________________ " << endl;
+	}
 	// Setting the InputMeshes
 	inputMesh_ = inputMeshP12;
 	inputMeshP1_ = inputMeshP1;
@@ -264,7 +270,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			cout << " Mesh Quality Assesment 2D " << endl;
 			cout << " Circumdiameter h_T:			" <<"max. = " << maxh_T << " 	min. = " << minh_T  << endl;
 			cout << " Incircumdiameter rho_T:		" <<"max. = " << maxrho_T << " 	min. = " << minrho_T  << endl;
-			cout << " Area of Triangles: 			" <<"max. = " << maxArea_T << " min. = " << minArea_T  << endl;
+			cout << " Area of Triangles: 			" <<"max. = " << maxArea_T << " 	min. = " << minArea_T  << endl;
 			cout << " Shape parameter: 			" <<"max. = " <<  maxC_T << " 	min. = " << minC_T << endl;
 			cout << " The maximal Error of Elements is 	"  << maxErrorElLoc << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
@@ -1364,15 +1370,15 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 			rhsFunc(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
 			for(int j=0 ; j< dofs_; j++){
 		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] + nablaU[j][w] - nablaP[j] ,2);
-				cout << " Func " << valueFunc[j] << " delta " << deltaU[j] << " nablaU " << nablaU[j][w] << " p " <<  nablaP[j]  << endl;
+				//cout << " Func " << valueFunc[j] << " delta " << deltaU[j] << " nablaU " << nablaU[j][w] << " p " <<  nablaP[j]  << endl;
 		}
 	}
 	double resElementValue =0.;
 	for(int j=0; j< dofs_ ; j++)
 		resElementValue += resElement[j] *detB1;
-	cout << " ------------------------------------ " << endl;
+	/*cout << " ------------------------------------ " << endl;
 	cout << " ReElement " << resElementValue << endl;
-	cout << " ------------------------------------ " << endl;
+	cout << " ------------------------------------ " << endl;*/
 	return resElementValue;
 
 
@@ -1901,15 +1907,14 @@ void ErrorEstimation<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeEle
   					surfaceTriangleElements->setElementsOfSurfaceGlobalEntry(i,nEl);
 					found = true;
 				}
-				if(found == false && j==(tmpElements.size()-2) ){
-					cout << " No Element Found for edges " << id1 << " " << id2 << " on Proc " << inputMesh_->getComm()->getRank() << " und element schon da=" << elementsOfSurfaceGlobal[i][0] << endl;
-					cout << " Tmp1= ";
-					for(int j=0; j< tmpElements.size()-1; j++){
-						cout << " " << tmpElements[j];
-					}
-					cout   << endl;
-	
+			}
+			if(found == false){
+				cout << " No Element Found for edges " << id1 << " " << id2 << " on Proc " << inputMesh_->getComm()->getRank() << " und element schon da=" << elementsOfSurfaceGlobal[i][0] << endl;
+				cout << " Tmp1= ";
+				for(int j=0; j< tmpElements.size()-1; j++){
+					cout << " " << tmpElements[j];
 				}
+				cout   << endl;
 			}			
 		}
 	}
