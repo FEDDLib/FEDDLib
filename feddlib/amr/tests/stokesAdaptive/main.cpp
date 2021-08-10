@@ -739,41 +739,15 @@ int main(int argc, char *argv[]) {
 				stokes->addRhsFunction(rhs);						    
 				stokes->initializeProblem();						    
 				stokes->assemble();
-				stokes->setBoundaries();             
+				stokes->setBoundaries();          
+				stokes->setBoundariesRHS();                
 				stokes->solve();
 
 			}
 			MAIN_TIMER_STOP(Solver);	
 
 						
-			
-	
-            Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());
-            Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaPressure(new ExporterParaView<SC,LO,GO,NO>());
-            
-            Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = stokes->getSolution()->getBlock(0);
-            Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = stokes->getSolution()->getBlock(1);
 
-            DomainPtr_Type dom = domainVelocity;
-            
-            exParaVelocity->setup("velocity", dom->getMesh(), dom->getFEType());
-            
-            UN dofsPerNode = dim;
-            exParaVelocity->addVariable(exportSolutionV, "u", "Vector", dofsPerNode, dom->getMapUnique());
-            
-            dom = domainPressure;
-            exParaPressure->setup("pressure", dom->getMesh(), dom->getFEType());
-            
-            if (dom->getFEType()=="P0")
-                exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getElementMap());
-            else
-                exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getMapUnique());
-
-            exParaVelocity->save(0.0);
-            exParaPressure->save(0.0);
-            
-            exParaVelocity->closeExporter();
-            exParaPressure->closeExporter();
 
 			MAIN_TIMER_START(Refinement," Step 3:	 meshRefinement");
 

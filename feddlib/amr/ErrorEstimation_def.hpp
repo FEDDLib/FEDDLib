@@ -210,7 +210,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 		for(int k=0; k< elements->numberElements();k++){
 			edgeNumbers = edgeElements->getEdgesOfElement(k); // edges of Element k
 			resElement = determineResElement(elements->getElement(k), rhsFunc); // calculating the residual of element k
-			if(problemType_ == "Stokes") // If the Problem is a Stokes Problem we calculate divU (maybe start a hierarchy
+			if(problemType_ == "Stokes" || problemType_ == "NavierStokes") // If the Problem is a (Navier)Stokes Problem we calculate divU (maybe start a hierarchy
 				divUElement = determineDivU(elements->getElement(k));
 
 			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+divUElement+ h_T[k]*h_T[k]*resElement );; //divUElement ; 
@@ -326,7 +326,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			surfaceNumbers = surfaceElements->getSurfacesOfElement(k); // surfaces of Element k
 
 			resElement = determineResElement(elements->getElement(k), rhsFunc); // calculating the residual of element k
-			if(problemType_ == "Stokes") // If the Problem is a Stokes Problem we calculate divU (maybe start a hierarchy
+			if(problemType_ == "Stokes" || problemType_ == "NavierStokes") // If the Problem is a (Navier)Stokes Problem we calculate divU (maybe start a hierarchy
 				divUElement = determineDivU(elements->getElement(k));
 			errorElement[k] = sqrt(1./2*(u_Jump[surfaceNumbers[0]]+u_Jump[surfaceNumbers[1]]+u_Jump[surfaceNumbers[2]]+u_Jump[surfaceNumbers[3]])+divUElement +h_T[k]*h_T[k]*resElement );
 			if(maxErrorElLoc < errorElement[k] )
@@ -1130,7 +1130,7 @@ template <class SC, class LO, class GO, class NO>
 double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 
 // Quad Points and weights of third order
-	double resElement =0.;
+	double divElement =0.;
 
 	int dim = this->dim_;
     SC* paras ; //= &(funcParameter[0]);
@@ -1186,7 +1186,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 		intFE =2;
 
 	vec2D_dbl_Type gradPhiV;
-	double resElementTmp;
+	double divElementTmp;
 	for (UN w=0; w< QuadW.size(); w++){
 		gradPhiV =gradPhi(dim, intFE, quadPointsTrans[w]);
 		vec2D_dbl_Type gradPhiT(gradPhiV.size(),vec_dbl_Type(dim));
@@ -1199,23 +1199,22 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 		}
 		vec_dbl_Type uTmp(gradPhiV.size());
 		for(int i=0; i< gradPhiV.size(); i++){
-			resElementTmp=0.;
+			divElementTmp=0.;
 			for(int j=0; j< dofs_ ; j++){
 				Teuchos::ArrayRCP<SC> valuesSolutionRep = valuesSolutionRepVel_->getBlock(j)->getDataNonConst(0);
 				uTmp[i] += valuesSolutionRep[nodeList[i]]*gradPhiT[i][j];
 			}
-		   	resElementTmp += pow(uTmp[i],2); // Binv1[j][j]*
+		   	divElementTmp += pow(uTmp[i],2); 
 		}
-		//resElementTmp = pow(resElementTmp,2);
-		resElementTmp *= QuadW[w];
+		divElementTmp *= QuadW[w];
 
-		resElement += resElementTmp;
+		divElement += divElementTmp;
 	}
-   	resElement =  resElement *detB1;
+   	divElement =  divElement *detB1;
 
 
 
-	return resElement;
+	return divElement;
 
 
 }
@@ -1247,6 +1246,9 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	vec_dbl_Type QuadW(t);
 	vec2D_dbl_Type QuadPts = getQuadValues(dim, FEType2_, "Element", QuadW, element);
 
+	int intFE = 1;
+	if(this->FEType2_ == "P2")
+		intFE =2;
 
 	vec2D_dbl_ptr_Type points = inputMesh_->getPointsRepeated();
 
@@ -1285,7 +1287,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	}
 	
 	vec_dbl_Type nablaP(dim);
-	if(calculatePressure_ == true){
+	if(problemType_ == "Stokes" || problemType_ == "NavierStokes"){
 		Teuchos::ArrayRCP<SC> valuesSolutionRepPre = valuesSolutionRepPre_->getBlock(0)->getDataNonConst(0);
 		vec2D_dbl_Type deriPhi = gradPhi(dim, 1, quadPointsTrans[0]);
 		vec2D_dbl_Type deriPhiT(dim+1,vec_dbl_Type(dim));
@@ -1299,6 +1301,45 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 		for(int s=0; s<dim; s++){
 			for(int t=0; t< dim+1 ; t++){
 				nablaP[s] += valuesSolutionRepPre[nodeList[t]]*deriPhiT[t][s] ;
+			}
+		}
+	}
+	// ####################################################################
+	vec2D_dbl_Type nablaU(dim,vec_dbl_Type(QuadW.size()));
+	if(problemType_ == "NavierStokes"){
+		for (UN w=0; w< QuadW.size(); w++){
+			vec2D_dbl_Type deriPhi = gradPhi(dim, intFE, quadPointsTrans[w]);
+			vec2D_dbl_Type deriPhiT(nodeList.size(),vec_dbl_Type(dim));
+			for(int q=0; q<dim; q++){
+				for(int p=0;p<nodeList.size(); p++){
+					for(int s=0; s< dim ; s++)
+						deriPhiT[p][q] += (deriPhi[p][s]*Binv1[s][q]);
+					
+				}
+			}
+			vec2D_dbl_Type u1_Tmp(dofs_, vec_dbl_Type(dim_));
+			Teuchos::ArrayRCP< SC > valuesSolRep;	
+			for( int d =0; d < dofs_ ; d++){
+				valuesSolRep = valuesSolutionRepVel_->getBlock(d)->getDataNonConst(0);
+				for(int s=0; s<dim; s++){
+					for(int t=0; t< nodeList.size() ; t++){
+		 				u1_Tmp[d][s] += valuesSolRep[nodeList[t]]*deriPhiT[t][s] ;
+					}
+				}
+			}
+			vec_dbl_Type phiV = phi(dim, intFE, quadPointsTrans[w]);
+			vec_dbl_Type vec_Tmp(dofs_);
+			for( int d =0; d < dofs_ ; d++){
+				valuesSolRep = valuesSolutionRepVel_->getBlock(d)->getDataNonConst(0);
+				for(int t=0; t< phiV.size() ; t++){
+	 				vec_Tmp[d] += valuesSolRep[nodeList[t]]*phiV[t] ;
+				}
+			}
+	
+			for(int t=0; t< dim ; t++){
+				for( int d =0; d < dofs_ ; d++){
+					nablaU[d][w] += vec_Tmp[d]*u1_Tmp[d][t];
+				}
 			}
 		}
 	}
@@ -1322,14 +1363,16 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	for (UN w=0; w< QuadW.size(); w++){
 			rhsFunc(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
 			for(int j=0 ; j< dofs_; j++){
-		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] - nablaP[j] ,2);
+		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] + nablaU[j][w] - nablaP[j] ,2);
+				cout << " Func " << valueFunc[j] << " delta " << deltaU[j] << " nablaU " << nablaU[j][w] << " p " <<  nablaP[j]  << endl;
 		}
 	}
 	double resElementValue =0.;
 	for(int j=0; j< dofs_ ; j++)
 		resElementValue += resElement[j] *detB1;
-
-
+	cout << " ------------------------------------ " << endl;
+	cout << " ReElement " << resElementValue << endl;
+	cout << " ------------------------------------ " << endl;
 	return resElementValue;
 
 
@@ -1858,7 +1901,7 @@ void ErrorEstimation<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeEle
   					surfaceTriangleElements->setElementsOfSurfaceGlobalEntry(i,nEl);
 					found = true;
 				}
-				if(found == false && j==tmpElements.size()-2 ){
+				if(found == false && j==(tmpElements.size()-2) ){
 					cout << " No Element Found for edges " << id1 << " " << id2 << " on Proc " << inputMesh_->getComm()->getRank() << " und element schon da=" << elementsOfSurfaceGlobal[i][0] << endl;
 					cout << " Tmp1= ";
 					for(int j=0; j< tmpElements.size()-1; j++){

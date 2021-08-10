@@ -1,5 +1,5 @@
 INCLUDE(TribitsCopyFilesToBinaryDir)
 INCLUDE(TribitsAddExecutableAndTest)
 INCLUDE(AddSubdirectories)
-ADD_SUBDIRECTORIES( laplaceAdaptive stokesAdaptive aneurysmBenchmark )
+ADD_SUBDIRECTORIES( laplaceAdaptive stokesAdaptive steadyNavierStokesAdaptive aneurysmBenchmark )
 
