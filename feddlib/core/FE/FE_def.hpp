@@ -4717,8 +4717,6 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
     UN deg = determineDegree( dim, FEType, Std) + degFunc;
 
-	deg = deg+3;
-	cout<< " Deg " << deg << endl;
     vec2D_dbl_ptr_Type quadPoints;
     getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values
 

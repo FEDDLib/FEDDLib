@@ -1898,8 +1898,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		for(int i=0; i< this->edgeElements_->numberElements(); i++){
 			if(this->edgeElements_->getElement(i).isInterfaceElement() ){
 				edgesInterfaceGlobalID.push_back(this->edgeMap_->getGlobalElement(i)); // extracting the global IDs of the new interfaceEdges
-			}
-			
+			}	
 		}
 		sort(edgesInterfaceGlobalID.begin(), edgesInterfaceGlobalID.end());
 
@@ -3028,12 +3027,12 @@ void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElemen
 		newTriangles[11]= {nodeInd[3],midPointInd[0],midPointInd[1]};
 
 		newTrianglesFlag[8]= originFlag[1]; 
-		newTrianglesFlag[9]= originFlag[3]; 
+		newTrianglesFlag[9]= originFlag[2]; 
 		newTrianglesFlag[10]= 10; 
 		newTrianglesFlag[11]= 10;
 
 		isInterfaceSurface[8]= interfaceSurface[1];
-		isInterfaceSurface[9]= interfaceSurface[3];
+		isInterfaceSurface[9]= interfaceSurface[2];
 		isInterfaceSurface[10]= false;
 		isInterfaceSurface[11]= false;
 

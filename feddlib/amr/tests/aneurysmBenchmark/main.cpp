@@ -173,6 +173,13 @@ void parabolicInflow3DStokes(double* x, double* res, double t, const double* par
     return;
 }
 
+void dummyFuncSol(double* x, double* res){
+    
+	res[0] = 0.;
+
+    return;
+}
+
 
 
 typedef unsigned UN;
@@ -198,7 +205,7 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
     bool verbose (comm->getRank() == 0);
     if (verbose) {
         cout << "###############################################################" <<endl;
-        cout << "################### Unsteady Navier-Stokes ####################" <<endl;
+        cout << "################### Steady Navier-Stokes ####################" <<endl;
         cout << "###############################################################" <<endl;
     }
 
@@ -318,7 +325,7 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 		
 
 
-			AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("NavierStokes",parameterListAll);
+			AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("NavierStokes",parameterListAll, dummyFuncSol, dummyFuncSol);
 
 		    int j=0;
 			MAIN_TIMER_START(Total," Step 4:	 Total RefinementAlgorithm");
@@ -362,11 +369,11 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 
 				Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolution = laplace.getSolution()->getBlock(0);
 
-				/*exPara->setup("solutionLaplace", domainVelocity->getMesh(), feTypeV);
+				exPara->setup("solutionLaplace", domainVelocity->getMesh(), feTypeV);
 			    
 			    exPara->addVariable(exportSolution, "u", "Scalar", 1, domainVelocity->getMapUnique(), domainVelocity->getMapUniqueP2());
 
-			    exPara->save(0.0);*/
+			    exPara->save(0.0);
 		        
 
 				// #################################################

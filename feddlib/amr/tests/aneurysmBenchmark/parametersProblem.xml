@@ -10,8 +10,8 @@
         <Parameter name="Symmetric gradient" type="bool" value="false"/>
         <Parameter name="Viscosity" type="double" value="1.0"/>
         <Parameter name="Density" type="double" value="1.0"/>
-        <Parameter name="MaxVelocity" type="double" value="1.0"/>
-        <Parameter name="MeanVelocity" type="double"   value="1.0"/>
+        <Parameter name="MaxVelocity" type="double" value="2.0"/>
+        <Parameter name="MeanVelocity" type="double"   value="2.0"/>
         <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
         <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>
         <Parameter name="MaxNonLinIts" type="int" value="3"/>
@@ -30,14 +30,14 @@
 	<ParameterList name="Mesh Refinement">
         <Parameter name="Refinement Mode" type="string" value="Regular"/>
         <Parameter name="Toleranz" type="double" value="0.001"/>
-        <Parameter name="Theta" type="double" value="0.1"/>
-        <Parameter name="MaxIter" type="int" value="25"/>
+        <Parameter name="Theta" type="double" value="0.5"/>
+        <Parameter name="MaxIter" type="int" value="2"/>
         <Parameter name="RefinementType" type="string" value="Maximum"/>
        	<Parameter name="Write Refinement Time" type="bool" value="true"/>
         <Parameter name="Write Mesh Quality" type="bool" value="true"/>
         <Parameter name="3D regular Refinement Diagonal Pick" type="int" value="0"/>
-        <Parameter name="Refinement Restriction" type="string" value="Bisection"/>
-        <Parameter name="Restriction Layer" type="int" value="3"/>
+        <Parameter name="Refinement Restriction" type="string" value="Bey"/>
+        <Parameter name="Restriction Layer" type="int" value="10"/>
 	<Parameter name="Coarsening Cycle" type="int" value="0"/>
 	<Parameter name="Coarsening m" type="int" value="2"/>
 	<Parameter name="Coarsening n" type="int" value="3"/>

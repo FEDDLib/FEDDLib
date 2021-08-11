@@ -780,11 +780,11 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 		// We only need to calculate the jump for interior egdes/surfaces, which are characetrized by the fact that they are connected to two elements
 		bool interiorElement= false;
 		if(dim_ == 2){
-			if(edgeElements->getElement(k).getFlag() == 10 || edgeElements->getElement(k).getFlag() == 0)
+			if((edgeElements->getElement(k).getFlag() == 10 || edgeElements->getElement(k).getFlag() == 0))//&& elementsOfSurfaceLocal.at(k).size()>1)
 				interiorElement=true;
 		}  
 		else if(dim_ == 3){
-			if(surfaceTriangleElements->getElement(k).getFlag() == 10 || surfaceTriangleElements->getElement(k).getFlag() == 0)
+			if((surfaceTriangleElements->getElement(k).getFlag() == 10 || surfaceTriangleElements->getElement(k).getFlag() == 0))//&& elementsOfSurfaceLocal.at(k).size()>1)
 				interiorElement=true;
 		}  
 		if(interiorElement == true){  
@@ -817,8 +817,6 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 				norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));	  
 			}
 					
-
-
 			vec_LO_Type elementsIDs(0);
 			// Case that both necessary element are on the same Proc
 			if(elementsOfSurfaceLocal.at(k).at(0) != -1){
@@ -1875,13 +1873,13 @@ void ErrorEstimation<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeEle
 
 	for(int i=0; i < surfaceTriangleElements->numberElements() ; i++){
 		FiniteElement surfaceTmp = surfaceTriangleElements->getElement(i);
-		if(surfaceTmp.isInterfaceElement()){
+		if(surfaceTmp.isInterfaceElement() && (surfaceTmp.getFlag() == 0 || surfaceTmp.getFlag() == 10)){
 
 			vec_int_Type tmpElements(0);
 			//this->surfaceTriangleElements_->setElementsOfSurfaceLocalEntry(i,-1);
 
 			edgeTmp1={surfaceTmp.getNode(0),surfaceTmp.getNode(1)};
-			edgeTmp2={surfaceTmp.getNode(0),surfaceTmp.getNode(2)};
+			edgeTmp2={surfaceTmp.getNode(1),surfaceTmp.getNode(2)};
 			//edgeTmp3={surfaceTmp.getNode(1),surfaceTmp.getNode(2)};
 
 			sort(edgeTmp1.begin(),edgeTmp1.end());
@@ -1915,10 +1913,10 @@ void ErrorEstimation<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeEle
 			if(found == false){
 				cout << " No Element Found for edges " << id1 << " " << id2 << " on Proc " << inputMesh_->getComm()->getRank() << " und element schon da=" << elementsOfSurfaceGlobal[i][0] << endl;
 				cout << " Tmp1= ";
-				for(int j=0; j< tmpElements.size()-1; j++){
+				for(int j=0; j< tmpElements.size(); j++){
 					cout << " " << tmpElements[j];
 				}
-				cout   << endl;
+				cout<< " Flag Surface " << surfaceTmp.getFlag()   << endl;
 			}			
 		}
 	}
