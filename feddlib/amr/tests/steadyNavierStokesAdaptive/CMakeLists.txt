@@ -19,7 +19,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNavierStokesAdaptive
 	EXEDEPS steadyNavierStokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptive
+TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveBFS
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES bfs.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -27,10 +27,26 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptive
 	EXEDEPS steadyNavierStokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptive3D
+TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveBFS3D
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES BFS3dC.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
 	DEST_FILES BFS3dC.mesh
+	EXEDEPS steadyNavierStokesAdaptive
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveLDC
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
+	SOURCE_FILES ldc2D2.mesh
+	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+	DEST_FILES ldc2D2.mesh
+	EXEDEPS steadyNavierStokesAdaptive
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveLDC3D
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
+	SOURCE_FILES ldc3D.mesh
+	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+	DEST_FILES ldc3D.mesh
 	EXEDEPS steadyNavierStokesAdaptive
 )

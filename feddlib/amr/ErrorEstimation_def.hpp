@@ -640,28 +640,32 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 		// Edge Numbers of Element
 		vec_int_Type surfaceElementsIds(surfaceNumbers);
 
-		vec_dbl_Type areaTriangles = determineAreaTriangles(elements,edgeElements, surfaceTriangleElements,  points);
+		vec_dbl_Type areaTriangles(numberSurfaceElements);// = determineAreaTriangles(elements,edgeElements, surfaceTriangleElements,  points);
+		vec_dbl_Type tmpVec1(numberSurfaceElements);
+		vec_dbl_Type tmpVec2(numberSurfaceElements);
 		// necessary entities
 		vec_dbl_Type p1(3),p2(3); // normal Vector of Surface
 		vec_dbl_Type v_E(3); // normal Vector of Surface
 		double norm_v_E;
 
+		vec_dbl_Type h_Tri =  calcDiamTriangles3D(surfaceTriangleElements,points, areaTriangles, tmpVec1, tmpVec2);
+
 		for(int k=0; k< surfaceTriangleElements->numberElements();k++){
 			FiniteElement surfaceTmp = surfaceTriangleElements->getElement(k);
-			double h_E = 0.;
+			/*double h_E = 0.;
 			for(int i =1; i< 3 ; i++){
 				double length = sqrt(pow(points->at(surfaceTmp.getNode(i)).at(0)-points->at(surfaceTmp.getNode(i-1)).at(0),2)+ pow(points->at(surfaceTmp.getNode(i)).at(1)-points->at(surfaceTmp.getNode(i-1)).at(1),2)+pow(points->at(surfaceTmp.getNode(i)).at(2)-points->at(surfaceTmp.getNode(i-1)).at(2),2));
 				if(length > h_E)
 					h_E = length;
 
-			}
+			}*/
 			double jumpQuad=0.;
 			for(int j=0; j<dofs_ ; j++){
 				for(int i=0; i<u_El[k].size();i++){
 					if(	calculatePressure_ == false)
 						jumpQuad += pow(u_El[k][i][j],2);
 					if(calculatePressure_ == true)
-						jumpQuad += pow(u_El[k][i][j]-p_El[k][i][0],2);
+						jumpQuad += pow(u_El[k][i][j],2); // -p_El[k][i][0]
 				}
 			}
 			if(this->FEType2_ =="P2")
@@ -670,7 +674,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 				quadWeightConst = areaTriangles[k];
 
 
-			surfaceElementsError[k] = h_E*jumpQuad*quadWeightConst; // (1./h_E[k])
+			surfaceElementsError[k] = h_Tri[k]*jumpQuad*quadWeightConst; // (1./h_E[k])
 
 			//cout << " Jump Quad " << " k " << k << " " << jumpQuad << " h_E " << h_E2[k] << endl;
 		}
