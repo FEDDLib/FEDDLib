@@ -135,6 +135,8 @@ void rhs3D(double* x, double* res, double* parameters){
 
     return;
 }
+
+
 void parabolicInflow3D(double* x, double* res, double t, const double* parameters)
 {
     // parameters[0] is the maxium desired velocity
@@ -275,8 +277,8 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 
 
         std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",30));
-        parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Max Ramp Time",3.) );
-        //parameter_vec.push_back(1.);
+        //parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Max Ramp Time",3.) );
+        parameter_vec.push_back(2.);
 
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
         if (!precMethod.compare("Monolithic"))
@@ -388,17 +390,17 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 		            
 		        parameter_vec.push_back(maxValue);
 
-		        //parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MaxVelocity",1.5);
+		        parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MaxVelocity",30);
 				MultiVectorConstPtr_Type inletSol = laplace.getSolution()->getBlock(0);               
 
 				Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
 
 		        bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 
-		        //bcFactory->addBC(parabolicInflow3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
+		        bcFactory->addBC(parabolicInflow3DStokes, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
 
 				//bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
-		        bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+		        //bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 		        
 				MAIN_TIMER_STOP(Bounds);	
 				MAIN_TIMER_START(Solver," Step 3:	 solving PDE");
