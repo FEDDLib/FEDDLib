@@ -8,17 +8,13 @@
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
-
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/FE/FiniteElement.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/Mesh/MeshStructured.hpp"
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
-#include "feddlib/core/Mesh/MeshUnstructuredRefinement.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
-#include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"
-#include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "feddlib/problems/specific/Laplace.hpp"
 #include "feddlib/problems/abstract/Problem.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
@@ -37,14 +33,14 @@
 /*!
  main of Laplace problem
 
- @brief Laplace main
- @author Christian Hochmuth
+ @brief Laplace Adaptive
+ @author Lea Saßmannshausen
  @version 1.0
  @copyright CH
  */
 
 // ##################################################################################
-// Rhs, ExactSolution and zeroBC for first Modellproblem
+// Rhs, ExactSolution and zeroBC for first Modellproblem lShape
 // ##################################################################################
 
 void bcLShape(double* x, double* res, double t, const double* parameters){
@@ -82,7 +78,7 @@ void rhsZero(double* x, double* res, double* parameters){
 }
 
 // ##################################################################################
-// Rhs, ExactSolution and zeroBC for second Modellproblem 2D
+// Rhs, ExactSolution and zeroBC for second Modellproblem 2D as in Paper
 // ##################################################################################
 void rhsPaper(double* x, double* res, double* parameters){
     
@@ -106,7 +102,7 @@ void zeroBC(double* x, double* res, double t, const double* parameters){
 }
 
 // ##################################################################################
-// Rhs, ExactSolution and zeroBC for second Modellproblem 3D
+// Rhs, ExactSolution and zeroBC for second Modellproblem 3D on Cube
 // ##################################################################################
 void exactSolPaper3D(double* x, double* res){
     
@@ -118,8 +114,6 @@ void exactSolPaper3D(double* x, double* res){
 	double z2 = (pow(x[2],2)-x[2]);
 
     res[0] = beta*x2*y2*z2*exp(alpha);
-
-	//cout << " Value of RHS in Func" << res[0] << " und x[0] trans " << x[0] << " und x[1] " << x[1]   <<  endl;
 
     return;
 }
@@ -149,15 +143,14 @@ void rhsPaper3D(double* x, double* res, double* parameters){
 
 	return;
 }
-
+// ##################################################################################
+// Rhs, ExactSolution and zeroBC for third Modellproblem 3D on Cube
 // #########################################################################
 void exactSolPaper3D2(double* x, double* res){
     
 	double alpha = 10000;
 
     res[0] = exp(-x[0]/alpha)+ exp(-x[1]/alpha) +exp(-x[2]/alpha);
-
-	//cout << " Value of RHS in Func" << res[0] << " und x[0] trans " << x[0] << " und x[1] " << x[1]   <<  endl;
 
     return;
 }
@@ -206,49 +199,6 @@ void dummyFuncExactSol(double* x, double* res){
     return;
 }
 // #################################################################################
-
-void bcLShape3D(double* x, double* res, double t, const double* parameters){
-
-	double r = sqrt(x[0]*x[0] + x[1]*x[1]);
-    double phi;
-    if(x[1] < 0.0)
-		phi = 2.0*M_PI+atan2(x[1],x[0]);
-    else
-		phi = atan2(x[1],x[0]);
-		
-    res[0] =  pow(r,2/3.)*sin(2/3.*phi)*pow(x[2],3); 
-
-}
-
-void exactSolLShape3D(double* x, double* res){
-
-	double r = sqrt(x[0]*x[0] + x[1]*x[1]);
-    double phi;
-    if(x[1] < 0.0)
-		phi = 2.0*M_PI+atan2(x[1],x[0]);
-    else
-		phi = atan2(x[1],x[0]);
-		
-    res[0] =  pow(r,2/3.)*sin(2/3.*phi)*pow(x[2],3); 
-}
-
-void rhsLShape3D(double* x, double* res, double* parameters){
-    
-    double r = sqrt(x[0]*x[0] + x[1]*x[1]);
-    double phi;
-	double t=1.;
-    if(x[1] < 0.0)
-		phi = 2.0*M_PI+atan2(x[1],x[0]);
-    else
-		phi = atan2(x[1],x[0]);
-	
-    res[0] =  -pow(r,2/3.)*sin(2/3.*phi)*(6*x[2]);
-
-
-    return;
-}
-
-//############################################################################
 
 typedef unsigned UN;
 typedef default_sc SC;
@@ -394,11 +344,6 @@ int main(int argc, char *argv[]) {
 			exactSol= exactSolLShape;
 			flag1Func = bcLShape;
 		}
-		else if(modellProblem == "lShape3D" && dim == 3){
-			rhs = rhsLShape3D;
-			exactSol= exactSolLShape3D;
-			flag1Func = bcLShape3D;
-		}
 		else if(modellProblem == "Paper" && dim ==2){
 			rhs = rhsPaper;
 			exactSol = exactSolPaper;
@@ -416,9 +361,7 @@ int main(int argc, char *argv[]) {
 			flag1Func = bcPaper3D2;
 			
 		}
-		
-
-	
+			
 
 		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("Laplace",parameterListProblem,exactSol); // exactSolLShape
 		std::vector<std::chrono::duration<double>> meshTiming(maxIter);
@@ -434,10 +377,10 @@ int main(int argc, char *argv[]) {
 
 			MAIN_TIMER_START(buildP2," Step 0:	 buildP2Mesh");
 			if (FEType=="P2" ) {
-					domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
-					domainP2->buildP2ofP1Domain( domainP1 );
-					domain = domainP2;
-			   		 }
+				domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
+				domainP2->buildP2ofP1Domain( domainP1 );
+				domain = domainP2;
+		    }
 			else 
 					domain = domainP1; 	
 			MAIN_TIMER_STOP(buildP2);		
@@ -453,23 +396,21 @@ int main(int argc, char *argv[]) {
 
 		   
 			Teuchos::RCP<Laplace<SC,LO,GO,NO> > laplace(new Laplace<SC,LO,GO,NO>( domain,FEType,parameterListAll,vL));
-				{
+			{
 				laplace->addBoundaries(bcFactory);
 				laplace->addRhsFunction(rhs);
 				laplace->initializeProblem();
 				laplace->assemble();
 				laplace->setBoundaries();
 				laplace->solve();
-				}
+			}
 			MAIN_TIMER_STOP(Solver);	
 	
 			MAIN_TIMER_START(Refinement," Step 3:	 meshRefinement");
 
 			// Refinement
 			domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-
 			{
-
 				ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( laplace , true);
 				domainRefined = meshRefiner.globalAlgorithm( domainP1,  domain, laplace->getSolution(), problem, rhs );
 			}
@@ -482,8 +423,8 @@ int main(int argc, char *argv[]) {
 			
 		}	
 
-			MAIN_TIMER_STOP(Total);	
-   			Teuchos::TimeMonitor::report(cout,"Main");
+		MAIN_TIMER_STOP(Total);	
+  		Teuchos::TimeMonitor::report(cout,"Main");
 
 
 	 

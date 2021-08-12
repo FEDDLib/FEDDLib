@@ -15,7 +15,6 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/Mesh/MeshStructured.hpp"
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
-#include "feddlib/core/Mesh/MeshUnstructuredRefinement.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include  <boost/function.hpp>
 #include "feddlib/problems/abstract/Problem.hpp"
@@ -43,13 +42,8 @@ public:
 
     typedef std::vector<MeshUnstrPtr_Type> MeshUnstrPtrArray_Type;
 
-    typedef MeshUnstructuredRefinement<SC,LO,GO,NO> MeshUnstrRef_Type;
-    typedef Teuchos::RCP<MeshUnstrRef_Type> MeshUnstrRefPtr_Type;
-    typedef std::vector<MeshUnstrRefPtr_Type> MeshUnstrRefPtrArray_Type; // Array of meshUnstr for meshRefinement
-
  	typedef typename Mesh_Type::CommPtr_Type CommPtr_Type;
     typedef typename Mesh_Type::CommConstPtr_Type CommConstPtr_Type;
-
     
     typedef Elements Elements_Type;
     typedef Teuchos::RCP<Elements_Type>  ElementsPtr_Type;
@@ -57,10 +51,7 @@ public:
     typedef Teuchos::RCP<SurfaceElements_Type> SurfaceElementsPtr_Type;
     typedef EdgeElements EdgeElements_Type;
     typedef Teuchos::RCP<EdgeElements_Type> EdgeElementsPtr_Type;
-    
-    typedef MeshInterface<SC,LO,GO,NO> MeshInterface_Type;
-    typedef Teuchos::RCP<MeshInterface_Type> MeshInterfacePtr_Type;
-    
+     
     typedef Map<LO,GO,NO> Map_Type;
     typedef typename Map_Type::MapPtr_Type MapPtr_Type;
     typedef typename Map_Type::MapConstPtr_Type MapConstPtr_Type;
@@ -90,7 +81,7 @@ public:
 
     typedef std::vector<MultiVectorPtr_Type> MultiVectorPtrArray_Type;
 
- typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
+	typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
     typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
     typedef Teuchos::RCP<const BlockMultiVector_Type> BlockMultiVectorConstPtr_Type;
   

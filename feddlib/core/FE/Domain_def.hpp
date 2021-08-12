@@ -350,18 +350,6 @@ void Domain<SC,LO,GO,NO>::buildP2ofP1Domain( DomainPtr_Type domainP1 ){ //P1 mes
     mesh_ = meshUnstructured;
 }
 
-/*template <class SC, class LO, class GO, class NO>
-vec_dbl_Type Domain<SC,LO,GO,NO>::errorEstimation(MultiVectorPtrConst_Type valuesSolution, double theta, string strategy){
-	// A-Posteriori Error Estimation, right now based in MeshUnstructuredRefinement, maybe reallocated later
-
-	MeshUnstrRefPtr_Type meshUnstrRef =Teuchos::rcp_dynamic_cast<MeshUnstrRef_Type>(mesh_, true );
-
-	vec_dbl_Type errorElements = meshUnstrRef->errorEstimation(valuesSolution, theta, strategy);
-
-	return errorElements;
-
-}*/
-
 template <class SC, class LO, class GO, class NO>
 void Domain<SC,LO,GO,NO>::initWithDomain(DomainPtr_Type domainP1){ 
 
