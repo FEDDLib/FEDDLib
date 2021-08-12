@@ -19,7 +19,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_aneurysmBenchmark
 )
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_aneurysmBenchmark
-	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES aneurysmBenchmark.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
     DEST_FILES aneurysmBenchmark.mesh
