@@ -216,15 +216,16 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 		for(int k=0; k< elements->numberElements();k++){
 			edgeNumbers = edgeElements->getEdgesOfElement(k); // edges of Element k
 			resElement = determineResElement(elements->getElement(k), rhsFunc); // calculating the residual of element k
-			if(problemType_ == "Stokes" || problemType_ == "NavierStokes") // If the Problem is a (Navier)Stokes Problem we calculate divU (maybe start a hierarchy
+			if(problemType_ == "Stokes" || problemType_ == "NavierStokes"){ // If the Problem is a (Navier)Stokes Problem we calculate divU (maybe start a hierarchy
 				divUElement = determineDivU(elements->getElement(k));
+			}
 
-			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+divUElement+ h_T[k]*h_T[k]*resElement );; //divUElement ; 
+			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+divUElement+ h_T[k]*h_T[k]*resElement ); //divUElement ; 
 
 			if(maxErrorElLoc < errorElement[k] )
 					maxErrorElLoc = errorElement[k];
 			//if(resElement > 1000)
-				//cout << " Error Element [k] " << errorElement[k] << " with resElement " << resElement << " divU " << divUElement << " and Jumps "<< u_Jump[edgeNumbers[0]] << " " << u_Jump[edgeNumbers[1]]<< " " << u_Jump[edgeNumbers[2]] << endl;
+			//cout << " Error Element [k] " << errorElement[k] << " with resElement " << resElement << " divU " << divUElement << " and Jumps "<< u_Jump[edgeNumbers[0]] << " " << u_Jump[edgeNumbers[1]]<< " " << u_Jump[edgeNumbers[2]] << endl;
 		}
 
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxErrorElLoc, outArg (maxErrorElLoc));
@@ -1158,13 +1159,13 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 	// Transformation Matrices
 	// We determine deltaU for the Elements. If FEType=P1 deltaU equals 0. If FEType = P2 we get a constant solution:
 	double deltaU =0.;
-	vec_LO_Type nodeList = 	element.getVectorNodeListNonConst();
+	vec_LO_Type nodeList = element.getVectorNodeListNonConst();
 
 	SC detB1;
     SmallMatrix<SC> B1(dim);
     SmallMatrix<SC> Binv1(dim);  
  
-	// We need this inverse Matrix to also transform the quad Points of on edge back to the reference element
+	// We need this inverse Matrix to also transform the quad Points back to the reference element
 	int index0 = nodeList[0];
 	 for (int s=0; s<dim; s++) {
 		int index = nodeList[s+1];
@@ -1174,46 +1175,37 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 	}
 
 
+	
 	detB1 = B1.computeInverse(Binv1);
 	detB1 = std::fabs(detB1);
-	vec_dbl_Type valueFunc(dofs_);
-
-	vec2D_dbl_Type quadPointsTrans(QuadW.size(),vec_dbl_Type(dim));
-
-	for(int i=0; i< QuadW.size(); i++){
-		 for(int j=0; j< dim; j++){
-			for(int k=0; k< dim; k++){
-		 		quadPointsTrans[i][j] += B1[j][k]* QuadPts[i].at(k) ; 
-			} 
-			quadPointsTrans[i][j] += points->at(element.getNode(0)).at(j)	;
-		 }
-	}
 
 	int intFE = 1;
 	if(this->FEType2_ == "P2")
 		intFE =2;
 
-	vec2D_dbl_Type gradPhiV;
-	double divElementTmp;
+
+	double divElementTmp=0.;
 	for (UN w=0; w< QuadW.size(); w++){
-		gradPhiV =gradPhi(dim, intFE, quadPointsTrans[w]);
+		vec2D_dbl_Type gradPhiV =gradPhi(dim, intFE, QuadPts[w]);
 		vec2D_dbl_Type gradPhiT(gradPhiV.size(),vec_dbl_Type(dim));
 		for(int q=0; q<dim; q++){
-			for(int p=0;p<dim+1; p++){
+			for(int p=0;p<nodeList.size(); p++){
 				for(int s=0; s< dim ; s++)
-					gradPhiT[p][q] += (gradPhiV[p][s]*Binv1[s][q]);
-				
+					gradPhiT[p][q] += (gradPhiV[p][s]*Binv1[s][q]);			
 			}
 		}
 		vec_dbl_Type uTmp(gradPhiV.size());
-		for(int i=0; i< gradPhiV.size(); i++){
-			divElementTmp=0.;
-			for(int j=0; j< dofs_ ; j++){
-				Teuchos::ArrayRCP<SC> valuesSolutionRep = valuesSolutionRepVel_->getBlock(j)->getDataNonConst(0);
+		for(int j=0; j< dofs_ ; j++){
+			Teuchos::ArrayRCP<SC> valuesSolutionRep = valuesSolutionRepVel_->getBlock(j)->getDataNonConst(0);
+			for(int i=0; i< nodeList.size(); i++){
 				uTmp[i] += valuesSolutionRep[nodeList[i]]*gradPhiT[i][j];
 			}
-		   	divElementTmp += pow(uTmp[i],2); 
 		}
+		divElementTmp=0.;
+		for(int i=0; i< nodeList.size(); i++){
+			divElementTmp += uTmp[i];
+		}
+		divElementTmp = pow(divElementTmp,2);
 		divElementTmp *= QuadW[w];
 
 		divElement += divElementTmp;
@@ -1228,7 +1220,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 }
 
 /*!
-@brief Function that that determines ||\Delta u_h + f ||_(L2(T)) or || \Delta u_h + f - \nabla p ||_T for an Element T
+@brief Function that that determines ||\Delta u_h + f ||_(L2(T)), || \Delta u_h + f - \nabla p ||_T || \Delta u_h + f - \nabla p - (u \cdot \nabla)u||_T for an Element T
 
 @param[in] FiniteElement element where ||div(u)||_T is calculated on
 @param[in] RhsFunc_Type rhsFunc which is the function used for the rhs of the pde
@@ -1297,7 +1289,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	vec_dbl_Type nablaP(dim);
 	if(problemType_ == "Stokes" || problemType_ == "NavierStokes"){
 		Teuchos::ArrayRCP<SC> valuesSolutionRepPre = valuesSolutionRepPre_->getBlock(0)->getDataNonConst(0);
-		vec2D_dbl_Type deriPhi = gradPhi(dim, 1, quadPointsTrans[0]);
+		vec2D_dbl_Type deriPhi = gradPhi(dim, 1, QuadPts[0]);
 		vec2D_dbl_Type deriPhiT(dim+1,vec_dbl_Type(dim));
 		for(int q=0; q<dim; q++){
 			for(int p=0;p<dim+1; p++){
@@ -1316,7 +1308,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	vec2D_dbl_Type nablaU(dim,vec_dbl_Type(QuadW.size()));
 	if(problemType_ == "NavierStokes"){
 		for (UN w=0; w< QuadW.size(); w++){
-			vec2D_dbl_Type deriPhi = gradPhi(dim, intFE, quadPointsTrans[w]);
+			vec2D_dbl_Type deriPhi = gradPhi(dim, intFE, QuadPts[w]);
 			vec2D_dbl_Type deriPhiT(nodeList.size(),vec_dbl_Type(dim));
 			for(int q=0; q<dim; q++){
 				for(int p=0;p<nodeList.size(); p++){
@@ -1325,8 +1317,17 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 					
 				}
 			}
-			vec2D_dbl_Type u1_Tmp(dofs_, vec_dbl_Type(dim_));
 			Teuchos::ArrayRCP< SC > valuesSolRep;	
+			vec2D_dbl_Type vec_Tmp(nodeList.size(),vec_dbl_Type(dofs_));
+			for( int d =0; d < dofs_ ; d++){
+				valuesSolRep = valuesSolutionRepVel_->getBlock(d)->getDataNonConst(0);
+				for(int t=0; t< nodeList.size() ; t++){
+	 				vec_Tmp[t][d] = valuesSolRep[nodeList[t]];
+				}	
+			}
+
+			vec2D_dbl_Type u1_Tmp(dofs_, vec_dbl_Type(dim_));
+
 			for( int d =0; d < dofs_ ; d++){
 				valuesSolRep = valuesSolutionRepVel_->getBlock(d)->getDataNonConst(0);
 				for(int s=0; s<dim; s++){
@@ -1335,20 +1336,15 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 					}
 				}
 			}
-			vec_dbl_Type phiV = phi(dim, intFE, quadPointsTrans[w]);
-			vec_dbl_Type vec_Tmp(dofs_);
+			vec_dbl_Type phiV = phi(dim, intFE, QuadPts[w]);
 			for( int d =0; d < dofs_ ; d++){
-				valuesSolRep = valuesSolutionRepVel_->getBlock(d)->getDataNonConst(0);
-				for(int t=0; t< phiV.size() ; t++){
-	 				vec_Tmp[d] += valuesSolRep[nodeList[t]]*phiV[t] ;
+				for(int t=0; t< nodeList.size() ; t++){
+					for(int s=0; s<dim; s++){
+						nablaU[d][w] += vec_Tmp[t][s]*phiV[t]*u1_Tmp[s][d];
+					}
 				}
 			}
-	
-			for(int t=0; t< dim ; t++){
-				for( int d =0; d < dofs_ ; d++){
-					nablaU[d][w] += vec_Tmp[d]*u1_Tmp[d][t];
-				}
-			}
+
 		}
 	}
 
@@ -1371,8 +1367,8 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	for (UN w=0; w< QuadW.size(); w++){
 			rhsFunc(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
 			for(int j=0 ; j< dofs_; j++){
-		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] + nablaU[j][w] - nablaP[j] ,2);
-				//cout << " Func " << valueFunc[j] << " delta " << deltaU[j] << " nablaU " << nablaU[j][w] << " p " <<  nablaP[j]  << endl;
+		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] - nablaU[j][w] - nablaP[j] ,2); // 
+				cout << " Func " << valueFunc[j] << " delta " << deltaU[j] << " nablaU " << nablaU[j][w] << " p " <<  nablaP[j]  << endl;
 		}
 	}
 	double resElementValue =0.;

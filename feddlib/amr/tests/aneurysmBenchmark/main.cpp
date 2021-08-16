@@ -94,30 +94,15 @@ void rhs0( double* p, double* res, const double* parameters){
 	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
 }
 
-void inflowParabolic2D(double* x, double* res, double t, const double* parameters){
-
-    double H = parameters[1];
-    res[0] = 4.*parameters[0]*x[1]*(H-x[1])/(H*H);
-    res[1] = 0.;
-    
-    return;
-}
-
-void inflowParabolic2DSin(double* x, double* res, double t, const double* parameters){
-
-    double H = parameters[1];
-    res[0] = sin(M_PI*t*0.125)*( 6*x[1]*(H-x[1]) ) / (H*H);
-    res[1] = 0.;
-
-    return;
-}
-
 void inflowParabolic3D(double* x, double* res, double t, const double* parameters){
 
-    double H = parameters[1];
-    res[0] = 16*parameters[0]*x[1]*(H-x[1])*x[2]*(H-x[2])/(H*H*H*H);
+    double H = parameters[1]/2.;
+	double r = sqrt(pow(x[1],2)+pow(x[2],2));
+    res[0] = parameters[0]*cos(1/2.*M_PI*r/H); 
     res[1] = 0.;
     res[2] = 0.;
+
+	cout<< " par " << parameters[0] << " vel " << res[0] << endl;
 
     return;
 }
@@ -163,14 +148,15 @@ void parabolicInflow3DStokes(double* x, double* res, double t, const double* par
 {
     // parameters[0] is the maxium desired velocity
     // parameters[1] end of ramp
-    // parameters[2] is the maxium solution value of the laplacian parabolic inflow problme
+    // parameters[2] is the maxium solution value of the laplacian parabolic inflow problem
     // we use x[0] for the laplace solution in the considered point. Therefore, point coordinates are missing
     
 
-    res[0] = parameters[0] / parameters[2] * x[0];
+    res[0] = (parameters[0] / parameters[2]) * x[0];
     res[1] = 0.;
     res[2] = 0.;
-    
+  
+	//cout << " res[0] " << res[0]  << endl;
 
     return;
 }
@@ -273,12 +259,12 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
         bool computeInflow = parameterListProblem->sublist("Parameter").get("Compute Inflow",false);
         int         n;
 		int 		maxIter 		= parameterListProblem->sublist("Mesh Refinement").get("MaxIter",5);
-		double maxVel 				= parameterListProblem->sublist("Parameter").get("MaxVelocity",2.);
+		double maxVel 				= parameterListProblem->sublist("Parameter").get("MaxVelocity",150.);
 
 
-        std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",30));
+        std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",150.));
         //parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Max Ramp Time",3.) );
-        parameter_vec.push_back(2.);
+        parameter_vec.push_back(5.0);
 
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
         if (!precMethod.compare("Monolithic"))
@@ -363,7 +349,7 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 
 				bcFactoryL->addBC(zeroBC, 3, 0, domainVelocity, "Dirichlet", 1);
 		        bcFactoryL->addBC(zeroBC, 10, 0, domainVelocity, "Dirichlet", 1);
-
+		        bcFactoryL->addBC(zeroBC, 1, 0, domainVelocity, "Dirichlet", 1);
 		        bcFactoryL->setRHS( laplace.getSolution(), 0.);
 
 
@@ -390,7 +376,7 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 		            
 		        parameter_vec.push_back(maxValue);
 
-		        parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MaxVelocity",30);
+		        //parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MaxVelocity",150.);
 				MultiVectorConstPtr_Type inletSol = laplace.getSolution()->getBlock(0);               
 
 				Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
@@ -413,9 +399,10 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 			        Teuchos::TimeMonitor solveTimeMonitor(*solveTime);
 
 			        navierStokes->addBoundaries(bcFactory);
-					navierStokes->addRhsFunction(rhs0);						    
+					//navierStokes->addRhsFunction(rhs0);						    
 			        navierStokes->initializeProblem();
 			        navierStokes->assemble();
+					//navierStokes->setBoundaries();          
 			        navierStokes->setBoundariesRHS();
 
 			        std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
