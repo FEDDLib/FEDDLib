@@ -382,7 +382,6 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 				Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
 
 		        bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-
 		        bcFactory->addBC(parabolicInflow3DStokes, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
 
 				//bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
@@ -418,7 +417,6 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 
 				// Refinement
 				domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-
 				{
 
 					ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( navierStokes , true);

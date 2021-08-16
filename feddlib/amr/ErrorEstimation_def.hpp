@@ -1368,7 +1368,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 			rhsFunc(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
 			for(int j=0 ; j< dofs_; j++){
 		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] - nablaU[j][w] - nablaP[j] ,2); // 
-				cout << " Func " << valueFunc[j] << " delta " << deltaU[j] << " nablaU " << nablaU[j][w] << " p " <<  nablaP[j]  << endl;
+				//cout << " Func " << valueFunc[j] << " delta " << deltaU[j] << " nablaU " << nablaU[j][w] << " p " <<  nablaP[j]  << endl;
 		}
 	}
 	double resElementValue =0.;
