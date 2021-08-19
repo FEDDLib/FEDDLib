@@ -28,15 +28,18 @@
 #include <Xpetra_DefaultPlatform.hpp>
 
 /*!
- main of time-dependent Navier-Stokes problem
+ main of steady Navier-Stokes problem
  
- @brief time-dependent Navier-Stokes main
- @author Christian Hochmuth
+ @brief steady Navier-Stokes main for aneurysm benchmark
+ @author Lea Saßmannshausen
  @version 1.0
  @copyright CH
  */
 
 using namespace std;
+// ######################
+// Functions for Laplace
+// ######################
 void zeroBC(double* x, double* res, double t, const double* parameters)
 {
     res[0] = 0.;
@@ -50,15 +53,20 @@ void zeroDirichlet(double* x, double* res, double t, const double* parameters){
 
     return;
 }
+// Function for the rhs
+void rhs3D(double* x, double* res, double* parameters){
+    
+    res[0] = 1.;
 
-void zeroDirichlet2D(double* x, double* res, double t, const double* parameters){
-
-    res[0] = 0.;
-    res[1] = 0.;
 
     return;
 }
+// ###################
 
+
+// ########################
+// Functions for Benchmark
+// ########################
 void zeroDirichlet3D(double* x, double* res, double t, const double* parameters){
 
     res[0] = 0.;
@@ -68,59 +76,17 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
     return;
 }
 
-void inflowPartialCFD(double* x, double* res, double t, const double* parameters){
-
-    double H = parameters[1];
-
-    if(t < 0.5)
-    {
-        res[0] = (4.0*1.5*parameters[0]*x[1]*(H-x[1])/(H*H))*((1 - cos(2.0*M_PI*t))/2.0);
-        res[1] = 0.;
-    }
-    else
-    {
-        res[0] = 4.0*1.5*parameters[0]*x[1]*(H-x[1])/(H*H);
-        res[1] = 0.;
-    }
-
-    return;
-}
-void rhs0( double* p, double* res, const double* parameters){
-
-	res[0] =0;
-    res[1] =0;
-	res[2] =0;
-
-	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
-}
-
 void inflowParabolic3D(double* x, double* res, double t, const double* parameters){
 
-    double H = parameters[1]/2.;
+    double H = parameters[1];
 	double r = sqrt(pow(x[1],2)+pow(x[2],2));
-    res[0] = parameters[0]*cos(1/2.*M_PI*r/H); 
+    res[0] = fabs(parameters[0]*cos(M_PI*r/H)); 
+
     res[1] = 0.;
     res[2] = 0.;
 
-	cout<< " par " << parameters[0] << " vel " << res[0] << endl;
-
     return;
 }
-
-
-void dummyFunc(double* x, double* res, double t, const double* parameters){
-
-    return;
-}
-// Function for the rhs
-void rhs3D(double* x, double* res, double* parameters){
-    
-    res[0] = 1.;
-
-
-    return;
-}
-
 
 void parabolicInflow3D(double* x, double* res, double t, const double* parameters)
 {
@@ -156,14 +122,26 @@ void parabolicInflow3DStokes(double* x, double* res, double t, const double* par
     res[1] = 0.;
     res[2] = 0.;
   
-	//cout << " res[0] " << res[0]  << endl;
+    return;
+}
+// ############################
+// Functions for Meshrefinement
+void dummyFuncSol(double* x, double* res){
+    
+	res[0] = 0.;
+
+    return;
+}
+// Function for the rhs
+void rhs0(double* x, double* res, double* parameters){
+    
+    res[0] = 0.;
+
 
     return;
 }
 
-void dummyFuncSol(double* x, double* res){
-    
-	res[0] = 0.;
+void dummyFunc(double* x, double* res, double t, const double* parameters){
 
     return;
 }
@@ -180,7 +158,7 @@ using namespace FEDD;
 int main(int argc, char *argv[]) {
     typedef MeshPartitioner<SC,LO,GO,NO> MeshPartitioner_Type;
     typedef Teuchos::RCP<Domain<SC,LO,GO,NO> > DomainPtr_Type;
-typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
+	typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 	typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
 	typedef Teuchos::RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
 	typedef Problem<SC,LO,GO,NO> Problem_Type;
@@ -241,30 +219,25 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
-
         ParameterListPtr_Type parameterListPrec = Teuchos::getParametersFromXmlFile(xmlPrecFile);
-
         ParameterListPtr_Type parameterListSolver = Teuchos::getParametersFromXmlFile(xmlSolverFile);
-
         ParameterListPtr_Type parameterListPrecTeko = Teuchos::getParametersFromXmlFile(xmlTekoPrecFile);
-        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
-        std::string feTypeV = parameterListProblem->sublist("Parameter").get("Discretization Velocity","P2");
-        std::string feTypeP = parameterListProblem->sublist("Parameter").get("Discretization Pressure","P1");
-        string		meshType = parameterListProblem->sublist("Parameter").get("Mesh Type","structured");
-        string		meshName = parameterListProblem->sublist("Parameter").get("Mesh Name","structured");
-        string		meshDelimiter = parameterListProblem->sublist("Parameter").get("Mesh Delimiter"," ");
-        int 		m = parameterListProblem->sublist("Parameter").get("H/h",5);
-        string		linearization = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
-        string		precMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
-        bool computeInflow = parameterListProblem->sublist("Parameter").get("Compute Inflow",false);
-        int         n;
-		int 		maxIter 		= parameterListProblem->sublist("Mesh Refinement").get("MaxIter",5);
-		double maxVel 				= parameterListProblem->sublist("Parameter").get("MaxVelocity",150.);
 
+        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
+        string 		feTypeV 		= parameterListProblem->sublist("Parameter").get("Discretization Velocity","P2");
+        string	 	feTypeP 		= parameterListProblem->sublist("Parameter").get("Discretization Pressure","P1");
+        string		meshType 		= parameterListProblem->sublist("Parameter").get("Mesh Type","structured");
+        string		meshName 		= parameterListProblem->sublist("Parameter").get("Mesh Name","structured");
+        string		meshDelimiter 	= parameterListProblem->sublist("Parameter").get("Mesh Delimiter"," ");
+        string		linearization 	= parameterListProblem->sublist("General").get("Linearization","FixedPoint");
+        string		precMethod 		= parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
+		int 		maxIter 		= parameterListProblem->sublist("Mesh Refinement").get("MaxIter",5);
+        double 		viscosity		= parameterListProblem->sublist("Parameter").get("Viscosity",1.e-3);
+        int numProcsCoarseSolve		= parameterListProblem->sublist("General").get("Mpi Ranks Coarse",0);
 
         std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",150.));
         //parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Max Ramp Time",3.) );
-        parameter_vec.push_back(5.0);
+        parameter_vec.push_back(5.0); // Inlet Diameter of aneruysm benchmark
 
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
         if (!precMethod.compare("Monolithic"))
@@ -274,165 +247,152 @@ typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 
         parameterListAll->setParameters(*parameterListSolver);
 
-        std::string bcType = parameterListProblem->sublist("Parameter").get("BC Type","parabolic");
-
-        int minNumberSubdomains;
-
-        int numProcsCoarseSolve = parameterListProblem->sublist("General").get("Mpi Ranks Coarse",0);
         int size = comm->getSize() - numProcsCoarseSolve;
-
-        double viscosity = parameterListProblem->sublist("Parameter").get("Viscosity",1.e-3);
 
         Teuchos::RCP<Teuchos::Time> totalTime(Teuchos::TimeMonitor::getNewCounter("main: Total Time"));
         Teuchos::RCP<Teuchos::Time> buildMesh(Teuchos::TimeMonitor::getNewCounter("main: Build Mesh"));
         Teuchos::RCP<Teuchos::Time> solveTime(Teuchos::TimeMonitor::getNewCounter("main: Solve problem time"));
         
-        {
-            DomainPtr_Type domainPressure;
-            DomainPtr_Type domainVelocity;
+        
+        DomainPtr_Type domainPressure;
+        DomainPtr_Type domainVelocity;
 
-            DomainPtr_Type domainRefined;
+        DomainPtr_Type domainRefined;
 
-            Teuchos::TimeMonitor totalTimeMonitor(*totalTime);
-            
-            Teuchos::TimeMonitor buildMeshMonitor(*buildMesh);
-            if (verbose)
-                cout << "-- Building Mesh ..." << flush;
-            
+        Teuchos::TimeMonitor totalTimeMonitor(*totalTime);
+        
+        Teuchos::TimeMonitor buildMeshMonitor(*buildMesh);
+        if (verbose)
+            cout << "-- Building Mesh ..." << flush;
+        
 
-	        domainPressure.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-	        domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-	        
-	        MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
-	        domainP1Array[0] = domainPressure;
-	        
-	        ParameterListPtr_Type pListPartitioner = sublist( parameterListProblem, "Mesh Partitioner" );
-	        MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
-	        
-	        partitionerP1.readAndPartition();
-		
+        domainPressure.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+        domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+        
+        MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
+        domainP1Array[0] = domainPressure;
+        
+        ParameterListPtr_Type pListPartitioner = sublist( parameterListProblem, "Mesh Partitioner" );
+        MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
+        
+        partitionerP1.readAndPartition();
+	
 
 
-			AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("NavierStokes",parameterListAll, dummyFuncSol, dummyFuncSol);
+		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("NavierStokes",parameterListAll, dummyFuncSol, dummyFuncSol);
 
-		    int j=0;
-			MAIN_TIMER_START(Total," Step 4:	 Total RefinementAlgorithm");
-			while(j<maxIter+1 ){
-				MAIN_TIMER_START(buildP2," Step 0:	 buildP2Mesh");
-				if (feTypeV=="P2" ) {
-					domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
-				    domainVelocity->buildP2ofP1Domain( domainPressure );
-					}
-				else
-				    domainVelocity = domainPressure;
-				MAIN_TIMER_STOP(buildP2);		
-				// ############################################################
-				// Genereating Vector for inlet 
-				// ############################################################
-				MAIN_TIMER_START(LaplaceInlet," Step 1:	 laplaceVector for Inlet");
-				Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryL(new BCBuilder<SC,LO,GO,NO>( ));
-
-				// Apply Boundary conditions - laplace at inlet
-				bcFactoryL->addBC(zeroDirichlet, 1, 0, domainVelocity, "Dirichlet", 1);
-				//bcFactoryL->addBC(zeroDirichlet, 2, 0, domainVelocity, "Neumann", 1);
-
-      			Laplace<SC,LO,GO,NO> laplace(domainVelocity,feTypeV,parameterListAllL,false);
-
-				{
-					laplace.addBoundaries(bcFactoryL);
-					laplace.addRhsFunction(rhs3D);
-					laplace.initializeProblem();
-			   		laplace.assemble();
-			   		laplace.setBoundaries();
-			   		laplace.solve();
+	    int j=0;
+		MAIN_TIMER_START(Total," Step 4:	 Total RefinementAlgorithm");
+		while(j<maxIter+1 ){
+			MAIN_TIMER_START(buildP2," Step 0:	 buildP2Mesh");
+			if (feTypeV=="P2" ) {
+				domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
+			    domainVelocity->buildP2ofP1Domain( domainPressure );
 				}
+			else
+			    domainVelocity = domainPressure;
+			MAIN_TIMER_STOP(buildP2);		
+			// ############################################################
+			// Genereating Vector for inlet 
+			// ############################################################
+			MAIN_TIMER_START(LaplaceInlet," Step 1:	 laplaceVector for Inlet");
+			Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryL(new BCBuilder<SC,LO,GO,NO>( ));
 
-				bcFactoryL->addBC(zeroBC, 3, 0, domainVelocity, "Dirichlet", 1);
-		        bcFactoryL->addBC(zeroBC, 10, 0, domainVelocity, "Dirichlet", 1);
-		        bcFactoryL->addBC(zeroBC, 1, 0, domainVelocity, "Dirichlet", 1);
-		        bcFactoryL->setRHS( laplace.getSolution(), 0.);
+			// Apply Boundary conditions - laplace at inlet
+			bcFactoryL->addBC(zeroDirichlet, 1, 0, domainVelocity, "Dirichlet", 1);
+			//bcFactoryL->addBC(zeroDirichlet, 2, 0, domainVelocity, "Neumann", 1);
 
+  			Laplace<SC,LO,GO,NO> laplace(domainVelocity,feTypeV,parameterListAllL,false);
 
-				Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+			{
+				laplace.addBoundaries(bcFactoryL);
+				laplace.addRhsFunction(rhs3D);
+				laplace.initializeProblem();
+		   		laplace.assemble();
+		   		laplace.setBoundaries();
+		   		laplace.solve();
+			}
 
-				Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolution = laplace.getSolution()->getBlock(0);
-
-				exPara->setup("solutionLaplace", domainVelocity->getMesh(), feTypeV);
-			    
-			    exPara->addVariable(exportSolution, "u", "Scalar", 1, domainVelocity->getMapUnique(), domainVelocity->getMapUniqueP2());
-
-			    exPara->save(0.0);
-		        
-
-				// #################################################
-				// Setting up and solving steady Navier-Stokes Problem 
-				// #################################################		    
-				    
-				MAIN_TIMER_STOP(LaplaceInlet);	
-							
-				MAIN_TIMER_START(Bounds," Step 2:	 bcFactory");
-				
-				SC maxValue = exportSolution->getMax();
-		            
-		        parameter_vec.push_back(maxValue);
-
-		        //parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MaxVelocity",150.);
-				MultiVectorConstPtr_Type inletSol = laplace.getSolution()->getBlock(0);               
-
-				Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
-
-		        bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-		        bcFactory->addBC(parabolicInflow3DStokes, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
-
-				//bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
-		        //bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-		        
-				MAIN_TIMER_STOP(Bounds);	
-				MAIN_TIMER_START(Solver," Step 3:	 solving PDE");
-
-				Teuchos::RCP<NavierStokes<SC,LO,GO,NO>> navierStokes( new NavierStokes<SC,LO,GO,NO> (domainVelocity, feTypeV, domainPressure, feTypeP, parameterListAll ));
-
-			    navierStokes->info();
-
-			    {
-			        Teuchos::TimeMonitor solveTimeMonitor(*solveTime);
-
-			        navierStokes->addBoundaries(bcFactory);
-					//navierStokes->addRhsFunction(rhs0);						    
-			        navierStokes->initializeProblem();
-			        navierStokes->assemble();
-					//navierStokes->setBoundaries();          
-			        navierStokes->setBoundariesRHS();
-
-			        std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
-			        NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
-			        nlSolver.solve( *navierStokes );
-			        comm->barrier();
-			    }
-
-				MAIN_TIMER_STOP(Solver);	
+			bcFactoryL->addBC(zeroBC, 3, 0, domainVelocity, "Dirichlet", 1);
+	        bcFactoryL->addBC(zeroBC, 10, 0, domainVelocity, "Dirichlet", 1);
+	        //bcFactoryL->addBC(zeroBC, 1, 0, domainVelocity, "Dirichlet", 1);
+	        bcFactoryL->setRHS( laplace.getSolution(), 0.);
 
 
-				MAIN_TIMER_START(Refinement," Step 3:	 meshRefinement");
+			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolution = laplace.getSolution()->getBlock(0);
+			exPara->setup("solutionLaplace", domainVelocity->getMesh(), feTypeV); 
+		    exPara->addVariable(exportSolution, "u", "Scalar", 1, domainVelocity->getMapUnique(), domainVelocity->getMapUniqueP2());
+		    exPara->save(0.0);
+	        
+			MAIN_TIMER_STOP(LaplaceInlet);	
 
-				// Refinement
-				domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-				{
+			// #################################################
+			// Setting up and solving steady Navier-Stokes Problem 
+			// #################################################		    
+						
+			MAIN_TIMER_START(Bounds," Step 2:	 bcFactory");
+			
+			SC maxValue = exportSolution->getMax();
+	            
+	        parameter_vec.push_back(maxValue);
 
-					ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( navierStokes , true);
-					domainRefined = meshRefiner.globalAlgorithm( domainPressure,  domainVelocity, navierStokes->getSolution(), problem, rhs0 );
-				}
+			MultiVectorConstPtr_Type inletSol = laplace.getSolution()->getBlock(0);               
 
-				domainPressure = domainRefined;
-				domainVelocity = domainPressure;
-				
-				j++;
-				MAIN_TIMER_STOP(Refinement);	
-		    
-		    // ####################
-		   
-		        
+			// Building boundary conditions
+			Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
+
+	        bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+
+	        bcFactory->addBC(parabolicInflow3DStokes, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
+	        //bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+	        
+			MAIN_TIMER_STOP(Bounds);	
+			MAIN_TIMER_START(Solver," Step 3:	 solving PDE");
+
+			Teuchos::RCP<NavierStokes<SC,LO,GO,NO>> navierStokes( new NavierStokes<SC,LO,GO,NO> (domainVelocity, feTypeV, domainPressure, feTypeP, parameterListAll ));
+
+		    navierStokes->info();
+
+		    {
+		        Teuchos::TimeMonitor solveTimeMonitor(*solveTime);
+
+		        navierStokes->addBoundaries(bcFactory);
+		        navierStokes->initializeProblem();
+		        navierStokes->assemble();
+		        navierStokes->setBoundariesRHS();
+
+		        std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
+		        NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
+		        nlSolver.solve( *navierStokes );
+		        comm->barrier();
 		    }
+
+			MAIN_TIMER_STOP(Solver);	
+
+
+			MAIN_TIMER_START(Refinement," Step 3:	 meshRefinement");
+
+			/// #################################################
+			// Mesh Refinement 
+			// #################################################		  
+			domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+			{
+
+				ProblemPtr_Type problem = Teuchos::rcp_dynamic_cast<Problem_Type>( navierStokes , true);
+				domainRefined = meshRefiner.globalAlgorithm( domainPressure,  domainVelocity, navierStokes->getSolution(), problem, rhs0 );
+			}
+	    	// #################################################
+			domainPressure = domainRefined;
+			domainVelocity = domainPressure;
+			
+			j++;
+			MAIN_TIMER_STOP(Refinement);	
+	    
+
+	   
+	        
+		    
 
         }
     }

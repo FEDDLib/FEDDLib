@@ -57,15 +57,8 @@ void rhsVer( double* x, double* res, const double* parameters){
 	double alpha= 0.5;
 	double omega= 2*M_PI;
 
-	res[0] =0;//-1*(0.25*pow(r,-3./2)* (1.5*sin(phi)*psi+cos(phi)*dPsi) + pow(r,-3./2) *(sin(phi)*(-1.5*psi-0.5*ddPsi)+cos(phi)*(2*dPsi+dddPsi))) - pow(r,-1.5)*(2.25*dPsi+dddPsi)*cos(phi)- 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi) * sin(phi);
-	res[1] =0;//-1*(0.25*pow(r,-3./2)* (sin(phi)*dPsi+ 1.5*cos(phi)*psi) + pow(r,-3./2) *(cos(phi)*(1.5*psi+ 0.5*ddPsi)+sin(phi)*(2*dPsi+dddPsi))) + pow(r,-1.5)*(2.25*dPsi+dddPsi)*sin(phi)- 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi) * cos(phi);// + 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi);
-
-
-
-	
-	//res[0] = -1*((pow(r,-3./2)*(sin(phi)*(-45./8* psi-5./2 *ddPsi)+cos(phi)*(9./4 *dPsi + dddPsi)))*cos(phi)-(pow(r,-3./2)*(sin(phi)*(9./4*dPsi + dddPsi)+cos(phi)*(45./8*psi+5./2*ddPsi)))*sin(phi)) - pow(r,-1.5)*(2.25*dPsi+dddPsi)*cos(phi)- 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi) * sin(phi);
-	//res[1] = -1*((pow(r,-3./2)*(sin(phi)*(-45./8* psi-5./2 *ddPsi)+cos(phi)*(9./4 *dPsi + dddPsi)))*sin(phi)+(pow(r,-3./2)*(sin(phi)*(9./4*dPsi + dddPsi)+cos(phi)*(45./8*psi+5./2*ddPsi)))*cos(phi))- pow(r,-1.5)*(2.25*dPsi+dddPsi)*sin(phi)+ 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi) * cos(phi);// + 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi);
-	//cout << " Rhs " << res[0] << " " << res[1] << endl;
+	res[0] =0;
+	res[1] =0;
 	
 }
 
@@ -147,98 +140,6 @@ void bcVer( double* x, double* res, double t, const double* parameters){
 
 }
 
-// ####################################
-// ######################
-// Paper Han
-// ######################
-void rhsHan( double* p, double* res, const double* parameters){
-
-	double x= p[0];
-	double y=p[1];
-	res[0] = -(12*pow(x,2)-12*x+2)*(4*pow(y,3)-6*pow(y,2)+2*y)+1;
-	res[1] = -(12*pow(y,2)-12*y+2)*(4*pow(x,3)-6*pow(x,2)+2*x)+1;
-}
-
-
-void exactSolutionUHan( double* p, double* res){
-
-	double x= p[0];
-	double y=p[1];
-
-	res[0] = pow(x-1,2)*pow(x,2)*2*(y-1)*pow(y,2)+pow(x-1,2)*x*x*pow((y-1),2)*2*y;
-	res[1] = pow(y-1,2)*pow(y,2)*2*(x-1)*pow(x,2)+pow(y-1,2)*y*y*pow((x-1),2)*2*x;
-}
-
-void exactSolutionPHan( double* p, double* res){
-
-	double x= p[0];
-	double y=p[1];
-	res[0] = x+y-1;
-
-}
-void bcHan( double* x, double* res, double t, const double* parameters){
-
-	res[0] = 0;
-	res[1] = 0;
-}
-// ####################################
-// ######################
-// Paper
-// ######################
-void rhsPaperExp( double* p, double* res, const double* parameters){
-
-	double x = 2*M_PI*p[0];
-	double y = 2*M_PI*p[1];
-
-	double R = 1000;
-
-	double lambda = R/2. - sqrt(pow(R,2)/4.+4.*M_PI*M_PI);
-
-	res[0] = -1*(-lambda*lambda*exp(lambda*p[0]) *cos(y) + exp(lambda*p[0])*4*M_PI*M_PI*cos(y)) +lambda*exp(2*lambda*p[0]);
-        res[1] = -1*(pow(lambda,3)/(2*M_PI)*exp(lambda*p[0]) *sin(y)-lambda*exp(lambda*p[0])*2*M_PI*sin(y));
-
-	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
-}
-
-
-void exactSolutionPaperExp( double* p, double* res){
-
-	double x = 2*M_PI*p[0];
-	double y = 2*M_PI*p[1];
-
-
-	double R = 1000;
-
-	double lambda = R/2. - sqrt(pow(R,2)/4.+4.*M_PI*M_PI);
-
-	res[0] =  1-exp(lambda*p[0])*cos(y);
-	res[1] =  lambda/(2*M_PI) * exp(lambda*p[0])*sin(y);
-}
-
-void exactSolutionPaperExpP( double* p, double* res){
-
-	double R = 10;
-
-	double lambda = R/2. - sqrt(pow(R,2)/4.+4.*M_PI*M_PI);
-
-	res[0] =  0.5*exp(2*lambda*p[0]);
-
-}
-
-
-void bcPaperExp( double* p, double* res, double t, const double* parameters){
-
-	double x = 2*M_PI*p[0];
-	double y = 2*M_PI*p[1];
-
-	double R = 1000;
-
-	double lambda = R/2. - sqrt(pow(R,2)/4.+4.*M_PI*M_PI);
-
-	res[0] =  1-exp(lambda*p[0])*cos(y);
-	res[1] =  lambda/(2*M_PI) * exp(lambda*p[0])*sin(y);
-}
-// ####################################
 
 void rhs0( double* p, double* res, const double* parameters){
 
@@ -275,7 +176,7 @@ void three(double* x, double* res, double t, const double* parameters){
 }
 void four(double* x, double* res, double t, const double* parameters){
     
-    res[0] =parameters[0]*1.-1.;
+    res[0] =parameters[0]*1.;
     res[1] = 0.;
     res[2] = 0.;
     
@@ -451,26 +352,7 @@ int main(int argc, char *argv[]) {
 		BCFunc_Type flag6Func;
 		BCFunc_Type flag7Func;
 
-		if(modellProblem == "Turek" && dim ==2){
-			rhs = rhs0;
-			exactSolU = dummyFuncSol;
-			exactSolP = dummyFuncSol;
-			flag1Func = zeroDirichlet2D;
-			flag2Func = inflowParabolic2D;
-			flag4Func = zeroDirichlet2D;
-			parameter_vec.push_back(0.41);//height of inflow region	
-		}
-		else if(modellProblem == "Turek" && dim == 3){
-			rhs = rhs0;
-			exactSolU = dummyFuncSol;
-			exactSolP = dummyFuncSol;
-			flag1Func = zeroDirichlet3D;
-			flag2Func = inflowParabolic3D;
-			flag4Func = zeroDirichlet3D;
-			parameter_vec.push_back(0.41);//height of inflow region	
-			
-		}
-		else if(modellProblem == "LDC" && dim ==2){
+		if(modellProblem == "LDC" && dim ==2){
 			rhs = rhs0;
 			exactSolU = dummyFuncSol;
 			exactSolP = dummyFuncSol;
@@ -479,8 +361,6 @@ int main(int argc, char *argv[]) {
 			flag3Func = zeroDirichlet2D; //three;
 			flag4Func = four;
 			flag5Func = five;
-			//flag6Func = six;
-
 		}
 		else if(modellProblem == "LDC" && dim ==3){
 			rhs = rhs0;
@@ -515,12 +395,6 @@ int main(int argc, char *argv[]) {
 			exactSolP= exactSolutionPVer;
 			flag1Func = bcVer;
 			flag5Func = bcSolutionPVer;
-		}
-		else if(modellProblem =="Aneurysma" && dim ==3){
-			
-
-
-
 		}
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem));
         if (precMethod == "Monolithic")

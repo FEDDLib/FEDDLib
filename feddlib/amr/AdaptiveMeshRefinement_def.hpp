@@ -40,9 +40,18 @@ domainsP1_(0)
 }
 
 
+void dummyFuncSol(double* x, double* res){
+    
+	res[0] = 0.;
+
+    return;
+}
+
 /*!
-Initializing problem with the kind of problem (e.g. Laplace, Stokes) for determining the correct error estimation and the dimension
-@param[in] problemType, dim
+\brief Initializing problem with the kind of problem we are solving for determining the correct error estimation. ParameterListAll delivers all necessary information (i.e. dim, feType). This constructor is used if no exact solutions are known.
+
+@param[in] problemType Laplace, Stokes, NavierStokes.
+@param[in] parameterListAll Parameterlist as used as input parametersProblem.xml.
 */
 template <class SC, class LO, class GO, class NO>
 AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll ):
@@ -79,13 +88,19 @@ domainsP1_(0)
 	coarseningN_  = parameterListAll->sublist("Mesh Refinement").get("Coarsening n" ,1);
 
 	refinementMode_  = parameterListAll->sublist("Mesh Refinement").get("Refinement Mode" ,"Regular");
-	// If no exact solution is given, we use a dummy function == 0 !!!
+
+	exactSolFunc_ = dummyFuncSol;
+	exactSolPFunc_ = dummyFuncSol;
 
 
 }
-/// 
-/// Initializing problem with the kind of problem, dimension and refinement spectific parameters
-///
+/*!
+\brief Initializing problem with the kind of problem we are solving for determining the correct error estimation. ParameterListAll delivers all necessary information (i.e. dim, feType). 
+
+@param[in] problemType Laplace, Stokes, NavierStokes.
+@param[in] paramerterListAll Parameterlist as used as input parametersProblem.xml.
+@param[in] exactSolFun Exact solution function.
+*/
 template <class SC, class LO, class GO, class NO>
 AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFunc ):
 inputMeshP1_(),
@@ -125,11 +140,17 @@ domainsP1_(0)
 
 	refinementMode_  = parameterListAll->sublist("Mesh Refinement").get("Refinement Mode" ,"Regular");
 
+	exactSolPFunc_ = dummyFuncSol;
 }
 
-/// 
-/// Initializing problem with the kind of problem, dimension and refinement spectific parameters
-///
+/*!
+\brief Initializing problem with the kind of problem we are solving for determining the correct error estimation. ParameterListAll delivers all necessary information (i.e. dim, feType). 
+
+@param[in] problemType Laplace, Stokes, NavierStokes.
+@param[in] paramerterListAll Parameterlist as used as input parametersProblem.xml.
+@param[in] exactSolFunU Exact solution for velocity u.
+@param[in] exactSolFunP Exact solution for velocity p.
+*/
 template <class SC, class LO, class GO, class NO>
 AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFuncU ,Func_Type exactSolFuncP ):
 inputMeshP1_(),
@@ -177,7 +198,14 @@ template <class SC, class LO, class GO, class NO>
 AdaptiveMeshRefinement<SC,LO,GO,NO>::~AdaptiveMeshRefinement(){
 
 }
+/*!
+\brief Initializing problem if only a certain area should be refined. 
 
+@param[in] domainP1 P_1 Domain
+@param[in] area Area that is suppose to be refined. If is a vector defining the area as follows: row1:[x_0,x_1] x-limits, row2: [y_0,y_1] y-limits, row3: [z_0,z_1] z-limits.
+@param[in] level intensity of refinement. Number of levels equals number of performed refinements.
+
+*/
 template <class SC, class LO, class GO, class NO>
 typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>:: refineArea(DomainPtr_Type domainP1, vec2D_dbl_Type area, int level ){
 
@@ -188,7 +216,6 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 	MeshUnstrPtr_Type outputMesh(new MeshUnstr_Type(domainP1->getComm(),  inputMeshP1_->volumeID_));
 
-	// !!!!! Not yes existing function 
 	domainRefined->initWithDomain(domainP1);
 
 	inputMeshP1_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1->getMesh() , true);
@@ -198,7 +225,6 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
     ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ );
 
 	// Refinement Factory object
-
 	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, refinementRestriction_, refinement3DDiagonal_, restrictionLayer_); 
 
 	// Estimating the error with the Discretizations Mesh.
@@ -217,6 +243,12 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 }
 
+/*!
+\brief Identifying the problem with respect to the degrees of freedom and whether we calculate pressure. By telling how many blocks the MultiVector has, we can tell whether we calculate pressure or not. Depending on the numbers of entries within the solution vector, we can tell how many degreesOfFreedom (dofs) we have.
+
+@param[in] valuesSolution Block that contains solution for velocity and as the case may be pressure.
+
+*/
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution){
 
@@ -244,16 +276,15 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstP
 }
 
 /*!
-\brief Global Algorithm of Mesh Refinement 
+\brief Global Algorithm of Mesh Refinement
+\brief Given domains and solutions depending on problem a global mesh refinement algorithm and error estimation is performed. For example if to solve simple laplace problem, we have only one solution to put in, if to estimate error for Navier-Stokes equation we need pressure and velocity solutions.
 
-\brief Given domains and solutions depending on problem global mesh refinement algorithm and error estimation is performed
+@param[in] domainP1  Domain with P_1 discretization, always neccesary as refinement is performed on P_1 mesh.
+@param[in] domainP12 Domain with P_1 or P_2 discretization if available, otherwise input domainP1.
+@param[in] solution  Solution of problem on P_1 or P_2 discretization, can contain velocity and pressure solution.
+@param[in] problem   The problem itself as the problemPtr. Contains Laplace, Stokes or Navier-Stokes problem.
+@param[in] rhs   Right hand side function from the pde system. Necessary for error estimation.
 
-\brief i.e. if to solve simple laplace problem, we have only one solution to put in, if to estimate error for Navier-Stokes equation we need pressure and velocity solution
-
-@param[in] domainP1  domain with P1 discretization, always neccesary as refinement is performed on P1 Mesh
-@param[in] domainP12 domain with P1 or P2 discretization if available, otherwise input domainP1
-@param[in] solution1 solution of problem on P1 or P2 discretization
-@param[in] solution2 solution of problem on P1 or P2 discretization if available, otherwise input solutionP1
 */
 
 template <class SC, class LO, class GO, class NO>
@@ -454,24 +485,14 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 }
 
-/*template <class SC, class LO, class GO, class NO>
-void AdaptiveMeshRefinement<SC,LO,GO,NO>::determineCoarsening(){
-
-
-
-}*/
-
-
-
 /*!
-\brief Calculating exact solution if possible with exactSolFunc_
+\brief Calculating exact solution for velocity if possible with exactSolFunc_.  
 
 */
 
 template <class SC, class LO, class GO, class NO>
 typename AdaptiveMeshRefinement<SC,LO,GO,NO>:: MultiVectorConstPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>::calcExactSolution(){
 	
-    //if ( !rhsFuncVec_[i].empty() )
 
 	MultiVectorPtr_Type exactSolution = Teuchos::rcp(new MultiVector_Type( solution_->getBlock(0)->getMap() ) ); 
 	Teuchos::ArrayRCP<SC> exactSolA = exactSolution->getDataNonConst(0);
@@ -492,15 +513,13 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>:: MultiVectorConstPtr_Type Adaptive
 }
 
 /*!
-\brief Calculating exact solution if possible with exactSolPFunc_
+\brief Calculating exact solution for pressure if possible with exactSolPFunc_
 
 */
 
 template <class SC, class LO, class GO, class NO>
 typename AdaptiveMeshRefinement<SC,LO,GO,NO>:: MultiVectorConstPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>::calcExactSolutionP(){
 	
-    //if ( !rhsFuncVec_[i].empty() )
-
 	MultiVectorPtr_Type exactSolution = Teuchos::rcp(new MultiVector_Type( domainP1_->getMapUnique())); 
 	Teuchos::ArrayRCP<SC> exactSolA = exactSolution->getDataNonConst(0);
 
@@ -518,10 +537,11 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>:: MultiVectorConstPtr_Type Adaptive
 }
 
 /*!
-Calculating error norms. If the exact solution is unknown we use approxmated errorNorm and error indicators
-@param[in] exact solution if known
-@param[in] FE solution
-@param[in] error estimation
+\brief Calculating error norms. If the exact solution is unknown we use approxmated error norm and error indicators.
+
+@param[in] exactSolution If known, otherwise a dummy vector with all zeros is input.
+@param[in] solutionP12 Finite element solution u_h and maybe p_h.
+@param[in] exactSolutionP If known, otherwise a vector with all zeros is input.
 */
 
 template <class SC, class LO, class GO, class NO>
@@ -710,10 +730,11 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 }
 
 
+/*!
 
-///
-/// ParaView exporter setup
-///
+\brief ParaViewExporter initiation. ParameterListAll contains most settings for ExporterParaView. ExporterParaViewAMR is an extension of ExportParaView and as such uses its setup.
+
+*/
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::initExporter( ParameterListPtr_Type parameterListAll){
 
@@ -733,9 +754,17 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::initExporter( ParameterListPtr_Type pa
 
 }
 
-///
-/// ParaView exporter export of solution on current mesh
-///
+/*!
+\brief ParaViewExporter export of solutions and other error values on current mesh.
+
+@param[in] mesh The current mesh on which refinement is performed.
+@param[in] exportSolutionMv Export vector of velocity fe solution.
+@param[in] exportSolutionPMv Export vector of pressure fe solution.
+@param[in] errorValue |u-u_h| on domainP12.
+@param[in] exactSolutionMv Export vector of exact velocity solution.
+@param[in] exactSolutionPMv Export vector of exact pressure solution.
+
+*/
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv,MultiVectorConstPtr_Type exportSolutionPMv,MultiVectorConstPtr_Type exactSolutionPMv){
 
@@ -782,10 +811,16 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh,
 
 }
 
+/*!
+\brief ParaViewExporter export of solutions and other error values on current mesh.
 
-///
-/// ParaView exporter export of error values and element distribution on current mesh
-///
+@param[in] mesh The current mesh on which refinement is performed.
+@param[in] errorElConst Estimated error eta_T.
+@param[in] errorElConstH1 H1 error elmentwise.
+@param[in] difH1Eta |eta_T-|\nabla u_h|_T| difference between estimated error an H1-error. 
+@param[in] vecDecompositionConst Information of distribution of elements among processors.
+
+*/
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportError(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type errorElConst, MultiVectorConstPtr_Type errorElConstH1 , MultiVectorConstPtr_Type difH1Eta ,MultiVectorConstPtr_Type vecDecompositionConst ){
 
@@ -810,7 +845,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportError(MeshUnstrPtr_Type mesh, Mu
 }
 
 /*!
-Writing refinement information
+\brief Writing refinement information at the end of mesh refinement.
 */
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){

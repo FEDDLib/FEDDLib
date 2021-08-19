@@ -101,9 +101,8 @@ void rhsPaperSin( double* p, double* res, const double* parameters){
 	double y = M_PI*p[1];
 
 	res[0] = -1*(4*pow(M_PI,3)*cos(y)*sin(y)*(pow(cos(x),2)-pow(sin(x),2)) - 8*pow(M_PI,3)*pow(sin(x),2)*cos(y)*sin(y) )- M_PI*sin(x)*cos(y);
-        res[1] = -1*(-4*pow(M_PI,3)*cos(x)*sin(x)*(pow(cos(y),2)-pow(sin(y),2)) + 8*pow(M_PI,3)*pow(sin(y),2)*cos(x)*sin(x)) - M_PI*cos(x)*sin(y);
+    res[1] = -1*(-4*pow(M_PI,3)*cos(x)*sin(x)*(pow(cos(y),2)-pow(sin(y),2)) + 8*pow(M_PI,3)*pow(sin(y),2)*cos(x)*sin(x)) - M_PI*cos(x)*sin(y);
 
-	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
 }
 
 
@@ -129,8 +128,8 @@ void bcPaperSin( double* p, double* res, double t, const double* parameters){
 	double x = p[0];
 	double y = p[1];
 
-	res[0] =  0.; //-2*pow(x,2)*y*pow((1-x),2)*(1-3*y+2*pow(y,2));
-	res[1] =  0.; //2*x*pow(y,2)*pow((1-y),2)*(1-3*x+2*pow(x,2));
+	res[0] =  0.; 
+	res[1] =  0.; 
 }
 
 // ####################################
@@ -156,15 +155,8 @@ void rhsVer( double* x, double* res, const double* parameters){
 	double alpha= 0.5;
 	double omega= 2*M_PI;
 
-	res[0] =0;//-1*(0.25*pow(r,-3./2)* (1.5*sin(phi)*psi+cos(phi)*dPsi) + pow(r,-3./2) *(sin(phi)*(-1.5*psi-0.5*ddPsi)+cos(phi)*(2*dPsi+dddPsi))) - pow(r,-1.5)*(2.25*dPsi+dddPsi)*cos(phi)- 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi) * sin(phi);
-	res[1] =0;//-1*(0.25*pow(r,-3./2)* (sin(phi)*dPsi+ 1.5*cos(phi)*psi) + pow(r,-3./2) *(cos(phi)*(1.5*psi+ 0.5*ddPsi)+sin(phi)*(2*dPsi+dddPsi))) + pow(r,-1.5)*(2.25*dPsi+dddPsi)*sin(phi)- 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi) * cos(phi);// + 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi);
-
-
-
-	
-	//res[0] = -1*((pow(r,-3./2)*(sin(phi)*(-45./8* psi-5./2 *ddPsi)+cos(phi)*(9./4 *dPsi + dddPsi)))*cos(phi)-(pow(r,-3./2)*(sin(phi)*(9./4*dPsi + dddPsi)+cos(phi)*(45./8*psi+5./2*ddPsi)))*sin(phi)) - pow(r,-1.5)*(2.25*dPsi+dddPsi)*cos(phi)- 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi) * sin(phi);
-	//res[1] = -1*((pow(r,-3./2)*(sin(phi)*(-45./8* psi-5./2 *ddPsi)+cos(phi)*(9./4 *dPsi + dddPsi)))*sin(phi)+(pow(r,-3./2)*(sin(phi)*(9./4*dPsi + dddPsi)+cos(phi)*(45./8*psi+5./2*ddPsi)))*cos(phi))- pow(r,-1.5)*(2.25*dPsi+dddPsi)*sin(phi)+ 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi) * cos(phi);// + 2 *pow(r,-1.5)*(2.25*ddPsi+ddddPsi);
-	//cout << " Rhs " << res[0] << " " << res[1] << endl;
+	res[0] =0;
+	res[1] =0;
 	
 }
 
@@ -294,9 +286,8 @@ void rhsPaperExp( double* p, double* res, const double* parameters){
 	double lambda = R/2. - sqrt(pow(R,2)/4.+4.*M_PI*M_PI);
 
 	res[0] = -1*(-lambda*lambda*exp(lambda*p[0]) *cos(y) + exp(lambda*p[0])*4*M_PI*M_PI*cos(y)) +lambda*exp(2*lambda*p[0]);
-        res[1] = -1*(pow(lambda,3)/(2*M_PI)*exp(lambda*p[0]) *sin(y)-lambda*exp(lambda*p[0])*2*M_PI*sin(y));
+    res[1] = -1*(pow(lambda,3)/(2*M_PI)*exp(lambda*p[0]) *sin(y)-lambda*exp(lambda*p[0])*2*M_PI*sin(y));
 
-	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
 }
 
 
@@ -344,8 +335,6 @@ void rhs0( double* p, double* res, const double* parameters){
 	res[0] =0;
     res[1] =0;
 	res[2] =0;
-
-	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
 }
 
 void one(double* x, double* res, double t, const double* parameters){
@@ -480,7 +469,6 @@ int main(int argc, char *argv[]) {
         cout << "################### Stokes ######################" <<endl;
         cout << "#################################################" <<endl;
     }
-
     
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
@@ -583,33 +571,12 @@ int main(int argc, char *argv[]) {
 			exactSolU= exactSolutionUHan;
 			exactSolP= exactSolutionPHan;
 			flag1Func = bcHan;
-
-
 		}
 		else if(modellProblem == "PaperSin" && dim == 2){
 			rhs = rhsPaperSin;
 			exactSolU= exactSolutionPaperSinU;
 			exactSolP = exactSolutionPaperSinP;
 			flag1Func = bcPaperSin;
-		}
-		else if(modellProblem == "Turek" && dim ==2){
-			rhs = rhs0;
-			exactSolU = dummyFuncSol;
-			exactSolP = dummyFuncSol;
-			flag1Func = zeroDirichlet2D;
-			flag2Func = inflowParabolic2D;
-			flag4Func = zeroDirichlet2D;
-			parameter_vec.push_back(0.41);//height of inflow region	
-		}
-		else if(modellProblem == "Turek" && dim == 3){
-			rhs = rhs0;
-			exactSolU = dummyFuncSol;
-			exactSolP = dummyFuncSol;
-			flag1Func = zeroDirichlet3D;
-			flag2Func = inflowParabolic3D;
-			flag4Func = zeroDirichlet3D;
-			parameter_vec.push_back(0.41);//height of inflow region	
-			
 		}
 		else if(modellProblem == "LDC" && dim ==2){
 			rhs = rhs0;
@@ -728,10 +695,6 @@ int main(int argc, char *argv[]) {
 			
             Teuchos::RCP<Stokes<SC,LO,GO,NO> > stokes( new Stokes<SC,LO,GO,NO>(domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll ));
 
-			//domainVelocity->info();
-			//domainPressure->info();
-			//stokes->info();
-			
 			{
 				Teuchos::TimeMonitor solveTimeMonitor(*solveTime);
 				

@@ -29,9 +29,9 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveBFS
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveBFS3D
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
-	SOURCE_FILES BFS3dC.mesh
+	SOURCE_FILES bfs3D.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES BFS3dC.mesh
+	DEST_FILES bfs3D.mesh
 	EXEDEPS steadyNavierStokesAdaptive
 )
 

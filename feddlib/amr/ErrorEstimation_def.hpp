@@ -15,10 +15,10 @@
 /*!
  Definition of ErrorEstimation
  
- @brief  ErrorEstimation
+  \brief  ErrorEstimation
  @author Lea Saßsmannshausen
 
- */
+*/
 
 using namespace std;
 using Teuchos::reduceAll;
@@ -29,6 +29,14 @@ using Teuchos::outArg;
 
 namespace FEDD {
 
+
+/*!
+\brief ErrorEstimation is initiated with the dimension and problemType, as it is necessary to fit errorEstimation to the problem at hand.
+
+@param[in] dim Dimension of problem.
+@param[in] problemType Type of problem. Choose between Laplace, Stokes and NavierStokes
+
+*/
 template <class SC, class LO, class GO, class NO>
 ErrorEstimation<SC,LO,GO,NO>:: ErrorEstimation(int dim, string problemType)
 {
@@ -41,9 +49,12 @@ template <class SC, class LO, class GO, class NO>
 ErrorEstimation<SC,LO,GO,NO>::~ErrorEstimation(){
 }
 
-///
-/// @brief We need to identify the problem with respect to the DegreesOfFreedom(dofs) of u our velocity and if necessary p our pressure
-///
+/*!
+\brief Identifying the problem with respect to the degrees of freedom and whether we calculate pressure. By telling how many block the MultiVector has, we can tell whether we calculate pressure or not. Depending on the numbers of entries within the solution vector, we can tell how many degreesOfFreedom (dofs) we have.
+
+@param[in] valuesSolution Blocks that contains solution for velocity and as the case may be pressure.
+
+*/
 template <class SC, class LO, class GO, class NO>
 void ErrorEstimation<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution){
 
@@ -73,9 +84,14 @@ void ErrorEstimation<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstPtr_Type
 		dofsP_=0;
 
 }
-///
-/// @brief We split the solution from the BlockMultiVector valuesSolution into one or two seperate blocks, where the blocks represen the different dimensions
-///
+
+
+/*!
+\brief We split the solution from the BlockMultiVector valuesSolution into one or more seperate blocks, where the blocks represent the different dimensions
+
+@param[in] valuesSolution Block that contains solution for velocity and as the case may be pressure.
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 void ErrorEstimation<SC,LO,GO,NO>::makeRepeatedSolution(BlockMultiVectorConstPtr_Type valuesSolution){
@@ -125,16 +141,15 @@ void ErrorEstimation<SC,LO,GO,NO>::makeRepeatedSolution(BlockMultiVectorConstPtr
 
 }
 /*!
-\brief Main Function for A-posteriori Error Estimation
+\brief Main Function for a posteriori error estimation
 
-\brief depending on the problem the the error estimation is calculated accordingly
+\brief depending on the problem the the error estimation is calculated accordingly.
 
-@param[in] inputMeshP1 the P1 Mesh that is used for later refinement
-@param[in] inputMeshP12 the possible P2 Mesh, if one of the solutions is of P2 Discretisation, otherwise both meshes are P1
-@param[in] solution of the PDE in BlockMultiVector Format (Block 0: Velocity, Block 1: Pressure)
-@param[in] rhs Function 
-@param[in] FETypeV as the maximum FEType for the Velocity, pressure is assumed to be P1 
-
+@param[in] inputMeshP1 The P1 Mesh that is used for later refinement.
+@param[in] inputMeshP12 The possible P2 Mesh, if one of the solutions is of P2 Discretisation, otherwise both meshes are P1.
+@param[in] solution Solution of the PDE in BlockMultiVector Format (Block 0: Velocity, Block 1: Pressure).
+@param[in] rhs The right hand side function of the pde.
+@param[in] FETypeV Finite element type as the maximum FEType for the Velocity, pressure is assumed to be P1 always.
 */ 
 template <class SC, class LO, class GO, class NO>
 typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, string FETypeV){
@@ -224,8 +239,6 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 			if(maxErrorElLoc < errorElement[k] )
 					maxErrorElLoc = errorElement[k];
-			//if(resElement > 1000)
-			//cout << " Error Element [k] " << errorElement[k] << " with resElement " << resElement << " divU " << divUElement << " and Jumps "<< u_Jump[edgeNumbers[0]] << " " << u_Jump[edgeNumbers[1]]<< " " << u_Jump[edgeNumbers[2]] << endl;
 		}
 
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxErrorElLoc, outArg (maxErrorElLoc));
@@ -454,9 +467,10 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 
 /*!
-@brief Tags only a certain Area for refinement and is independent of any error estimation
-@param[in] inputMeshP1 the P1 Mesh that is used for later refinement
-@param[in] the area, that is suppose to be refined. If is a vector defining the area as follows: row1:[x_0,x_1] x-limits, row2: [y_0,y_1] y-limits, row3: [z_0,z_1] z-limits 
+\brief Tags only a certain Area for refinement and is independent of any error estimation.
+
+@param[in] inputMeshP1 The P1 Mesh that is used for later refinement.
+@param[in] area  Area that is suppose to be refined. If is a vector defining the area as follows: row1:[x_0,x_1] x-limits, row2: [y_0,y_1] y-limits, row3: [z_0,z_1] z-limits .
 */
 template <class SC, class LO, class GO, class NO>
 void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type inputMeshP1,vec2D_dbl_Type area){
@@ -558,11 +572,7 @@ void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type inputMeshP1,vec2D_
 }
 
 /*!
-@brief Part of the error estimator that calculates the jump part of the estimation
-
-@param[in] none, as all necessary parameters for the calculation are already part of the Error estimation class.
-
-@brief What kind of jump is calculated depends on the problemType we have at hand.
+\brief Part of the error estimator that calculates the jump part of the estimation. What kind of jump is calculated depends on the problemType we have at hand.
 */
 template <class SC, class LO, class GO, class NO>
 vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
@@ -641,7 +651,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 		// Edge Numbers of Element
 		vec_int_Type surfaceElementsIds(surfaceNumbers);
 
-		vec_dbl_Type areaTriangles(numberSurfaceElements);// = determineAreaTriangles(elements,edgeElements, surfaceTriangleElements,  points);
+		vec_dbl_Type areaTriangles(numberSurfaceElements);
 		vec_dbl_Type tmpVec1(numberSurfaceElements);
 		vec_dbl_Type tmpVec2(numberSurfaceElements);
 		// necessary entities
@@ -653,13 +663,6 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 
 		for(int k=0; k< surfaceTriangleElements->numberElements();k++){
 			FiniteElement surfaceTmp = surfaceTriangleElements->getElement(k);
-			/*double h_E = 0.;
-			for(int i =1; i< 3 ; i++){
-				double length = sqrt(pow(points->at(surfaceTmp.getNode(i)).at(0)-points->at(surfaceTmp.getNode(i-1)).at(0),2)+ pow(points->at(surfaceTmp.getNode(i)).at(1)-points->at(surfaceTmp.getNode(i-1)).at(1),2)+pow(points->at(surfaceTmp.getNode(i)).at(2)-points->at(surfaceTmp.getNode(i-1)).at(2),2));
-				if(length > h_E)
-					h_E = length;
-
-			}*/
 			double jumpQuad=0.;
 			for(int j=0; j<dofs_ ; j++){
 				for(int i=0; i<u_El[k].size();i++){
@@ -675,9 +678,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 				quadWeightConst = areaTriangles[k];
 
 
-			surfaceElementsError[k] = h_Tri[k]*jumpQuad*quadWeightConst; // (1./h_E[k])
-
-			//cout << " Jump Quad " << " k " << k << " " << jumpQuad << " h_E " << h_E2[k] << endl;
+			surfaceElementsError[k] = h_Tri[k]*jumpQuad*quadWeightConst; 
 		}
 						
 	}
@@ -686,11 +687,11 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 }
 
 /*!
-@brief Function that calculates the jump part for nabla u or p 
+\brief Function that calculates the jump part for nabla u or p 
 
-@param[in] phiDerivative is either 'Gradient' or 'None' and what kind of jump is calculated depends on the problemType we have at hand. If phiDerivative is 'Gradient' the nabla u jump part is caluculated and if its 'None' then the p-
-@param[in] dofsSol is the degree of freedom of the caluclated jump part. p's dof is typically 1 whereas u's dof can vary depending on the problem
-@param[in] FEType of the calculated jump part. 
+@param[in] phiDerivative phiDerivative is either 'Gradient' or 'None' and what kind of jump is calculated depends on the problemType we have at hand. If phiDerivative is 'Gradient' the nabla u jump part is caluculated and if its 'None' then the pressure jump.
+@param[in] dofsSol Degree of freedom of the caluclated jump part. The pressure dof is always 1 whereas velocity dof can vary depending on the problem.
+@param[in] FEType Finite element type of the calculated jump part. 
  
 */
 template <class SC, class LO, class GO, class NO>
@@ -788,7 +789,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 			if((surfaceTriangleElements->getElement(k).getFlag() == 10 || surfaceTriangleElements->getElement(k).getFlag() == 0))//&& elementsOfSurfaceLocal.at(k).size()>1)
 				interiorElement=true;
 		}  
-		if(interiorElement == true){  
+		if(interiorElement == true && elementsOfSurfaceLocal.at(k).size() > 1){  
 		// Per edge we have depending on discretization quadrature points and weights
 			vec_dbl_Type quadWeights(quadPSize);
 			vec2D_dbl_Type quadPoints; 
@@ -1037,14 +1038,14 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 }
 
 /*!
-@brief Function that marks the elements for refinement 
+\brief Function that marks the elements for refinement.
 
-@param[in] errorElementMv is the MultiVector that contains the estimated error for each element
-@param[in] theta is a parameter determining a certain error bound for marking
-@param[in] markingStrategy is the strategy with which the elements are marked. Implemented Strategies 'Doerfler' or 'Maximum'  
-@param[in] meshP1 is the P1 mesh which is used for later refinement and has to be the one beeing marked
+@param[in] errorElementMv MultiVector that contains the estimated error for each element.
+@param[in] theta Parameter determining for marking strategies.
+@param[in] markingStrategy Strategy with which the elements are marked. Implemented Strategies 'Doerfler' or 'Maximum'. 
+@param[in] meshP1 P1 mesh which is used for later refinement and has to be the one beeing marked.
 
-@brief !! it is essential that the meshP1 mesh inserted here is the mesh that will be used for mesh refinement, as it contains the elementwise-information determining refinement. !!
+ \brief !! it is essential that the meshP1 mesh inserted here is the mesh that will be used for mesh refinement, as it contains the elementwise-information determining refinement. !!
 */
 
 template <class SC, class LO, class GO, class NO>
@@ -1130,9 +1131,11 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
 }
 
 /*!
-@brief Function that that determines || div(u) ||_T for a Element T
+\brief Function that that determines || div(u) ||_T for a Element T.
 
-@param[in] FiniteElement element where ||div(u)||_T is calculated on
+@param[in] element FiniteElement element where ||div(u)||_T is calculated on.
+
+@param[out] divElement Divergence of u_h on element
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -1220,11 +1223,12 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 }
 
 /*!
-@brief Function that that determines ||\Delta u_h + f ||_(L2(T)), || \Delta u_h + f - \nabla p ||_T || \Delta u_h + f - \nabla p - (u \cdot \nabla)u||_T for an Element T
+\brief Function that that determines ||\Delta u_h + f ||_(L2(T)), || \Delta u_h + f - \nabla p_h ||_T or || \Delta u_h + f - \nabla p_h - (u_h \cdot \nabla)u_h||_T for an Element T
 
-@param[in] FiniteElement element where ||div(u)||_T is calculated on
-@param[in] RhsFunc_Type rhsFunc which is the function used for the rhs of the pde
+@param[in] element FiniteElement element where ||div(u)||_T is calculated on.
+@param[in] rhsFunc The right hand side function of the pde.
 
+@param[out] resElement Residual of element according to problemType 
 */
 
 template <class SC, class LO, class GO, class NO>
@@ -1235,7 +1239,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	vec_dbl_Type resElement(dofs_);
 
 	int dim = this->dim_;
-    SC* paras ; //= &(funcParameter[0]);
+    SC* paras ;
 
 	int t=1;
 	if(dim == 2)
@@ -1367,29 +1371,30 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	for (UN w=0; w< QuadW.size(); w++){
 			rhsFunc(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
 			for(int j=0 ; j< dofs_; j++){
-		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] - nablaU[j][w] - nablaP[j] ,2); // 
-				//cout << " Func " << valueFunc[j] << " delta " << deltaU[j] << " nablaU " << nablaU[j][w] << " p " <<  nablaP[j]  << endl;
+		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] - nablaU[j][w] - nablaP[j] ,2); 
 		}
 	}
 	double resElementValue =0.;
 	for(int j=0; j< dofs_ ; j++)
 		resElementValue += resElement[j] *detB1;
-	/*cout << " ------------------------------------ " << endl;
-	cout << " ReElement " << resElementValue << endl;
-	cout << " ------------------------------------ " << endl;*/
+
 	return resElementValue;
 
 
 }
 /*!
 
-@brief Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information
+\brief Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information.
 
-@param[in] dim for which the quadrature points are needed
-@param[in] FEType for which the quadrature points are needed
-@param[in] Type of quadrature points are need. Either 'Element' if you integrate over an element or 'Surface' if you need to integrate over a surface (i.e. for calculating the jump)
+@param[in] dim Dimension for which the quadrature points are needed.
+@param[in] FEType Finite element type for which the quadrature points are needed.
+@param[in] Type Type of quadrature points are need. Either 'Element' if you integrate over an element or 'Surface' if you need to integrate over a surface (i.e. for calculating the jump)
 @param[in] QuadW Vector to be filled with the quadrature weights accordingly
 @param[in] FiniteElement surface for which you need the quadrature points in case if 'Surface' type, as it is needed for figuring out the quadrature points
+
+@param[out] QuadPts Quadrature points
+@param[out] QuadW Quadrature weights
+\brief Keep in mind that elementwise quadPoint are defined on reference element whereas surface quadPoints are defined on the input surface, which is typically not the reference Element. 
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -1520,19 +1525,19 @@ vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::getQuadValues(int dim, string FETyp
 
 }
 /*!
-@brief function, that determines volume of tetrahedra
+ \brief function, that determines volume of tetrahedra.
 
-@param[in] elements
-@param[in] edgeElements
-@param[in] points
+@param[in] elements Elements.
+@param[in] edgeElements Edges.
+@param[in] points Points.
 
-
+@param[out] volumeTetrahedra Volume of tetrahedras
 */
 
 template <class SC, class LO, class GO, class NO>
 vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineVolTet(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points){
 	
-	vec_dbl_Type volumeTetraeder(elements->numberElements());
+	vec_dbl_Type volumeTetrahedra(elements->numberElements());
 
 	vec_dbl_Type p1(3),p2(3), p3(3), v_K(3);
 
@@ -1565,20 +1570,22 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineVolTet(ElementsPtr_Type elem
 		v_K[2] = p1[0]*p2[1] - p1[1]*p2[0];
 
 		
-		volumeTetraeder[k] = fabs(p3[0] * v_K[0] + p3[1] * v_K[1] +p3[2] * v_K[2]) / 6. ;
+		volumeTetrahedra[k] = fabs(p3[0] * v_K[0] + p3[1] * v_K[1] +p3[2] * v_K[2]) / 6. ;
 	}
 
 		
 		
-	return volumeTetraeder;
+	return volumeTetrahedra;
 }
 
 /*!
-@brief Calculating the circumdiameter of tetraeder
+ \brief Calculating the circumdiameter of tetraeder.
 
-@param[in] elements
-@param[in] points
-@param[in] volTet Volume of tetrahedra
+@param[in] elements Elements.
+@param[in] points Points.
+@param[in] volTet Volume of tetrahedra.
+
+@param[out] diamElements Uncircumdiameter of tetrahedra.
 
 */
 
@@ -1617,12 +1624,14 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamTetraeder(ElementsPtr_Type el
 }
 
 /*!
-@brief Calcutlating the incircumdiameter of tetrahedra
+ \brief Calcutlating the incircumdiameter of tetrahedra.
 
-@param[in] elements
-@param[in] surfaceTriangleElements
-@param[in] volTet Volume of tetrahedra
-@param[in] areaTriangles Area of faces of tetrahedra
+@param[in] elements Elements.
+@param[in] surfaceTriangleElements TriangleElements.
+@param[in] volTet Volume of tetrahedra.
+@param[in] areaTriangles Area of faces of tetrahedra.
+
+@param[out] rhoElements Incircumdiameter of tetrahedra.
 
 */
 
@@ -1645,10 +1654,12 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcRhoTetraeder(ElementsPtr_Type ele
 	return rhoElements;
 }
 /*!
-@brief Calculating the diameter of triangles. This is necessary for 2D A-posteriori error estimation
+ \brief Calculating the diameter of triangles.
 
-@param[in] elements
-@param[in] points
+@param[in] elements Elements.
+@param[in] points Points.
+
+@param[out] diamElements Diameter of triangles.
 
 */
 
@@ -1694,14 +1705,14 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamTriangles3D(SurfaceElementsPt
 
 
 /*!
-@brief Calculating the area of the triangle elements of tetrahedra
+ \brief Calculating the area of the triangle elements of tetrahedra
 
-@param[in] elements
-@param[in] edgeElements
-@param[in] surfaceElements
-@param[in] points
+@param[in] elements Elements.
+@param[in] edgeElements Edges.
+@param[in] surfaceElements Triangle Elements.
+@param[in] points Points.
 
-
+@param[out] areaTriangles Area of triangles.
 */
 
 template <class SC, class LO, class GO, class NO>
@@ -1738,10 +1749,14 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineAreaTriangles(ElementsPtr_Ty
 	return areaTriangles;
 }
 /*!
-@brief Calculating the diameter of triangles. This is necessary for 2D A-posteriori error estimation
+ \brief Calculating the diameter of triangles. 
 
-@param[in] elements
-@param[in] points
+@param[in] elements Elements
+@param[in] points Points
+
+@param[out] diamElements Diameter of triangles (Uncirclediameter).
+@param[out] rho_T Incirclediameter.
+@param[out] C_T Shape parameter.
 
 */
 
@@ -1791,18 +1806,17 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>:: calcDiamTriangles(ElementsPtr_Type e
 
 
 /*!
-@brief determineCoarseningError is the essential part of the mesh coarsening process.
-@brief instead of calulating a error of mesh level k, we redestribute it to lower mesh levels and defining those.// We execute this function with an estimated error from the above 'estimateCoarseningError' function. With this error, we mark the elements according to that error and refine afterwards
- If we decide to coarsen a certain mesh level, we take that level, look at the k-m level and refine that to the point where we are at the same level we wanted to perform the coarsening on
+ \brief DetermineCoarseningError is the essential part of the mesh coarsening process.
+ \brief Instead of calulating an error for mesh level k, we redestribute it to lower mesh levels and refining those. We execute this function with an estimated error from level k. With this calculated error, we mark the elements according to that error and refine afterwards.
+ If we decide to coarsen a certain mesh level, we take that level, look at the k-m level and refine that to the point where we are at the same level we wanted to perform the coarsening on.
 
 
-@param[in] mesh_k the current mesh of level k
-@param[in] mesh_k_m the mesh of refinement level k-m
-@param[in] errorElementMv_k as the error estimation of mesh level k
-@param[in] distribution is either 'forwards' or 'backwards'. We determine the error estimate in level k-m with redistributing backwards. if we are in level k-m we calculate the k-m+1 mesh level error estimation via redistributing the k-m error forward. 
-@param[in] markingStrategy the strategy with which element are marked
-@param[in] theta as the a marking threshold
-
+@param[in] mesh_k Current mesh of level k.
+@param[in] mesh_k_m Mesh of refinement level k-m.
+@param[in] errorElementMv_k The error estimation of mesh level k.
+@param[in] distribution Either 'forwards' or 'backwards'. We determine the error estimate in level k-m with redistributing backwards. if we are in level k-m we calculate the k-m+1 mesh level error estimation via redistributing the k-m error forward. 
+@param[in] markingStrategy The strategy with which element are marked.
+@param[in] theta Marking threshold.
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -1841,10 +1855,10 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 }
 
 /*!
-@brief updateElementsOfSurfaceLocalAndGlobal is performed here instead of in meshRefinement, as the information is only needed in case of error estimation
+ \brief UpdateElementsOfSurfaceLocalAndGlobal is performed here instead of in meshRefinement, as the information is only needed in case of error estimation. Equivalent function as updateElementsOfEdgeGlobal but with the important destinction, that it runs without communication and only relies on local information.
 
-@param[in] edgeElements
-@param[in] surfaceTriangleElements
+@param[in] edgeElements Edes.
+@param[in] surfaceTriangleElements Triangle elements.
 
 */
 
@@ -1922,11 +1936,11 @@ void ErrorEstimation<SC,LO,GO,NO>::updateElementsOfSurfaceLocalAndGlobal(EdgeEle
 }
 
 /*!
-@brief Build Surface Map
+ \brief Build Surface Map.
  Contrary to building the edge map, building the surface map is somewhat simpler as elementsOfSurfaceGlobal and elementsOfSurfaceLocal already exist.
  Via elementsOfSurface global each surface can be uniquely determined by the two elements it connects.
 
-	The surfacemap is only used for error estimation. Thus it is only build here and not in the refinementFactory
+The surfacemap is only used for error estimation. Thus it is only build here and not in the refinementFactory.
 
 */
 
@@ -2157,12 +2171,13 @@ void ErrorEstimation<SC,LO,GO,NO>::buildTriangleMap(){
 }
 
 /*!
-@brief Calcutlating the gradient of phi depending on quad points p
+ \brief Calcutlating the gradient of phi depending on quad points p.
 
-@param[in] dim
-@param[in] intFE integer value of discretisation P1 (1) or P2(2)
-@param[in] p Quadpoints or other points for which phi is suppose to be evaluated
+@param[in] dim Dimension.
+@param[in] intFE Integer value of discretisation P1 (1) or P2(2).
+@param[in] p Quadpoints or other points for which phi is suppose to be evaluated.
 
+@param[out] gradPhi Gradient of phi with evaluated values p.
 */
 
 template <class SC, class LO, class GO, class NO>
@@ -2287,12 +2302,13 @@ vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::gradPhi(int dim,
 }
 
 /*!
-@brief Calcutlating phi depending on quad points p
+ \brief Calcutlating phi depending on quad points p.
 
-@param[in] dim
-@param[in] intFE integer value of discretisation P1 (1) or P2(2)
-@param[in] p Quadpoints or other points for which phi is to be evaluated
+@param[in] dim.
+@param[in] intFE integer value of discretisation P1 (1) or P2(2).
+@param[in] p Quadpoints or other points for which phi is to be evaluated.
 
+@param[out] phi Phi with evaluated values p.
 */
 
 template <class SC, class LO, class GO, class NO>

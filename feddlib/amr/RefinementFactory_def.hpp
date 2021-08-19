@@ -15,7 +15,7 @@
 /*!
  Definition of RefinementFactory
  
- @brief  RefinementFactory
+  \brief  RefinementFactory
  @author Lea Saßmannshausen
 
  */
@@ -36,10 +36,13 @@ MeshUnstructured<SC,LO,GO,NO>()
 
   
 }
-/*!
 
-@param[in] comm 
-@param[in] volumeID
+
+/*!
+\brief Initiating RefinementFactory via MeshUnstructured.
+
+@param[in] comm CommPtr.
+@param[in] volumeID The flag ID of triangles in 2D or tetrahedra in 3D. Usually 10.
 
 */
 
@@ -51,11 +54,12 @@ MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 }
 
 /*!
+\brief Initiating RefinementFactory via MeshUnstructured with additional information for mesh refinement
 
-@param[in] comm 
-@param[in] volumeID
-@param[in] refinementRestriction for repeated refinement steps
-@param[in] refinement3DDiagonal
+@param[in] comm CommPtr
+@param[in] volumeID The flag ID of triangles in 2D or tetrahedra in 3D. Usually 10.
+@param[in] refinementRestriction Restriction for repeated refinement steps.
+@param[in] refinement3DDiagonal 3D diagonal pick for regular refinement
 
 */
 
@@ -78,9 +82,10 @@ RefinementFactory<SC,LO,GO,NO>::~RefinementFactory(){
 
 /*!
 
-@brief Not all edges are marked with a flag in the beginning. In order to set the correct flags to new points we assign the edge flag of the edge they originated from, similar to the function determineEdgeFlagP2New, but uses the edgeMap 
-@param[in] meshP1 inputMesh
-@param[in] edgeElements that receive flags
+ \brief Not all edges are marked with a flag in the beginning. In order to set the correct flags to new points we assign the edge flag of the edge they originated from, similar to the function determineEdgeFlagP2New, but this function uses the edgeMap.
+
+@param[in] meshP1 InputMesh, always P1.
+@param[in] edgeElements Edges that receive flags.
 
 */
 
@@ -145,20 +150,16 @@ void RefinementFactory<SC,LO,GO,NO>::assignEdgeFlags( MeshUnstrPtr_Type meshP1, 
 		MultiVectorLOPtr_Type isInterfaceElement_imp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterfaceUnique, 1 ) );
 		isInterfaceElement_imp->putScalar( (LO) 0 ); 
 		isInterfaceElement_imp->importFromVector( edgeFlags, false, "Insert");
-		//isInterfaceElement_imp->print();
 
 		MultiVectorLOPtr_Type isInterfaceElement_exp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterfaceUnique, 1 ) );
 		isInterfaceElement_exp->putScalar( (LO) 0 ); 
 		isInterfaceElement_exp->exportFromVector( edgeFlags, false, "Insert");
-		//isInterfaceElement_exp->print();
 
 		MultiVectorLOPtr_Type isInterfaceElement2_imp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterface, 1 ) );
 		isInterfaceElement2_imp->putScalar( (LO) 0 ); 
 		isInterfaceElement2_imp->importFromVector(isInterfaceElement_imp, false, "Insert");
-		//isInterfaceElement2_imp->print();
 
 		isInterfaceElement2_imp->exportFromVector(isInterfaceElement_exp, false, "Insert");
-		//isInterfaceElement2_imp->print();
 
 		edgeFlagsEntries  = isInterfaceElement2_imp->getDataNonConst(0);
 
@@ -205,9 +206,7 @@ void RefinementFactory<SC,LO,GO,NO>::assignEdgeFlags( MeshUnstrPtr_Type meshP1, 
 		flagExportEntries[i] = flagsTmp[i];
 	}
 	
-	//flagsExport->print();
 	flagsImport->importFromVector(flagsExport, false, "Insert");
-	//flagsImport->print();
 
     Teuchos::ArrayRCP< LO > flagImportEntries  = flagsImport->getDataNonConst(0);
 	for(int i=0; i<flagImportEntries.size(); i++){
@@ -227,11 +226,13 @@ void RefinementFactory<SC,LO,GO,NO>::assignEdgeFlags( MeshUnstrPtr_Type meshP1, 
 
 /*!
 
-@brief main function of RefinementFactory, performs one complete mesh refinement
+ \brief Main function of RefinementFactory, performs one complete mesh refinement, according to red-green refinement (Verfuerth) or tetrahedral grid refinement (Bey). 
 
-@param[in] meshP1 inputMesh
-@param[in] iteration current Iteration
-@param[in] outputMesh refined mesh
+@param[in] meshP1 InputMesh P1.
+@param[in] iteration Current Iteration.
+@param[in] refinementMode In 2D we can choose between 'Regular' (red-green) or 'Bisection. In 3D only 'Regular' is possible, which is also the default mode.
+
+@param[out] outputMesh Refined mesh.
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -633,19 +634,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 
    		Teuchos::TimeMonitor::report(cout,"Mesh Refinement");
 		//Teuchos::TimeMonitor::summarize(cout, false, true, false, Teuchos::Union , "Mesh Refinement", false);
-	
-		/*		
-		for(int i=0; i < this->pointsRep_->size(); i++){
-			if(this->pointsRep_->at(i).at(0) == 0 && this->pointsRep_->at(i).at(1) == 0 && this->pointsRep_->at(i).at(2) > 0 && this->pointsRep_->at(i).at(2) < 1 ){ 
-				this->bcFlagRep_->at(i) = 2;
-			}
-		}
 
-		for(int i=0; i < this->pointsUni_->size(); i++){
-			if(this->pointsUni_->at(i).at(0) == 0 && this->pointsUni_->at(i).at(1) == 0 && this->pointsUni_->at(i).at(2) > 0 && this->pointsUni_->at(i).at(2) < 1 ){ 
-				this->bcFlagUni_->at(i) = 2;
-			}
-		}*/
 		
 		if(this->comm_->getRank() == 0){
 			cout << "__________________________________________________________________________________________________________ " << endl;
@@ -689,13 +678,13 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 }
 /*!
 
-@brief checking if surfaces are part of the interface. 
-Done by checking if all edges of a triangle are part of the interface and if both elements connected to the surface are on differen processors
+ \brief Checking if surfaces are part of the interface. 
+Done by checking if all edges of a triangle are part of the interface and if both elements connected to the surface are on different processors.
 
-@param[in] edgeElements
-@param[in] originFlag Flags of surfaces of indexElement
-@param[in] edgeNumbers
-@param[in] indexElement
+@param[in] edgeElements Edges.
+@param[in] originFlag Flags of surfaces of indexElement.
+@param[in] edgeNumbers Numbers of inserted surfaces edges.
+@param[in] indexElement Index of element in question.
 
 */
 
@@ -758,13 +747,13 @@ vec_bool_Type RefinementFactory<SC,LO,GO,NO>::checkInterfaceSurface( EdgeElement
 
 /*!
 
-@brief building nodemap after refinement
+ \brief Building nodemap after refinement.
 
-@param[in] edgeElements
-@param[in] mapGlobalProc
-@param[in] mapProc
-@param[in] newPoints
-@param[in] newPointsRepeated
+@param[in] edgeElements Edges.
+@param[in] mapGlobalProc Map of global processor numbers.
+@param[in] mapProc Map of local processor numbers.
+@param[in] newPoints Number of new points per refinement iteration.
+@param[in] newPointsRepeated Number of new repeated points per refinement iteration.
 
 
 */
@@ -926,7 +915,6 @@ void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeEleme
 				indTmp[1] = values[j];
 				indicesTmp.push_back(indTmp);	// vector with the indices and values belonging to node i
 			}
-			//sort(indicesTmp.begin(),indicesTmp.end());
 			found = false;
 			for(int k=0; k<indicesTmp.size();k++){
 				if(inzidenzIndices[i][1] == indicesTmp[k][0]){
@@ -976,13 +964,13 @@ void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeEleme
 
 /*!
 
-@brief building surface triangle elements, as they are not originally part of the mesh information provided by mesh partitioner
+ \brief Building surface triangle elements, as they are not originally part of the mesh information provided by mesh partitioner.
 
-@param[in] elements
-@param[in] edgeElements
-@param[in] surfaceTriangleElements pointer which will be filled with surfaceTriangleElements
-@param[in] edgeMap
-@param[in] elementMap
+@param[in] elements Elements.
+@param[in] edgeElements Edges.
+@param[in] surfaceTriangleElements Pointer which will be filled with surfaceTriangleElements.
+@param[in] edgeMap Global Mapping of edges
+@param[in] elementMap Global Mapping of elements.
 
 
 */
@@ -1052,12 +1040,6 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 		// Tri_2 = [x_0,x_2,x_3] -> Edge 1,2,5
 		// Tri_3 = [x_1,x_2,x_3] -> Edge 3,4,5
 
-		/*vec2D_int_Type subElements(4,vec_int_Type(3));
-		subElements[0] = {edgeNumbers[0],edgeNumbers[1],edgeNumbers[3]};
-		subElements[1] = {edgeNumbers[0],edgeNumbers[2],edgeNumbers[4]};
-		subElements[2] = {edgeNumbers[1],edgeNumbers[2],edgeNumbers[5]};
-		subElements[3] = {edgeNumbers[3],edgeNumbers[4],edgeNumbers[5]};*/
-
 		// We check if one or more of these triangles are part of the boundary surface and determine there flag
 
 		vec2D_int_Type originTriangles(4,vec_int_Type(3));
@@ -1083,8 +1065,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 					sort(triTmp.begin(),triTmp.end());
 					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] &&  triTmp[2] == originTriangleTmp[2] ) 
 						originFlag[j] = elements->getElement(i).getSubElements()->getElement(k).getFlag();
-					//auto it1 = find( originTriangles.begin(), originTriangles.end() ,triTmp );
-               		//entry = distance( originTriangles.begin() , it1 );
+				
 				}
 			}
 		}
@@ -1116,10 +1097,10 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 
 /*!
 
-@brief building edgeMap after refinement
+ \brief Building edgeMap after refinement.
 
-@param[in] mapGlobalProc
-@param[in] mapProc
+@param[in] mapGlobalProc Map of global processor numbers
+@param[in] mapProc Map of local processor number
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -1264,18 +1245,12 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 			Teuchos::Array<SC> value2(1,uniqueInterfaceIDsList_[i]);
 			indMatrix->insertGlobalValues(index[0], col(), value2());
 		 }
-   		indMatrix->fillComplete(); //mapUniqueInterfaceNodes,mapUniqueInterfaceNodes);
-		//indMatrix->print();
-		//indMatrix->writeMM();
+   		indMatrix->fillComplete(); 
 
 		MatrixPtr_Type importMatrix = Teuchos::rcp( new Matrix_Type(this->mapRepeated_, 40 ) );
    		
 		importMatrix->importFromVector(indMatrix,false,"Insert");
-		importMatrix->fillComplete(); // mapInterfaceNodesRep, mapInterfaceNodesUnique); //mapScaledInterfaceNodesGlobalID,mapScaledInterfaceNodesGlobalID);
-		
-		//importMatrix->print(Teuchos::VERB_EXTREME);
-
-		//importMatrix->writeMM();
+		importMatrix->fillComplete(); 		
 		
 		// Determine global indices
 		GO edgeID=0;
@@ -1324,32 +1299,31 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 
 /*!
 
-@brief 
-Refinement Restrictions
-In 2D we can add some Restrictions to the Mesh Refinement:
-Bisection:	this will keep the regularity of the Mesh by only refining whith a irregular strategy 
+\brief Refinement Restrictions
+\brief In 2D we can add some Restrictions to the Mesh Refinement:
+\brief Bisection:	this will keep the regularity of the Mesh by only refining whith a irregular strategy 
 			  	when the longest edge is involved. If not we add a node to the longest edge, whereby 
-					the irregular refinement strategy is changed
-GreenTags:	this will only check tagged green Elements, if its irregular refinement tag from the previous
+					the irregular refinement strategy is changed.
+\brief GreenTags:	this will only check tagged green Elements, if its irregular refinement tag from the previous
 					refinement is 'green' and if so not refine it green again but add a node to the longest
-					edge and thus refine it blue
-In the 3D Case we simply never refine an element irregularly twice, this strategy is called simply 'Bey'.
+					edge and thus refine it blue.
+\brief In the 3D Case we simply never refine an element irregularly twice, this strategy is called simply 'Bey'.
 If an element is refined regular, its refinement tag changes from eventually 'irregular' to regular. If those elements
-should still not be refined irregular we use the strategy 'BeyIrreuglar.
+should still not be refined irregular we use the strategy 'BeyIrregular'.
 
-Furthermore if there is no fitting irrregular refinement strategy (Type(1)-Type(4) don't fit) we refine regular instead.
+\brief Furthermore if there is no fitting irrregular refinement strategy (Type(1)-Type(4) don't fit) we refine regular instead.
 
 
-@param[in] meshP1
-@param[in] elements
-@param[in] edgeElements
-@param[in] iteration
-@param[in] newPoints
-@param[in] newPointsCommon
-@param[in] globalInterfaceIDsTagged
-@param[in] mapInterfaceEdges
-@param[in] restriction
-@param[in] newElements
+@param[in] meshP1 P_1 Mesh.
+@param[in] elements Element.
+@param[in] edgeElements Edges.
+@param[in] iteration Current iteration.
+@param[in] newPoints Number of new unique points originating from restrictions.
+@param[in] newPointsCommon Number of new repeated points originating from restrictions.
+@param[in] globalInterfaceIDsTagged List of global IDs of tagged interface edges.
+@param[in] mapInterfaceEdges Map of interface edges.
+@param[in] restriction The kind of restriction we want to apply.
+@param[in] newElements Number of new elements orginating from restrictions.
 
 */
 
@@ -1373,7 +1347,6 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 		vec2D_LO_Type elementsOfEdgesLocal = edgeElements->getElementsOfEdgeLocal();
 		
 		int entry;
-
 
 		for(int i=0;i<elements->numberElements() ;i++){
 			for(int j=0;j<3;j++){
@@ -1675,13 +1648,13 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 
 /*!
 
-@brief irregular refinement performed according to set rules determined by Bey or Verfürth
+ \brief Refinement performed according to the set of rules determined by Bey or Verfürth.
 
-@param[in] elements
-@param[in] edgeElements
-@param[in] newElements
-@param[in] edgeMap
-@param[in] surfaceTriangleElements
+@param[in] elements Elements.
+@param[in] edgeElements Edges.
+@param[in] newElements Number of new elements originating from refinement.
+@param[in] edgeMap Map of global edge ids.
+@param[in] surfaceTriangleElements Triangle elements (3D case).
 
 */
 
@@ -1796,27 +1769,19 @@ void RefinementFactory<SC,LO,GO,NO>::refineMeshRegIreg(ElementsPtr_Type elements
 				for(int j=0;j<6;j++){
 					edgeElements->getElement(edgesOfElement[j]).setFiniteElementRefinementType("unrefined");
 					edgeElements->getElement(edgesOfElement[j]).setPredecessorElement(edgeMap->getGlobalElement(edgesOfElement[j]));
-					//edgeElements->getElement(edgesOfElement[j]).setInterfaceElement( edgeElements->getElement(edgesOfElement[j]).isInterfaceElement());
 					this->edgeElements_->addEdge(edgeElements->getElement(edgesOfElement[j]),i);
 
 				}
 
 				vec_int_Type surfacesOfElement = surfaceTriangleElements->getSurfacesOfElement(i);
 				for(int j=0;j<4;j++){
-					//surfaceTriangleElements->getElement(surfacesOfElement[j]).setInterfaceElement(surfaceTriangleElements->getElement(surfacesOfElement[j]).isInterfaceElement());
 					this->surfaceTriangleElements_->addSurface(surfaceTriangleElements->getElement(surfacesOfElement[j]),i);
-					/*if(surfaceTriangleElements->getElement(surfacesOfElement[j]).getFlag() !=0 && surfaceTriangleElements->getElement(surfacesOfElement[j]).getFlag() !=10){
-						if ( !this->elementsC_->getElement(i).subElementsInitialized() )
-							this->elementsC_->getElement(i).initializeSubElements( this->FEType_, this->dim_ -1) ;
-						this->elementsC_->getElement(i).addSubElement(surfaceTriangleElements_->getElement(surfacesOfElement[j]));	
-					}*/	
 				}
 			}
 		}
 	}
 						
 	for(int j=0;j<this->edgeElements_->numberElements();j++){
-		//this->elementsC_->getElement(j).untagForRefinement();			
 		if(this->edgeElements_->getElement(j).isTaggedForRefinement())
 			cout<< "tagged edge element somehow made it " << endl;
 	}
@@ -1826,10 +1791,10 @@ void RefinementFactory<SC,LO,GO,NO>::refineMeshRegIreg(ElementsPtr_Type elements
 
 /*!
 
-@brief Updating ElementsOfEdgesLocal and ElementsOfEdgesGlobal
+ \brief Updating ElementsOfEdgesLocal and ElementsOfEdgesGlobal.
 
-@param[in] maxRank
-@param[in] edgeMap
+@param[in] maxRank The maximal processor rank.
+@param[in] edgeMap Map of global edge ids.
 
 */
 
@@ -2035,26 +2000,16 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 			}
 		}
 
-		/*for(int i=0; i<this->edgeElements_->getElementsOfEdgeGlobal().size() ; i++){
-			cout << "ElementsOfEdgeGlobal " << i << " " ;
-			for(int j=0; j < this->edgeElements_->getElementsOfEdgeGlobal(i).size() ; j++){
-				cout << this->edgeElements_->getElementsOfEdgeGlobal(i).at(j) << " " ; 
-	
-			}
-			cout << " " << endl;
-		}*/
-			
-
 	}
 
 }
 
 /*!
 
-@brief adding a Midpoint on an edge
+ \brief Adding a Midpoint on an edge.
 
-@param[in] edgeElements
-@param[in] edgeID
+@param[in] edgeElements Edges.
+@param[in] edgeID Edge ids where the midpoints is added.
 
 */
 
@@ -2090,13 +2045,13 @@ void RefinementFactory<SC,LO,GO,NO>::addMidpoint(EdgeElementsPtr_Type edgeElemen
 
 /*!
 
-@brief determine longest edge in triangle
+ \brief Eetermine longest edge in triangle.
 
-@param[in] edgeElements
-@param[in] edgeVec
-@param[in] points
+@param[in] edgeElements Edges.
+@param[in] edgeVec Vector with edge ids of triangle.
+@param[in] points Points.
 
-@param[out] local edgeID of the longest edge
+@param[out] Local edgeID of the longest edge.
 
 */
 
@@ -2152,11 +2107,11 @@ int RefinementFactory<SC,LO,GO,NO>::determineLongestEdge( EdgeElementsPtr_Type e
 
 /*!
 
-@brief 2D blue refinement: refining element according to blue refinement scheme - connecting nodes of shorter edge with midpoint of longer tagged edge and connect that with opposite corner
+ \brief 2D blue refinement: refining element according to blue refinement scheme - connecting nodes of shorter edge with midpoint of longer tagged edge and connect that with opposite corner
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
+@param[in] edgeElements Edges
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -2377,11 +2332,11 @@ void RefinementFactory<SC,LO,GO,NO>::refineBlue(EdgeElementsPtr_Type edgeElement
 }
 /*!
 
-@brief 2D green refinement: refining the element according to green scheme - connecting node on refined edge with the opposite node 
+ \brief 2D green refinement: refining the element according to green scheme - connecting node on refined edge with the opposite node. 
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
+@param[in] edgeElements Edges.
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
 
 */
 
@@ -2567,11 +2522,11 @@ void RefinementFactory<SC,LO,GO,NO>::refineGreen(EdgeElementsPtr_Type edgeElemen
 }
 /*!
 
-@brief 2D red refinement: refining the element red by connecting all tagged edges midpoints. one element is refined into 4 
+ \brief 2D red refinement: refining the element red by connecting all tagged edges midpoints. one element is refined into 4.
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
+@param[in] edgeElements Edges
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
 
 */
 
@@ -2735,27 +2690,24 @@ void RefinementFactory<SC,LO,GO,NO>::refineRed(EdgeElementsPtr_Type edgeElements
 
 /*!
 
-@brief 3D Type(4) refinement
+ \brief 3D Type(4) refinement as defined in  "Tetrahedral Grid Refinement" by J. Bey 'Algorithm Regular Refinement' in Computing, Springer Verlag 1955
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
-@param[in] surfaceTriangleElements
+@param[in] edgeElements Edges.
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
+@param[in] surfaceTriangleElements Triangle elements.
 
 */
 
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements){
 
-// ##########################################################################################################################################
 // Implementation of Type (4) Refinement Type
 // We use this Refinement Type 
 	if(this->dim_ == 3){ 
 
 		// The way we refine the Tetrahedron is defined by how we order the nodes of the tetrahedron
 		// (For the algorithm see "Tetrahedral Grid Refinement" by J. Bey 'Algorithm Regular Refinement' in Computing, Springer Verlag 1955)
-		// The Type 4 Refinement is similar to a green Refinement in two dimensions, as we connect the midpoint to the opposite points on the same surface
-		// The procedure is similar to the regular refinement, we just add less elements
 
         vec_int_Type midPointInd( 0 ); // indices of midpoints of edges of soon to be refined element
 		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
@@ -3157,28 +3109,26 @@ void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElemen
 }
 /*!
 
-@brief 3D Type(3) refinement
+ \brief 3D Type(3) refinement as defined in  "Tetrahedral Grid Refinement" by J. Bey 'Algorithm Regular Refinement' in Computing, Springer Verlag 1955
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
-@param[in] surfaceTriangleElements
+@param[in] edgeElements Edges.
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
+@param[in] surfaceTriangleElements Triangle elements.
 
 */
 
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements){
 
-// ##########################################################################################################################################
+
 // Implementation of Type (3) Refinement Type
 // We use this Refinement Type 
 	if(this->dim_ == 3){ 
 
 		// The way we refine the Tetrahedron is defined by how we order the nodes of the tetrahedron
 		// (For the algorithm see "Tetrahedral Grid Refinement" by J. Bey 'Algorithm Regular Refinement' in Computing, Springer Verlag 1955)
-		// The Type 2 Refinement is similar to a green Refinement in two dimensions, as we connect the midpoint to the opposite points on the same surface
-		// The procedure is similar to the regular refinement, we just add less elements
-
+		
         vec_int_Type midPointInd(0); // indices of midpoints of edges of soon to be refined element
 		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
 		vec_int_Type edgeNumbersUntagged(0);
@@ -3573,19 +3523,18 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 
 /*!
 
-@brief 3D Type(2) refinement
+ \brief 3D Type(2) refinement as defined in  "Tetrahedral Grid Refinement" by J. Bey 'Algorithm Regular Refinement' in Computing, Springer Verlag 1955
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
-@param[in] surfaceTriangleElements
+@param[in] edgeElements Edges.
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
+@param[in] surfaceTriangleElements Triangle elements.
 
 */
 
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements){
 
-// ##########################################################################################################################################
 // Implementation of Type (2) Refinement Type
 // We use this Refinement Type 
 	if(this->dim_ == 3){ 
@@ -3910,19 +3859,18 @@ void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElemen
 
 /*!
 
-@brief 3D Type(1) refinement
+ \brief 3D Type(1) refinement as defined in  "Tetrahedral Grid Refinement" by J. Bey 'Algorithm Regular Refinement' in Computing, Springer Verlag 1955
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
-@param[in] surfaceTriangleElements
+@param[in] edgeElements Edges.
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
+@param[in] surfaceTriangleElements Triangle elements.
 
 */
 
 template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements){
 
-// ##########################################################################################################################################
 // Implementation of Type (1) Refinement Type
 // We use this Refinement Type 
 	if(this->dim_ == 3){ 
@@ -4333,12 +4281,13 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
     
 /*!
 
-@brief 2D and 3D regular refinement. Chosen by error estimator or otherwise elements are refined regular by connecting edge midpoints.
+ \brief 2D and 3D regular refinement. Chosen by error estimator or otherwise elements are refined regular by connecting edge midpoints.
+ \brief 3D regular refinement as defined in  "Tetrahedral Grid Refinement" by J. Bey 'Algorithm Regular Refinement' in Computing, Springer Verlag 1955
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
-@param[in] surfaceTriangleElements
+@param[in] edgeElements Edges.
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
+@param[in] surfaceTriangleElements Triangle elements.
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -4867,7 +4816,6 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 		lengthDia[2] = sqrt(pow(pointsRep->at(midPointInd[2]).at(0) - pointsRep->at(midPointInd[3]).at(0),2) + pow(pointsRep->at(midPointInd[2]).at(1) - pointsRep->at(midPointInd[3]).at(1),2) +pow(pointsRep->at(midPointInd[2]).at(2) - pointsRep->at(midPointInd[3]).at(2),2) );
 
-		//cout << " Längen der Diagonalen: dia1 (normale Wahl)=" << lengthDia[0] << " dia2=" << lengthDia[1] << " dia3=" << lengthDia[2] << endl; 
 
 		vec2D_dbl_Type dia(3,vec_dbl_Type(2));
 		dia[0] = { lengthDia[0],0.};
@@ -4875,7 +4823,11 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		dia[2] = { lengthDia[2],2.};
 		sort(dia.begin(),dia.end());		
 
+		// Diagonal 0 represents the shortest
+		// Diagonal 1 represents the second shortest
+		// Diagonal 2 represents the longest
 
+		// If the Diagonal is not within that rand we allways use diaInd =0. Same Diagonal with consistent indexing of elements
 		if(refinement3DDiagonal_>2 || refinement3DDiagonal_ < 0)
 			diaInd =0;
 		else 
@@ -5566,12 +5518,13 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 /*!
 
-@brief 2D and 3D refinement by bisection of tagged Elements. Chosen by error estimator or otherwise elements are refined regular by connecting edge midpoints.
+ \brief 2D and 3D that bisects the edges of tagged Elements. Chosen by error estimator or otherwise elements are refined regular by connecting edge midpoints.
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
-@param[in] surfaceTriangleElements
+@param[in] edgeElements Edges.
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
+@param[in] surfaceTriangleElements Triangle elements.
+
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -5620,12 +5573,12 @@ void RefinementFactory<SC,LO,GO,NO>::bisectEdges(EdgeElementsPtr_Type edgeElemen
 }
 /*!
 
-@brief 2D refinement by bisection of tagged Elements with three tagged Edges.
+ \brief 2D refinement by bisection of tagged Elements with three tagged Edges.
 
-@param[in] edgeElements
-@param[in] elements
-@param[in] indexELement
-@param[in] surfaceTriangleElements
+@param[in] edgeElements Edges.
+@param[in] elements Elements.
+@param[in] indexELement Element in question.
+@param[in] surfaceTriangleElements Triangle elements.
 
 */
 template <class SC, class LO, class GO, class NO>
@@ -5789,7 +5742,7 @@ void RefinementFactory<SC,LO,GO,NO>::bisectElement3(EdgeElementsPtr_Type edgeEle
 		}
     }
 	else        	
-		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "The red irregular Refinement Method you requested is only applicable to a 2 dimensional Mesh.");
+		TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "The Refinement by Bisection Method you requested is only applicable to a 2 dimensional Mesh.");
 	
  }
 

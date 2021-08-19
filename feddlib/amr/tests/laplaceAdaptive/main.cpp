@@ -86,8 +86,6 @@ void rhsPaper(double* x, double* res, double* parameters){
 
     res[0] = pow(alpha,2) * exp(-alpha*x[0]) *(4.*x[1]*(1-x[1])) + 8.* (1.-exp(-alpha*x[0])-(1.-exp(-alpha))*x[0]);
 
-	//cout << " Value of RHS in Func" << res[0] << " und x[0] trans " << x[0] << " und x[1] " << x[1]   <<  endl;
-
     return;
 }
 
@@ -108,7 +106,7 @@ void exactSolPaper3D(double* x, double* res){
     
 	double alpha = -100*(pow(x[0]-1./4,2) +pow(x[1]-1./4 ,2)+pow(x[2]-1./4 ,2));
 
-	double beta = 100000.;
+	double beta = 100.;
 	double x2 = (pow(x[0],2)-x[0]);
 	double y2 = (pow(x[1],2)-x[1]);
 	double z2 = (pow(x[2],2)-x[2]);
@@ -121,7 +119,7 @@ void paperBC(double* x, double* res, double t, const double* parameters){
     
 	double alpha = -100*(pow(x[0]-1./4,2) +pow(x[1]-1./4 ,2)+pow(x[2]-1./4 ,2));
 
-	double beta = 100000.;
+	double beta = 100.;
 
 	double x2 = (pow(x[0],2)-x[0]);
 	double y2 = (pow(x[1],2)-x[1]);
@@ -129,15 +127,13 @@ void paperBC(double* x, double* res, double t, const double* parameters){
 
     res[0] = beta*x2*y2*z2*exp(alpha);
 
-	//cout << " Value of RHS in Func" << res[0] << " und x[0] trans " << x[0] << " und x[1] " << x[1]   <<  endl;
-
     return;
 }
 void rhsPaper3D(double* x, double* res, double* parameters){
 
 	double alpha = -100*(pow(x[0]-1./4,2) +pow(x[1]-1./4,2)+pow(x[2]-1./4 ,2));
 	
-	double beta = 100000.;
+	double beta = 100.;
 
 	res[0] = -beta*(40000 *pow(x[0],4) *(x[1] - 1)* x[1] *(x[2] - 1)* x[2] - 60000*  pow(x[0],3)* (x[1] - 1)* x[1]* (x[2] - 1)* x[2] + pow(x[0],2)* (40000*pow(x[1],4)* (x[2] - 1)* x[2] - 60000* pow(x[1],3)* (x[2] - 1)* x[2] + pow(x[1],2)* (40000 *pow(x[2],4) - 60000 * pow(x[2],3) + 64500*pow(x[2],2) - 44700* x[2] - 98) + x[1]* (-40000*pow(x[2],4) + 60000*pow(x[2],3) - 44700*pow(x[2],2) + 24900*x[2] + 98) - 98*(x[2] - 1)* x[2]) + x[0] *(-40000*pow(x[1],4) *(x[2] - 1)* x[2] + 60000 *pow(x[1],3)* (x[2] - 1)* x[2] + pow(x[1],2)* (-40000*pow(x[2],4) + 60000 *pow(x[2],3) - 44700*pow(x[2],2) + 24900* x[2] + 98) + x[1] *(40000*pow(x[2],4) - 60000*pow(x[2],3) + 24900*pow(x[2],2) - 5100* x[2] - 98) + 98* (x[2] - 1)* x[2]) - 98*(x[1] - 1)* x[1]* (x[2] - 1)* x[2])*exp(alpha);
 
