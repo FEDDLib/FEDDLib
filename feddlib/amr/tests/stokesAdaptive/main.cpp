@@ -483,7 +483,7 @@ int main(int argc, char *argv[]) {
     myCLP.setOption("blockprecfile",&xmlBlockPrecFile,".xml file with Inputparameters.");
     string xmlSolverFile = "parametersSolver.xml";
     myCLP.setOption("solverfile",&xmlSolverFile,".xml file with Inputparameters.");
-
+  
     double length = 4.;
     myCLP.setOption("length",&length,"length of domain.");
     
