@@ -11,6 +11,7 @@
 
 #include "AdaptiveMeshRefinement_decl.hpp"
 #include <chrono> 
+#include <iomanip>
 /*!
  Definition of AdaptiveMeshRefinement
  
@@ -64,24 +65,20 @@ domainsP1_(0)
 {
 	parameterListAll_ = parameterListAll;
 	this->dim_ = parameterListAll->sublist("Parameter").get("Dimension",2);;
-	this->problemType_ = problemType;
+	problemType_ = problemType;
 
-	this->FEType1_ = "P1";
-	this->FEType2_ = parameterListAll->sublist("Parameter").get("Discretization","P1");
+	FEType1_ = "P1";
+	FEType2_ = parameterListAll->sublist("Parameter").get("Discretization","P1");
 
-	this->exportWithParaview_ = false;
+	exportWithParaview_ = false;
 
 	tol_= parameterListAll->sublist("Mesh Refinement").get("Toleranz",0.001);
 	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
 	markingStrategy_ = parameterListAll->sublist("Mesh Refinement").get("RefinementType","Uniform");
 	maxIter_ = parameterListAll->sublist("Mesh Refinement").get("MaxIter",3);
-	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");
-	refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
 
-	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
+	writeRefinementInfo_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Info",true);
 	writeMeshQuality_ = parameterListAll->sublist("Mesh Refinement").get("Write Mesh Quality",true);
-
-	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
 
 	coarseningCycle_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening Cycle",0);
 	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
@@ -126,13 +123,9 @@ domainsP1_(0)
 	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
 	markingStrategy_ = parameterListAll->sublist("Mesh Refinement").get("RefinementType","Uniform");
 	maxIter_ = parameterListAll->sublist("Mesh Refinement").get("MaxIter",3);
-	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");
-	refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
 
-	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
+	writeRefinementInfo_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Info",true);
 	writeMeshQuality_ = parameterListAll->sublist("Mesh Refinement").get("Write Mesh Quality",true);
-
-	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
 
 	coarseningCycle_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening Cycle",0);
 	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
@@ -178,13 +171,9 @@ domainsP1_(0)
 	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
 	markingStrategy_ = parameterListAll->sublist("Mesh Refinement").get("RefinementType","Uniform");
 	maxIter_ = parameterListAll->sublist("Mesh Refinement").get("MaxIter",3);
-	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");
-	refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
-
-	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
+	
+	writeRefinementInfo_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Info",true);
 	writeMeshQuality_ = parameterListAll->sublist("Mesh Refinement").get("Write Mesh Quality",true);
-
-	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
 
 	coarseningCycle_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening Cycle",0);
 	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
@@ -222,10 +211,10 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	inputMeshP1_->FEType_ = domainP1->getFEType();
 
 	// Error Estimation object
-    ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ );
+    ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ , writeMeshQuality_);
 
 	// Refinement Factory object
-	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, refinementRestriction_, refinement3DDiagonal_, restrictionLayer_); 
+	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, parameterListAll_); // refinementRestriction_, refinement3DDiagonal_, restrictionLayer_); 
 
 	// Estimating the error with the Discretizations Mesh.
 	int currentLevel =0;
@@ -300,6 +289,11 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 	comm_ = domainP1 ->getComm();
 
+	if(this->comm_->getRank() == 0 && currentIter_ < maxIter_){
+			cout << " -- Adaptive Mesh Refinement --" << endl;
+			cout << " " << endl;
+	}
+
 	maxRank_ = std::get<1>(domainP1->getMesh()->rankRange_);
 	// We save the domains of each step
 	// The P1 Mesh is always used for refinement while the P1 or P2 Mesh is used for error Estimation depending on Discretisation
@@ -329,10 +323,10 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	this->identifyProblem(solution);
 
 	// Error Estimation object
-    ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ );
+    ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_, writeMeshQuality_ );
 
 	// Refinement Factory object
-	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, refinementRestriction_, refinement3DDiagonal_,restrictionLayer_); 
+	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, parameterListAll_); 
 
 	if(dim_ ==3){
 		SurfaceElementsPtr_Type surfaceTriangleElements = inputMeshP12_->getSurfaceTriangleElements(); // Surfaces
@@ -477,7 +471,9 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 		writeRefinementInfo();	
 		exporterSol_->closeExporter();
 	    exporterError_->closeExporter();
-	}
+	} 
+	else
+		cout << " -- done -- " << endl;
 
     domainRefined->setMesh(outputMesh);
 	
@@ -877,13 +873,17 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 
 	Teuchos::ArrayRCP<const double > elementProcList = elementList->getData(0);
 
+	double maxNumElementsOnProcs = numElementsProc[currentIter_];
+	reduceAll<int, double> (*comm_, REDUCE_MAX, maxNumElementsOnProcs, outArg (maxNumElementsOnProcs));
+
+	double minNumElementsOnProcs = numElementsProc[currentIter_];
+	reduceAll<int, double> (*comm_, REDUCE_MIN, minNumElementsOnProcs, outArg (minNumElementsOnProcs));
 
 
-
-	if(comm_->getRank() == 0){	
+	if(comm_->getRank() == 0 && writeRefinementInfo_ == true){	
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " Summary Mesh Refinement" << endl;
+			cout << " Summary of Mesh Refinement" << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
 			cout << " Marking Strategy:	" << markingStrategy_ << endl;
@@ -896,42 +896,35 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 			cout << " Number of Refinements:		" << currentIter_ << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " Number of elements after Refinement.... " << endl;
-			for(int i=1; i<= currentIter_; i++)
-				cout <<" "<< i << ":	" << numElements[i] << endl;
+			cout << " Refinementlevel|| Elements	|| Nodes	|| Max. estimated error  " << endl;
+			cout << "__________________________________________________________________________________________________________ " << endl;
+			for(int i=0; i<= currentIter_; i++)
+				cout <<" "<< i << "		|| " << numElements[i] << "		|| " << numNodes[i]<< "		|| " << maxErrorEl[i]<<  endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " Number of Nodes after Refinement.... " << endl;
-			for(int i=1; i<=currentIter_ ; i++)
-				cout <<" "<< i << ":	" << numNodes[i] << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Errorestimation: max error in Elements according to error Estimator in Refinement.... " << endl;
-			for (int i=0; i<currentIter_ ; i++)
-				cout <<" "<< i << ":	" << maxErrorEl[i] << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Maximal error in nodes after Refinement. " << endl;
-			for (int i=1; i<=currentIter_ ; i++)
-				cout <<" "<< i << ":	" << maxErrorKn[i] << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " || u-u_h ||_H1	||	|| u-u_h ||_L2  ||" ;
-			if( calculatePressure_== true  && exactSolPInput_ == true  ){
-				cout << " 	|| p-p_h||_L2 " << endl;
-			}
-			else
-				cout << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			for (int i=1; i<=currentIter_ ; i++){
-				cout <<" "<< i << ":	"  << errorH1[i]<< "	||	" << errorL2[i] ;
+			if(exactSolInput_ == true){
+				cout << " Maximal error in nodes after Refinement. " << endl;
+				for (int i=1; i<=currentIter_ ; i++)
+					cout <<" "<< i << ":	" << maxErrorKn[i] << endl;
+				cout << "__________________________________________________________________________________________________________ " << endl;
+				cout << " || u-u_h ||_H1	||	|| u-u_h ||_L2  ||" ;
 				if( calculatePressure_== true  && exactSolPInput_ == true  ){
-					cout << "  	||	" <<  errorL2P[i] << endl;
+					cout << " 	|| p-p_h||_L2 " << endl;
 				}
 				else
 					cout << endl;
+				cout << "__________________________________________________________________________________________________________ " << endl;
+				for (int i=1; i<=currentIter_ ; i++){
+					cout <<" "<< i << ":	"<<  setprecision(5) << fixed << errorH1[i]<< "		||	" << errorL2[i] ;
+					if( calculatePressure_== true  && exactSolPInput_ == true  ){
+						cout << " 	 	||	" << setprecision(5) << fixed <<  errorL2P[i] << endl;
+					}
+					else
+						cout << endl;
+				}
+			
+				cout << "__________________________________________________________________________________________________________ " << endl;
 			}
-			cout << "__________________________________________________________________________________________________________ " << endl;
-
 			cout << " ||u-u_h||_H1 / ||u ||_H1 	||  eta / ||u_h ||_H1	" << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			for (int i=1; i<=currentIter_ ; i++){
@@ -940,8 +933,9 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
 			cout << "Distribution of elements on .. " << endl;
-			for(int l=0; l< maxRank_ +1 ; l++)
-				cout <<" Processor "<< l << " carries " << elementProcList[l] << " Elements "<< endl; 
+			//for(int l=0; l< maxRank_ +1 ; l++)
+			cout <<" Max Number of Elements on Processors " << setprecision(0) << fixed <<   maxNumElementsOnProcs << endl; 
+			cout <<" Min Number of Elements on Processors " <<  minNumElementsOnProcs << endl; 
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;

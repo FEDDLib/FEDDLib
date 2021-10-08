@@ -76,7 +76,7 @@ public:
     
     RefinementFactory( CommConstPtr_Type comm, int volumeID=10 );
 
-    RefinementFactory( CommConstPtr_Type comm, int volumeID,  string refinementRestriction, int refinement3DDiagonal = 0, int restrictionLayer_ =2);
+    RefinementFactory( CommConstPtr_Type comm, int volumeID,  ParameterListPtr_Type parameterListAll);
     
     ~RefinementFactory();
     
@@ -128,11 +128,9 @@ public:
 	void bisectElement3(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElementp);
 
 	string refinementRestriction_ = "none";
-	string markingStrategy_ = "Maximum";
-	double theta_ = 0.5;
 
-	bool meshQualityPrint_ = "false";
-	bool timeTablePrint_ = "false";
+	bool writeRefinementTime_ = "true";
+
 	int refinement3DDiagonal_ = 0; // 0 beeing the shortest interior Diagonal, 1 the second shortest and 2 the longest interior Diagonal 
 
 	int currentIter_ = 0;

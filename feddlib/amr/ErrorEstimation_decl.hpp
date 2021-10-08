@@ -67,7 +67,7 @@ public:
   
     ErrorEstimation();
     
-    ErrorEstimation(int dim, string problemType);
+    ErrorEstimation(int dim, string problemType, bool writeMeshQuality_);
     
     ~ErrorEstimation();
     
@@ -119,7 +119,7 @@ public:
 	string markingStrategy_ = "Maximum";
 	double theta_ = 0.5;
 
-	bool meshQualityPrint_ = "false";
+	bool writeMeshQuality_ = "false";
 	bool timeTablePrint_ = "false";
 	int refinement3DDiagonal_ = 0; // 0 beeing the shortest interior Diagonal, 1 the second shortest and 2 the longest interior Diagonal 
 

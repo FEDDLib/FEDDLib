@@ -194,7 +194,9 @@ private:
 	vec_int_Type numNodes;
 
 	bool writeRefinementTime_ = true ;
+	bool writeRefinementInfo_ = true ;
 	bool writeMeshQuality_ = true ;
+
 
 	ParameterListPtr_Type parameterListAll_ ;
 

@@ -64,13 +64,15 @@ MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 */
 
 template <class SC, class LO, class GO, class NO>
-RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID, string refinementRestriction, int refinement3DDiagonal, int restrictionLayer):
+RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int volumeID, ParameterListPtr_Type parameterListAll):
 MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 {
     this->volumeID_ = volumeID;
-	this->refinement3DDiagonal_= refinement3DDiagonal;
-	this->refinementRestriction_ = refinementRestriction;
-	this->restrictionLayer_ = restrictionLayer;
+
+	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");
+	refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
+	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
+	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
 
 }
 
@@ -299,13 +301,14 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 
 
 		if(this->comm_->getRank() == 0){
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			cout << " 	-- Mesh Refinement -- " << endl;
+			cout << "	__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " Start Iteration " << iteration+1 << " of "<< this->dim_ << "D Mesh Refinement " << endl;
-			cout << " Number of Elements:	" << this->elementMap_->getGlobalNumElements() << endl;
-			cout << " Number of Nodes:	" << this->mapUnique_->getGlobalNumElements() << endl; 
-			cout << " Number of Edges:	" << this->edgeMap_->getGlobalNumElements() << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			cout << " 	Start Iteration " << iteration+1 << " of "<< this->dim_ << "D Mesh Refinement " << endl;
+			cout << " 	Number of Elements:	" << this->elementMap_->getGlobalNumElements() << endl;
+			cout << " 	Number of Nodes:	" << this->mapUnique_->getGlobalNumElements() << endl; 
+			cout << " 	Number of Edges:	" << this->edgeMap_->getGlobalNumElements() << endl;
+			cout << "	__________________________________________________________________________________________________________ " << endl;
 		}
 
 
@@ -632,20 +635,20 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 
 		MESH_TIMER_STOP(totalTime);		
 
-   		Teuchos::TimeMonitor::report(cout,"Mesh Refinement");
-		//Teuchos::TimeMonitor::summarize(cout, false, true, false, Teuchos::Union , "Mesh Refinement", false);
-
 		
 		if(this->comm_->getRank() == 0){
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			cout << "	__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " ... finished Iteration " << iteration+1 << " of 2D Mesh Refinement " << endl;
-			cout << " Number of new Elements:	 " << this->elementMap_->getGlobalNumElements() - meshP1->elementMap_-> getGlobalNumElements() << endl;
-			cout << " Number of new Nodes:		 " << this->mapUnique_->getGlobalNumElements()- meshP1->mapUnique_-> getGlobalNumElements() << endl; 
-			cout << " Number of new Edges:	 	 " << this->edgeMap_->getGlobalNumElements()- meshP1->edgeMap_-> getGlobalNumElements() << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			cout << " 	... finished Iteration " << iteration+1 << " of " << this->dim_ << "D Mesh Refinement " << endl;
+			cout << " 	Number of new Elements:	" << this->elementMap_->getGlobalNumElements() - meshP1->elementMap_-> getGlobalNumElements() << endl;
+			cout << " 	Number of new Nodes:	" << this->mapUnique_->getGlobalNumElements()- meshP1->mapUnique_-> getGlobalNumElements() << endl; 
+			cout << " 	Number of new Edges:	" << this->edgeMap_->getGlobalNumElements()- meshP1->edgeMap_-> getGlobalNumElements() << endl;
+			cout << "	__________________________________________________________________________________________________________ " << endl;
+			cout << " " << endl;
 		}
 
+		if(writeRefinementTime_ )
+   			Teuchos::TimeMonitor::report(cout,"Mesh Refinement");
 		
 	// Finally we set all changed mesh enteties for outputMesh
 
