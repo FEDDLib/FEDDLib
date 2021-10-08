@@ -436,7 +436,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 
 			if(inputMesh_->getComm()->getRank() == 0){
-				cout << " 	-- Mesh Quality Assesment 2D of current mesh level -- 	" << endl;
+				cout << " 	-- Mesh Quality Assesment 3D of current mesh level -- 	" << endl;
 				cout << "	__________________________________________________________________________________________________________ " << endl;
 				cout << " " << endl;
 				cout << " 	Circumdiameter h_T:			" <<"max. = "  << setprecision(5) << fixed << maxh_T << " min. = " << minh_T  << endl;

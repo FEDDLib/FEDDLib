@@ -59,8 +59,6 @@ SET(SOURCES ${SOURCES} ${Mesh_SOURCES})
 #SET(HEADERS ${HEADERS} ${Utils_HEADERS})
 #SET(SOURCES ${SOURCES} ${Utils_SOURCES})
 
-
-
 TRIBITS_EXCLUDE_AUTOTOOLS_FILES()
 # This is the list of files excluded from the tarball
 TRIBITS_EXCLUDE_FILES()
