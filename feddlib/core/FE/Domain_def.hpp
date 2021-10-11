@@ -172,30 +172,33 @@ vec_int_ptr_Type Domain<SC,LO,GO,NO>::getElementsFlag() const{
     return mesh_->getElementsFlag();
 }
 
+
 template <class SC, class LO, class GO, class NO>
 LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
     if (this->dim_ == 2) {
         if ( this->FEType_ == "P1" ) {
-            return 20;
+            return 24;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 30;
+            return 48;
         }
         else {
             return 40;
         }
     } else {
         if ( this->FEType_ == "P1" ) {
-            return 50;
+            return 100;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 80;
+            return 160;
         }
         else {
             return 100;
         }
     }
 }
+
+
 
 template <class SC, class LO, class GO, class NO>
 void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int dim, std::string FEType, int N, int M, int numProcsCoarseSolve){
