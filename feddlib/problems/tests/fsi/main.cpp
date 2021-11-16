@@ -10,6 +10,7 @@
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
+#include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 
 void rhsDummy2D(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here

@@ -166,6 +166,8 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     // loop over all previously created edges
 	vec_int_Type markedTrue(edgeElements->numberElements());
 
+	int numberLocalPoints = pointsP1->size();
+
     for (int i=0; i<edgeElements->numberElements(); i++) {
         
         LO p1ID = edgeElements->getElement(i).getNode( 0 );
@@ -176,8 +178,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
         
         for (int d=0; d<this->dim_; d++)
             newPoints[i][d] = ( (*pointsP1)[p1ID][d] + (*pointsP1)[p2ID][d] ) / 2.;
-        
-
+      
        	newFlags[i] = determineFlagP2( meshP1, p1ID, p2ID, i, markedPoints );
 		                
         const vec_LO_Type elementsOfEdge = edgeElements->getElementsOfEdge( i );

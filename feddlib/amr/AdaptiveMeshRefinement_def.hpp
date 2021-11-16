@@ -48,6 +48,14 @@ void dummyFuncSol(double* x, double* res){
     return;
 }
 
+
+void dummyFuncRHS( double* p, double* res, const double* parameters){
+
+	res[0] =0.;
+
+	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
+}
+
 /*!
 \brief Initializing problem with the kind of problem we are solving for determining the correct error estimation. ParameterListAll delivers all necessary information (i.e. dim, feType). This constructor is used if no exact solutions are known.
 
@@ -70,7 +78,9 @@ domainsP1_(0)
 	FEType1_ = "P1";
 	FEType2_ = parameterListAll->sublist("Parameter").get("Discretization","P1");
 
-	exportWithParaview_ = false;
+	exactSolInput_ = false;
+	exactSolPInput_ = false;
+
 
 	tol_= parameterListAll->sublist("Mesh Refinement").get("Toleranz",0.001);
 	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
@@ -154,7 +164,7 @@ errorEstimationMv_(0),
 domainsP1_(0)
 {
 	parameterListAll_ = parameterListAll;
-	this->dim_ = parameterListAll->sublist("Parameter").get("Dimension",2);;
+	this->dim_ = parameterListAll->sublist("Parameter").get("Dimension",2);
 	this->problemType_ = problemType;
 
 	this->FEType1_ = "P1";
@@ -283,7 +293,10 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 	currentIter_ = domainsP1_.size() ;
 
-	rhsFunc_ = rhsFunc;
+	if(rhsFunc.empty())
+		rhsFunc_ = dummyFuncRHS;
+	else
+		rhsFunc_ = rhsFunc;
 
 	problem_ = problem;
 
@@ -295,17 +308,19 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	}
 
 	maxRank_ = std::get<1>(domainP1->getMesh()->rankRange_);
+
+	domainP1_.reset(new Domain<SC,LO,GO,NO>( domainP1->getComm() , dim_ ));
+	domainP12_.reset(new Domain<SC,LO,GO,NO>( domainP1->getComm() , dim_ ));
+	domainP1_->initWithDomain(domainP1);
+	domainP12_->initWithDomain(domainP12);
+
 	// We save the domains of each step
 	// The P1 Mesh is always used for refinement while the P1 or P2 Mesh is used for error Estimation depending on Discretisation
-	domainsP1_.push_back(domainP1);
-	domainsP12_.push_back(domainP12);
-
-	domainP1_ = domainP1;
-	domainP12_ = domainP12;
-
+	domainsP1_.push_back(domainP1_);
+	domainsP12_.push_back(domainP12_);
 
 	// Reading Mesh from domainP1 as we always refine the P1 Mesh, here defined as inputMesh_
-	inputMeshP1_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1->getMesh() , true);
+	inputMeshP1_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1_->getMesh() , true);
 	inputMeshP1_->FEType_ = domainP1->getFEType();
 	
 	// With the global Algorithm we create a new P1 domain with a new mesh
@@ -317,7 +332,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	// Init to be refined domain with inputDomain
 	domainRefined->initWithDomain(domainP1);
 
-	inputMeshP12_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP12->getMesh() , true);
+	inputMeshP12_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP12_->getMesh() , true);
 	inputMeshP12_->FEType_ = domainP12->getFEType();
 
 	this->identifyProblem(solution);
@@ -429,7 +444,6 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
    		refinementFactory.refineMesh(inputMeshP1_,currentIter_, outputMesh, refinementMode_);
 	}
 
-
 	// Export distribution of elements among processors
 	MultiVectorPtr_Type procNumTmp = Teuchos::rcp( new MultiVector_Type(domainP12->getElementMap() , 1 ) );
 
@@ -480,6 +494,116 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	return domainRefined;
 
 }
+
+
+/*!
+\brief Interpolating solution on edges for new tagged edges or in general
+
+*/
+template <class SC, class LO, class GO, class NO>
+typename AdaptiveMeshRefinement<SC,LO,GO,NO>::BlockMultiVectorPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>::initerpolateSolution( DomainPtr_Type domainK, DomainPtr_Type domainK_1, BlockMultiVectorConstPtr_Type solution, string interpolMode){
+
+	// We assume that the domainPk is the one corresponding to the solution and the domainPk_1 is ne next Refinement stage (k+1).
+	// Thus, we interpolate the solution from domainPk to domainPk_1.
+	// We have new unique points and maps which will correspond to the new solution 
+
+	// We tag elements of the domainP1
+	MeshUnstrPtr_Type inputMeshK = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainK->getMesh() , true);
+	MeshUnstrPtr_Type inputMeshK_1 = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainK_1->getMesh() , true);
+	// EdgeElements
+	EdgeElementsPtr_Type edgeElements = inputMeshK->getEdgeElements();
+	// Unique Map von DomainK_1
+	MapConstPtr_Type mapUniqueK_1 = domainK_1->getMapUnique();
+	MapConstPtr_Type mapRepeatedK_1 = domainK_1->getMapRepeated();
+	// Input solution is uniquely distributed, we need it in a repeated Form
+	BlockMultiVectorPtr_Type valuesSolutionVel = Teuchos::rcp( new BlockMultiVector_Type(dofs_ ) );
+
+    Teuchos::ArrayRCP< SC > valuesVel  = solution->getBlock(0)->getDataNonConst(0);
+	Teuchos::ArrayRCP< SC > valuesP;
+	if(calculatePressure_)
+		valuesP=solution->getBlock(1)->getDataNonConst(0);
+
+	// New solution based on the unique map, but we need to extend it in case of vector based solution. Value u_1 is (u_1x, u_1y, u_1z) with global ids (id_1,id_2,id_3). 
+    MapConstPtr_Type  globalMapUnique = domainK_1->getMapUnique()->buildVecFieldMap(dofs_);
+
+	// Also we need to extend the kth unique map to a repeated map.
+	MapConstPtr_Type globalMapRep = domainK->getMapRepeated()->buildVecFieldMap(dofs_);
+
+	// The solution vector is uniquely distributed. We need it to be repeated, as we need both edge values to calculate interpolation values
+	MultiVectorPtr_Type mvValues =  Teuchos::rcp( new MultiVector_Type(solution->getBlock(0)->getMap(), 1 ) );
+	Teuchos::ArrayRCP< SC > mvValuesA  = mvValues->getDataNonConst(0);	
+
+	MultiVectorPtr_Type mvValuesRep =  Teuchos::rcp( new MultiVector_Type(globalMapRep, 1 ) );	
+
+	for(int i=0; i< mvValuesA.size(); i++){
+		mvValuesA[i] = valuesVel[i];
+	}
+	mvValuesRep->importFromVector(mvValues,false,"Insert");
+	
+	Teuchos::ArrayRCP< SC > mvValuesARep  = mvValuesRep->getDataNonConst(0);	
+	// -----	
+
+	// The pressure solution vector is uniquely distributed. We need it to be repeated, as we need both edge values to calculate interpolation values
+	MultiVectorPtr_Type mvValuesP =  Teuchos::rcp( new MultiVector_Type(domainK->getMapUnique(), 1 ) );
+	Teuchos::ArrayRCP< SC > mvValuesPA  = mvValuesP->getDataNonConst(0);	
+
+	MultiVectorPtr_Type mvValuesPRep =  Teuchos::rcp( new MultiVector_Type(domainK->getMapRepeated(), 1 ) );
+	if(calculatePressure_){	
+		for(int i=0; i< mvValuesPA.size(); i++){
+			mvValuesPA[i] = valuesP[i];
+		}
+	}
+	mvValuesPRep->importFromVector(mvValuesP,false,"Insert");
+	Teuchos::ArrayRCP< SC > mvValuesAPRep  = mvValuesPRep->getDataNonConst(0);	
+	// -----
+
+	// Vector for new interpolated solution
+	MultiVectorPtr_Type newSolutionVel =  Teuchos::rcp( new MultiVector_Type(globalMapUnique, 1 ) );
+	Teuchos::ArrayRCP< SC > newSolutionA  = newSolutionVel->getDataNonConst(0);	
+
+	MultiVectorPtr_Type newSolutionP =  Teuchos::rcp( new MultiVector_Type(domainK_1->getMapUnique(), 1 ) );
+	Teuchos::ArrayRCP< SC > newSolutionAP  = newSolutionP->getDataNonConst(0);	
+
+	// Write old solution
+	for(int i=0; i< valuesVel.size(); i++){
+		newSolutionA[i] = valuesVel[i]; 
+	}
+	// Write old solution Pressure
+	if(calculatePressure_){
+		for(int i=0; i< valuesP.size(); i++){
+			newSolutionAP[i] = valuesP[i]; 
+		}
+	}
+	// Write interpolated values
+	FiniteElement edgeTmp;
+	for(int i=0; i< edgeElements->numberElements(); i++){
+		edgeTmp = edgeElements->getElement(i);
+		if(edgeTmp.isTaggedForRefinement()){
+			LO nodeID = edgeElements->getMidpoint(i);
+			LO p1ID = edgeTmp.getNode( 0 );
+	   		LO p2ID = edgeTmp.getNode( 1 );
+
+			// Checken haben wir den Knoten in uniquer Verteilung in domain_k+1 haben
+			GO nodeIDGO = mapRepeatedK_1->getGlobalElement(nodeID);
+			if(mapUniqueK_1->getLocalElement(nodeIDGO) != -1){
+			   for (int d=0; d<dofs_; d++){
+			   	  newSolutionA[mapUniqueK_1->getLocalElement(nodeIDGO)*dofs_+d] = (mvValuesARep[p1ID*dofs_+d] + mvValuesARep[p2ID*dofs_+d]) / 2;
+			   	  cout << " NewSolution " << newSolutionA[mapUniqueK_1->getLocalElement(nodeIDGO)] << " from " << mvValuesARep[p1ID] << " " << mvValuesARep[p2ID] << endl;
+				}
+				if(calculatePressure_ == true)
+				   	  newSolutionAP[mapUniqueK_1->getLocalElement(nodeIDGO)] = (mvValuesAPRep[p1ID] + mvValuesAPRep[p2ID]) / 2;
+			}
+		}
+	}
+	//newSolution->print();
+	BlockMultiVectorPtr_Type newSolutionBlock = Teuchos::rcp( new BlockMultiVector_Type(2) );
+	newSolutionBlock->addBlock(newSolutionVel,0);
+	if(calculatePressure_)
+		newSolutionBlock->addBlock(newSolutionP,1);
+
+	return newSolutionBlock;	
+}
+
 
 /*!
 \brief Calculating exact solution for velocity if possible with exactSolFunc_.  
@@ -829,6 +953,8 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportError(MeshUnstrPtr_Type mesh, Mu
 	else{
 		exporterError_->reSetup(mesh);
 
+		errorElConstH1->print();
+		mesh->getElementMap()->print();
 		exporterError_->updateVariables(errorElConst,"eta_T");
 		exporterError_->updateVariables(errorElConstH1,"||u-u_h||_H1(T)");
 		exporterError_->updateVariables(difH1Eta, "eta_T-||u-u_h||_H1(T)");
@@ -898,8 +1024,13 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 			cout << " " << endl;
 			cout << " Refinementlevel|| Elements	|| Nodes	|| Max. estimated error  " << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
-			for(int i=0; i<= currentIter_; i++)
-				cout <<" "<< i << "		|| " << numElements[i] << "		|| " << numNodes[i]<< "		|| " << maxErrorEl[i]<<  endl;
+			for(int i=0; i<= currentIter_; i++){
+				if(numElements[i] < 10000)
+					cout <<" "<< i << "		|| "	<< numElements[i] << "		|| " << numNodes[i]<< "		|| " << maxErrorEl[i]<<  endl;
+				else
+					cout <<" "<< i << "		|| "	<< numElements[i] << "	|| " << numNodes[i]<< "		|| " << maxErrorEl[i]<<  endl; 
+
+			}
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
 			if(exactSolInput_ == true){

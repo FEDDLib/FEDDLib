@@ -102,6 +102,7 @@ public:
 	MultiVectorConstPtr_Type calcExactSolution();
 	MultiVectorConstPtr_Type calcExactSolutionP();
 	//void determineCoarsening();
+	BlockMultiVectorPtr_Type initerpolateSolution( DomainPtr_Type domainK, DomainPtr_Type domainK_1, BlockMultiVectorConstPtr_Type solution, string interpolMode);
 
 	void identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution);
 

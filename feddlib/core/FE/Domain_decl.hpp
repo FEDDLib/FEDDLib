@@ -124,7 +124,7 @@ public:
 
     void buildP2ofP1Domain( DomainPtr_Type domainP1 );
 
-    void initWithDomain(DomainPtr_Type domainsP1); // Mesh Refinement
+    void initWithDomain(DomainConstPtr_Type domainsP1); // Mesh Refinement
 
     void setMesh(MeshUnstrPtr_Type meshUnstr); 
     

@@ -18,7 +18,7 @@
  	<ParameterList name="Mesh Refinement">
         <Parameter name="Toleranz" type="double" value="0.001"/>
         <Parameter name="Theta" type="double" value="0.5"/>
-        <Parameter name="MaxIter" type="int" value="6"/>
+        <Parameter name="MaxIter" type="int" value="8"/>
         <Parameter name="RefinementType" type="string" value="Maximum"/>
        	<Parameter name="Write Refinement Time" type="bool" value="true"/>
         <Parameter name="Write Mesh Quality" type="bool" value="true"/>

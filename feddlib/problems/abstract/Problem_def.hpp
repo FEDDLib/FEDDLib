@@ -427,6 +427,12 @@ typename Problem<SC,LO,GO,NO>::DomainConstPtr_Type Problem<SC,LO,GO,NO>::getDoma
 }
 
 template<class SC,class LO,class GO,class NO>
+void Problem<SC,LO,GO,NO>::setDomain(int i, DomainConstPtr_Type domain) const{
+
+    domainPtr_vec_.at(i) = domain;
+}
+
+template<class SC,class LO,class GO,class NO>
 std::string Problem<SC,LO,GO,NO>::getFEType(int i) const{
 
     return domain_FEType_vec_.at(i);

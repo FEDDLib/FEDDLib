@@ -134,7 +134,6 @@ public:
 	int refinement3DDiagonal_ = 0; // 0 beeing the shortest interior Diagonal, 1 the second shortest and 2 the longest interior Diagonal 
 
 	int currentIter_ = 0;
-	int restrictionLayer_ = 0;
 
 	string refinementMode_ = "Regular";
 

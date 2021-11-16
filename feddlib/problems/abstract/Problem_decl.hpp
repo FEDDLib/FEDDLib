@@ -165,6 +165,8 @@ public:
 
     DomainConstPtr_Type getDomain(int i) const;
 
+    void setDomain(int i, DomainConstPtr_Type) const;
+
     DomainConstPtr_vec_Type getDomainVector() const{
         return domainPtr_vec_;
     };

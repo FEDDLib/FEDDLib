@@ -58,7 +58,7 @@
         <Parameter name="Contiguous" type="bool" value="true"/>
         
         <Parameter name="Mesh 1 Name" type="string" value="fluid.mesh"/>
-        <Parameter name="Mesh 2 Name" type="string" value="solid.mesh"/>
+        <Parameter name="Mesh 2 Name" type="string" value="structure.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
         

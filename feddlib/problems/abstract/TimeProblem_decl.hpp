@@ -151,6 +151,8 @@ public:
     
     DomainConstPtr_Type getDomain(int i) const;
 
+    void setDomain(int i, DomainConstPtr_Type domain) const;
+
     std::string getFEType(int i);
 
     std::string getVariableName(int i);

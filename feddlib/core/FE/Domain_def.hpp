@@ -176,20 +176,20 @@ template <class SC, class LO, class GO, class NO>
 LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
     if (this->dim_ == 2) {
         if ( this->FEType_ == "P1" ) {
-            return 200;
+            return 100;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 300;
+            return 150;
         }
         else {
-            return 400;
+            return 200;
         }
     } else {
         if ( this->FEType_ == "P1" ) {
-            return 500;
+            return 200;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 800;
+            return 400;
         }
         else {
             return 100;
@@ -351,7 +351,7 @@ void Domain<SC,LO,GO,NO>::buildP2ofP1Domain( DomainPtr_Type domainP1 ){ //P1 mes
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::initWithDomain(DomainPtr_Type domainP1){ 
+void Domain<SC,LO,GO,NO>::initWithDomain(DomainConstPtr_Type domainP1){ 
 
 	n_ = domainP1->n_;
 	m_ = domainP1->m_;

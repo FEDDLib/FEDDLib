@@ -6,6 +6,8 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/General/ExporterTxt.hpp"
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 
 #include "NonLinearSolver.hpp"
 #include "TimeSteppingTools.hpp"

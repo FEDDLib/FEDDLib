@@ -288,18 +288,19 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
     
     MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+
     if (type=="FixedPoint") {
         
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
         u_rep_->importFromVector(u, true);
-                
+
         MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
         this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, u_rep_, true );
         
         N->resumeFill();
         N->scale(density);
         N->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
-        
+
         A_->addMatrix(1.,ANW,0.);
         N->addMatrix(1.,ANW,1.);
     }

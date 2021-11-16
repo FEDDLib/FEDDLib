@@ -1018,6 +1018,12 @@ typename TimeProblem<SC,LO,GO,NO>::DomainConstPtr_Type TimeProblem<SC,LO,GO,NO>:
 }
 
 template<class SC,class LO,class GO,class NO>
+void TimeProblem<SC,LO,GO,NO>::setDomain(int i, DomainConstPtr_Type domain) const {
+    
+    problem_->setDomain(i, domain);
+}
+
+template<class SC,class LO,class GO,class NO>
 std::string TimeProblem<SC,LO,GO,NO>::getFEType(int i){
 
     return problem_->getFEType(i);
