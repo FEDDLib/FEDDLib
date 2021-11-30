@@ -22,10 +22,7 @@
         <Parameter name="RefinementType" type="string" value="Maximum"/>
        	<Parameter name="Write Refinement Time" type="bool" value="true"/>
         <Parameter name="Write Mesh Quality" type="bool" value="true"/>
-        <Parameter name="3D regular Refinement Diagonal Pick" type="int" value="0"/>
-        <Parameter name="Refinement Restriction" type="string" value="BeyIrregular"/>
   	<Parameter name="Modell Problem" type="string" value="lShape"/>
-        <Parameter name="Restriction Layer" type="int" value="10"/>
 	<Parameter name="Coarsening Cycle" type="int" value="0"/>
 	<Parameter name="Coarsening m" type="int" value="1"/>
 	<Parameter name="Coarsening n" type="int" value="2"/>

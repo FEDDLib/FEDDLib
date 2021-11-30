@@ -68,11 +68,16 @@ RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int vo
 MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 {
     this->volumeID_ = volumeID;
-
-	refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");
-	refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
-	restrictionLayer_ =  parameterListAll->sublist("Mesh Refinement").get("Restriction Layer",2);
-	writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
+	this->dim_ = parameterListAll->sublist("Parameter").get("Dimension",2);
+	if(this->dim_ == 2){
+		refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");
+		writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
+	}
+	else{
+		refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","BeyIrregular");
+		refinement3DDiagonal_ = parameterListAll->sublist("Mesh Refinement").get("3D regular Refinement Diagonal Pick",0);
+		writeRefinementTime_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Time",true);
+	}
 
 }
 
@@ -257,11 +262,12 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
     this->volumeID_ = meshP1->volumeID_;
 	this->rankRange_=meshP1->rankRange_;
 	// necessary entities
-    EdgeElementsPtr_Type edgeElementsTmp = meshP1->getEdgeElements(); // Edges
+    //EdgeElementsPtr_Type edgeElementsTmp = meshP1->getEdgeElements(); // Edges
     SurfaceElementsPtr_Type surfaceTriangleElements = meshP1->getSurfaceTriangleElements(); // Surfaces
     ElementsPtr_Type elementsTmp = meshP1->getElementsC(); // Elements
 
-	EdgeElementsPtr_Type edgeElements =Teuchos::rcp( new EdgeElements(*edgeElementsTmp));
+	EdgeElementsPtr_Type edgeElements =meshP1->getEdgeElements(); //Teuchos::rcp( new EdgeElements(*edgeElementsTmp));
+	//EdgeElementsPtr_Type edgeElements=Teuchos::rcp( new EdgeElements(*edgeElementsTmp));
 	ElementsPtr_Type elements =Teuchos::rcp( new Elements(*elementsTmp));
 
     vec2D_dbl_ptr_Type points = meshP1->getPointsRepeated(); // Points
@@ -1514,10 +1520,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 		MapConstPtr_Type edgeMap = meshP1->getEdgeMap();
 		int numPoints=0;
 		int layer =0;
-		int inputLayer = (restrictionLayer_ + 2 - currentIter_);
-		vec_bool_Type bisectedAll(elements->numberElements());
-		if(inputLayer <= restrictionLayer_ )
-			inputLayer =restrictionLayer_;
+		int inputLayer = currentIter_;
 		while(alright==0){
 			alright=1;
 			if(layer == inputLayer &&( restriction == "Bey" || restriction == "BeyIrregular") ){
@@ -1554,10 +1557,8 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
 							elements->getElement(i).setFiniteElementRefinementType("irregular");
-							//this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
 							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							//newElements = newElements +7;
 							alright=0;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
@@ -1566,10 +1567,8 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 						else if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular"){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							//this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
 							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							//newElements = newElements +7;
 							alright=0;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
@@ -1580,10 +1579,8 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 						if(edgeTag > 0 && elements->getElement(i).getFiniteElementRefinementType( ) == "irregular" ){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							//this->refineRegular( edgeElements, elements, i,surfaceTriangleElements);
 							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							//newElements = newElements +7;
 							alright=0;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
@@ -1593,10 +1590,8 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 					if(nodeTag >3 && edgeTag >2){
 							numPoints= this->pointsRep_->size();
 							elements->getElement(i).tagForRefinement();
-							//this->refineRegular(edgeElements, elements, i,surfaceTriangleElements);
 							this->bisectEdges( edgeElements, elements, i,surfaceTriangleElements, "all");
 							newPoints=newPoints + this->pointsRep_->size()-numPoints;
-							//newElements = newElements +7;
 							alright=0;
 							for(int j=0; j<untaggedIDsTmp.size(); j++)
 								untaggedIDs.push_back(untaggedIDsTmp[j]);
