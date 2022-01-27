@@ -11,7 +11,6 @@ template <class SC = default_sc, class LO = default_lo, class GO = default_go, c
 class AssembleFEFactory {
   public:
 
-
 	typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
         typedef Teuchos::RCP<AssembleFE_Type> AssembleFEPtr_Type;
 
