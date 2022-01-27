@@ -1,0 +1,182 @@
+\hypertarget{classFEDD_1_1FE__test}{}\section{F\+E\+DD\+:\+:F\+E\+\_\+test$<$ SC, LO, GO, NO $>$ Class Template Reference}
+\label{classFEDD_1_1FE__test}\index{F\+E\+D\+D\+::\+F\+E\+\_\+test$<$ S\+C, L\+O, G\+O, N\+O $>$@{F\+E\+D\+D\+::\+F\+E\+\_\+test$<$ S\+C, L\+O, G\+O, N\+O $>$}}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a4bf704b63e6a006c948788ac278fefdf}\label{classFEDD_1_1FE__test_a4bf704b63e6a006c948788ac278fefdf}} 
+typedef Domain$<$ SC, LO, GO, NO $>$ {\bfseries Domain\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a220cdfcf14adc7b10e3cf6b198c8ac1e}\label{classFEDD_1_1FE__test_a220cdfcf14adc7b10e3cf6b198c8ac1e}} 
+typedef Teuchos\+::\+R\+CP$<$ Domain\+\_\+\+Type $>$ {\bfseries Domain\+Ptr\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a21352276864ccd9ed775284d09861b95}\label{classFEDD_1_1FE__test_a21352276864ccd9ed775284d09861b95}} 
+typedef Teuchos\+::\+R\+CP$<$ const Domain\+\_\+\+Type $>$ {\bfseries Domain\+Const\+Ptr\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a93f3521d7bd37cfd52c784d6d6a53f8e}\label{classFEDD_1_1FE__test_a93f3521d7bd37cfd52c784d6d6a53f8e}} 
+typedef std\+::vector$<$ Domain\+Const\+Ptr\+\_\+\+Type $>$ {\bfseries Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a0c33a401f8ef7e5686fbf10d7c977064}\label{classFEDD_1_1FE__test_a0c33a401f8ef7e5686fbf10d7c977064}} 
+typedef Elements {\bfseries Elements\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_afe7ce4f08ca4b25a9af2ce5f0f9c4efa}\label{classFEDD_1_1FE__test_afe7ce4f08ca4b25a9af2ce5f0f9c4efa}} 
+typedef Teuchos\+::\+R\+CP$<$ Elements\+\_\+\+Type $>$ {\bfseries Elements\+Ptr\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_ad0cfe575f34823ebf02507cf9499757f}\label{classFEDD_1_1FE__test_ad0cfe575f34823ebf02507cf9499757f}} 
+typedef Matrix$<$ SC, LO, GO, NO $>$ {\bfseries Matrix\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_ae3cfa39a166c722fef1c61da95a2051f}\label{classFEDD_1_1FE__test_ae3cfa39a166c722fef1c61da95a2051f}} 
+typedef Teuchos\+::\+R\+CP$<$ Matrix\+\_\+\+Type $>$ {\bfseries Matrix\+Ptr\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_ac3222994604394e705978a046e9e21e4}\label{classFEDD_1_1FE__test_ac3222994604394e705978a046e9e21e4}} 
+typedef Matrix\+\_\+\+Type\+::\+Map\+Ptr\+\_\+\+Type {\bfseries Map\+Ptr\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a24e80d214cd4a95668c90970106cc595}\label{classFEDD_1_1FE__test_a24e80d214cd4a95668c90970106cc595}} 
+typedef Matrix\+\_\+\+Type\+::\+Map\+Const\+Ptr\+\_\+\+Type {\bfseries Map\+Const\+Ptr\+\_\+\+Type}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a06a63b4dc1a19562eeb7746ba7688a1b}\label{classFEDD_1_1FE__test_a06a63b4dc1a19562eeb7746ba7688a1b}} 
+typedef boost\+::function$<$ void(double $\ast$x, double $\ast$res, double t, const double $\ast$parameters)$>$ {\bfseries B\+C\+\_\+func\+\_\+\+Type}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a2e3b4192d231e6640086213f61baaeba}\label{classFEDD_1_1FE__test_a2e3b4192d231e6640086213f61baaeba}} 
+\hyperlink{classFEDD_1_1FE__test_a2e3b4192d231e6640086213f61baaeba}{F\+E\+\_\+test} (bool save\+Assembly=false)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__test_a9bc8d2dd017116bfb6921a1f63fe458a}{add\+FE} (Domain\+Const\+Ptr\+\_\+\+Type domain)
+\begin{DoxyCompactList}\small\item\em Adding underlying domains. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__test_ae576ce75f4d2692b83433f01c08f447a}{assembly\+Laplace} (int dim, string F\+E\+Type, int degree, Matrix\+Ptr\+\_\+\+Type \&A, bool call\+Fill\+Complete, int F\+E\+Loc\+External)
+\begin{DoxyCompactList}\small\item\em Assembly of constant stiffness matix for laplacian operator $ \Delta $. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__test_a755e4ee92ed27e3accfb8c05f234f0eb}{assembly\+R\+HS} (int dim, string F\+E\+Type, Multi\+Vector\+Ptr\+\_\+\+Type a, string field\+Type, Rhs\+Func\+\_\+\+Type func, vector$<$ SC $>$ \&func\+Parameter)
+\begin{DoxyCompactList}\small\item\em Assembly of Rhs. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__test_ac3a835c3218131847be6962a0e256fb2}{add\+Fe\+Matrix} (Matrix\+Ptr\+\_\+\+Type \&A, Small\+Matrix$<$ SC $>$ element\+Matrix, Finite\+Element element, Map\+Const\+Ptr\+\_\+\+Type map)
+\begin{DoxyCompactList}\small\item\em Inserting element stiffness matrices into global stiffness matrix. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__test_a6018698bb792e172da9b790bec29b3f5}{add\+Fe\+Vector} (Vector\+Ptr\+\_\+\+Type \&a, vec\+\_\+dbl\+\_\+\+Type element\+Vector, Finite\+Element element)
+\begin{DoxyCompactList}\small\item\em Inserting element rhs vector into global rhs vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a409153b295bfaedbb731360429ae8c0d}\label{classFEDD_1_1FE__test_a409153b295bfaedbb731360429ae8c0d}} 
+bool {\bfseries save\+Assembly\+\_\+}
+\item 
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a39e2d4cf2b368fdb0280596a064e8212}\label{classFEDD_1_1FE__test_a39e2d4cf2b368fdb0280596a064e8212}} 
+Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type {\bfseries domain\+Vec\+\_\+}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a9bc8d2dd017116bfb6921a1f63fe458a}\label{classFEDD_1_1FE__test_a9bc8d2dd017116bfb6921a1f63fe458a}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}!add\+FE@{add\+FE}}
+\index{add\+FE@{add\+FE}!F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}}
+\subsubsection{\texorpdfstring{add\+F\+E()}{addFE()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__test}{F\+E\+D\+D\+::\+F\+E\+\_\+test}$<$ SC, LO, GO, NO $>$\+::add\+FE (\begin{DoxyParamCaption}\item[{Domain\+Const\+Ptr\+\_\+\+Type}]{domain }\end{DoxyParamCaption})}
+
+
+
+Adding underlying domains. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em domain} & Finite element function space \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__test_ac3a835c3218131847be6962a0e256fb2}\label{classFEDD_1_1FE__test_ac3a835c3218131847be6962a0e256fb2}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}!add\+Fe\+Matrix@{add\+Fe\+Matrix}}
+\index{add\+Fe\+Matrix@{add\+Fe\+Matrix}!F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}}
+\subsubsection{\texorpdfstring{add\+Fe\+Matrix()}{addFeMatrix()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__test}{F\+E\+D\+D\+::\+F\+E\+\_\+test}$<$ SC, LO, GO, NO $>$\+::add\+Fe\+Matrix (\begin{DoxyParamCaption}\item[{Matrix\+Ptr\+\_\+\+Type \&}]{A,  }\item[{Small\+Matrix$<$ SC $>$}]{element\+Matrix,  }\item[{Finite\+Element}]{element,  }\item[{Map\+Const\+Ptr\+\_\+\+Type}]{map }\end{DoxyParamCaption})}
+
+
+
+Inserting element stiffness matrices into global stiffness matrix. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \&A} & Global Matrix \\
+\hline
+\mbox{\tt in}  & {\em element\+Matrix} & Stiffness matrix of one element \\
+\hline
+\mbox{\tt in}  & {\em element} & Corresponding finite element \\
+\hline
+\mbox{\tt in}  & {\em map} & Map that corresponds to repeated nodes \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a6018698bb792e172da9b790bec29b3f5}\label{classFEDD_1_1FE__test_a6018698bb792e172da9b790bec29b3f5}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}!add\+Fe\+Vector@{add\+Fe\+Vector}}
+\index{add\+Fe\+Vector@{add\+Fe\+Vector}!F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}}
+\subsubsection{\texorpdfstring{add\+Fe\+Vector()}{addFeVector()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__test}{F\+E\+D\+D\+::\+F\+E\+\_\+test}$<$ SC, LO, GO, NO $>$\+::add\+Fe\+Vector (\begin{DoxyParamCaption}\item[{Vector\+Ptr\+\_\+\+Type \&}]{a,  }\item[{vec\+\_\+dbl\+\_\+\+Type}]{element\+Vector,  }\item[{Finite\+Element}]{element }\end{DoxyParamCaption})}
+
+
+
+Inserting element rhs vector into global rhs vector. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \&a} & Global Matrix \\
+\hline
+\mbox{\tt in}  & {\em element\+Vector} & Stiffness matrix of one element \\
+\hline
+\mbox{\tt in}  & {\em element} & Corresponding finite element \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__test_ae576ce75f4d2692b83433f01c08f447a}\label{classFEDD_1_1FE__test_ae576ce75f4d2692b83433f01c08f447a}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}!assembly\+Laplace@{assembly\+Laplace}}
+\index{assembly\+Laplace@{assembly\+Laplace}!F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}}
+\subsubsection{\texorpdfstring{assembly\+Laplace()}{assemblyLaplace()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__test}{F\+E\+D\+D\+::\+F\+E\+\_\+test}$<$ SC, LO, GO, NO $>$\+::assembly\+Laplace (\begin{DoxyParamCaption}\item[{int}]{dim,  }\item[{string}]{F\+E\+Type,  }\item[{int}]{degree,  }\item[{Matrix\+Ptr\+\_\+\+Type \&}]{A,  }\item[{bool}]{call\+Fill\+Complete,  }\item[{int}]{F\+E\+Loc\+External }\end{DoxyParamCaption})}
+
+
+
+Assembly of constant stiffness matix for laplacian operator $ \Delta $. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em dim} & Dimension \\
+\hline
+\mbox{\tt in}  & {\em F\+E\+Type} & FE Discretization \\
+\hline
+\mbox{\tt in}  & {\em degree} & Degree of basis function \\
+\hline
+\mbox{\tt in}  & {\em A} & Resulting matrix \\
+\hline
+\mbox{\tt in}  & {\em call\+Fill\+Complete} & If Matrix A should be completely filled at end of function \\
+\hline
+\mbox{\tt in}  & {\em F\+E\+Loc\+External} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__test_a755e4ee92ed27e3accfb8c05f234f0eb}\label{classFEDD_1_1FE__test_a755e4ee92ed27e3accfb8c05f234f0eb}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}!assembly\+R\+HS@{assembly\+R\+HS}}
+\index{assembly\+R\+HS@{assembly\+R\+HS}!F\+E\+D\+D\+::\+F\+E\+\_\+test@{F\+E\+D\+D\+::\+F\+E\+\_\+test}}
+\subsubsection{\texorpdfstring{assembly\+R\+H\+S()}{assemblyRHS()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__test}{F\+E\+D\+D\+::\+F\+E\+\_\+test}$<$ SC, LO, GO, NO $>$\+::assembly\+R\+HS (\begin{DoxyParamCaption}\item[{int}]{dim,  }\item[{string}]{F\+E\+Type,  }\item[{Multi\+Vector\+Ptr\+\_\+\+Type}]{a,  }\item[{string}]{field\+Type,  }\item[{Rhs\+Func\+\_\+\+Type}]{func,  }\item[{vector$<$ SC $>$ \&}]{func\+Parameter }\end{DoxyParamCaption})}
+
+
+
+Assembly of Rhs. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em dim} & Dimension \\
+\hline
+\mbox{\tt in}  & {\em F\+E\+Type} & FE Discretization \\
+\hline
+\mbox{\tt in}  & {\em \&a} & Resulting vector \\
+\hline
+\mbox{\tt in}  & {\em field\+Type} & Vectorvalued or scalar rhs \\
+\hline
+\mbox{\tt in}  & {\em func} & Rhs function \\
+\hline
+\mbox{\tt in}  & {\em func\+Parameter} & Parameter for rhs function \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+F\+E\+\_\+test\+\_\+decl.\+cpp\item 
+F\+E\+\_\+test\+\_\+def.\+cpp\end{DoxyCompactItemize}
