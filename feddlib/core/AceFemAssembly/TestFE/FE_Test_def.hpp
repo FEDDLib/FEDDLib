@@ -69,7 +69,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 		
 		AssemblyFE_Type assemblyFe = new AssemblyFEFactory("Laplace",elements->getElement(T).getFlag(),elements->getElement(T).getVectorNodeList(), params);
 
-		assemblyFE.assemblyLaplace(elementMatrix);
+		assemblyFE.assemblyJacobian(elementMatrix);
 
 		addFeMatrix(A,elementMatrix, elements->getElement(T), map);
 		

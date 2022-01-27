@@ -24,12 +24,13 @@ class AssembleFEAceLaplace : public AssembleFE<SC,LO,GO,NO> {
 
 	AssembleFEAceLaplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters);
 
-	virtual void assemblyLaplacian(SmallMatrixPtr_Type &elementMatrix);
 	virtual void assemblyRHS(MultiVectorPtr_Type &elementVector);
 
-	virtual void assemblyJacobian(MatrixPtr_Type &A) {};
-	virtual void assemblyMass(MatrixPtr_Type &A) {};
+	virtual void assemblyJacobian(SmallMatrixPtr_Type &elementMatrix);
 
+
+   private:
+	void assemblyLaplacian(SmallMatrixPtr_Type &elementMatrix);
 	
  };
 

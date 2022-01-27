@@ -15,17 +15,18 @@ class AssembleFE {
 
 	typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 	typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
-	//typedef SmallMatrix<SC> Matrix;
-    	//typedef Teuchos::RCP<Matrix> MatrixPtr;
+	
+	typedef SmallMatrix<SC> SmallMatrix_Type;
+    	typedef Teuchos::RCP<SmallMatrix_Type> SmallMatrixPtr_Type;
 
 	typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
 
 	AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters);
 		
-	virtual void assemblyJacobian(MatrixPtr_Type &A) =0;
+	virtual void assemblyJacobian(SmallMatrixPtr_Type &elementMatrix) =0;
 	virtual void assemblyRHS(MultiVectorPtr_Type &elementVector) =0;
 
-	virtual void assemblyMass(MatrixPtr_Type &A) =0;
+	//virtual void assemblyMass(MatrixPtr_Type &A) =0;
 
 	void checkParameter();
 	void updateParams( ParameterListPtr_Type params);

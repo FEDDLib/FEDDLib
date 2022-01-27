@@ -24,6 +24,20 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params)
 
 /*!
 
+ \brief Assembly Jacobian is simply assemblyLaplacian for Laplace Problem
+
+@param[in] &elementMatrix
+
+*/ 
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFEAceLaplace<SC,LO,GO,NO>::assemblyJacobian(SmallMatrixPtr_Type &elementMatrix) {
+
+	assemblyLaplacian(elementMatrix);
+}
+
+/*!
+
  \brief Assembly function for \f$ \int_T \nabla v \cdot \nabla u ~dx\f$ 
 
 @param[in] &elementMatrix
