@@ -45,6 +45,7 @@ class AssembleFE {
   protected:
 	// For example if we consider an element with multiple discretizations i.e. P2-P1 Velocity-Pressure.
 	// We might need more than one FEType or Degree of freedom information
+	// Vectoren mit Informationen besser so abepsicher sieher z.B. bcBuilder.
 	int numFEType_;
 	string FEType1_; 
 	string FEType2_;

@@ -3,7 +3,7 @@
 
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/FE/FE.hpp"
-#include "FE_Test.hpp"
+#include "feddlib/core/AceFemAssembly/TestFE/FE_Test.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
@@ -70,7 +70,8 @@ int main(int argc, char *argv[]) {
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Implement 3D test.");
     }
     domain->buildMesh( 1,"Square", dim, FEType, n, m, numProcsCoarseSolve);
-    
+   
+
     FE_Test<SC,LO,GO,NO> fe_test;
     fe_test.addFE(domain);
     

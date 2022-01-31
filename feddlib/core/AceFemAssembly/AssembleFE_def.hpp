@@ -25,12 +25,12 @@ AssembleFE<SC,LO,GO,NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, Par
 	params_=params;
 
 	// Reading through parameterlist
-	dim_= params_->sublist("Parameter").get("dim",-1);
+	dim_= params_->sublist("Parameter").get("Dimension",-1);
 	FEType1_= params_->sublist("Parameter").get("Discretization1","none");
-	FEType2_= params_->sublist("Parameter").get("Discretization1","none");
+	//FEType2_= params_->sublist("Parameter").get("Discretization1","none");
 	dofs1_= params_->sublist("Parameter").get("Dofs1",-1);
-	dofs2_= params_->sublist("Parameter").get("Dofs2",-1);
-	timeProblem_= params_->sublist("Timestepping Parameter").get("Timeproblem",false);
+	//dofs2_= params_->sublist("Parameter").get("Dofs2",-1);
+	//timeProblem_= params_->sublist("Timestepping Parameter").get("Timeproblem",false);
 	
 	checkParameter();
 
@@ -69,11 +69,11 @@ AssembleFE<SC,LO,GO,NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, Par
 */
 template <class SC, class LO, class GO, class NO>
 void AssembleFE<SC,LO,GO,NO>::checkParameter( ){
-	TEUCHOS_TEST_FOR_EXCEPTION(dim_=-1, std::runtime_error, "Dimension not initialized");
-	TEUCHOS_TEST_FOR_EXCEPTION(dofs1_=-1, std::runtime_error, "Dofs1 not initialized");
-	TEUCHOS_TEST_FOR_EXCEPTION(dofs2_=-1, std::runtime_error, "Dofs2 not initialized");
+	TEUCHOS_TEST_FOR_EXCEPTION(dim_==-1, std::runtime_error, "Dimension not initialized");
+	TEUCHOS_TEST_FOR_EXCEPTION(dofs1_==-1, std::runtime_error, "Dofs1 not initialized");
+	//TEUCHOS_TEST_FOR_EXCEPTION(dofs2_==-1, std::runtime_error, "Dofs2 not initialized");
 	TEUCHOS_TEST_FOR_EXCEPTION(FEType1_=="none", std::runtime_error, "FEType1 not initialized");
-	TEUCHOS_TEST_FOR_EXCEPTION(FEType2_=="none", std::runtime_error, "FEType2 not initialized");
+	//TEUCHOS_TEST_FOR_EXCEPTION(FEType2_=="none", std::runtime_error, "FEType2 not initialized");
 	//TEUCHOS_TEST_FOR_EXCEPTION(timeProblem_==-1, std::runtime_error, "Dofs not initialized");
 
 };
