@@ -59,15 +59,14 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 	                                    MatrixPtr_Type &A,
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
-	// Building Parameterlist
-
 
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblem.xml");
-	int dofs = 3;
 	
     UN FEloc = checkFE(dim,FEType);
 
 	ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+	int dofsElement = elements->getElement(0).getVectorNodeList().size();
 
 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
 
@@ -75,7 +74,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 
 	vec2D_dbl_Type nodes;
 
-	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( 3));
+	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
 
 	for (UN T=0; T<elements->numberElements(); T++) {
 		
@@ -119,8 +118,6 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
 
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblem.xml");
 
-	int dofs = 3;
-
     UN FEloc = checkFE(dim,FEType);
 
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
@@ -149,10 +146,12 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
 
 		AssembleFEPtr_Type assemblyFE = assembleFEFactory.build("Laplace",elements->getElement(T).getFlag(),nodes, params);
 
-		vec_GO_Type nodeIDs(dofs); // Specific for 3 degrees of freedom now
-		nodeIDs.push_back(map->getGlobalElement(elements->getElement(T).getNode(0)));	
-		nodeIDs.push_back(map->getGlobalElement(elements->getElement(T).getNode(1)));	
-		nodeIDs.push_back(map->getGlobalElement(elements->getElement(T).getNode(2)));	
+		assemblyFE->addRHSFunc(func);
+
+		vec_GO_Type nodeIDs(0); // Specific for 3 degrees of freedom now
+		for(int i=0; i< nodes.size() ; i++){
+			nodeIDs.push_back(map->getGlobalElement(elements->getElement(T).getNode(i)));	
+		}
 
 		Teuchos::ArrayView<GO> nodeIDsGo = Teuchos::arrayViewFromVector( nodeIDs);
 		MapPtr_Type mapNodeIDs =
@@ -184,18 +183,22 @@ void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type el
 		Teuchos::Array<SC> value( numNodes, 0. );
         Teuchos::Array<GO> columnIndices( numNodes, 0 );
 
+		//Teuchos::ArrayView<const LO> indices;
+		//Teuchos::ArrayView<const SC> values;
+
 		for (UN i=0; i < numNodes ; i++) {
+			GO row = map->getGlobalElement( element.getNode(i) );
+			//A->getGlobalRowView(element.getNode(i), indices,valuesRow);
 			for(UN j=0; j < numNodes ; j++){
 			    
 			    columnIndices[j] = map->getGlobalElement( element.getNode(j) );
+				
 				value[j] = (*elementMatrix)[i][j];
 			    				    
 			}
-			GO row = map->getGlobalElement( element.getNode(i) );
-		   // A->addGlobalValues( row, columnIndices(), value() ); // Check if this functions (addGlobalValues) exists for Matrix
 
+		  	A->insertGlobalValues( row, columnIndices(), value() ); // Automatically adds entries if a value already exists
 		}
-
 }
 
 /*!
@@ -213,9 +216,8 @@ void FE_Test<SC,LO,GO,NO>::addFeVector(MultiVectorPtr_Type &a, MultiVectorPtr_Ty
         Teuchos::ArrayRCP<SC>  globalVec = a->getDataNonConst(0);
         Teuchos::ArrayRCP<SC>  elementVec = elementVector->getDataNonConst(0);
 		int numNodes = elementVec.size();
-		
-		for(UN j=0; j < numNodes ; j++){
-		    
+
+		for(UN j=0; j < element.getVectorNodeList().size() ; j++){
 			globalVec[element.getNode(j)] += elementVec[j];
 		    				    
 		}

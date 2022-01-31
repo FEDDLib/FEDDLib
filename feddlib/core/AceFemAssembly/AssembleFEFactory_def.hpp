@@ -30,10 +30,10 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 	AssembleFEPtr_Type assembleFESpecific;
 
 	if(problemType == "Laplace"){
-		cout<< " builng Laplace elements " << endl;
 		//AssembleFEAceLaplace<SC,LO,GO,NO> assembleFESpecific  = new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params);
 		Teuchos::RCP<AssembleFEAceLaplace<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params) );
 		assembleFE = assembleFESpecific;
+		
 
 	}
 	else if(problemType == "NavierStokes"){

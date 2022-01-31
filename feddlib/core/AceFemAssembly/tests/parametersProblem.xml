@@ -1,8 +1,8 @@
 <ParameterList name="Laplace">
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="2"/>
-        <Parameter name="Dofs1" type="int" value="3"/>
-        <Parameter name="Discretization1" type="string" value="P1"/><!--P1, P2; velocity, pressure always P1 -->
+        <Parameter name="Dofs1" type="int" value="1"/>
+        <Parameter name="Discretization1" type="string" value="P2"/><!--P1, P2; velocity, pressure always P1 -->
         <Parameter name="Mesh Type" type="string" value="structured"/> <!--structured, unstructured, structured_bfs -->
         <Parameter name="Mesh Name" type="string" value="square.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh-->
         <Parameter name="Mesh Delimiter" type="string" value=" "/>

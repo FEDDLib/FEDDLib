@@ -42,6 +42,8 @@ class AssembleFE {
 	int getDim();
 	vec2D_dbl_Type getNodesRefConfig();
 
+	void addRHSFunc(RhsFunc_Type rhsFunc){ rhsFunc_ = rhsFunc;}; 
+
   protected:
 	// For example if we consider an element with multiple discretizations i.e. P2-P1 Velocity-Pressure.
 	// We might need more than one FEType or Degree of freedom information
@@ -51,6 +53,8 @@ class AssembleFE {
 	string FEType2_;
 	int dofs1_;
 	int dofs2_;
+
+	RhsFunc_Type rhsFunc_;
 
 	int dim_;
 
