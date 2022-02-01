@@ -31,6 +31,48 @@ class AssembleFEAceLaplace : public AssembleFE<SC,LO,GO,NO> {
 
    private:
 	void assemblyLaplacian(SmallMatrixPtr_Type &elementMatrix);
+
+	void gradPhi(	int Dimension,
+                    int intFE,
+                    int i,
+                    vec_dbl_Type &QuadPts,
+                    vec_dbl_ptr_Type &value);
+    
+    /*! Most of the quadrature formulas can be found in http://code-aster.org/doc/v11/en/man_r/r3/r3.01.01.pdf 01/2021  */
+    void getQuadratureValues(int Dimension,
+                            int Degree,
+                            vec2D_dbl_ptr_Type &QuadPts,
+                            vec_dbl_ptr_Type &QuadW,
+                            std::string FEType);
+    
+    int getDPhi(	vec3D_dbl_ptr_Type &DPhi,
+                	vec_dbl_ptr_Type &weightsDPhi,
+                    int Dimension,
+                    std::string FEType,
+                    int Degree);
+
+	void buildTransformation(SmallMatrix<SC>& B);
+
+    UN determineDegree(UN dim,
+                       std::string FEType,
+                       UN degFunc);
+
+    int getPhi(vec2D_dbl_ptr_Type &Phi,
+                            vec_dbl_ptr_Type &weightsPhi,
+                            int dim,
+                            std::string FEType,
+                            int Degree,
+               			    std::string FETypeQuadPoints="");
+
+	void phi(int dim,
+			  int intFE,
+			  int i,
+			  vec_dbl_Type &p,
+			  double* value);
+
+    void applyBTinv(vec3D_dbl_ptr_Type& dPhiIn,
+                    vec3D_dbl_Type& dPhiOut,
+                    SmallMatrix<SC>& Binv);
 	
  };
 

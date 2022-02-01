@@ -25,11 +25,15 @@ AssembleFEFactory<SC,LO,GO,NO>::AssembleFEFactory(){
 template <class SC, class LO, class GO, class NO>
 typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC,LO,GO,NO>::build(string problemType, int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params)
 {
+	AssembleFEPtr_Type assembleFE;
+
 	AssembleFEPtr_Type assembleFESpecific;
 
 	if(problemType == "Laplace"){
 		//AssembleFEAceLaplace<SC,LO,GO,NO> assembleFESpecific  = new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params);
 		Teuchos::RCP<AssembleFEAceLaplace<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params) );
+		assembleFE = assembleFESpecific;
+		
 
 	}
 	else if(problemType == "NavierStokes"){
@@ -39,7 +43,7 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
     		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "No specific implementation for your request.");
 
 
-	return assembleFESpecific;
+	return assembleFE;
 };
 
 }

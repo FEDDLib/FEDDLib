@@ -33,6 +33,9 @@ void FE_Test<SC,LO,GO,NO>::addFE(DomainConstPtr_Type domain){
         domainNC->initializeFEData();
     }
     domainVec_.push_back(domain);
+
+	
+
 }
 
 
@@ -56,20 +59,32 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 	                                    MatrixPtr_Type &A,
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
+
+	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblem.xml");
 	
+    UN FEloc = checkFE(dim,FEType);
+
 	ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+	int dofsElement = elements->getElement(0).getVectorNodeList().size();
 
 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
 
 	MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
 
-	SmallMatrixPtr_Type elementMatrix(elements->getElement(0).size());
+	vec2D_dbl_Type nodes;
+
+	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
 
 	for (UN T=0; T<elements->numberElements(); T++) {
 		
-		AssemblyFE_Type assemblyFe = new AssemblyFEFactory("Laplace",elements->getElement(T).getFlag(),elements->getElement(T).getVectorNodeList(), params);
+		nodes = getCoordinates(elements->getElement(T).getVectorNodeList(), pointsRep);
 
-		assemblyFE.assemblyJacobian(elementMatrix);
+		AssembleFEFactory<SC,LO,GO,NO> assembleFEFactory;// = new AssembleFEFactory<SC,LO,GO,NO>();
+
+		AssembleFEPtr_Type assemblyFE = assembleFEFactory.build("Laplace",elements->getElement(T).getFlag(),nodes, params);
+
+		assemblyFE->assemblyJacobian(elementMatrix);
 
 		addFeMatrix(A,elementMatrix, elements->getElement(T), map);
 		
@@ -100,6 +115,11 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
                       vector<SC>& funcParameter
                       )
  {
+
+	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblem.xml");
+
+    UN FEloc = checkFE(dim,FEType);
+
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
@@ -110,6 +130,8 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
     int parameters;
     double x;
 
+	vec2D_dbl_Type nodes;
+
     std::vector<double> valueFunc(dim);
     SC* paras = &(funcParameter[0]);
     
@@ -118,11 +140,28 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-		AssemblyFE_Type assemblyFe = new AssemblyFEFactory("Laplace",elements->getElement(T).getFlag(),elements->getElement(T).getVectorNodeList(), params);
+		nodes = getCoordinates(elements->getElement(T).getVectorNodeList(), pointsRep);
 
-		assemblyFE.assembleRhs(elementVec,func, funcParameter);
+		AssembleFEFactory<SC,LO,GO,NO> assembleFEFactory;// = new AssembleFEFactory<SC,LO,GO,NO>();
 
-		addFeVec(valuesRhs,elementVec, elements->getElement(T), map);
+		AssembleFEPtr_Type assemblyFE = assembleFEFactory.build("Laplace",elements->getElement(T).getFlag(),nodes, params);
+
+		assemblyFE->addRHSFunc(func);
+
+		vec_GO_Type nodeIDs(0); // Specific for 3 degrees of freedom now
+		for(int i=0; i< nodes.size() ; i++){
+			nodeIDs.push_back(map->getGlobalElement(elements->getElement(T).getNode(i)));	
+		}
+
+		Teuchos::ArrayView<GO> nodeIDsGo = Teuchos::arrayViewFromVector( nodeIDs);
+		MapPtr_Type mapNodeIDs =
+			Teuchos::rcp( new Map_Type( map->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), nodeIDsGo, 0, map->getComm()  ) );
+
+		MultiVectorPtr_Type elementVec = Teuchos::rcp( new MultiVector_Type( mapNodeIDs, 1 ) );
+
+		assemblyFE->assemblyRHS(elementVec);
+
+		addFeVector(a, elementVec, elements->getElement(T)); // if they are both multivectors its actually super simple! Import entries and add
 	}
 }
 
@@ -138,24 +177,28 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
 
 */
 template <class SC, class LO, class GO, class NO>
-void FE_Test<SC,LO,GO,NO>::addFeMatrix(SmallMatrixPtr_Type &A, SmallMatrix<SC> elementMatrix, FiniteElement element, MapConstPtr_Type map){
+void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type map){
 
-		int numNodes = elementMatrix[0].size();
+		int numNodes = elementMatrix->size();
 		Teuchos::Array<SC> value( numNodes, 0. );
-        Teuchos::Array<GO> columnIndices( numNodes.size(), 0 );
+        Teuchos::Array<GO> columnIndices( numNodes, 0 );
+
+		//Teuchos::ArrayView<const LO> indices;
+		//Teuchos::ArrayView<const SC> values;
 
 		for (UN i=0; i < numNodes ; i++) {
+			GO row = map->getGlobalElement( element.getNode(i) );
+			//A->getGlobalRowView(element.getNode(i), indices,valuesRow);
 			for(UN j=0; j < numNodes ; j++){
 			    
 			    columnIndices[j] = map->getGlobalElement( element.getNode(j) );
-				value[j] = (*elementMatrix)[i][j]
+				
+				value[j] = (*elementMatrix)[i][j];
 			    				    
 			}
-			GO row = map->getGlobalElement( element.getNode(i) );
-		    A->addGlobalValues( row, columnIndices(), value() ); // Check if this functions (addGlobalValues) exists for Matrix
 
+		  	A->insertGlobalValues( row, columnIndices(), value() ); // Automatically adds entries if a value already exists
 		}
-
 }
 
 /*!
@@ -168,16 +211,71 @@ void FE_Test<SC,LO,GO,NO>::addFeMatrix(SmallMatrixPtr_Type &A, SmallMatrix<SC> e
 
 */
 template <class SC, class LO, class GO, class NO>
-void FE_Test<SC,LO,GO,NO>::addFeVector(VectorPtr_Type &a, vec_dbl_Type elementVector, FiniteElement element){
+void FE_Test<SC,LO,GO,NO>::addFeVector(MultiVectorPtr_Type &a, MultiVectorPtr_Type elementVector, FiniteElement element){
 
-		int numNodes = elementVector.size();
-		
-		for(UN j=0; j < numNodes ; j++){
-		    
-			a[element.getNode(j)] += elementVector[j];
+        Teuchos::ArrayRCP<SC>  globalVec = a->getDataNonConst(0);
+        Teuchos::ArrayRCP<SC>  elementVec = elementVector->getDataNonConst(0);
+		int numNodes = elementVec.size();
+
+		for(UN j=0; j < element.getVectorNodeList().size() ; j++){
+			globalVec[element.getNode(j)] += elementVec[j];
 		    				    
 		}
 
+}
+
+// ----------------------------------------------------------
+// Helper Functions from FE Class 
+
+/*! \brief Matches Finite Element Discretization to domain. Useful 
+	for AssemblyFE class.
+
+
+
+
+*/
+template <class SC, class LO, class GO, class NO>
+int FE_Test<SC,LO,GO,NO>::checkFE(int dim, string FEType){
+
+    int FEloc;
+    std::vector<int> matches;
+    for (int i = 0; i < domainVec_.size(); i++) {
+        if (domainVec_.at(i)->getDimension() == dim)
+            matches.push_back(i);
+    }
+
+    bool found = false;
+    for (int i = 0; i < matches.size();i++) {
+        if (domainVec_.at( matches.at(i) )->getFEType() == FEType) {
+            FEloc = matches.at(i);
+            found = true;
+        }
+    }
+
+    TEUCHOS_TEST_FOR_EXCEPTION(!found, std::logic_error   ,"Combination of dimenson(2/3) and FE Type(P1/P2) not defined yet. Use addFE(domain)");
+
+    return FEloc;
+}
+
+/*!
+
+ \brief Returns coordinates of local node ids
+
+@param[in] localIDs
+@param[in] points
+@param[out] coordinates 
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+vec2D_dbl_Type FE_Test<SC,LO,GO,NO>::getCoordinates(vec_LO_Type localIDs, vec2D_dbl_ptr_Type points){
+
+	vec2D_dbl_Type coordinates(0,vec_dbl_Type( points->at(0).size()));
+	for(int i=0; i < localIDs.size() ; i++){
+		coordinates.push_back(points->at(localIDs[i]));
+	}
+
+    return coordinates;
 }
 
 };

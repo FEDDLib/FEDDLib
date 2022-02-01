@@ -7,8 +7,11 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
+#include "feddlib/core/LinearAlgebra/Map.hpp"
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/FE/sms.hpp"
+#include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
+#include "feddlib/core/AceFemAssembly/AssembleFEFactory.hpp"
 
 #include <Teuchos_Array.hpp>
 #include <Teuchos_BLAS.hpp>
@@ -35,7 +38,13 @@ class FE_Test {
 	typedef SmallMatrix<SC> SmallMatrix_Type;
     typedef Teuchos::RCP<SmallMatrix_Type> SmallMatrixPtr_Type;
 
-
+	typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
+	typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
+	
+	typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
+    typedef Teuchos::RCP<AssembleFE_Type> AssembleFEPtr_Type;
+	
+    typedef typename Matrix_Type::Map_Type Map_Type;
     typedef typename Matrix_Type::MapPtr_Type MapPtr_Type;
     typedef typename Matrix_Type::MapConstPtr_Type MapConstPtr_Type;
 
@@ -51,8 +60,8 @@ class FE_Test {
 					    string FEType,
 					    int degree,
 					    MatrixPtr_Type &A,
-					    bool callFillComplete,
-					     int FELocExternal );
+					     bool callFillComplete = true,
+                         int FELocExternal = -1 );
 
 	void assemblyRHS(int dim,
                        string FEType,
@@ -62,11 +71,18 @@ class FE_Test {
                       vector<SC>& funcParameter
                       );
 
-	void addFeMatrix(MatrixPtr_Type &A, SmallMatrix<SC> elementMatrix, FiniteElement element, MapConstPtr_Type map);
-	void addFeVector(VectorPtr_Type &a, vec_dbl_Type elementVector, FiniteElement element);
-
-    bool saveAssembly_;
+	bool saveAssembly_;
     DomainConstPtr_vec_Type	domainVec_;
+
+	private:
+		void addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type map);
+		void addFeVector(MultiVectorPtr_Type &a, MultiVectorPtr_Type elementVector, FiniteElement element);
+			
+		int checkFE(int dim, string FEType);
+
+		vec2D_dbl_Type getCoordinates(vec_LO_Type localIDs, vec2D_dbl_ptr_Type points);
+
+    
 };
 }
 #endif
