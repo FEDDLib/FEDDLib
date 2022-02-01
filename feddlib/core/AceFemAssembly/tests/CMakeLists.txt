@@ -22,3 +22,11 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fe_test
 	DEST_FILES parametersProblem.xml 
 	EXEDEPS fe_test
 )
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_fe_test
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
+	SOURCE_FILES square.mesh
+	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+        DEST_FILES square.mesh
+	EXEDEPS fe_test
+)
