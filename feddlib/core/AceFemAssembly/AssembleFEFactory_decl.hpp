@@ -30,8 +30,20 @@ namespace FEDD {
         typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
         typedef Teuchos::RCP<AssembleFE_Type> AssembleFEPtr_Type;
 
+        /*!
+         \brief Constructor
+
+        */
         AssembleFEFactory();
 
+        /*!
+         \brief We only need this one function to build assembleFE, where we define the problem type and the AssembleFE object we extend to a specific problem.
+
+         @param[in] problemType Type of specfic problem we focus on
+         @param[in] flag Flag of element
+         @param[in] nodesRefConfig Nodes of element in reference configuration
+         @param[in] params Parameterlist for current problem
+        */
         AssembleFEPtr_Type build( string problemType, int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params);
 
     };
