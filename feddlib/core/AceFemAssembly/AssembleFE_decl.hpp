@@ -180,8 +180,10 @@ namespace FEDD {
         // We might need more than one FEType or Degree of freedom information
         // Vectoren mit Informationen besser so abepsicher sieher z.B. bcBuilder.
         int numFEType_;
+        /// @todo Why do we need FEType1_ and FEType2_ in the abstract class?
         string FEType1_;
         string FEType2_;
+        /// @todo Why do we need dofs1_ and dofs2_ in the abstract class? I think, we should think about a general framework for this
         int dofs1_;
         int dofs2_;
 
@@ -189,6 +191,7 @@ namespace FEDD {
 
         int dim_;
 
+        /// @todo Why "Reference Configuration"?
         vec2D_dbl_Type nodesRefConfig_;
         bool timeProblem_;
         int flag_;
