@@ -33,8 +33,7 @@ class AssembleFEFactory {
 
 	AssembleFEPtr_Type build( string problemType, int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params);
 
-
-
 };
+
 }
 #endif
