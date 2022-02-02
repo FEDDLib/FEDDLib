@@ -100,14 +100,15 @@ namespace FEDD {
         //virtual void assembleMass(MatrixPtr_Type &A) =0;
 
         /*!
-         \brief Check the input parameters from the constructor and the ParameterList for consistency.
+         \brief Check the input parameters from the constructor and the ParameterList for completeness and consistency.
         */
-        void checkParameters();
+        virtual void checkParameters();
 
         /*!
-         \brief Update the ParameterList initially specified at construction time.
+         \brief Set or update the parameters read from the ParameterList.
+         @param[in] ParameterList as read from the xml file
         */
-        void updateParams( ParameterListPtr_Type params);
+        virtual void updateParams(ParameterListPtr_Type params);
 
         /*!
          \brief This function is called every time the FEDDLib proceeds from one to the next time step. The size of the time step will always be provided as input.
@@ -124,6 +125,7 @@ namespace FEDD {
         /*!
          \brief Update the solution vector.
          @todo We still have to fix the ordering of the dofs.
+         @param[in] solution
         */
         void updateSolution(vec_dbl_Type solution);
 
@@ -164,6 +166,12 @@ namespace FEDD {
 
     protected:
 
+        /*!
+         \brief Constructor
+         @param[in] flag Flag of element
+         @param[in] nodesRefConfig Nodes of element in reference configuration
+         @param[in] params Parameterlist for current problem
+        */
         AssembleFE(int flag,
                    vec2D_dbl_Type nodesRefConfig,
                    ParameterListPtr_Type parameters);
