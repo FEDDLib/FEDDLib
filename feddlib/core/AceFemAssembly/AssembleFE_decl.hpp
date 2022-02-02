@@ -7,6 +7,12 @@
 
 namespace FEDD {
 
+    template <class SC = default_sc,
+              class LO = default_lo,
+              class GO = default_go,
+              class NO = default_no>
+    class AssembleFEFactory;
+
     /// \class AssembleFE
     /// \brief This abstract class defining the interface for any type of element assembly rountines in the FEDDLib.
     ///
