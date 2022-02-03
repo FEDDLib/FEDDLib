@@ -31,9 +31,15 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params)
 */ 
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLaplace<SC,LO,GO,NO>::assemblyJacobian(SmallMatrixPtr_Type &elementMatrix) {
+typename AssembleFEAceLaplace<SC,LO,GO,NO>::SmallMatrixPtr_Type AssembleFEAceLaplace<SC,LO,GO,NO>::assembleJacobian() {
+
+	int dofsElement = this->nodesRefConfig_.size();
+
+	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
 
 	assemblyLaplacian(elementMatrix);
+
+	return elementMatrix;
 }
 
 /*!
@@ -93,14 +99,15 @@ void AssembleFEAceLaplace<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type &e
 
 */
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLaplace<SC,LO,GO,NO>::assemblyRHS(MultiVectorPtr_Type &elementVector) {
+vec_dbl_Type AssembleFEAceLaplace<SC,LO,GO,NO>::assembleRHS() {
 
-	Teuchos::ArrayRCP< SC > elementVec = elementVector->getDataNonConst(0);
 
 	int dim = this->getDim();
 	int numNodes= this->getNodesRefConfig().size();
 	int Grad =1; // Needs to be fixed	
 	string FEType = this->FEType1_;
+
+	vec_dbl_Type elementVector(numNodes);
 
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
@@ -136,10 +143,19 @@ void AssembleFEAceLaplace<SC,LO,GO,NO>::assemblyRHS(MultiVectorPtr_Type &element
        		value += weights->at(w) * phi->at(w).at(i);
 		}
         value *= absDetB *valueFunc[0];
-        elementVec[i] += value;
+        elementVector[i] += value;
     }
 
+	return elementVector;
 }
+
+/*!
+
+ \brief Building Transformation
+
+@param[in] &B
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 void AssembleFEAceLaplace<SC,LO,GO,NO>::buildTransformation(SmallMatrix<SC>& B){
@@ -155,6 +171,14 @@ void AssembleFEAceLaplace<SC,LO,GO,NO>::buildTransformation(SmallMatrix<SC>& B){
     }
 
 }
+
+/*!
+
+ \brief Assembly function for \f$ \int_T f ~ v ~dx \f$, we need to 
+
+@param[in] &elementVector
+
+*/
 
 template <class SC, class LO, class GO, class NO>
 void AssembleFEAceLaplace<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,

@@ -7,12 +7,12 @@
 
 namespace FEDD {
 
-    template <class SC = default_sc,
+   /* template <class SC = default_sc,
               class LO = default_lo,
               class GO = default_go,
               class NO = default_no>
     class AssembleFEFactory;
-
+	*/
     /*!
     \class AssembleFE
     \brief This abstract class defining the interface for any type of element assembly rountines in the FEDDLib.
@@ -20,7 +20,7 @@ namespace FEDD {
     \tparam SC The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.g., for using complex instead
     \tparam LO The local ordinal type. The is the index type for local indices
     \tparam GO The global ordinal type. The is the index type for global indices
-    @todo This should actually by removed since the class should operate only on element level)
+    @todo This should actually be removed since the class should operate only on element level)
     \tparam NO The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.
 
     Any new assembly routine on element level should implemented following the interface provided in this class. During the setup of a specific boundary value problem one AssembleFE object will be constructed using the AssembleFEFactory for each finite element. This is can be understood roughly as follows:
@@ -77,25 +77,25 @@ namespace FEDD {
          \brief Assemble the element Jacobian matrix.
          \return the element Jacobian matrix
         */
-        virtual SmallMatrixPtr_Type &elementMatrix assembleJacobian() = 0;
+        virtual SmallMatrixPtr_Type assembleJacobian() = 0;
 
         /*!
          \brief Assemble the element right hand side vector.
          \return the element right hand side vector
         */
-        virtual MultiVectorPtr_Type &elementVector assembleRHS() = 0;
+        virtual vec_dbl_Type assembleRHS() = 0;
 
         /*!
          \brief Get the currently assembled element Jacobian matrix
          \return the element Jacobian matrix
         */
-        virtual SmallMatrixPtr_Type &elementMatrix getJacobian() = 0;
+        SmallMatrixPtr_Type getJacobian() {return jacobian_;}; // TODO: Why virtual?
 
         /*!
          \brief Get the currently assembled right hand side vector.
          \return the element right hand side vector
         */
-        virtual MultiVectorPtr_Type &elementVector getRHS() = 0;
+        MultiVectorPtr_Type getRHS(){return rhsVec_;};
 
         //virtual void assembleMass(MatrixPtr_Type &A) =0;
 
@@ -120,7 +120,7 @@ namespace FEDD {
          \brief Get the time state of the object.
          \return the time.
         */
-        double getTime();
+        double getTimestep();
 
         /*!
          \brief Update the solution vector.
@@ -188,11 +188,14 @@ namespace FEDD {
         int dofs1_;
         int dofs2_;
 
+	SmallMatrixPtr_Type jacobian_;
+	MultiVectorPtr_Type rhsVec_;
+
         RhsFunc_Type rhsFunc_;
 
         int dim_;
 
-        /// @todo Why "Reference Configuration"?
+        /// @todo Why "Reference Configuration"? Because you said so ..
         vec2D_dbl_Type nodesRefConfig_;
         bool timeProblem_;
         int flag_;
@@ -201,7 +204,7 @@ namespace FEDD {
         ParameterListPtr_Type params_;// Including flags
         vec_dbl_Type solution_ ;
 
-        friend class AssembleFEFactory<SC,LO,GO,NO>;
+        //friend class AssembleFEFactory<SC,LO,GO,NO>;
     };
 }
 #endif

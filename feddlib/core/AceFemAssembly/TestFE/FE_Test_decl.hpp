@@ -76,7 +76,7 @@ class FE_Test {
 
 	private:
 		void addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type map);
-		void addFeVector(MultiVectorPtr_Type &a, MultiVectorPtr_Type elementVector, FiniteElement element);
+		void addFeVector(MultiVectorPtr_Type &a, vec_dbl_Type elementVector, FiniteElement element);
 			
 		int checkFE(int dim, string FEType);
 

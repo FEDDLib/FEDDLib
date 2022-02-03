@@ -24,9 +24,17 @@ class AssembleFEAceLaplace : public AssembleFE<SC,LO,GO,NO> {
 
 	AssembleFEAceLaplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters);
 
-	virtual void assemblyRHS(MultiVectorPtr_Type &elementVector);
+	/*!
+	 \brief Assemble the element Jacobian matrix.
+	 \return the element Jacobian matrix
+	*/
+	virtual SmallMatrixPtr_Type assembleJacobian();
 
-	virtual void assemblyJacobian(SmallMatrixPtr_Type &elementMatrix);
+	/*!
+	 \brief Assemble the element right hand side vector.
+	 \return the element right hand side vector
+	*/
+	virtual vec_dbl_Type assembleRHS();	
 
 
    private:

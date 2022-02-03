@@ -24,7 +24,7 @@ AssembleFE<SC,LO,GO,NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, Par
 	//dofs2_= params_->sublist("Parameter").get("Dofs2",-1);
 	//timeProblem_= params_->sublist("Timestepping Parameter").get("Timeproblem",false);
 
-	checkParameter();
+	checkParameters();
 
 	solution_ = vec_dbl_Type(dofs1_);
 /// Element Numbering for triangular elements:
@@ -57,7 +57,7 @@ AssembleFE<SC,LO,GO,NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, Par
 
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFE<SC,LO,GO,NO>::checkParameter( ){
+void AssembleFE<SC,LO,GO,NO>::checkParameters( ){
 	TEUCHOS_TEST_FOR_EXCEPTION(dim_==-1, std::runtime_error, "Dimension not initialized");
 	TEUCHOS_TEST_FOR_EXCEPTION(dofs1_==-1, std::runtime_error, "Dofs1 not initialized");
 	//TEUCHOS_TEST_FOR_EXCEPTION(dofs2_==-1, std::runtime_error, "Dofs2 not initialized");

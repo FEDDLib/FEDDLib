@@ -74,7 +74,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 
 	vec2D_dbl_Type nodes;
 
-	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
+	//SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
 
 	for (UN T=0; T<elements->numberElements(); T++) {
 		
@@ -84,7 +84,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 
 		AssembleFEPtr_Type assemblyFE = assembleFEFactory.build("Laplace",elements->getElement(T).getFlag(),nodes, params);
 
-		assemblyFE->assemblyJacobian(elementMatrix);
+		SmallMatrixPtr_Type elementMatrix = assemblyFE->assembleJacobian();
 
 		addFeMatrix(A,elementMatrix, elements->getElement(T), map);
 		
@@ -148,18 +148,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
 
 		assemblyFE->addRHSFunc(func);
 
-		vec_GO_Type nodeIDs(0); // Specific for 3 degrees of freedom now
-		for(int i=0; i< nodes.size() ; i++){
-			nodeIDs.push_back(map->getGlobalElement(elements->getElement(T).getNode(i)));	
-		}
-
-		Teuchos::ArrayView<GO> nodeIDsGo = Teuchos::arrayViewFromVector( nodeIDs);
-		MapPtr_Type mapNodeIDs =
-			Teuchos::rcp( new Map_Type( map->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), nodeIDsGo, 0, map->getComm()  ) );
-
-		MultiVectorPtr_Type elementVec = Teuchos::rcp( new MultiVector_Type( mapNodeIDs, 1 ) );
-
-		assemblyFE->assemblyRHS(elementVec);
+		vec_dbl_Type elementVec = assemblyFE->assembleRHS();
 
 		addFeVector(a, elementVec, elements->getElement(T)); // if they are both multivectors its actually super simple! Import entries and add
 	}
@@ -211,14 +200,14 @@ void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type el
 
 */
 template <class SC, class LO, class GO, class NO>
-void FE_Test<SC,LO,GO,NO>::addFeVector(MultiVectorPtr_Type &a, MultiVectorPtr_Type elementVector, FiniteElement element){
+void FE_Test<SC,LO,GO,NO>::addFeVector(MultiVectorPtr_Type &a, vec_dbl_Type elementVector, FiniteElement element){
 
         Teuchos::ArrayRCP<SC>  globalVec = a->getDataNonConst(0);
-        Teuchos::ArrayRCP<SC>  elementVec = elementVector->getDataNonConst(0);
-		int numNodes = elementVec.size();
+        //Teuchos::ArrayRCP<SC>  elementVec = elementVector->getDataNonConst(0);
+		int numNodes = elementVector.size();
 
 		for(UN j=0; j < element.getVectorNodeList().size() ; j++){
-			globalVec[element.getNode(j)] += elementVec[j];
+			globalVec[element.getNode(j)] += elementVector[j];
 		    				    
 		}
 
