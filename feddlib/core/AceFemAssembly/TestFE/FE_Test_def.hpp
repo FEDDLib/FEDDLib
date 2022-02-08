@@ -59,6 +59,8 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 	                                    MatrixPtr_Type &A,
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
+/// \todo Tupel for Disk Anzahl Knoten, Anzahl Freiheitsgrade
+
 
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblem.xml");
 	
@@ -84,7 +86,9 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 
 		AssembleFEPtr_Type assemblyFE = assembleFEFactory.build("Laplace",elements->getElement(T).getFlag(),nodes, params);
 
-		SmallMatrixPtr_Type elementMatrix = assemblyFE->assembleJacobian();
+		assemblyFE->assembleJacobian();
+
+		SmallMatrixPtr_Type elementMatrix = assemblyFE->getJacobian(); 
 
 		addFeMatrix(A,elementMatrix, elements->getElement(T), map);
 		
@@ -148,7 +152,9 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
 
 		assemblyFE->addRHSFunc(func);
 
-		vec_dbl_Type elementVec = assemblyFE->assembleRHS();
+		assemblyFE->assembleRHS();
+
+		vec_dbl_Type elementVec =  assemblyFE->getRHS();
 
 		addFeVector(a, elementVec, elements->getElement(T)); // if they are both multivectors its actually super simple! Import entries and add
 	}

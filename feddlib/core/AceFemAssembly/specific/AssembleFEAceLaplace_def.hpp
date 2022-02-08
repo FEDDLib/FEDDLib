@@ -31,7 +31,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params)
 */ 
 
 template <class SC, class LO, class GO, class NO>
-typename AssembleFEAceLaplace<SC,LO,GO,NO>::SmallMatrixPtr_Type AssembleFEAceLaplace<SC,LO,GO,NO>::assembleJacobian() {
+void AssembleFEAceLaplace<SC,LO,GO,NO>::assembleJacobian() {
 
 	int dofsElement = this->nodesRefConfig_.size();
 
@@ -39,7 +39,7 @@ typename AssembleFEAceLaplace<SC,LO,GO,NO>::SmallMatrixPtr_Type AssembleFEAceLap
 
 	assemblyLaplacian(elementMatrix);
 
-	return elementMatrix;
+	this->jacobian_ = elementMatrix ;
 }
 
 /*!
@@ -99,7 +99,7 @@ void AssembleFEAceLaplace<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type &e
 
 */
 template <class SC, class LO, class GO, class NO>
-vec_dbl_Type AssembleFEAceLaplace<SC,LO,GO,NO>::assembleRHS() {
+void AssembleFEAceLaplace<SC,LO,GO,NO>::assembleRHS() {
 
 
 	int dim = this->getDim();
@@ -146,7 +146,7 @@ vec_dbl_Type AssembleFEAceLaplace<SC,LO,GO,NO>::assembleRHS() {
         elementVector[i] += value;
     }
 
-	return elementVector;
+	this->rhsVec_ = elementVector;
 }
 
 /*!

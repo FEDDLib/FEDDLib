@@ -81,13 +81,24 @@ void AssembleFE<SC,LO,GO,NO>::advanceInTime( double dt){
 
 };
 
+template <class SC, class LO, class GO, class NO>
+void AssembleFE<SC,LO,GO,NO>::advanceNewtonStep(){
+	newtonStep_ = newtonStep_ ;
+
+};
+
 
 template <class SC, class LO, class GO, class NO>
-double AssembleFE<SC,LO,GO,NO>::getTimestep(){
+double AssembleFE<SC,LO,GO,NO>::getTimeStep(){
 	return timeStep_ ;
 
 };
 
+template <class SC, class LO, class GO, class NO>
+int AssembleFE<SC,LO,GO,NO>::getNewtonStep(){
+	return newtonStep_ ;
+
+};
 
 template <class SC, class LO, class GO, class NO>
 void AssembleFE<SC,LO,GO,NO>::updateSolution( vec_dbl_Type solution){

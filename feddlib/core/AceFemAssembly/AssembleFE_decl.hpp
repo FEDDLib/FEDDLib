@@ -7,12 +7,12 @@
 
 namespace FEDD {
 
-   /* template <class SC = default_sc,
+   template <class SC = default_sc,
               class LO = default_lo,
               class GO = default_go,
               class NO = default_no>
     class AssembleFEFactory;
-	*/
+	
     /*!
     \class AssembleFE
     \brief This abstract class defining the interface for any type of element assembly rountines in the FEDDLib.
@@ -60,16 +60,11 @@ namespace FEDD {
     class AssembleFE {
     public:
 
-        /// @todo This matrix type should not be needed
-        typedef Matrix<SC,LO,GO,NO> Matrix_Type;
-        typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
-
-        /// @todo Can we use a vector type which does not need a map?
-        typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
-        typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
 
         typedef SmallMatrix<SC> SmallMatrix_Type;
         typedef Teuchos::RCP<SmallMatrix_Type> SmallMatrixPtr_Type;
+
+	    // Teuchos:: Array anstatt vec_dbl_Type
 
         typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
 
@@ -77,25 +72,25 @@ namespace FEDD {
          \brief Assemble the element Jacobian matrix.
          \return the element Jacobian matrix
         */
-        virtual SmallMatrixPtr_Type assembleJacobian() = 0;
+        virtual void assembleJacobian() = 0;
 
         /*!
          \brief Assemble the element right hand side vector.
          \return the element right hand side vector
         */
-        virtual vec_dbl_Type assembleRHS() = 0;
+        virtual void assembleRHS() = 0;
 
         /*!
          \brief Get the currently assembled element Jacobian matrix
          \return the element Jacobian matrix
         */
-        SmallMatrixPtr_Type getJacobian() {return jacobian_;}; // TODO: Why virtual?
+        SmallMatrixPtr_Type getJacobian() {return jacobian_;}; 
 
         /*!
          \brief Get the currently assembled right hand side vector.
          \return the element right hand side vector
         */
-        MultiVectorPtr_Type getRHS(){return rhsVec_;};
+        vec_dbl_Type getRHS(){return rhsVec_;};
 
         //virtual void assembleMass(MatrixPtr_Type &A) =0;
 
@@ -115,12 +110,22 @@ namespace FEDD {
          @param[in] dt Timestepping length
         */
         void advanceInTime(double dt);
+        /*!
+         \brief Get the time state of the object.
+         \return the timestep
+        */
+        double getTimeStep();
+
+        /*!
+         \brief This function is called every time the FEDDLib proceeds from one to the next newton step. The size of the time step will always be provided as input. 
+        */
+        void advanceNewtonStep();
 
         /*!
          \brief Get the time state of the object.
-         \return the time.
+         \return newtonStep.
         */
-        double getTimestep();
+        int getNewtonStep();
 
         /*!
          \brief Update the solution vector.
@@ -143,8 +148,8 @@ namespace FEDD {
         /*!
          \brief This function is called at the end of each Newton step after updating the solution vector.
         */
-        void postProcessing(); // gespeicherte Daten rein und rausziehen. Manche Sachen nachträglich nicht mehr ändern
-
+        void postProcessing();
+		/// @todo PostProcessing: Teuchos::Array with values and one global Array with Strings and names
 
         /*!
          \brief Get the spatial dimension. (Typically 2 or 3)
@@ -160,7 +165,7 @@ namespace FEDD {
         vec2D_dbl_Type getNodesRefConfig();
 
         /*!
-         @todo Should this be "changeRHSFunction()" instead? Probably, we want to specificy a RHS per defaiult at construction. This function is only for changing it, right?
+         @todo Still work in Progress with RHS and Mass Matrix
         */
         void addRHSFunc(RhsFunc_Type rhsFunc){ rhsFunc_ = rhsFunc;};
 
@@ -176,35 +181,36 @@ namespace FEDD {
                    vec2D_dbl_Type nodesRefConfig,
                    ParameterListPtr_Type parameters);
 
-        // For example if we consider an element with multiple discretizations i.e. P2-P1 Velocity-Pressure.
-        // We might need more than one FEType or Degree of freedom information
-        // Vectoren mit Informationen besser so abepsicher sieher z.B. bcBuilder.
-        
-        int numFEType_;
-        /// @todo Why do we need FEType1_ and FEType2_ in the abstract class?
-        string FEType1_;
-        string FEType2_;
+
+
         /// @todo Why do we need dofs1_ and dofs2_ in the abstract class? I think, we should think about a general framework for this
+		/// \todo Put into Parameterlist.
         int dofs1_;
         int dofs2_;
 
-	SmallMatrixPtr_Type jacobian_;
-	MultiVectorPtr_Type rhsVec_;
+		string FEType1_;
+		string FEType2_;
+
+        int numFEType_;
+
+		SmallMatrixPtr_Type jacobian_;
+		vec_dbl_Type rhsVec_;
 
         RhsFunc_Type rhsFunc_;
 
         int dim_;
 
-        /// @todo Why "Reference Configuration"? Because you said so ..
+        /// @todo Why "Reference Configuration"? 
         vec2D_dbl_Type nodesRefConfig_;
         bool timeProblem_;
         int flag_;
         double timeStep_ ;
-        ParameterListPtr_Type paramsMaterial_;// Including flags
-        ParameterListPtr_Type params_;// Including flags
+        int newtonStep_ ;
+        ParameterListPtr_Type paramsMaterial_;
+        ParameterListPtr_Type params_;
         vec_dbl_Type solution_ ;
 
-        //friend class AssembleFEFactory<SC,LO,GO,NO>;
+        friend class AssembleFEFactory<SC,LO,GO,NO>;
     };
 }
 #endif

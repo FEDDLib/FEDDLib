@@ -7,6 +7,7 @@
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 
 namespace FEDD {
+
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class AssembleFEAceLaplace : public AssembleFE<SC,LO,GO,NO> {
   public:
@@ -22,23 +23,26 @@ class AssembleFEAceLaplace : public AssembleFE<SC,LO,GO,NO> {
 
 	typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
 
-	AssembleFEAceLaplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters);
-
 	/*!
 	 \brief Assemble the element Jacobian matrix.
 	 \return the element Jacobian matrix
 	*/
-	virtual SmallMatrixPtr_Type assembleJacobian();
+	virtual void assembleJacobian();
 
 	/*!
 	 \brief Assemble the element right hand side vector.
 	 \return the element right hand side vector
 	*/
-	virtual vec_dbl_Type assembleRHS();	
+	virtual void assembleRHS();	
 
+   protected:
+	AssembleFEAceLaplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters); /// \todo Tupel for Disk Anzahl Knoten, Anzahl Freiheitsgrade
 
    private:
+
 	void assemblyLaplacian(SmallMatrixPtr_Type &elementMatrix);
+
+    friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 
 	void gradPhi(	int Dimension,
                     int intFE,

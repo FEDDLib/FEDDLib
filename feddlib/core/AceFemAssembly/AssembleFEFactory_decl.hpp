@@ -23,7 +23,7 @@ namespace FEDD {
     \endcode
     If a new element assembly is implemented, it has to be added to the build() function. Only then, this element assembly can be executed within the FEDDLib.
     */
-    template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
+    template <class SC , class LO , class GO , class NO>
     class AssembleFEFactory {
     public:
 
