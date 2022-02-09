@@ -312,5 +312,84 @@ template <class SC, class LO, class GO, class NO>
 LO Matrix<SC,LO,GO,NO>::getGlobalMaxNumRowEntries() const{
     return matrix_->getGlobalMaxNumRowEntries();
 }
+
+template <class SC, class LO, class GO, class NO>
+void Matrix<SC,LO,GO,NO>::importFromVector( MatrixPtr_Type mvIn, bool reuseImport, std::string combineMode, std::string type) {
+
+    //TEUCHOS_TEST_FOR_EXCEPTION( getNodeNumCols() != mvIn->getNodeNumCols(), std::logic_error,"MultiVectors for fillFromVector have different number of vectors.");
+
+    if ( importer_.is_null() || !reuseImport) {
+        if (type=="Forward")
+            importer_ = Xpetra::ImportFactory<LO,GO,NO>::Build ( mvIn->getMapXpetra(), this->getMapXpetra() );
+        else if(type=="Reverse")
+            importer_ = Xpetra::ImportFactory<LO,GO,NO>::Build ( this->getMapXpetra(), mvIn->getMapXpetra() );
+        else
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse");
+    }
+    else{
+        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getSourceMap()->isSameAs( *mvIn->getMap()->getXpetraMap() ), std::logic_error,"Source maps of Importer and Matrix are not the same.");
+        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getTargetMap()->isSameAs( *this->getMap()->getXpetraMap() ), std::logic_error,"Target maps of Importer and Matrix are not the same.");
+    }
+
+        
+    if (type=="Forward") {
+        if ( !combineMode.compare("Insert") )
+            matrix_->doImport ( *mvIn->getXpetraMatrix(), *importer_, Xpetra::INSERT);
+        else if ( !combineMode.compare("Add") )
+            matrix_->doImport ( *mvIn->getXpetraMatrix(), *importer_, Xpetra::ADD);
+        else
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
+    }
+    else if(type=="Reverse"){
+        if ( !combineMode.compare("Insert") )
+            matrix_->doExport ( *mvIn->getXpetraMatrix(), *importer_, Xpetra::INSERT);
+        else if ( !combineMode.compare("Add") )
+            matrix_->doExport ( *mvIn->getXpetraMatrix(), *importer_, Xpetra::ADD);
+        else
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
+    }
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse");
+}
+
+template <class SC, class LO, class GO, class NO>
+void Matrix<SC,LO,GO,NO>::exportFromVector( MatrixPtr_Type mvIn, bool reuseExport, std::string combineMode, std::string type) {
+
+    //TEUCHOS_TEST_FOR_EXCEPTION( getNodeNumCols() != mvIn->getNodeNumCols(), std::logic_error,"MultiVectors for fillFromVector have different number of vectors.");
+
+    if ( exporter_.is_null() || !reuseExport) {
+        if (type=="Forward")
+            exporter_ = Xpetra::ExportFactory<LO,GO,NO>::Build ( mvIn->getMapXpetra(), this->getMapXpetra() );
+        else if(type=="Reverse")
+            exporter_ = Xpetra::ExportFactory<LO,GO,NO>::Build ( this->getMapXpetra(), mvIn->getMapXpetra() );
+        else
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse");
+    }
+    else{
+        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getSourceMap()->isSameAs( *this->getMap()->getXpetraMap() ), std::logic_error,"Source maps of Exporter and Multivector are not the same.");
+        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getTargetMap()->isSameAs( *mvIn->getMap()->getXpetraMap() ), std::logic_error,"Target maps of Exporter and Multivector are not the same.");
+    }
+
+        
+    if (type=="Forward") {
+        if ( !combineMode.compare("Insert") )
+            matrix_->doExport ( *mvIn->getXpetraMatrix(), *exporter_, Xpetra::INSERT);
+        else if ( !combineMode.compare("Add") )
+            matrix_->doExport ( *mvIn->getXpetraMatrix(), *exporter_, Xpetra::ADD);
+        else
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
+    }
+    else if(type=="Reverse"){
+        if ( !combineMode.compare("Insert") )
+            matrix_->doImport ( *mvIn->getXpetraMatrix(), *exporter_, Xpetra::INSERT);
+        else if ( !combineMode.compare("Add") )
+            matrix_->doImport ( *mvIn->getXpetraMatrix(), *exporter_, Xpetra::ADD);
+        else
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
+    }
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse");
+}
+
 }
 #endif

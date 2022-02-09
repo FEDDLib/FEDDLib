@@ -129,15 +129,17 @@ template <class SC, class LO, class GO, class NO>
 void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP1 ){
     
     // If flags of line segments should be used over surface flags, this functions must be checked
-    
-    int rank = this->comm_->getRank();
+     int rank = this->comm_->getRank();
     this->rankRange_ = meshP1->rankRange_;
     bool verbose( this->comm_->getRank() == 0 );
     this->elementMap_ = meshP1->elementMap_;
+	this->edgeMap_ = meshP1->edgeMap_;
     this->dim_ = meshP1->getDimension();
     this->FEType_ = "P2";
     this->numElementsGlob_ = meshP1->numElementsGlob_;
+	//this->surfaceTriangleElements_ = meshP1->surfaceTriangleElements_; // for later
     
+	meshP1->assignEdgeFlags(); // Function that determines the flag for each edge. That way the P2 flags can easily be determined
     GO P1Offset = meshP1->mapUnique_->getMaxAllGlobalIndex()+1;
     EdgeElementsPtr_Type edgeElements = meshP1->getEdgeElements();
     ElementsPtr_Type elements = meshP1->getElementsC();
@@ -160,8 +162,10 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
 
     vec2D_dbl_ptr_Type pointsP1 = meshP1->getPointsRepeated();
     MapConstPtr_Type mapRepeatedP1 = meshP1->getMapRepeated();
-    vec2D_LO_Type markedPoints(0);
-    // loop over all previously created edges
+
+
+    // loop over all previously created edges to construct new P2 points 
+
     for (int i=0; i<edgeElements->numberElements(); i++) {
         
         LO p1ID = edgeElements->getElement(i).getNode( 0 );
@@ -171,12 +175,11 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
         GO id2 = mapRepeatedP1->getGlobalElement( p2ID );
         
         for (int d=0; d<this->dim_; d++)
-            newPoints[i][d] = ( (*pointsP1)[p1ID][d] + (*pointsP1)[p2ID][d] ) / 2.;
+            newPoints[i][d] = ( (*pointsP1)[p1ID][d] + (*pointsP1)[p2ID][d] ) / 2.; // New point on middle of nodes
         
 
-       	newFlags[i] = determineFlagP2( meshP1, p1ID, p2ID, i, markedPoints );
-		
-                        
+       	newFlags[i] = edgeElements->getElement(i).getFlag(); // New flags according to edge flags
+		                
         const vec_LO_Type elementsOfEdge = edgeElements->getElementsOfEdge( i );
         const vec_GO_Type elementsGlobalOfEdge = edgeElements->getElementsOfEdgeGlobal( i );
                 
@@ -186,7 +189,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
                 relevantElementsOfEdge.push_back( elementsOfEdge[j] );
         }
 
-        // We need to determine the correct location in the P2 element
+        // We need to determine the correct location in the P2 element as prescribed by a specific pattern
         vec_int_Type positions( relevantElementsOfEdge.size() );
         if ( relevantElementsOfEdge.size() > 0 )
             determinePositionInElementP2( positions, relevantElementsOfEdge, p1ID, p2ID, meshP1 );
@@ -200,146 +203,8 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
             newElementNodes[ relevantElementsOfEdge[j] ][ positions[j]-factor ] =  i ;
         
     }
-    
-    // ##########################################################
-    // We need to go through all marked points and determine the correct flags
-    // Marked point i holds the following data markedPoints[i]: p1ID, p2ID, localEdgeID(=i of the above loop over all edges).
-    // Idea:    Determine the rank which holds the element of which surface information is needed (if there exists any).
-    //          Do this for all marked points, build a communication pattern based on the elements, and communicate to the relevant ranks.
-    //          On the relevant ranks, determine the flag with the surface information for all edges for an element (some of the information might not be needed - this can be optimized).
-    // Send the information back with the above pattern and set the correct flag.
-    vec_GO_Type globalElements(0);
-    for (int i=0; i<markedPoints.size(); i++) {
-        LO localEdgeID = markedPoints[i][2];
 
-        LO p1ID = markedPoints[i][0];
-        LO p2ID = markedPoints[i][1];
-
-        const vec_LO_Type elementsOfEdge = edgeElements->getElementsOfEdge( (int) localEdgeID );
-        const vec_GO_Type elementsGlobalOfEdge = edgeElements->getElementsOfEdgeGlobal( (int) localEdgeID );
-        for (int j=0; j<elementsOfEdge.size(); j++) {
-            if (elementsOfEdge[j] == OTLO::invalid()){
-                globalElements.push_back( elementsGlobalOfEdge[j] );
-            }
-        }
-    }
-	
-    make_unique( globalElements );
-
-    Teuchos::ArrayView<GO> globalElementsArray = Teuchos::arrayViewFromVector( globalElements );
-
-    MapPtr_Type mapElementsNeeded =
-        Teuchos::rcp( new Map_Type( meshP1->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalElementsArray, 0, this->comm_) );
-	
-	
-    MapConstPtr_Type elementMap = meshP1->getElementMap();
-
-    typedef MultiVector<LO,LO,GO,NO> MultiVectorLO_Type;
-    typedef Teuchos::RCP<MultiVectorLO_Type> MultiVectorLOPtr_Type;
-    // sending a boolean would be enough here
-    MultiVectorLOPtr_Type activateElements = Teuchos::rcp( new MultiVectorLO_Type( mapElementsNeeded, 1 ) );
-
-    activateElements->putScalar( (LO) 1 );
-
-    MultiVectorLOPtr_Type isActiveElement = Teuchos::rcp( new MultiVectorLO_Type( elementMap, 1 ) );
-    isActiveElement->putScalar( (LO) 0 );
-
-    isActiveElement->importFromVector( activateElements, true, "Add" );
-
-    Teuchos::ArrayRCP< const LO >  data = isActiveElement->getData( 0 );
-    vec_GO_Type activeElements(0);
-    vec_LO_Type activeElementsLocal(0);
-    for (int i=0; i<data.size(); i++) {
-        if (data[i] > 0){
-            activeElements.push_back( elementMap->getGlobalElement( i ) );
-            activeElementsLocal.push_back( i );
-        }
-    }
-
-    Teuchos::ArrayView<GO> activeElementsArray = Teuchos::arrayViewFromVector( activeElements );
-    MapPtr_Type mapActiveElements =
-        Teuchos::rcp( new Map_Type( meshP1->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), activeElementsArray, 0, this->comm_) );
-
-
-
-    // Now every element of activeElements determines the flags for all edges.
-    // We use MultiVectorLO_Type to send the flags back, although the flags are of type int
-    UN numEdges = -1;
-    if (this->dim_ == 2)
-        numEdges = 3;
-    else if (this->dim_ == 3)
-        numEdges = 6;
-
-    MultiVectorLOPtr_Type activeElementsFlags = Teuchos::rcp( new MultiVectorLO_Type( mapActiveElements, numEdges ) );
-    MultiVectorLOPtr_Type neededElementsFlags = Teuchos::rcp( new MultiVectorLO_Type( mapElementsNeeded, numEdges ) );
-
-    typedef MultiVector<GO,LO,GO,NO> MultiVectorGO_Type;
-    typedef Teuchos::RCP<MultiVectorGO_Type> MultiVectorGOPtr_Type;
-
-    // Additionally, we need to communicate the global IDs, which define the edge.
-    // This information is needed to find the correct edge, which needed the flag information in the first place.
-    MultiVectorGOPtr_Type activeElementsEdgeGID1 = Teuchos::rcp( new MultiVectorGO_Type( mapActiveElements, numEdges ) );
-    MultiVectorGOPtr_Type activeElementsEdgeGID2 = Teuchos::rcp( new MultiVectorGO_Type( mapActiveElements, numEdges ) );
-    MultiVectorGOPtr_Type neededElementsEdgeGID1 = Teuchos::rcp( new MultiVectorGO_Type( mapElementsNeeded, numEdges ) );
-    MultiVectorGOPtr_Type neededElementsEdgeGID2 = Teuchos::rcp( new MultiVectorGO_Type( mapElementsNeeded, numEdges ) );
-
-//    vec2D_int_Type edgeCombinations( numEdges, vec_int_Type(2,-1) );
-//    getEdgeCombinations( edgeCombinations );
-
-    vec2D_int_Type edgeCombinations = elements->getElementEdgePermutation();
-
-    for (int i=0; i<activeElementsLocal.size(); i++) {
-        FiniteElement fe = elements->getElement( activeElementsLocal[i] );
-        for (int j=0; j<edgeCombinations.size(); j++) {
-            LO p1ID = fe.getNode( edgeCombinations[j][0] );
-            LO p2ID = fe.getNode( edgeCombinations[j][1] );
-            LO flag = determineFlagP2( fe, p1ID, p2ID, edgeCombinations );
-            activeElementsFlags->getDataNonConst(j)[i] = flag;
-            // We set the smaller index in GID1 vector and the larger index in the GID2 vector
-            GO p1GID = mapRepeatedP1->getGlobalElement( p1ID );
-            GO p2GID = mapRepeatedP1->getGlobalElement( p2ID );
-            if ( p1GID > p2GID ) {
-                activeElementsEdgeGID1->getDataNonConst(j)[i] = p2GID;
-                activeElementsEdgeGID2->getDataNonConst(j)[i] = p1GID;
-            }
-            else{
-                activeElementsEdgeGID1->getDataNonConst(j)[i] = p1GID;
-                activeElementsEdgeGID2->getDataNonConst(j)[i] = p2GID;
-            }
-        }
-    }
-
-    // We build the same Importer/Exporter 3 times. This can be optimized
-    neededElementsFlags->importFromVector( activeElementsFlags, false, "Insert");
-    neededElementsEdgeGID1->importFromVector( activeElementsEdgeGID1, false, "Insert");
-    neededElementsEdgeGID2->importFromVector( activeElementsEdgeGID2, false, "Insert");
-
-    for (int i=0; i<markedPoints.size(); i++) {
-        LO localEdgeID = markedPoints[i][2];
-        GO p1GID = mapRepeatedP1->getGlobalElement( markedPoints[i][0] );
-        GO p2GID = mapRepeatedP1->getGlobalElement( markedPoints[i][1] );
-
-
-        if (p2GID < p1GID) {
-            GO tmp = p1GID;
-            p1GID = p2GID;
-            p2GID = tmp;
-        }
-
-        for (int j=0; j<numEdges; j++) {
-            for (int k=0; k<neededElementsEdgeGID1->getLocalLength(); k++) {
-                if ( neededElementsEdgeGID1->getData(j)[k] == p1GID && neededElementsEdgeGID2->getData(j)[k] == p2GID ){
-                    if (newFlags[ localEdgeID ] == -1)
-                        newFlags[ localEdgeID ] = neededElementsFlags->getData(j)[k];
-                    if (neededElementsFlags->getData(j)[k] < newFlags[ localEdgeID ]) // we use the smallest possible flag
-                        newFlags[ localEdgeID ] = neededElementsFlags->getData(j)[k];
-                }
-            }
-        }
-    }
-    
-    // ##########################################################
-    // Set P2 Elements
+    // Set P2 Elements, by resetting 'old' elements and adding them with the new nodes per element
     this->elementsC_.reset(new Elements());
     
     LO numberLocalP1Nodes = meshP1->getPointsRepeated()->size();
@@ -358,6 +223,10 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     if (verbose)
         cout << "-- Setting global point IDs and building repeated P2 map and repeated points ... " << flush;
     
+	// Now the corresponding maps for nodes and flags are updated.
+	// Generally the P2 points are added after the P1 points in the node lists. Thus the new IDs just need to be added at the 
+	// end of the maps
+
     this->pointsRep_.reset(new std::vector<std::vector<double> >(meshP1->pointsRep_->size(),vector<double>(this->dim_,-1.)));
     *this->pointsRep_ = *meshP1->pointsRep_;
     this->bcFlagRep_.reset(new vector<int>(meshP1->bcFlagRep_->size()));
@@ -369,6 +238,9 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     Teuchos::ArrayView<const GO> nodeList = meshP1->getMapRepeated()->getNodeElementList();
     std::vector<GO> vecGlobalIDs = Teuchos::createVector( nodeList );
     
+	// To correctly determine the global nodeIDs of the new P2 nodes we set them via the global edge IDs.
+	// As can be on more than one processor at a time, they are an easy way to determine the correct 
+	// nodeIDs via the edges'globalID.
     for (int i=0; i<edgeElements->numberElements(); i++){
         vecGlobalIDs.push_back( edgeElements->getGlobalID( (LO) i ) + P1Offset );
     }
@@ -395,6 +267,8 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
         this->bcFlagUni_->at(i) = this->bcFlagRep_->at(id);
 
     }
+	this->edgeElements_ = edgeElements;
+
     
     if (verbose)
         cout << "done --" << endl;
@@ -803,27 +677,27 @@ int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( FiniteElement& fe, LO p1ID, 
 }
     
 template <class SC, class LO, class GO, class NO>
-int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( MeshUnstrPtr_Type meshP1, LO p1ID, LO p2ID, LO localEdgeID, vec2D_LO_Type& markedPoint ){
+int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( LO p1ID, LO p2ID, LO localEdgeID, vec2D_LO_Type& markedPoint ){
     
 
-    ElementsPtr_Type elements = meshP1->getElementsC();
+    ElementsPtr_Type elements = this->getElementsC();
 
     vec2D_int_Type permutation = elements->getElementEdgePermutation();
 
-    EdgeElementsPtr_Type edgeElements = meshP1->getEdgeElements();
+    EdgeElementsPtr_Type edgeElements = this->getEdgeElements();
 
-    MapConstPtr_Type elementMap = meshP1->getElementMap();
+    MapConstPtr_Type elementMap = this->getElementMap();
 
     int rank = this->comm_->getRank();
 
-    int flag1 = ( *meshP1->getBCFlagRepeated() )[p1ID];
+    int flag1 = ( *this->getBCFlagRepeated() )[p1ID];
 
-    int flag2 = ( *meshP1->getBCFlagRepeated() )[p2ID];
+    int flag2 = ( *this->getBCFlagRepeated() )[p2ID];
 
     int newFlag = std::numeric_limits<int>::max();
 
-    if(flag1 == volumeID_ || flag2 == volumeID_ ) // one node is in an inner node, than the new node is an inner node aswell
-        newFlag = volumeID_;
+    if(flag1 == this->volumeID_ || flag2 == this->volumeID_ ) // one node is in an inner node, than the new node is an inner node aswell
+        newFlag = this->volumeID_;
     else{
 
         // check if node 1 and node 2 are part of the same surface. In this case we can use the flag of the corresponding surface. Otherwise we mark the new point as an interior point and it gets the volumeID_.
@@ -857,19 +731,20 @@ int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( MeshUnstrPtr_Type meshP1, LO
                 fe.findEdgeFlagInSubElements( edge, newFlags, false /*we are not in a subElement yet*/, permutation, foundLineSegment );
 
                 //We need to mark this point since it can still be on the surface and another element holds the corresponding surface with the correct flag.
-                if (newFlags.size() == 0 && newFlag > volumeID_)
-                    newFlag = volumeID_; //do we need this?
+                if (newFlags.size() == 0 && newFlag > this->volumeID_)
+                    newFlag = this->volumeID_; //do we need this?
 
-                //If we found a line element, the we choose this flag
+                //If we found a line element, then we choose this flag
                 if (foundLineSegment){
                     foundFlag = true;
                     newFlag = newFlags [0];
                 }
                 else {
                     // We use the lowest flag of all surfaces
+					
                     for (int k = 0; k < newFlags.size(); k++) {
                         foundFlag = true;
-                        if (newFlag > newFlags[k] )
+                       if (newFlag > newFlags[k] )
                             newFlag = newFlags[k];
                     }
                 }
@@ -888,7 +763,6 @@ int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( MeshUnstrPtr_Type meshP1, LO
     
     return newFlag;
 }
-
 
 
 template <class SC, class LO, class GO, class NO>
@@ -993,6 +867,352 @@ void MeshUnstructured<SC,LO,GO,NO>::setMeshFileName(string meshFileName, string 
     meshFileName_ = meshFileName;
     delimiter_ = delimiter;
 }
+
+/*!
+
+ \brief Not all edges are marked with a flag in the beginning. In order to set the correct flags to new points we assign the edge flag of the edge they originated from, similar to the function determineEdgeFlagP2, but this function uses the edgeMap.
+
+*/
+
+
+template <class SC, class LO, class GO, class NO>
+void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
+
+	vec2D_LO_Type markedPoints(0);
+	EdgeElementsPtr_Type edgeElements = this->getEdgeElements();
+	ElementsPtr_Type elements = this->getElementsC();
+	MapConstPtr_Type mapRepeatedP1 = this->getMapRepeated();
+	vec_int_Type newFlags(edgeElements->numberElements());
+
+	MapConstPtr_Type edgeMap = this->getEdgeMap();
+
+	vec_int_Type markedTrue(edgeElements->numberElements());
+	for(int i=0; i< edgeElements->numberElements() ; i++){
+		LO p1ID =edgeElements->getElement(i).getNode(0);
+		LO p2ID =edgeElements->getElement(i).getNode(1);
+		newFlags[i]=this->determineFlagP2(p1ID, p2ID, i , markedPoints );
+		if(newFlags[i] != -1){ // questionable point that were given a flag, but that is not certain yet
+			vec_LO_Type elementsOfEdge = edgeElements->getElementsOfEdge( (int) i );		
+       		for (int j=0; j<elementsOfEdge.size(); j++) {
+           		if ( elementsOfEdge[j] == -1 ) 
+					markedTrue[i] =1;
+			}
+		}	
+	}
+	// It is possible that a Edge is conencted to two surfaces with different Flags, that are also on different Processors
+	// This Leads to two different Flags for the same Edge
+	// In order to counter that effect we check the interface edges of which we determined the flag via surfaces and check if they have the same flag and if not choose the lower one
+	int maxRank = std::get<1>(this->rankRange_);
+	if(maxRank >0 ){
+		vec_GO_Type edgeSwitch(0);
+		vec_LO_Type flags(0);
+		for(int i=0; i<edgeElements->numberElements(); i++){
+			if(markedTrue[i]==1){
+				edgeSwitch.push_back(edgeMap->getGlobalElement(i));
+				flags.push_back(newFlags[i]);
+			}
+		}
+
+		// communticating elements across interface
+		Teuchos::ArrayView<GO> edgeSwitchArray = Teuchos::arrayViewFromVector( edgeSwitch);
+
+		MapPtr_Type mapGlobalInterface =
+			Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgeSwitchArray, 0, this->comm_) );
+
+		// Global IDs of Procs
+		// Setting newPoints as to be communicated Values
+		MultiVectorLOPtr_Type edgeFlags = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterface, 1 ) );
+		Teuchos::ArrayRCP< LO > edgeFlagsEntries  = edgeFlags->getDataNonConst(0);
+
+		for(int i=0; i< edgeFlagsEntries.size() ; i++){
+			edgeFlagsEntries[i] = flags[i] ;
+		}
+
+		MapConstPtr_Type mapGlobalInterfaceUnique = mapGlobalInterface;
+		if(mapGlobalInterface->getGlobalNumElements()>0){
+			mapGlobalInterfaceUnique = mapGlobalInterface->buildUniqueMap( this->rankRange_ );
+		}
+
+
+		MultiVectorLOPtr_Type isInterfaceElement_imp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterfaceUnique, 1 ) );
+		isInterfaceElement_imp->putScalar( (LO) 0 ); 
+		isInterfaceElement_imp->importFromVector( edgeFlags, false, "Insert");
+
+		MultiVectorLOPtr_Type isInterfaceElement_exp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterfaceUnique, 1 ) );
+		isInterfaceElement_exp->putScalar( (LO) 0 ); 
+		isInterfaceElement_exp->exportFromVector( edgeFlags, false, "Insert");
+
+		MultiVectorLOPtr_Type isInterfaceElement2_imp = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterface, 1 ) );
+		isInterfaceElement2_imp->putScalar( (LO) 0 ); 
+		isInterfaceElement2_imp->importFromVector(isInterfaceElement_imp, false, "Insert");
+
+		isInterfaceElement2_imp->exportFromVector(isInterfaceElement_exp, false, "Insert");
+
+		edgeFlagsEntries  = isInterfaceElement2_imp->getDataNonConst(0);
+
+		for(int i=0; i<edgeFlagsEntries.size(); i++){
+			LO entry = edgeMap->getLocalElement(edgeSwitch[i]);
+			if(newFlags[entry] > edgeFlagsEntries[i]){
+				newFlags[entry] = edgeFlagsEntries[i];
+
+			}
+		}
+	}
+	// In the next Step we need to determine the missing Flags of the 'MarkedMissing' Edges
+	// We create a Map of the entries we have and one of the ones we need
+	vec_GO_Type edgesNeeded(0); // For the Flag entries we need
+	vec_GO_Type edgesActive(0);
+	vec_int_Type flagsTmp(0);
+	for(int i=0; i<edgeElements->numberElements(); i++){
+		if(newFlags[i]==-1){
+			edgesNeeded.push_back(edgeMap->getGlobalElement(i));
+		}
+		else{
+			edgesActive.push_back(edgeMap->getGlobalElement(i));
+			flagsTmp.push_back(newFlags[i]);
+			
+		}
+	}
+
+	// communticating elements across interface
+	Teuchos::ArrayView<GO> edgesNeededArray = Teuchos::arrayViewFromVector( edgesNeeded);
+	Teuchos::ArrayView<GO> edgesActiveArray = Teuchos::arrayViewFromVector( edgesActive);
+	
+	MapPtr_Type mapEdgesNeeded =
+		Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesNeededArray, 0, this->comm_) );
+
+	MapPtr_Type mapEdgesActive =
+		Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesActiveArray, 0, this->comm_) );
+
+	MultiVectorLOPtr_Type flagsImport = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesNeeded, 1 ) );
+	flagsImport->putScalar(10);
+
+	MultiVectorLOPtr_Type flagsExport = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesActive, 1 ) );
+	Teuchos::ArrayRCP< LO > flagExportEntries  = flagsExport->getDataNonConst(0);
+	for(int i=0; i< flagExportEntries.size(); i++){
+		flagExportEntries[i] = flagsTmp[i];
+	}
+	
+	flagsImport->importFromVector(flagsExport, false, "Insert");
+
+    Teuchos::ArrayRCP< LO > flagImportEntries  = flagsImport->getDataNonConst(0);
+	for(int i=0; i<flagImportEntries.size(); i++){
+		LO entry = edgeMap->getLocalElement(edgesNeeded[i]);
+		if(newFlags[entry] ==-1){
+			newFlags[entry] = flagImportEntries[i];
+		}
+	}
+
+	for(int i=0; i< edgeElements->numberElements() ; i++){
+		edgeElements->getElement(i).setFlag(newFlags[i]);
+	}
+    
+}
+
+template <class SC, class LO, class GO, class NO>
+void MeshUnstructured<SC,LO,GO,NO>::buildEdgeMap(){
+
+		int maxRank = std::get<1>(this->rankRange_);
+		vec_GO_Type globalProcs(0);
+		for (int i=0; i<= maxRank; i++)
+			globalProcs.push_back(i);
+
+		Teuchos::ArrayView<GO> globalProcArray = Teuchos::arrayViewFromVector( globalProcs);
+
+		vec_GO_Type localProc(0);
+		localProc.push_back(this->comm_->getRank());
+		Teuchos::ArrayView<GO> localProcArray = Teuchos::arrayViewFromVector( localProc);
+
+		MapPtr_Type mapGlobalProc =
+			Teuchos::rcp( new Map_Type( this->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
+
+		MapPtr_Type mapProc =
+			Teuchos::rcp( new Map_Type( this->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
+		
+
+		vec2D_int_Type interfaceEdgesLocalId(1,vec_int_Type(1));
+		const int myRank = this->comm_->getRank();
+
+		MultiVectorLOPtr_Type exportLocalEntry = Teuchos::rcp( new MultiVectorLO_Type( mapProc, 1 ) );
+
+		// First we determine a Map only for the interface Nodes
+		// This will reduce the size of the Matrix we build later significantly if only look at the interface edges
+		int numEdges= this->edgeElements_->numberElements();
+		vec2D_GO_Type inzidenzIndices(0,vec_GO_Type(2)); // Vector that stores global IDs of each edge (in Repeated Sense)
+		vec_LO_Type localEdgeIndex(0); // stores the local ID of edges in question 
+		vec_GO_Type id(2);
+		int edgesUnique=0;
+    	EdgeElementsPtr_Type edgeElements = this->edgeElements_; // Edges
+
+		vec2D_dbl_ptr_Type points = this->pointsRep_;
+
+		int interfaceNum=0;
+		for(int i=0; i<numEdges; i++ ){
+			if(edgeElements->getElement(i).isInterfaceElement()){
+
+				id[0] = this->mapRepeated_->getGlobalElement(edgeElements->getElement(i).getNode(0)); 
+				id[1] = this->mapRepeated_->getGlobalElement(edgeElements->getElement(i).getNode(1));
+			 	
+
+
+				sort(id.begin(),id.end());
+				inzidenzIndices.push_back(id);
+
+				localEdgeIndex.push_back(i);
+				interfaceNum++;
+			}
+	
+			else{
+				edgesUnique++;
+			}
+
+
+		 }
+		// This Matrix is row based, where the row is based on mapInterfaceNodesUnqiue
+		// We then add a '1' Entry when two global Node IDs form an edge
+		MatrixPtr_Type inzidenzMatrix = Teuchos::rcp( new Matrix_Type(this->mapUnique_, 40 ) );
+		Teuchos::Array<GO> index(1);
+		Teuchos::Array<GO> col(1);
+		Teuchos::Array<SC> value(1, Teuchos::ScalarTraits<SC>::one() );
+
+		for(int i=0; i<inzidenzIndices.size(); i++ ){
+	
+			index[0] = inzidenzIndices[i][0];
+			col[0] = inzidenzIndices[i][1];
+			inzidenzMatrix->insertGlobalValues(index[0], col(), value());
+		
+		 }
+   		inzidenzMatrix->fillComplete(); //mapInterfaceNodesUnique,mapInterfaceNodesUnique);
+		
+
+		// Set unique edges IDs 
+		// Setting the IDs of Edges that are uniquely on one Processor
+
+		exportLocalEntry->putScalar( (LO) edgesUnique );
+
+		MultiVectorLOPtr_Type newEdgesUniqueGlobal= Teuchos::rcp( new MultiVectorLO_Type( mapGlobalProc, 1 ) );
+		newEdgesUniqueGlobal->putScalar( (LO) 0 ); 
+		newEdgesUniqueGlobal->importFromVector( exportLocalEntry, true, "Insert");
+		// offset EdgesUnique for proc and globally
+		Teuchos::ArrayRCP< const LO > newEdgesList = newEdgesUniqueGlobal->getData(0);
+
+		GO procOffsetEdges=0;
+		for(int i=0; i< myRank; i++)
+			procOffsetEdges= procOffsetEdges + newEdgesList[i];
+
+		// global IDs for map
+		vec_GO_Type vecGlobalIDsEdges(this->edgeElements_->numberElements()); 
+	
+		// Step 1: adding unique global edge IDs
+		int count=0;
+		for(int i=0; i< this->edgeElements_->numberElements(); i++){
+			if(!this->edgeElements_->getElement(i).isInterfaceElement()){
+				vecGlobalIDsEdges.at(i) = procOffsetEdges+count;
+				count++;
+			}
+		}	
+		
+		// Now we add the repeated ids, by first turning interfaceEdgesTag into a map
+		// Offset for interface IDS:
+		GO offsetInterface=0;
+		for(int i=0; i< maxRank+1; i++)
+			 offsetInterface=  offsetInterface + newEdgesList[i];
+		
+		//Now we count the row entries on each processor an set global IDs
+
+		Teuchos::ArrayView<const LO> indices;
+		Teuchos::ArrayView<const SC> values;
+		vec2D_GO_Type inzidenzIndicesUnique(0,vec_GO_Type(2)); // Vector that stores only both global IDs if the first is part of my unique Interface Nodes
+		MapConstPtr_Type colMap = inzidenzMatrix->getMap("col");
+		MapConstPtr_Type rowMap = inzidenzMatrix->getMap("row");
+		int numRows = rowMap->getNodeNumElements();
+		int uniqueEdges =0;
+		for(int i=0; i<numRows; i++ ){
+			inzidenzMatrix->getLocalRowView(i, indices,values); 
+			uniqueEdges = uniqueEdges+indices.size();
+			vec_GO_Type edgeTmp(2);
+			for(int j=0; j<indices.size(); j++){
+				edgeTmp[0] = rowMap->getGlobalElement(i);
+				edgeTmp[1] = colMap->getGlobalElement(indices[j]);
+				inzidenzIndicesUnique.push_back(edgeTmp);
+			}
+		}
+	
+		exportLocalEntry->putScalar( uniqueEdges );
+		MultiVectorLOPtr_Type newEdgesInterfaceGlobal= Teuchos::rcp( new MultiVectorLO_Type( mapGlobalProc, 1 ) );
+		newEdgesInterfaceGlobal->putScalar( (LO) 0 ); 
+		newEdgesInterfaceGlobal->importFromVector( exportLocalEntry, true, "Insert");
+
+		// offset EdgesUnique for proc and globally
+		Teuchos::ArrayRCP< const LO > numUniqueInterface = newEdgesInterfaceGlobal->getData(0);
+
+		procOffsetEdges=0;
+		for(int i=0; i< myRank; i++)
+			procOffsetEdges= procOffsetEdges + numUniqueInterface[i];
+
+		int numInterfaceEdges=0;
+		
+		vec_GO_Type uniqueInterfaceIDsList_(inzidenzIndicesUnique.size());
+		for(int i=0; i< uniqueInterfaceIDsList_.size(); i++)
+			uniqueInterfaceIDsList_[i] = procOffsetEdges + i;
+
+		MatrixPtr_Type indMatrix = Teuchos::rcp( new Matrix_Type(this->mapUnique_, 40 ) );
+
+		for(int i=0; i<inzidenzIndicesUnique.size(); i++ ){
+			index[0] = inzidenzIndicesUnique[i][0];
+			col[0] = inzidenzIndicesUnique[i][1];
+			Teuchos::Array<SC> value2(1,uniqueInterfaceIDsList_[i]);
+			indMatrix->insertGlobalValues(index[0], col(), value2());
+		 }
+   		indMatrix->fillComplete(); 
+
+		MatrixPtr_Type importMatrix = Teuchos::rcp( new Matrix_Type(this->mapRepeated_, 40 ) );
+   		
+		importMatrix->importFromVector(indMatrix,false,"Insert");
+		importMatrix->fillComplete(); 		
+		
+		// Determine global indices
+		GO edgeID=0;
+		colMap = importMatrix->getMap("col");
+		rowMap = importMatrix->getMap("row");
+	
+		LO valueID=0;
+		bool found = false;
+		GO entry =0;
+		for(int i=0; i<inzidenzIndices.size(); i++ ){
+			
+			importMatrix->getLocalRowView(rowMap->getLocalElement(inzidenzIndices[i][0]), indices,values); // Indices and values connected to node i / row i in Matrix
+			// Entries in 'indices' represent the local entry in 'colmap
+			// with 'getGlobalElement' we know the global Node ID that belongs to the first Node that form an edge
+			// vector in with entries only for edges belonging to node i;
+			vec2D_GO_Type indicesTmp(indices.size(),vec_GO_Type(2));
+			vec_GO_Type indTmp(2);
+			for(int j=0; j<indices.size(); j++){
+				indTmp[0] = colMap->getGlobalElement(indices[j]);
+				indTmp[1] = values[j];
+				indicesTmp.push_back(indTmp);	// vector with the indices and values belonging to node i
+			}
+			found = false;
+			for(int k=0; k<indicesTmp.size();k++){
+				if(inzidenzIndices[i][1] == indicesTmp[k][0]){
+					entry =k;
+					k = indicesTmp.size();
+					edgeID = indicesTmp[entry][1];
+					vecGlobalIDsEdges.at(localEdgeIndex[i]) = offsetInterface + edgeID;
+					found =true;
+				}
+			}
+			
+		 }
+
+
+		Teuchos::RCP<std::vector<GO>> edgesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsEdges ) );
+		Teuchos::ArrayView<GO> edgesGlobMappingArray = Teuchos::arrayViewFromVector( *edgesGlobMapping);
+
+		this->edgeMap_.reset(new Map<LO,GO,NO>(this->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
+		//this->edgeMap_->print();
+}
+
 
 template <class SC, class LO, class GO, class NO>
 void MeshUnstructured<SC,LO,GO,NO>::readMeshSize(){
@@ -1262,6 +1482,7 @@ void MeshUnstructured<SC,LO,GO,NO>::readLines(){
     if (verbose)
         cout << "done." << endl;
 }
+
 
 }
 #endif
