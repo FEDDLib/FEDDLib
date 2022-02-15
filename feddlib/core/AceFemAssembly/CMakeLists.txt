@@ -2,25 +2,17 @@ SET(AceFemAssembly_HEADERS
 	AceFemAssembly/AssembleFE_decl.hpp
 	AceFemAssembly/AssembleFE_def.hpp
 	AceFemAssembly/AssembleFE.hpp
-#	AceFemAssembly/specific/AssembleFEAceLaplace_decl.hpp
-#	AceFemAssembly/specific/AssembleFEAceLaplace_def.hpp
-#	AceFemAssembly/specific/AssembleFEAceLaplace.hpp
+	AceFemAssembly/Helper.hpp
 	AceFemAssembly/AssembleFEFactory_decl.hpp
 	AceFemAssembly/AssembleFEFactory_def.hpp
 	AceFemAssembly/AssembleFEFactory.hpp
-#	AceFemAssembly/AssembleFEGeneral_decl.hpp
-#	AceFemAssembly/AssembleFEGeneral_def.hpp
-#	AceFemAssembly/AssembleFEGeneral.hpp
-#	AceFemAssembly/tests/FE_Test_decl.hpp
-#	AceFemAssembly/tests/FE_Test_def.hpp
-#	AceFemAssembly/tests/FE_Test.hpp
 CACHE INTERNAL "")
 
 SET(AceFemAssembly_SOURCES
 	AceFemAssembly/AssembleFE.cpp
-#	AceFemAssembly/specific/AssembleFEAceLaplace.cpp
+	AceFemAssembly/Helper.cpp
 	AceFemAssembly/AssembleFEFactory.cpp
-#	AceFemAssembly/tests/FE_Test.cpp
+
 CACHE INTERNAL "")
 
 

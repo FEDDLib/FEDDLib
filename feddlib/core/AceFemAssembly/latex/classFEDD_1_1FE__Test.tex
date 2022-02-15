@@ -1,0 +1,485 @@
+\hypertarget{classFEDD_1_1FE__Test}{}\section{F\+E\+DD\+:\+:F\+E\+\_\+\+Test$<$ SC, LO, GO, NO $>$ Class Template Reference}
+\label{classFEDD_1_1FE__Test}\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test$<$ S\+C, L\+O, G\+O, N\+O $>$@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test$<$ S\+C, L\+O, G\+O, N\+O $>$}}
+
+
+{\ttfamily \#include $<$F\+E\+\_\+\+Test\+\_\+decl.\+hpp$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef Domain$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$ \hyperlink{classFEDD_1_1FE__Test_a5e414af507a141db0961c32bf6b19825}{Domain\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1FE__Test_a5e414af507a141db0961c32bf6b19825}{Domain\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1FE__Test_a1020475c408a64c7926feb8dded7f0c3}{Domain\+Ptr\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ const \hyperlink{classFEDD_1_1FE__Test_a5e414af507a141db0961c32bf6b19825}{Domain\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1FE__Test_a0a941851908a1e68d1554f8b28a7c72a}{Domain\+Const\+Ptr\+\_\+\+Type}
+\item 
+typedef std\+::vector$<$ \hyperlink{classFEDD_1_1FE__Test_a0a941851908a1e68d1554f8b28a7c72a}{Domain\+Const\+Ptr\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1FE__Test_a3345ab320c9e19d77dc7fec9645da0d0}{Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type}
+\item 
+typedef Elements \hyperlink{classFEDD_1_1FE__Test_a73f1a4ecb41cbeec1be473d71efe022d}{Elements\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1FE__Test_a73f1a4ecb41cbeec1be473d71efe022d}{Elements\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1FE__Test_af8f5bc3cb82c5d60a3a63b1e5c89a678}{Elements\+Ptr\+\_\+\+Type}
+\item 
+typedef Matrix$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$ \hyperlink{classFEDD_1_1FE__Test_ab21a3d554ec8bf6763a7dabcbe800b35}{Matrix\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1FE__Test_ab21a3d554ec8bf6763a7dabcbe800b35}{Matrix\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}{Matrix\+Ptr\+\_\+\+Type}
+\item 
+typedef Small\+Matrix$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC} $>$ \hyperlink{classFEDD_1_1FE__Test_a11f3375e690a493e9076b63b0f86edf4}{Small\+Matrix\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1FE__Test_a11f3375e690a493e9076b63b0f86edf4}{Small\+Matrix\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1FE__Test_a675b52d9e58407c6baadb403394be92b}{Small\+Matrix\+Ptr\+\_\+\+Type}
+\item 
+typedef Multi\+Vector$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$ \hyperlink{classFEDD_1_1FE__Test_a431ec5a97628feb8a0a8d16874ecd060}{Multi\+Vector\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1FE__Test_a431ec5a97628feb8a0a8d16874ecd060}{Multi\+Vector\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type}
+\item 
+typedef \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$ \hyperlink{classFEDD_1_1FE__Test_afbc20c921480ce9f89ec045f94f6806a}{Assemble\+F\+E\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1FE__Test_afbc20c921480ce9f89ec045f94f6806a}{Assemble\+F\+E\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1FE__Test_a7a938cd88b5f936c58993fff97074e2d}{Assemble\+F\+E\+Ptr\+\_\+\+Type}
+\item 
+typedef std\+::vector$<$ \hyperlink{classFEDD_1_1FE__Test_a7a938cd88b5f936c58993fff97074e2d}{Assemble\+F\+E\+Ptr\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1FE__Test_a7c6207bb2e578ea92dbfb20aa766e2d3}{Assemble\+F\+E\+Ptr\+\_\+vec\+\_\+\+Type}
+\item 
+typedef Matrix\+\_\+\+Type\+::\+Map\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test_a416d3abf702e778eb7fab3cd1feb3ede}{Map\+\_\+\+Type}
+\item 
+typedef Matrix\+\_\+\+Type\+::\+Map\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test_af41d3f3475a5ac2e0c7d3aab1b06102b}{Map\+Ptr\+\_\+\+Type}
+\item 
+typedef Matrix\+\_\+\+Type\+::\+Map\+Const\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test_ad09d94cdf8e7574fc9b6d1648fa18826}{Map\+Const\+Ptr\+\_\+\+Type}
+\item 
+typedef boost\+::function$<$ void(double $\ast$x, double $\ast$res, double t, const double $\ast$parameters)$>$ \hyperlink{classFEDD_1_1FE__Test_a1ac70a79e5935320b05ecf16739ad8a4}{B\+C\+\_\+func\+\_\+\+Type}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFEDD_1_1FE__Test_a2e9a8640f2f6ed99376efbe84298e744}{F\+E\+\_\+\+Test} (bool save\+Assembly=false)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__Test_a9703f9144722f9c01e5bde489c2e6c2f}{add\+FE} (\hyperlink{classFEDD_1_1FE__Test_a0a941851908a1e68d1554f8b28a7c72a}{Domain\+Const\+Ptr\+\_\+\+Type} domain)
+\begin{DoxyCompactList}\small\item\em Adding underlying domains. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__Test_ab547f74307b655e75629ea6717bad2a2}{assembly\+Laplace} (int dim, string F\+E\+Type, int degree, int dofs, \hyperlink{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}{Matrix\+Ptr\+\_\+\+Type} \&A, bool call\+Fill\+Complete=true, int F\+E\+Loc\+External=-\/1)
+\begin{DoxyCompactList}\small\item\em Assembly of constant stiffness matix for laplacian operator $ \Delta $. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__Test_a6aeb958829d463fc3216694ac43e6873}{assembly\+Navier\+Stokes} (int dim, string F\+E\+Type\+Velocity, string F\+E\+Type\+Pressure, int degree, int dofs\+Velocity, int dofs\+Pressure, \hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type} u\+\_\+rep, \hyperlink{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}{Matrix\+Ptr\+\_\+\+Type} \&A, bool call\+Fill\+Complete=true, int F\+E\+Loc\+External=-\/1)
+\begin{DoxyCompactList}\small\item\em Assembly of Jacobian for Navier\+Stokes. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__Test_a262c614022e1bf4bf44cafb282494d15}{assembly\+R\+HS} (int dim, string F\+E\+Type, \hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type} a, string field\+Type, Rhs\+Func\+\_\+\+Type func, vector$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC} $>$ \&func\+Parameter)
+\begin{DoxyCompactList}\small\item\em Assembly of Rhs. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{classFEDD_1_1FE__Test_a9d4fe8878ab5ce8bf7817b2b7f57b1fc}{save\+Assembly\+\_\+}
+\item 
+\hyperlink{classFEDD_1_1FE__Test_a3345ab320c9e19d77dc7fec9645da0d0}{Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type} \hyperlink{classFEDD_1_1FE__Test_ad429d8e769350d7ab954942729d77674}{domain\+Vec\+\_\+}
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classFEDD_1_1FE__Test_aae827bac5afc6e83398c187fde2dc48c}{add\+Fe\+Matrix} (\hyperlink{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}{Matrix\+Ptr\+\_\+\+Type} \&A, \hyperlink{classFEDD_1_1FE__Test_a675b52d9e58407c6baadb403394be92b}{Small\+Matrix\+Ptr\+\_\+\+Type} element\+Matrix, Finite\+Element element, \hyperlink{classFEDD_1_1FE__Test_ad09d94cdf8e7574fc9b6d1648fa18826}{Map\+Const\+Ptr\+\_\+\+Type} map, int dofs)
+\begin{DoxyCompactList}\small\item\em Inserting element stiffness matrices into global stiffness matrix. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__Test_a91a2d157f4967fe1b198ade0cef4d63f}{add\+Fe\+Vector} (\hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type} \&a, vec\+\_\+dbl\+\_\+\+Type element\+Vector, Finite\+Element element)
+\begin{DoxyCompactList}\small\item\em Inserting element rhs vector into global rhs vector. \end{DoxyCompactList}\item 
+void \hyperlink{classFEDD_1_1FE__Test_a5cbe33c46976b681489edf73e8b4be4d}{init\+Assemble\+F\+E\+Elements} (string element\+Type, tuple\+\_\+disk\+\_\+vec\+\_\+ptr\+\_\+\+Type problem\+Disk, \hyperlink{classFEDD_1_1FE__Test_af8f5bc3cb82c5d60a3a63b1e5c89a678}{Elements\+Ptr\+\_\+\+Type} elements, Parameter\+List\+Ptr\+\_\+\+Type params, vec2\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type points\+Rep)
+\begin{DoxyCompactList}\small\item\em Initialization of vector consisting of the assemble\+FE Elements. Follows structure of \textquotesingle{}normal\textquotesingle{} elements, i.\+e. element\+Map also applicable. \end{DoxyCompactList}\item 
+int \hyperlink{classFEDD_1_1FE__Test_afe37563f768c20036dd87277258b8019}{check\+FE} (int dim, string F\+E\+Type)
+\begin{DoxyCompactList}\small\item\em Matches Finite Element Discretization to domain. Useful for Assembly\+FE class. \end{DoxyCompactList}\item 
+vec2\+D\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test_a60f1f1b498d11e9953349cd1ba532527}{get\+Coordinates} (vec\+\_\+\+L\+O\+\_\+\+Type local\+I\+Ds, vec2\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type points)
+\begin{DoxyCompactList}\small\item\em Returns coordinates of local node ids. \end{DoxyCompactList}\item 
+vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test_af91b8a8834bd9e3a8e7f2893e353a212}{get\+Solution} (vec\+\_\+\+L\+O\+\_\+\+Type local\+I\+Ds, \hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type} u\+\_\+rep, int dofs\+Velocity)
+\begin{DoxyCompactList}\small\item\em Returns entries of u of element. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFEDD_1_1FE__Test_a7c6207bb2e578ea92dbfb20aa766e2d3}{Assemble\+F\+E\+Ptr\+\_\+vec\+\_\+\+Type} \hyperlink{classFEDD_1_1FE__Test_a8456e72f910449b1eea6883291d2cda0}{assembly\+F\+E\+Elements\+\_\+}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_afbc20c921480ce9f89ec045f94f6806a}\label{classFEDD_1_1FE__Test_afbc20c921480ce9f89ec045f94f6806a}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Assemble\+F\+E\+\_\+\+Type@{Assemble\+F\+E\+\_\+\+Type}}
+\index{Assemble\+F\+E\+\_\+\+Type@{Assemble\+F\+E\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Assemble\+F\+E\+\_\+\+Type}{AssembleFE\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE}$<$\hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC},\hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO},\hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO},\hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_afbc20c921480ce9f89ec045f94f6806a}{Assemble\+F\+E\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a7a938cd88b5f936c58993fff97074e2d}\label{classFEDD_1_1FE__Test_a7a938cd88b5f936c58993fff97074e2d}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Assemble\+F\+E\+Ptr\+\_\+\+Type@{Assemble\+F\+E\+Ptr\+\_\+\+Type}}
+\index{Assemble\+F\+E\+Ptr\+\_\+\+Type@{Assemble\+F\+E\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Assemble\+F\+E\+Ptr\+\_\+\+Type}{AssembleFEPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1FE__Test_afbc20c921480ce9f89ec045f94f6806a}{Assemble\+F\+E\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a7a938cd88b5f936c58993fff97074e2d}{Assemble\+F\+E\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a7c6207bb2e578ea92dbfb20aa766e2d3}\label{classFEDD_1_1FE__Test_a7c6207bb2e578ea92dbfb20aa766e2d3}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Assemble\+F\+E\+Ptr\+\_\+vec\+\_\+\+Type@{Assemble\+F\+E\+Ptr\+\_\+vec\+\_\+\+Type}}
+\index{Assemble\+F\+E\+Ptr\+\_\+vec\+\_\+\+Type@{Assemble\+F\+E\+Ptr\+\_\+vec\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Assemble\+F\+E\+Ptr\+\_\+vec\+\_\+\+Type}{AssembleFEPtr\_vec\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef std\+::vector$<$\hyperlink{classFEDD_1_1FE__Test_a7a938cd88b5f936c58993fff97074e2d}{Assemble\+F\+E\+Ptr\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a7c6207bb2e578ea92dbfb20aa766e2d3}{Assemble\+F\+E\+Ptr\+\_\+vec\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a1ac70a79e5935320b05ecf16739ad8a4}\label{classFEDD_1_1FE__Test_a1ac70a79e5935320b05ecf16739ad8a4}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!B\+C\+\_\+func\+\_\+\+Type@{B\+C\+\_\+func\+\_\+\+Type}}
+\index{B\+C\+\_\+func\+\_\+\+Type@{B\+C\+\_\+func\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{B\+C\+\_\+func\+\_\+\+Type}{BC\_func\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef boost\+::function$<$void(double$\ast$ x, double$\ast$ res, double t, const double$\ast$ parameters)$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a1ac70a79e5935320b05ecf16739ad8a4}{B\+C\+\_\+func\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a5e414af507a141db0961c32bf6b19825}\label{classFEDD_1_1FE__Test_a5e414af507a141db0961c32bf6b19825}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Domain\+\_\+\+Type@{Domain\+\_\+\+Type}}
+\index{Domain\+\_\+\+Type@{Domain\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Domain\+\_\+\+Type}{Domain\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Domain$<$\hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC},\hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO},\hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO},\hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a5e414af507a141db0961c32bf6b19825}{Domain\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a0a941851908a1e68d1554f8b28a7c72a}\label{classFEDD_1_1FE__Test_a0a941851908a1e68d1554f8b28a7c72a}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Domain\+Const\+Ptr\+\_\+\+Type@{Domain\+Const\+Ptr\+\_\+\+Type}}
+\index{Domain\+Const\+Ptr\+\_\+\+Type@{Domain\+Const\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Domain\+Const\+Ptr\+\_\+\+Type}{DomainConstPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$const \hyperlink{classFEDD_1_1FE__Test_a5e414af507a141db0961c32bf6b19825}{Domain\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a0a941851908a1e68d1554f8b28a7c72a}{Domain\+Const\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a3345ab320c9e19d77dc7fec9645da0d0}\label{classFEDD_1_1FE__Test_a3345ab320c9e19d77dc7fec9645da0d0}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type@{Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type}}
+\index{Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type@{Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type}{DomainConstPtr\_vec\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef std\+::vector$<$\hyperlink{classFEDD_1_1FE__Test_a0a941851908a1e68d1554f8b28a7c72a}{Domain\+Const\+Ptr\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a3345ab320c9e19d77dc7fec9645da0d0}{Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a1020475c408a64c7926feb8dded7f0c3}\label{classFEDD_1_1FE__Test_a1020475c408a64c7926feb8dded7f0c3}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Domain\+Ptr\+\_\+\+Type@{Domain\+Ptr\+\_\+\+Type}}
+\index{Domain\+Ptr\+\_\+\+Type@{Domain\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Domain\+Ptr\+\_\+\+Type}{DomainPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1FE__Test_a5e414af507a141db0961c32bf6b19825}{Domain\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a1020475c408a64c7926feb8dded7f0c3}{Domain\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a73f1a4ecb41cbeec1be473d71efe022d}\label{classFEDD_1_1FE__Test_a73f1a4ecb41cbeec1be473d71efe022d}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Elements\+\_\+\+Type@{Elements\+\_\+\+Type}}
+\index{Elements\+\_\+\+Type@{Elements\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Elements\+\_\+\+Type}{Elements\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Elements \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a73f1a4ecb41cbeec1be473d71efe022d}{Elements\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_af8f5bc3cb82c5d60a3a63b1e5c89a678}\label{classFEDD_1_1FE__Test_af8f5bc3cb82c5d60a3a63b1e5c89a678}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Elements\+Ptr\+\_\+\+Type@{Elements\+Ptr\+\_\+\+Type}}
+\index{Elements\+Ptr\+\_\+\+Type@{Elements\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Elements\+Ptr\+\_\+\+Type}{ElementsPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1FE__Test_a73f1a4ecb41cbeec1be473d71efe022d}{Elements\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_af8f5bc3cb82c5d60a3a63b1e5c89a678}{Elements\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a416d3abf702e778eb7fab3cd1feb3ede}\label{classFEDD_1_1FE__Test_a416d3abf702e778eb7fab3cd1feb3ede}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Map\+\_\+\+Type@{Map\+\_\+\+Type}}
+\index{Map\+\_\+\+Type@{Map\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Map\+\_\+\+Type}{Map\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Matrix\+\_\+\+Type\+::\+Map\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a416d3abf702e778eb7fab3cd1feb3ede}{Map\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_ad09d94cdf8e7574fc9b6d1648fa18826}\label{classFEDD_1_1FE__Test_ad09d94cdf8e7574fc9b6d1648fa18826}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Map\+Const\+Ptr\+\_\+\+Type@{Map\+Const\+Ptr\+\_\+\+Type}}
+\index{Map\+Const\+Ptr\+\_\+\+Type@{Map\+Const\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Map\+Const\+Ptr\+\_\+\+Type}{MapConstPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Matrix\+\_\+\+Type\+::\+Map\+Const\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_ad09d94cdf8e7574fc9b6d1648fa18826}{Map\+Const\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_af41d3f3475a5ac2e0c7d3aab1b06102b}\label{classFEDD_1_1FE__Test_af41d3f3475a5ac2e0c7d3aab1b06102b}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Map\+Ptr\+\_\+\+Type@{Map\+Ptr\+\_\+\+Type}}
+\index{Map\+Ptr\+\_\+\+Type@{Map\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Map\+Ptr\+\_\+\+Type}{MapPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Matrix\+\_\+\+Type\+::\+Map\+Ptr\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_af41d3f3475a5ac2e0c7d3aab1b06102b}{Map\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_ab21a3d554ec8bf6763a7dabcbe800b35}\label{classFEDD_1_1FE__Test_ab21a3d554ec8bf6763a7dabcbe800b35}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Matrix\+\_\+\+Type@{Matrix\+\_\+\+Type}}
+\index{Matrix\+\_\+\+Type@{Matrix\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Matrix\+\_\+\+Type}{Matrix\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Matrix$<$\hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC},\hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO},\hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO},\hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_ab21a3d554ec8bf6763a7dabcbe800b35}{Matrix\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}\label{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Matrix\+Ptr\+\_\+\+Type@{Matrix\+Ptr\+\_\+\+Type}}
+\index{Matrix\+Ptr\+\_\+\+Type@{Matrix\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Matrix\+Ptr\+\_\+\+Type}{MatrixPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1FE__Test_ab21a3d554ec8bf6763a7dabcbe800b35}{Matrix\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}{Matrix\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a431ec5a97628feb8a0a8d16874ecd060}\label{classFEDD_1_1FE__Test_a431ec5a97628feb8a0a8d16874ecd060}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Multi\+Vector\+\_\+\+Type@{Multi\+Vector\+\_\+\+Type}}
+\index{Multi\+Vector\+\_\+\+Type@{Multi\+Vector\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+\_\+\+Type}{MultiVector\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Multi\+Vector$<$\hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC},\hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO},\hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO},\hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a431ec5a97628feb8a0a8d16874ecd060}{Multi\+Vector\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}\label{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Multi\+Vector\+Ptr\+\_\+\+Type@{Multi\+Vector\+Ptr\+\_\+\+Type}}
+\index{Multi\+Vector\+Ptr\+\_\+\+Type@{Multi\+Vector\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Multi\+Vector\+Ptr\+\_\+\+Type}{MultiVectorPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1FE__Test_a431ec5a97628feb8a0a8d16874ecd060}{Multi\+Vector\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a11f3375e690a493e9076b63b0f86edf4}\label{classFEDD_1_1FE__Test_a11f3375e690a493e9076b63b0f86edf4}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Small\+Matrix\+\_\+\+Type@{Small\+Matrix\+\_\+\+Type}}
+\index{Small\+Matrix\+\_\+\+Type@{Small\+Matrix\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Small\+Matrix\+\_\+\+Type}{SmallMatrix\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Small\+Matrix$<$\hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a11f3375e690a493e9076b63b0f86edf4}{Small\+Matrix\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a675b52d9e58407c6baadb403394be92b}\label{classFEDD_1_1FE__Test_a675b52d9e58407c6baadb403394be92b}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!Small\+Matrix\+Ptr\+\_\+\+Type@{Small\+Matrix\+Ptr\+\_\+\+Type}}
+\index{Small\+Matrix\+Ptr\+\_\+\+Type@{Small\+Matrix\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{Small\+Matrix\+Ptr\+\_\+\+Type}{SmallMatrixPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1FE__Test_a11f3375e690a493e9076b63b0f86edf4}{Small\+Matrix\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test_a675b52d9e58407c6baadb403394be92b}{Small\+Matrix\+Ptr\+\_\+\+Type}}
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a2e9a8640f2f6ed99376efbe84298e744}\label{classFEDD_1_1FE__Test_a2e9a8640f2f6ed99376efbe84298e744}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!F\+E\+\_\+\+Test@{F\+E\+\_\+\+Test}}
+\index{F\+E\+\_\+\+Test@{F\+E\+\_\+\+Test}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{F\+E\+\_\+\+Test()}{FE\_Test()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+\hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1FE__Test}{F\+E\+\_\+\+Test} (\begin{DoxyParamCaption}\item[{bool}]{save\+Assembly = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Constructor. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a9703f9144722f9c01e5bde489c2e6c2f}\label{classFEDD_1_1FE__Test_a9703f9144722f9c01e5bde489c2e6c2f}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!add\+FE@{add\+FE}}
+\index{add\+FE@{add\+FE}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{add\+F\+E()}{addFE()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::add\+FE (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1FE__Test_a0a941851908a1e68d1554f8b28a7c72a}{Domain\+Const\+Ptr\+\_\+\+Type}}]{domain }\end{DoxyParamCaption})}
+
+
+
+Adding underlying domains. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em domain} & Finite element function space \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_aae827bac5afc6e83398c187fde2dc48c}\label{classFEDD_1_1FE__Test_aae827bac5afc6e83398c187fde2dc48c}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!add\+Fe\+Matrix@{add\+Fe\+Matrix}}
+\index{add\+Fe\+Matrix@{add\+Fe\+Matrix}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{add\+Fe\+Matrix()}{addFeMatrix()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::add\+Fe\+Matrix (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}{Matrix\+Ptr\+\_\+\+Type} \&}]{A,  }\item[{\hyperlink{classFEDD_1_1FE__Test_a675b52d9e58407c6baadb403394be92b}{Small\+Matrix\+Ptr\+\_\+\+Type}}]{element\+Matrix,  }\item[{Finite\+Element}]{element,  }\item[{\hyperlink{classFEDD_1_1FE__Test_ad09d94cdf8e7574fc9b6d1648fa18826}{Map\+Const\+Ptr\+\_\+\+Type}}]{map,  }\item[{int}]{dofs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Inserting element stiffness matrices into global stiffness matrix. 
+
+\begin{DoxyRefDesc}{Todo}
+\item[\hyperlink{todo__todo000010}{Todo}]column indices pre determine\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \&A} & Global Matrix \\
+\hline
+\mbox{\tt in}  & {\em element\+Matrix} & Stiffness matrix of one element \\
+\hline
+\mbox{\tt in}  & {\em element} & Corresponding finite element \\
+\hline
+\mbox{\tt in}  & {\em map} & Map that corresponds to repeated nodes \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a91a2d157f4967fe1b198ade0cef4d63f}\label{classFEDD_1_1FE__Test_a91a2d157f4967fe1b198ade0cef4d63f}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!add\+Fe\+Vector@{add\+Fe\+Vector}}
+\index{add\+Fe\+Vector@{add\+Fe\+Vector}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{add\+Fe\+Vector()}{addFeVector()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::add\+Fe\+Vector (\begin{DoxyParamCaption}\item[{\hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type} \&}]{a,  }\item[{vec\+\_\+dbl\+\_\+\+Type}]{element\+Vector,  }\item[{Finite\+Element}]{element }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Inserting element rhs vector into global rhs vector. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em \&a} & Global Matrix \\
+\hline
+\mbox{\tt in}  & {\em element\+Vector} & Stiffness matrix of one element \\
+\hline
+\mbox{\tt in}  & {\em element} & Corresponding finite element \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_ab547f74307b655e75629ea6717bad2a2}\label{classFEDD_1_1FE__Test_ab547f74307b655e75629ea6717bad2a2}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!assembly\+Laplace@{assembly\+Laplace}}
+\index{assembly\+Laplace@{assembly\+Laplace}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{assembly\+Laplace()}{assemblyLaplace()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::assembly\+Laplace (\begin{DoxyParamCaption}\item[{int}]{dim,  }\item[{string}]{F\+E\+Type,  }\item[{int}]{degree,  }\item[{int}]{dofs,  }\item[{\hyperlink{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}{Matrix\+Ptr\+\_\+\+Type} \&}]{A,  }\item[{bool}]{call\+Fill\+Complete = {\ttfamily true},  }\item[{int}]{F\+E\+Loc\+External = {\ttfamily -\/1} }\end{DoxyParamCaption})}
+
+
+
+Assembly of constant stiffness matix for laplacian operator $ \Delta $. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em dim} & Dimension \\
+\hline
+\mbox{\tt in}  & {\em F\+E\+Type} & FE Discretization \\
+\hline
+\mbox{\tt in}  & {\em degree} & Degree of basis function \\
+\hline
+\mbox{\tt in}  & {\em A} & Resulting matrix \\
+\hline
+\mbox{\tt in}  & {\em call\+Fill\+Complete} & If Matrix A should be completely filled at end of function \\
+\hline
+\mbox{\tt in}  & {\em F\+E\+Loc\+External} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyRefDesc}{Todo}
+\item[\hyperlink{todo__todo000009}{Todo}]Tupel for Disk Anzahl Knoten, Anzahl Freiheitsgrade \end{DoxyRefDesc}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a6aeb958829d463fc3216694ac43e6873}\label{classFEDD_1_1FE__Test_a6aeb958829d463fc3216694ac43e6873}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!assembly\+Navier\+Stokes@{assembly\+Navier\+Stokes}}
+\index{assembly\+Navier\+Stokes@{assembly\+Navier\+Stokes}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{assembly\+Navier\+Stokes()}{assemblyNavierStokes()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::assembly\+Navier\+Stokes (\begin{DoxyParamCaption}\item[{int}]{dim,  }\item[{string}]{F\+E\+Type\+Velocity,  }\item[{string}]{F\+E\+Type\+Pressure,  }\item[{int}]{degree,  }\item[{int}]{dofs\+Velocity,  }\item[{int}]{dofs\+Pressure,  }\item[{\hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type}}]{u\+\_\+rep,  }\item[{\hyperlink{classFEDD_1_1FE__Test_a3c2e34afc3a1495c2b00313399f12b3d}{Matrix\+Ptr\+\_\+\+Type} \&}]{A,  }\item[{bool}]{call\+Fill\+Complete = {\ttfamily true},  }\item[{int}]{F\+E\+Loc\+External = {\ttfamily -\/1} }\end{DoxyParamCaption})}
+
+
+
+Assembly of Jacobian for Navier\+Stokes. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em dim} & Dimension \\
+\hline
+\mbox{\tt in}  & {\em F\+E\+Type} & FE Discretization \\
+\hline
+\mbox{\tt in}  & {\em degree} & Degree of basis function \\
+\hline
+\mbox{\tt in}  & {\em A} & Resulting matrix \\
+\hline
+\mbox{\tt in}  & {\em call\+Fill\+Complete} & If Matrix A should be completely filled at end of function \\
+\hline
+\mbox{\tt in}  & {\em F\+E\+Loc\+External} & \\
+\hline
+\end{DoxyParams}
+Tupel construction follows follwing pattern\+: string\+: Physical Entity (i.\+e. Velocity) , string\+: Discretisation (i.\+e. \char`\"{}\+P2\char`\"{}), int\+: Degrees of Freedom per Node, int\+: Number of Nodes per element) \mbox{\Hypertarget{classFEDD_1_1FE__Test_a262c614022e1bf4bf44cafb282494d15}\label{classFEDD_1_1FE__Test_a262c614022e1bf4bf44cafb282494d15}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!assembly\+R\+HS@{assembly\+R\+HS}}
+\index{assembly\+R\+HS@{assembly\+R\+HS}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{assembly\+R\+H\+S()}{assemblyRHS()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::assembly\+R\+HS (\begin{DoxyParamCaption}\item[{int}]{dim,  }\item[{string}]{F\+E\+Type,  }\item[{\hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type}}]{a,  }\item[{string}]{field\+Type,  }\item[{Rhs\+Func\+\_\+\+Type}]{func,  }\item[{vector$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC} $>$ \&}]{func\+Parameter }\end{DoxyParamCaption})}
+
+
+
+Assembly of Rhs. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em dim} & Dimension \\
+\hline
+\mbox{\tt in}  & {\em F\+E\+Type} & FE Discretization \\
+\hline
+\mbox{\tt in}  & {\em \&a} & Resulting vector \\
+\hline
+\mbox{\tt in}  & {\em field\+Type} & Vectorvalued or scalar rhs \\
+\hline
+\mbox{\tt in}  & {\em func} & Rhs function \\
+\hline
+\mbox{\tt in}  & {\em func\+Parameter} & Parameter for rhs function \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_afe37563f768c20036dd87277258b8019}\label{classFEDD_1_1FE__Test_afe37563f768c20036dd87277258b8019}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!check\+FE@{check\+FE}}
+\index{check\+FE@{check\+FE}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{check\+F\+E()}{checkFE()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+int \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::check\+FE (\begin{DoxyParamCaption}\item[{int}]{dim,  }\item[{string}]{F\+E\+Type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Matches Finite Element Discretization to domain. Useful for Assembly\+FE class. 
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a60f1f1b498d11e9953349cd1ba532527}\label{classFEDD_1_1FE__Test_a60f1f1b498d11e9953349cd1ba532527}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!get\+Coordinates@{get\+Coordinates}}
+\index{get\+Coordinates@{get\+Coordinates}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{get\+Coordinates()}{getCoordinates()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+vec2\+D\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::get\+Coordinates (\begin{DoxyParamCaption}\item[{vec\+\_\+\+L\+O\+\_\+\+Type}]{local\+I\+Ds,  }\item[{vec2\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Returns coordinates of local node ids. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em local\+I\+Ds} & \\
+\hline
+\mbox{\tt in}  & {\em points} & \\
+\hline
+\mbox{\tt out}  & {\em coordinates} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_af91b8a8834bd9e3a8e7f2893e353a212}\label{classFEDD_1_1FE__Test_af91b8a8834bd9e3a8e7f2893e353a212}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!get\+Solution@{get\+Solution}}
+\index{get\+Solution@{get\+Solution}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{get\+Solution()}{getSolution()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+vec\+\_\+dbl\+\_\+\+Type \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::get\+Solution (\begin{DoxyParamCaption}\item[{vec\+\_\+\+L\+O\+\_\+\+Type}]{local\+I\+Ds,  }\item[{\hyperlink{classFEDD_1_1FE__Test_ac7c0363aa74e0bfcb903c13330c50185}{Multi\+Vector\+Ptr\+\_\+\+Type}}]{u\+\_\+rep,  }\item[{int}]{dofs\+Velocity }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Returns entries of u of element. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em local\+I\+Ds} & \\
+\hline
+\mbox{\tt in}  & {\em points} & \\
+\hline
+\mbox{\tt out}  & {\em coordinates} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a5cbe33c46976b681489edf73e8b4be4d}\label{classFEDD_1_1FE__Test_a5cbe33c46976b681489edf73e8b4be4d}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!init\+Assemble\+F\+E\+Elements@{init\+Assemble\+F\+E\+Elements}}
+\index{init\+Assemble\+F\+E\+Elements@{init\+Assemble\+F\+E\+Elements}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{init\+Assemble\+F\+E\+Elements()}{initAssembleFEElements()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+void \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::init\+Assemble\+F\+E\+Elements (\begin{DoxyParamCaption}\item[{string}]{element\+Type,  }\item[{tuple\+\_\+disk\+\_\+vec\+\_\+ptr\+\_\+\+Type}]{problem\+Disk,  }\item[{\hyperlink{classFEDD_1_1FE__Test_af8f5bc3cb82c5d60a3a63b1e5c89a678}{Elements\+Ptr\+\_\+\+Type}}]{elements,  }\item[{Parameter\+List\+Ptr\+\_\+\+Type}]{params,  }\item[{vec2\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type}]{points\+Rep }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Initialization of vector consisting of the assemble\+FE Elements. Follows structure of \textquotesingle{}normal\textquotesingle{} elements, i.\+e. element\+Map also applicable. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em element\+Type} & i.\+e. Laplace, Navier Stokes.. \\
+\hline
+\mbox{\tt in}  & {\em problem\+Disk} & Tuple of specific problem Information \\
+\hline
+\mbox{\tt in}  & {\em elements} & \\
+\hline
+\mbox{\tt in}  & {\em params} & parameter list \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a8456e72f910449b1eea6883291d2cda0}\label{classFEDD_1_1FE__Test_a8456e72f910449b1eea6883291d2cda0}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!assembly\+F\+E\+Elements\+\_\+@{assembly\+F\+E\+Elements\+\_\+}}
+\index{assembly\+F\+E\+Elements\+\_\+@{assembly\+F\+E\+Elements\+\_\+}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{assembly\+F\+E\+Elements\+\_\+}{assemblyFEElements\_}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+\hyperlink{classFEDD_1_1FE__Test_a7c6207bb2e578ea92dbfb20aa766e2d3}{Assemble\+F\+E\+Ptr\+\_\+vec\+\_\+\+Type} \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::assembly\+F\+E\+Elements\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_ad429d8e769350d7ab954942729d77674}\label{classFEDD_1_1FE__Test_ad429d8e769350d7ab954942729d77674}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!domain\+Vec\+\_\+@{domain\+Vec\+\_\+}}
+\index{domain\+Vec\+\_\+@{domain\+Vec\+\_\+}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{domain\+Vec\+\_\+}{domainVec\_}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+\hyperlink{classFEDD_1_1FE__Test_a3345ab320c9e19d77dc7fec9645da0d0}{Domain\+Const\+Ptr\+\_\+vec\+\_\+\+Type} \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::domain\+Vec\+\_\+}
+
+\mbox{\Hypertarget{classFEDD_1_1FE__Test_a9d4fe8878ab5ce8bf7817b2b7f57b1fc}\label{classFEDD_1_1FE__Test_a9d4fe8878ab5ce8bf7817b2b7f57b1fc}} 
+\index{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}!save\+Assembly\+\_\+@{save\+Assembly\+\_\+}}
+\index{save\+Assembly\+\_\+@{save\+Assembly\+\_\+}!F\+E\+D\+D\+::\+F\+E\+\_\+\+Test@{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}}
+\subsubsection{\texorpdfstring{save\+Assembly\+\_\+}{saveAssembly\_}}
+{\footnotesize\ttfamily template$<$class SC  = default\+\_\+sc, class LO  = default\+\_\+lo, class GO  = default\+\_\+go, class NO  = default\+\_\+no$>$ \\
+bool \hyperlink{classFEDD_1_1FE__Test}{F\+E\+D\+D\+::\+F\+E\+\_\+\+Test}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::save\+Assembly\+\_\+}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Test\+F\+E/\hyperlink{FE__Test__decl_8hpp}{F\+E\+\_\+\+Test\+\_\+decl.\+hpp}\item 
+Test\+F\+E/\hyperlink{FE__Test__def_8hpp}{F\+E\+\_\+\+Test\+\_\+def.\+hpp}\end{DoxyCompactItemize}

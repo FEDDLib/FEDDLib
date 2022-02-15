@@ -1,0 +1,88 @@
+\hypertarget{fe__test__laplace_8cpp}{}\section{tests/fe\+\_\+test\+\_\+laplace.cpp File Reference}
+\label{fe__test__laplace_8cpp}\index{tests/fe\+\_\+test\+\_\+laplace.\+cpp@{tests/fe\+\_\+test\+\_\+laplace.\+cpp}}
+{\ttfamily \#include \char`\"{}feddlib/core/\+F\+E\+D\+D\+Core.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+General/\+Default\+Type\+Defs.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+F\+E/\+Domain.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+F\+E/\+F\+E.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+Ace\+Fem\+Assembly/\+Test\+F\+E/\+F\+E\+\_\+\+Test.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+General/\+Exporter\+Para\+View.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+Linear\+Algebra/\+Multi\+Vector.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$Teuchos\+\_\+\+Global\+M\+P\+I\+Session.\+hpp$>$}\newline
+{\ttfamily \#include $<$Xpetra\+\_\+\+Default\+Platform.\+hpp$>$}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+Mesh/\+Mesh\+Partitioner.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}feddlib/core/\+Mesh/\+Mesh\+Unstructured.\+hpp\char`\"{}}\newline
+Include dependency graph for fe\+\_\+test\+\_\+laplace.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{fe__test__laplace_8cpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef unsigned \hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN}
+\item 
+typedef double \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}
+\item 
+typedef int \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}
+\item 
+typedef default\+\_\+go \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}
+\item 
+typedef Kokkos\+Classic\+::\+Default\+Node\+::\+Default\+Node\+Type \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{fe__test__laplace_8cpp_a21a529a0146aeb111f88f6ad763ed4b8}{one\+Func} (double $\ast$x, double $\ast$res, double $\ast$parameters)
+\item 
+int \hyperlink{fe__test__laplace_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\mbox{\Hypertarget{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}\label{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}} 
+\index{fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}!GO@{GO}}
+\index{GO@{GO}!fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}}
+\subsubsection{\texorpdfstring{GO}{GO}}
+{\footnotesize\ttfamily typedef default\+\_\+go \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}}
+
+\mbox{\Hypertarget{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}\label{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}} 
+\index{fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}!LO@{LO}}
+\index{LO@{LO}!fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}}
+\subsubsection{\texorpdfstring{LO}{LO}}
+{\footnotesize\ttfamily typedef int \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}}
+
+\mbox{\Hypertarget{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}\label{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}} 
+\index{fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}!NO@{NO}}
+\index{NO@{NO}!fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}}
+\subsubsection{\texorpdfstring{NO}{NO}}
+{\footnotesize\ttfamily typedef Kokkos\+Classic\+::\+Default\+Node\+::\+Default\+Node\+Type \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO}}
+
+\mbox{\Hypertarget{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}\label{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}} 
+\index{fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}!SC@{SC}}
+\index{SC@{SC}!fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}}
+\subsubsection{\texorpdfstring{SC}{SC}}
+{\footnotesize\ttfamily typedef double \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}}
+
+\mbox{\Hypertarget{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}\label{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}} 
+\index{fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}!UN@{UN}}
+\index{UN@{UN}!fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}}
+\subsubsection{\texorpdfstring{UN}{UN}}
+{\footnotesize\ttfamily typedef unsigned \hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN}}
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{fe__test__laplace_8cpp_a0ddf1224851353fc92bfbff6f499fa97}\label{fe__test__laplace_8cpp_a0ddf1224851353fc92bfbff6f499fa97}} 
+\index{fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}!main@{main}}
+\index{main@{main}!fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{fe__test__laplace_8cpp_a21a529a0146aeb111f88f6ad763ed4b8}\label{fe__test__laplace_8cpp_a21a529a0146aeb111f88f6ad763ed4b8}} 
+\index{fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}!one\+Func@{one\+Func}}
+\index{one\+Func@{one\+Func}!fe\+\_\+test\+\_\+laplace.\+cpp@{fe\+\_\+test\+\_\+laplace.\+cpp}}
+\subsubsection{\texorpdfstring{one\+Func()}{oneFunc()}}
+{\footnotesize\ttfamily void one\+Func (\begin{DoxyParamCaption}\item[{double $\ast$}]{x,  }\item[{double $\ast$}]{res,  }\item[{double $\ast$}]{parameters }\end{DoxyParamCaption})}
+

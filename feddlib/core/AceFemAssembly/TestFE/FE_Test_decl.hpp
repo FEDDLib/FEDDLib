@@ -6,6 +6,7 @@
 #include "feddlib/core/General/SmallMatrix.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"
+#include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/core/LinearAlgebra/Map.hpp"
 #include "feddlib/core/FE/Domain.hpp"
@@ -17,12 +18,13 @@
 #include <Teuchos_BLAS.hpp>
 
 #include <boost/function.hpp>
-
+#include <tuple>  
 namespace FEDD {
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class FE_Test {
   public:
+
 
     typedef Domain<SC,LO,GO,NO> Domain_Type;
     typedef Teuchos::RCP<Domain_Type> DomainPtr_Type;
@@ -43,25 +45,39 @@ class FE_Test {
 	
 	typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
     typedef Teuchos::RCP<AssembleFE_Type> AssembleFEPtr_Type;
-	
+    typedef std::vector<AssembleFEPtr_Type> AssembleFEPtr_vec_Type;	
+
     typedef typename Matrix_Type::Map_Type Map_Type;
     typedef typename Matrix_Type::MapPtr_Type MapPtr_Type;
     typedef typename Matrix_Type::MapConstPtr_Type MapConstPtr_Type;
 
-    typedef boost::function<void(double* x, double* res, double t, const double* parameters)> BC_func_Type;
-    
+    typedef BlockMatrix<SC,LO,GO,NO> BlockMatrix_Type ;
+    typedef Teuchos::RCP<BlockMatrix_Type> BlockMatrixPtr_Type;
 
+    typedef boost::function<void(double* x, double* res, double t, const double* parameters)> BC_func_Type;
 
     FE_Test(bool saveAssembly=false);
 
     void addFE(DomainConstPtr_Type domain);
 
 	void assemblyLaplace(int dim,
-					    string FEType,
-					    int degree,
-					    MatrixPtr_Type &A,
-					     bool callFillComplete = true,
-                         int FELocExternal = -1 );
+				string FEType,
+				int degree,
+				int dofs,
+				MatrixPtr_Type &A,
+				bool callFillComplete = true,
+				int FELocExternal = -1 );
+
+	void assemblyNavierStokes(int dim,
+								string FETypeVelocity,
+								string FETypePressure,
+								int degree,
+								int dofsVelocity,
+								int dofsPressure,
+								MultiVectorPtr_Type u_rep,
+								BlockMatrixPtr_Type &A,
+								bool callFillComplete = true,
+								int FELocExternal=-1);
 
 	void assemblyRHS(int dim,
                        string FEType,
@@ -75,13 +91,18 @@ class FE_Test {
     DomainConstPtr_vec_Type	domainVec_;
 
 	private:
-		void addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type map);
+		void addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type map, int dofs);
+		void addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstColumn,MapConstPtr_Type mapSecondColumn, tuple_disk_vec_ptr_Type problemDisk);
+
 		void addFeVector(MultiVectorPtr_Type &a, vec_dbl_Type elementVector, FiniteElement element);
 			
+		void initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep);
 		int checkFE(int dim, string FEType);
 
-		vec2D_dbl_Type getCoordinates(vec_LO_Type localIDs, vec2D_dbl_ptr_Type points);
+		AssembleFEPtr_vec_Type assemblyFEElements_;
 
+		vec2D_dbl_Type getCoordinates(vec_LO_Type localIDs, vec2D_dbl_ptr_Type points);
+		vec_dbl_Type getSolution(vec_LO_Type localIDs, MultiVectorPtr_Type u_rep, int dofsVelocity);
     
 };
 }

@@ -64,15 +64,11 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     
-//    Xpetra::UnderlyingLib ulib;
-//    if (!ulib_str.compare("UseTpetra"))
-//        ulib = Xpetra::UseTpetra;
-//    else if (!ulib_str.compare("UseEpetra"))
-//        ulib = Xpetra::UseEpetra;
 
     // Mesh
-	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblem.xml");
+	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemLaplace.xml");
     std::string FEType=params->sublist("Parameter").get("Discretization1","P1");
+    int dofs =params->sublist("Parameter").get("Dofs",1);
     int numProcsCoarseSolve = 0;
     int n;
     int size = comm->getSize();
@@ -108,11 +104,15 @@ int main(int argc, char *argv[]) {
 
     MatrixPtr_Type A= Teuchos::rcp(new Matrix_Type( domain->getMapUnique(), 30  ) ); // with approx entries per row
 
-    MultiVectorPtr_Type a= Teuchos::rcp(new MultiVector_Type(domain->getMapRepeated()  ) ); 
+	if(dofs == dim)
+		A.reset(new Matrix_Type( domain->getMapVecFieldUnique(), 30  ) );
 
     {
-        fe.assemblyLaplace(dim, FEType, 2, A, true/*call fillComplete*/);
-		fe.assemblyRHS(dim, FEType, a, "Scalar", oneFunc,funcParameter);
+		if(dofs == dim)
+       		 fe.assemblyLaplaceVecField(dim, FEType, 2, A, true/*call fillComplete*/);
+		else
+			 fe.assemblyLaplace(dim, FEType, 2, A, true/*call fillComplete*/);
+
     }
     
  	FE_Test<SC,LO,GO,NO> fe_test;
@@ -120,28 +120,21 @@ int main(int argc, char *argv[]) {
     
     MatrixPtr_Type A_test= Teuchos::rcp(new Matrix_Type(domain->getMapUnique(), 30  ) ); // with approx entries per row
 
-    MultiVectorPtr_Type a_test= Teuchos::rcp(new MultiVector_Type(domain->getMapRepeated()  ) ); 
+	if(dofs == dim)
+		A_test.reset(new Matrix_Type( domain->getMapVecFieldUnique(), 30  ) );
+
     {
-        fe_test.assemblyLaplace(dim, FEType, 2, A_test, true/*call fillComplete*/);
-		fe_test.assemblyRHS(dim, FEType, a_test, "Scalar" , oneFunc,funcParameter);
+        fe_test.assemblyLaplace(dim, FEType, 2,dofs, A_test, true/*call fillComplete*/);
     }
 
    
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type(domain->getMapUnique(), 30  ) ); // with approx entries per row
+	if(dofs == dim)
+		Sum.reset(new Matrix_Type( domain->getMapVecFieldUnique(), 30  ) );
 	A->addMatrix(-1, Sum, 1);
 	A_test->addMatrix(1, Sum, -1);
 
-	//this = alpha*A + beta*this
-	MultiVectorConstPtr_Type tmp = a_test;
-    a->update( -1., tmp,1. );
 
-	vec_dbl_Type resNorm(1);
-	const Teuchos::ArrayView<SC> normRhs = Teuchos::arrayViewFromVector( resNorm);
-	a->norm2(normRhs);
-	if(comm->getRank() == 0)
-		cout << " Norm of Difference between right hand sides: " << normRhs[0] << endl;
-
-	
 	int maxRank = std::get<1>(domain->getMesh()->rankRange_);
 
 	double res=0.;
@@ -149,12 +142,14 @@ int main(int argc, char *argv[]) {
 	Teuchos::ArrayView<const SC> values;
 
 	for (UN i=0; i < domain->getMapUnique()->getMaxLocalIndex()+1 ; i++) {
-		GO row = domain->getMapUnique()->getGlobalElement( i );
-		Sum->getGlobalRowView(row, indices,values);
-		
-		for(int j=0; j< values.size() ; j++){
-			res += values[j];			
-		}		
+		for(int d=0; d< dofs ; d++){
+			GO row = dofs*domain->getMapUnique()->getGlobalElement( i )+d;
+			Sum->getGlobalRowView(row, indices,values);
+			
+			for(int j=0; j< values.size() ; j++){
+				res += values[j];			
+			}	
+		}	
 	}
 	res = fabs(res);
 	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));

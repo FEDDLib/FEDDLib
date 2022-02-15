@@ -13,7 +13,7 @@ AssembleFEFactory<SC,LO,GO,NO>::AssembleFEFactory(){
 
 
 template <class SC, class LO, class GO, class NO>
-typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC,LO,GO,NO>::build(string problemType, int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params)
+typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC,LO,GO,NO>::build(string problemType, int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple)
 {
 	AssembleFEPtr_Type assembleFE;
 
@@ -21,13 +21,14 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 
 	if(problemType == "Laplace"){
 		//AssembleFEAceLaplace<SC,LO,GO,NO> assembleFESpecific  = new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params);
-		Teuchos::RCP<AssembleFEAceLaplace<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params) );
+		Teuchos::RCP<AssembleFEAceLaplace<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 
 
 	}
 	else if(problemType == "NavierStokes"){
-		//AssembleFESpecificNavierStokes_Type assembeFESpecific  = new AssembleFeAceNavierStokes(flag,nodesRefConfig, parameters);
+		Teuchos::RCP<AssembleFEAceNavierStokes<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceNavierStokes<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		assembleFE = assembleFESpecific;
 	}
 	else
     		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "No specific implementation for your request.");

@@ -134,7 +134,13 @@ int SmallMatrix<T>::multiply(SmallMatrix<T> &bMat, SmallMatrix &cMat){
 template<class T>
 int SmallMatrix<T>::add(SmallMatrix<T> &bMat, SmallMatrix &cMat){
     
-    if (size_==2) {
+	for(int i=0; i< size_; i++){
+		for(int j=0; j< size_;j++){
+			cMat[i][j] =  values_[i][j]+bMat[i][j];
+		}
+	}
+
+    /*if (size_==2) {
         cMat[0][0] = values_[0][0]+bMat[0][0];
         cMat[0][1] = values_[0][1]+bMat[0][1];
         cMat[1][0] = values_[1][0]+bMat[1][0];
@@ -154,7 +160,7 @@ int SmallMatrix<T>::add(SmallMatrix<T> &bMat, SmallMatrix &cMat){
         cMat[2][2] = values_[2][2]+bMat[2][2];
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!");
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!");*/
     
     return 0;
 }

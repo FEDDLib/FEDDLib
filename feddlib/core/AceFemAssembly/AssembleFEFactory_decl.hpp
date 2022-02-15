@@ -5,7 +5,7 @@
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFEAceLaplace.hpp"
-
+#include "feddlib/core/AceFemAssembly/specific/AssembleFEAceNavierStokes.hpp"
 namespace FEDD {
 
     /*!
@@ -29,7 +29,6 @@ namespace FEDD {
 
         typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
         typedef Teuchos::RCP<AssembleFE_Type> AssembleFEPtr_Type;
-
         /*!
          \brief Constructor
 
@@ -44,7 +43,7 @@ namespace FEDD {
          @param[in] nodesRefConfig Nodes of element in reference configuration
          @param[in] params Parameterlist for current problem
         */
-        AssembleFEPtr_Type build( string problemType, int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params);
+        AssembleFEPtr_Type build( string problemType, int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);
 
     };
 

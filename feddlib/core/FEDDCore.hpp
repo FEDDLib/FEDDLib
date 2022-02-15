@@ -61,7 +61,14 @@ namespace FEDD {
 typedef unsigned UN;
 
 typedef std::tuple<int,int> tuple_intint_Type;
-    
+typedef std::tuple<std::string,std::string,int,int> tuple_ssii_Type;
+typedef std::tuple<std::string,double> tuple_sd_Type;
+typedef std::vector<tuple_sd_Type> tuple_sd_vec_Type;
+typedef Teuchos::RCP<tuple_sd_vec_Type> tuple_sd_vec_ptr_Type;
+
+typedef std::vector<tuple_ssii_Type> tuple_disk_vec_Type;
+typedef Teuchos::RCP<tuple_disk_vec_Type> tuple_disk_vec_ptr_Type;
+
 typedef std::vector<std::string>                                    string_vec_Type;
 typedef Teuchos::RCP<string_vec_Type>								string_vec_ptr_Type;
 

@@ -1,0 +1,114 @@
+\hypertarget{classFEDD_1_1Helper}{}\section{F\+E\+DD\+:\+:Helper Class Reference}
+\label{classFEDD_1_1Helper}\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+
+
+{\ttfamily \#include $<$Helper.\+hpp$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844}{Var\+Type} \{ \hyperlink{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844ad1258f74a7555232acfcffd74b5b0b6c}{Std} =0, 
+\hyperlink{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844a1b2c0b407eeb884b3d1f6e4cdbd354d5}{Grad} =1
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{classFEDD_1_1Helper_a86db0eff29bd3d7e6d7853436a9e5e37}{grad\+Phi} (int Dimension, int int\+FE, int i, vec\+\_\+dbl\+\_\+\+Type \&Quad\+Pts, vec\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&value)
+\item 
+static void \hyperlink{classFEDD_1_1Helper_afed2032e131e00f658402817f66d9cfd}{get\+Quadrature\+Values} (int Dimension, int Degree, vec2\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&Quad\+Pts, vec\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&QuadW, std\+::string F\+E\+Type)
+\item 
+static int \hyperlink{classFEDD_1_1Helper_aec6f9bc4208c7ce02f2bebad7a98e7d1}{get\+D\+Phi} (vec3\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&D\+Phi, vec\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&weights\+D\+Phi, int Dimension, std\+::string F\+E\+Type, int Degree)
+\item 
+static \hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN} \hyperlink{classFEDD_1_1Helper_a62c020fe93bef461eb74528cb7f19511}{determine\+Degree} (\hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN} dim, std\+::string F\+E\+Type, \hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN} deg\+Func)
+\item 
+static \hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN} \hyperlink{classFEDD_1_1Helper_ace7ad8b7d83b47bfd03bda783c18ad89}{determine\+Degree2} (\hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN} dim, std\+::string F\+E\+Type1, std\+::string F\+E\+Type2, \hyperlink{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844}{Var\+Type} type1, \hyperlink{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844}{Var\+Type} type2, \hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN} extra\+Deg=0)
+\item 
+static int \hyperlink{classFEDD_1_1Helper_ac15451b565dee93fa08b63c7a2957480}{get\+Phi} (vec2\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&Phi, vec\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&weights\+Phi, int dim, std\+::string F\+E\+Type, int Degree, std\+::string F\+E\+Type\+Quad\+Points=\char`\"{}\char`\"{})
+\item 
+static void \hyperlink{classFEDD_1_1Helper_aca7380d78c4202232789905290c682a3}{phi} (int dim, int int\+FE, int i, vec\+\_\+dbl\+\_\+\+Type \&p, double $\ast$value)
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFEDD_1_1Helper_afc109ce89832cd31f89218386a3585ed}{Helper} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844}\label{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844}} 
+\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!Var\+Type@{Var\+Type}}
+\index{Var\+Type@{Var\+Type}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+\subsubsection{\texorpdfstring{Var\+Type}{VarType}}
+{\footnotesize\ttfamily enum \hyperlink{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844}{F\+E\+D\+D\+::\+Helper\+::\+Var\+Type}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Std@{Std}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!Std@{Std}}}\mbox{\Hypertarget{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844ad1258f74a7555232acfcffd74b5b0b6c}\label{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844ad1258f74a7555232acfcffd74b5b0b6c}} 
+Std&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Grad@{Grad}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!Grad@{Grad}}}\mbox{\Hypertarget{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844a1b2c0b407eeb884b3d1f6e4cdbd354d5}\label{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844a1b2c0b407eeb884b3d1f6e4cdbd354d5}} 
+Grad&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classFEDD_1_1Helper_afc109ce89832cd31f89218386a3585ed}\label{classFEDD_1_1Helper_afc109ce89832cd31f89218386a3585ed}} 
+\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!Helper@{Helper}}
+\index{Helper@{Helper}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+\subsubsection{\texorpdfstring{Helper()}{Helper()}}
+{\footnotesize\ttfamily F\+E\+D\+D\+::\+Helper\+::\+Helper (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classFEDD_1_1Helper_a62c020fe93bef461eb74528cb7f19511}\label{classFEDD_1_1Helper_a62c020fe93bef461eb74528cb7f19511}} 
+\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!determine\+Degree@{determine\+Degree}}
+\index{determine\+Degree@{determine\+Degree}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+\subsubsection{\texorpdfstring{determine\+Degree()}{determineDegree()}}
+{\footnotesize\ttfamily \hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN} F\+E\+D\+D\+::\+Helper\+::determine\+Degree (\begin{DoxyParamCaption}\item[{\hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN}}]{dim,  }\item[{std\+::string}]{F\+E\+Type,  }\item[{\hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN}}]{deg\+Func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{classFEDD_1_1Helper_ace7ad8b7d83b47bfd03bda783c18ad89}\label{classFEDD_1_1Helper_ace7ad8b7d83b47bfd03bda783c18ad89}} 
+\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!determine\+Degree2@{determine\+Degree2}}
+\index{determine\+Degree2@{determine\+Degree2}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+\subsubsection{\texorpdfstring{determine\+Degree2()}{determineDegree2()}}
+{\footnotesize\ttfamily \hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN} F\+E\+D\+D\+::\+Helper\+::determine\+Degree2 (\begin{DoxyParamCaption}\item[{\hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN}}]{dim,  }\item[{std\+::string}]{F\+E\+Type1,  }\item[{std\+::string}]{F\+E\+Type2,  }\item[{\hyperlink{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844}{Var\+Type}}]{type1,  }\item[{\hyperlink{classFEDD_1_1Helper_a9cb6017aaedca354e0402b8ff3b70844}{Var\+Type}}]{type2,  }\item[{\hyperlink{fe__test__laplace_8cpp_a223307b878979b01e3ac887d91865ab5}{UN}}]{extra\+Deg = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{classFEDD_1_1Helper_aec6f9bc4208c7ce02f2bebad7a98e7d1}\label{classFEDD_1_1Helper_aec6f9bc4208c7ce02f2bebad7a98e7d1}} 
+\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!get\+D\+Phi@{get\+D\+Phi}}
+\index{get\+D\+Phi@{get\+D\+Phi}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+\subsubsection{\texorpdfstring{get\+D\+Phi()}{getDPhi()}}
+{\footnotesize\ttfamily int F\+E\+D\+D\+::\+Helper\+::get\+D\+Phi (\begin{DoxyParamCaption}\item[{vec3\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&}]{D\+Phi,  }\item[{vec\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&}]{weights\+D\+Phi,  }\item[{int}]{Dimension,  }\item[{std\+::string}]{F\+E\+Type,  }\item[{int}]{Degree }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{classFEDD_1_1Helper_ac15451b565dee93fa08b63c7a2957480}\label{classFEDD_1_1Helper_ac15451b565dee93fa08b63c7a2957480}} 
+\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!get\+Phi@{get\+Phi}}
+\index{get\+Phi@{get\+Phi}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+\subsubsection{\texorpdfstring{get\+Phi()}{getPhi()}}
+{\footnotesize\ttfamily int F\+E\+D\+D\+::\+Helper\+::get\+Phi (\begin{DoxyParamCaption}\item[{vec2\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&}]{Phi,  }\item[{vec\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&}]{weights\+Phi,  }\item[{int}]{dim,  }\item[{std\+::string}]{F\+E\+Type,  }\item[{int}]{Degree,  }\item[{std\+::string}]{F\+E\+Type\+Quad\+Points = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{classFEDD_1_1Helper_afed2032e131e00f658402817f66d9cfd}\label{classFEDD_1_1Helper_afed2032e131e00f658402817f66d9cfd}} 
+\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!get\+Quadrature\+Values@{get\+Quadrature\+Values}}
+\index{get\+Quadrature\+Values@{get\+Quadrature\+Values}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+\subsubsection{\texorpdfstring{get\+Quadrature\+Values()}{getQuadratureValues()}}
+{\footnotesize\ttfamily void F\+E\+D\+D\+::\+Helper\+::get\+Quadrature\+Values (\begin{DoxyParamCaption}\item[{int}]{Dimension,  }\item[{int}]{Degree,  }\item[{vec2\+D\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&}]{Quad\+Pts,  }\item[{vec\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&}]{QuadW,  }\item[{std\+::string}]{F\+E\+Type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Most of the quadrature formulas can be found in \href{http://code-aster.org/doc/v11/en/man_r/r3/r3.01.01.pdf}{\tt http\+://code-\/aster.\+org/doc/v11/en/man\+\_\+r/r3/r3.\+01.\+01.\+pdf} 01/2021 \mbox{\Hypertarget{classFEDD_1_1Helper_a86db0eff29bd3d7e6d7853436a9e5e37}\label{classFEDD_1_1Helper_a86db0eff29bd3d7e6d7853436a9e5e37}} 
+\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!grad\+Phi@{grad\+Phi}}
+\index{grad\+Phi@{grad\+Phi}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+\subsubsection{\texorpdfstring{grad\+Phi()}{gradPhi()}}
+{\footnotesize\ttfamily void F\+E\+D\+D\+::\+Helper\+::grad\+Phi (\begin{DoxyParamCaption}\item[{int}]{Dimension,  }\item[{int}]{int\+FE,  }\item[{int}]{i,  }\item[{vec\+\_\+dbl\+\_\+\+Type \&}]{Quad\+Pts,  }\item[{vec\+\_\+dbl\+\_\+ptr\+\_\+\+Type \&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\Hypertarget{classFEDD_1_1Helper_aca7380d78c4202232789905290c682a3}\label{classFEDD_1_1Helper_aca7380d78c4202232789905290c682a3}} 
+\index{F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}!phi@{phi}}
+\index{phi@{phi}!F\+E\+D\+D\+::\+Helper@{F\+E\+D\+D\+::\+Helper}}
+\subsubsection{\texorpdfstring{phi()}{phi()}}
+{\footnotesize\ttfamily void F\+E\+D\+D\+::\+Helper\+::phi (\begin{DoxyParamCaption}\item[{int}]{dim,  }\item[{int}]{int\+FE,  }\item[{int}]{i,  }\item[{vec\+\_\+dbl\+\_\+\+Type \&}]{p,  }\item[{double $\ast$}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Helper_8hpp}{Helper.\+hpp}\item 
+\hyperlink{Helper_8cpp}{Helper.\+cpp}\end{DoxyCompactItemize}

@@ -4,6 +4,7 @@
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"
+#include "feddlib/core/AceFemAssembly/Helper.hpp"
 
 namespace FEDD {
 
@@ -26,7 +27,7 @@ namespace FEDD {
     Any new assembly routine on element level should implemented following the interface provided in this class. During the setup of a specific boundary value problem one AssembleFE object will be constructed using the AssembleFEFactory for each finite element. This is can be understood roughly as follows:
     \code
     for (int i=1; i<numElements; i++) {
-        AssembleFE assmeblyFe[i] = AssembleFEFactory<>::build("problemType",flag,nodesRefConfig,params);
+        AssembleFE assmeblyFe[i] = AssembleFEFactory<>::build("problemType",flag,nodesRefConfig,params,tuple);
     }
     \endcode
     It is not possible to construct an AssembleFE object without using the AssembleFEFactory since the constructor is protected and hence not directly accessible.
@@ -169,6 +170,12 @@ namespace FEDD {
         */
         void addRHSFunc(RhsFunc_Type rhsFunc){ rhsFunc_ = rhsFunc;};
 
+        /*!
+         \brief Return vector of tupled with element based values. First column per tuple string with description, second column with corresponding value
+			\return elementInformation
+        */
+		tuple_sd_vec_ptr_Type getTupleElement(){return elementIntormation_;};
+
     protected:
 
         /*!
@@ -176,22 +183,15 @@ namespace FEDD {
          @param[in] flag Flag of element
          @param[in] nodesRefConfig Nodes of element in reference configuration
          @param[in] params Parameterlist for current problem
+		 @param[in] tuple vector of element information tuples. 
         */
         AssembleFE(int flag,
                    vec2D_dbl_Type nodesRefConfig,
-                   ParameterListPtr_Type parameters);
+                   ParameterListPtr_Type parameters,
+		   		tuple_disk_vec_ptr_Type tuple);
 
-
-
-        /// @todo Why do we need dofs1_ and dofs2_ in the abstract class? I think, we should think about a general framework for this
-		/// \todo Put into Parameterlist.
-        int dofs1_;
-        int dofs2_;
-
-		string FEType1_;
-		string FEType2_;
-
-        int numFEType_;
+		//void readTuple(); /// @todo To have tuple information in basis class as well?
+		//tuple_disk_vec_ptr_Type getTuple();  
 
 		SmallMatrixPtr_Type jacobian_;
 		vec_dbl_Type rhsVec_;
@@ -200,6 +200,8 @@ namespace FEDD {
 
         int dim_;
 
+		tuple_disk_vec_ptr_Type diskTuple_;
+		tuple_sd_vec_ptr_Type elementIntormation_;
         /// @todo Why "Reference Configuration"? 
         vec2D_dbl_Type nodesRefConfig_;
         bool timeProblem_;

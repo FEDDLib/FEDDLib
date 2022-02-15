@@ -2,10 +2,14 @@ SET(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/AssembleFEAceLaplace_decl.hpp
 	AceFemAssembly/specific/AssembleFEAceLaplace_def.hpp
 	AceFemAssembly/specific/AssembleFEAceLaplace.hpp
+	AceFemAssembly/specific/AssembleFEAceNavierStokes_decl.hpp
+	AceFemAssembly/specific/AssembleFEAceNavierStokes_def.hpp
+	AceFemAssembly/specific/AssembleFEAceNavierStokes.hpp
 CACHE INTERNAL "")
 
 SET(AceFemAssemblySpecific_SOURCES
 	AceFemAssembly/specific/AssembleFEAceLaplace.cpp
+	AceFemAssembly/specific/AssembleFEAceNavierStokes.cpp
 CACHE INTERNAL "")
 
 
