@@ -49,11 +49,13 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleJacobian() {
 
 	SmallMatrixPtr_Type elementMatrixA =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+
 	if(this->newtonStep_ ==0){
 		assemblyLaplacian(elementMatrixA);
 		assemblyDivAndDivT(elementMatrixA);
 		constantMatrix_ = elementMatrixA;
 	}
+
 	assemblyAdvection(elementMatrix);
 	assemblyAdvectionInU(elementMatrix);
 
@@ -188,7 +190,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr
 
 	int dim = this->getDim();
 	int numNodes= numNodesVelocity_;
-	int Grad =3; // Needs to be fixed	
+	int Grad =2; // Needs to be fixed	
 	string FEType = FETypeVelocity_;
 	int dofs = dofsVelocity_;
 
@@ -267,7 +269,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyDivAndDivT(SmallMatrixPtr_T
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 	int dim = this->dim_;
 
-    UN deg =1; // Helper::determineDegree2( dim, FETypeVelocity_, FETypePressure_, Grad, Std);
+    UN deg =2; // Helper::determineDegree2( dim, FETypeVelocity_, FETypePressure_, Grad, Std);
 
     Helper::getDPhi(dPhi, weights, dim, FETypeVelocity_, deg);
 
@@ -291,33 +293,30 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyDivAndDivT(SmallMatrixPtr_T
     vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
     applyBTinv( dPhi, dPhiTrans, Binv );
 
-    for (UN i=0; i < phi->at(0).size(); i++) {
-        Teuchos::Array<Teuchos::Array<SC> >valueVec( dim, Teuchos::Array<SC>( dPhiTrans[0].size(), 0. ) );
+    Teuchos::Array<GO> rowIndex( 1, 0 );
+    Teuchos::Array<SC> value(1, 0.);
 
-        for (UN j=0; j < valueVec[0].size(); j++) {
-            for (UN w=0; w<dPhiTrans.size(); w++) {
-                for (UN d=0; d<dim; d++)
-                    valueVec[d][j] += weights->at(w) * phi->at(w)[i] * dPhiTrans[w][j][d];
-            }
+
+    for (UN i=0; i < phi->at(0).size(); i++) {
+        if (FETypePressure_=="P0")
+            rowIndex[0] = GO ( 0 );
+        else
+            rowIndex[0] = GO ( i );
+
+        for (UN j=0; j < dPhiTrans[0].size(); j++) {
             for (UN d=0; d<dim; d++){
-                valueVec[d][j] *= absDetB;
-                /*if (setZeros_ && std::fabs(valueVec[d][j]) < myeps_) {
-                    valueVec[d][j] = 0.;
-                }*/
+                value[0] = 0.;
+                for (UN w=0; w<dPhiTrans.size(); w++)
+                    value[0] += weights->at(w) * phi->at(w)[i] * dPhiTrans[w][j][d];
+                value[0] *= absDetB;
+
+
+				(*elementMatrix)[rowIndex[0]+dofsVelocity_*numNodesVelocity_][dofsVelocity_ * j + d] +=value[0];
+				(*elementMatrix)[dofsVelocity_ * j + d][dofsVelocity_*numNodesVelocity_+rowIndex[0]] +=value[0];
             }
-        }
-		for (UN j=0; j < valueVec.size(); j++){
-			GO row;
-			if (FETypePressure_=="P0")
-			    row = GO (0);
-			else
-				row = GO (i);
-        	for (UN d=0; d<dofsVelocity_; d++) {
-				(*elementMatrix)[i+dofsVelocity_*numNodesVelocity_][dofsVelocity_ * j + d] =valueVec[d][dofsVelocity_ * j + d];
-				(*elementMatrix)[dofsVelocity_ * j + d][dofsVelocity_*numNodesVelocity_+i] =valueVec[d][dofsVelocity_ * j + d];
-			}
         }
     }
+	//elementMatrix->print();
     // We compute value twice, maybe we should change this
     /*for (UN i=0; i < dPhiTrans[0].size(); i++) {
 

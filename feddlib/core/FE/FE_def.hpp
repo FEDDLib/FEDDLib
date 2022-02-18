@@ -2135,10 +2135,12 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivTFast( int dim,
                     value[0] *= absDetB;
                     colIndex[0] = GO ( dim * mapping1->getGlobalElement( elements1->getElement(T).getNode(j) ) + d );
                     Bmat->insertGlobalValues( rowIndex[0], colIndex(), value() );
-                    BTmat->insertGlobalValues( colIndex[0], rowIndex(), value() );
+                    BTmat->insertGlobalValues( colIndex[0], rowIndex(), value() );	
+					
                 }
             }
-        }
+		}
+	    	
     }
     if (callFillComplete) {
         Bmat->fillComplete( map1, map2 );

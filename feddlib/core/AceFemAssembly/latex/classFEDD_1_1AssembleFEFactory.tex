@@ -1,0 +1,112 @@
+\hypertarget{classFEDD_1_1AssembleFEFactory}{}\section{F\+E\+DD\+:\+:Assemble\+F\+E\+Factory$<$ SC, LO, GO, NO $>$ Class Template Reference}
+\label{classFEDD_1_1AssembleFEFactory}\index{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory$<$ S\+C, L\+O, G\+O, N\+O $>$@{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory$<$ S\+C, L\+O, G\+O, N\+O $>$}}
+
+
+This class allows for constructing \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE} objects.  
+
+
+
+
+{\ttfamily \#include $<$Assemble\+F\+E\+\_\+decl.\+hpp$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$ \hyperlink{classFEDD_1_1AssembleFEFactory_a42c8b5387f23fea233cb2c9b2bfc379f}{Assemble\+F\+E\+\_\+\+Type}
+\item 
+typedef Teuchos\+::\+R\+CP$<$ \hyperlink{classFEDD_1_1AssembleFEFactory_a42c8b5387f23fea233cb2c9b2bfc379f}{Assemble\+F\+E\+\_\+\+Type} $>$ \hyperlink{classFEDD_1_1AssembleFEFactory_aa7e0143080c2d0fbe8df0d26c55d6b5c}{Assemble\+F\+E\+Ptr\+\_\+\+Type}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFEDD_1_1AssembleFEFactory_a29b1ce08865f9d32e7011e208a4cebb9}{Assemble\+F\+E\+Factory} ()
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\hyperlink{classFEDD_1_1AssembleFEFactory_aa7e0143080c2d0fbe8df0d26c55d6b5c}{Assemble\+F\+E\+Ptr\+\_\+\+Type} \hyperlink{classFEDD_1_1AssembleFEFactory_ac895d65acf2626100832586df84d6a9c}{build} (string problem\+Type, int flag, vec2\+D\+\_\+dbl\+\_\+\+Type nodes\+Ref\+Config, Parameter\+List\+Ptr\+\_\+\+Type params, tuple\+\_\+disk\+\_\+vec\+\_\+ptr\+\_\+\+Type tuple)
+\begin{DoxyCompactList}\small\item\em We only need this one function to build assemble\+FE, where we define the problem type and the \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE} object we extend to a specific problem. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$class SC, class LO, class GO, class NO$>$\newline
+class F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory$<$ S\+C, L\+O, G\+O, N\+O $>$}
+
+This class allows for constructing \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE} objects. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em SC} & The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.\+g., for using complex instead \\
+\hline
+{\em LO} & The local ordinal type. The is the index type for local indices \\
+\hline
+{\em GO} & The global ordinal type. The is the index type for global indices (this should actually by removed since the class should operate only on element level) \\
+\hline
+{\em NO} & The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.\\
+\hline
+\end{DoxyTemplParams}
+This class provides a function for constructing objects of classes derived from \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE}. In particular, an \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE} object is constructed as follows\+: 
+\begin{DoxyCode}
+AssembleFE assmeblyFe = \hyperlink{classFEDD_1_1AssembleFEFactory_ac895d65acf2626100832586df84d6a9c}{AssembleFEFactory<>::build}(\textcolor{stringliteral}{"problemType"},flag,
+      nodesRefConfig,params);
+\end{DoxyCode}
+ If a new element assembly is implemented, it has to be added to the \hyperlink{classFEDD_1_1AssembleFEFactory_ac895d65acf2626100832586df84d6a9c}{build()} function. Only then, this element assembly can be executed within the F\+E\+D\+D\+Lib. 
+
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classFEDD_1_1AssembleFEFactory_a42c8b5387f23fea233cb2c9b2bfc379f}\label{classFEDD_1_1AssembleFEFactory_a42c8b5387f23fea233cb2c9b2bfc379f}} 
+\index{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory@{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}!Assemble\+F\+E\+\_\+\+Type@{Assemble\+F\+E\+\_\+\+Type}}
+\index{Assemble\+F\+E\+\_\+\+Type@{Assemble\+F\+E\+\_\+\+Type}!F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory@{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}}
+\subsubsection{\texorpdfstring{Assemble\+F\+E\+\_\+\+Type}{AssembleFE\_Type}}
+{\footnotesize\ttfamily template$<$class SC, class LO, class GO, class NO$>$ \\
+typedef \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE}$<$\hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC},\hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO},\hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO},\hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO}$>$ \hyperlink{classFEDD_1_1AssembleFEFactory}{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1AssembleFEFactory_a42c8b5387f23fea233cb2c9b2bfc379f}{Assemble\+F\+E\+\_\+\+Type}}
+
+\mbox{\Hypertarget{classFEDD_1_1AssembleFEFactory_aa7e0143080c2d0fbe8df0d26c55d6b5c}\label{classFEDD_1_1AssembleFEFactory_aa7e0143080c2d0fbe8df0d26c55d6b5c}} 
+\index{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory@{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}!Assemble\+F\+E\+Ptr\+\_\+\+Type@{Assemble\+F\+E\+Ptr\+\_\+\+Type}}
+\index{Assemble\+F\+E\+Ptr\+\_\+\+Type@{Assemble\+F\+E\+Ptr\+\_\+\+Type}!F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory@{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}}
+\subsubsection{\texorpdfstring{Assemble\+F\+E\+Ptr\+\_\+\+Type}{AssembleFEPtr\_Type}}
+{\footnotesize\ttfamily template$<$class SC, class LO, class GO, class NO$>$ \\
+typedef Teuchos\+::\+R\+CP$<$\hyperlink{classFEDD_1_1AssembleFEFactory_a42c8b5387f23fea233cb2c9b2bfc379f}{Assemble\+F\+E\+\_\+\+Type}$>$ \hyperlink{classFEDD_1_1AssembleFEFactory}{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1AssembleFEFactory_aa7e0143080c2d0fbe8df0d26c55d6b5c}{Assemble\+F\+E\+Ptr\+\_\+\+Type}}
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classFEDD_1_1AssembleFEFactory_a29b1ce08865f9d32e7011e208a4cebb9}\label{classFEDD_1_1AssembleFEFactory_a29b1ce08865f9d32e7011e208a4cebb9}} 
+\index{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory@{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}!Assemble\+F\+E\+Factory@{Assemble\+F\+E\+Factory}}
+\index{Assemble\+F\+E\+Factory@{Assemble\+F\+E\+Factory}!F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory@{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}}
+\subsubsection{\texorpdfstring{Assemble\+F\+E\+Factory()}{AssembleFEFactory()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+\hyperlink{classFEDD_1_1AssembleFEFactory}{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1AssembleFEFactory}{Assemble\+F\+E\+Factory} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Constructor. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classFEDD_1_1AssembleFEFactory_ac895d65acf2626100832586df84d6a9c}\label{classFEDD_1_1AssembleFEFactory_ac895d65acf2626100832586df84d6a9c}} 
+\index{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory@{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}!build@{build}}
+\index{build@{build}!F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory@{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}}
+\subsubsection{\texorpdfstring{build()}{build()}}
+{\footnotesize\ttfamily template$<$class SC , class LO , class GO , class NO $>$ \\
+\hyperlink{classFEDD_1_1AssembleFEFactory}{Assemble\+F\+E\+Factory}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::\hyperlink{classFEDD_1_1AssembleFEFactory_aa7e0143080c2d0fbe8df0d26c55d6b5c}{Assemble\+F\+E\+Ptr\+\_\+\+Type} \hyperlink{classFEDD_1_1AssembleFEFactory}{F\+E\+D\+D\+::\+Assemble\+F\+E\+Factory}$<$ \hyperlink{fe__test__laplace_8cpp_a79c7e86a57edbb2a5a53242bcd04e41e}{SC}, \hyperlink{fe__test__laplace_8cpp_ad6a38c9f07d3fd633eefca5bccad8410}{LO}, \hyperlink{fe__test__laplace_8cpp_afa2946b509009b4f45eb04bd8c5b27d9}{GO}, \hyperlink{fe__test__laplace_8cpp_a5e24f37b28787429872b6ecb1d0417ce}{NO} $>$\+::build (\begin{DoxyParamCaption}\item[{string}]{problem\+Type,  }\item[{int}]{flag,  }\item[{vec2\+D\+\_\+dbl\+\_\+\+Type}]{nodes\+Ref\+Config,  }\item[{Parameter\+List\+Ptr\+\_\+\+Type}]{params,  }\item[{tuple\+\_\+disk\+\_\+vec\+\_\+ptr\+\_\+\+Type}]{tuple }\end{DoxyParamCaption})}
+
+
+
+We only need this one function to build assemble\+FE, where we define the problem type and the \hyperlink{classFEDD_1_1AssembleFE}{Assemble\+FE} object we extend to a specific problem. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em problem\+Type} & Type of specfic problem we focus on \\
+\hline
+\mbox{\tt in}  & {\em flag} & Flag of element \\
+\hline
+\mbox{\tt in}  & {\em nodes\+Ref\+Config} & Nodes of element in reference configuration \\
+\hline
+\mbox{\tt in}  & {\em params} & Parameterlist for current problem \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{AssembleFE__decl_8hpp}{Assemble\+F\+E\+\_\+decl.\+hpp}\item 
+\hyperlink{AssembleFEFactory__decl_8hpp}{Assemble\+F\+E\+Factory\+\_\+decl.\+hpp}\item 
+\hyperlink{AssembleFEFactory__def_8hpp}{Assemble\+F\+E\+Factory\+\_\+def.\+hpp}\end{DoxyCompactItemize}

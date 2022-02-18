@@ -124,6 +124,8 @@ void FE_Test<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
 
+
+
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemNavierStokes.xml");
 	
     UN FElocVel = checkFE(dim,FETypeVelocity); // Checks for different domains which belongs to a certain fetype
@@ -139,14 +141,19 @@ void FE_Test<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 	MapConstPtr_Type mapPres = domainVec_.at(FElocPres)->getMapRepeated();
 
+
 	vec_dbl_Type solution;
 
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int dofs;
+	int numVelo=6;
+	if(dim==3){
+		numVelo=10;
+	}
 	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
-	tuple_ssii_Type vel ("Velocity","P2",dofsVelocity,6);
-	tuple_ssii_Type pres ("Pressure","P1",dofsPressure,3);
+	tuple_ssii_Type vel ("Velocity","P2",dofsVelocity,numVelo);
+	tuple_ssii_Type pres ("Pressure","P1",dofsPressure,dim+1);
 	problemDisk->push_back(vel);
 	problemDisk->push_back(pres);
 
@@ -170,11 +177,17 @@ void FE_Test<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 		SmallMatrixPtr_Type elementMatrix = assemblyFEElements_[T]->getJacobian(); 
 
 		addFeBlockMatrix(A, elementMatrix, elements->getElement(T), mapVel, mapPres, problemDisk);
+		/*if(T ==0){
+			//elementMatrix->print();
+			A->getBlock(0,1)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
+			A->getBlock(0,1)->print();
+			A->getBlock(0,1)->resumeFill();
+		}	*/	
 	}
 	if (callFillComplete){
 	    A->getBlock(0,0)->fillComplete();
-	    A->getBlock(1,0)->fillComplete();
-	    A->getBlock(0,1)->fillComplete();
+	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
+	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocPres)->getMapUnique(),domainVec_.at(FElocVel)->getMapVecFieldUnique());
 	    A->getBlock(1,1)->fillComplete();
 	}
 
@@ -224,34 +237,25 @@ void FE_Test<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixP
             }
 		}
 
-		Teuchos::Array<SC> value2( numNodes2, 0. );
-        Teuchos::Array<GO> columnIndices2( numNodes2, 0 );
+		Teuchos::Array<SC> value2( 1, 0. );
+        Teuchos::Array<GO> columnIndex( 1, 0. );
+        Teuchos::Array<GO> rowIndex( 1, 0. );
 
-		int offset= numNodes1;
+		int offset= numNodes1*dofs1;
 		//Teuchos::ArrayView<const LO> indices;
 		//Teuchos::ArrayView<const SC> values;
 
-		for (UN i=0; i < numNodes2 ; i++) {
-			for(int d=0; d<dofs2; d++){
-				for (UN j=0; j < columnIndices2.size(); j++){
-                    columnIndices2[j] = GO ( dofs2 * mapSecondRow->getGlobalElement( element.getNode(j) ) + d );
-					value2[j] = (*elementMatrix)[i][offset+dofs2*j+d];			    				    
+		for (UN j=0; j < numNodes2; j++){
+            rowIndex[0] = GO ( mapSecondRow->getGlobalElement( element.getNode(j) ) );
+			for (UN i=0; i < numNodes1 ; i++) {
+				for(int d=0; d<dofs1; d++){				
+					value2[0] = (*elementMatrix)[i*dofs1+d][offset+j];			    				    		
+					columnIndex[0] =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+d);
+					//cout << " Row "<< columnIndex[0] << " Column " << rowIndex[0] << " value " << value2[0] << endl;
+			  		A->getBlock(1,0)->insertGlobalValues( rowIndex[0], columnIndex(), value2() ); // Automatically adds entries if a value already exists   
+			  		A->getBlock(0,1)->insertGlobalValues( columnIndex[0], rowIndex(), value2() ); // Automatically adds entries if a value already exists        
 				}
-
-				GO row =GO (dofs2* mapFirstRow->getGlobalElement( element.getNode(i) )+d);
-		  		A->getBlock(0,1)->insertGlobalValues( row, columnIndices2(), value2() ); // Automatically adds entries if a value already exists           
-            }
-		}
-		for (UN i=0; i < numNodes2 ; i++) {
-			for(int d=0; d<dofs2; d++){
-				for (UN j=0; j < columnIndices2.size(); j++){
-                    columnIndices2[j] = GO ( dofs2 * mapFirstRow->getGlobalElement( element.getNode(j) ) + d );
-					value2[j] = (*elementMatrix)[offset+i][dofs2*j+d];			    				    
-				}
-
-				GO row =GO (dofs2* mapSecondRow->getGlobalElement( element.getNode(i) )+d);
-		  		A->getBlock(1,0)->insertGlobalValues( row, columnIndices2(), value2() ); // Automatically adds entries if a value already exists           
-            }
+			}      
 		}
 }
 /*!

@@ -1,3 +1,12 @@
+#ifndef MAIN_TIMER_START
+#define MAIN_TIMER_START(A,S) Teuchos::RCP<Teuchos::TimeMonitor> A = Teuchos::rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer(std::string("Main") + std::string(S))));
+#endif
+
+#ifndef MAIN_TIMER_STOP
+#define MAIN_TIMER_STOP(A) A.reset();
+#endif
+
+
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 
@@ -52,12 +61,23 @@ int main(int argc, char *argv[]) {
     Teuchos::CommandLineProcessor myCLP;
     string ulib_str = "Tpetra";
     myCLP.setOption("ulib",&ulib_str,"Underlying lib");
-    int dim = 2;
-    myCLP.setOption("dim",&dim,"dim");
-    int m = 2;
-    myCLP.setOption("m",&m,"H/h");
+
+    //myCLP.setOption("dim",&dim,"dim");
+    //int m = 2;
+    //myCLP.setOption("m",&m,"H/h");
     
-    string filename = "square.mesh";
+    // Mesh
+	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemNavierStokes.xml");
+    string filename = params->sublist("Parameter").get("Mesh Name","square.mesh");
+    std::string FETypeV=params->sublist("Parameter").get("DiscretizationV","P1");
+    std::string FETypeP=params->sublist("Parameter").get("DiscretizationP","P1");
+    int dofsV =params->sublist("Parameter").get("DofsV",2);
+    int dofsP =params->sublist("Parameter").get("DofsP",1);
+    int dim = params->sublist("Parameter").get("Dimension",3);
+    int numProcsCoarseSolve = 0;
+    int n;
+    int size = comm->getSize();
+
 
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
@@ -68,14 +88,6 @@ int main(int argc, char *argv[]) {
     }
     
 
-    // Mesh
-	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemLaplace.xml");
-    std::string FEType=params->sublist("Parameter").get("Discretization1","P1");
-    int dofsV =params->sublist("Parameter").get("DofsV",2);
-    int dofsP =params->sublist("Parameter").get("DofsP",1);
-    int numProcsCoarseSolve = 0;
-    int n;
-    int size = comm->getSize();
 
 	DomainPtr_Type domainP1;
     DomainPtr_Type domainP2;
@@ -93,7 +105,7 @@ int main(int argc, char *argv[]) {
     
     partitionerP1.readAndPartition();
 
-    if (FEType == "P2") {
+    if (FETypeV == "P2") {
         domainP2->buildP2ofP1Domain( domainP1 );
         domain = domainP2;
     }
@@ -110,11 +122,13 @@ int main(int argc, char *argv[]) {
 	u_rep->putScalar(1);
 
 	// Checking first Block:
+
+	MAIN_TIMER_START(FE," FE:   Assemble System");
 	BlockMatrixPtr_Type systemFE= Teuchos::rcp(new BlockMatrix_Type(2 ) );  
 	MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type(domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() ) );  
 
-	MatrixPtr_Type A = Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), 30  ) );
-    fe.assemblyLaplaceVecField(dim, FEType, 2, A, true/*call fillComplete*/);
+	MatrixPtr_Type A = Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
+    fe.assemblyLaplaceVecField(dim, FETypeV, 2, A, true/*call fillComplete*/);
 
 	MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type(domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() ) );      
     fe.assemblyAdvectionVecField( dim,"P2", N, u_rep, true );
@@ -137,34 +151,41 @@ int main(int argc, char *argv[]) {
 	ANW->fillComplete(domain->getMapVecFieldUnique(), domain->getMapVecFieldUnique());
 
 	systemFE->addBlock(ANW,0,0);
-	MatrixPtr_Type BT= Teuchos::rcp(new Matrix_Type(domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
+	MatrixPtr_Type BT= Teuchos::rcp(new Matrix_Type(domain->getMapVecFieldUnique(), domainP1->getDimension() * domainP1->getApproxEntriesPerRow() )  );
     MatrixPtr_Type B= Teuchos::rcp(new Matrix_Type(domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 
     fe.assemblyDivAndDivTFast(dim, "P2", "P1", 2, B, BT, domain->getMapVecFieldUnique(), domainP1->getMapUnique(), true );
+	//B->print();
+	MAIN_TIMER_STOP(FE);	
+	cout << " Done for FE " << endl;
 	// ANW is first block 
 	// --------------------------------------------------------------
-    
+	MAIN_TIMER_START(FE_test," FE_test: Assemble System");
  	FE_Test<SC,LO,GO,NO> fe_test;
     fe_test.addFE(domain);
     fe_test.addFE(domainP1);
     BlockMatrixPtr_Type systemFETest= Teuchos::rcp(new BlockMatrix_Type(2 ) );  
 
-    MatrixPtr_Type A_test= Teuchos::rcp(new Matrix_Type(domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
-    MatrixPtr_Type B_test= Teuchos::rcp(new Matrix_Type(domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
-    MatrixPtr_Type BT_test= Teuchos::rcp(new Matrix_Type(domainP1->getMapUnique(), domainP1->getDimension() * domainP1->getApproxEntriesPerRow() )  );
+  	MatrixPtr_Type A_test= Teuchos::rcp(new Matrix_Type(domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
+    MatrixPtr_Type BT_test= Teuchos::rcp(new Matrix_Type(domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
+    MatrixPtr_Type B_test= Teuchos::rcp(new Matrix_Type(domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 	MatrixPtr_Type dummy = Teuchos::rcp( new Matrix_Type( domainP1->getMapUnique(), 1 ) );
-        
-        
+       
+	
 	systemFETest->addBlock(A_test,0,0);
-	systemFETest->addBlock(B_test,0,1);
-	systemFETest->addBlock(BT_test,1,0);
+	systemFETest->addBlock(BT_test,0,1);
+	systemFETest->addBlock(B_test,1,0);
 	systemFETest->addBlock(dummy,1,1);
+
     {
-        fe_test.assemblyNavierStokes(dim, "P2","P1", 2,dofsV,dofsP,u_rep,systemFETest, true/*call fillComplete*/);
+        fe_test.assemblyNavierStokes(dim, FETypeV, FETypeP, 2,dofsV,dofsP,u_rep,systemFETest, true/*call fillComplete*/);
     }
-   
+	//B_test->print();
+	cout << " Done for FE Test" << endl;
+	MAIN_TIMER_STOP(FE_test);	
+	Teuchos::TimeMonitor::report(cout,"Main");
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
-	ANW->addMatrix(-1, Sum, 1);
+	ANW->addMatrix(1, Sum, 1);
 	A_test->addMatrix(1, Sum, -1);
 
 
@@ -191,17 +212,15 @@ int main(int argc, char *argv[]) {
 		cout << " Norm of Difference between Block A: " << res << endl;
 	
 
-	MatrixPtr_Type Sum2= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
-	BT->addMatrix(-1, Sum2, 1);
+	MatrixPtr_Type Sum2= Teuchos::rcp(new Matrix_Type( domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
+	B->addMatrix(1, Sum2, 1);
 	B_test->addMatrix(1, Sum2, -1);
 
 
 	res=0.;
-
-
-	for (UN i=0; i < domain->getMapUnique()->getMaxLocalIndex()+1 ; i++) {
-		for(int d=0; d< dofsV ; d++){
-			GO row = dofsV*domain->getMapUnique()->getGlobalElement( i )+d;
+	for (UN i=0; i < domainP1->getMapUnique()->getMaxLocalIndex()+1 ; i++) {
+		for(int d=0; d< dofsP ; d++){
+			GO row = dofsP*domainP1->getMapUnique()->getGlobalElement( i )+d;
 			Sum2->getGlobalRowView(row, indices,values);
 			
 			for(int j=0; j< values.size() ; j++){
@@ -211,9 +230,12 @@ int main(int argc, char *argv[]) {
 	}
 	res = fabs(res);
 	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
-
+	//Sum2->fillComplete();
+	//Sum2->print();
 	if(comm->getRank() == 0)
 		cout << " Norm of Difference between Block B: " << res << endl;
+
+
 
     return(EXIT_SUCCESS);
 }
