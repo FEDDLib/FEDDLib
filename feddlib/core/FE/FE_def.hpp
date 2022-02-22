@@ -118,6 +118,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 	                                    BlockMatrixPtr_Type &A,
  										ParameterListPtr_Type params,
  										bool reAssemble,
+ 										string assembleMode,
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
 	
@@ -162,12 +163,17 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 		solution = getSolution(elements->getElement(T).getVectorNodeList(), u_rep,dofsVelocity);
 
 		assemblyFEElements_[T]->updateSolution(solution);
-
-		assemblyFEElements_[T]->assembleJacobian();
-
-		assemblyFEElements_[T]->advanceNewtonStep();
-
-		SmallMatrixPtr_Type elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+ 
+ 		SmallMatrixPtr_Type elementMatrix;
+		if(assembleMode == "Jacobian"){
+			assemblyFEElements_[T]->assembleJacobian();
+		    elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+			assemblyFEElements_[T]->advanceNewtonStep();
+		}
+		if(assembleMode == "Rhs"){
+		    assemblyFEElements_[T]->assembleRHS();
+		    elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+		}
 
 		if(reAssemble)
 			addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
@@ -181,7 +187,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 		}	*/	
 	}
 	if (callFillComplete && reAssemble)
-	    A->getBlock(0,0)->fillComplete();
+	    A->getBlock(0,0)->fillComplete( domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocVel)->getMapVecFieldUnique());
 	else{
 		A->getBlock(0,0)->fillComplete();
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
@@ -2191,9 +2197,6 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionInUVecField(int dim,
                 }
 
                 GO row = GO ( dim * map->getGlobalElement( elements->getElement(T).getNode(i) ) + d1 );
-
-
-
                 A->insertGlobalValues( row, indices(), value() );
             }
         }

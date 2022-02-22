@@ -386,6 +386,7 @@ class FE {
 								BlockMatrixPtr_Type &A,
 								ParameterListPtr_Type params,
 								bool reAssemble,
+							    string assembleMode,
 								bool callFillComplete = true,
 								int FELocExternal=-1);
 

@@ -21,8 +21,16 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNavierStokesAssFE
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAssFE
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
+	SOURCE_FILES dfg_fsi_fluid_h002.mesh
+	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+	DEST_FILES dfg_fsi_fluid_h002.mesh
+	EXEDEPS steadyNavierStokesAssFE
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAssFE2
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
 	SOURCE_FILES square.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
 	DEST_FILES square.mesh
-	EXEDEPS steadyNavierStokesAssFE
+	EXEDEPS steadyNavierStokesAssFE2
 )

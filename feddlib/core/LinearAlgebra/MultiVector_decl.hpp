@@ -122,6 +122,8 @@ public:
 
     void dot(MultiVectorConstPtr_Type a, const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &dots) const;
 
+	// Calculate absolute value of Multivector
+	void abs(MultiVectorConstPtr_Type a);
     //this = alpha*A + beta*this
     void update( const SC& alpha, const MultiVector_Type& A, const SC& beta );
 

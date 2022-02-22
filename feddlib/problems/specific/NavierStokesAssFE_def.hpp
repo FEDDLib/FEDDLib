@@ -159,17 +159,15 @@ void NavierStokesAssFE<SC,LO,GO,NO>::assembleConstantMatrices() const{
 	this->system_->addBlock(B,1,0);
 	this->system_->addBlock(C,1,1);
 
-	this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_,false, true/*call fillComplete*/);
+	this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_,false,"Jacobian", true/*call fillComplete*/);
 
 	//A_->print();
 
     A_ = this->system_->getBlock(0,0);
 	B = this->system_->getBlock(1,0);
 	BT = this->system_->getBlock(0,1);
-
- 	//A_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     
-    
+    this->system_->addBlock( A_, 0, 0 );
     //this->feFactory_->assemblyLaplaceVecField(this->dim_, this->domain_FEType_vec_.at(0), 2, A_, true);
 	//A_->print();    
 
@@ -180,8 +178,8 @@ void NavierStokesAssFE<SC,LO,GO,NO>::assembleConstantMatrices() const{
     B->resumeFill();
     BT->resumeFill();
     
-    B->scale(-1.);
-    BT->scale(-1.);
+    //B->scale(-1.);
+    //BT->scale(-1.);
     
     B->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), pressureMap );
     BT->fillComplete( pressureMap, this->getDomain(0)->getMapVecFieldUnique() );
@@ -253,23 +251,21 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
     
     MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-       MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-       u_rep_->importFromVector(u, true);
-    if (type=="FixedPoint") {
-         this->system_->addBlock(ANW,0,0);
-		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true, true/*call fillComplete*/);
-		ANW= this->system_->getBlock(0,0);	
-		ANW->resumeFill();
 
-    }
-    else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
+  	MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+        u_rep_->importFromVector(u, true);
+   if (type=="Rhs") {
+   
+
+   		this->system_->addBlock(ANW,0,0);
+		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true, "Rhs",  true);
+
+   }
+	else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
         this->system_->addBlock(ANW,0,0);
-		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true, true/*call fillComplete*/);
-		ANW= this->system_->getBlock(0,0);	
-		ANW->resumeFill();
-		
+		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true,"Jacobian", true);		
     }
-    ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
+	
     
     this->system_->addBlock( ANW, 0, 0 );
     
@@ -277,50 +273,36 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         std::cout << "done -- " << std::endl;
 }
 
+
 template<class SC,class LO,class GO,class NO>
-void NavierStokesAssFE<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions){
-
-    if (this->verbose_)
-        std::cout << "-- Reassembly Navier-Stokes (Extrapolation) ... " << std::flush;
-
+void NavierStokesAssFE<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
     
-    double density = this->parameterList_->sublist("Parameter").get("Density",1.);
+    this->reAssemble("Rhs");
 
-    if (previousSolutions.size()>=2) {
-
-        MultiVectorPtr_Type extrapolatedVector = Teuchos::rcp( new MultiVector_Type( previousSolutions[0]->getBlock(0) ) );
-
-        extrapolatedVector->update( -1., *previousSolutions[1]->getBlock(0), 2. );
-
-        u_rep_->importFromVector(extrapolatedVector, true);
-    }
-    else if(previousSolutions.size()==1){
-        MultiVectorConstPtr_Type u = previousSolutions[0]->getBlock(0);
-        u_rep_->importFromVector(u, true);
-    }
-    else if (previousSolutions.size()==0){
-        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);
-    }
-
-    MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-
-    MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-    this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, u_rep_, true );
-
-    N->resumeFill();
-    N->scale(density);
-    N->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
-
-    A_->addMatrix(1.,ANW,0.);
-    N->addMatrix(1.,ANW,1.);
-
-    ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
-
-    this->system_->addBlock( ANW, 0, 0 );
+    // We need to account for different parameters of time discretizations here
+    // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
+    if (this->coeff_.size() == 0)
+        this->system_->apply( *this->solution_, *this->residualVec_ );
+    else
+        this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
     
-    if (this->verbose_)
-        std::cout << "done -- " << std::endl;
+
+    if (!type.compare("standard")){
+        this->residualVec_->update(-1.,*this->rhs_,1.);
+//        if ( !this->sourceTerm_.is_null() )
+//            this->residualVec_->update(-1.,*this->sourceTerm_,1.);
+        // this might be set again by the TimeProblem after addition of M*u
+        this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
+        
+    }
+    else if(!type.compare("reverse")){
+        this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
+//        if ( !this->sourceTerm_.is_null() )
+//            this->residualVec_->update(1.,*this->sourceTerm_,1.);
+        // this might be set again by the TimeProblem after addition of M*u
+        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
+        
+    }
 }
 
 
@@ -575,37 +557,6 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvalua
 #endif
 
 template<class SC,class LO,class GO,class NO>
-void NavierStokesAssFE<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
-    
-    this->reAssemble("FixedPoint");
-
-    // We need to account for different parameters of time discretizations here
-    // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
-    if (this->coeff_.size() == 0)
-        this->system_->apply( *this->solution_, *this->residualVec_ );
-    else
-        this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
-    
-
-    if (!type.compare("standard")){
-        this->residualVec_->update(-1.,*this->rhs_,1.);
-//        if ( !this->sourceTerm_.is_null() )
-//            this->residualVec_->update(-1.,*this->sourceTerm_,1.);
-        // this might be set again by the TimeProblem after addition of M*u
-        this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
-        
-    }
-    else if(!type.compare("reverse")){
-        this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
-//        if ( !this->sourceTerm_.is_null() )
-//            this->residualVec_->update(1.,*this->sourceTerm_,1.);
-        // this might be set again by the TimeProblem after addition of M*u
-        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-        
-    }
-}
-
-template<class SC,class LO,class GO,class NO>
 void NavierStokesAssFE<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std::string type, double time, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const{
 
 
@@ -747,6 +698,51 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssembleFSI(std::string type, MultiVector
 }*/
 
 
+template<class SC,class LO,class GO,class NO>
+void NavierStokesAssFE<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions){
+
+    if (this->verbose_)
+        std::cout << "-- Reassembly Navier-Stokes (Extrapolation) ... " << std::flush;
+
+    
+    double density = this->parameterList_->sublist("Parameter").get("Density",1.);
+
+    if (previousSolutions.size()>=2) {
+
+        MultiVectorPtr_Type extrapolatedVector = Teuchos::rcp( new MultiVector_Type( previousSolutions[0]->getBlock(0) ) );
+
+        extrapolatedVector->update( -1., *previousSolutions[1]->getBlock(0), 2. );
+
+        u_rep_->importFromVector(extrapolatedVector, true);
+    }
+    else if(previousSolutions.size()==1){
+        MultiVectorConstPtr_Type u = previousSolutions[0]->getBlock(0);
+        u_rep_->importFromVector(u, true);
+    }
+    else if (previousSolutions.size()==0){
+        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+        u_rep_->importFromVector(u, true);
+    }
+
+    MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+
+    MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, u_rep_, true );
+
+    N->resumeFill();
+    N->scale(density);
+    N->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
+
+    A_->addMatrix(1.,ANW,0.);
+    N->addMatrix(1.,ANW,1.);
+
+    ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
+
+    this->system_->addBlock( ANW, 0, 0 );
+    
+    if (this->verbose_)
+        std::cout << "done -- " << std::endl;
+}
 
 }
 

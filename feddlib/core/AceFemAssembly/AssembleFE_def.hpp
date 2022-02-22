@@ -74,7 +74,7 @@ void AssembleFE<SC,LO,GO,NO>::advanceInTime( double dt){
 
 template <class SC, class LO, class GO, class NO>
 void AssembleFE<SC,LO,GO,NO>::advanceNewtonStep(){
-	newtonStep_ = newtonStep_ ;
+	newtonStep_ = newtonStep_+1 ;
 
 };
 

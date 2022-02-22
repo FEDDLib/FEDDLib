@@ -24,7 +24,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="square.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h002.mesh"/>
     </ParameterList>
     <ParameterList name="Exporter">
         

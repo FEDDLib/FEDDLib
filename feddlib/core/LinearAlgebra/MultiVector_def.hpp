@@ -203,6 +203,12 @@ void MultiVector<SC,LO,GO,NO>::normInf(const Teuchos::ArrayView< typename Teucho
 }
 
 template <class SC, class LO, class GO, class NO>
+void MultiVector<SC,LO,GO,NO>::abs(MultiVectorConstPtr_Type a) {
+    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in abs is null.");
+    multiVector_->abs( *a->getXpetraMultiVector());
+}
+
+template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::dot(MultiVectorConstPtr_Type a, const Teuchos::ArrayView< typename Teuchos::ScalarTraits<SC>::magnitudeType> &dots) const {
     TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in dot is null.");
     multiVector_->dot( *a->getXpetraMultiVector(), dots );

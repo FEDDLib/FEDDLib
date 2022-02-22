@@ -134,6 +134,9 @@ int main(int argc, char *argv[]) {
     typedef MeshPartitioner<SC,LO,GO,NO> MeshPartitioner_Type;
     typedef Teuchos::RCP<Domain<SC,LO,GO,NO> > DomainPtr_Type;
 
+    typedef Matrix<SC,LO,GO,NO> Matrix_Type;
+    typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
+
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
@@ -244,21 +247,23 @@ int main(int argc, char *argv[]) {
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
 
-           parameter_vec.push_back(1.);//height of inflow region
+           parameter_vec.push_back(0.41);//height of inflow region
            
             if (dim==2){
                 bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
-                bcFactory->addBC(inflowParabolic2D, 4, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+                bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 //                       bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
 //                        bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
-                bcFactory->addBC(zeroDirichlet2D, 3, 0, domainVelocity, "Dirichlet", dim);
+                //bcFactory->addBC(zeroDirichlet2D, 3, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(zeroDirichlet2D, 5, 0, domainVelocity, "Dirichlet", dim);
             }
             else if (dim==3){
                 bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
                 bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 //                        bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
 //                        bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
-                bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(zeroDirichlet3D, 2, 0, domainVelocity, "Dirichlet", dim);
                 
             }
 			// ---------------------
@@ -302,9 +307,8 @@ int main(int argc, char *argv[]) {
             }
  
 			Teuchos::TimeMonitor::report(cout,"Main");	
-
-
-            Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());
+       
+			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());
             Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaPressure(new ExporterParaView<SC,LO,GO,NO>());
 
             Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = navierStokes.getSolution()->getBlock(0);
@@ -313,6 +317,9 @@ int main(int argc, char *argv[]) {
             Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionVAssFE = navierStokesAssFE.getSolution()->getBlock(0);
             Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionPAssFE = navierStokesAssFE.getSolution()->getBlock(1);
 
+
+
+
 			// Calculating the error per node
 			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValues = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( navierStokes.getSolution()->getBlock(0)->getMap() ) ); 
 			//this = alpha*A + beta*B + gamma*this
@@ -320,12 +327,41 @@ int main(int argc, char *argv[]) {
 
 			// Taking abs norm
 			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > errorValuesAbs = errorValues;
+
+			errorValues->abs(errorValuesAbs);
+
  			Teuchos::Array<SC> norm(1); 
     		errorValues->norm2(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
 			double res = norm[0];
-
+			reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 			if(comm->getRank() ==0)
 				cout << " 2 Norm of solutions " << res << endl;
+
+
+			MatrixPtr_Type Sum2= Teuchos::rcp(new Matrix_Type( domainVelocity->getMapVecFieldUnique(), domainVelocity->getDimension() * domainVelocity->getApproxEntriesPerRow() )  );
+			navierStokes.getSystem()->getBlock(0,0)->addMatrix(1, Sum2, 1);
+			navierStokesAssFE.getSystem()->getBlock(0,0)->addMatrix(-1, Sum2, 1);
+
+			Teuchos::ArrayView<const GO> indices;
+			Teuchos::ArrayView<const SC> values;
+			res=0.;
+			for (UN i=0; i < domainVelocity->getMapUnique()->getMaxLocalIndex()+1 ; i++) {
+				for(int d=0; d< dim ; d++){
+					GO row = dim*domainVelocity->getMapUnique()->getGlobalElement( i )+d;
+					Sum2->getGlobalRowView(row, indices,values);
+					
+					for(int j=0; j< values.size() ; j++){
+						res += fabs(values[j]);			
+					}	
+				}	
+			}
+			res = fabs(res);
+			reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
+           
+			if(comm->getRank() == 0)
+				cout << " Norm of Difference between Block A: " << res << endl;
+
+  			
 
             DomainPtr_Type dom = domainVelocity;
 
@@ -344,7 +380,11 @@ int main(int argc, char *argv[]) {
 
 
             exParaVelocity->save(0.0);
-            exParaPressure->save(0.0);            
+            exParaPressure->save(0.0); 
+
+
+
+			
             
         }
     }
