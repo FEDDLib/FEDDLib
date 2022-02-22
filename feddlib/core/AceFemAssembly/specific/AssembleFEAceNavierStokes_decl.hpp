@@ -110,6 +110,10 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	vec_dbl_Type solutionPressure_;
 
 	SmallMatrixPtr_Type constantMatrix_;
+
+	double viscosity_ ;
+   	 double density_ ;
+
 	
  };
 

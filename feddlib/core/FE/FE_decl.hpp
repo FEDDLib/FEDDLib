@@ -7,8 +7,11 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
+#include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "Domain.hpp"
 #include "sms.hpp"
+#include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
+#include "feddlib/core/AceFemAssembly/AssembleFEFactory.hpp"
 
 #include <Teuchos_Array.hpp>
 #include <Teuchos_BLAS.hpp>
@@ -73,6 +76,16 @@ class FE {
 
     typedef boost::function<void(double* x, double* res, double t, const double* parameters)> BC_func_Type;
     
+	typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
+    typedef Teuchos::RCP<AssembleFE_Type> AssembleFEPtr_Type;
+    typedef std::vector<AssembleFEPtr_Type> AssembleFEPtr_vec_Type;	
+
+    typedef BlockMatrix<SC,LO,GO,NO> BlockMatrix_Type ;
+    typedef Teuchos::RCP<BlockMatrix_Type> BlockMatrixPtr_Type;
+
+	typedef SmallMatrix<SC> SmallMatrix_Type;
+    typedef Teuchos::RCP<SmallMatrix_Type> SmallMatrixPtr_Type;
+
     DomainConstPtr_vec_Type	domainVec_;
     Teuchos::RCP<ElementSpec> es_;
 
@@ -363,8 +376,33 @@ class FE {
 
     void epsilonTensor(vec_dbl_Type &basisValues, SmallMatrix<SC> &epsilonValues, int activeDof);
 
+    void assemblyNavierStokes(int dim,
+								string FETypeVelocity,
+								string FETypePressure,
+								int degree,
+								int dofsVelocity,
+								int dofsPressure,
+								MultiVectorPtr_Type u_rep,
+								BlockMatrixPtr_Type &A,
+								ParameterListPtr_Type params,
+								bool reAssemble,
+								bool callFillComplete = true,
+								int FELocExternal=-1);
+
 /* ----------------------------------------------------------------------------------------*/
 private:
+	void addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstColumn,MapConstPtr_Type mapSecondColumn, tuple_disk_vec_ptr_Type problemDisk);
+
+	void addFeBlock(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstRow, int row, int column, tuple_disk_vec_ptr_Type problemDisk);
+
+			
+	void initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep);
+
+	AssembleFEPtr_vec_Type assemblyFEElements_;
+
+	vec2D_dbl_Type getCoordinates(vec_LO_Type localIDs, vec2D_dbl_ptr_Type points);
+	vec_dbl_Type getSolution(vec_LO_Type localIDs, MultiVectorPtr_Type u_rep, int dofsVelocity);
+
     //Start of AceGen code
     /*! AceGen code for 3D Neo-Hooke material model
     @param[out] v: values needed for the computaion of F, not needed after computation

@@ -37,9 +37,13 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 	dofsElementVelocity_ = dofsVelocity_*numNodesVelocity_;
 	dofsElementPressure_  = dofsPressure_*numNodesPressure_;	
 
-	this->solution_ = vec_dbl_Type(dofsElementVelocity_); //dofsElementPressure_+
+	//this->solution_ = vec_dbl_Type(dofsElementVelocity_); //dofsElementPressure_+
 	this->solutionVelocity_ = vec_dbl_Type(dofsElementVelocity_);
 	this->solutionPressure_ = vec_dbl_Type(dofsElementPressure_);
+
+ 	viscosity_ = this->params_->sublist("Parameter").get("Viscosity",1.);
+    density_ = this->params_->sublist("Parameter").get("Density",1.);
+
 }
 
 
@@ -48,16 +52,26 @@ template <class SC, class LO, class GO, class NO>
 void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleJacobian() {
 
 	SmallMatrixPtr_Type elementMatrixA =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+	SmallMatrixPtr_Type elementMatrixB =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 
 	if(this->newtonStep_ ==0){
 		assemblyLaplacian(elementMatrixA);
-		assemblyDivAndDivT(elementMatrixA);
-		constantMatrix_ = elementMatrixA;
+		elementMatrixA->scale(viscosity_);
+		elementMatrixA->scale(density_);
+
+		constantMatrix_= elementMatrixA;
+
+		assemblyDivAndDivT(elementMatrixB);
+
+		constantMatrix_->add( (*elementMatrixB),(*constantMatrix_));
 	}
 
 	assemblyAdvection(elementMatrix);
+
 	assemblyAdvectionInU(elementMatrix);
+
+	elementMatrix->scale(density_);
 
 	elementMatrix->add((*constantMatrix_),(*elementMatrix));
 
@@ -100,7 +114,9 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Ty
                 }
             }
             value[j] *= absDetB;
-			
+			 /*if (std::fabs(value[j]) < pow(10,-14)) {
+		            value[j] = 0.;
+		        }*/
 			for (UN d=0; d<dofs; d++) {
               (*elementMatrix)[i*dofs +d][j*dofs+d] = value[j];
             }
@@ -150,13 +166,12 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Ty
     vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
     applyBTinv( dPhi, dPhiTrans, Binv );
 
-
     for (int w=0; w<phi->size(); w++){ //quads points
         for (int d=0; d<dim; d++) {
             uLoc[d][w] = 0.;
             for (int i=0; i < phi->at(0).size(); i++) {
                 LO index = dim * i + d;
-                uLoc[d][w] += solutionVelocity_[index] * phi->at(w).at(i);
+                uLoc[d][w] += this->solution_[index] * phi->at(w).at(i);
             }
         }
 
@@ -167,16 +182,18 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Ty
         Teuchos::Array<GO> indices( dPhiTrans[0].size(), 0 );
         for (UN j=0; j < value.size(); j++) {
             for (UN w=0; w<dPhiTrans.size(); w++) {
-                for (UN d=0; d<dim; d++)
+                for (UN d=0; d<dim; d++){
                     value[j] += weights->at(w) * uLoc[d][w] * (*phi)[w][i] * dPhiTrans[w][j][d];
+				}
             }
             value[j] *= absDetB;
+
             /*if (setZeros_ && std::fabs(value[j]) < myeps_) {
                 value[j] = 0.;
             }*/
 
             for (UN d=0; d<dofs; d++) {
-         	    (*elementMatrix)[i*dofs +d][j*dofs+d] += value[j];
+         	    (*elementMatrix)[i*dofs +d][j*dofs+d] = value[j];
 
 			}
         }
@@ -184,6 +201,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Ty
     }
 
 }
+
 
 template <class SC, class LO, class GO, class NO>
 void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Type &elementMatrix){

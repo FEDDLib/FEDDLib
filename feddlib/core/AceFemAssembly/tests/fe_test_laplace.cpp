@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
 			Sum->getGlobalRowView(row, indices,values);
 			
 			for(int j=0; j< values.size() ; j++){
-				res += values[j];			
+				res += fabs(values[j]);			
 			}	
 		}	
 	}

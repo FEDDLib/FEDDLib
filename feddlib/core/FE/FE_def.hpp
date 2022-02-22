@@ -95,6 +95,278 @@ void FE<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,
     }
 }
 
+/*!
+
+ \brief Assembly of Jacobian for NavierStokes 
+@param[in] dim Dimension
+@param[in] FEType FE Discretization
+@param[in] degree Degree of basis function
+@param[in] A Resulting matrix
+@param[in] callFillComplete If Matrix A should be completely filled at end of function
+@param[in] FELocExternal 
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
+	                                    string FETypeVelocity,
+	                                    string FETypePressure,
+	                                    int degree,
+										int dofsVelocity,
+										int dofsPressure,
+										MultiVectorPtr_Type u_rep,
+	                                    BlockMatrixPtr_Type &A,
+ 										ParameterListPtr_Type params,
+ 										bool reAssemble,
+	                                    bool callFillComplete,
+	                                    int FELocExternal){
+	
+	
+    UN FElocVel = checkFE(dim,FETypeVelocity); // Checks for different domains which belongs to a certain fetype
+    UN FElocPres = checkFE(dim,FETypePressure); // Checks for different domains which belongs to a certain fetype
+
+	ElementsPtr_Type elements = domainVec_.at(FElocVel)->getElementsC();
+
+	int dofsElement = elements->getElement(0).getVectorNodeList().size();
+
+	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FElocVel)->getPointsRepeated();
+
+	MapConstPtr_Type mapVel = domainVec_.at(FElocVel)->getMapRepeated();
+
+	MapConstPtr_Type mapPres = domainVec_.at(FElocPres)->getMapRepeated();
+
+	vec_dbl_Type solution;
+
+	/// Tupel construction follows follwing pattern:
+	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	int dofs;
+	int numVelo=6;
+	if(dim==3){
+		numVelo=10;
+	}
+	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
+	tuple_ssii_Type vel ("Velocity","P2",dofsVelocity,numVelo);
+	tuple_ssii_Type pres ("Pressure","P1",dofsPressure,dim+1);
+	problemDisk->push_back(vel);
+	problemDisk->push_back(pres);
+
+	if(assemblyFEElements_.size()== 0)
+	 	initAssembleFEElements("NavierStokes",problemDisk,elements, params,pointsRep);
+	else if(assemblyFEElements_.size() != elements->numberElements())
+	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
+
+	//SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
+
+	for (UN T=0; T<assemblyFEElements_.size(); T++) {
+		
+		solution = getSolution(elements->getElement(T).getVectorNodeList(), u_rep,dofsVelocity);
+
+		assemblyFEElements_[T]->updateSolution(solution);
+
+		assemblyFEElements_[T]->assembleJacobian();
+
+		assemblyFEElements_[T]->advanceNewtonStep();
+
+		SmallMatrixPtr_Type elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+
+		if(reAssemble)
+			addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
+		else
+			addFeBlockMatrix(A, elementMatrix, elements->getElement(T), mapVel, mapPres, problemDisk);
+		/*if(T ==0){
+			//elementMatrix->print();
+			A->getBlock(0,1)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
+			A->getBlock(0,1)->print();
+			A->getBlock(0,1)->resumeFill();
+		}	*/	
+	}
+	if (callFillComplete && reAssemble)
+	    A->getBlock(0,0)->fillComplete();
+	else{
+		A->getBlock(0,0)->fillComplete();
+	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
+	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocPres)->getMapUnique(),domainVec_.at(FElocVel)->getMapVecFieldUnique());
+	    A->getBlock(1,1)->fillComplete();
+	}
+
+}
+
+/*!
+
+ \brief Inserting element stiffness matrices into global stiffness matrix
+@todo column indices pre determine
+
+@param[in] &A Global Block Matrix
+@param[in] elementMatrix Stiffness matrix of one element
+@param[in] element Corresponding finite element
+@param[in] map Map that corresponds to repeated nodes of first block
+@param[in] map Map that corresponds to repeated nodes of second block
+
+*/
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstRow,MapConstPtr_Type mapSecondRow, tuple_disk_vec_ptr_Type problemDisk){
+		
+		int numDisk = problemDisk->size();
+
+		int dofs1 = std::get<2>(problemDisk->at(0));
+		int dofs2 = std::get<2>(problemDisk->at(1));
+
+		int numNodes1 = std::get<3>(problemDisk->at(0));
+		int numNodes2=std::get<3>(problemDisk->at(1));
+
+		int dofsBlock1 = dofs1*numNodes1;
+		int dofsBlock2  = dofs2*numNodes2;
+
+		Teuchos::Array<SC> value1( numNodes1, 0. );
+        Teuchos::Array<GO> columnIndices1( numNodes1, 0 );
+
+		for (UN i=0; i < numNodes1 ; i++) {
+			for(int di=0; di<dofs1; di++){
+				GO row =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+di);
+				for(int d=0; d<dofs1; d++){
+					for (UN j=0; j < columnIndices1.size(); j++){
+		                columnIndices1[j] = GO ( dofs1 * mapFirstRow->getGlobalElement( element.getNode(j) ) + d );
+						value1[j] = (*elementMatrix)[dofs1*i+di][dofs1*j+d];	
+					}
+			  		A->getBlock(0,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
+				}          
+            }
+		}
+
+		Teuchos::Array<SC> value2( 1, 0. );
+        Teuchos::Array<GO> columnIndex( 1, 0. );
+        Teuchos::Array<GO> rowIndex( 1, 0. );
+
+		int offset= numNodes1*dofs1;
+		//Teuchos::ArrayView<const LO> indices;
+		//Teuchos::ArrayView<const SC> values;
+
+		for (UN j=0; j < numNodes2; j++){
+            rowIndex[0] = GO ( mapSecondRow->getGlobalElement( element.getNode(j) ) );
+			for (UN i=0; i < numNodes1 ; i++) {
+				for(int d=0; d<dofs1; d++){				
+					value2[0] = (*elementMatrix)[i*dofs1+d][offset+j];			    				    		
+					columnIndex[0] =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+d);
+					//cout << " Row "<< columnIndex[0] << " Column " << rowIndex[0] << " value " << value2[0] << endl;
+			  		A->getBlock(1,0)->insertGlobalValues( rowIndex[0], columnIndex(), value2() ); // Automatically adds entries if a value already exists   
+			  		A->getBlock(0,1)->insertGlobalValues( columnIndex[0], rowIndex(), value2() ); // Automatically adds entries if a value already exists        
+				}
+			}      
+		}
+}
+
+/*!
+
+ \brief Adding FEBlock (row,column) to FE Blockmatrix
+@todo column indices pre determine
+
+@param[in] &A Global Block Matrix
+@param[in] elementMatrix Stiffness matrix of one element
+@param[in] element Corresponding finite element
+@param[in] map Map that corresponds to repeated nodes of first block
+@param[in] map Map that corresponds to repeated nodes of second block
+
+*/
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::addFeBlock(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapRow, int row, int column, tuple_disk_vec_ptr_Type problemDisk){
+		
+		int dofs1 = std::get<2>(problemDisk->at(0));
+
+		int numNodes1 = std::get<3>(problemDisk->at(0));
+
+		int dofsBlock1 = dofs1*numNodes1;
+
+		Teuchos::Array<SC> value1( numNodes1, 0. );
+        Teuchos::Array<GO> columnIndices1( numNodes1, 0 );
+
+		for (UN i=0; i < numNodes1 ; i++) {
+			for(int di=0; di<dofs1; di++){
+				GO row =GO (dofs1* mapRow->getGlobalElement( element.getNode(i) )+di);
+				for(int d=0; d<dofs1; d++){
+					for (UN j=0; j < columnIndices1.size(); j++){
+		                columnIndices1[j] = GO ( dofs1 * mapRow->getGlobalElement( element.getNode(j) ) + d );
+						value1[j] = (*elementMatrix)[dofs1*i+di][dofs1*j+d];	
+					}
+			  		A->getBlock(0,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
+				}          
+            }
+		}
+}
+
+/*!
+
+ \brief Initialization of vector consisting of the assembleFE Elements. Follows structure of 'normal' elements, i.e. elementMap also applicable
+
+@param[in] elementType i.e. Laplace, Navier Stokes..
+@param[in] problemDisk Tuple of specific problem Information
+@param[in] elements
+@param[in] params parameter list
+
+*/
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep){
+    
+	vec2D_dbl_Type nodes;
+	for (UN T=0; T<elements->numberElements(); T++) {
+		
+		nodes = getCoordinates(elements->getElement(T).getVectorNodeList(), pointsRep);
+
+		AssembleFEFactory<SC,LO,GO,NO> assembleFEFactory;
+
+		AssembleFEPtr_Type assemblyFE = assembleFEFactory.build(elementType,elements->getElement(T).getFlag(),nodes, params,problemDisk);
+
+		assemblyFEElements_.push_back(assemblyFE);
+
+	}
+
+}
+
+/*!
+
+ \brief Returns coordinates of local node ids
+
+@param[in] localIDs
+@param[in] points
+@param[out] coordinates 
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+vec2D_dbl_Type FE<SC,LO,GO,NO>::getCoordinates(vec_LO_Type localIDs, vec2D_dbl_ptr_Type points){
+
+	vec2D_dbl_Type coordinates(0,vec_dbl_Type( points->at(0).size()));
+	for(int i=0; i < localIDs.size() ; i++){
+		coordinates.push_back(points->at(localIDs[i]));
+	}
+
+    return coordinates;
+}
+
+/*!
+
+ \brief Returns entries of u of element
+
+@param[in] localIDs
+@param[in] points
+@param[out] coordinates 
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+vec_dbl_Type FE<SC,LO,GO,NO>::getSolution(vec_LO_Type localIDs, MultiVectorPtr_Type u_rep, int dofsVelocity){
+
+    Teuchos::ArrayRCP<SC>  uArray = u_rep->getDataNonConst(0);
+	
+	vec_dbl_Type solution(0);
+	for(int i=0; i < localIDs.size() ; i++){
+		for(int d=0; d<dofsVelocity; d++)
+			solution.push_back(uArray[localIDs[i]*dofsVelocity+d]);
+	}
+
+    return solution;
+}
+
+
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,
                                     vec3D_dbl_Type& dPhiOut,
@@ -1809,8 +2081,10 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecField(int dim,
                 Teuchos::Array<GO> indices( dPhiTrans[0].size(), 0 );
                 for (UN j=0; j < value.size(); j++) {
                     for (UN w=0; w<dPhiTrans.size(); w++) {
-                        for (UN d=0; d<dim; d++)
+                        for (UN d=0; d<dim; d++){
                             value[j] += weights->at(w) * uLoc[d][w] * (*phi)[w][i] * dPhiTrans[w][j][d];
+                           } 
+                           
                     }
                     value[j] *= absDetB;
                     if (setZeros_ && std::fabs(value[j]) < myeps_) {

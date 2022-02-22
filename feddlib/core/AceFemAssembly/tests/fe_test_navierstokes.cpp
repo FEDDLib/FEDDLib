@@ -117,6 +117,7 @@ int main(int argc, char *argv[]) {
     FE<SC,LO,GO,NO> fe;
     fe.addFE(domain);
     fe.addFE(domainP1);
+	fe.doSetZeros(pow(10,-13));
 	// Solution
 	MultiVectorPtr_Type u_rep = Teuchos::rcp(new MultiVector_Type(domain->getMapVecFieldRepeated(),1));
 	u_rep->putScalar(1);
@@ -181,12 +182,15 @@ int main(int argc, char *argv[]) {
         fe_test.assemblyNavierStokes(dim, FETypeV, FETypeP, 2,dofsV,dofsP,u_rep,systemFETest, true/*call fillComplete*/);
     }
 	//B_test->print();
+	BT->print();
+	BT_test->print();
+
 	cout << " Done for FE Test" << endl;
 	MAIN_TIMER_STOP(FE_test);	
 	Teuchos::TimeMonitor::report(cout,"Main");
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 	ANW->addMatrix(1, Sum, 1);
-	A_test->addMatrix(1, Sum, -1);
+	A_test->addMatrix(-1, Sum, 1);
 
 
 	int maxRank = std::get<1>(domain->getMesh()->rankRange_);
@@ -201,10 +205,12 @@ int main(int argc, char *argv[]) {
 			Sum->getGlobalRowView(row, indices,values);
 			
 			for(int j=0; j< values.size() ; j++){
-				res += values[j];			
+				res += fabs(values[j]);			
 			}	
 		}	
 	}
+	Sum->fillComplete();
+	//Sum->print();
 	res = fabs(res);
 	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 
@@ -214,7 +220,7 @@ int main(int argc, char *argv[]) {
 
 	MatrixPtr_Type Sum2= Teuchos::rcp(new Matrix_Type( domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 	B->addMatrix(1, Sum2, 1);
-	B_test->addMatrix(1, Sum2, -1);
+	B_test->addMatrix(-1, Sum2, 1);
 
 
 	res=0.;
@@ -224,7 +230,7 @@ int main(int argc, char *argv[]) {
 			Sum2->getGlobalRowView(row, indices,values);
 			
 			for(int j=0; j< values.size() ; j++){
-				res += values[j];			
+				res += fabs(values[j]);			
 			}	
 		}	
 	}

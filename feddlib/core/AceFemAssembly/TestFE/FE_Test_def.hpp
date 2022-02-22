@@ -221,19 +221,16 @@ void FE_Test<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixP
 
 		Teuchos::Array<SC> value1( numNodes1, 0. );
         Teuchos::Array<GO> columnIndices1( numNodes1, 0 );
-
-		//Teuchos::ArrayView<const LO> indices;
-		//Teuchos::ArrayView<const SC> values;
-
 		for (UN i=0; i < numNodes1 ; i++) {
-			for(int d=0; d<dofs1; d++){
-				for (UN j=0; j < columnIndices1.size(); j++){
-                    columnIndices1[j] = GO ( dofs1 * mapFirstRow->getGlobalElement( element.getNode(j) ) + d );
-					value1[j] = (*elementMatrix)[i][dofs1*j+d];			    				    
-				}
-
-				GO row =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+d);
-		  		A->getBlock(0,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists           
+			for(int di=0; di<dofs1; di++){
+				GO row =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+di);
+				for(int d=0; d<dofs1; d++){
+					for (UN j=0; j < columnIndices1.size(); j++){
+		                columnIndices1[j] = GO ( dofs1 * mapFirstRow->getGlobalElement( element.getNode(j) ) + d );
+						value1[j] = (*elementMatrix)[dofs1*i+di][dofs1*j+d];	
+					}
+			  		A->getBlock(0,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
+				}          
             }
 		}
 
@@ -378,7 +375,7 @@ void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type el
 			for(int d=0; d<dofs; d++){
 				for (UN j=0; j < columnIndices.size(); j++){
                     columnIndices[j] = GO ( dofs * map->getGlobalElement( element.getNode(j) ) + d );
-					value[j] = (*elementMatrix)[i][dofs*j+d];			    				    
+					value[j] = (*elementMatrix)[dofs*i+d][dofs*j+d];			    				    
 				}
 
 				GO row =GO (dofs* map->getGlobalElement( element.getNode(i) )+d);
@@ -479,10 +476,11 @@ vec_dbl_Type FE_Test<SC,LO,GO,NO>::getSolution(vec_LO_Type localIDs, MultiVector
 
     Teuchos::ArrayRCP<SC>  uArray = u_rep->getDataNonConst(0);
 	
-	vec_dbl_Type solution(localIDs.size()*dofsVelocity);
+	vec_dbl_Type solution(0);
 	for(int i=0; i < localIDs.size() ; i++){
-		for(int d=0; d<dofsVelocity; d++)
+		for(int d=0; d<dofsVelocity; d++){
 			solution.push_back(uArray[localIDs[i]*dofsVelocity+d]);
+		}
 	}
 
     return solution;
