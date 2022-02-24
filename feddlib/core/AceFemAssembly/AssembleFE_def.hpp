@@ -13,7 +13,7 @@ AssembleFE<SC,LO,GO,NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, Par
 	nodesRefConfig_ = nodesRefConfig;
 
 	timeStep_ =0. ;
-	newtonStep_ =0.;
+	newtonStep_ =0;
 
 	params_=params;
 

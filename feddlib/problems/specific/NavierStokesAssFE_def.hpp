@@ -161,7 +161,7 @@ void NavierStokesAssFE<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
 	this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_,false,"Jacobian", true/*call fillComplete*/);
 
-	//A_->print();
+/*	//A_->print();
 
     A_ = this->system_->getBlock(0,0);
 	B = this->system_->getBlock(1,0);
@@ -185,7 +185,7 @@ void NavierStokesAssFE<SC,LO,GO,NO>::assembleConstantMatrices() const{
     BT->fillComplete( pressureMap, this->getDomain(0)->getMapVecFieldUnique() );
     
     this->system_->addBlock( BT, 0, 1 );
-    this->system_->addBlock( B, 1, 0 );
+    this->system_->addBlock( B, 1, 0 );*/
     
     if ( !this->getFEType(0).compare("P1") ) {
         C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
@@ -253,10 +253,8 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
     MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
 
   	MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);
+    u_rep_->importFromVector(u, true);
    if (type=="Rhs") {
-   
-
    		this->system_->addBlock(ANW,0,0);
 		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true, "Rhs",  true);
 
@@ -590,7 +588,7 @@ void NavierStokesAssFE<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std:
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokesAssFE<SC,LO,GO,NO>::create_W_op() const
 {
-    this->reAssemble("FixedPoint");
+    //this->reAssemble("FixedPoint");
     this->reAssemble("Newton");
 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");

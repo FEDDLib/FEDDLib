@@ -247,8 +247,8 @@ int main(int argc, char *argv[]) {
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
 
-           parameter_vec.push_back(0.41);//height of inflow region
-           
+          	 parameter_vec.push_back(0.41);//height of inflow region
+
             if (dim==2){
                 bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
                 bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
@@ -331,12 +331,20 @@ int main(int argc, char *argv[]) {
 			errorValues->abs(errorValuesAbs);
 
  			Teuchos::Array<SC> norm(1); 
-    		errorValues->norm2(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
+    		errorValues->normInf(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
 			double res = norm[0];
-			reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 			if(comm->getRank() ==0)
-				cout << " 2 Norm of solutions " << res << endl;
+				cout << " 2 Norm of Error of Solutions " << res << endl;
 
+			navierStokes.getSolution()->norm2(norm);
+			res = norm[0];
+			if(comm->getRank() ==0)
+				cout << " 2 Norm of solution navier stokes " << res << endl;
+
+			navierStokesAssFE.getSolution()->norm2(norm);
+			res = norm[0];
+			if(comm->getRank() ==0)
+				cout << " 2 Norm of solutions navier stokes assemFE " << res << endl;
 
 			MatrixPtr_Type Sum2= Teuchos::rcp(new Matrix_Type( domainVelocity->getMapVecFieldUnique(), domainVelocity->getDimension() * domainVelocity->getApproxEntriesPerRow() )  );
 			navierStokes.getSystem()->getBlock(0,0)->addMatrix(1, Sum2, 1);
@@ -351,17 +359,38 @@ int main(int argc, char *argv[]) {
 					Sum2->getGlobalRowView(row, indices,values);
 					
 					for(int j=0; j< values.size() ; j++){
-						res += fabs(values[j]);			
+						if(fabs(values[j])>res)
+							res = fabs(values[j]);			
 					}	
 				}	
 			}
 			res = fabs(res);
-			reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
+			reduceAll<int, double> (*comm, REDUCE_MAX, res, outArg (res));
            
 			if(comm->getRank() == 0)
 				cout << " Norm of Difference between Block A: " << res << endl;
 
-  			
+			MatrixPtr_Type Sum1= Teuchos::rcp(new Matrix_Type( domainPressure->getMapUnique(), domainVelocity->getDimension() * domainVelocity->getApproxEntriesPerRow() )  );
+			navierStokes.getSystem()->getBlock(1,0)->addMatrix(1, Sum1, 1);
+			navierStokesAssFE.getSystem()->getBlock(1,0)->addMatrix(-1, Sum1, 1);
+
+			res=0.;
+			for (UN i=0; i < domainPressure->getMapUnique()->getMaxLocalIndex()+1 ; i++) {
+				GO row = domainPressure->getMapUnique()->getGlobalElement( i );
+				Sum1->getGlobalRowView(row, indices,values);
+				
+				for(int j=0; j< values.size() ; j++){
+					res += fabs(values[j]);			
+				}	
+			}	
+			
+			res = fabs(res);
+			reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
+		
+			if(comm->getRank() == 0)
+				cout << " Norm of Difference between Block B: " << res << endl;
+
+		  			
 
             DomainPtr_Type dom = domainVelocity;
 

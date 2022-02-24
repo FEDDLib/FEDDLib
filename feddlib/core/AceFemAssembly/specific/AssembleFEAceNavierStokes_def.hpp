@@ -56,6 +56,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleJacobian() {
 	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 
 	if(this->newtonStep_ ==0){
+
 		constantMatrix_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 
 		assemblyLaplacian(elementMatrixA);
@@ -139,11 +140,14 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleRHS(){
 	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 
 	if(this->newtonStep_ ==0){
+		constantMatrix_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+
 		assemblyLaplacian(elementMatrixA);
+
 		elementMatrixA->scale(viscosity_);
 		elementMatrixA->scale(density_);
 
-		constantMatrix_= elementMatrixA;
+		constantMatrix_->add( (*elementMatrixA),(*constantMatrix_));
 
 		assemblyDivAndDivT(elementMatrixB);
 
