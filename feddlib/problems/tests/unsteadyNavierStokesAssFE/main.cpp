@@ -7,31 +7,27 @@
 #endif
 
 #include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
-
+#include "feddlib/problems/Solver/DAESolverInTime.hpp"
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
+#include "feddlib/problems/specific/NavierStokes.hpp"
 #include "feddlib/problems/specific/NavierStokesAssFE.hpp"
-
-#include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 
-
 /*!
- main of steady-state Navier-Stokes problem
-
- @brief steady-state Navier-Stokes main
+ main of time-dependent Navier-Stokes problem
+ 
+ @brief time-dependent Navier-Stokes main
  @author Christian Hochmuth
  @version 1.0
  @copyright CH
  */
 
 using namespace std;
-using namespace Teuchos;
-using namespace FEDD;
 
 void zeroDirichlet(double* x, double* res, double t, const double* parameters){
 
@@ -47,34 +43,6 @@ void zeroDirichlet2D(double* x, double* res, double t, const double* parameters)
 
     return;
 }
-void one(double* x, double* res, double t, const double* parameters){
-
-    res[0] = 1.;
-    res[1] = 1.;
-
-    return;
-}
-void two(double* x, double* res, double t, const double* parameters){
-
-    res[0] = 2.;
-    res[1] = 2.;
-
-    return;
-}
-void three(double* x, double* res, double t, const double* parameters){
-
-    res[0] = 3.;
-    res[1] = 3.;
-
-    return;
-}
-void four(double* x, double* res, double t, const double* parameters){
-
-    res[0] = 4.;
-    res[1] = 4.;
-
-    return;
-}
 
 void zeroDirichlet3D(double* x, double* res, double t, const double* parameters){
 
@@ -85,10 +53,37 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
     return;
 }
 
+void inflowPartialCFD(double* x, double* res, double t, const double* parameters){
+
+    double H = parameters[1];
+
+    if(t < 0.5)
+    {
+        res[0] = (4.0*1.5*parameters[0]*x[1]*(H-x[1])/(H*H))*((1 - cos(2.0*M_PI*t))/2.0);
+        res[1] = 0.;
+    }
+    else
+    {
+        res[0] = 4.0*1.5*parameters[0]*x[1]*(H-x[1])/(H*H);
+        res[1] = 0.;
+    }
+
+    return;
+}
+
 void inflowParabolic2D(double* x, double* res, double t, const double* parameters){
 
     double H = parameters[1];
-    res[0] = 4*parameters[0]*x[1]*(H-x[1])/(H*H);
+    res[0] = 4.*parameters[0]*x[1]*(H-x[1])/(H*H);
+    res[1] = 0.;
+    
+    return;
+}
+
+void inflowParabolic2DSin(double* x, double* res, double t, const double* parameters){
+
+    double H = parameters[1];
+    res[0] = sin(M_PI*t*0.125)*( 6*x[1]*(H-x[1]) ) / (H*H);
     res[1] = 0.;
 
     return;
@@ -103,23 +98,31 @@ void inflowParabolic3D(double* x, double* res, double t, const double* parameter
 
     return;
 }
+
 void inflow3DRichter(double* x, double* res, double t, const double* parameters)
 {
-
     double H = parameters[1];
     
-    res[0] = 9./8 * parameters[0] *x[1]*(H-x[1])*(H*H-x[2]*x[2])/( H*H*(H/2.)*(H/2.) );
-    res[1] = 0.;
-    res[2] = 0.;
-
+    if(t < 1.)
+    {
+        res[0] = 9./8 * parameters[0] *x[1]*(H-x[1])*(H*H-x[2]*x[2])/( H*H*(H/2.)*(H/2.) ) * ((1 - cos(2.0*M_PI*t))/2.0);
+        res[1] = 0.;
+        res[2] = 0.;
+    }
+    else
+    {
+        res[0] = 9./8 * parameters[0] *x[1]*(H-x[1])*(H*H-x[2]*x[2])/( H*H*(H/2.)*(H/2.) );
+        res[1] = 0.;
+        res[2] = 0.;
+    }
     
     return;
 }
+
 void dummyFunc(double* x, double* res, double t, const double* parameters){
 
     return;
 }
-
 
 typedef unsigned UN;
 typedef default_sc SC;
@@ -127,10 +130,9 @@ typedef default_lo LO;
 typedef default_go GO;
 typedef default_no NO;
 
+using namespace Teuchos;
 using namespace FEDD;
-
 int main(int argc, char *argv[]) {
-    
     typedef MeshPartitioner<SC,LO,GO,NO> MeshPartitioner_Type;
     typedef Teuchos::RCP<Domain<SC,LO,GO,NO> > DomainPtr_Type;
 
@@ -142,12 +144,9 @@ int main(int argc, char *argv[]) {
 
     Teuchos::RCP<const Teuchos::Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
     bool verbose (comm->getRank() == 0);
-
-//    Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
-
     if (verbose) {
         cout << "###############################################################" <<endl;
-        cout << "##################### Steady Navier-Stokes ####################" <<endl;
+        cout << "################### Unsteady Navier-Stokes ####################" <<endl;
         cout << "###############################################################" <<endl;
     }
 
@@ -183,20 +182,16 @@ int main(int argc, char *argv[]) {
         ParameterListPtr_Type parameterListSolver = Teuchos::getParametersFromXmlFile(xmlSolverFile);
 
         ParameterListPtr_Type parameterListPrecTeko = Teuchos::getParametersFromXmlFile(xmlTekoPrecFile);
-
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
-
         std::string discVelocity = parameterListProblem->sublist("Parameter").get("Discretization Velocity","P2");
         std::string discPressure = parameterListProblem->sublist("Parameter").get("Discretization Pressure","P1");
-
-
-        string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","structured");
-        string		meshName    	= parameterListProblem->sublist("Parameter").get("Mesh Name","circle2D_1800.mesh");
-        string		meshDelimiter   = parameterListProblem->sublist("Parameter").get("Mesh Delimiter"," ");
-        int 		m				= parameterListProblem->sublist("Parameter").get("H/h",5);
-        string		linearization	= parameterListProblem->sublist("General").get("Linearization","FixedPoint");
-        string		precMethod      = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
-        int         mixedFPIts		= parameterListProblem->sublist("General").get("MixedFPIts",1);        
+        string		meshType = parameterListProblem->sublist("Parameter").get("Mesh Type","structured");
+        string		meshName = parameterListProblem->sublist("Parameter").get("Mesh Name","structured");
+        string		meshDelimiter = parameterListProblem->sublist("Parameter").get("Mesh Delimiter"," ");
+        int 		m = parameterListProblem->sublist("Parameter").get("H/h",5);
+        string		linearization = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
+        string		precMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
+        bool computeInflow = parameterListProblem->sublist("Parameter").get("Compute Inflow",false);
         int         n;
 
 
@@ -206,13 +201,16 @@ int main(int argc, char *argv[]) {
         else
             parameterListAll->setParameters(*parameterListPrecTeko);
 
-        parameterListAll->setParameters(*parameterListSolver);    
-        
+        parameterListAll->setParameters(*parameterListSolver);
+
         std::string bcType = parameterListProblem->sublist("Parameter").get("BC Type","parabolic");
 
         int minNumberSubdomains;
         if (!meshType.compare("structured")) {
             minNumberSubdomains = 1;
+        }
+        else if(!meshType.compare("structured_rec")){
+            minNumberSubdomains = length;
         }
         else if(!meshType.compare("structured_bfs")){
             minNumberSubdomains = (int) 2*length+1;
@@ -221,7 +219,14 @@ int main(int argc, char *argv[]) {
         int numProcsCoarseSolve = parameterListProblem->sublist("General").get("Mpi Ranks Coarse",0);
         int size = comm->getSize() - numProcsCoarseSolve;
 
+        double viscosity = parameterListProblem->sublist("Parameter").get("Viscosity",1.e-3);
+
+        Teuchos::RCP<Teuchos::Time> totalTime(Teuchos::TimeMonitor::getNewCounter("main: Total Time"));
+        Teuchos::RCP<Teuchos::Time> buildMesh(Teuchos::TimeMonitor::getNewCounter("main: Build Mesh"));
+        Teuchos::RCP<Teuchos::Time> solveTime(Teuchos::TimeMonitor::getNewCounter("main: Solve problem time"));
+        
         {
+           
             DomainPtr_Type domainPressure;
             DomainPtr_Type domainVelocity;
                               
@@ -266,48 +271,67 @@ int main(int argc, char *argv[]) {
                 bcFactory->addBC(zeroDirichlet3D, 2, 0, domainVelocity, "Dirichlet", dim);
                 
             }
-			// ---------------------
-			// Old Assembly Rouine
-        
-          	NavierStokes<SC,LO,GO,NO> navierStokes( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
 
-            {
-				MAIN_TIMER_START(NavierStokes," Assemble System and solve");
-                navierStokes.addBoundaries(bcFactory);
-                navierStokes.initializeProblem();
-                navierStokes.assemble();
+            
 
-                navierStokes.setBoundariesRHS();
+            
+//          
+                     
+            int timeDisc = parameterListProblem->sublist("Timestepping Parameter").get("Butcher table",0);
 
-                std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
-                NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
-                nlSolver.solve( navierStokes );
-				MAIN_TIMER_STOP(NavierStokes);	
-                comm->barrier();
-            }
+			DAESolverInTime<SC,LO,GO,NO> daeTimeSolver(parameterListAll, comm);
+            SmallMatrix<int> defTS(2);
+            defTS[0][0] = 1;
+            defTS[0][1] = 1;
+            defTS[1][0] = 0;
+            defTS[1][1] = 0;
 
-           	// ---------------------
-			// New Assembly Rouine
-        
-            NavierStokesAssFE<SC,LO,GO,NO> navierStokesAssFE( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
+            daeTimeSolver.defineTimeStepping(defTS);
 
-            {
-				MAIN_TIMER_START(NavierStokesAssFE," AssFE:   Assemble System and solve");
-                navierStokesAssFE.addBoundaries(bcFactory);
-                navierStokesAssFE.initializeProblem();
-                navierStokesAssFE.assemble();
+			// ###########################################################################################################
+			// OLD ASSEMBLY
+            NavierStokes<SC,LO,GO,NO> navierStokes( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
 
-                navierStokesAssFE.setBoundariesRHS();
+            navierStokes.addBoundaries(bcFactory);
+            
+            navierStokes.initializeProblem();
+            
+            navierStokes.assemble();
 
-                std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
-                NonLinearSolver<SC,LO,GO,NO> nlSolverAssFE( nlSolverType );
-                nlSolverAssFE.solve( navierStokesAssFE );
-				MAIN_TIMER_STOP(NavierStokesAssFE);	
-                comm->barrier();
-            }
- 
-			Teuchos::TimeMonitor::report(cout,"Main");	
-       
+            navierStokes.setBoundariesRHS();
+
+            daeTimeSolver.setProblem(navierStokes);
+
+            daeTimeSolver.setupTimeStepping();
+
+            daeTimeSolver.advanceInTime();
+			cout << " ###### DONE WITH OLD ASSEMBLY ##### " << endl;
+			// ###########################################################################################################
+
+			DAESolverInTime<SC,LO,GO,NO> daeTimeSolverAssFE(parameterListAll, comm);
+
+
+            daeTimeSolverAssFE.defineTimeStepping(defTS);
+
+			// ###########################################################################################################
+			// New Assembly
+  			NavierStokesAssFE<SC,LO,GO,NO> navierStokesAssFE( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
+			navierStokesAssFE.addBoundaries(bcFactory);
+            
+            navierStokesAssFE.initializeProblem();
+            
+            navierStokesAssFE.assemble();
+
+            navierStokesAssFE.setBoundariesRHS();
+
+            daeTimeSolverAssFE.setProblem(navierStokesAssFE);
+
+            daeTimeSolverAssFE.setupTimeStepping();
+
+            daeTimeSolverAssFE.advanceInTime();
+			// ###########################################################################################################
+
+
 			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());
             Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaPressure(new ExporterParaView<SC,LO,GO,NO>());
 
@@ -334,7 +358,7 @@ int main(int argc, char *argv[]) {
     		errorValues->normInf(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
 			double res = norm[0];
 			if(comm->getRank() ==0)
-				cout << " Inf Norm of Error of Solutions " << res << endl;
+				cout << " 2 Norm of Error of Solutions " << res << endl;
 
 			navierStokes.getSolution()->norm2(norm);
 			res = norm[0];
@@ -368,7 +392,7 @@ int main(int argc, char *argv[]) {
 			reduceAll<int, double> (*comm, REDUCE_MAX, res, outArg (res));
            
 			if(comm->getRank() == 0)
-				cout << "Inf Norm of Difference between Block A: " << res << endl;
+				cout << " Norm of Difference between Block A: " << res << endl;
 
 			MatrixPtr_Type Sum1= Teuchos::rcp(new Matrix_Type( domainPressure->getMapUnique(), domainVelocity->getDimension() * domainVelocity->getApproxEntriesPerRow() )  );
 			navierStokes.getSystem()->getBlock(1,0)->addMatrix(1, Sum1, 1);
@@ -409,14 +433,14 @@ int main(int argc, char *argv[]) {
 
 
             exParaVelocity->save(0.0);
-            exParaPressure->save(0.0); 
+            exParaPressure->save(0.0); 	
 
 
 
-			
-            
         }
     }
+
+    Teuchos::TimeMonitor::report(cout);
 
     return(EXIT_SUCCESS);
 }

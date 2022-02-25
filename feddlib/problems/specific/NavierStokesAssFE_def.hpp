@@ -259,6 +259,11 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
 		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true, "Rhs",  true);
 
    }
+   if (type=="FixedPoint") {
+   		this->system_->addBlock(ANW,0,0);
+		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true, "Rhs",  true);
+
+   }
 	else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
         this->system_->addBlock(ANW,0,0);
 		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true,"Jacobian", true);		

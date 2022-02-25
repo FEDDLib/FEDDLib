@@ -181,7 +181,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Ty
     vec2D_dbl_ptr_Type  phi;
 	vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-	UN deg = Helper::determineDegree(dim,FEType,Grad); // Not complete
+	UN deg = 5; //Helper::determineDegree(dim,FEType,Grad); // Not complete
 	//UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
     //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, extraDeg);
 
@@ -255,7 +255,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr
     vec2D_dbl_ptr_Type  phi;
 	vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-	UN deg = Helper::determineDegree(dim,FEType,Grad); // Not complete
+	UN deg = 5 ;// Helper::determineDegree(dim,FEType,Grad); // Not complete
 	//UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
     //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, extraDeg);
 
@@ -299,10 +299,6 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr
                         value[ dim * j + d2 ] += weights->at(w) * duLoc[w][d2][d1] * (*phi)[w][i] * (*phi)[w][j];
                     }
                     value[ dim * j + d2 ] *= absDetB;
-
-                    /*if (setZeros_ && std::fabs(value[ dim * j + d2 ]) < myeps_) {
-                        value[ dim * j + d2 ] = 0.;
-                    }*/
                 }
             }
             for (UN j=0; j < phi->at(0).size(); j++){
@@ -314,7 +310,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr
         }
     }
 }
-
+ 
 
 
 template <class SC, class LO, class GO, class NO>
