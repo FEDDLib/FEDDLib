@@ -92,16 +92,8 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
     problem->getLinearSolverBuilder()->setParameterList(pListThyraSolver);
     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
 
-	cout << " ###################### " << endl;
-	cout << " Setup Preconditioner " << endl;
-	cout << " ###################### " << endl;
-
     if ( type != "MonolithicConstPrec" ||  problem->getPreconditioner()->getThyraPrec().is_null() )
         problem->setupPreconditioner( "Monolithic" );
-
-	cout << " ###################### " << endl;
-	cout << " ... done " << endl;
-	cout << " ###################### " << endl;
 
     if (!pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive").compare("Multiplicative")) {
         pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",true);
@@ -126,11 +118,6 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
     else{
         Thyra::initializeOp<SC>(*lowsFactory, thyraMatrix, solver.ptr());
     }
-
-	cout << " ###################### " << endl;
-	cout << " solve.. " << endl;
-	cout << " ###################### " << endl;
-
 
     {
         Thyra::SolveStatus<SC> status = Thyra::solve<SC>(*solver, Thyra::NOTRANS, *thyraB, thyraX.ptr());

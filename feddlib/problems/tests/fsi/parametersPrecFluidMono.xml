@@ -1,6 +1,6 @@
 <ParameterList name="Prec">
 
-    <Parameter name="Number of blocks" type="int" value="1"/>
+    <Parameter name="Number of blocks" type="int" value="2"/>
 
     <ParameterList name="ThyraPreconditioner">
 
@@ -17,7 +17,7 @@
                 <Parameter name="DofOrdering1" type="string" value="NodeWise"/>
                 <Parameter name="DofOrdering2" type="string" value="NodeWise"/>
                 <Parameter name="Overlap" type="int" value="1"/>
-                <Parameter name="TwoLevel" type="bool" value="false"/>
+                <Parameter name="TwoLevel" type="bool" value="true"/>
                 <Parameter name="Level Combination" type="string" value="Additive"/><!--Multiplicative,Additive-->
                 <Parameter name="OverlappingOperator Type" type="string" value="AlgebraicOverlappingOperator"/>
                 <Parameter name="CoarseOperator Type" type="string" value="RGDSWCoarseOperator"/><!--GDSWCoarseOperator,IPOUHarmonicCoarseOperator-->

@@ -1,6 +1,6 @@
 <ParameterList name="Prec">
 
-    <Parameter name="Number of blocks" type="int" value="1"/>
+    <Parameter name="Number of blocks" type="int" value="2"/>
 
     <ParameterList name="ThyraPreconditioner">
 
