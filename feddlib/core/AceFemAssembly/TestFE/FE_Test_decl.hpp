@@ -68,6 +68,14 @@ class FE_Test {
 				bool callFillComplete = true,
 				int FELocExternal = -1 );
 
+	void assemblyLinElas(int dim,
+				string FEType,
+				int degree,
+				int dofs,
+				MatrixPtr_Type &A,
+				bool callFillComplete = true,
+				int FELocExternal = -1 );
+
 	void assemblyNavierStokes(int dim,
 								string FETypeVelocity,
 								string FETypePressure,

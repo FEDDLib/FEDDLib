@@ -253,7 +253,7 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
 				for(int d=0; d<dofs1; d++){				
 					value2[0] = (*elementMatrix)[i*dofs1+d][offset+j];			    				    		
 					columnIndex[0] =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+d);
-					//cout << " Row "<< columnIndex[0] << " Column " << rowIndex[0] << " value " << value2[0] << endl;
+
 			  		A->getBlock(1,0)->insertGlobalValues( rowIndex[0], columnIndex(), value2() ); // Automatically adds entries if a value already exists   
 			  		A->getBlock(0,1)->insertGlobalValues( columnIndex[0], rowIndex(), value2() ); // Automatically adds entries if a value already exists        
 				}
@@ -276,24 +276,24 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::addFeBlock(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapRow, int row, int column, tuple_disk_vec_ptr_Type problemDisk){
 		
-		int dofs1 = std::get<2>(problemDisk->at(0));
+		int dofs1 = std::get<2>(problemDisk->at(row));
 
-		int numNodes1 = std::get<3>(problemDisk->at(0));
+		int numNodes1 = std::get<3>(problemDisk->at(row));
 
 		int dofsBlock1 = dofs1*numNodes1;
 
-		Teuchos::Array<SC> value1( numNodes1, 0. );
-        Teuchos::Array<GO> columnIndices1( numNodes1, 0 );
+		Teuchos::Array<SC> value( numNodes1, 0. );
+        Teuchos::Array<GO> columnIndices( numNodes1, 0 );
 
 		for (UN i=0; i < numNodes1 ; i++) {
 			for(int di=0; di<dofs1; di++){
-				GO row =GO (dofs1* mapRow->getGlobalElement( element.getNode(i) )+di);
+				GO rowID =GO (dofs1* mapRow->getGlobalElement( element.getNode(i) )+di);
 				for(int d=0; d<dofs1; d++){
-					for (UN j=0; j < columnIndices1.size(); j++){
-		                columnIndices1[j] = GO ( dofs1 * mapRow->getGlobalElement( element.getNode(j) ) + d );
-						value1[j] = (*elementMatrix)[dofs1*i+di][dofs1*j+d];	
+					for (UN j=0; j < columnIndices.size(); j++){
+		                columnIndices[j] = GO ( dofs1 * mapRow->getGlobalElement( element.getNode(j) ) + d );
+						value[j] = (*elementMatrix)[dofs1*i+di][dofs1*j+d];	
 					}
-			  		A->getBlock(0,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
+			  		A->getBlock(row,column)->insertGlobalValues( rowID, columnIndices(), value() ); // Automatically adds entries if a value already exists 
 				}          
             }
 		}

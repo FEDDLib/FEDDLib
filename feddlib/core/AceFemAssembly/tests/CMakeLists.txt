@@ -67,3 +67,32 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_fe_test_navierstokes2
         DEST_FILES square.mesh
 	EXEDEPS fe_test_navierstokes
 )
+
+### FE LINELAS
+TRIBITS_ADD_EXECUTABLE(
+fe_test_linElas
+SOURCES fe_test_linElas.cpp
+)
+
+TRIBITS_ADD_TEST(
+fe_test_linElas
+NAME fe_test_linElas
+ARGS
+NUM_MPI_PROCS 1
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fe_test_linElas
+	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+	SOURCE_FILES parametersProblemLinElas.xml
+	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+	DEST_FILES parametersProblemLinElas.xml 
+	EXEDEPS fe_test_linElas
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_fe_test_linElas
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
+	SOURCE_FILES cube.mesh
+	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+        DEST_FILES cube.mesh
+	EXEDEPS fe_test_linElas
+)

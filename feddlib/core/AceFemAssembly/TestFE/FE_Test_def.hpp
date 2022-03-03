@@ -61,7 +61,6 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 	                                    MatrixPtr_Type &A,
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
-/// \todo Tupel for Disk Anzahl Knoten, Anzahl Freiheitsgrade
 
 
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemLaplace.xml");
@@ -76,12 +75,84 @@ void FE_Test<SC,LO,GO,NO>::assemblyLaplace(int dim,
 
 	vec2D_dbl_Type nodes;
 
+	int numNodes=dim+1;
+	if(FEType == "P2"){
+		numNodes= 6;
+		if(dim==3)
+			numNodes=10;
+	}
+
 	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
-	tuple_ssii_Type vel ("Laplace",FEType,dofs,6);	
+	tuple_ssii_Type vel ("Laplace",FEType,dofs,numNodes);	
 	problemDisk->push_back(vel);
 
 	if(assemblyFEElements_.size()== 0)
 	 	initAssembleFEElements("Laplace",problemDisk,elements, params,pointsRep);
+	else if(assemblyFEElements_.size() != elements->numberElements())
+	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
+
+
+	for (UN T=0; T<elements->numberElements(); T++) {
+
+		assemblyFEElements_[T]->assembleJacobian();
+
+		SmallMatrixPtr_Type elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+
+		addFeMatrix(A,elementMatrix, elements->getElement(T), map,dofs);
+		
+	}
+	if (callFillComplete)
+	    A->fillComplete();
+
+}
+
+/*!
+
+ \brief Assembly of constant stiffness matix for linear elasticity 
+
+@param[in] dim Dimension
+@param[in] FEType FE Discretization
+@param[in] degree Degree of basis function
+@param[in] A Resulting matrix
+@param[in] callFillComplete If Matrix A should be completely filled at end of function
+@param[in] FELocExternal 
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+void FE_Test<SC,LO,GO,NO>::assemblyLinElas(int dim,
+	                                    string FEType,
+	                                    int degree,
+										int dofs,
+	                                    MatrixPtr_Type &A,
+	                                    bool callFillComplete,
+	                                    int FELocExternal){
+
+	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemLinElas.xml");
+	
+    UN FEloc = checkFE(dim,FEType);
+
+	ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+
+	MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
+
+	vec2D_dbl_Type nodes;
+
+	int numNodes=dim+1;
+	if(FEType == "P2"){
+		numNodes= 6;
+		if(dim==3)
+			numNodes=10;
+	}
+
+	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
+	tuple_ssii_Type vel ("LinElas",FEType,dofs,numNodes);	
+	problemDisk->push_back(vel);
+
+	if(assemblyFEElements_.size()== 0)
+	 	initAssembleFEElements("LinearElasticity",problemDisk,elements, params,pointsRep);
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
 
@@ -177,12 +248,6 @@ void FE_Test<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 		SmallMatrixPtr_Type elementMatrix = assemblyFEElements_[T]->getJacobian(); 
 
 		addFeBlockMatrix(A, elementMatrix, elements->getElement(T), mapVel, mapPres, problemDisk);
-		/*if(T ==0){
-			//elementMatrix->print();
-			A->getBlock(0,1)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
-			A->getBlock(0,1)->print();
-			A->getBlock(0,1)->resumeFill();
-		}	*/	
 	}
 	if (callFillComplete){
 	    A->getBlock(0,0)->fillComplete();
@@ -211,7 +276,7 @@ void FE_Test<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixP
 		int numDisk = problemDisk->size();
 
 		int dofs1 = std::get<2>(problemDisk->at(0));
-		int dofs2 =std::get<2>(problemDisk->at(1));
+		int dofs2 = std::get<2>(problemDisk->at(1));
 
 		int numNodes1 = std::get<3>(problemDisk->at(0));
 		int numNodes2=std::get<3>(problemDisk->at(1));
@@ -221,6 +286,7 @@ void FE_Test<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixP
 
 		Teuchos::Array<SC> value1( numNodes1, 0. );
         Teuchos::Array<GO> columnIndices1( numNodes1, 0 );
+
 		for (UN i=0; i < numNodes1 ; i++) {
 			for(int di=0; di<dofs1; di++){
 				GO row =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+di);

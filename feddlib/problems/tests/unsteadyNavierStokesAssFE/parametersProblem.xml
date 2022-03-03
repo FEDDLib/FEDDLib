@@ -48,7 +48,7 @@
         <Parameter name="Correct pressure"                      type="bool"         value="false"/>
         <Parameter name="Semi implicit pressure"                type="bool"         value="false"/>
         <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
-        <Parameter name="Final time"	                    	type="double"   	value="1.0"/>
+        <Parameter name="Final time"	                    	type="double"   	value="0.03"/>
         <Parameter name="dt"			                    	type="double"   	value="0.01"/>
         <!-- adaptive variables -->
         <Parameter name="Print Solution Short" type="bool" value="true"/>

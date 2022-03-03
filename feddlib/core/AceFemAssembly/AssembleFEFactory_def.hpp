@@ -23,11 +23,13 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 		//AssembleFEAceLaplace<SC,LO,GO,NO> assembleFESpecific  = new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params);
 		Teuchos::RCP<AssembleFEAceLaplace<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
-
-
 	}
 	else if(problemType == "NavierStokes"){
 		Teuchos::RCP<AssembleFEAceNavierStokes<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceNavierStokes<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		assembleFE = assembleFESpecific;
+	}
+	else if(problemType == "LinearElasticity"){
+		Teuchos::RCP<AssembleFEAceLinElas<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceLinElas<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
 	else

@@ -5,6 +5,7 @@
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFEAceLaplace.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFEAceLinElas.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFEAceNavierStokes.hpp"
 namespace FEDD {
 
