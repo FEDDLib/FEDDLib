@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
     MatrixPtr_Type A= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
 
     {
-		fe.assemblyLinElasXDim( dim, domain->getFEType(), A, lambda, mu );
+		fe.assemblyLinElasXDim( dim, domain->getFEType(), A, lambda, mu ); // Is it necessary to send mu and lambda when E is defined in parameter file?
     }
     
 	// Class for assembling linear Elasticity via Acefem implementation
