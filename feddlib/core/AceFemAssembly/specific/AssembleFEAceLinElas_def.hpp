@@ -2,7 +2,7 @@
 #define ASSEMBLEFEACELINELAS_DEF_hpp
 
 #include "AssembleFEAceLinElas_decl.hpp"
-#include "NeoHookQuadraticTets.hpp"
+#include "feddlib/core/AceFemAssembly/AceInterface/NeoHookQuadraticTets.hpp"
 #include <vector>
 
 namespace FEDD {
