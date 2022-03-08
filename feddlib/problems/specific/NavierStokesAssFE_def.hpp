@@ -44,7 +44,8 @@ NavierStokesAssFE<SC,LO,GO,NO>::NavierStokesAssFE( const DomainConstPtr_Type &do
 NonLinearProblem<SC,LO,GO,NO>( parameterList, domainVelocity->getComm() ),
 A_(),
 pressureIDsLoc(new vec_int_Type(2)),
-u_rep_()
+u_rep_(),
+p_rep_()
 {
 
     this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
@@ -55,6 +56,8 @@ u_rep_()
     this->dim_ = this->getDomain(0)->getDimension();
 
     u_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
+
+    p_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
 
     if (parameterList->sublist("Parameter").get("Calculate Coefficients",false)) {
         vec2D_dbl_ptr_Type vectmpPointsPressure = domainPressure->getPointsUnique();
@@ -147,6 +150,9 @@ void NavierStokesAssFE<SC,LO,GO,NO>::assembleConstantMatrices() const{
     
 	if (this->system_.is_null())
         this->system_.reset(new BlockMatrix_Type(2));
+
+	if (this->residualVec_.is_null())
+        this->residualVec_.reset(new BlockMultiVector_Type(2));
     
     MatrixPtr_Type B(new Matrix_Type( pressureMap, this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     MatrixPtr_Type BT(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) );
@@ -159,7 +165,7 @@ void NavierStokesAssFE<SC,LO,GO,NO>::assembleConstantMatrices() const{
 	this->system_->addBlock(B,1,0);
 	this->system_->addBlock(C,1,1);
 
-	this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_,false,"Jacobian", true/*call fillComplete*/);
+	this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_,this->residualVec_, this->parameterList_,false,"Jacobian", true/*call fillComplete*/);
 
 /*	//A_->print();
 
@@ -254,19 +260,23 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
   	MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
     u_rep_->importFromVector(u, true);
+
+  	MultiVectorConstPtr_Type p = this->solution_->getBlock(1);
+    p_rep_->importFromVector(p, true);
+
    if (type=="Rhs") {
    		this->system_->addBlock(ANW,0,0);
-		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true, "Rhs",  true);
+		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_, this->residualVec_,this->parameterList_, true, "Rhs",  true);
 
    }
    if (type=="FixedPoint") {
    		this->system_->addBlock(ANW,0,0);
-		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true, "Rhs",  true);
+		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_, this->residualVec_,this->parameterList_, true, "FixedPoint",  true);
 
    }
 	else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
         this->system_->addBlock(ANW,0,0);
-		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,this->system_, this->parameterList_, true,"Jacobian", true);		
+		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_,this->residualVec_, this->parameterList_, true,"Jacobian", true);		
     }
 	
     
@@ -280,14 +290,23 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
 template<class SC,class LO,class GO,class NO>
 void NavierStokesAssFE<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
     
-    this->reAssemble("Rhs");
+    //this->reAssemble("Rhs");
+  	MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+    u_rep_->importFromVector(u, true);
+
+  	MultiVectorConstPtr_Type p = this->solution_->getBlock(1);
+    p_rep_->importFromVector(p, true);
+
+	this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_, this->residualVec_,this->parameterList_, true, "Rhs",  true);
+	this->residualVec_->print();
+	cout << " ####### COEFFS SIZE " << this->coeff_.size() << " ############# " << endl;
 
     // We need to account for different parameters of time discretizations here
     // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
-    if (this->coeff_.size() == 0)
+    /*if (this->coeff_.size() == 0)
         this->system_->apply( *this->solution_, *this->residualVec_ );
     else
-        this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
+        this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );*/
     
 
     if (!type.compare("standard")){

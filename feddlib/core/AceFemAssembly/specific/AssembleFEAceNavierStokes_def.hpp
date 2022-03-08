@@ -42,7 +42,9 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 	this->solutionPressure_ = vec_dbl_Type(dofsElementPressure_);
 
  	viscosity_ = this->params_->sublist("Parameter").get("Viscosity",1.);
-    	density_ = this->params_->sublist("Parameter").get("Density",1.);
+    density_ = this->params_->sublist("Parameter").get("Density",1.);
+
+	dofsElement_ = dofsElementVelocity_+ dofsElementPressure_;
 
 }
 
@@ -53,7 +55,8 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleJacobian() {
 
 	SmallMatrixPtr_Type elementMatrixA =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 	SmallMatrixPtr_Type elementMatrixB =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
-	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+	SmallMatrixPtr_Type elementMatrixN =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+	SmallMatrixPtr_Type elementMatrixW =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 
 	if(this->newtonStep_ ==0){
 
@@ -72,17 +75,23 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleJacobian() {
 
 		constantMatrix_->add( (*elementMatrixB),(*constantMatrix_));
 
+		ANB_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_)); // A + B + N
+		ANB_->add( (*constantMatrix_),(*ANB_));
+
+		assemblyAdvection(elementMatrixN);
+		elementMatrixN->scale(density_);
+		ANB_->add( (*elementMatrixN),(*ANB_));
+
 	}
+	
+	assemblyAdvectionInU(elementMatrixW);
+	elementMatrixW->scale(density_);
 
-	assemblyAdvection(elementMatrix);
+	//elementMatrix->add((*constantMatrix_),(*elementMatrix));
+	this->jacobian_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 
-	assemblyAdvectionInU(elementMatrix);
-
-	elementMatrix->scale(density_);
-
-	elementMatrix->add((*constantMatrix_),(*elementMatrix));
-
-	this->jacobian_ = elementMatrix; // int add(SmallMatrix<T> &bMat, SmallMatrix<T> &cMat); //this+B=C elementMatrix + constantMatrix_;
+	this->jacobian_->add((*ANB_),(*this->jacobian_));
+	this->jacobian_->add((*elementMatrixW),(*this->jacobian_));  // int add(SmallMatrix<T> &bMat, SmallMatrix<T> &cMat); //this+B=C elementMatrix + constantMatrix_;
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -106,6 +115,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Ty
     SmallMatrix<SC> Binv(dim);
   
     buildTransformation(B);
+
     detB = B.computeInverse(Binv);
     absDetB = std::fabs(detB);
 
@@ -135,34 +145,26 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Ty
 template <class SC, class LO, class GO, class NO>
 void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleRHS(){
 
-	SmallMatrixPtr_Type elementMatrixA =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
-	SmallMatrixPtr_Type elementMatrixB =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
-	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+	SmallMatrixPtr_Type elementMatrixN =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
 
-	if(this->newtonStep_ ==0){
-		constantMatrix_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+	ANB_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_)); // A + B + N
+	ANB_->add( (*constantMatrix_),(*ANB_));
 
-		assemblyLaplacian(elementMatrixA);
+	assemblyAdvection(elementMatrixN);
+	elementMatrixN->scale(density_);
+	ANB_->add( (*elementMatrixN),(*ANB_));
 
-		elementMatrixA->scale(viscosity_);
-		elementMatrixA->scale(density_);
-
-		constantMatrix_->add( (*elementMatrixA),(*constantMatrix_));
-
-		assemblyDivAndDivT(elementMatrixB);
-
-		elementMatrixB->scale(-1.);
-
-		constantMatrix_->add( (*elementMatrixB),(*constantMatrix_));
+	this->rhsVec_ = vec_dbl_Type(dofsElement_,0);
+	// Multiplying ANB_ * solution
+	for(int i=0 ; i< ANB_->size();i++){
+		for(int j=0; j < ANB_->size(); j++){
+			this->rhsVec_[i] += (*ANB_)[i][j]*this->solution_[j];
+			cout <<"Solution["<<j <<"]" << this->solution_[i] << endl;
+		}
+		cout <<"RHS["<<i <<"]" << this->rhsVec_[i] << endl;
 	}
 
-	assemblyAdvection(elementMatrix);
-
-	elementMatrix->scale(density_);
-
-	elementMatrix->add((*constantMatrix_),(*elementMatrix));
-
-	this->jacobian_ = elementMatrix; // int add(SmallMatrix<T> &bMat, SmallMatrix<T> &cMat); //this+B=C elementMatrix + constantMatrix_;
+	//this->jacobian_ = ANB_; // int add(SmallMatrix<T> &bMat, SmallMatrix<T> &cMat); //this+B=C elementMatrix + constantMatrix_;
 
 }
 
@@ -232,7 +234,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Ty
 		}
  		for (UN d=0; d<dim; d++) {
     	    for (UN j=0; j < indices.size(); j++)
-    	   		 (*elementMatrix)[i*dofs +d][j*dofs+d] += value[j];
+    	   		 (*elementMatrix)[i*dofs +d][j*dofs+d] = value[j];
 			
         }
         
@@ -303,7 +305,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr
             }
             for (UN j=0; j < phi->at(0).size(); j++){
                 for (UN d=0; d<dofs; d++) {
-         	    	(*elementMatrix)[i*dofs +d1][j*dofs+d] += value[j*dofs+d];
+         	    	(*elementMatrix)[i*dofs +d1][j*dofs+d] = value[j*dofs+d];
 				}
             }
           
