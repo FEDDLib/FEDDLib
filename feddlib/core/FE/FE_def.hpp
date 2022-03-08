@@ -115,7 +115,9 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 										int dofsVelocity,
 										int dofsPressure,
 										MultiVectorPtr_Type u_rep,
+										MultiVectorPtr_Type p_rep,
 	                                    BlockMatrixPtr_Type &A,
+										BlockMultiVectorPtr_Type &resVec,
  										ParameterListPtr_Type params,
  										bool reAssemble,
  										string assembleMode,
@@ -128,6 +130,8 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 	ElementsPtr_Type elements = domainVec_.at(FElocVel)->getElementsC();
 
+	ElementsPtr_Type elementsPres = domainVec_.at(FElocPres)->getElementsC();
+
 	int dofsElement = elements->getElement(0).getVectorNodeList().size();
 
 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FElocVel)->getPointsRepeated();
@@ -136,7 +140,11 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 	MapConstPtr_Type mapPres = domainVec_.at(FElocPres)->getMapRepeated();
 
-	vec_dbl_Type solution;
+	vec_dbl_Type solution(0);
+	vec_dbl_Type solution_u;
+	vec_dbl_Type solution_p;
+
+	vec_dbl_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
@@ -158,9 +166,21 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 	//SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
 
+	MultiVectorPtr_Type resVec_u = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocVel)->getMapVecFieldRepeated(), 1 ) );
+    MultiVectorPtr_Type resVec_p = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocPres)->getMapRepeated(), 1 ) );
+	
+	BlockMultiVectorPtr_Type resVecRep = Teuchos::rcp( new BlockMultiVector_Type( 2) );
+	resVecRep->addBlock(resVec_u,0);
+	resVecRep->addBlock(resVec_p,1);
+
 	for (UN T=0; T<assemblyFEElements_.size(); T++) {
-		
-		solution = getSolution(elements->getElement(T).getVectorNodeList(), u_rep,dofsVelocity);
+		vec_dbl_Type solution(0);
+
+		solution_u = getSolution(elements->getElement(T).getVectorNodeList(), u_rep,dofsVelocity);
+		solution_p = getSolution(elementsPres->getElement(T).getVectorNodeList(), p_rep,dofsPressure);
+
+		solution.insert( solution.end(), solution_u.begin(), solution_u.end() );
+		solution.insert( solution.end(), solution_p.begin(), solution_p.end() );
 
 		assemblyFEElements_[T]->updateSolution(solution);
  
@@ -169,38 +189,91 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 			assemblyFEElements_[T]->assembleJacobian();
 		    elementMatrix = assemblyFEElements_[T]->getJacobian(); 
 			assemblyFEElements_[T]->advanceNewtonStep();
+
+			if(reAssemble)
+				addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
+			else
+				addFeBlockMatrix(A, elementMatrix, elements->getElement(T), mapVel, mapPres, problemDisk);
+
+
 		}
 		if(assembleMode == "Rhs"){
 		    assemblyFEElements_[T]->assembleRHS();
-		    elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+		    rhsVec = assemblyFEElements_[T]->getRHS(); 
+			addFeBlockMv(resVecRep, rhsVec, elements->getElement(T),elementsPres->getElement(T), dofsVelocity,dofsPressure);
 		}
 
-		if(reAssemble)
-			addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
-		else
-			addFeBlockMatrix(A, elementMatrix, elements->getElement(T), mapVel, mapPres, problemDisk);
-		/*if(T ==0){
+				/*if(T ==0){
 			//elementMatrix->print();
 			A->getBlock(0,1)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
 			A->getBlock(0,1)->print();
 			A->getBlock(0,1)->resumeFill();
 		}	*/	
 	}
-	if (callFillComplete && reAssemble)
+	if (callFillComplete && reAssemble && assembleMode != "Rhs" )
 	    A->getBlock(0,0)->fillComplete( domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocVel)->getMapVecFieldUnique());
-	else{
+	else if(callFillComplete && !reAssemble && assembleMode != "Rhs"){
 		A->getBlock(0,0)->fillComplete();
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
 	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocPres)->getMapUnique(),domainVec_.at(FElocVel)->getMapVecFieldUnique());
 	    A->getBlock(1,1)->fillComplete();
 	}
 
+    MultiVectorPtr_Type resVecUnique_u = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocVel)->getMapVecFieldUnique(), 1 ) );
+    MultiVectorPtr_Type resVecUnique_p = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocPres)->getMapUnique(), 1 ) );
+
+    resVecUnique_u->putScalar(0.);
+    resVecUnique_p->putScalar(0.);
+
+    resVecUnique_u->exportFromVector( resVec_u, true, "Add" );
+    resVecUnique_p->exportFromVector( resVec_p, true, "Add" );
+
+	resVec->addBlock(resVecUnique_u,0);
+	resVec->addBlock(resVecUnique_p,1);
+
+
 }
 
 /*!
 
+ \brief Inserting local rhsVec into global residual Mv;
+
+
+@param[in] res BlockMultiVector of residual vec; Repeated distribution; 2 blocks
+@param[in] rhsVec sorted the same way as residual vec
+@param[in] element of block1
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock1,FiniteElement elementBlock2, int dofs1, int dofs2 ){
+
+    Teuchos::ArrayRCP<SC>  resArray_block1 = res->getBlockNonConst(0)->getDataNonConst(0);
+
+    Teuchos::ArrayRCP<SC>  resArray_block2 = res->getBlockNonConst(1)->getDataNonConst(0);
+
+	vec_LO_Type nodeList_block1 = elementBlock1.getVectorNodeList();
+
+	vec_LO_Type nodeList_block2 = elementBlock2.getVectorNodeList();
+
+	for(int i=0; i< nodeList_block1.size() ; i++){
+		for(int d=0; d<dofs1; d++)
+			resArray_block1[nodeList_block1[i]*dofs1+d] += rhsVec[i*dofs1+d];
+	}
+	int offset = nodeList_block1.size()*dofs1;
+
+	for(int i=0; i < nodeList_block2.size(); i++){
+		for(int d=0; d<dofs2; d++)
+			resArray_block2[nodeList_block2[i]*dofs2+d] += rhsVec[i*dofs2+d+offset];
+	}
+
+}
+
+
+/*!
+
  \brief Inserting element stiffness matrices into global stiffness matrix
-@todo column indices pre determine
+
 
 @param[in] &A Global Block Matrix
 @param[in] elementMatrix Stiffness matrix of one element

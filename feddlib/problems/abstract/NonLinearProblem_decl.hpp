@@ -118,7 +118,7 @@ public:
     
     double nonLinearTolerance_;
     BlockMultiVectorPtr_Type    previousSolution_;
-    BlockMultiVectorPtr_Type    residualVec_;
+    mutable BlockMultiVectorPtr_Type    residualVec_;
     SmallMatrix<double> coeff_;// coefficients for a time-dependent problem
 
 private:

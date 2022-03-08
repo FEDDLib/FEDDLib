@@ -290,6 +290,7 @@ int main(int argc, char *argv[]) {
 
 			// ###########################################################################################################
 			// OLD ASSEMBLY
+			MAIN_TIMER_START(FE," Old: Solve equation");
             NavierStokes<SC,LO,GO,NO> navierStokes( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
 
             navierStokes.addBoundaries(bcFactory);
@@ -305,7 +306,8 @@ int main(int argc, char *argv[]) {
             daeTimeSolver.setupTimeStepping();
 
             daeTimeSolver.advanceInTime();
-			cout << " ###### DONE WITH OLD ASSEMBLY ##### " << endl;
+			MAIN_TIMER_STOP(FE);	
+
 			// ###########################################################################################################
 
 			DAESolverInTime<SC,LO,GO,NO> daeTimeSolverAssFE(parameterListAll, comm);
@@ -315,6 +317,8 @@ int main(int argc, char *argv[]) {
 
 			// ###########################################################################################################
 			// New Assembly
+			MAIN_TIMER_START(FE_test," New: Solve equation");
+
   			NavierStokesAssFE<SC,LO,GO,NO> navierStokesAssFE( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
 			navierStokesAssFE.addBoundaries(bcFactory);
             
@@ -329,6 +333,8 @@ int main(int argc, char *argv[]) {
             daeTimeSolverAssFE.setupTimeStepping();
 
             daeTimeSolverAssFE.advanceInTime();
+			MAIN_TIMER_STOP(FE_test);	
+			Teuchos::TimeMonitor::report(cout,"Main");
 			// ###########################################################################################################
 
 

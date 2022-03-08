@@ -83,6 +83,9 @@ class FE {
     typedef BlockMatrix<SC,LO,GO,NO> BlockMatrix_Type ;
     typedef Teuchos::RCP<BlockMatrix_Type> BlockMatrixPtr_Type;
 
+    typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type ;
+    typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
+
 	typedef SmallMatrix<SC> SmallMatrix_Type;
     typedef Teuchos::RCP<SmallMatrix_Type> SmallMatrixPtr_Type;
 
@@ -383,7 +386,9 @@ class FE {
 								int dofsVelocity,
 								int dofsPressure,
 								MultiVectorPtr_Type u_rep,
+								MultiVectorPtr_Type p_rep,
 								BlockMatrixPtr_Type &A,
+								BlockMultiVectorPtr_Type &resVec,
 								ParameterListPtr_Type params,
 								bool reAssemble,
 							    string assembleMode,
@@ -395,6 +400,8 @@ private:
 	void addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstColumn,MapConstPtr_Type mapSecondColumn, tuple_disk_vec_ptr_Type problemDisk);
 
 	void addFeBlock(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstRow, int row, int column, tuple_disk_vec_ptr_Type problemDisk);
+
+	void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock1,FiniteElement elementBlock2, int dofs1, int dofs2 );
 
 			
 	void initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep);

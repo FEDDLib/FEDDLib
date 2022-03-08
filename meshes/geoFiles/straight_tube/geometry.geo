@@ -5,8 +5,8 @@ h = 0.1;
 R= 0.50;
 L = 5.0;
 
-nb_layers = 40;
-n_elem_quarter = 10;
+nb_layers = 20;
+n_elem_quarter = 8;
 n_elem_solid = 3;
 
 // ############# POINTS ##############

@@ -11,10 +11,10 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fsiArtery
 	EXEDEPS fsi_artery
 )
 
-#TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_fsiArtery
-#	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-#    SOURCE_FILES dfg_fsi_fluid_h004.mesh dfg_fsi_solid_h004.mesh
-#	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-#	DEST_FILES dfg_fsi_fluid_h004.mesh dfg_fsi_solid_h004.mesh
-#	EXEDEPS fsi_artery
-#)
+TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_fsiArtery
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
+        SOURCE_FILES solid.mesh fluid.mesh
+	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+	DEST_FILES solid.mesh fluid.mesh
+	EXEDEPS fsi_artery
+)

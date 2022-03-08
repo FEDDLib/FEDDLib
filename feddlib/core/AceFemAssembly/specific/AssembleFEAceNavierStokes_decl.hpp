@@ -106,10 +106,13 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	int dofsElementVelocity_ ;
 	int dofsElementPressure_ ;
 
+	int dofsElement_;
+
 	vec_dbl_Type solutionVelocity_;
 	vec_dbl_Type solutionPressure_;
 
 	SmallMatrixPtr_Type constantMatrix_;
+	SmallMatrixPtr_Type ANB_;
 
 	double viscosity_ ;
    	 double density_ ;
