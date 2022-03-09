@@ -247,7 +247,7 @@ int main(int argc, char *argv[]) {
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
 
-          	 parameter_vec.push_back(0.41);//height of inflow region
+          	 parameter_vec.push_back(1);//0.41);//height of inflow region
 
             if (dim==2){
                 bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);

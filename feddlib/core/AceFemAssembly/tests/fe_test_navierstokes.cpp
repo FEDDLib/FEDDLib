@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     // Mesh
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemNavierStokes.xml");
     string filename = params->sublist("Parameter").get("Mesh Name","square.mesh");
-    std::string FETypeV=params->sublist("Parameter").get("DiscretizationV","P1");
+    std::string FETypeV=params->sublist("Parameter").get("DiscretizationV","P2");
     std::string FETypeP=params->sublist("Parameter").get("DiscretizationP","P1");
     int dofsV =params->sublist("Parameter").get("DofsV",2);
     int dofsP =params->sublist("Parameter").get("DofsP",1);
@@ -87,7 +87,6 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     
-
 
 	DomainPtr_Type domainP1;
     DomainPtr_Type domainP2;
@@ -156,7 +155,7 @@ int main(int argc, char *argv[]) {
     MatrixPtr_Type B= Teuchos::rcp(new Matrix_Type(domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 
     fe.assemblyDivAndDivTFast(dim, "P2", "P1", 2, B, BT, domain->getMapVecFieldUnique(), domainP1->getMapUnique(), true );
-	//B->print();
+
 	MAIN_TIMER_STOP(FE);	
 	cout << " Done for FE " << endl;
 	// ANW is first block 
@@ -178,12 +177,10 @@ int main(int argc, char *argv[]) {
 	systemFETest->addBlock(B_test,1,0);
 	systemFETest->addBlock(dummy,1,1);
 
-    {
-        fe_test.assemblyNavierStokes(dim, FETypeV, FETypeP, 2,dofsV,dofsP,u_rep,systemFETest, true/*call fillComplete*/);
-    }
-	//B_test->print();
-	BT->print();
-	BT_test->print();
+    fe_test.assemblyNavierStokes(dim, FETypeV, FETypeP, 2,dofsV,dofsP,u_rep,systemFETest, true/*call fillComplete*/);
+    
+	B->print();
+	B_test->print();
 
 	cout << " Done for FE Test" << endl;
 	MAIN_TIMER_STOP(FE_test);	
@@ -191,6 +188,7 @@ int main(int argc, char *argv[]) {
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 	ANW->addMatrix(1, Sum, 1);
 	A_test->addMatrix(-1, Sum, 1);
+
 
 
 	int maxRank = std::get<1>(domain->getMesh()->rankRange_);

@@ -296,6 +296,43 @@ int main(int argc, char *argv[])
                             domainP2fluid->buildP2ofP1Domain( domainP1fluid );
                             domainP2struct->buildP2ofP1Domain( domainP1struct );
                         }
+
+			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+
+			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainP2fluid->getMapUnique()));
+			vec_int_ptr_Type BCFlags = domainP2fluid->getBCFlagUnique();
+
+			Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
+			for(int i=0; i< entries.size(); i++){
+				entries[i] = BCFlags->at(i);
+			}
+
+			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+			exPara->setup("FlagsFluid", domainP2fluid->getMesh(), discType);
+
+			exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainP2fluid->getMapUnique(), domainP2fluid->getMapUniqueP2());
+
+			exPara->save(0.0);
+
+			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara2(new ExporterParaView<SC,LO,GO,NO>());
+
+			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution2(new MultiVector<SC,LO,GO,NO>(domainP2struct->getMapUnique()));
+			vec_int_ptr_Type BCFlags2 = domainP2struct->getBCFlagUnique();
+
+			Teuchos::ArrayRCP< SC > entries2  = exportSolution2->getDataNonConst(0);
+			for(int i=0; i< entries2.size(); i++){
+				entries2[i] = BCFlags2->at(i);
+			}
+
+			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst2 = exportSolution2;
+
+			exPara2->setup("FlagsStructure", domainP2struct->getMesh(), discType);
+
+			exPara2->addVariable(exportSolutionConst2, "Flags", "Scalar", 1,domainP2struct->getMapUnique(), domainP2struct->getMapUniqueP2());
+
+			exPara2->save(0.0);
+
                         // Calculate distances is done in: identifyInterfaceParallelAndDistance
                         domainP1fluid->identifyInterfaceParallelAndDistance(domainP1struct, idsInterface);
                         if (!discType.compare("P2"))
@@ -332,41 +369,7 @@ int main(int argc, char *argv[])
             }
 
 
-			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
-			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainFluidVelocity->getMapUnique()));
-			vec_int_ptr_Type BCFlags = domainFluidVelocity->getBCFlagUnique();
-
-			Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
-			for(int i=0; i< entries.size(); i++){
-				entries[i] = BCFlags->at(i);
-			}
-
-			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
-
-			exPara->setup("FlagsFluid", domainFluidVelocity->getMesh(), discType);
-
-			exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainFluidVelocity->getMapUnique(), domainFluidVelocity->getMapUniqueP2());
-
-			exPara->save(0.0);
-
-			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara2(new ExporterParaView<SC,LO,GO,NO>());
-
-			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution2(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapUnique()));
-			vec_int_ptr_Type BCFlags2 = domainStructure->getBCFlagUnique();
-
-			Teuchos::ArrayRCP< SC > entries2  = exportSolution2->getDataNonConst(0);
-			for(int i=0; i< entries2.size(); i++){
-				entries2[i] = BCFlags2->at(i);
-			}
-
-			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst2 = exportSolution2;
-
-			exPara2->setup("FlagsStructure", domainStructure->getMesh(), discType);
-
-			exPara2->addVariable(exportSolutionConst2, "Flags", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
-
-			exPara2->save(0.0);
 
 
 
@@ -623,8 +626,8 @@ int main(int argc, char *argv[])
 //                TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "fix Randwerte für Richter Benchmark");
             bcFactoryGeometry->addBC(zeroDirichlet3D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow ring
             bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // outflow ring
-            //bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // inflow
-            //bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // outflow
+            bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // inflow
+            bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // outflow
             // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand.
             // Hier erstmal Dirichlet Nullrand, wird spaeter von der Sturkturloesung vorgegeben
             bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface

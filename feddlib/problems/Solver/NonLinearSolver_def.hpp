@@ -352,6 +352,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton( NonLinearProblem_Type &problem )
         //this makes only sense for Navier-Stokes/Stokes, for other problems, e.g., non linear elasticity, it should do nothing.
 
         problem.calculateNonLinResidualVec("reverse");
+
         if (criterion=="Residual")
             residual = problem.calculateResidualNorm();
 

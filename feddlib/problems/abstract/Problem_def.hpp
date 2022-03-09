@@ -268,6 +268,7 @@ int Problem<SC,LO,GO,NO>::solve( BlockMultiVectorPtr_Type rhs ){
         std::string type = parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
         its = linSolver.solve( this, rhs, type ); // if rhs is null. Then the rhs_ of this is used in the linear solver
     }
+
     if (verbose_)
         std::cout << " done -- " << std::endl;
 
