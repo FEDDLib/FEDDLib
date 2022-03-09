@@ -20,6 +20,7 @@ CACHE INTERNAL "")
 
 SET(AceFemAssemblyAceInterface_SOURCES
 	AceFemAssembly/AceInterface/NeoHookQuadraticTets.f
+  AceFemAssembly/AceInterface/NeoHookQuadraticTets2.f
 	AceFemAssembly/AceInterface/SMSUtility.f
 CACHE INTERNAL "")
 

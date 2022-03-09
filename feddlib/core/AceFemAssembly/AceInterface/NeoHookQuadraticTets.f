@@ -11,9 +11,10 @@
 ! Total size of Mathematica  code : 8838 subexpressions
 ! Total size of Fortran code      : 27829 bytes
 
- 
+      module f_routines
+        contains
 !******************* S U B R O U T I N E **********************
-      SUBROUTINE SKR10(v,d,ul,ul0,xl,s,p,ht,hp) bind(c, name='skr') !Ad   
+      SUBROUTINE SKR10(v,d,ul,ul0,xl,s,p,ht,hp)  
       IMPLICIT NONE
       include 'sms.h'
       INTEGER i1,i2,i200,i215,icode !Added this
@@ -584,11 +585,10 @@
         ENDDO
        ENDDO
       ENDDO
-      END
+      END SUBROUTINE
 
 !******************* S U B R O U T I N E **********************
-      SUBROUTINE SPP10(v,d,ul,ul0,xl,s,p,ht,hp,sg,sg0,sxd,gpost,npost) 
-     &bind(c, name='spp') !Added this
+      SUBROUTINE SPP10(v,d,ul,ul0,xl,s,p,ht,hp,sg,sg0,sxd,gpost,npost)
       IMPLICIT NONE
       include 'sms.h'
       INTEGER i250,i251,icode !Added this
@@ -883,4 +883,5 @@
       npost(8,6)=v(290)
       npost(9,6)=v(293)
       npost(10,6)=v(296)
-      END
+      END SUBROUTINE
+      END MODULE f_routines

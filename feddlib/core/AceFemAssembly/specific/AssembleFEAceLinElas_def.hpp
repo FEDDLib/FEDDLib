@@ -4,6 +4,7 @@
 #include "AssembleFEAceLinElas_decl.hpp"
 #include "feddlib/core/AceFemAssembly/AceInterface/NeoHookQuadraticTets.hpp"
 #include <vector>
+#include <iostream>
 
 namespace FEDD {
 
@@ -23,7 +24,7 @@ AssembleFEAceLinElas<SC,LO,GO,NO>::AssembleFEAceLinElas(int flag, vec2D_dbl_Type
 AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 {
 	/// Extracting values from ParameterList params:
-	E_ = this->params_->sublist("Parameter").get("E",3500); // the last value is the dafault value, in case no parameter is set
+	E_ = this->params_->sublist("Parameter").get("E",3500.0); // the last value is the dafault value, in case no parameter is set
     //lambda_ = this->params_->sublist("Parameter").get("lambda",1.);
     poissonRatio_ = this->params_->sublist("Parameter").get("Poisson Ratio",0.4e-0);
 
@@ -84,8 +85,8 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assemblyLinElas(SmallMatrixPtr_Type &ele
 	std::vector<double> xl(30); // Nodal Positions in reference coordinates
 	std::vector<double> s(900); // Element Stiffness Matrix [Output from skr]
 	std::vector<double> p(30); // Residual vector [Output from skr]
-	std::vector<double> ht; // History parameters currently unused
-	std::vector<double> hp; // History parameters currently unused
+	std::vector<double> ht(10); // History parameters currently unused
+	std::vector<double> hp(10); // History parameters currently unused
 
 	d[0] = this->E_; // TODO: Check order if there is a problem
 	d[1] = this->poissonRatio_;
@@ -102,8 +103,9 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assemblyLinElas(SmallMatrixPtr_Type &ele
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
+	std::cout << "[DEBUG]Pre-SKR Call - Jacobian!" << std::endl;
 	skr(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
-
+	std::cout << "[DEBUG]Post-SKR Call! - Jacobian!" << std::endl;
 	// Note: FEAP/Fortran returns matrices unrolled in column major form. This must be converted for use here.
 
     for (UN i=0; i < this->dofsElement_; i++) {
@@ -132,8 +134,8 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assembleRHS() {
 	std::vector<double> xl(30); // Nodal Positions in reference coordinates
 	std::vector<double> s(900); // Element Stiffness Matrix [Output from skr]
 	std::vector<double> p(30); // Residual vector [Output from skr]
-	std::vector<double> ht; // History parameters currently unused
-	std::vector<double> hp; // History parameters currently unused
+	std::vector<double> ht(10); // History parameters currently unused
+	std::vector<double> hp(10); // History parameters currently unused
 
 	d[0] = this->E_; // TODO: Check order if there is a problem
 	d[1] = this->poissonRatio_;
@@ -151,7 +153,9 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assembleRHS() {
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
+	std::cout << "[DEBUG]Pre-SKR Call - Residuum!" << std::endl;
 	skr(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
+	std::cout << "[DEBUG]Post-SKR Call! - Residuum!" << std::endl;
 	this->rhsVec_ = p;
 }
 
