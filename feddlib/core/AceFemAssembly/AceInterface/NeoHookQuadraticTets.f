@@ -1,27 +1,29 @@
 !**************************************************************
 !* AceGen    7.404 Linux (9 Feb 22)                           *
-!*           Co. J. Korelc  2020           4 Mar 22 12:00:09  *
+!*           Co. J. Korelc  2020           10 Mar 22 12:04:17 *
 !**************************************************************
 ! User     : Full professional version
-! Notebook : NeoHookQuadraticTets
-! Evaluation time                 : 10 s    Mode  : Optimal
+! Notebook : QuadraticTetsNeoHook
+! Evaluation time                 : 21 s    Mode  : Optimal
 ! Number of formulae              : 372     Method: Automatic
 ! Subroutine                      : SKR10 size: 5080
 ! Subroutine                      : SPP10 size: 3758
 ! Total size of Mathematica  code : 8838 subexpressions
-! Total size of Fortran code      : 27829 bytes
+! Total size of Fortran code      : 27826 bytes
 
+ 
+C
       module f_routines
         contains
 !******************* S U B R O U T I N E **********************
-      SUBROUTINE SKR10(v,d,ul,ul0,xl,s,p,ht,hp)  
+      SUBROUTINE SKR10(v,d,ul,ul0,xl,s,p,ht,hp)
       IMPLICIT NONE
       include 'sms.h'
-      INTEGER i1,i2,i200,i215,icode !Added this
+      INTEGER i1,i2,i200,i215,icode
       DOUBLE PRECISION v(1002),d(2),ul(3,10),ul0(3,10),xl(3
      &,10),s(30,30),p(30),ht(*),hp(*)
-      icode=18 !Added this
-      call SMSIntPoints(icode,ngpo,gp) !Added this
+      icode=18
+      call SMSIntPoints(icode,ngpo,gp)
       v(194)=d(2)
       v(197)=d(1)/(2d0*(1d0+v(194)))
       v(481)=2d0*v(197)
@@ -580,23 +582,23 @@
         v(901)=v(163)*v(241)+v(162)*v(242)+v(161)*v(243)
         v(902)=v(163)*v(238)+v(162)*v(239)+v(161)*v(240)
         p(i200)=p(i200)+v(126)*v(6)*v(565+i200)
-        DO i215=i200,30
+        DO i215=1,30
          s(i200,i215)=s(i200,i215)+v(6)*v(872+i215)
         ENDDO
        ENDDO
       ENDDO
-      END SUBROUTINE
+      END
 
 !******************* S U B R O U T I N E **********************
       SUBROUTINE SPP10(v,d,ul,ul0,xl,s,p,ht,hp,sg,sg0,sxd,gpost,npost)
       IMPLICIT NONE
       include 'sms.h'
-      INTEGER i250,i251,icode !Added this
+      INTEGER i250,i251,icode
       DOUBLE PRECISION v(1002),d(2),ul(3,10),ul0(3,10),xl(3
      &,10),s(30,30),p(30),ht(*),hp(*),sg(*),sg0(*),sxd(30),gpost(64
      &,21),npost(10,6)
-      icode=18 !Added this
-      call SMSIntPoints(icode,ngpo,gp) !Added this
+      icode=18
+      call SMSIntPoints(icode,ngpo,gp)
       v(443)=d(2)
       v(446)=d(1)/(2d0*(1d0+v(443)))
       v(507)=2d0*v(446)
@@ -883,5 +885,5 @@
       npost(8,6)=v(290)
       npost(9,6)=v(293)
       npost(10,6)=v(296)
-      END SUBROUTINE
-      END MODULE f_routines
+      END
+      end module f_routines

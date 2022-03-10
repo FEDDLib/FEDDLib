@@ -72,10 +72,10 @@ int main(int argc, char *argv[]) {
     double poissonRatio=params->sublist("Parameter").get("Poisson Ratio",0.4e-0);
 
     // Berechne daraus nun E (Youngsches Modul) und die erste Lamé-Konstanten \lambda
-    double youngModulus = mu*2.*(1 + poissonRatio);
+    double youngModulus=params->sublist("Parameter").get("E",1000.0);
     double lambda = (poissonRatio*youngModulus)/((1 + poissonRatio)*(1 - 2*poissonRatio));
 
-    int dofs =params->sublist("Parameter").get("Dofs",1);
+    int dofs =params->sublist("Parameter").get("Dofs",3);
     int numProcsCoarseSolve = 0;
     int n;
     int size = comm->getSize();
