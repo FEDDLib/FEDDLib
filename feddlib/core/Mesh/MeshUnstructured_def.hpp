@@ -870,7 +870,8 @@ void MeshUnstructured<SC,LO,GO,NO>::setMeshFileName(string meshFileName, string 
 
 /*!
 
- \brief Not all edges are marked with a flag in the beginning. In order to set the correct flags to new points we assign the edge flag of the edge they originated from, similar to the function determineEdgeFlagP2, but this function uses the edgeMap.
+ \brief Not all edges are marked with a flag in the beginning. In order to set the correct flags to new points we assign the edge flag of the edge they originated from, similar to the function determineEdgeFlagP2, but this function uses the edgeMap. 
+	@todo Elaboration of Flag Assignment Process. i.e. Lowest flag is used etc.
 
 */
 

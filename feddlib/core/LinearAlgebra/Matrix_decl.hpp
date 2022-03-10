@@ -81,62 +81,143 @@ public:
 
     Matrix& operator+=(const Matrix& matIn);
 
+	/*! 
+		\brief Intertion of values in global row 'globalRow'. Matrix is distributed nodewise. If values are added to same row, they automatically get summed up.
+
+	*/
     void insertGlobalValues (GO globalRow, const Teuchos::ArrayView< const GO > &cols, const Teuchos::ArrayView< const SC > &vals);
 
+	/*!
+		\brief Returns the local number of rows.
+		
+	*/
     LO getNodeNumRows() const;
 
+	/*!
+		\brief Returns map of type " ". i.e. row or column map
+	*/
     MapConstPtr_Type getMap(string map_string="");
 
+	/*!
+		\brief Returns map of type " ". i.e. row or column map
+	*/
     MapConstPtr_Type getMap(string map_string="") const;
 
+	/*!
+		\brief Return map in Xpetra Format of type " ".
+	*/
     XpetraMapConstPtr_Type getMapXpetra(string map_string="");
 
+	/*!
+		\brief i.e. for NOX
+	*/
     Teuchos::RCP<const Thyra::LinearOpBase<SC> > getThyraLinOp() const;
 
+	/*!
+		\brief i.e. for NOX
+	*/
     Teuchos::RCP<Thyra::LinearOpBase<SC> > getThyraLinOpNonConst();
 
+	/*!
+		\brief printing matrix
+	*/
     void print(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME);
 
+	/*!
+		\brief Resuming filling process. But only limited options i.e. scaling remain.
+	*/
     void resumeFill();
 
+	/*!
+		\brief after inserting global values into matrix. After this step the column map is fixed. Row map is used for filling.
+	*/
     void fillComplete();
 
+	/*!
+		\brief Filling of Matrix based on specific domainmap (column map) and rangeMap (rowmap).
+	*/
     void fillComplete(MapConstPtr_Type domainMap, MapConstPtr_Type rangeMap);
 
+	/*!
+		\brief
+	*/
     bool isLocallyIndexed();
 
+	/*!
+		\brief Check if matrix is already filled complete.
+	*/
     bool isFillComplete();
 //    void fillComplete(with maps);
 
 //    ThyraLinOpPtr_Type getThyraLinOp();
 
+	/*!
+		\brief Extracting single rows of Matrix with global row ID. Indices returns global indices of entries stored in values.
+	*/
     void getGlobalRowView(GO globalRow, Teuchos::ArrayView< const GO > &indices, Teuchos::ArrayView< const SC > &values) const;
 
+	/*!
+		\brief Extracting single rows of Matrix with local row ID. Indices returns local indices of entries stored in values.
+	*/
     void getLocalRowView(LO localRow, Teuchos::ArrayView< const LO > &indices, Teuchos::ArrayView< const SC > &values) const;
 
+	/*!
+		\brief Replacing single rows of Matrix with global row ID. Indices returns global indices of entries stored in values.
+	*/
     void replaceGlobalValues(GO globalRow, const Teuchos::ArrayView< const GO > &indices, const Teuchos::ArrayView< const SC > &values);
 
+	/*!
+		\brief Replacing single rows of Matrix with local row ID. Indices returns local indices of entries stored in values.
+	*/
     void replaceLocalValues(LO localRow, const Teuchos::ArrayView< const LO > &indices, const Teuchos::ArrayView< const SC > &values);
 
+	/*!
+		\brief Return matrix in Xpetra Format of type " ".
+	*/
     XpetraMatrixConstPtr_Type getXpetraMatrix() const;
     
+	/*!
+		\brief Matrix Vector Operation. Applying MultiVector X to this. Y = alpha * (this)^mode * X + beta * Y. Mode being transposed or not. 
+	*/
     void apply(const MultiVector_Type& X,
                MultiVector_Type& Y,
                Teuchos::ETransp mode = Teuchos::NO_TRANS,
                SC alpha = Teuchos::ScalarTraits<SC>::one(),
                SC beta = Teuchos::ScalarTraits<SC>::zero() ) const;
 
+	/*!
+		\brief Scaling this with constant alpha.
+	*/
     void scale(const SC& alpha);
 
+	/*!
+		\brief Writing Matrix in file.
+	*/
     void writeMM(std::string fileName="matrix.mm") const;
 
+	/*!
+		\brief B = alpha*this + beta*B.
+	*/
     void addMatrix(SC alpha, const MatrixPtr_Type &B, SC beta);
     
+	/*!
+		\brief Turning Matrix into MultiVector Format
+	*/
     void toMV( MultiVectorPtr_Type& mv );
     
+	/*!
+		\brief Maximum number of entries in any row of the matrix, over all processes.
+	*/
     LO getGlobalMaxNumRowEntries() const;
 
+	/* !
+		Matrix Analogue to MultiVector Import. Based on Row Map of Matrix mvIn. 
+	*/
     void importFromVector( MatrixPtr_Type mvIn, bool reuseImport = false, std::string combineMode = "Insert", std::string type="Forward" );
+
+	/* !
+		Matrix Analogue to MultiVector Export. Based on Row Map of Matrix mvIn. 
+	*/
     void exportFromVector( MatrixPtr_Type mvIn, bool reuseExport = false, std::string combineMode = "Insert", std::string type="Forward" );
 	
 

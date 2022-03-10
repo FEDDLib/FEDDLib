@@ -90,8 +90,6 @@ public:
     void determineRanksFromFractions(vec_int_Type& fractions);
     
     void makeContinuousElements(ElementsPtr_Type elements, vec_idx_Type& eind_vec, vec_idx_Type& eptr_vec );
-    
-    //void findAndSetSurfaces( vec2D_int_Type& surfElements_vec, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation, MapConstPtr_Type mapRepeated);
 
 	/*! 
 		\brief Finding the surfaces corresponding to a specfic element and then setting subelements
