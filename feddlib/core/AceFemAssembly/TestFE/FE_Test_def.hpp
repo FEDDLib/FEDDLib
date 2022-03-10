@@ -322,7 +322,6 @@ void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type el
                 for(int k=0;k<dofs;k++){
                     for (UN j=0; j < columnIndices.size(); j++){
                         columnIndices[j] = GO ( dofs * map->getGlobalElement( element.getNode(j) )+k);
-                        // std::cout << columnIndices[j] << " ";
                         value[j] = (*elementMatrix)[dofs*i+d][dofs*j+k];
                     }
                     A->insertGlobalValues( row, columnIndices(), value() ); // Automatically adds entries if a value already exists                                   
