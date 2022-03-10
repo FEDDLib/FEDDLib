@@ -364,63 +364,17 @@ int main(int argc, char *argv[]) {
     		errorValues->normInf(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
 			double res = norm[0];
 			if(comm->getRank() ==0)
-				cout << " 2 Norm of Error of Solutions " << res << endl;
+				cout << " Inf Norm of Error of Solutions " << res << endl;
 
 			navierStokes.getSolution()->norm2(norm);
 			res = norm[0];
 			if(comm->getRank() ==0)
-				cout << " 2 Norm of solution navier stokes " << res << endl;
+				cout << "2 Norm of solution navier stokes " << res << endl;
 
 			navierStokesAssFE.getSolution()->norm2(norm);
 			res = norm[0];
 			if(comm->getRank() ==0)
 				cout << " 2 Norm of solutions navier stokes assemFE " << res << endl;
-
-			MatrixPtr_Type Sum2= Teuchos::rcp(new Matrix_Type( domainVelocity->getMapVecFieldUnique(), domainVelocity->getDimension() * domainVelocity->getApproxEntriesPerRow() )  );
-			navierStokes.getSystem()->getBlock(0,0)->addMatrix(1, Sum2, 1);
-			navierStokesAssFE.getSystem()->getBlock(0,0)->addMatrix(-1, Sum2, 1);
-
-			Teuchos::ArrayView<const GO> indices;
-			Teuchos::ArrayView<const SC> values;
-			res=0.;
-			for (UN i=0; i < domainVelocity->getMapUnique()->getMaxLocalIndex()+1 ; i++) {
-				for(int d=0; d< dim ; d++){
-					GO row = dim*domainVelocity->getMapUnique()->getGlobalElement( i )+d;
-					Sum2->getGlobalRowView(row, indices,values);
-					
-					for(int j=0; j< values.size() ; j++){
-						if(fabs(values[j])>res)
-							res = fabs(values[j]);			
-					}	
-				}	
-			}
-			res = fabs(res);
-			reduceAll<int, double> (*comm, REDUCE_MAX, res, outArg (res));
-           
-			if(comm->getRank() == 0)
-				cout << " Norm of Difference between Block A: " << res << endl;
-
-			MatrixPtr_Type Sum1= Teuchos::rcp(new Matrix_Type( domainPressure->getMapUnique(), domainVelocity->getDimension() * domainVelocity->getApproxEntriesPerRow() )  );
-			navierStokes.getSystem()->getBlock(1,0)->addMatrix(1, Sum1, 1);
-			navierStokesAssFE.getSystem()->getBlock(1,0)->addMatrix(-1, Sum1, 1);
-
-			res=0.;
-			for (UN i=0; i < domainPressure->getMapUnique()->getMaxLocalIndex()+1 ; i++) {
-				GO row = domainPressure->getMapUnique()->getGlobalElement( i );
-				Sum1->getGlobalRowView(row, indices,values);
-				
-				for(int j=0; j< values.size() ; j++){
-					res += fabs(values[j]);			
-				}	
-			}	
-			
-			res = fabs(res);
-			reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
-		
-			if(comm->getRank() == 0)
-				cout << " Norm of Difference between Block B: " << res << endl;
-
-		  			
 
             DomainPtr_Type dom = domainVelocity;
 

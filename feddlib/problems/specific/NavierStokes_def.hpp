@@ -746,7 +746,6 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
     else
         this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
     
-
     if (!type.compare("standard")){
         this->residualVec_->update(-1.,*this->rhs_,1.);
 //        if ( !this->sourceTerm_.is_null() )
@@ -760,9 +759,9 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
 //        if ( !this->sourceTerm_.is_null() )
 //            this->residualVec_->update(1.,*this->sourceTerm_,1.);
         // this might be set again by the TimeProblem after addition of M*u
-        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-        
+        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );    
     }
+
 }
 
 template<class SC,class LO,class GO,class NO>

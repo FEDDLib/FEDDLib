@@ -57,8 +57,8 @@
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="fluid.mesh"/>
-        <Parameter name="Mesh 2 Name" type="string" value="solid.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="fluid_artery_res1.mesh"/>
+        <Parameter name="Mesh 2 Name" type="string" value="solid_artery_res1.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
         
