@@ -118,13 +118,14 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 										MultiVectorPtr_Type p_rep,
 	                                    BlockMatrixPtr_Type &A,
 										BlockMultiVectorPtr_Type &resVec,
+										SmallMatrix_Type coeff,
  										ParameterListPtr_Type params,
  										bool reAssemble,
  										string assembleMode,
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
 	
-	
+
     UN FElocVel = checkFE(dim,FETypeVelocity); // Checks for different domains which belongs to a certain fetype
     UN FElocPres = checkFE(dim,FETypePressure); // Checks for different domains which belongs to a certain fetype
 
@@ -173,6 +174,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 	resVecRep->addBlock(resVec_u,0);
 	resVecRep->addBlock(resVec_p,1);
 
+
 	for (UN T=0; T<assemblyFEElements_.size(); T++) {
 		vec_dbl_Type solution(0);
 
@@ -185,10 +187,16 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 		assemblyFEElements_[T]->updateSolution(solution);
  
  		SmallMatrixPtr_Type elementMatrix;
-		if(assembleMode == "Jacobian"){
+		if(assembleMode == "Jacobian" || assembleMode == "FixedPoint"){
 			assemblyFEElements_[T]->assembleJacobian();
 		    elementMatrix = assemblyFEElements_[T]->getJacobian(); 
-			assemblyFEElements_[T]->advanceNewtonStep();
+			if(assembleMode == "FixedPoint"){
+         	   AssembleFEAceNavierStokesPtr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFEAceNavierStokes_Type>(assemblyFEElements_[T] );
+			   elTmp->assembleRHS();
+			   elementMatrix = elTmp->getFixedPointMatrix(); 
+			}
+			else
+				assemblyFEElements_[T]->advanceNewtonStep();
 
 			if(reAssemble)
 				addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
@@ -198,19 +206,16 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 		}
 		if(assembleMode == "Rhs"){
+			AssembleFEAceNavierStokesPtr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFEAceNavierStokes_Type>(assemblyFEElements_[T] );
+			elTmp->setCoeff(coeff);
 		    assemblyFEElements_[T]->assembleRHS();
 		    rhsVec = assemblyFEElements_[T]->getRHS(); 
 			addFeBlockMv(resVecRep, rhsVec, elements->getElement(T),elementsPres->getElement(T), dofsVelocity,dofsPressure);
 		}
 
-				/*if(T ==0){
-			//elementMatrix->print();
-			A->getBlock(0,1)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
-			A->getBlock(0,1)->print();
-			A->getBlock(0,1)->resumeFill();
-		}	*/	
+			
 	}
-	if (callFillComplete && reAssemble && assembleMode != "Rhs" )
+	if (callFillComplete && reAssemble )
 	    A->getBlock(0,0)->fillComplete( domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocVel)->getMapVecFieldUnique());
 	else if(callFillComplete && !reAssemble && assembleMode != "Rhs"){
 		A->getBlock(0,0)->fillComplete();
@@ -219,17 +224,20 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 	    A->getBlock(1,1)->fillComplete();
 	}
 
-    MultiVectorPtr_Type resVecUnique_u = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocVel)->getMapVecFieldUnique(), 1 ) );
-    MultiVectorPtr_Type resVecUnique_p = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocPres)->getMapUnique(), 1 ) );
+	if(assembleMode == "Rhs"){
 
-    resVecUnique_u->putScalar(0.);
-    resVecUnique_p->putScalar(0.);
+		MultiVectorPtr_Type resVecUnique_u = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocVel)->getMapVecFieldUnique(), 1 ) );
+		MultiVectorPtr_Type resVecUnique_p = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocPres)->getMapUnique(), 1 ) );
 
-    resVecUnique_u->exportFromVector( resVec_u, true, "Add" );
-    resVecUnique_p->exportFromVector( resVec_p, true, "Add" );
+		resVecUnique_u->putScalar(0.);
+		resVecUnique_p->putScalar(0.);
 
-	resVec->addBlock(resVecUnique_u,0);
-	resVec->addBlock(resVecUnique_p,1);
+		resVecUnique_u->exportFromVector( resVec_u, true, "Add" );
+		resVecUnique_p->exportFromVector( resVec_p, true, "Add" );
+
+		resVec->addBlock(resVecUnique_u,0);
+		resVec->addBlock(resVecUnique_p,1);
+	}
 
 
 }

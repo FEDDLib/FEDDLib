@@ -85,6 +85,8 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	*/
 	void assemblyDivAndDivT(SmallMatrixPtr_Type &elementMatrix);
 
+
+
     friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 
 	void buildTransformation(SmallMatrix<SC>& B);

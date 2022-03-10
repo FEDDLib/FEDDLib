@@ -88,7 +88,6 @@ int main(int argc, char *argv[]) {
     }
     
 
-
 	DomainPtr_Type domainP1;
     DomainPtr_Type domainP2;
     DomainPtr_Type domain;
@@ -177,12 +176,10 @@ int main(int argc, char *argv[]) {
 	systemFETest->addBlock(B_test,1,0);
 	systemFETest->addBlock(dummy,1,1);
 
-    {
-        fe_test.assemblyNavierStokes(dim, FETypeV, FETypeP, 2,dofsV,dofsP,u_rep,systemFETest, true/*call fillComplete*/);
-    }
-	//B_test->print();
-	BT->print();
-	BT_test->print();
+    fe_test.assemblyNavierStokes(dim, FETypeV, FETypeP, 2,dofsV,dofsP,u_rep,systemFETest, true/*call fillComplete*/);
+    
+	B->print();
+	B_test->print();
 
 	cout << " Done for FE Test" << endl;
 	MAIN_TIMER_STOP(FE_test);	
@@ -190,6 +187,7 @@ int main(int argc, char *argv[]) {
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 	ANW->addMatrix(1, Sum, 1);
 	A_test->addMatrix(-1, Sum, 1);
+
 
 
 	int maxRank = std::get<1>(domain->getMesh()->rankRange_);
