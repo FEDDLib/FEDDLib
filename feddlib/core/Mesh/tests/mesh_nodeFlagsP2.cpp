@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     Teuchos::CommandLineProcessor myCLP;
     string ulib_str = "Tpetra"; //this does nothing atm
     myCLP.setOption("ulib",&ulib_str,"Underlying lib");
-    string filename = "meshNodeTestP23D2.mesh";
+    string filename = "meshNodeTestP23D.mesh";
     myCLP.setOption("file",&filename,"Mesh filename");
     int dim = 3;
     myCLP.setOption("dim",&dim,"Dimension");

@@ -93,7 +93,7 @@ void Matrix<SC,LO,GO,NO>::insertGlobalValues(GO globalRow, const Teuchos::ArrayV
 
 template <class SC, class LO, class GO, class NO>
 LO Matrix<SC,LO,GO,NO>::getNodeNumRows() const{
-    return matrix_->getNodeNumRows();
+    return matrix_->getLocalNumRows();
 }
 
 
