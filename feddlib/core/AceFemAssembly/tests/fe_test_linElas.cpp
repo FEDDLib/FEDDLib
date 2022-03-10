@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     double youngModulus = mu*2.*(1 + poissonRatio);
     double lambda = (poissonRatio*youngModulus)/((1 + poissonRatio)*(1 - 2*poissonRatio));
 
-    int dofs =params->sublist("Parameter").get("Dofs",1);
+    int dofs =params->sublist("Parameter").get("Dofs",3);
     int numProcsCoarseSolve = 0;
     int n;
     int size = comm->getSize();
