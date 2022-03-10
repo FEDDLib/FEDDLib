@@ -68,12 +68,12 @@ int main(int argc, char *argv[]) {
 
     // Mesh
     std::string FEType=params->sublist("Parameter").get("Discretization","P1");
-    double mu=params->sublist("Parameter").get("Mu",0.3571);
     double poissonRatio=params->sublist("Parameter").get("Poisson Ratio",0.4e-0);
 
     // Berechne daraus nun E (Youngsches Modul) und die erste Lamé-Konstanten \lambda
     double youngModulus=params->sublist("Parameter").get("E",1000.0);
     double lambda = (poissonRatio*youngModulus)/((1 + poissonRatio)*(1 - 2*poissonRatio));
+    double mu = youngModulus/(2*(1+poissonRatio));
 
     int dofs =params->sublist("Parameter").get("Dofs",3);
     int numProcsCoarseSolve = 0;
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
     MatrixPtr_Type A= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
 
     {
-		fe.assemblyLinElasXDim( dim, domain->getFEType(), A, lambda, mu ); // Is it necessary to send mu and lambda when E is defined in parameter file?
+		fe.assemblyLinElasXDim( dim, domain->getFEType(), A, lambda, mu );
     }
     
 	// Class for assembling linear Elasticity via Acefem implementation
@@ -124,14 +124,18 @@ int main(int argc, char *argv[]) {
         fe_test.assemblyLinElas(dim, FEType, 2,dofs, A_test, true/*call fillComplete*/);
     }
 
+    /*std::cout << "[DEBUG] **************************BEGIN PRINT A****************************" << std::endl;
+    A->print();
+    std::cout << "[DEBUG] ****************************END OF A*******************************" << std::endl;
+    std::cout << "[DEBUG] ***********************BEGIN PRINT A_TEST**************************" << std::endl;
+    A_test->print();
+    std::cout << "[DEBUG] **************************END OF A_TEST****************************" << std::endl;*/
+
    	// Comparing matrices
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
-	A->addMatrix(-1, Sum, 1);
-	A_test->addMatrix(1, Sum, -1);
-
-
+	A->addMatrix(-1, Sum, 0);
+	A_test->addMatrix(1, Sum, 1);
 	int maxRank = std::get<1>(domain->getMesh()->rankRange_);
-
 	double res=0.;
 	Teuchos::ArrayView<const GO> indices;
 	Teuchos::ArrayView<const SC> values;
@@ -149,9 +153,13 @@ int main(int argc, char *argv[]) {
 	res = fabs(res);
 	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 
+    
+    /*Sum->fillComplete();
+    std::cout << "[DEBUG] **************************BEGIN PRINT SUM**************************" << std::endl;
+    Sum->print();
+    std::cout << "[DEBUG] *****************************END OF SUM****************************" << std::endl;*/
 	if(comm->getRank() == 0)
 		cout << " Norm of Difference between StiffnessMatrices: " << res << endl;
-	
 
     return(EXIT_SUCCESS);
 }

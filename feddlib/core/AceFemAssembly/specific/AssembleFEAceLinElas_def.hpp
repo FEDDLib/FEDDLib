@@ -105,14 +105,18 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assemblyLinElas(SmallMatrixPtr_Type &ele
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	std::cout << "[DEBUG] SKR-Jacobian Calls after this line!" << std::endl;
+	// std::cout << "[DEBUG] SKR-Jacobian Calls after this line!" << std::endl;
 	skr(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
-	std::cout << "[DEBUG] SKR-Jacobian Call successful!" << std::endl;
+	// std::cout << "[DEBUG] SKR-Jacobian Call successful!" << std::endl;
 	// Note: FEAP/Fortran returns matrices unrolled in column major form. This must be converted for use here.
+
+	/* std::cout << "[DEBUG] Printing FEAP output Stiffness vector" << std::endl;
+	for (int i=0;i<900;i++)
+		std::cout << s[i] << " ";*/
 
     for (UN i=0; i < this->dofsElement_; i++) {
         for (UN j=0; j < this->dofsElement_; j++) {
-            (*elementMatrix)[i][j] = s[this->dofsElement_*j+i]; // Rolling into a matrix using column major (m*j+i)
+            (*elementMatrix)[i][j] = -s[this->dofsElement_*j+i]; // Rolling into a matrix using column major (m*j+i)
         }
     }
 
@@ -157,9 +161,9 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assembleRHS() {
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	std::cout << "[DEBUG] SKR-Rhs Calls after this line!" << std::endl;
+	// std::cout << "[DEBUG] SKR-Rhs Calls after this line!" << std::endl;
 	skr(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
-	std::cout << "[DEBUG] SKR-Rhs Call successful!" << std::endl;
+	// std::cout << "[DEBUG] SKR-Rhs Call successful!" << std::endl;
 	this->rhsVec_ = p;
 }
 

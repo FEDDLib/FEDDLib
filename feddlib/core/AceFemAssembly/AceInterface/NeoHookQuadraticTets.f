@@ -1,10 +1,10 @@
 !**************************************************************
 !* AceGen    7.404 Linux (9 Feb 22)                           *
-!*           Co. J. Korelc  2020           10 Mar 22 12:04:17 *
+!*           Co. J. Korelc  2020           10 Mar 22 18:29:41 *
 !**************************************************************
 ! User     : Full professional version
 ! Notebook : QuadraticTetsNeoHook
-! Evaluation time                 : 21 s    Mode  : Optimal
+! Evaluation time                 : 23 s    Mode  : Optimal
 ! Number of formulae              : 372     Method: Automatic
 ! Subroutine                      : SKR10 size: 5080
 ! Subroutine                      : SPP10 size: 3758

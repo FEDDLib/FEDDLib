@@ -9,7 +9,7 @@
     </ParameterList>
   
     <ParameterList name="Mesh Partitioner">        
-        <Parameter name="Mesh 1 Name" type="string" value="cube.mesh"/>
+        <Parameter name="Mesh 1 Name"                           type="string"   value="cube.mesh"/>
     </ParameterList>
     
 

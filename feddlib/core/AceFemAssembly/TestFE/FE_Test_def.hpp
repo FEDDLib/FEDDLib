@@ -117,7 +117,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyLinElas(int dim,
         SmallMatrixPtr_Type elementMatrix = assemblyFEElements_[T]->getJacobian(); 
         addFeMatrix(A,elementMatrix, elements->getElement(T), map,dofs);
         
-        elementMatrix->print();
+        // elementMatrix->print();
     }
     if (callFillComplete)
         A->fillComplete();
@@ -310,7 +310,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
 @param[in] map Map that corresponds to repeated nodes
 */
 template <class SC, class LO, class GO, class NO>
-void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type map, int dofs){
+void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type map, int dofs){      
         int numNodes = elementMatrix->size()/dofs;
         Teuchos::Array<SC> value( numNodes, 0. );
         Teuchos::Array<GO> columnIndices( numNodes, 0 );
@@ -318,12 +318,15 @@ void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type el
         //Teuchos::ArrayView<const SC> values;
         for (UN i=0; i < numNodes ; i++) {
             for(int d=0; d<dofs; d++){
-                for (UN j=0; j < columnIndices.size(); j++){
-                    columnIndices[j] = GO ( dofs * map->getGlobalElement( element.getNode(j) ) + d );
-                    value[j] = (*elementMatrix)[dofs*i+d][dofs*j+d];                                    
-                }
                 GO row =GO (dofs* map->getGlobalElement( element.getNode(i) )+d);
-                A->insertGlobalValues( row, columnIndices(), value() ); // Automatically adds entries if a value already exists           
+                for(int k=0;k<dofs;k++){
+                    for (UN j=0; j < columnIndices.size(); j++){
+                        columnIndices[j] = GO ( dofs * map->getGlobalElement( element.getNode(j) )+k);
+                        // std::cout << columnIndices[j] << " ";
+                        value[j] = (*elementMatrix)[dofs*i+d][dofs*j+k];
+                    }
+                    A->insertGlobalValues( row, columnIndices(), value() ); // Automatically adds entries if a value already exists                                   
+                }           
             }
         }
 }
