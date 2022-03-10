@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
     // Mesh
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemNavierStokes.xml");
     string filename = params->sublist("Parameter").get("Mesh Name","square.mesh");
-    std::string FETypeV=params->sublist("Parameter").get("DiscretizationV","P1");
+    std::string FETypeV=params->sublist("Parameter").get("DiscretizationV","P2");
     std::string FETypeP=params->sublist("Parameter").get("DiscretizationP","P1");
     int dofsV =params->sublist("Parameter").get("DofsV",2);
     int dofsP =params->sublist("Parameter").get("DofsP",1);
@@ -156,7 +156,6 @@ int main(int argc, char *argv[]) {
     MatrixPtr_Type B= Teuchos::rcp(new Matrix_Type(domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 
     fe.assemblyDivAndDivTFast(dim, "P2", "P1", 2, B, BT, domain->getMapVecFieldUnique(), domainP1->getMapUnique(), true );
-	//B->print();
 	MAIN_TIMER_STOP(FE);	
 	cout << " Done for FE " << endl;
 	// ANW is first block 

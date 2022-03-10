@@ -33,8 +33,11 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	/*!
 	 \brief Assemble the element right hand side vector.
 	*/
-	virtual void assembleRHS();	
+	virtual void assembleRHS();
 
+	SmallMatrixPtr_Type getFixedPointMatrix(){return ANB_;};
+
+	void setCoeff(SmallMatrix_Type coeff);
    protected:
 
 
@@ -113,6 +116,8 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 
 	SmallMatrixPtr_Type constantMatrix_;
 	SmallMatrixPtr_Type ANB_;
+
+	SmallMatrix_Type coeff_;
 
 	double viscosity_ ;
    	 double density_ ;

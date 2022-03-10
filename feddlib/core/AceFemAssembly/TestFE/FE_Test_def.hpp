@@ -230,7 +230,7 @@ void FE_Test<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixP
                 for(int d=0; d<dofs1; d++){              
                     value2[0] = (*elementMatrix)[i*dofs1+d][offset+j];                                          
                     columnIndex[0] =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+d);
-                    //cout << " Row "<< columnIndex[0] << " Column " << rowIndex[0] << " value " << value2[0] << endl;
+
                     A->getBlock(1,0)->insertGlobalValues( rowIndex[0], columnIndex(), value2() ); // Automatically adds entries if a value already exists   
                     A->getBlock(0,1)->insertGlobalValues( columnIndex[0], rowIndex(), value2() ); // Automatically adds entries if a value already exists        
                 }
