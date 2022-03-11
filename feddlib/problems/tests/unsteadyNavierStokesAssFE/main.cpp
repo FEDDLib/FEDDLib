@@ -365,7 +365,8 @@ int main(int argc, char *argv[]) {
 			double res = norm[0];
 			if(comm->getRank() ==0)
 				cout << " Inf Norm of Error of Solutions " << res << endl;
-
+			double infNormError = res;
+		
 			navierStokes.getSolution()->norm2(norm);
 			res = norm[0];
 			if(comm->getRank() ==0)
@@ -395,6 +396,8 @@ int main(int argc, char *argv[]) {
             exParaVelocity->save(0.0);
             exParaPressure->save(0.0); 	
 
+
+           TEUCHOS_TEST_FOR_EXCEPTION( infNormError > 1e-11 , std::logic_error, "Inf Norm of Error between calculated solutions is too great. Exceeded 1e-11. ");
 
 
         }
