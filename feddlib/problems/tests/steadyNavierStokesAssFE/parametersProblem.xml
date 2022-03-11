@@ -1,6 +1,6 @@
 <ParameterList name="Problem">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Dimension" type="int" value="2"/>
         <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
         <Parameter name="Discretization Pressure" type="string" value="P1"/>
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
@@ -25,7 +25,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="DFG3DCylinder_1k.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h008.mesh"/>
     </ParameterList>
     <ParameterList name="Exporter">
         
@@ -46,7 +46,7 @@
         <Parameter name="ParaViewCoarse" type="bool" value="false"/>
         <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>
         <Parameter name="ParaView export subdomain" type="bool" value="false"/>
-        <Parameter name="Preconditioner Method" type="string" value="Teko"/><!-- Monolithic, Teko -->
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko -->
         <Parameter name="Assemble Velocity Mass" type="bool" value="false"/>
         <Parameter name="Delete P1 Data" type="bool" value="false"/><!-- only for Monolithic and Newton -->
     </ParameterList>

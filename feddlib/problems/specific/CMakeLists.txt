@@ -17,6 +17,9 @@ SET(problems_specific_HEADERS
     specific/LinElas_decl.hpp
     specific/LinElas_def.hpp
     specific/LinElas.hpp
+    specific/LinElasAssFE_decl.hpp
+    specific/LinElasAssFE_def.hpp
+    specific/LinElasAssFE.hpp
 #    specific/LinElasFirstOrder_decl.hpp
 #    specific/LinElasFirstOrder_def.hpp
 #    specific/LinElasFirstOrder.hpp
@@ -50,6 +53,7 @@ SET(problems_specific_SOURCES
 	specific/LaplaceBlocks.cpp
     #specific/LaplacePseudoCoupled.cpp
     specific/LinElas.cpp
+    specific/LinElasAssFE.cpp
 #    specific/LinElasFirstOrder.cpp
 	specific/NavierStokes.cpp
 	specific/NavierStokesAssFE.cpp

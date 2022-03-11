@@ -155,7 +155,12 @@ int main(int argc, char *argv[]) {
     MatrixPtr_Type B= Teuchos::rcp(new Matrix_Type(domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 
     fe.assemblyDivAndDivTFast(dim, "P2", "P1", 2, B, BT, domain->getMapVecFieldUnique(), domainP1->getMapUnique(), true );
-
+	B->resumeFill();
+	B->scale(-1.);	
+	B->fillComplete();
+	BT->resumeFill();
+	BT->scale(-1.);
+	BT->fillComplete();
 	MAIN_TIMER_STOP(FE);	
 	cout << " Done for FE " << endl;
 	// ANW is first block 
@@ -179,14 +184,14 @@ int main(int argc, char *argv[]) {
 
     fe_test.assemblyNavierStokes(dim, FETypeV, FETypeP, 2,dofsV,dofsP,u_rep,systemFETest, true/*call fillComplete*/);
     
-	B->print();
-	B_test->print();
+	//B->print();
+	//B_test->print();
 
 	cout << " Done for FE Test" << endl;
 	MAIN_TIMER_STOP(FE_test);	
 	Teuchos::TimeMonitor::report(cout,"Main");
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
-	ANW->addMatrix(1, Sum, 1);
+	ANW->addMatrix(1, Sum, 0);
 	A_test->addMatrix(-1, Sum, 1);
 
 
@@ -217,8 +222,8 @@ int main(int argc, char *argv[]) {
 	
 
 	MatrixPtr_Type Sum2= Teuchos::rcp(new Matrix_Type( domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
-	B->addMatrix(1, Sum2, 1);
-	B_test->addMatrix(-1, Sum2, 1);
+	B->addMatrix(1, Sum2, 0);
+	B_test->addMatrix(1, Sum2, -1);
 
 
 	res=0.;

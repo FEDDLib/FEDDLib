@@ -26,13 +26,6 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_unsteadyNavierStokesAssFE
     DEST_FILES dfg_fsi_fluid_h008.mesh
 	EXEDEPS unsteadyNavierStokesAssFE
 )
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_unsteadyNavierStokesAssFE2
-	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-	SOURCE_FILES dfg_fsi_fluid_h002.mesh
-	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    DEST_FILES dfg_fsi_fluid_h002.mesh
-	EXEDEPS unsteadyNavierStokesAssFE
-)
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_unsteadyNavierStokesAssFE3D
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
 	SOURCE_FILES DFG3DCylinder_1k.mesh
