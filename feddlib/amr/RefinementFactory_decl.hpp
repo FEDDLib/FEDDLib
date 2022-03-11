@@ -82,8 +82,6 @@ public:
     
 
     void refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh, string refinementMode); // MeshRefinement
-
-	void assignEdgeFlags( MeshUnstrPtr_Type meshP1, EdgeElementsPtr_Type edgeElements);
     	
 	void refineRegular(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements,  int i, SurfaceElementsPtr_Type surfaceTriangleElements); // aka red refinement
 	
