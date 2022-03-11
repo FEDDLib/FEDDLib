@@ -49,43 +49,75 @@ public:
     
     ~MeshPartitioner();
     
+	/*! 
+		\brief Main Function of partitioner called 
+	*/
     void readAndPartition();
         
-    /*! Only used in 3D*/
+    /*! \brief Only used in 3D to set the edges as subelements to surfaces*/
     void setEdgesToSurfaces(int meshNumber);
     
+	/*! 
+		\brief Setting surfaces, i.e. edges in 2D and triangles in 3D, as subelements to the corresponding elements
+	*/
     void setSurfacesToElements(int meshNumber);
     
+	/*! 
+		\brief Main function, that reads and partions and distributes the mesh to the different processors. 
+		Here all necessary maps and lists are created
+	*/
     void partitionMesh( MeshUnstrPtr_Type& mesh, int meshNumber );
 
+	/*! 
+		\brief Making the edge list parallel
+	*/
     void buildEdgeListParallel( MeshUnstrPtr_Type mesh, ElementsPtr_Type elementsGlobal );
     
+	/*! 
+		\brief Building the edge list
+	*/
     void buildEdgeList( MeshUnstrPtr_Type mesh, ElementsPtr_Type& elementsGlobal );
 
+	/*! 
+		\brief Setting surfaces, i.e. edges in 2D and triangles in 3D, as subelements to the corresponding elements
+	*/
     void setLocalEdgeIndices(vec2D_int_Type &localEdgeIndices );
 
     void determineRanks();
-    
+
     void determineRanksFromNumberRanks(vec_int_Type& ranks);
     
     void determineRanksFromFractions(vec_int_Type& fractions);
     
     void makeContinuousElements(ElementsPtr_Type elements, vec_idx_Type& eind_vec, vec_idx_Type& eptr_vec );
-    
-    void findAndSetSurfaces( vec2D_int_Type& surfElements_vec, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation, MapConstPtr_Type mapRepeated);
 
+	/*! 
+		\brief Finding the surfaces corresponding to a specfic element and then setting subelements
+	*/
     void findAndSetSurfacesPartitioned( vec2D_int_Type& surfElements_vec, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation, vec_GO_Type& linearSurfacePartitionOffset, int globalElID);
 
+	/*! 
+		\brief Setting local IDs to the edges in 3D case with respect to the local numbering of elements
+	*/
     void setLocalSurfaceEdgeIndices( vec2D_int_Type &localSurfaceEdgeIndices, int edgesElementOrder );
     
+	/*! 
+		\brief Only relevant in 3D. Finding the edges corresponding to the specfic element and then setting as subsubelement.
+	*/
     void findAndSetSurfaceEdges( vec2D_int_Type& edgeElements_vec, vec_int_Type& edgeElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation, MapConstPtr_Type mapRepeated);
     
+	/*! 
+		\brief Searching on particular surface in a surface list.
+	*/
     int searchInSurfaces( vec2D_int_Type& surfaces, vec_int_Type searchSurface);
     
     void setLocalSurfaceIndices(vec2D_int_Type &localSurfaceIndices, int surfaceElementOrder );
     /* ###################################################################### */
 private:    
     
+	/*! 
+		\brief Function called internally to read and partition mesh i of domain i
+	*/
     void readAndPartitionMesh( int meshNumber );
     
     ParameterListPtr_Type pList_;

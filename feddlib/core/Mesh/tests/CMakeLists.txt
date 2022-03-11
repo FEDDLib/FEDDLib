@@ -104,6 +104,27 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_elementFlags
     EXEDEPS mesh_elementFlags
 )
 
+### mesh_nodeFlagsP2
+TRIBITS_ADD_EXECUTABLE(
+    mesh_nodeFlagsP2
+    SOURCES mesh_nodeFlagsP2.cpp
+)
+
+TRIBITS_ADD_TEST(
+    mesh_nodeFlagsP2
+    NAME mesh_nodeFlagsP2
+    ARGS
+    NUM_MPI_PROCS 4
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_nodeFlagsP2
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
+    SOURCE_FILES meshNodeTestP23D.mesh
+    DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    DEST_FILES meshNodeTestP23D.mesh
+    EXEDEPS mesh_nodeFlagsP2
+)
+
 ### mesh_unstructured
 TRIBITS_ADD_EXECUTABLE(
 	mesh_unstructured

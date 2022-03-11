@@ -93,7 +93,7 @@ void Matrix<SC,LO,GO,NO>::insertGlobalValues(GO globalRow, const Teuchos::ArrayV
 
 template <class SC, class LO, class GO, class NO>
 LO Matrix<SC,LO,GO,NO>::getNodeNumRows() const{
-    return matrix_->getNodeNumRows();
+    return matrix_->getLocalNumRows();
 }
 
 
@@ -398,8 +398,6 @@ void Matrix<SC,LO,GO,NO>::exportFromVector( MatrixPtr_Type mvIn, bool reuseExpor
     else
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse");
 }
-
-
 
 }
 #endif
