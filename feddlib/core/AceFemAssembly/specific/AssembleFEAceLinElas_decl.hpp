@@ -46,7 +46,7 @@ class AssembleFEAceLinElas : public AssembleFE<SC,LO,GO,NO> {
     friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 
 	
-	double mu_ ; 
+	double E_ ; 
    	double lambda_;
 	double poissonRatio_;
 	string FEType_ ; // FEType of Disk

@@ -33,7 +33,7 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	/*!
 	 \brief Assemble the element right hand side vector.
 	*/
-	virtual void assembleRHS();	
+	virtual void assembleRHS();
 
 	SmallMatrixPtr_Type getFixedPointMatrix(){return ANB_;};
 

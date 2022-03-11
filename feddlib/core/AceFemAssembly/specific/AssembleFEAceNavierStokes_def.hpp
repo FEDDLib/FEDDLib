@@ -85,8 +85,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleJacobian() {
 		elementMatrixB->scale(-1.);
 
 		constantMatrix_->add( (*elementMatrixB),(*constantMatrix_));
-
-	}
+    }
 
 	ANB_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_)); // A + B + N
 	ANB_->add( (*constantMatrix_),(*ANB_));
@@ -94,7 +93,6 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleJacobian() {
 	assemblyAdvection(elementMatrixN);
 	elementMatrixN->scale(density_);
 	ANB_->add( (*elementMatrixN),(*ANB_));
-
 	assemblyAdvectionInU(elementMatrixW);
 	elementMatrixW->scale(density_);
 

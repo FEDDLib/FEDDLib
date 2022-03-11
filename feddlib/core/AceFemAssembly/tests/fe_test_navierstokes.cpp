@@ -155,12 +155,14 @@ int main(int argc, char *argv[]) {
     MatrixPtr_Type B= Teuchos::rcp(new Matrix_Type(domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 
     fe.assemblyDivAndDivTFast(dim, "P2", "P1", 2, B, BT, domain->getMapVecFieldUnique(), domainP1->getMapUnique(), true );
+
 	B->resumeFill();
 	B->scale(-1.);	
 	B->fillComplete();
 	BT->resumeFill();
 	BT->scale(-1.);
 	BT->fillComplete();
+
 	MAIN_TIMER_STOP(FE);	
 	cout << " Done for FE " << endl;
 	// ANW is first block 

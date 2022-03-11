@@ -4,11 +4,12 @@
         <Parameter name="Discretization"                        type="string"   value="P2"/><!--P1, P2-->
 	    <Parameter name="Density"					            type="double"   value="1."/>
 	    <Parameter name="Poisson Ratio"					        type="double"   value="0.4e-0"/>
-        <Parameter name="Mu" type="double" value="0.3571"/>
+        <Parameter name="E"                                     type="double"   value="1000.0"/>
+        <Parameter name="Dofs"                                  type="int"      value="3"/>
     </ParameterList>
   
     <ParameterList name="Mesh Partitioner">        
-        <Parameter name="Mesh 1 Name" type="string" value="cube.mesh"/>
+        <Parameter name="Mesh 1 Name"                           type="string"   value="cube.mesh"/>
     </ParameterList>
     
 
