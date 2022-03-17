@@ -132,34 +132,57 @@ int main(int argc, char *argv[]) {
     std::cout << "[DEBUG] **************************END OF A_TEST****************************" << std::endl;*/
 
    	// Comparing matrices
-	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
-	A->addMatrix(-1, Sum, 0);
-	A_test->addMatrix(1, Sum, 1);
+	//MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
+    MatrixPtr_Type ATestLocal= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
+    MatrixPtr_Type ALocal= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
+	//A->addMatrix(-1, Sum, 0);
+	//A_test->addMatrix(1, Sum, 1);
+    A_test->addMatrix(1,ATestLocal,0);
+    A->addMatrix(1,ALocal,0);
 	int maxRank = std::get<1>(domain->getMesh()->rankRange_);
-	double res=0.;
-	Teuchos::ArrayView<const GO> indices;
-	Teuchos::ArrayView<const SC> values;
+	bool matricesAreEqual=true;
+	//Teuchos::ArrayView<const GO> indicesSum;
+	//Teuchos::ArrayView<const SC> valuesSum;
+    Teuchos::ArrayView<const GO> indicesATest;
+	Teuchos::ArrayView<const SC> valuesATest;
+    Teuchos::ArrayView<const GO> indicesA;
+	Teuchos::ArrayView<const SC> valuesA;
+    //A_test->writeMM("A_test.mm");
+    //A->writeMM("A.mm");
 
+    std::cout << "[DEBUG] Matrix equivalency test" << std::endl;
+
+    int falseCounter=0;
 	for (UN i=0; i < domain->getMapUnique()->getMaxLocalIndex()+1 ; i++) {
 		for(int d=0; d< dofs ; d++){
 			GO row = dofs*domain->getMapUnique()->getGlobalElement( i )+d;
-			Sum->getGlobalRowView(row, indices,values);
-			
-			for(int j=0; j< values.size() ; j++){
-				res += fabs(values[j]);			
-			}	
+			//Sum->getGlobalRowView(row, indicesSum,valuesSum);
+			ATestLocal->getGlobalRowView(row, indicesATest, valuesATest);
+            ALocal->getGlobalRowView(row,indicesA,valuesA);
+			for(int j=0; j< valuesATest.size() ; j++){
+                        double maxXYOne = std::max( { 1.0, std::fabs(valuesATest[j]) , std::fabs(valuesA[j]) } ) ;
+				        // if( std::fabs(valuesATest[j]-valuesA[j]) >= std::numeric_limits<double>::epsilon()*maxXYOne )
+                        if( std::fabs(valuesATest[j]-valuesA[j]) >= 1e-13*maxXYOne )
+                           {
+                               std::cout << "[DEBUG] Matrix value not equal! \n" << std::setprecision(20) << "[DEBUG] A_Test: " << valuesATest[j] << "  A: "<< valuesA[j] << std::endl;
+                               matricesAreEqual=false;
+                               falseCounter++;
+                           }
+			}
 		}	
 	}
-	res = fabs(res);
-	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 
-    
+	//reduceAll<int, double> (*comm, REDUCE_SUM, matricesAreEqual, outArg (matricesAreEqual));
+
+    //Sum->fillComplete();
+    //Sum->writeMM("Sum.mm");
+
     /*Sum->fillComplete();
     std::cout << "[DEBUG] **************************BEGIN PRINT SUM**************************" << std::endl;
     Sum->print();
     std::cout << "[DEBUG] *****************************END OF SUM****************************" << std::endl;*/
 	if(comm->getRank() == 0)
-		cout << " Norm of Difference between StiffnessMatrices: " << res << endl;
+		std::cout << "[DEBUG] Matrices are equal: " << std::boolalpha << matricesAreEqual << ", and with " << falseCounter << " problems!" << std::endl;
 
     return(EXIT_SUCCESS);
 }
