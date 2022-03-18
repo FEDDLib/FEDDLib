@@ -400,6 +400,18 @@ class FE {
 							    string assembleMode,
 								bool callFillComplete = true,
 								int FELocExternal=-1);
+	void assemblyLinearElasticity(int dim,
+                                    string FEType,
+                                    int degree,
+									int dofs,
+									MultiVectorPtr_Type d_rep,
+                                    BlockMatrixPtr_Type &A,
+									BlockMultiVectorPtr_Type &resVec,
+									ParameterListPtr_Type params,
+									bool reAssemble,
+									string assembleMode,
+                                    bool callFillComplete=true,
+                                    int FELocExternal=-1);
 
 /* ----------------------------------------------------------------------------------------*/
 private:

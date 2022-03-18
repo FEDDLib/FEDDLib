@@ -67,13 +67,13 @@ int main(int argc, char *argv[]) {
     
 
     // Mesh
-    std::string FEType=params->sublist("Parameter").get("Discretization","P1");
+    std::string FEType=params->sublist("Parameter").get("Discretization","P12");
     double poissonRatio=params->sublist("Parameter").get("Poisson Ratio",0.4e-0);
 
     // Berechne daraus nun E (Youngsches Modul) und die erste Lamé-Konstanten \lambda
     double youngModulus=params->sublist("Parameter").get("E",1000.0);
-    double lambda = (poissonRatio*youngModulus)/((1 + poissonRatio)*(1 - 2*poissonRatio));
-    double mu = youngModulus/(2*(1+poissonRatio));
+    double lambda = (poissonRatio*youngModulus)/((1. + poissonRatio)*(1. - 2.*poissonRatio));
+    double mu = youngModulus/(2.*(1.+poissonRatio));
 
     int dofs =params->sublist("Parameter").get("Dofs",3);
     int numProcsCoarseSolve = 0;
@@ -123,43 +123,77 @@ int main(int argc, char *argv[]) {
     {
         fe_test.assemblyLinElas(dim, FEType, 2,dofs, A_test, true/*call fillComplete*/);
     }
+	//A_test->writeMM();
 
-    /*std::cout << "[DEBUG] **************************BEGIN PRINT A****************************" << std::endl;
-    A->print();
-    std::cout << "[DEBUG] ****************************END OF A*******************************" << std::endl;
-    std::cout << "[DEBUG] ***********************BEGIN PRINT A_TEST**************************" << std::endl;
-    A_test->print();
-    std::cout << "[DEBUG] **************************END OF A_TEST****************************" << std::endl;*/
-
-   	// Comparing matrices
+    // Comparing matrices
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
-	A->addMatrix(-1, Sum, 0);
-	A_test->addMatrix(1, Sum, 1);
+	A->addMatrix(1, Sum, 0);
+	A_test->addMatrix(-1, Sum, 1);
+
+	// Build A_test as an 'unfilled' Matrix in order to access its entries
+	MatrixPtr_Type A_AssFE= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
+	A_test->addMatrix(1, A_AssFE, 0);
+
+	// Build A_test as an 'unfilled' Matrix in order to access its entries
+	MatrixPtr_Type A_Ass= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
+	A->addMatrix(1, A_Ass, 0);
+
 	int maxRank = std::get<1>(domain->getMesh()->rankRange_);
 	double res=0.;
+	double relRes =0.;
 	Teuchos::ArrayView<const GO> indices;
 	Teuchos::ArrayView<const SC> values;
 
+	Teuchos::ArrayView<const GO> indices2;
+	Teuchos::ArrayView<const SC> values2;
+
+	Teuchos::ArrayView<const GO> indices3;
+	Teuchos::ArrayView<const SC> values3;
+	double epsilon = 1e-13;
+	int approxEqual = 1;
+	int essentEqual = 1;
 	for (UN i=0; i < domain->getMapUnique()->getMaxLocalIndex()+1 ; i++) {
 		for(int d=0; d< dofs ; d++){
 			GO row = dofs*domain->getMapUnique()->getGlobalElement( i )+d;
-			Sum->getGlobalRowView(row, indices,values);
+
+			A_Ass->getGlobalRowView(row, indices,values);
 			
+			A_AssFE->getGlobalRowView(row,indices2,values2);
+
+			Sum->getGlobalRowView(row,indices3,values3);
+			// We assume it is correct enough and the same indices are filled
 			for(int j=0; j< values.size() ; j++){
-				res += fabs(values[j]);			
+				if(std::abs(values3[j])>res){
+					res = std::abs(values3[j]);	
+					cout << "Values1 " << values[j] << " Value2 " << values2[j] << endl;
+				}
+				if(!(fabs(values[j] - values2[j]) <= ( (fabs(values[j]) > fabs(values2[j]) ? fabs(values2[j]) : fabs(values[j])) * epsilon))){
+					if(std::abs(values[j] - values2[j]) >= 1e-12) // Ignore differences smaller than 1e-12
+						essentEqual=0;
+						
+				}
+				if(!(fabs(values[j] - values2[j]) <= ( (fabs(values[j]) < fabs(values2[j]) ? fabs(values2[j]) : fabs(values[j])) * epsilon))){
+					if(std::abs(values[j] - values2[j]) >= 1e-12)
+						approxEqual=0;
+				}
+				
 			}	
 		}	
 	}
-	res = fabs(res);
-	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 
-    
-    /*Sum->fillComplete();
-    std::cout << "[DEBUG] **************************BEGIN PRINT SUM**************************" << std::endl;
-    Sum->print();
-    std::cout << "[DEBUG] *****************************END OF SUM****************************" << std::endl;*/
-	if(comm->getRank() == 0)
-		cout << " Norm of Difference between StiffnessMatrices: " << res << endl;
+	reduceAll<int, double> (*comm, REDUCE_MAX, res, outArg (res));
+
+	reduceAll<int, int> (*comm, REDUCE_MIN, approxEqual, outArg (approxEqual));
+
+	reduceAll<int, int> (*comm, REDUCE_MIN, essentEqual, outArg (essentEqual));
+
+	if(comm->getRank() == 0){
+		cout << "Max Difference between StiffnessMatrices: " << res << endl;
+		if( essentEqual >0)
+			cout << "Matrices are essentially equal" << endl;
+		if( approxEqual >0)
+			cout << "Matrices are approximately equal" <<  endl;
+	}
 
     return(EXIT_SUCCESS);
 }

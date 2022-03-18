@@ -18,6 +18,8 @@ public:
     typedef typename Problem_Type::MultiVector_Type MultiVector_Type;
     typedef typename Problem_Type::MultiVectorPtr_Type MultiVectorPtr_Type;
 
+    typedef typename Problem_Type::MultiVectorConstPtr_Type MultiVectorConstPtr_Type;
+
     typedef typename Problem_Type::BlockMultiVector_Type BlockMultiVector_Type;
     typedef typename Problem_Type::BlockMultiVectorPtr_Type BlockMultiVectorPtr_Type;
     
@@ -51,6 +53,8 @@ public:
     // Falls es doch irgendwann benutzt wird, denke daran den Konstruktor zu aendern (vgl. Stokes.hpp)
     // Teuchos::RCP<Matrix_Type> 	K_;
 //    virtual void assembleExternal( std::string type ){};
+
+     MultiVectorPtr_Type d_rep_;
 private:
 
 };
