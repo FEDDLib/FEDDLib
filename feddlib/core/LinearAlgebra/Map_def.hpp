@@ -96,7 +96,7 @@ typename Map<LO,GO,NO>::MapPtr_Type Map<LO,GO,NO>::buildVecFieldMap(UN numDofs, 
 
     TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"map is null.");
     TEUCHOS_TEST_FOR_EXCEPTION(ordering.compare("NodeWise"), std::logic_error,"Select a valid ordering: NodeWise");
-    Teuchos::ArrayView<const GO> elementList = map_->getNodeElementList();
+    Teuchos::ArrayView<const GO> elementList = map_->getLocalElementList();
     Teuchos::Array<GO> elementListField( numDofs *  elementList.size() );
     for (UN i=0; i<elementList.size(); i++) {
         for (UN dof=0; dof<numDofs; dof++)
@@ -136,7 +136,7 @@ LO Map<LO,GO,NO>::getLocalElement(GO id) const{
 template < class LO, class GO, class NO>
 LO Map<LO,GO,NO>::getNodeNumElements() const{
     TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"map is null.");
-    return map_->getNodeNumElements();
+    return map_->getLocalNumElements();
 }
 
 template < class LO, class GO, class NO>
@@ -148,7 +148,7 @@ GO Map<LO,GO,NO>::getGlobalNumElements() const{
 template < class LO, class GO, class NO>
 Teuchos::ArrayView< const GO > Map<LO,GO,NO>::getNodeElementList() const{
     TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"map is null.");
-    return map_->getNodeElementList();
+    return map_->getLocalElementList();
 }
     
 template < class LO, class GO, class NO>

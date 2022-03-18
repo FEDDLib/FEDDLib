@@ -220,6 +220,8 @@ void MeshPartitioner<SC,LO,GO,NO>::determineRanksFromNumberRanks( vec_int_Type& 
     
 }
 
+/// Reading and partioning of the mesh. Input File is .mesh. Reading is serial and at some point the mesh entities are distributed along the processors.
+
 template <class SC, class LO, class GO, class NO>
 void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
             
@@ -231,14 +233,15 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     
     MeshUnstrPtr_Type meshUnstr = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domains_[meshNumber]->getMesh() );
     
+	// Reading nodes
     meshUnstr->readMeshEntity("node");
     // We delete the point at this point. We only need the flags to determine surface elements. We will load them again later.
     meshUnstr->pointsRep_.reset();
-    
+    // Reading elements
     meshUnstr->readMeshEntity("element");
-    
+    // Reading surfaces
     meshUnstr->readMeshEntity("surface");
-    
+    // Reading line segments 
     meshUnstr->readMeshEntity("line");
 
 
@@ -247,11 +250,13 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     bool buildEdges = pList_->get("Build Edge List", true);
     bool buildSurfaces = pList_->get("Build Surface List", true);
 
+	// Adding surface as subelement to elements
     if (buildSurfaces)
         this->setSurfacesToElements( meshNumber );
     else
         meshUnstr->deleteSurfaceElements();
 
+	// Serially distributed elements
     ElementsPtr_Type elementsMesh = meshUnstr->getElementsC();
     
     // Setup Metis
@@ -265,20 +270,17 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     //    options[METIS_OPTION_RTYPE] = METIS_RTYPE_GREEDY;
     options[METIS_OPTION_NITER] = 50; // default is 10
     options[METIS_OPTION_CCORDER] = 1;
-    idx_t ne = meshUnstr->getNumElementsGlobal();
-    idx_t nn = meshUnstr->getNumGlobalNodes();
+    idx_t ne = meshUnstr->getNumElementsGlobal(); // Global number of elements
+    idx_t nn = meshUnstr->getNumGlobalNodes();	// Global number of nodes
+    idx_t ned = meshUnstr->getEdgeElements()->numberElements(); // Global number of edges
 
-    // ----------------------------------------------------------------
-    // Neu: Indexmenge Edges
-    // ----------------------------------------------------------------
-    idx_t ned = meshUnstr->getEdgeElements()->numberElements();
-    // ----------------------------------------------------------------
         
     int dim = meshUnstr->getDimension();
     std::string FEType = domains_[meshNumber]->getFEType();
 
-    vec_idx_Type eptr_vec(0);
-    vec_idx_Type eind_vec(0);
+	// Setup for paritioning with metis
+    vec_idx_Type eptr_vec(0); // Vector for local elements ptr (local is still global at this point)
+    vec_idx_Type eind_vec(0); // Vector for local elements ids
     
     makeContinuousElements(elementsMesh, eind_vec, eptr_vec);
 
@@ -310,8 +312,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     vec_idx_Type epart(ne,-1);
     vec_idx_Type npart(nn,-1);
 
-    // Hier werden die Knoten und Elemente den Proc zugeordnet
-    // Über die Elemente könnten die edges zugeordnet werden
+    // Partitioning elements with metis
     if (verbose)
         cout << "-- Start partitioning with Metis ... " << flush;
     
@@ -341,20 +342,21 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     
     vec_GO_Type locepart(0);
     vec_GO_Type pointsRepIndices(0);
-    // Global Edge IDs
+    // Global Edge IDs of local elements
     vec_GO_Type locedpart(0);
 
-
-
+	// Getting global IDs of element's nodes
     for (int i=0; i<ne; i++) {
         if (epart[i] == comm_->getRank() - std::get<0>( rankRanges_[meshNumber] ) ){
             locepart.push_back(i);
             for (int j=eptr[i]; j<eptr[i+1]; j++)
-                pointsRepIndices.push_back( eind[j] );
+                pointsRepIndices.push_back( eind[j] ); // Ids of element nodes, globalIDs
         }
     }
     eind_vec.erase(eind_vec.begin(),eind_vec.end());
     eptr_vec.erase(eptr_vec.begin(),eptr_vec.end());
+	
+	// Sorting ids with global and corresponding local values to creat repeated map
     {
         //Sollte in eigene Funktion
         {
@@ -398,17 +400,19 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     if (verbose)
         cout << "done!" << endl;
     
-    
+    //  Building repeated node map
     Teuchos::ArrayView<GO> pointsRepGlobMapping =  Teuchos::arrayViewFromVector( pointsRepIndices );
-    
     meshUnstr->mapRepeated_.reset( new Map<LO,GO,NO>( underlyingLib, OTGO::invalid(), pointsRepGlobMapping, 0, this->comm_) );
     MapConstPtr_Type mapRepeated = meshUnstr->mapRepeated_;
+
     // We keep the global elements if we want to build edges later. Otherwise they will be deleted
     ElementsPtr_Type elementsGlobal = Teuchos::rcp( new Elements_Type( *elementsMesh ) );
+
+	// Resetting elements to add the corresponding local IDs instead of global ones
     meshUnstr->elementsC_.reset(new Elements ( FEType, dim ) );
     {
         Teuchos::ArrayView<GO> elementsGlobalMapping =  Teuchos::arrayViewFromVector( locepart );
-            // elementsGlobalMapping -> elements per Processor
+        // elementsGlobalMapping -> elements per Processor
 
         meshUnstr->elementMap_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, elementsGlobalMapping, 0, this->comm_) );
         
@@ -436,57 +440,18 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
         }
     }
 
-
+	// Next we distribute the coordinates and flags correctly
     
-    if (!buildEdges)
-        elementsGlobal.reset();
-
-    locepart.erase(locepart.begin(),locepart.end());
-    if (verbose)
-        cout << "done!" << endl;
-        
-    if (buildSurfaces){
-        this->setEdgesToSurfaces( meshNumber );}
-    else
-        meshUnstr->deleteSurfaceElements();
-        
-    if (buildEdges) {
-        if (verbose)
-            cout << "-- Build edge element list ... \n" << flush;
-        
-        
-        buildEdgeListParallel( meshUnstr, elementsGlobal );
-        
-        if (verbose)
-            cout << "\n done!"<< endl;
-        
-        MapConstPtr_Type elementMap =  meshUnstr->getElementMap();
-
-        FEDD_TIMER_START(partitionEdgesTimer," : MeshPartitioner : Partition Edges");
-        meshUnstr->getEdgeElements()->partitionEdges( elementMap, mapRepeated );
-        FEDD_TIMER_STOP(partitionEdgesTimer);
-
-        // edge global indices on different processors
-        for( int i=0; i<meshUnstr->getEdgeElements()->numberElements() ; i++){
-            locedpart.push_back(meshUnstr->getEdgeElements()->getGlobalID((LO) i));
-        }
-
-        // Setup EdgeMap
-        Teuchos::ArrayView<GO> edgesGlobalMapping =  Teuchos::arrayViewFromVector( locedpart );
-        meshUnstr->edgeMap_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, edgesGlobalMapping, 0, this->comm_) );
-
-
-    }
-        
-    meshUnstr->readMeshEntity("node");
+          
+    meshUnstr->readMeshEntity("node"); // We reread the nodes, as they were deleted earlier
     
     if (verbose)
         cout << "-- Build Repeated Points Volume ... " << flush;
             
-    // adjust for coarse procs
+    // building the unique map
     meshUnstr->mapUnique_ = meshUnstr->mapRepeated_->buildUniqueMap( rankRanges_[meshNumber] );
 
-    //    free(epart);
+    // free(epart);
     if (verbose)
         cout << "-- Building unique & repeated points ... " << flush;
     {
@@ -504,6 +469,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
         }
     }
 
+	// Setting unique points and flags
     meshUnstr->pointsUni_.reset(new std::vector<std::vector<double> >( meshUnstr->mapUnique_->getNodeNumElements(), std::vector<double>(dim,-1.) ) );
     meshUnstr->bcFlagUni_.reset(new std::vector<int> ( meshUnstr->mapUnique_->getNodeNumElements(), 0) );
     GO indexGlobal;
@@ -516,6 +482,47 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
         }
         meshUnstr->bcFlagUni_->at(i) = meshUnstr->bcFlagRep_->at( map->getLocalElement( indexGlobal) );
     }
+
+	// Finally we build the edges. As part of the edge build involves nodes and elements,
+	// they should be build last to avoid any local and global IDs mix up
+	if (!buildEdges)
+        elementsGlobal.reset();
+
+    locepart.erase(locepart.begin(),locepart.end());
+    if (verbose)
+        cout << "done!" << endl;
+        
+    if (buildSurfaces){
+        this->setEdgesToSurfaces( meshNumber ); // Adding edges as subelements in the 3D case. All dim-1-Subelements were already set
+		}
+    else
+        meshUnstr->deleteSurfaceElements();
+        
+    if (buildEdges) {
+        if (verbose)
+            cout << "-- Build edge element list ... \n" << flush;
+                
+        buildEdgeListParallel( meshUnstr, elementsGlobal );
+        
+        if (verbose)
+            cout << "\n done!"<< endl;
+        
+        MapConstPtr_Type elementMap =  meshUnstr->getElementMap();
+
+        FEDD_TIMER_START(partitionEdgesTimer," : MeshPartitioner : Partition Edges");
+        meshUnstr->getEdgeElements()->partitionEdges( elementMap, mapRepeated );
+        FEDD_TIMER_STOP(partitionEdgesTimer);
+
+        // edge global indices on different processors
+        for( int i=0; i<meshUnstr->getEdgeElements()->numberElements() ; i++){
+            locedpart.push_back(meshUnstr->getEdgeElements()->getGlobalID((LO) i));
+        }
+
+        // Setup for the EdgeMap
+        Teuchos::ArrayView<GO> edgesGlobalMapping =  Teuchos::arrayViewFromVector( locedpart );
+        meshUnstr->edgeMap_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, edgesGlobalMapping, 0, this->comm_) );
+    }
+
     
     if (verbose)
         cout << "done!" << endl;
@@ -530,7 +537,8 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
 }
 
 
-
+/// Function that (addionally) adds edges as subelements in the 3D case. This is relevant when the .mesh file also contains edge information 
+/// in 3D. Otherwise edges are not set as subelements in 3D.
 template <class SC, class LO, class GO, class NO>
 void MeshPartitioner<SC,LO,GO,NO>::setEdgesToSurfaces(int meshNumber){
     bool verbose ( comm_->getRank() == 0 );
@@ -578,12 +586,14 @@ void MeshPartitioner<SC,LO,GO,NO>::setEdgesToSurfaces(int meshNumber){
         cout << "done!" << endl;
 }
 
+/// Adding surfaces as subelements to the corresponding elements. This adresses surfaces in 3D or edges in 2D. 
+/// If in the 3D case edges are also part of the .mesh file, they will be added as subelements later. 
 template <class SC, class LO, class GO, class NO>
 void MeshPartitioner<SC,LO,GO,NO>::setSurfacesToElements(int meshNumber){
     
     bool verbose ( comm_->getRank() == 0 );
     MeshUnstrPtr_Type meshUnstr = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domains_[meshNumber]->getMesh() );
-    ElementsPtr_Type elementsMesh = meshUnstr->getElementsC();
+    ElementsPtr_Type elementsMesh = meshUnstr->getElementsC(); // Previously Elements read
 
     if (verbose)
             cout << "-- Set surfaces of elements ... " << flush;
@@ -640,9 +650,7 @@ void MeshPartitioner<SC,LO,GO,NO>::setSurfacesToElements(int meshNumber){
         elementSurfaceCounter = 0;
         for (int j=0; j<elementsMesh->getElement( i ).size(); j++) {
             if ( flags->at( elementsMesh->getElement( i ).getNode( j ) ) < volumeID  )
-                elementSurfaceCounter++;
-            
-            
+                elementSurfaceCounter++;           
         }
         
         if (elementSurfaceCounter >= surfaceElOrder){
@@ -666,7 +674,7 @@ void MeshPartitioner<SC,LO,GO,NO>::buildEdgeListParallel( MeshUnstrPtr_Type mesh
     bool verbose(comm->getRank()==0);
     
     MapConstPtr_Type repeatedMap =  mesh->getMapRepeated();
-    //
+    // Building local edges with repeated node list
     vec2D_int_Type localEdgeIndices(0);
     setLocalEdgeIndices( localEdgeIndices );
     EdgeElementsPtr_Type edges = Teuchos::rcp( new EdgeElements_Type() );
@@ -749,11 +757,17 @@ void MeshPartitioner<SC,LO,GO,NO>::makeContinuousElements(ElementsPtr_Type eleme
     eptr_vec.push_back(elcounter);
     
 }
-    
+ 
+/// Function that sets edges (2D) or surfaces(3D) to the corresponding element. It determines for the specific element 'element' if it has a surface with a non
+/// volumeflag that can be set as subelement 
 template <class SC, class LO, class GO, class NO>
 void MeshPartitioner<SC,LO,GO,NO>::findAndSetSurfacesPartitioned( vec2D_int_Type& surfElements_vec, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation , vec_GO_Type& linearSurfacePartitionOffset, int globalElID ){
     
-    
+    // In general we look through the different permutations the input element 'element' can have and if they correspond to a surface. 
+	// The mesh's surface elements 'surfElements_vec' are then used to determine the corresponding surface
+	// If found, the nodes are then used to build the subelement and the corresponding surfElementFlag is set.  
+	// The Ids are global at this point, as the values are not distributed yet.
+
     int loc, id1Glob, id2Glob, id3Glob;
     int size = this->comm_->getSize();
     vec_int_Type locAll(size);
