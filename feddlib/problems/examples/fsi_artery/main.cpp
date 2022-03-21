@@ -66,9 +66,9 @@ void parabolicInflow3DLin(double* x, double* res, double t, const double* parame
     }
     else
     {
-        res[0] = parameters[0] / parameters[2] * x[0];
+        res[0] = 0.;
         res[1] = 0.;
-        res[2] = 0.;
+        res[2] = parameters[0] / parameters[2] * x[0];
     }
 
     return;
