@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     int m = 2;
     myCLP.setOption("m",&m,"H/h");
     
-    string filename = params->sublist("Mesh Partitioner").get("Mesh 1 Name","cube.mesh");
+    string filename = params->sublist("Mesh Partitioner").get("Mesh 1 Name","tetrahedron.mesh");
 
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
@@ -161,8 +161,8 @@ int main(int argc, char *argv[]) {
             ALocal->getGlobalRowView(row,indicesA,valuesA);
 			for(int j=0; j< valuesATest.size() ; j++){
                         double maxXYOne = std::max( { 1.0, std::fabs(valuesATest[j]) , std::fabs(valuesA[j]) } ) ;
-				        // if( std::fabs(valuesATest[j]-valuesA[j]) >= std::numeric_limits<double>::epsilon()*maxXYOne )
-                        if( std::fabs(valuesATest[j]-valuesA[j]) >= 1e-13*maxXYOne )
+				        //if( std::fabs(valuesATest[j]-valuesA[j]) >= std::numeric_limits<double>::epsilon()*maxXYOne )
+                        if( std::fabs(valuesATest[j]-valuesA[j]) >= 1e-12*maxXYOne )
                            {
                                std::cout << "[DEBUG] Matrix value not equal! \n" << std::setprecision(20) << "[DEBUG] A_Test: " << valuesATest[j] << "  A: "<< valuesA[j] << std::endl;
                                matricesAreEqual=false;
