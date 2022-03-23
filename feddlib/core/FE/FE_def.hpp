@@ -94,6 +94,115 @@ void FE<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,
         }
     }
 }
+/*!
+
+ \brief Assembly of Jacobian for NavierStokes 
+@param[in] dim Dimension
+@param[in] FEType FE Discretization
+@param[in] degree Degree of basis function
+@param[in] A Resulting matrix
+@param[in] callFillComplete If Matrix A should be completely filled at end of function
+@param[in] FELocExternal 
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyLinearElasticity(int dim,
+	                                    string FEType,
+	                                    int degree,
+										int dofs,
+										MultiVectorPtr_Type d_rep,
+	                                    BlockMatrixPtr_Type &A,
+										BlockMultiVectorPtr_Type &resVec,
+ 										ParameterListPtr_Type params,
+ 										bool reAssemble,
+ 										string assembleMode,
+	                                    bool callFillComplete,
+	                                    int FELocExternal){
+	
+	ElementsPtr_Type elements = domainVec_.at(0)->getElementsC();
+
+	int dofsElement = elements->getElement(0).getVectorNodeList().size();
+
+	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(0)->getPointsRepeated();
+
+	MapConstPtr_Type mapVel = domainVec_.at(0)->getMapRepeated();
+
+	vec_dbl_Type solution(0);
+	vec_dbl_Type solution_d;
+
+	vec_dbl_Type rhsVec;
+
+	/// Tupel construction follows follwing pattern:
+	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	int numNodes=6;
+	if(dim==3){
+		numNodes=10;
+	}
+	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
+	tuple_ssii_Type displacement ("Displacement",FEType,dofs,numNodes);
+	problemDisk->push_back(displacement);
+
+	if(assemblyFEElements_.size()== 0)
+	 	initAssembleFEElements("LinearElasticity",problemDisk,elements, params,pointsRep);
+	else if(assemblyFEElements_.size() != elements->numberElements())
+	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
+
+	MultiVectorPtr_Type resVec_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(0)->getMapVecFieldRepeated(), 1 ) );
+	
+	BlockMultiVectorPtr_Type resVecRep = Teuchos::rcp( new BlockMultiVector_Type( 1) );
+	resVecRep->addBlock(resVec_d,0);
+
+ 	SmallMatrixPtr_Type elementMatrix;
+	for (UN T=0; T<assemblyFEElements_.size(); T++) {
+		vec_dbl_Type solution(0);
+
+		solution_d = getSolution(elements->getElement(T).getVectorNodeList(), d_rep,dofs);
+
+		solution.insert( solution.end(), solution_d.begin(), solution_d.end() );
+
+		assemblyFEElements_[T]->updateSolution(solution);
+ 
+		assemblyFEElements_[T]->assembleJacobian();
+
+		elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+			
+		assemblyFEElements_[T]->advanceNewtonStep();
+
+
+		addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
+		
+	
+		/*if(assembleMode == "Rhs"){
+			AssembleFEAceNavierStokesPtr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFEAceNavierStokes_Type>(assemblyFEElements_[T] );
+			elTmp->setCoeff(coeff);
+		    assemblyFEElements_[T]->assembleRHS();
+		    rhsVec = assemblyFEElements_[T]->getRHS(); 
+			addFeBlockMv(resVecRep, rhsVec, elements->getElement(T),elementsPres->getElement(T), dofsVelocity,dofsPressure);
+		}*/
+
+			
+	}
+	if (callFillComplete)
+	    A->getBlock(0,0)->fillComplete( domainVec_.at(0)->getMapVecFieldUnique(),domainVec_.at(0)->getMapVecFieldUnique());
+	
+	/*if(assembleMode == "Rhs"){
+
+		MultiVectorPtr_Type resVecUnique_u = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocVel)->getMapVecFieldUnique(), 1 ) );
+		MultiVectorPtr_Type resVecUnique_p = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocPres)->getMapUnique(), 1 ) );
+
+		resVecUnique_u->putScalar(0.);
+		resVecUnique_p->putScalar(0.);
+
+		resVecUnique_u->exportFromVector( resVec_u, true, "Add" );
+		resVecUnique_p->exportFromVector( resVec_p, true, "Add" );
+
+		resVec->addBlock(resVecUnique_u,0);
+		resVec->addBlock(resVecUnique_p,1);
+	}*/
+
+
+}
 
 /*!
 
@@ -155,8 +264,8 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 		numVelo=10;
 	}
 	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
-	tuple_ssii_Type vel ("Velocity","P2",dofsVelocity,numVelo);
-	tuple_ssii_Type pres ("Pressure","P1",dofsPressure,dim+1);
+	tuple_ssii_Type vel ("Velocity",FETypeVelocity,dofsVelocity,numVelo);
+	tuple_ssii_Type pres ("Pressure",FETypePressure,dofsPressure,dim+1);
 	problemDisk->push_back(vel);
 	problemDisk->push_back(pres);
 
