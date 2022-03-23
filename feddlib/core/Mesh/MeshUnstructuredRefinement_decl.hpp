@@ -72,9 +72,7 @@ protected:
 
 
 
-private:
-    void assignEdgeFlags( MeshUnstrRefPtr_Type meshP1, EdgeElementsPtr_Type edgeElements);
-    	
+private:   	
 	void refineRegular( MeshUnstrRefPtr_Type meshP1, EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements,  int i); // aka red refinement
 	
 	void refineGreen( MeshUnstrRefPtr_Type meshP1, EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements,  int i); // green refinement
