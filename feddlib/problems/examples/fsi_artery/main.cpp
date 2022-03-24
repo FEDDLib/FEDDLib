@@ -12,6 +12,14 @@
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 
+/*! Test case for specific artery geometrie or straight tube geometry. Inflow depends on inflow region
+	-> straight tube: Inflow in (0,0,z)*laplaceInflow direction
+	-> artery: Inflow scaled with normal vector on inflow (x,y,z) * laplaceInflow	
+
+*/
+
+
+
 void zeroBC(double* x, double* res, double t, const double* parameters)
 {
     res[0] = 0.;
@@ -43,15 +51,62 @@ void parabolicInflow3D(double* x, double* res, double t, const double* parameter
     }
     else
     {
-        res[2] = parameters[0] / parameters[2] * x[0];
-        res[1] = 0.;
         res[0] = 0.;
+        res[1] = 0.;
+        res[2] = parameters[0] / parameters[2] * x[0];
+
     }
 
     return;
 }
 
 void parabolicInflow3DLin(double* x, double* res, double t, const double* parameters)
+{
+    // parameters[0] is the maxium desired velocity
+    // parameters[1] end of ramp
+    // parameters[2] is the maxium solution value of the laplacian parabolic inflow problme
+    // we use x[0] for the laplace solution in the considered point. Therefore, point coordinates are missing
+    
+    if(t < parameters[1])
+    {
+        res[0] = 0.;
+        res[1] = 0.;
+        res[2] = parameters[0] / parameters[2] * x[0] * t / parameters[1];
+    }
+    else
+    {
+        res[0] = 0.;
+        res[1] = 0.;
+        res[2] = parameters[0] / parameters[2] * x[0];
+    }
+
+    return;
+}
+
+void parabolicInflow3DArtery(double* x, double* res, double t, const double* parameters)
+{
+    // parameters[0] is the maxium desired velocity
+    // parameters[1] end of ramp
+    // parameters[2] is the maxium solution value of the laplacian parabolic inflow problme
+    // we use x[0] for the laplace solution in the considered point. Therefore, point coordinates are missing
+    
+    if(t < parameters[1])
+    {
+        res[0] = 0.;
+        res[1] = 0.;
+        res[2] = parameters[0] / parameters[2] * x[0] * 0.5 * ( ( 1 - cos( M_PI*t/parameters[1]) ));
+    }
+    else
+    {
+        res[1] = 0.;
+        res[0] = 0.;
+        res[2] = parameters[0] / parameters[2] * x[0];
+    }
+
+    return;
+}
+
+void parabolicInflow3DLinArtery(double* x, double* res, double t, const double* parameters)
 {
     // parameters[0] is the maxium desired velocity
     // parameters[1] end of ramp
@@ -256,6 +311,7 @@ int main(int argc, char *argv[])
             DomainPtr_Type domainP2struct;
           
             std::string bcType = parameterListAll->sublist("Parameter").get("BC Type","Compute Inflow");
+            std::string geometryType = parameterListAll->sublist("Parameter").get("Geometry Type","Artery");
             
             {
                 TimeMonitor_Type totalTimeMonitor(*totalTime);
@@ -494,7 +550,7 @@ int main(int argc, char *argv[])
                 
                 bcFactoryLaplace->addBC(zeroBC, 2, 0, domainFluidVelocity, "Dirichlet", 1); //inflow ring
                 bcFactoryLaplace->addBC(zeroBC, 3, 0, domainFluidVelocity, "Dirichlet", 1); //outflow ring
-                bcFactoryLaplace->addBC(zeroBC, 1, 0, domainFluidVelocity, "Dirichlet", 1); //surface
+                bcFactoryLaplace->addBC(zeroBC, 6, 0, domainFluidVelocity, "Dirichlet", 1); //surface
                 
                 ParameterListPtr_Type parameterListProblemL = Teuchos::getParametersFromXmlFile(xmlProbL);
                 ParameterListPtr_Type parameterListPrecL = Teuchos::getParametersFromXmlFile(xmlPrecL);
@@ -552,27 +608,50 @@ int main(int argc, char *argv[])
                 //bcFactory->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
                  string rampType = parameterListProblem->sublist("Parameter Fluid").get("Ramp type","cos");
                 if (rampType == "cos") {
-                    bcFactory->addBC(parabolicInflow3D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
-                    bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+                
+                	if(geometryType == "Artery"){
+                    	bcFactory->addBC(parabolicInflow3DArtery, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
+                    	bcFactory->addBC(parabolicInflow3DArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+                    	bcFactoryFluid->addBC(parabolicInflow3DArtery, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
+                    	bcFactoryFluid->addBC(parabolicInflow3DArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+            
+                    }
+                    else {
+                        bcFactory->addBC(parabolicInflow3D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
+                    	bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+                    	bcFactoryFluid->addBC(parabolicInflow3D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
+                    	bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
                     
+            		}
                     
                     bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                    bcFactoryFluid->addBC(parabolicInflow3D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
-                    bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
-                    
+                  
                 }
                 else if(rampType == "linear"){
-                    bcFactory->addBC(parabolicInflow3DLin, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
-                    bcFactory->addBC(parabolicInflow3DLin, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
-                    
+                
+                    if(geometryType == "Artery"){
+                    	bcFactory->addBC(parabolicInflow3DLinArtery, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
+                    	bcFactory->addBC(parabolicInflow3DLinArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+                    	bcFactoryFluid->addBC(parabolicInflow3DLinArtery, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
+                   		bcFactoryFluid->addBC(parabolicInflow3DLinArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+            
+                    }
+                    else {
+                        bcFactory->addBC(parabolicInflow3DLin, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
+                    	bcFactory->addBC(parabolicInflow3DLin, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+                    	
+                    	bcFactoryFluid->addBC(parabolicInflow3DLin, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
+                    	bcFactoryFluid->addBC(parabolicInflow3DLin, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+            
+            		}
+                
+
                     bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                    bcFactoryFluid->addBC(parabolicInflow3DLin, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
-                    bcFactoryFluid->addBC(parabolicInflow3DLin, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
-                }
+                 }
                 
-                //bcFactory->addBC(zeroDirichlet3D, 3, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // outflow ring
+                bcFactory->addBC(zeroDirichlet3D, 3, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // outflow ring
                 
-                //bcFactoryFluid->addBC(zeroDirichlet3D, 3, 0, domainFluidVelocity, "Dirichlet", dim); // outflow ring
+                bcFactoryFluid->addBC(zeroDirichlet3D, 3, 0, domainFluidVelocity, "Dirichlet", dim); // outflow ring
                 
                 if (zeroPressure) {
                     bcFactory->addBC(zeroBC, 3, 1, domainFluidPressure, "Dirichlet", 1); // outflow ring

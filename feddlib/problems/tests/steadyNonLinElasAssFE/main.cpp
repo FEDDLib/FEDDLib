@@ -6,9 +6,12 @@
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/problems/specific/LinElas.hpp"
+#include "feddlib/problems/specific/NonLinElasticity.hpp"
 #include "feddlib/problems/specific/LinElasAssFE.hpp"
+#include "feddlib/problems/specific/NonLinElasAssFE.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
+#include "feddlib/problems/Solver/NonLinearSolver.hpp"
 
 void zeroDirichlet(double* x, double* res, double t, const double* parameters)
 {
@@ -238,120 +241,125 @@ int main(int argc, char *argv[])
             
 
         // LinElas Objekt erstellen
-        LinElas<SC,LO,GO,NO> LinElas( domain, FEType, parameterListAll );
-      
-        LinElas.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
+        NonLinElasticity<SC,LO,GO,NO> NonLinElas( domain, FEType, parameterListAll );
+
+        NonLinElas.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
 
         if (dim==2)
-            LinElas.addRhsFunction( rhs2D );
+            NonLinElas.addRhsFunction( rhs2D );
         else if(dim==3)
-            LinElas.addRhsFunction( rhsX );
+            NonLinElas.addRhsFunction( rhsX );
 
         double force = parameterListAll->sublist("Parameter").get("Volume force",0.);
         double degree = 0;
         
-        LinElas.addParemeterRhs( force );
-        LinElas.addParemeterRhs( degree );
+        NonLinElas.addParemeterRhs( force );
+        NonLinElas.addParemeterRhs( degree );
         // ######################
         // Matrix assemblieren, RW setzen und System loesen
         // ######################
-        LinElas.initializeProblem();
-        LinElas.assemble();                
-        LinElas.setBoundaries(); // In der Klasse Problem
-        int its = LinElas.solve();
+        NonLinElas.initializeProblem();
+        NonLinElas.assemble();                
+        NonLinElas.setBoundaries(); // In der Klasse Problem
+		NonLinElas.setBoundariesRHS();
 
-        
+		std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
+        NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
+        nlSolver.solve( NonLinElas );
+        comm->barrier();	
+
 
         // LinElas Objekt erstellen
-        LinElasAssFE<SC,LO,GO,NO> LinElasAssFE( domain, FEType, parameterListAll );
+        NonLinElasAssFE<SC,LO,GO,NO> NonLinElasAssFE( domain, FEType, parameterListAll );
 
-        LinElasAssFE.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
+        NonLinElasAssFE.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
 
         if (dim==2)
-            LinElasAssFE.addRhsFunction( rhs2D );
+            NonLinElasAssFE.addRhsFunction( rhs2D );
         else if(dim==3)
-            LinElasAssFE.addRhsFunction( rhsX );
+            NonLinElasAssFE.addRhsFunction( rhsX );
         
-        LinElasAssFE.addParemeterRhs( force );
-        LinElasAssFE.addParemeterRhs( degree );
+        NonLinElasAssFE.addParemeterRhs( force );
+        NonLinElasAssFE.addParemeterRhs( degree );
         // ######################
         // Matrix assemblieren, RW setzen und System loesen
         // ######################
-        LinElasAssFE.initializeProblem();
-        LinElasAssFE.assemble();                
-        LinElasAssFE.setBoundaries(); // In der Klasse Problem
-        int itsAssFE = LinElasAssFE.solve();
+        NonLinElasAssFE.initializeProblem();
+        NonLinElasAssFE.assemble();                
+        NonLinElasAssFE.setBoundaries(); // In der Klasse Problem
+        NonLinElasAssFE.setBoundariesRHS();
 
+        NonLinearSolver<SC,LO,GO,NO> nlSolverAssFE( nlSolverType );
+        nlSolverAssFE.solve( NonLinElasAssFE );
+        comm->barrier();
         
 		if(comm->getRank() ==0){
 			cout << " ############################################### " << endl;
-			cout << " Linear Iterations FEDDLib Assembly : " << its << endl; 
-			cout << " Linear Iterations AceGEN Assembly  : " << itsAssFE << endl;
+			cout << " Nonlinear Iterations FEDDLib Assembly : " << nlSolver.getNonLinIts() << endl; 
+			cout << " Nonlinear Iterations AceGEN Assembly  : " << nlSolverAssFE.getNonLinIts() << endl;
 			cout << " ############################################### " << endl;
 
 		}
+
+			// ######################
+            // Mesh-Bewegung testen
+            // ######################
+            // Setze die aktuelle (nicht-deformierte) Konfiguration als Referenzkonfiguration
+            /*domain->setReferenceConfiguration();
+
+            typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
+            typedef RCP<MultiVector_Type> MultiVectorPtr_Type;
+            typedef RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
+
+            MultiVectorConstPtr_Type displacementUniqueConst = LinElas.getSolution()->getBlock(0);
+            MultiVectorPtr_Type displacementRepeated = rcp( new MultiVector_Type( LinElas.getDomain(0)->getMapVecFieldRepeated() ) );
+
+            displacementRepeated->importFromVector( displacementUniqueConst );
+            MultiVectorPtr_Type displacementUnique = rcp_const_cast<MultiVector_Type>(displacementUniqueConst);
+            // Verschiebe das Gitter
+            domain->moveMesh(displacementUnique, displacementRepeated);*/
+
+			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+
+			exPara->setup( "displacements", domain->getMesh(), FEType );
+
+			MultiVectorConstPtr_Type valuesSolidConst1 = NonLinElas.getSolution()->getBlock(0);
+			exPara->addVariable( valuesSolidConst1, "valuesLinElas", "Vector", dim, domain->getMapUnique());
+
+			MultiVectorConstPtr_Type valuesSolidConst2 = NonLinElasAssFE.getSolution()->getBlock(0);
+			exPara->addVariable( valuesSolidConst2, "valuesLinElasAssFE", "Vector", dim, domain->getMapUnique());
+
+			exPara->save(0.0);
+
+			// Calculating the error per node
+			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValues = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( valuesSolidConst1->getMap() ) ); 
+			//this = alpha*A + beta*B + gamma*this
+			errorValues->update( 1., valuesSolidConst2, -1. ,valuesSolidConst1, 0.);
+
+			// Taking abs norm
+			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > errorValuesAbs = errorValues;
+
+			errorValues->abs(errorValuesAbs);
+
+ 			Teuchos::Array<SC> norm(1); 
+    		errorValues->norm2(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
+			double res = norm[0];
+			if(comm->getRank() ==0)
+				cout << " 2 Norm of Error of Solutions " << res << endl;
+			double infNormError = res;
+		
+			NonLinElas.getSolution()->norm2(norm);
+			res = norm[0];
+			if(comm->getRank() ==0)
+				cout << " Relative error 2-Norm of solution linear elasticity " << infNormError/res << endl;
+
+			NonLinElasAssFE.getSolution()->norm2(norm);
+			res = norm[0];
+			if(comm->getRank() ==0)
+				cout << " Relative error 2-Norm of solutions linear elasticity assemFE " << infNormError/res << endl;
 		
 
-		// ######################
-        // Mesh-Bewegung testen
-        // ######################
-        // Setze die aktuelle (nicht-deformierte) Konfiguration als Referenzkonfiguration
-        /*domain->setReferenceConfiguration();
-
-        typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
-        typedef RCP<MultiVector_Type> MultiVectorPtr_Type;
-        typedef RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
-
-        MultiVectorConstPtr_Type displacementUniqueConst = LinElas.getSolution()->getBlock(0);
-        MultiVectorPtr_Type displacementRepeated = rcp( new MultiVector_Type( LinElas.getDomain(0)->getMapVecFieldRepeated() ) );
-
-        displacementRepeated->importFromVector( displacementUniqueConst );
-        MultiVectorPtr_Type displacementUnique = rcp_const_cast<MultiVector_Type>(displacementUniqueConst);
-        // Verschiebe das Gitter
-        domain->moveMesh(displacementUnique, displacementRepeated);*/
-
-		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-
-		exPara->setup( "displacements", domain->getMesh(), FEType );
-
-		MultiVectorConstPtr_Type valuesSolidConst1 = LinElas.getSolution()->getBlock(0);
-		exPara->addVariable( valuesSolidConst1, "valuesLinElas", "Vector", dim, domain->getMapUnique());
-
-		MultiVectorConstPtr_Type valuesSolidConst2 = LinElasAssFE.getSolution()->getBlock(0);
-		exPara->addVariable( valuesSolidConst2, "valuesLinElasAssFE", "Vector", dim, domain->getMapUnique());
-
-		exPara->save(0.0);
-
-		// Calculating the error per node
-		Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValues = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( valuesSolidConst1->getMap() ) ); 
-		//this = alpha*A + beta*B + gamma*this
-		errorValues->update( 1., valuesSolidConst2, -1. ,valuesSolidConst1, 0.);
-
-		// Taking abs norm
-		Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > errorValuesAbs = errorValues;
-
-		errorValues->abs(errorValuesAbs);
-
-		Teuchos::Array<SC> norm(1); 
-		errorValues->norm2(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
-		double res = norm[0];
-		if(comm->getRank() ==0)
-			cout << " 2 Norm of Error of Solutions " << res << endl;
-		double infNormError = res;
-	
-		LinElas.getSolution()->norm2(norm);
-		res = norm[0];
-		if(comm->getRank() ==0)
-			cout << " Relative error Norm of solution linear elasticity " << infNormError/res << endl;
-
-		LinElasAssFE.getSolution()->norm2(norm);
-		res = norm[0];
-		if(comm->getRank() ==0)
-			cout << " Relative error Norm of solutions linear elasticity assemFE " << infNormError/res << endl;
-	
-
-
-      // TEUCHOS_TEST_FOR_EXCEPTION( infNormError > 1e-11 , std::logic_error, "Inf Norm of Error between calculated solutions is too great. Exceeded 1e-11. ");
+          // TEUCHOS_TEST_FOR_EXCEPTION( infNormError > 1e-11 , std::logic_error, "Inf Norm of Error between calculated solutions is too great. Exceeded 1e-11. ");
 
     }
 
