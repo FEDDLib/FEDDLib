@@ -182,7 +182,25 @@ class FE {
                                  int degree,
                                  MatrixPtr_Type &A,
                                  bool callFillComplete = true);
-    
+
+
+	// Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
+	void assemblyReactionTerm(int dim,
+    							std::string FEType,
+                                MatrixPtr_Type &A,
+                                MultiVectorPtr_Type u,
+                                bool callFillComplete,
+                     			std::vector<SC>& funcParameter,
+								RhsFunc_Type reactionFunc);	
+
+    void assemblyLaplaceDiffusion(int Dimension,
+                        std::string FEType,
+                        int degree,
+                        MatrixPtr_Type &A,
+		            	vec2D_dbl_Type diffusionTensor,
+                        bool callFillComplete = true,
+                        int FELocExternal = -1);
+
     void assemblyElasticityJacobianAndStressAceFEM(int dim,
                                                    std::string FEType,
                                                    MatrixPtr_Type &A,
@@ -486,6 +504,11 @@ private:
                                     SmallMatrix<SC>& B,
                                     vec_dbl_Type& b,
                                     std::string FEType="P");
+
+    void applyDiff(vec3D_dbl_Type& dPhiIn,
+                   vec3D_dbl_Type& dPhiOut,
+                   SmallMatrix<SC>& diffT);
+    
     
     void phi(       int Dimension,
                     int intFE,

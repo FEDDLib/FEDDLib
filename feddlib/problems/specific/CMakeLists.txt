@@ -11,6 +11,9 @@ SET(problems_specific_HEADERS
     specific/LaplaceBlocks_decl.hpp
  	specific/LaplaceBlocks_def.hpp
  	specific/LaplaceBlocks.hpp
+ 	 specific/DiffusionReaction_decl.hpp
+ 	specific/DiffusionReaction_def.hpp
+ 	specific/DiffusionReaction.hpp
     #specific/LaplacePseudoCoupled_decl.hpp
     #specific/LaplacePseudoCoupled_def.hpp
     #specific/LaplacePseudoCoupled.hpp
@@ -58,6 +61,7 @@ SET(problems_specific_SOURCES
     specific/LinElas.cpp
     specific/LinElasAssFE.cpp
 #    specific/LinElasFirstOrder.cpp
+	specific/DiffusionReaction.cpp
 	specific/NavierStokes.cpp
 	specific/NavierStokesAssFE.cpp
     specific/NonLinElasticity.cpp

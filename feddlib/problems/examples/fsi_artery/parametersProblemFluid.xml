@@ -7,8 +7,8 @@
         <Parameter name="Mesh Name"					            type="string"   value="dfg_fsi_fluid.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh, dfg_fsi_benchmark_fluid.mesh-->
         <Parameter name="Mesh Delimiter"					    type="string"   value=" "/>
         <Parameter name="H/h"							    	type="int"   	value="6"/>        
-        <Parameter name="Viscosity"					            type="double"   value="1.0e-3"/>
-        <Parameter name="Density"					            type="double"   value="1000.0"/>
+        <Parameter name="Viscosity" type="double" value="3.0e-6"/>
+        <Parameter name="Density" type="double" value="1.0e-6"/>
         <Parameter name="MaxVelocity"                           type="double"   value=".3"/>
         <Parameter name="MeanVelocity"                          type="double"   value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
         <Parameter name="relNonLinTol"							type="double"   value="1.0e-4"/>
