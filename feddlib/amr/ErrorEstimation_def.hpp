@@ -277,10 +277,10 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 				cout << "	Mesh Quality Assesment 2D of current mesh" << endl;
 				cout << "	__________________________________________________________________________________________________________ " << endl;
 				cout << " " << endl;
-				cout << " 	Circumdiameter h_T: 		" <<"max. = " << setprecision(5) << fixed << maxh_T << "	min. = " << minh_T  << endl;
-				cout << " 	Incircumdiameter rho_T:		" <<"max. = " << maxrho_T << "	min. = " << minrho_T  << endl;
-				cout << " 	Area of Triangles:	 	" <<"max. = " << maxArea_T << "	min. = " << minArea_T  << endl;
-				cout << " 	Shape parameter:	 	" <<"max. = " <<  maxC_T << "	min. = " << minC_T << endl;
+				cout << " 	Circumdiameter h_T: 		" <<"max. = " << setprecision(5)  << maxh_T << "	min. = " << setprecision(5)  << minh_T  << endl;
+				cout << " 	Incircumdiameter rho_T:		" <<"max. = " << setprecision(5)  <<maxrho_T << "	min. = " <<setprecision(5)  << minrho_T  << endl;
+				cout << " 	Area of Triangles:	 	" <<"max. = " << setprecision(5)  << maxArea_T << "	min. = " << setprecision(5)  << minArea_T  << endl;
+				cout << " 	Shape parameter:	 	" <<"max. = " << setprecision(5)  << maxC_T << "	min. = " << setprecision(5)  <<minC_T << endl;
 				cout << " 	The maximal Error of Elements is "  << maxErrorElLoc << endl;
 				cout << "	__________________________________________________________________________________________________________ " << endl;
 			}
@@ -439,14 +439,14 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 				cout << " 	-- Mesh Quality Assesment 3D of current mesh level -- 	" << endl;
 				cout << "	__________________________________________________________________________________________________________ " << endl;
 				cout << " " << endl;
-				cout << " 	Circumdiameter h_T:			" <<"max. = "  << setprecision(5) << fixed << maxh_T << " min. = " << minh_T  << endl;
-				cout << " 	Incircumdiameter rho_T:			" <<"max. = " << maxrho_T << " min. = " << minrho_T  << endl;
-				cout << " 	Circumdiameter h_Tri:			" <<"max. = " << maxh_Tri << " min. = " << minh_Tri  << endl;
-				cout << " 	Incircumdiameter rho_Tri:		" <<"max. = " << maxrho_Tri << " min. = " << minrho_Tri  << endl;
-				cout << " 	Area of Triangles: 			" <<"max. = " << maxArea_T << " min. = " << minArea_T  << endl;
-				cout << " 	Volume of Tetraeder: 			" <<"max. = " << maxVol_T << " min. = " << minVol_T  << endl;
-				cout << " 	Shape parameter Tetraeder: 		" <<"max. = " <<  maxC_T << " min. = " << minC_T << endl;
-				cout << " 	Shape parameter Triangles: 		" <<"max. = " <<  maxC_Tri << " min. = " << minC_Tri << endl;
+				cout << " 	Circumdiameter h_T:			" <<"max. = "  << setprecision(5)  << maxh_T << " min. = " << setprecision(5)  <<minh_T  << endl;
+				cout << " 	Incircumdiameter rho_T:			" <<"max. = " <<setprecision(5)  << maxrho_T << " min. = " << setprecision(5)  <<minrho_T  << endl;
+				cout << " 	Circumdiameter h_Tri:			" <<"max. = " <<setprecision(5)  << maxh_Tri << " min. = " << setprecision(5)  <<minh_Tri  << endl;
+				cout << " 	Incircumdiameter rho_Tri:		" <<"max. = " << setprecision(5)  <<maxrho_Tri << " min. = " << setprecision(5)  <<minrho_Tri  << endl;
+				cout << " 	Area of Triangles: 			" <<"max. = " << setprecision(5)  <<maxArea_T << " min. = " << setprecision(5)  <<minArea_T  << endl;
+				cout << " 	Volume of Tetraeder: 			" <<"max. = " << setprecision(5)  <<maxVol_T << " min. = " << setprecision(5)  <<minVol_T  << endl;
+				cout << " 	Shape parameter Tetraeder: 		" <<"max. = " << setprecision(5)  << maxC_T << " min. = " << setprecision(5)  <<minC_T << endl;
+				cout << " 	Shape parameter Triangles: 		" <<"max. = " << setprecision(5)  << maxC_Tri << " min. = " << setprecision(5)  <<minC_Tri << endl;
 				cout << " 	The maximal Error of Elements is 	"  << maxErrorElLoc << endl;
 				cout << "	__________________________________________________________________________________________________________ " << endl;
 			}
@@ -454,7 +454,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 
 
 	}
-		
+
 	errorEstimation_ = errorElementMv;
 	
 	MESH_TIMER_STOP(errorEstimation);

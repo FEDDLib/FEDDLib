@@ -24,7 +24,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="ldc2D2.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="bfs.mesh"/>
     </ParameterList>
 
 	<ParameterList name="Mesh Refinement">
@@ -35,7 +35,7 @@
         <Parameter name="RefinementType" type="string" value="Maximum"/>
        	<Parameter name="Write Refinement Time" type="bool" value="true"/>
         <Parameter name="Write Mesh Quality" type="bool" value="true"/>
-        <Parameter name="Modell Problem" type="string" value="LDC"/>
+        <Parameter name="Modell Problem" type="string" value="BFS"/>
 		<Parameter name="Coarsening Cycle" type="int" value="0"/>
 		<Parameter name="Coarsening m" type="int" value="2"/>
 		<Parameter name="Coarsening n" type="int" value="3"/>

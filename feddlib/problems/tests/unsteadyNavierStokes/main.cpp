@@ -36,6 +36,14 @@ void zeroDirichlet2D(double* x, double* res, double t, const double* parameters)
     return;
 }
 
+void couette2D(double* x, double* res, double t, const double* parameters){
+
+    res[0] = 1.*parameters[0];
+    res[1] = 0.;
+
+    return;
+}
+
 void zeroDirichlet3D(double* x, double* res, double t, const double* parameters){
 
     res[0] = 0.;
@@ -362,7 +370,7 @@ int main(int argc, char *argv[]) {
             // ####################
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
-            if (!bcType.compare("parabolic"))
+            if (!bcType.compare("parabolic") || !bcType.compare("Couette"))
                 parameter_vec.push_back(1.);//height of inflow region
             else if(!bcType.compare("parabolic_benchmark_sin") || !bcType.compare("parabolic_benchmark") || !bcType.compare("partialCFD"))
                 parameter_vec.push_back(.41);//height of inflow region
@@ -420,6 +428,14 @@ int main(int argc, char *argv[]) {
 
 //                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
 
+            }
+            else if (!bcType.compare("Couette")){
+              bcFactory->addBC(couette2D, 1, 0, domainVelocity, "Dirichlet", dim, parameter_vec); // wall
+              bcFactory->addBC(zeroDirichlet2D, 2, 0, domainVelocity, "Dirichlet", dim); // wall
+              //bcFactory->addBC(inflow3DRichter, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec); // inflow
+              //bcFactory->addBC(zeroDirichlet3D, 3, 0, domainVelocity, "Dirichlet_Z", dim);
+              //bcFactory->addBC(zeroDirichlet3D, 5, 0, domainVelocity, "Dirichlet", dim);
+            
             }
             
             int timeDisc = parameterListProblem->sublist("Timestepping Parameter").get("Butcher table",0);
