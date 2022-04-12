@@ -14,15 +14,14 @@ template<class SC,class LO,class GO,class NO>
 SCI<SC,LO,GO,NO>::SCI(const DomainConstPtr_Type &domainStructure, std::string FETypeStructure,
 					const DomainConstPtr_Type &domainChem, std::string FETypeChem,
                     ParameterListPtr_Type parameterListChem, ParameterListPtr_Type parameterListStructure,
-                    ParameterListPtr_Type parameterListFSI, ParameterListPtr_Type parameterListGeometry,
-                    Teuchos::RCP<SmallMatrix<int> > &defTS):
-NonLinearProblem<SC,LO,GO,NO>( parameterListFSI, domainVelocity->getComm() ),
+                    ParameterListPtr_Type parameterListSCI, Teuchos::RCP<SmallMatrix<int> > &defTS):
+Problem<SC,LO,GO,NO>( parameterListFSI, domainVelocity->getComm() ),
 // hasSourceTerm = drittes Arguement. assembleSourceTerm() fuer NS nicht programmiert.
 // Deswegen hier erstmal false (default Parameter).
 // Fuer Struktur hingegen ist default Parameter true, da programmiert.
 problemStructure_(),
 problemChem_(),
-problemStructureNonLin_(),
+//problemStructureNonLin_(),
 meshDisplacementOld_rep_(),
 meshDisplacementNew_rep_(),
 u_rep_(),
@@ -34,33 +33,31 @@ materialModel_( parameterListStructure->sublist("Parameter").get("Material model
 valuesForExport_(0),
 exporterGeo_()
 {
-    this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
-    geometryExplicit_ = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
+    //this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
 
-    this->initNOXParameters();
+    //this->initNOXParameters();
     counterP = 0;
     
-    std::string linearization = parameterListSCI->sublist("General").get("Linearization","FixedPoint");
+    //std::string linearization = parameterListSCI->sublist("General").get("Linearization","FixedPoint");
     
-    TEUCHOS_TEST_FOR_EXCEPTION( !(linearization == "Newton" || linearization == "NOX")  && materialModel_ != "linear", std::runtime_error, "Nonlinear material models can only be used with Newton's method or FixedPoint (nonlinear material Jacobian will still be used).");
+    //TEUCHOS_TEST_FOR_EXCEPTION( !(linearization == "Newton" || linearization == "NOX")  && materialModel_ != "linear", std::runtime_error, "Nonlinear material models can only be used with Newton's method or FixedPoint (nonlinear material Jacobian will still be used).");
     
-
     this->addVariable( domainStructure, FETypeStructure, "d_s", domainStructure->getDimension() ); // Struktur
-    this->addVariable( domainChem, FETypeChem, "u", domainChem->getDimension()); // Fluid-Druck
+    this->addVariable( domainChem, FETypeChem, "c", domainChem->getDimension()); // Chemistry
 
     this->dim_ = this->getDomain(0)->getDimension();
     
     problemChem_ = Teuchos::rcp( new ChemProblem_Type( domainVelocity, FETypeVelocity, domainPressure, FETypePressure, parameterListFluid ) );
     problemChem_->initializeProblem();
     
-    if (materialModel_=="linear"){
+    //if (materialModel_=="linear"){
         problemStructure_ = Teuchos::rcp( new StructureProblem_Type( domainStructure, FETypeStructure, parameterListStructure ) );
         problemStructure_->initializeProblem();
-    }
+    /*}
     else{
         problemStructureNonLin_ = Teuchos::rcp( new StructureNonLinProblem_Type( domainStructure, FETypeStructure, parameterListStructure) );
         problemStructureNonLin_->initializeProblem();
-    }
+    }*/
     
     //We initialize the subproblems. In the main routine, we need to call initializeFSI(). There, we first initialize the vectors of the FSI problem and then we set the pointers of the subproblems to the vectors of the full monolithic FSI system. This way all values are only saved once in the subproblems and can be used by the monolithic FSI system.
     
@@ -84,7 +81,7 @@ template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::info()
 {
     this->infoProblem();
-    this->infoNonlinProblem();
+    //this->infoNonlinProblem();
 }
 
 // Alle linearen Probleme
@@ -94,45 +91,35 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
     if (type == "") {
         if (this->verbose_)
         {
-            std::cout << "-- Assembly FSI ... " << std::endl;
+            std::cout << "-- Assembly SCI ... " << std::endl;
         }
 
-        
+        // First Assumption: Almost incompressible Material
         this->problemChem_->assemble();
         
+        // Elementwise determined E Module
+        MultiVectorPtr_Type eModVec = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getElementMap() ) );
+
+        MultiVectorPtr_Type solChemRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) )
+        solChemRep->importFromVector(this->problemChem_->getSolution());
+
+        this->feFactory_->determineEMod(FEType,solChemRep,eModVec,this->getDomain(1));
+
+
         // steady rhs wird hier assembliert.
         // rhsFunc auf 0 (=x) und 0 (=y) abaendern bei LinElas!
-        if (materialModel_=="linear")
-            this->problemStructure_->assemble();
+        //if (materialModel_=="linear"){
+            this->feFactory_->assemblyLinElasXDimE(int dim, FEType,tr_Type &A, eModVec, nu, true);
+
+            //this->problemStructure_->assemble();
+        /*}
         else
-            this->problemStructureNonLin_->assemble();
+            this->problemStructureNonLin_->assemble();*/
       
-        // ###########################
-        // Kopplungsbloecke
-        // ###########################
-        // ACHTUNG: Anders als im Matlab-Code!!!
-        // Matlab: C1_T hat so viele Zeilen wie das komplette Fluid-System (u + p)
-        // FEDDLib: C1_T hat so viele Zeilen wie das Geschwindigkeitssystem (nur u)
-        // Bemerkung: Verteilung der Zeilen wird angegeben (Range-Map).
-        // Interface wird von der Fluid-Seite aus gehalten, deswegen auch
-        // getDomain(0) bei C2, obwohl es in der Struktur-Spalte ist.
-        MatrixPtr_Type C1_T(new Matrix_Type( this->getDomain(1)->getMapVecFieldUnique(), 1 ) ); // Chem-Kopplung
+       
+        MatrixPtr_Type C1_T(new Matrix_Type( this->getDomain(1)->getMapVecUnique(), 1 ) ); // Chem-Kopplung
         MatrixPtr_Type C1(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) ); // Struktur-Kopplung
-        
-        
-      
-        // Chem-Bloecke
-        //this->feFactory_->assemblySCICoupling(this->dim_, this->domain_FEType_vec_.at(0), C1, C1_T, 0, 0,
-
-                  
-        
-        /*MatrixPtr_Type dummyC;
-        // we need to set the dummy coupling conditions for monolithic preconditioning with FROSch
-        if ( !this->getDomain(0)->getGlobalInterfaceMapVecFieldPartial().is_null() ) {
-            dummyC.reset(new Matrix_Type( this->getDomain(0)->getInterfaceMapVecFieldUnique(), 1 ) );
-            this->feFactory_->assemblyDummyCoupling(this->dim_, this->domain_FEType_vec_.at(0), dummyC, 0,true);
-        }*/
-
+       
         // ###########################
         // Korrekte Skalierung der entsprechenden Bloecke
         // ###########################
@@ -144,43 +131,21 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         
         this->system_.reset(new BlockMatrix_Type(2));
 
-        
-        // Fluid
-        this->system_->addBlock( this->problemFluid_->system_->getBlock(0,0), 0, 0 );
-        
+         
         // Struktur
-        if (materialModel_=="linear")
-            this->system_->addBlock( this->problemStructure_->system_->getBlock(0,0), 1, 1 );
-        else
-            this->system_->addBlock( this->problemStructureNonLin_->system_->getBlock(0,0), 1, 1 );
+        this->system_->addBlock( this->problemStructure_->system_->getBlock(0,0), 0, 0);
         
-        // Kopplung
-        this->system_->addBlock( C1_T, 0, 1 );
-        this->system_->addBlock( C1, 1, 0 );
-
-
-        if (!dummyC.is_null())
-            this->system_->addBlock( dummyC, 3, 3 );
-        
+        // Chemistry
+        this->system_->addBlock( this->probleChem_->system_->getBlock(0,0), 1, 1 );
        
-
-        // Sollte (bzw. muss) erst aufgerufen werden, wenn alle Bloecke aus assemble()
-        // in das ganze System hineingeschrieben worden sind. Ansonsten findet
-        // blockExists() keinen Block
-    //    this->initializeVectors();
-    //    this->initializeVectorsNonLinear();
-        //NOX
-
         // We set the vector from the partial problems
         this->setFromPartialVectorsInit();
         
         // Fuer die Zeitprobleme
         timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
         ParameterListPtr_Type plStructure;
-        if (materialModel_=="linear")
-            plStructure = this->problemStructure_->getParameterList();
-        else
-            plStructure = this->problemStructureNonLin_->getParameterList();
+        
+        plStructure = this->problemStructure_->getParameterList();
         
         setupSubTimeProblems(this->problemFluid_->getParameterList(), plStructure);
         
@@ -189,478 +154,17 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             std::cout << "done -- " << std::endl;
         }
     }
-    else
-        reAssemble(type);
-}
-
-
-template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
-{
-
-    double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
-
-    // Fluid-Dichte
-    double density = this->problemFluid_->getParameterList()->sublist("Parameter").get("Density",1.);
-    double viscosity = this->problemFluid_->getParameterList()->sublist("Parameter").get("Viscosity",1.);
-
-    if(type == "UpdateMeshDisplacement")
-    {
-        if(this->verbose_)
-            std::cout << "-- Reassembly (UpdateMeshDisplacement)" << '\n';
-
-        // Da dieser Abschnitt zu Beginn der neuen Zeititeration aufgerufen wird, muss
-        // auch die alte Gitterverschiebung durch die neue Loesung aktualisiert werden.
-        updateMeshDisplacement();
-        return;
-    }
-
-
-    if(type == "UpdateTime")
-    {
-        if(this->verbose_)
-            std::cout << "-- Reassembly (UpdateTime)" << '\n';
-
-        updateTime();
-        return;
-    }
-
-    if(type == "UpdateChemInTime")
-    {
-        if(this->verbose_)
-            std::cout << "-- Reassembly (UpdateChemInTime)" << '\n';
-
-        updateFluidInTime();
-        return;
-    }
-
-    if(type == "MoveMesh")
-    {
-        if(this->verbose_)
-            std::cout << "-- Reassembly (MoveMesh)" << '\n';
-
-        moveMesh();
-        return;
-    }
-
-    if(type == "AddInterfaceBlockRHS")
-    {
-        if(this->verbose_)
-            std::cout << "-- Reassembly (AddInterfaceBlockRHS)" << '\n';
-
-        addInterfaceBlockRHS();
-        return;
-    }
-
-    if(type == "ComputeChemRHSInTime")
-    {
-        if(this->verbose_)
-            std::cout << "-- Reassembly (ComputeChemRHSInTime)" << '\n';
-        
-        computeFluidRHSInTime( );
-        return;
-    }
-    if(type == "ComputeSolidRHSInTime")
-    {
-        if(this->verbose_)
-            std::cout << "-- Reassembly (ComputeSolidRHSInTime)" << '\n';
-        
-        computeSolidRHSInTime( );
-        return;
-    }
-
-    
-    // ###############
-    // Berechne die Gittergeschwindigkeit w und FSI-Konvektion-Anteil (u-w)
-    // ###############
-    MultiVectorConstPtr_Type fluidSolution = this->solution_->getBlock(0);
-    u_rep_->importFromVector(fluidSolution, true);
-    u_minus_w_rep_->importFromVector(fluidSolution, true); //    u_minus_w_rep_ = *u_rep_;
-
-    MultiVectorConstPtr_Type geometrySolution;
-    if(geometryExplicit_)
-    {
-        geometrySolution = this->problemGeometry_->getSolution()->getBlock(0);
-    }
-    else
-    {
-        geometrySolution = this->solution_->getBlock(4);
-    }
-    meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
-
-    *w_rep_ = *meshDisplacementNew_rep_;
-    w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
-    w_rep_->scale( 1.0/dt );
-
-    u_minus_w_rep_->update( -1.0, *w_rep_, 1.0 );
-
-    // Selbiges fuer den Druck
-    MultiVectorConstPtr_Type pressureSolution = this->solution_->getBlock(1);
-    p_rep_->importFromVector(pressureSolution, true);
-
-
-    // ###############
-    // Neu-Assemblierung zu Beginn der neuen Zeititeration im Falle von geometrisch explizit,
-    // da das Geometrieproblem zu Beginn der neuen Zeititeration geloest wird und sich somit
-    // das Gitter danach bewegt.
-    // ###############
-    if(type == "ForTime")
-    {
-        if(this->verbose_)
-            std::cout << "-- Reassembly (ForTime)" << '\n';
-
-        // Do we need ForTime at this point? see DAESolverInTime, is it only needed for extrapolation?
-        if(geometryExplicit_)
-        {
-            // ACHTUNG: Fluid-Loesung wird hier auf Null gesetzt, wegen initializeVectors().
-            // Somit dann auch die problemTimeFluid_ wodurch eine falsche BDF2-RHS entsteht.
-            // Rufe im DAESolverInTime deswegen erneut setPartialSolutions() auf.
-            
-            
-            this->problemFluid_->assembleConstantMatrices(); // Die Steifikeitsmatrix wird weiter unten erst genutzt
-            
-            // Es ist P = P_
-            P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-//            counterP++;
-//            std::string outNameMeshVelo = "meshVelo" + to_string(counterP) + ".mm";
-//            w_rep_->writeMM(outNameMeshVelo);
-//            Teuchos::ArrayRCP<SC> values = w_rep_->getDataNonConst(0);
-//            for (int i=0; i<values.size()/2; i++) {
-//                values[2*i] = i;
-//            }
-            this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
-            P_->resumeFill();
-            P_->scale(density);
-            P_->scale(-1.0);
-//            P_->scale(.0);
-            P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
-//            std::string outNameP = "P" + to_string(counterP) + ".mm";
-//            std::cout << "write P:"<<std::endl;
-//            P_->writeMM( "P.mm" );
-            // Druck und Divergenz hinzufuegen
-            this->system_->addBlock( this->problemFluid_->system_->getBlock(0,1), 0, 1 );
-            this->system_->addBlock( this->problemFluid_->system_->getBlock(1,0), 1, 0 );
-            if (this->problemFluid_->system_->blockExists(1,1))
-                this->system_->addBlock( this->problemFluid_->system_->getBlock(1,1), 1, 1 );            
-        }
-
-        return; // Damit wir nicht den ganzen Rest auch noch machen!
-    }
-
-
-    // ###############
-    // Neu-Assemblierung
-    // ###############
-    // Fluid: A+P+N+W
-    MatrixPtr_Type APNW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-
-    if(geometryExplicit_)
-    {
-        
-        if(type == "FixedPoint")
-        {
-            TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "should always be called by the residual and never here.");
-        }
-        else if(type == "Newton")
-        {
-            if(this->verbose_){
-                std::cout << "-- Reassembly GE (Newton)" << '\n';
-                std::cout << "-- Reassembly GE (Newton) ... full reassembly" << '\n';
-            }
-            
-            problemFluid_->reAssemble( "Newton" );
-            
-            if (materialModel_ != "linear")
-                this->problemStructureNonLin_->reAssemble("Newton");
-            
-        }
-    }
-    else
-    {
-        if(type == "FixedPoint")
-        {
-            TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "should always be called by the residual and never here.");
-        }
-        else if(type == "Newton")
-        {
-            if(this->verbose_){
-                std::cout << "-- Reassembly GI (Newton)" << '\n';
-                std::cout << "-- Reassembly GI (Newton) ... only W" << '\n';
-            }
-
-            problemFluid_->reAssemble( "Newton" );
-            
-            // TODO: Shape
-            // domain(0) = domain(4)
-            MatrixPtr_Type shapeVelocity = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-            MatrixPtr_Type shapeDiv = Teuchos::rcp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) ); // shape fuer div-Nebenbedingung
-
-            this->feFactory_->assemblyShapeDerivativeVelocity(this->dim_, this->domain_FEType_vec_.at(4), this->domain_FEType_vec_.at(1),
-                            shapeVelocity, 4, u_rep_, w_rep_, p_rep_, dt, density, viscosity, true);
-            this->feFactory_->assemblyShapeDerivativeDivergence(this->dim_, this->domain_FEType_vec_.at(4), this->domain_FEType_vec_.at(1),
-                            shapeDiv, 1, 4, this->getDomain(1)->getMapUnique(), this->getDomain(4)->getMapVecFieldUnique(), u_rep_, true);
-            shapeDiv->resumeFill();
-            shapeDiv->scale(-1.0);
-            shapeDiv->fillComplete(this->getDomain(4)->getMapVecFieldUnique(), this->getDomain(1)->getMapUnique());
-
-            // Shape Reinschreiben
-            this->system_->addBlock(shapeVelocity, 0, 4);
-            this->system_->addBlock(shapeDiv, 1, 4);
-            
-            if (materialModel_ != "linear")
-                this->problemStructureNonLin_->reAssemble("Newton");
-
-        }
-    }
-
-    this->system_->addBlock( problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
-    
-    if (materialModel_ != "linear")
-        this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 2, 2 );
-}
-
-template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions)
-{
-    double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
-    // Fluid-Dichte
-    double density = this->problemFluid_->getParameterList()->sublist("Parameter").get("Density",1.);
-
-    // ###############
-    // w bestimmen
-    // ###############
-    MultiVectorConstPtr_Type geometrySolution;
-    if(geometryExplicit_)
-    {
-        geometrySolution = this->problemGeometry_->getSolution()->getBlock(0);
-    }
-    else
-    {
-        geometrySolution = this->solution_->getBlock(4);
-    }
-    meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
-
-
-    *w_rep_ = *meshDisplacementNew_rep_;
-    // update(): this = alpha*A + beta*this
-    w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
-    w_rep_->scale(1.0/dt);
-
-
-    // ###############
-    // u extrapolieren
-    // ###############
-    // Beachte: getBlock(0) ist hier der Richtige, da dies der u-Variable in FSI entspricht.
-    if (previousSolutions.size() >= 2)
-    {
-        MultiVectorPtr_Type extrapolatedVector = Teuchos::rcp( new MultiVector_Type( previousSolutions[0]->getBlock(0) ) );
-
-        // Extrapolation fuer BDF2
-        // update(): this = alpha*A + beta*this
-        extrapolatedVector->update( -1., *previousSolutions[1]->getBlock(0), 2. );
-
-        u_rep_->importFromVector(extrapolatedVector, true);
-    }
-    else if(previousSolutions.size() == 1)
-    {
-        MultiVectorConstPtr_Type u = previousSolutions[0]->getBlock(0);
-        u_rep_->importFromVector(u, true);
-    }
-    else if (previousSolutions.size() == 0)
-    {
-        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);
-    }
-
-    // (u-w)
-    *u_minus_w_rep_ = *u_rep_;
-    // update(): this = alpha*A + beta*this
-    u_minus_w_rep_->update(-1.0, *w_rep_, 1.0);
-
-
-    // ###############
-    // Neu assemblieren
-    // ###############
-
-    MatrixPtr_Type APN = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-
-    MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-    this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, u_minus_w_rep_, true );
-
-    P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-    
-    this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
-    P_->resumeFill();
-    P_->scale(density);
-    P_->scale(-1.0);
-    P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
-
-
-    N->resumeFill();
-    N->scale(density);
-    N->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
-
-    this->problemFluid_->A_->addMatrix(1.0, APN, 0.0);
-    P_->addMatrix(1.0, APN, 1.0);
-    N->addMatrix(1.0, APN, 1.0);
-
-    APN->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
-
-    this->system_->addBlock( APN, 0, 0 );
-}
-
-template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const
-{
-    
-    MultiVectorConstPtr_Type geometrySolution;
-    
-    if(geometryExplicit_)
-        geometrySolution = this->problemGeometry_->getSolution()->getBlock(0);
-    else {
-        moveMesh();
-        geometrySolution = this->solution_->getBlock(4);
-    }
-    
-    meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
-    
-    MultiVectorConstPtr_Type fluidSolution = this->solution_->getBlock(0);
-    u_rep_->importFromVector(fluidSolution, true);
-    u_minus_w_rep_->importFromVector(fluidSolution, true); //    u_minus_w_rep_ = *u_rep_;
-    
-    *w_rep_ = *meshDisplacementNew_rep_;
-    w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
-    double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
-    w_rep_->scale(1.0/dt);
-    
-    u_minus_w_rep_->update(-1.0, *w_rep_, 1.0);
-    
-    if (!geometryExplicit_) {
-        
-        P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-        double density = this->problemTimeFluid_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
-        
-        this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
-        P_->resumeFill();
-        P_->scale(density);
-        P_->scale(-1.0);
-        P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
-        
-        problemFluid_->assembleConstantMatrices();
-        
-        this->system_->addBlock( this->problemFluid_->system_->getBlock(0,1), 0, 1 );
-        this->system_->addBlock( this->problemFluid_->system_->getBlock(1,0), 1, 0 );
-        TEUCHOS_TEST_FOR_EXCEPTION(this->problemFluid_->system_->blockExists(1,1) , std::runtime_error, "Stabilization is used. Account for it.");
-    }
-    if ( this->verbose_ )
-        std::cout << "Warning: Wrong consideration of temporal discretization for multi-stage RK methods!" << std::endl;
-    
-    this->problemFluid_->calculateNonLinResidualVecWithMeshVelo( "reverse", time, u_minus_w_rep_, P_ );
-    this->system_->addBlock( problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
-    
-    // we need to account for the coupling in the residuals
-    if (materialModel_!="linear"){
-        this->problemStructureNonLin_->calculateNonLinResidualVec( "reverse", time );
-        this->residualVec_->addBlock( this->problemStructureNonLin_->getResidualVector()->getBlockNonConst(0) , 2);
-        // we need to add a possible source term
-    }
-    else{
-        MultiVectorPtr_Type residualSolidFSI =
-            Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(2) );
-        this->problemStructure_->getSystem()->getBlock(0,0)->apply( *this->problemStructure_->getSolution()->getBlock(0), *residualSolidFSI, Teuchos::NO_TRANS, -1. ); // y= -Ax + 0*y
-        MultiVectorPtr_Type resSolidNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(2) );
-        resSolidNonConst->update(1., *this->problemStructure_->getRhs()->getBlock(0), 1.);
-        // we need to add a possible source term
-    }
-    
-    MultiVectorPtr_Type residualFluidVelocityFSI =
-        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(0) );
-    MultiVectorPtr_Type residualSolidFSI =
-        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(2) );
-
-    MultiVectorPtr_Type residualCouplingFSI =
-        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(3) );
-    residualCouplingFSI->update( 1. , *this->rhs_->getBlock(3), 0. ); // change to -1 for standard
-    
-    //Now we need to add the coupling blocks
-    this->system_->getBlock(0,3)->apply( *this->solution_->getBlock(3) , *residualFluidVelocityFSI, Teuchos::NO_TRANS, -1., 1. );
-    
-    this->system_->getBlock(2,3)->apply( *this->solution_->getBlock(3) , *residualSolidFSI, Teuchos::NO_TRANS, -1., 1. );
-    
-    this->system_->getBlock(3,0)->apply( *this->solution_->getBlock(0) , *residualCouplingFSI, Teuchos::NO_TRANS, -1., 1. );
-    
-    this->system_->getBlock(3,2)->apply( *this->solution_->getBlock(2) , *residualCouplingFSI, Teuchos::NO_TRANS, -1., 1. );
-
-    if (!geometryExplicit_) {
-        
-        MultiVectorPtr_Type residualGeometryFSI =
-            Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(4) );
-        residualGeometryFSI->update( 1. , *this->rhs_->getBlock(4), 0. ); // change to -1 for standard
-
-        this->system_->getBlock(4,4)->apply( *this->solution_->getBlock(4) , *residualGeometryFSI, Teuchos::NO_TRANS, -1., 1. );
-        
-        this->system_->getBlock(4,2)->apply( *this->solution_->getBlock(2) , *residualGeometryFSI, Teuchos::NO_TRANS, -1., 1. );
-        
-    }
-    // might also be called in the sub calculateNonLinResidualVec() methods which where used above
-    if (type == "reverse")
-        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-    else if (type == "standard"){
-        this->residualVec_->scale(-1.);
-        this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
-    }
-
+    else if (type == "MoveMesh")
+         moveMesh();
+    else if (type == "UpdateMeshDisplacement")
+         updateMeshDisplacement();
+    else if (type == "ComputeSolidRHSInTime")
+         computeSolidRHSInTime();
+    else if (type == "UpdateChemInTime")
+          updateChemInTime();
 
 }
 
-// Muss derzeit nur am Anfang jeder Zeititeration aufgerufen werden, damit
-// problemTimeFluid_ und problemTimeStructure_ die aktuelle Loesung haben.
-// ACHTUNG: Wenn wir irgendwann einmal anfangen reAssemble() auf problemFluid_ und
-// problemStructure_ aufzurufen, dann muessen wir in jeder nichtlinearen Iteration
-// diese setPartialSolutions() aufrufen, damit problemFluid_ und problemStructure_
-// den korrekten nichtlinearen Term ausrechnen koennen.
-// CH: Ist das noch relevant?
-// We need to build FSI so this method is not needed anymore
-template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::setFromPartialVectorsInit() const
-{
-    
-    //Fluid velocity
-    this->solution_->addBlock( this->problemFluid_->getSolution()->getBlockNonConst(0), 0 );
-    this->residualVec_->addBlock( this->problemFluid_->getResidualVector()->getBlockNonConst(0), 0 );
-    this->residualVec_->addBlock( this->problemFluid_->getResidualVector()->getBlockNonConst(0), 0 );
-    this->rhs_->addBlock( this->problemFluid_->getRhs()->getBlockNonConst(0), 0 );
-    this->sourceTerm_->addBlock( this->problemFluid_->getSourceTerm()->getBlockNonConst(0), 0 );
-    
-    //Fluid pressure
-    this->solution_->addBlock( this->problemFluid_->getSolution()->getBlockNonConst(1), 1 );
-    this->residualVec_->addBlock( this->problemFluid_->getResidualVector()->getBlockNonConst(1), 1 );
-    this->rhs_->addBlock( this->problemFluid_->getRhs()->getBlockNonConst(1), 1 );
-    this->previousSolution_->addBlock( this->problemFluid_->getPreviousSolution()->getBlockNonConst(1), 1 );
-    this->sourceTerm_->addBlock( this->problemFluid_->getSourceTerm()->getBlockNonConst(1), 1 );
-    
-    if (materialModel_=="linear"){
-        this->solution_->addBlock( this->problemStructure_->getSolution()->getBlockNonConst(0), 2 );
-        // we dont have a residual vector for linear problems
-        this->rhs_->addBlock( this->problemStructure_->getRhs()->getBlockNonConst(0), 2 );
-        this->sourceTerm_->addBlock( this->problemStructure_->getSourceTerm()->getBlockNonConst(0), 2 );
-    }
-    else{
-        this->solution_->addBlock( this->problemStructureNonLin_->getSolution()->getBlockNonConst(0), 2 );
-        this->residualVec_->addBlock( this->problemStructureNonLin_->getResidualVector()->getBlockNonConst(0), 2 );
-        this->rhs_->addBlock( this->problemStructureNonLin_->getRhs()->getBlockNonConst(0), 2 );
-        this->previousSolution_->addBlock( this->problemStructureNonLin_->getPreviousSolution()->getBlockNonConst(0), 2 );
-        this->sourceTerm_->addBlock( this->problemStructureNonLin_->getSourceTerm()->getBlockNonConst(0), 2 );
-    }
-    
-    if(!geometryExplicit_){
-        this->solution_->addBlock( this->problemGeometry_->getSolution()->getBlockNonConst(0), 4 );
-        // we dont have a previous solution for linear problems
-        this->rhs_->addBlock( this->problemGeometry_->getRhs()->getBlockNonConst(0), 4 );
-        this->sourceTerm_->addBlock( this->problemGeometry_->getSourceTerm()->getBlockNonConst(0), 4 );
-    }
-}
-    
 template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateMeshDisplacement() const
 {
@@ -670,114 +174,6 @@ void SCI<SC,LO,GO,NO>::updateMeshDisplacement() const
 }
 
 
-template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::solveGeometryProblem() const
-{
-    DomainPtr_Type domainFluid = Teuchos::rcp_const_cast<Domain_Type>(this->getDomain(0));
-    DomainPtr_Type domainStruct = Teuchos::rcp_const_cast<Domain_Type>(this->getDomain(2));
-
-    // Hole die dof-Map
-    MapConstPtr_Type interfaceMapFluidVecField = domainFluid->getInterfaceMapVecFieldUnique();
-    MapConstPtr_Type interfaceMapStructureVecField = domainStruct->getInterfaceMapVecFieldUnique();
-    
-    MapConstPtr_Type interfaceMapGlobalFluidVecField = domainFluid->getGlobalInterfaceMapVecFieldUnique();
-    MapConstPtr_Type interfaceMapGlobalStructureVecField = domainStruct->getGlobalInterfaceMapVecFieldUnique();
-
-    MeshUnstrPtr_Type meshUnstructuredFluid = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainFluid->getMesh() );
-    vec3D_GO_ptr_Type indicesGlobalMatchedOriginFluid = meshUnstructuredFluid->getMeshInterface()->getIndicesGlobalMatchedOrigin();
-
-    // Strukturloesung holen
-    MultiVectorConstPtr_Type struc_sol_unique = this->solution_->getBlock(2);
-
-    // Extrahiere nun aus der globalen Strukturloesung die Loesung auf dem Interface (in parallel).
-    MultiVectorPtr_Type interfaceSolutionStruct = Teuchos::rcp( new MultiVector_Type( interfaceMapStructureVecField, 1 ) );
-
-    {
-        int flagCounter = 0;
-        Teuchos::ArrayRCP< SC > valuesInterface = interfaceSolutionStruct->getDataNonConst(0); //single MultiVector
-        Teuchos::ArrayRCP< SC > valuesStructure = struc_sol_unique->getDataNonConst(0); //single MultiVector
-
-        for(UN i = 0; i < valuesInterface.size(); i++)
-        {
-            GO interfaceIDGlobal = interfaceMapGlobalStructureVecField->getGlobalElement( i ); // ID (vektorwertig, also dofID) in der Interface-Nummerierung
-//            GO nodeID; // nodeID der interfaceID in der Interface-Nummerierung
-//            LO localDofNumber; // Ranges from 0 to dofs-1
-//            toNodeID(this->dim_, interfaceID, nodeID, localDofNumber); //This function assumes NodeWise ordering.
-//
-//            // Ggf. ist die ID auf einer anderen Flag.
-//            // Bei nur einer Interface-Flag kommt man nicht hier hinein.
-//            while( nodeID > indicesGlobalMatchedOriginFluid->at(flagCounter).at(0).size()-1 )
-//            {
-//                nodeID = nodeID - indicesGlobalMatchedOriginFluid->at(flagCounter).at(0).size();
-//                flagCounter = flagCounter + 1; // hier steht dann die korrekte Flag
-//            }
-//
-//            // Beachte: at(1) ist Struktur!!!
-//            // GlobaleID des Interface-Knotens in der Struktur-Nummerierung
-//            GO globalInterfaceIDNode = indicesGlobalMatchedOriginFluid->at(flagCounter).at(1).at(nodeID);
-//            GO globalInterfaceIDinStructure; // dofID
-//            toDofID(this->dim_, globalInterfaceIDNode, localDofNumber, globalInterfaceIDinStructure);
-
-            // LokaleID auf dem Prozessor vom Interface-Knoten.
-            LO localInterfaceIDinStructure = domainStruct->getMapVecFieldUnique()->getLocalElement(interfaceIDGlobal);
-
-            valuesInterface[i] = valuesStructure[localInterfaceIDinStructure];
-        }
-    }
-
-    MultiVectorPtr_Type interfaceSolutionFluid = Teuchos::rcp( new MultiVector_Type( interfaceMapFluidVecField, 1 ) );
-    interfaceSolutionFluid->importFromVector( interfaceSolutionStruct );
-
-    {
-        // Strukturlsg als RW setzen (per Hand)
-        this->problemGeometry_->setBoundariesSystem(); // RW im System setzen (mit den Flags von oben)
-        this->problemGeometry_->getRhs()->putScalar(0.0);
-
-        Teuchos::ArrayRCP< SC > valuesInterface = interfaceSolutionFluid->getDataNonConst(0); //single MultiVector
-        Teuchos::ArrayRCP< SC > valuesFluidRhs = this->problemGeometry_->getRhs()->getBlock(0)->getDataNonConst(0); //single MultiVector
-
-        int flagCounter = 0;
-        for(UN i = 0; i < valuesInterface.size(); i++)
-        {
-            GO interfaceIDGlobal = interfaceMapGlobalFluidVecField->getGlobalElement( i );
-//            GO interfaceID = interfaceMapFluidVecField->getGlobalElement( i ); // dofID in der Interface-Nummerierung
-//            GO nodeID; // dofID der interfaceID in der Interface-Nummerierung
-//            LO localDofNumber; // Ranges from 0 to dofs-1
-//            toNodeID(this->dim_, interfaceID, nodeID, localDofNumber);//This function assumes NodeWise ordering.
-//
-//            // Ggf. ist die ID auf einer anderen Flag.
-//            // Bei nur einer Interface-Flag kommt man nicht hier hinein.
-//            while(nodeID > indicesGlobalMatchedOriginFluid->at(flagCounter).at(0).size()-1)
-//            {
-//                nodeID = nodeID - indicesGlobalMatchedOriginFluid->at(flagCounter).at(0).size();
-//                flagCounter = flagCounter + 1; // hier steht dann die korrekte Flag
-//            }
-//
-//            // Beachte: at(0) ist Fluid!!!
-//            // GlobaleID des Interface-Knotens in der Fluid-Nummerierung
-//            GO globalInterfaceIDNode = indicesGlobalMatchedOriginFluid->at(flagCounter).at(0).at(nodeID);
-//            GO globalInterfaceIDinFluid; // dofID
-//            toDofID(this->dim_, globalInterfaceIDNode, localDofNumber, globalInterfaceIDinFluid);
-
-            // LokaleID auf dem Prozessor des Interface-Knotens.
-            LO localInterfaceIDinFluid = domainFluid->getMapVecFieldUnique()->getLocalElement(interfaceIDGlobal);
-
-            valuesFluidRhs[localInterfaceIDinFluid] = valuesInterface[i];
-
-            // valuesFluidRhs[localInterfaceIDinFluid.at(i)] = valuesInterface[i];
-        }
-
-        this->problemGeometry_->solve();
-        
-        if (!exporterGeo_.is_null())
-            this->exporterGeo_->save( this->timeSteppingTool_->currentTime() );
-        
-
-    }
-    
-    
-
-}
 
 
 template<class SC,class LO,class GO,class NO>
@@ -894,24 +290,24 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListF
 
 
 template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::setFluidMassmatrix( MatrixPtr_Type& massmatrix ) const
+void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
 {
     //######################
     // Massematrix fuer FSI combineSystems(), ggf nichtlinear.
     //######################
-    double density = this->problemTimeFluid_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
-    int size = this->problemTimeFluid_->getSystem()->size();
+    double density = this->problemTimeChem_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
+    int size = this->problemTimeChem_->getSystem()->size();
 
-    this->problemTimeFluid_->systemMass_.reset(new BlockMatrix_Type(size));
+    this->problemTimeChem_->systemMass_.reset(new BlockMatrix_Type(size));
     {
-        massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeFluid_->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+        massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapdUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
         // 0 = Fluid
-        this->feFactory_->assemblyMass( this->dim_, this->problemTimeFluid_->getFEType(0), "Vector",  massmatrix, 0, true );
+        this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Vector",  massmatrix, 0, true );
         massmatrix->resumeFill();
         massmatrix->scale(density);
         massmatrix->fillComplete( this->problemTimeFluid_->getDomain(0)->getMapVecFieldUnique(), this->problemTimeFluid_->getDomain(0)->getMapVecFieldUnique() );
 
-        this->problemTimeFluid_->systemMass_->addBlock(massmatrix, 0, 0);
+        this->problemTimeChem_->systemMass_->addBlock(massmatrix, 0, 0);
     }
 }
 
@@ -1200,49 +596,26 @@ void SCI<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
 }
 
 template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::initializeGE(){
-/*All vectors (solution, rhs, previousSolution,...) should be initialized at this point (initializeProblem() was called)
- Therefore, all these BlockMVectors should have a length of 5 since the geometry problem is included in the general setup. We need to resize these BlockMVs here if the Geometry Explicit (GE) system is used.
-*/
-    if (geometryExplicit_) {
-        this->solution_->resize( 4 );
-        this->rhs_->resize( 4 );
-        this->sourceTerm_->resize( 4 );
-        this->rhsFuncVec_.resize( 4 );
-        this->previousSolution_->resize( 4 );
-        this->residualVec_->resize( 4 );
-        this->initVectorSpaces();  //reinitialize NOX vector spaces
-    }
-}
-template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::moveMesh() const
 {
 
     MultiVectorConstPtr_Type displacementUniqueConst;
-    if(geometryExplicit_)
-    {
-        displacementUniqueConst = this->problemGeometry_->getSolution()->getBlock(0);
-    }
-    else
-    {
-        displacementUniqueConst = this->solution_->getBlock(4);
-    }
+
+    displacementUniqueConst = this->solution_->getBlock(0);
+    
     MultiVectorPtr_Type displacementRepeated = Teuchos::rcp( new MultiVector_Type( this->problemGeometry_->getDomain(0)->getMapVecFieldRepeated() ) );
 
     displacementRepeated->importFromVector( displacementUniqueConst );
     MultiVectorPtr_Type displacementUnique = Teuchos::rcp_const_cast<MultiVector_Type>(displacementUniqueConst);
 
 
-    // Verschiebe die Gitter fuer Fluid-Velocity und Fluid-Druck
+    // Verschiebe die Gitter fuer Chemistry
     // ACHTUNG: Klappt nur, weil die P2-Knoten hinter den P1-Knoten kommen.
     // Sonst muessen fuer den Druck die P1-Knoten extrahiert werden.
     // TODO: Wahrscheinlich reicht nur FSI-Domain, da selbes Objekt bei problemFluid_ und problemTimeFluid_.
     ( Teuchos::rcp_const_cast<Domain_Type>(this->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
-    ( Teuchos::rcp_const_cast<Domain_Type>(this->getDomain(1)) )->moveMesh(displacementUnique, displacementRepeated);
-    ( Teuchos::rcp_const_cast<Domain_Type>(this->problemFluid_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
-    ( Teuchos::rcp_const_cast<Domain_Type>(this->problemFluid_->getDomain(1)) )->moveMesh(displacementUnique, displacementRepeated);
-    ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeFluid_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
-    ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeFluid_->getDomain(1)) )->moveMesh(displacementUnique, displacementRepeated);
+    ( Teuchos::rcp_const_cast<Domain_Type>(this->problemChem_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
+    ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeChem_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
 }
 
 
@@ -1250,23 +623,23 @@ void SCI<SC,LO,GO,NO>::moveMesh() const
 // damit die previousSolution_ initialisiert sind. Genauso fuer SystemMass
 // TODO: updateSystemMassMultiPreviousStep() fertig programmieren
 template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::updateFluidInTime() const
+void SCI<SC,LO,GO,NO>::updateChemInTime() const
 {
     int nmbBDF = timeSteppingTool_->getBDFNumber();
 
     if(nmbBDF<2 && !this->parameterList_->sublist("General").get("Linearization","FixedPoint").compare("Extrapolation")) {
         if (timeSteppingTool_->currentTime()!=0.){
-            this->problemTimeFluid_->updateSolutionMultiPreviousStep(2);
-            this->problemTimeFluid_->updateSystemMassMultiPreviousStep(2);
+            this->problemTimeChem_->updateSolutionMultiPreviousStep(2);
+            this->problemTimeChem_->updateSystemMassMultiPreviousStep(2);
         }
         else{
-            this->problemTimeFluid_->updateSolutionMultiPreviousStep(1);
-            this->problemTimeFluid_->updateSystemMassMultiPreviousStep(1);
+            this->problemTimeChem_->updateSolutionMultiPreviousStep(1);
+            this->problemTimeChem_->updateSystemMassMultiPreviousStep(1);
         }
     }
     else{
-        this->problemTimeFluid_->updateSolutionMultiPreviousStep(nmbBDF);
-        this->problemTimeFluid_->updateSystemMassMultiPreviousStep(nmbBDF);
+        this->problemTimeChem_->updateSolutionMultiPreviousStep(nmbBDF);
+        this->problemTimeChem_->updateSystemMassMultiPreviousStep(nmbBDF);
     }
 }
 }

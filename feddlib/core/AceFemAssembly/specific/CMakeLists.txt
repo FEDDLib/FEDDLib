@@ -8,12 +8,16 @@ SET(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/AssembleFEAceLinElas_decl.hpp
 	AceFemAssembly/specific/AssembleFEAceLinElas_def.hpp
 	AceFemAssembly/specific/AssembleFEAceLinElas.hpp
+	AceFemAssembly/specific/AssembleFEAceNonLinElas_decl.hpp
+	AceFemAssembly/specific/AssembleFEAceNonLinElas_def.hpp
+	AceFemAssembly/specific/AssembleFEAceNonLinElas.hpp
 CACHE INTERNAL "")
 
 SET(AceFemAssemblySpecific_SOURCES
 	AceFemAssembly/specific/AssembleFEAceLaplace.cpp
 	AceFemAssembly/specific/AssembleFEAceNavierStokes.cpp
 	AceFemAssembly/specific/AssembleFEAceLinElas.cpp
+	AceFemAssembly/specific/AssembleFEAceNonLinElas.cpp
 CACHE INTERNAL "")
 
 

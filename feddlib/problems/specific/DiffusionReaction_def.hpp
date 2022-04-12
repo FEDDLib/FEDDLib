@@ -14,7 +14,7 @@ namespace FEDD {
 
 template<class SC,class LO,class GO,class NO>
 DiffusionReaction<SC,LO,GO,NO>::DiffusionReaction(const DomainConstPtr_Type &domain, std::string FEType, ParameterListPtr_Type parameterList, vec2D_dbl_Type diffusionTensor,  RhsFunc_Type reactionFunc, bool vectorDiffusion):
-NonLinearProblem<SC,LO,GO,NO>(parameterList, domain->getComm()),
+Problem<SC,LO,GO,NO>(parameterList, domain->getComm()),
 vectorDiffusion_(vectorDiffusion),
 A_(),
 u_rep_(),
@@ -31,7 +31,7 @@ reactionFunc_()
 
 	reactionFunc_ = reactionFunc;
 
-    u_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapUnique() ) );
+    u_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapRepeated() ) );
 
 	// Test for exception!!
 
@@ -57,18 +57,34 @@ void DiffusionReaction<SC,LO,GO,NO>::assembleConstantMatrices( std::string type 
     if (this->verbose_)
         std::cout << "-- Assembly Laplace with Diffusion Tensor ... " << std::flush;
 
-    A_.reset(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    A_.reset(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
 
     this->feFactory_->assemblyLaplaceDiffusion(this->dim_, this->domain_FEType_vec_.at(0), 2, A_, this->diffusionTensor_ );
 
+    MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+    // Here we insert the assembly of the reaction part.
+    
+    vec_dbl_Type param(0);
+    for(int i=0; i< funcParameter_.size(); i++){
+        param.push_back(funcParameter_[i]);
+    }
+
+    this->feFactory_->assemblyLinearReactionTerm( this->dim_, this->domain_FEType_vec_.at(0), N,  true, param, reactionFunc_);
+
+    MatrixPtr_Type AN = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+
+    N->addMatrix(1.,AN,0.);
+    A_->addMatrix(1.,AN,0.);
+
+    AN->fillComplete( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getMapUnique() );
 
     if (this->system_.is_null())
         this->system_.reset(new BlockMatrix_Type(1));
 
-    this->system_->addBlock(A_,0,0);
+    this->system_->addBlock(AN,0,0);
     
-    this->assembleSourceTerm( 0. );
-    this->addToRhs( this->sourceTerm_ );
+    //this->assembleSourceTerm( 0. );
+    //this->addToRhs( this->sourceTerm_ );
     
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
@@ -87,16 +103,15 @@ void DiffusionReaction<SC,LO,GO,NO>::assemble( std::string type ) const{
             std::cout << "-- Assembly Diffusion ... " << std::endl;
 
         assembleConstantMatrices();
-        
         if (this->verbose_)
             std::cout << "done -- " << std::endl;
     }
-    else
-        reAssemble( type );
+    //else
+    //    reAssemble( type );
 
 }
 
-template<class SC,class LO,class GO,class NO>
+/*template<class SC,class LO,class GO,class NO>
 void DiffusionReaction<SC,LO,GO,NO>::reAssemble( MatrixPtr_Type& massmatrix, std::string type ) const
 {
 
@@ -114,20 +129,21 @@ void DiffusionReaction<SC,LO,GO,NO>::reAssemble(std::string type) const {
 	// Sensible input is the reaction function. Might distinguish between linear and nonlinear Reaction term.
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
     
-    MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
 
+    vec_dbl_Type param(0);
+		for(int i=0; i< funcParameter_.size(); i++){
+			param.push_back(funcParameter_[i]);
+		}
     if (type=="FixedPoint") {
         
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
 
         u_rep_->importFromVector(u, true);
 
-        MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+        MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
 		// Here we insert the assembly of the reaction part.
-		vec_dbl_Type param(0);
-		for(int i=0; i< funcParameter_.size(); i++){
-			param.push_back(funcParameter_[i]);
-		}
+		
         this->feFactory_->assemblyReactionTerm( this->dim_, this->domain_FEType_vec_.at(0), N, u_rep_, true, param, reactionFunc_);
         
 		// Adding A to ANW
@@ -135,15 +151,17 @@ void DiffusionReaction<SC,LO,GO,NO>::reAssemble(std::string type) const {
 		// Addind N to ANW
         N->addMatrix(1.,ANW,1.);
     }
-    /*else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
-        MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-        this->feFactory_->assemblyAdvectionInUVecField( this->dim_, this->domain_FEType_vec_.at(0), W, u_rep, true );
+    else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
+        MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+        this->feFactory_->assemblyDReactionTerm( this->dim_, this->domain_FEType_vec_.at(0), W, u_rep_, true, param, reactionFunc_);
         W->resumeFill();
-        W->scale(density);
-        W->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
-        this->system_->getBlock( 0, 0 )->addMatrix(1.,ANW,0.);
+
+        W->fillComplete( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getMapUnique());
+        
+        A_->addMatrix(1.,ANW,0.);
         W->addMatrix(1.,ANW,1.);
-    }*/
+
+    }
     ANW->fillComplete( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getMapUnique() );
     
     this->system_->addBlock( ANW, 0, 0 );
@@ -247,6 +265,8 @@ void DiffusionReaction<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBa
     using Teuchos::rcp_const_cast;
     using Teuchos::ArrayView;
     using Teuchos::Array;
+
+    TEUCHOS_TEST_FOR_EXCEPTION( this->solution_->getBlock(0)->getMap()->getUnderlyingLib() != "Tpetra", std::runtime_error, "Use of NOX only supports Tpetra. Epetra support must be implemented.");
     RCP<Teuchos::FancyOStream> fancy = Teuchos::fancyOStream(Teuchos::rcpFromRef(std::cout));
     TEUCHOS_TEST_FOR_EXCEPTION( inArgs.get_x().is_null(), std::logic_error, "inArgs.get_x() is null.");
 
@@ -295,7 +315,7 @@ void DiffusionReaction<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBa
             Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
             Teuchos::RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
 
-            XpetraMatrixConstPtr_Type W_systemXpetra = this->getSystem()->getMergedMatrix()->getXpetraMatrix();
+            XpetraMatrixConstPtr_Type W_systemXpetra = this->getSystem()->getBlock( 0, 0 )->getXpetraMatrix();
 
             XpetraMatrixPtr_Type W_systemXpetraNonConst = rcp_const_cast<XpetraMatrix_Type>(W_systemXpetra);
             Xpetra::CrsMatrixWrap<SC,LO,GO,NO>& crsOp = dynamic_cast<Xpetra::CrsMatrixWrap<SC,LO,GO,NO>&>(*W_systemXpetraNonConst);
@@ -341,8 +361,7 @@ void DiffusionReaction<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBa
 
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::LinearOpBase<SC> > DiffusionReaction<SC,LO,GO,NO>::create_W_op() const
-{
-    
+{   
     Teuchos::RCP<const Thyra::LinearOpBase<SC> > W_opConst = this->system_->getThyraLinOp();
     Teuchos::RCP<Thyra::LinearOpBase<SC> > W_op = Teuchos::rcp_const_cast<Thyra::LinearOpBase<SC> >(W_opConst);
     return W_op;
@@ -359,7 +378,7 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > DiffusionReaction<SC,LO,GO,NO>::cre
     
     return thyraPrecNonConst;
 }
-
+*/
 
 
 template<class SC,class LO,class GO,class NO>

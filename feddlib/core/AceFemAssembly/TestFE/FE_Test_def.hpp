@@ -123,6 +123,88 @@ void FE_Test<SC,LO,GO,NO>::assemblyLinElas(int dim,
         A->fillComplete();
 }
 /*!
+ \brief Assembly of constant stiffness matix for nonlinear elasticity 
+@param[in] dim Dimension
+@param[in] FEType FE Discretization
+@param[in] degree Degree of basis function
+@param[in] A Resulting matrix
+@param[in] callFillComplete If Matrix A should be completely filled at end of function
+@param[in] FELocExternal 
+*/
+template <class SC, class LO, class GO, class NO>
+void FE_Test<SC,LO,GO,NO>::assemblyNonLinElas(int dim,
+                                    string FEType,
+                                    int degree,
+                                    int dofs,
+                                    MultiVectorPtr_Type d_rep,
+                                    MatrixPtr_Type &A,
+                                    MultiVectorPtr_Type &resVec,
+                                    ParameterListPtr_Type params,
+                                    bool reAssemble,
+                                    string assembleMode,
+                                    bool callFillComplete,
+                                    int FELocExternal){
+                                    
+    ElementsPtr_Type elements = domainVec_.at(0)->getElementsC();
+
+	int dofsElement = elements->getElement(0).getVectorNodeList().size();
+
+	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(0)->getPointsRepeated();
+
+	MapConstPtr_Type map = domainVec_.at(0)->getMapRepeated();
+
+	vec_dbl_Type solution(0);
+	vec_dbl_Type solution_d;
+
+	vec_dbl_Type rhsVec;
+
+	/// Tupel construction follows follwing pattern:
+	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	int numNodes=6;
+	if(dim==3){
+		numNodes=10;
+	}
+	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
+	tuple_ssii_Type displacement ("Displacement",FEType,dofs,numNodes);
+	problemDisk->push_back(displacement);
+
+	if(assemblyFEElements_.size()== 0)
+	 	initAssembleFEElements("NonLinearElasticity",problemDisk,elements, params,pointsRep);
+	else if(assemblyFEElements_.size() != elements->numberElements())
+	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
+
+	MultiVectorPtr_Type resVec_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(0)->getMapVecFieldRepeated(), 1 ) );
+
+ 	SmallMatrixPtr_Type elementMatrix;
+	for (UN T=0; T<assemblyFEElements_.size(); T++) {
+		vec_dbl_Type solution(0);
+
+		solution_d = getSolution(elements->getElement(T).getVectorNodeList(), d_rep,dofs);
+
+		solution.insert( solution.end(), solution_d.begin(), solution_d.end() );
+
+		assemblyFEElements_[T]->updateSolution(solution);
+
+        if(assembleMode == "Jacobian"){
+            assemblyFEElements_[T]->assembleJacobian();
+            elementMatrix = assemblyFEElements_[T]->getJacobian();              
+            assemblyFEElements_[T]->advanceNewtonStep();
+            addFeMatrix(A, elementMatrix, elements->getElement(T), map, dofs);
+        }
+        if(assembleMode == "Rhs"){
+		    assemblyFEElements_[T]->assembleRHS();
+		    rhsVec = assemblyFEElements_[T]->getRHS(); 
+			addFeMv(resVec_d, rhsVec, elements->getElement(T),  dofs);
+		}
+
+
+	}
+	if (callFillComplete && assembleMode == "Jacobian")
+	    A->fillComplete( domainVec_.at(0)->getMapVecFieldUnique(),domainVec_.at(0)->getMapVecFieldUnique());
+	
+        
+}
+/*!
  \brief Assembly of Jacobian for NavierStokes 
 @param[in] dim Dimension
 @param[in] FEType FE Discretization
@@ -298,7 +380,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
         assemblyFEElements_[T]->addRHSFunc(func);
         assemblyFEElements_[T]->assembleRHS();
         vec_dbl_Type elementVec =  assemblyFEElements_[T]->getRHS();
-        addFeVector(a, elementVec, elements->getElement(T)); // if they are both multivectors its actually super simple! Import entries and add
+        addFeMv(a, elementVec, elements->getElement(T),1); // if they are both multivectors its actually super simple! Import entries and add
     }
 }
 /*!
@@ -329,21 +411,29 @@ void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type el
             }
         }
 }
+
+
 /*!
  \brief Inserting element rhs vector into global rhs vector
-@param[in] &a Global Matrix
-@param[in] elementVector Stiffness matrix of one element
-@param[in] element Corresponding finite element
+ 
+@param[in] res BlockMultiVector of residual vec; Repeated distribution; 2 blocks
+@param[in] rhsVec sorted the same way as residual vec
+@param[in] element of block1
+
 */
+
 template <class SC, class LO, class GO, class NO>
-void FE_Test<SC,LO,GO,NO>::addFeVector(MultiVectorPtr_Type &a, vec_dbl_Type elementVector, FiniteElement element){
-        Teuchos::ArrayRCP<SC>  globalVec = a->getDataNonConst(0);
-        //Teuchos::ArrayRCP<SC>  elementVec = elementVector->getDataNonConst(0);
-        int numNodes = elementVector.size();
-        for(UN j=0; j < element.getVectorNodeList().size() ; j++){
-            globalVec[element.getNode(j)] += elementVector[j];
-                                
-        }
+void FE_Test<SC,LO,GO,NO>::addFeMv(MultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock, int dofs){
+
+    Teuchos::ArrayRCP<SC>  resArray = res->getDataNonConst(0);
+
+	vec_LO_Type nodeList = elementBlock.getVectorNodeList();
+
+	for(int i=0; i< nodeList.size() ; i++){
+		for(int d=0; d<dofs; d++)
+			resArray[nodeList[i]*dofs+d] += rhsVec[i*dofs+d];
+	}
+
 }
 // ----------------------------------------------------------
 // Helper Functions from FE Class 

@@ -19,7 +19,7 @@
 
 namespace FEDD {
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class DiffusionReaction : public NonLinearProblem<SC,LO,GO,NO> {
+class DiffusionReaction : public Problem<SC,LO,GO,NO> {
     
 public:
     
@@ -63,31 +63,33 @@ public:
 
     virtual void assemble( std::string type = "" ) const;
 
-    void reAssemble( std::string type = "" ) const;
-
-    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
-    
     virtual void getValuesOfInterest( vec_dbl_Type& values ){};
 
 	MatrixPtr_Type getMassMatrix() const; // new for calculating L2-Error
     
     virtual void computeValuesOfInterestAndExport() {};
-//    virtual int SetupPreconditioner(BMat_ptr_Type systemPrec, ThyraConstLinOpPtr_Type thyraMatrix=Teuchos::null, ThyraPrecPtr_Type thyraPreconditioner = Teuchos::null, LinSolverBuilderPtr_Type linearSolverBuilder = Teuchos::null) const;
+
+    /*void reAssemble( std::string type = "" ) const;
+
+    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
+    
+    //    virtual int SetupPreconditioner(BMat_ptr_Type systemPrec, ThyraConstLinOpPtr_Type thyraMatrix=Teuchos::null, ThyraPrecPtr_Type thyraPreconditioner = Teuchos::null, LinSolverBuilderPtr_Type linearSolverBuilder = Teuchos::null) const;
 
 	 virtual void reAssemble(MatrixPtr_Type& massmatrix, std::string type ) const;
 
     virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions);
 
-    virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const; //standard or reverse
+    virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const; //standard or reverse*/
+
 
     mutable MatrixPtr_Type 	A_;
     MultiVectorPtr_Type u_rep_;
 	vec_dbl_Type funcParameter_;
 
 
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
+    //Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
     
-    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
+    //Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
 
 private:
     /*####################*/
@@ -95,10 +97,10 @@ private:
 	vec2D_dbl_Type diffusionTensor_;
 	RhsFunc_Type reactionFunc_;
 
-	virtual void evalModelImpl(
+	/*virtual void evalModelImpl(
                        const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
                        const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
-                       ) const;
+                       ) const;*/
 
     
 };
