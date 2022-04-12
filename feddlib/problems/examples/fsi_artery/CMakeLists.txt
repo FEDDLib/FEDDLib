@@ -13,8 +13,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fsiArtery
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_fsiArtery
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES fluid_artery_res1.mesh solid_artery_res1.mesh fluid_straightTube.mesh solid_straightTube.mesh 
+    SOURCE_FILES fluid_artery_res2.mesh solid_artery_res2.mesh fluid_straightTube.mesh solid_straightTube.mesh 
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES fluid_artery_res1.mesh solid_artery_res1.mesh fluid_straightTube.mesh solid_straightTube.mesh
+	DEST_FILES fluid_artery_res2.mesh solid_artery_res2.mesh fluid_straightTube.mesh solid_straightTube.mesh
 	EXEDEPS fsi_artery
 )
