@@ -42,7 +42,8 @@ class FE_Test {
 
 	typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
 	typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
-	
+	typedef Teuchos::RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
+	    
 	typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
     typedef Teuchos::RCP<AssembleFE_Type> AssembleFEPtr_Type;
     typedef std::vector<AssembleFEPtr_Type> AssembleFEPtr_vec_Type;	
@@ -53,6 +54,9 @@ class FE_Test {
 
     typedef BlockMatrix<SC,LO,GO,NO> BlockMatrix_Type ;
     typedef Teuchos::RCP<BlockMatrix_Type> BlockMatrixPtr_Type;
+
+    typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type ;
+    typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
 
     typedef boost::function<void(double* x, double* res, double t, const double* parameters)> BC_func_Type;
 
@@ -75,6 +79,19 @@ class FE_Test {
 				MatrixPtr_Type &A,
 				bool callFillComplete = true,
 				int FELocExternal = -1 );
+				
+	void assemblyNonLinElas(int dim,
+                            string FEType,
+                            int degree,
+                            int dofs,
+                            MultiVectorPtr_Type d_rep,
+                            MatrixPtr_Type &A,
+                            MultiVectorPtr_Type &resVec,
+                            ParameterListPtr_Type params,
+                            bool reAssemble,
+                            string assembleMode,
+                            bool callFillComplete = true,
+                            int FELocExternal = -1);
 
 	void assemblyNavierStokes(int dim,
 								string FETypeVelocity,
@@ -102,7 +119,7 @@ class FE_Test {
 		void addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type map, int dofs);
 		void addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstColumn,MapConstPtr_Type mapSecondColumn, tuple_disk_vec_ptr_Type problemDisk);
 
-		void addFeVector(MultiVectorPtr_Type &a, vec_dbl_Type elementVector, FiniteElement element);
+		void addFeMv(MultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock, int dofs);
 			
 		void initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep);
 		int checkFE(int dim, string FEType);

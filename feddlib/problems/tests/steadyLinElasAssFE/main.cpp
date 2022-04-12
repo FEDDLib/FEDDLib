@@ -258,6 +258,7 @@ int main(int argc, char *argv[])
         LinElas.initializeProblem();
         LinElas.assemble();                
         LinElas.setBoundaries(); // In der Klasse Problem
+
         int its = LinElas.solve();
 
         

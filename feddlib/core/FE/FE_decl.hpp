@@ -183,6 +183,13 @@ class FE {
                                  MatrixPtr_Type &A,
                                  bool callFillComplete = true);
 
+    // Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
+	void assemblyLinearReactionTerm(int dim,
+    							std::string FEType,
+                                MatrixPtr_Type &A,
+                                bool callFillComplete,
+                     			std::vector<SC>& funcParameter,
+								RhsFunc_Type reactionFunc);	
 
 	// Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
 	void assemblyReactionTerm(int dim,
@@ -193,6 +200,26 @@ class FE {
                      			std::vector<SC>& funcParameter,
 								RhsFunc_Type reactionFunc);	
 
+                                // Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
+	void assemblyDReactionTerm(int dim,
+    							std::string FEType,
+                                MatrixPtr_Type &A,
+                                MultiVectorPtr_Type u,
+                                bool callFillComplete,
+                     			std::vector<SC>& funcParameter,
+								RhsFunc_Type reactionFunc);
+
+    void assemblyLinElasXDimE(int dim,
+                                std::string FEType,
+                                MatrixPtr_Type &A,
+                                MultiVectorPtr_Type eModVec,
+                                double nu,
+                                bool callFillComplete=true);
+
+    void determineEMod(std::string FEType, 
+                       MultiVectorPtr_Type solution,
+                       MultiVectorPtr_Type &eModVec,
+                       DomainConstPtr_Type domain);
     void assemblyLaplaceDiffusion(int Dimension,
                         std::string FEType,
                         int degree,
@@ -419,18 +446,30 @@ class FE {
 								bool callFillComplete = true,
 								int FELocExternal=-1);
 	void assemblyLinearElasticity(int dim,
+                                string FEType,
+                                int degree,
+                                int dofs,
+                                MultiVectorPtr_Type d_rep,
+                                BlockMatrixPtr_Type &A,
+                                BlockMultiVectorPtr_Type &resVec,
+                                ParameterListPtr_Type params,
+                                bool reAssemble,
+                                string assembleMode,
+                                bool callFillComplete=true,
+                                int FELocExternal=-1);
+
+    void assemblyNonLinearElasticity(int dim,
                                     string FEType,
                                     int degree,
-									int dofs,
-									MultiVectorPtr_Type d_rep,
+                                    int dofs,
+                                    MultiVectorPtr_Type d_rep,
                                     BlockMatrixPtr_Type &A,
-									BlockMultiVectorPtr_Type &resVec,
-									ParameterListPtr_Type params,
-									bool reAssemble,
-									string assembleMode,
+                                    BlockMultiVectorPtr_Type &resVec,
+                                    ParameterListPtr_Type params,
+                                    bool reAssemble,
+                                    string assembleMode,
                                     bool callFillComplete=true,
                                     int FELocExternal=-1);
-
 /* ----------------------------------------------------------------------------------------*/
 private:
 	void addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstColumn,MapConstPtr_Type mapSecondColumn, tuple_disk_vec_ptr_Type problemDisk);
@@ -439,6 +478,7 @@ private:
 
 	void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock1,FiniteElement elementBlock2, int dofs1, int dofs2 );
 
+    void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock, int dofs);
 			
 	void initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep);
 

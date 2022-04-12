@@ -1,0 +1,37 @@
+<ParameterList name="unsteady linear elasticity">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="2"/>
+        <Parameter name="Discretization" type="string" value="P2"/><!--P1, P2-->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+        <Parameter name="H/h" type="int" value="10"/>        
+        <Parameter name="Source Type" type="string"   value="surface"/>
+        <Parameter name="Volume force" type="double" value="1."/>
+	    <Parameter name="Density" type="double"   value="1000.e-0"/>
+	    <Parameter name="Poisson Ratio" type="double"   value="0.4e-0"/>
+	    <Parameter name="Mu" type="double"   value="0.5e+6"/>
+	    <Parameter name="degree" type="int"   value="5"/>
+    </ParameterList>
+    <ParameterList name="Mesh Partitioner">
+        
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        
+        <Parameter name="Mesh 1 Name" type="string" value="square_h02.mesh"/>
+    </ParameterList>
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse"		                type="int"      value="0"/>
+        <Parameter name="ParaViewExport"			            type="bool"     value="true"/>
+        <Parameter name="ParaViewCoarse"                        type="bool"     value="false"/>
+        <Parameter name="Preconditioner Method"                 type="string"   value="Monolithic"/><!-- Monolithic, Diagonal, Triangular -->
+        <Parameter name="Scale mass matrix"                     type="bool"     value="true"/>
+        <Parameter name="Set Zeros"		                        type="bool"     value="true"/>
+    </ParameterList>
+    <ParameterList name="Timestepping Parameter">
+        <Parameter name="Class"                                 type="string"		value="Newmark"/> <!-- Newmark -->
+        <Parameter name="BDF"		                    		type="int"		   	value="1"/>
+        <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
+        <Parameter name="Final time"	                    	type="double"   	value=".2"/>
+        <Parameter name="dt"			                    	type="double"   	value="0.025"/>
+        <Parameter name="beta"			                    	type="double"   	value="0.25"/> <!-- newmark method parameter-->
+        <Parameter name="gamma"			                    	type="double"   	value="0.5"/> <!-- newmark method parameter-->
+    </ParameterList>
+</ParameterList>

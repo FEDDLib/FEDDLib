@@ -32,6 +32,10 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 		Teuchos::RCP<AssembleFEAceLinElas<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceLinElas<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
+	else if(problemType == "NonLinearElasticity"){
+		Teuchos::RCP<AssembleFEAceNonLinElas<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceNonLinElas<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		assembleFE = assembleFESpecific;
+	}
 	else
     		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "No specific implementation for your request.");
 
