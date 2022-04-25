@@ -91,9 +91,9 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fe_test_linElas
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_fe_test_linElas
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-	SOURCE_FILES cube.mesh
+	SOURCE_FILES tetrahedron.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-        DEST_FILES cube.mesh
+        DEST_FILES tetrahedron.mesh
 	EXEDEPS fe_test_linElas
 )
 

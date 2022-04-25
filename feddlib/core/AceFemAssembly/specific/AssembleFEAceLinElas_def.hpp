@@ -110,9 +110,9 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assemblyLinElas(SmallMatrixPtr_Type &ele
 	// std::cout << "[DEBUG] SKR-Jacobian Call successful!" << std::endl;
 	// Note: FEAP/Fortran returns matrices unrolled in column major form. This must be converted for use here.
 
-	/* std::cout << "[DEBUG] Printing FEAP output Stiffness vector" << std::endl;
+	/*std::cout << "[DEBUG] Printing FEAP output Stiffness vector" << std::endl;
 	for (int i=0;i<900;i++)
-		std::cout << s[i] << " ";*/
+		std::cout << std::setprecision(767) << s[i] << std::endl;*/
 
     for (UN i=0; i < this->dofsElement_; i++) {
         for (UN j=0; j < this->dofsElement_; j++) {

@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     int m = 2;
     myCLP.setOption("m",&m,"H/h");
     
-    string filename = params->sublist("Mesh Partitioner").get("Mesh 1 Name","cube.mesh");
+    string filename = params->sublist("Mesh Partitioner").get("Mesh 1 Name","tetrahedron.mesh");
 
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);

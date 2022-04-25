@@ -1,5 +1,6 @@
 SET(AceFemAssemblyAceInterface_HEADERS
 	AceFemAssembly/AceInterface/NeoHookQuadraticTets.hpp
+  AceFemAssembly/AceInterface/NeoHookQuadraticTets2.hpp
   AceFemAssembly/AceInterface/sms.h
   AceFemAssembly/AceInterface/bdata.h
   AceFemAssembly/AceInterface/pdata6.h
@@ -20,7 +21,9 @@ CACHE INTERNAL "")
 
 SET(AceFemAssemblyAceInterface_SOURCES
 	AceFemAssembly/AceInterface/NeoHookQuadraticTets.f
+  AceFemAssembly/AceInterface/NeoHookQuadraticTets_cbinding.f
   AceFemAssembly/AceInterface/NeoHookQuadraticTets2.f
+  AceFemAssembly/AceInterface/NeoHookQuadraticTets2_cbinding.f
 	AceFemAssembly/AceInterface/SMSUtility.f
 CACHE INTERNAL "")
 
