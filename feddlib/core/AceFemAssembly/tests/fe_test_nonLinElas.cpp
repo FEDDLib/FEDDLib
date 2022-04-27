@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     RCP<const Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
 
     // Command Line Parameters
-	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemLinElas.xml");
+	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemNonLinElas.xml");
     Teuchos::CommandLineProcessor myCLP;
     string ulib_str = "Tpetra";
     myCLP.setOption("ulib",&ulib_str,"Underlying lib");
@@ -67,11 +67,12 @@ int main(int argc, char *argv[]) {
     
 
     // Mesh
-    std::string FEType=params->sublist("Parameter").get("Discretization","P12");
+    std::string FEType=params->sublist("Parameter").get("Discretization","P2");
     double poissonRatio=params->sublist("Parameter").get("Poisson Ratio",0.4e-0);
 
     // Berechne daraus nun E (Youngsches Modul) und die erste Lamé-Konstanten \lambda
     double youngModulus=params->sublist("Parameter").get("E",1000.0);
+    double solConst=params->sublist("Parameter").get("Solution",1.0);
     double lambda = (poissonRatio*youngModulus)/((1. + poissonRatio)*(1. - 2.*poissonRatio));
     double mu = youngModulus/(2.*(1.+poissonRatio));
 
@@ -109,15 +110,19 @@ int main(int argc, char *argv[]) {
     fe.addFE(domain);
     
     MultiVectorPtr_Type d_rep = Teuchos::rcp( new MultiVector_Type( domain->getMapVecFieldRepeated(), 1 ) ); // RHS vector
-	d_rep->putScalar(1.);
+	d_rep->putScalar(solConst);
     MatrixPtr_Type A= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) ); // Jacobi Matrix
     MultiVectorPtr_Type f = Teuchos::rcp( new MultiVector_Type( domain->getMapVecFieldRepeated(), 1 ) ); // RHS vector
 
     {
-        fe.assemblyElasticityJacobianAndStressAceFEM(dim, domain->getFEType(), A, f, d_rep, params, 1);
+        //fe.assemblyElasticityJacobianAndStressAceFEM(dim, domain->getFEType(), A, f, d_rep, params, 1);
+        fe.assemblyElasticityJacobianAceFEM(dim, domain->getFEType(), A,d_rep, "Neo-Hooke",youngModulus,poissonRatio,1.,true);
+        fe.assemblyElasticityStressesAceFEM(dim, domain->getFEType(), f,d_rep, "Neo-Hooke",youngModulus,poissonRatio,1.,true);
+                                                  
 
     }
-    
+    f->print();
+    //A->print();
 	// Class for assembling linear Elasticity via Acefem implementation
  	FE_Test<SC,LO,GO,NO> fe_test;
     fe_test.addFE(domain);
@@ -125,11 +130,12 @@ int main(int argc, char *argv[]) {
     MatrixPtr_Type A_test= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(),domain->getDimension() * domain->getApproxEntriesPerRow()   ) );
     MultiVectorPtr_Type f_test = Teuchos::rcp( new MultiVector_Type( domain->getMapVecFieldRepeated(), 1 ) ); // RHS vector
     {
-        fe_test.assemblyNonLinElas(dim, FEType, 2,dofs,d_rep, A_test,f,params,false,"Jacobian",true);
-        fe_test.assemblyNonLinElas(dim, FEType, 2,dofs,d_rep, A_test,f,params,false,"Rhs",true);
+        fe_test.assemblyNonLinElas(dim, FEType, 2,dofs,d_rep, A_test,f_test,params,false,"Jacobian",true);
+        fe_test.assemblyNonLinElas(dim, FEType, 2,dofs,d_rep, A_test,f_test,params,false,"Rhs",true);
         
     }
-	//A_test->writeMM();
+    f_test->print();
+	//A_test->print();
 
     // Comparing matrices
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
@@ -199,6 +205,37 @@ int main(int argc, char *argv[]) {
 		if( approxEqual >0)
 			cout << "Matrices are approximately equal" <<  endl;
 	}
+
+
+    MultiVectorConstPtr_Type f_const = f;
+    MultiVectorConstPtr_Type f_test_const = f_test;
+
+    // Calculating the error per node
+    Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValuesRhsVec = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( f->getMap() ) ); 
+    //this = alpha*A + beta*B + gamma*this
+    errorValuesRhsVec->update( 1., f_const, -1. ,f_test_const, 0.);
+
+    // Taking abs norm
+    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > errorValuesAbs = errorValuesRhsVec;
+    errorValuesRhsVec->abs(errorValuesAbs);
+
+    Teuchos::Array<SC> norm(1); 
+    errorValuesRhsVec->normInf(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
+    res = norm[0];
+    if(comm->getRank() ==0)
+        cout << " Inf Norm of Error of right-hand sides " << res << endl;
+    double infNormError = res;
+
+    /*f->norm2(norm);
+    res = norm[0];
+    if(comm->getRank() ==0)
+        cout << " Relative error Norm of rhs nonlinear elasticity " << infNormError/res << endl;
+
+    f_test->norm2(norm);
+    res = norm[0];
+    if(comm->getRank() ==0)
+        cout << " Relative error Norm of rhs nonlinear elasticity assemFE " << infNormError/res << endl;
+    */
 
     return(EXIT_SUCCESS);
 }

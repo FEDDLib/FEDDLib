@@ -39,14 +39,14 @@ MeshPartitioner<SC,LO,GO,NO>::~MeshPartitioner(){
 
     
 template <class SC, class LO, class GO, class NO>
-void MeshPartitioner<SC,LO,GO,NO>::readAndPartition( )
+void MeshPartitioner<SC,LO,GO,NO>::readAndPartition(int volumeID)
 {
     //Read
     string delimiter = pList_->get( "Delimiter", " " );
     for (int i=0; i<domains_.size(); i++) {
         std::string meshName = pList_->get( "Mesh " + std::to_string(i+1) + " Name", "noName" );
         TEUCHOS_TEST_FOR_EXCEPTION( meshName == "noName", std::runtime_error, "No mesh name given.");
-        domains_[i]->initializeUnstructuredMesh( domains_[i]->getDimension(), "P1" ); //we only allow to read P1 meshes.
+        domains_[i]->initializeUnstructuredMesh( domains_[i]->getDimension(), "P1" , volumeID); //we only allow to read P1 meshes.
         domains_[i]->readMeshSize( meshName, delimiter );
     }
     

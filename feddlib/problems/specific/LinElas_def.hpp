@@ -80,20 +80,6 @@ void LinElas<SC,LO,GO,NO>::assemble( std::string type ) const
     MatrixPtr_Type K = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     // MatrixPtr_Type K = Teuchos::rcp(new Matrix_Type( this->domainPtr_vec_.at(0)->getMapVecFieldUnique(), 10 ) );
 
-    MultiVectorPtr_Type solChemRep = Teuchos::rcp(new MultiVector_Type ( this->getDomain(0)->getMapRepeated()));
-
-    Teuchos::ArrayRCP< SC > c = solChemRep->getDataNonConst(0);
-    vec2D_dbl_ptr_Type pointsRep = this->getDomain(0)->getPointsRepeated();
-    int dim = this->getDomain(0)->getDimension();
-    for(int i=0; i< pointsRep->size(); i++){
-        c[i] = 1.; //(1.-pointsRep->at(i).at(dim-1));        
-    }
-
-    MultiVectorPtr_Type eModVec = Teuchos::rcp(new MultiVector_Type ( this->getDomain(0)->getElementMap()));
-    this->feFactory_->determineEMod(this->getDomain(0)->getFEType(),solChemRep,eModVec,this->getDomain(0));
-      
-    //this->feFactory_->assemblyLinElasXDimE(this->dim_,this->getDomain(0)->getFEType(), K, eModVec, poissonRatio, true);
-
     // Assembliere die Steifigkeitsmatrix. Die 2 gibt degree an, d.h. die Ordnung der Quadraturformel, die benutzt werden soll.
     this->feFactory_->assemblyLinElasXDim( this->dim_, this->getDomain(0)->getFEType(), K, lambda, mu );
 

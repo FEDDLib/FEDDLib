@@ -173,7 +173,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyNonLinElas(int dim,
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
 
-	MultiVectorPtr_Type resVec_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(0)->getMapVecFieldRepeated(), 1 ) );
+	MultiVectorPtr_Type resVecRep = Teuchos::rcp( new MultiVector_Type( domainVec_.at(0)->getMapVecFieldRepeated(), 1 ) );
 
  	SmallMatrixPtr_Type elementMatrix;
 	for (UN T=0; T<assemblyFEElements_.size(); T++) {
@@ -194,7 +194,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyNonLinElas(int dim,
         if(assembleMode == "Rhs"){
 		    assemblyFEElements_[T]->assembleRHS();
 		    rhsVec = assemblyFEElements_[T]->getRHS(); 
-			addFeMv(resVec_d, rhsVec, elements->getElement(T),  dofs);
+			addFeMv(resVecRep, rhsVec, elements->getElement(T),  dofs);
 		}
 
 
@@ -202,6 +202,10 @@ void FE_Test<SC,LO,GO,NO>::assemblyNonLinElas(int dim,
 	if (callFillComplete && assembleMode == "Jacobian")
 	    A->fillComplete( domainVec_.at(0)->getMapVecFieldUnique(),domainVec_.at(0)->getMapVecFieldUnique());
 	
+    if(assembleMode == "Rhs"){
+        resVec->importFromVector(resVecRep, true,"Add");
+
+    }
         
 }
 /*!

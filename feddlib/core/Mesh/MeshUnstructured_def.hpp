@@ -66,16 +66,6 @@ template <class SC, class LO, class GO, class NO>
 MeshUnstructured<SC,LO,GO,NO>::~MeshUnstructured(){
 }
 
-//template <class SC, class LO, class GO, class NO>
-//vec2D_int_ptr_Type MeshUnstructured<SC,LO,GO,NO>::getElements(){
-//
-//
-//    this->elementsVec_ = Teuchos::rcp( new vec2D_int_Type( this->elementsC_->numberElements() ) );
-//    for (int i=0; i<this->elementsVec_->size(); i++)
-//        this->elementsVec_->at(i) = this->elementsC_->getElement(i).getVectorNodeList();
-//
-//    return this->elementsVec_;
-//}
 
 
 template <class SC, class LO, class GO, class NO>

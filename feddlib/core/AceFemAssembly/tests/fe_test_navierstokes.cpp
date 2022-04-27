@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
 	fe.doSetZeros(pow(10,-13));
 	// Solution
 	MultiVectorPtr_Type u_rep = Teuchos::rcp(new MultiVector_Type(domain->getMapVecFieldRepeated(),1));
-	u_rep->putScalar(1);
+	u_rep->putScalar(100.);
 
 	// Checking first Block:
 
@@ -210,7 +210,8 @@ int main(int argc, char *argv[]) {
 			Sum->getGlobalRowView(row, indices,values);
 			
 			for(int j=0; j< values.size() ; j++){
-				res += fabs(values[j]);			
+				if(fabs(values[j])>res)
+					res = fabs(values[j]);			
 			}	
 		}	
 	}
@@ -220,12 +221,12 @@ int main(int argc, char *argv[]) {
 	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 
 	if(comm->getRank() == 0)
-		cout << " Norm of Difference between Block A: " << res << endl;
+		cout << " Max Norm of Difference between Block A: " << res << endl;
 	
 
 	MatrixPtr_Type Sum2= Teuchos::rcp(new Matrix_Type( domainP1->getMapUnique(), domain->getDimension() * domain->getApproxEntriesPerRow() )  );
 	B->addMatrix(1, Sum2, 0);
-	B_test->addMatrix(1, Sum2, -1);
+	B_test->addMatrix(-1, Sum2, 1);
 
 
 	res=0.;

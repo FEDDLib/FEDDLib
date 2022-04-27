@@ -112,9 +112,9 @@ NUM_MPI_PROCS 1
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fe_test_nonlinElas
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-	SOURCE_FILES parametersProblemLinElas.xml
+	SOURCE_FILES parametersProblemNonLinElas.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES parametersProblemLinElas.xml 
+	DEST_FILES parametersProblemNonLinElas.xml 
 	EXEDEPS fe_test_nonlinElas
 )
 

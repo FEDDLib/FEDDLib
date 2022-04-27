@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
     bool verbose (comm->getRank() == 0); // Print-Ausgaben nur auf rank = 0
     if (verbose) {
         cout << "###############################################################" <<endl;
-        cout << "############ Starting Steady Linear Elasticity ... ############" <<endl;
+        cout << "############ Starting Steady Nonlinear Elasticity ... ############" <<endl;
         cout << "###############################################################" <<endl;
     }
 
@@ -164,9 +164,9 @@ int main(int argc, char *argv[])
         parameterListAll->setParameters(*parameterListPrec);
         parameterListAll->setParameters(*parameterListSolver);
 
-        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
+        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
         string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","structured");
-        string		meshName    	= parameterListProblem->sublist("Parameter").get("Mesh Name","dfg_fsi_solid.mesh");
+        string		meshName    	= parameterListProblem->sublist("Parameter").get("Mesh Name","cube_0_1.mesh");
         string		meshDelimiter   = parameterListProblem->sublist("Parameter").get("Mesh Delimiter"," ");
         int         n;
         int 		m				= parameterListProblem->sublist("Parameter").get("H/h",5);
@@ -324,12 +324,10 @@ int main(int argc, char *argv[])
 			exPara->setup( "displacements", domain->getMesh(), FEType );
 
 			MultiVectorConstPtr_Type valuesSolidConst1 = NonLinElas.getSolution()->getBlock(0);
-			exPara->addVariable( valuesSolidConst1, "valuesLinElas", "Vector", dim, domain->getMapUnique());
+			exPara->addVariable( valuesSolidConst1, "valuesNonLinElas", "Vector", dim, domain->getMapUnique());
 
 			MultiVectorConstPtr_Type valuesSolidConst2 = NonLinElasAssFE.getSolution()->getBlock(0);
-			exPara->addVariable( valuesSolidConst2, "valuesLinElasAssFE", "Vector", dim, domain->getMapUnique());
-
-			exPara->save(0.0);
+			exPara->addVariable( valuesSolidConst2, "valuesNonLinElasAssFE", "Vector", dim, domain->getMapUnique());
 
 			// Calculating the error per node
 			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValues = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( valuesSolidConst1->getMap() ) ); 
@@ -341,22 +339,25 @@ int main(int argc, char *argv[])
 
 			errorValues->abs(errorValuesAbs);
 
+			exPara->addVariable( errorValuesAbs, "erroeValues", "Vector", dim, domain->getMapUnique());
+			exPara->save(0.0);
+
  			Teuchos::Array<SC> norm(1); 
-    		errorValues->norm2(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
+    		errorValues->normInf(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
 			double res = norm[0];
 			if(comm->getRank() ==0)
-				cout << " 2 Norm of Error of Solutions " << res << endl;
+				cout << " Inf Norm of Error of Solutions " << res << endl;
 			double infNormError = res;
 		
-			NonLinElas.getSolution()->norm2(norm);
+			NonLinElas.getSolution()->getBlock(0)->normInf(norm);
 			res = norm[0];
 			if(comm->getRank() ==0)
-				cout << " Relative error 2-Norm of solution linear elasticity " << infNormError/res << endl;
+				cout << " Relative error Inf-Norm of solution linear elasticity " << infNormError/res << endl;
 
-			NonLinElasAssFE.getSolution()->norm2(norm);
+			NonLinElasAssFE.getSolution()->getBlock(0)->normInf(norm);
 			res = norm[0];
 			if(comm->getRank() ==0)
-				cout << " Relative error 2-Norm of solutions linear elasticity assemFE " << infNormError/res << endl;
+				cout << " Relative error Inf-Norm of solutions linear elasticity assemFE " << infNormError/res << endl;
 		
 
           // TEUCHOS_TEST_FOR_EXCEPTION( infNormError > 1e-11 , std::logic_error, "Inf Norm of Error between calculated solutions is too great. Exceeded 1e-11. ");

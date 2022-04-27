@@ -482,7 +482,7 @@ vec_int_ptr_Type Domain<SC,LO,GO,NO>::getBCFlagUnique() const{
 
 template <class SC, class LO, class GO, class NO>
 vec2D_int_ptr_Type Domain<SC,LO,GO,NO>::getElements() const{
-
+    TEUCHOS_TEST_FOR_EXCEPTION(mesh_->getElementsC().is_null(), std::runtime_error, "Elements is null for this mesh.");
     return mesh_->getElements();
 }
 

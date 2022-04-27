@@ -25,11 +25,6 @@ u_rep_()
     C_ = this->parameterList_->sublist("Parameter").get("C",1.);
     
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
-//    poissonRatio_ = this->parameterList_->sublist("Parameter").get("Poisson Ratio",0.4);
-//    mue_ = this->parameterList_->sublist("Parameter").get("Mu",2.0e+6);
-//    // Berechne daraus nun E (Youngsches Modul) und die erste Lamé-Konstante \lambda
-//    E_ = mue_*2.*(1. + poissonRatio_);
-//    lambda_ = (poissonRatio_*E_)/((1 + poissonRatio_)*(1 - 2*poissonRatio_));
     
 }
 
@@ -92,15 +87,33 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         u_rep_->importFromVector(u, true);
         
         MultiVectorPtr_Type f = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) );
+        f->putScalar(0.);
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-        this->feFactory_->assemblyElasticityJacobianAndStressAceFEM(this->dim_, this->getDomain(0)->getFEType(), W, f, u_rep_, this->parameterList_, C_);
+        this->system_->addBlock( W, 0, 0 );  
+        MultiVectorPtr_Type fRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) ); 
+        fRep->putScalar(0.);   
+        this->residualVec_->addBlock( fRep, 0 ); 
+        this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,true);
+        MatrixPtr_Type V = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+        fRep->scale(-1.);
+        this->feFactory_->assemblyElasticityJacobianAndStressAceFEM(this->dim_, this->getDomain(0)->getFEType(), V, f, u_rep_, this->parameterList_, C_);
         
+        Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValues = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( fRep->getMap() ) ); 
+        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > fConst = f; 
+        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > fRepConst = fRep; 
+
+		//this = alpha*A + beta*B + gamma*this
+		errorValues->update( 1., fRepConst, -1. , fConst,0.);
+        Teuchos::Array<SC> norm(1); 
+    	errorValues->normInf(norm);
+        cout << " \n " << endl;
+        cout << "############### Difference between RHS " << norm[0]  << " ############### " << endl;
+
         MultiVectorPtr_Type fUnique = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
         fUnique->putScalar(0.);
-        fUnique->exportFromVector( f, true, "Add" );
+        fUnique->exportFromVector( fRep, true, "Add" );
 
         this->residualVec_->addBlock( fUnique, 0 );
-        this->system_->addBlock( W, 0, 0 );
 
         //        MultiVectorPtr_Type f = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) );
 //        this->feFactory_->assemblyElasticityStressesAceFEM(this->dim_, this->getDomain(0)->getFEType(), f, u_rep_, material_model, E_, nu_, C_);

@@ -201,9 +201,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 										MultiVectorPtr_Type d_rep,
 	                                    BlockMatrixPtr_Type &A,
 										BlockMultiVectorPtr_Type &resVec,
- 										ParameterListPtr_Type params,
- 										bool reAssemble,
- 										string assembleMode,
+ 										ParameterListPtr_Type params, 									
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
 	
@@ -234,11 +232,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	 	initAssembleFEElements("NonLinearElasticity",problemDisk,elements, params,pointsRep);
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
-
-	MultiVectorPtr_Type resVec_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(0)->getMapVecFieldRepeated(), 1 ) );
 	
-	BlockMultiVectorPtr_Type resVecRep = Teuchos::rcp( new BlockMultiVector_Type( 1) );
-	resVecRep->addBlock(resVec_d,0);
 
  	SmallMatrixPtr_Type elementMatrix;
 	for (UN T=0; T<assemblyFEElements_.size(); T++) {
@@ -250,23 +244,46 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 
 		assemblyFEElements_[T]->updateSolution(solution);
 
-        if(assembleMode == "Jacobian"){
-            assemblyFEElements_[T]->assembleJacobian();
-            elementMatrix = assemblyFEElements_[T]->getJacobian();              
-            assemblyFEElements_[T]->advanceNewtonStep();
-            addFeBlock(A, elementMatrix, elements->getElement(T), map, 0, 0, problemDisk);
-        }
-        if(assembleMode == "Rhs"){
-		    assemblyFEElements_[T]->assembleRHS();
-		    rhsVec = assemblyFEElements_[T]->getRHS(); 
-			addFeBlockMv(resVecRep, rhsVec, elements->getElement(T),  dofs);
-		}
+        assemblyFEElements_[T]->assembleJacobian();
+        elementMatrix = assemblyFEElements_[T]->getJacobian();              
+        addFeBlock(A, elementMatrix, elements->getElement(T), map, 0, 0, problemDisk);
+
+        assemblyFEElements_[T]->assembleRHS();
+        rhsVec = assemblyFEElements_[T]->getRHS(); 
+        addFeBlockMv(resVec, rhsVec, elements->getElement(T),  dofs);
+
+        assemblyFEElements_[T]->advanceNewtonStep();
 
 
 	}
 	if (callFillComplete)
 	    A->getBlock(0,0)->fillComplete( domainVec_.at(0)->getMapVecFieldUnique(),domainVec_.at(0)->getMapVecFieldUnique());
 	
+}
+
+
+/*!
+
+ \brief Inserting local rhsVec into global residual Mv;
+
+
+@param[in] res BlockMultiVector of residual vec; Repeated distribution; 2 blocks
+@param[in] rhsVec sorted the same way as residual vec
+@param[in] element of block1
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock, int dofs){
+
+    Teuchos::ArrayRCP<SC>  resArray_block = res->getBlockNonConst(0)->getDataNonConst(0);
+
+	vec_LO_Type nodeList_block = elementBlock.getVectorNodeList();
+
+	for(int i=0; i< nodeList_block.size() ; i++){
+		for(int d=0; d<dofs; d++)
+			resArray_block[nodeList_block[i]*dofs+d] += rhsVec[i*dofs+d];
+	}
 }
 
 /*!
@@ -447,31 +464,6 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type r
 	for(int i=0; i < nodeList_block2.size(); i++){
 		for(int d=0; d<dofs2; d++)
 			resArray_block2[nodeList_block2[i]*dofs2+d] += rhsVec[i*dofs2+d+offset];
-	}
-
-}
-
-/*!
-
- \brief Inserting local rhsVec into global residual Mv;
-
-
-@param[in] res BlockMultiVector of residual vec; Repeated distribution; 2 blocks
-@param[in] rhsVec sorted the same way as residual vec
-@param[in] element of block1
-
-*/
-
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock, int dofs){
-
-    Teuchos::ArrayRCP<SC>  resArray_block = res->getBlockNonConst(0)->getDataNonConst(0);
-
-	vec_LO_Type nodeList_block = elementBlock.getVectorNodeList();
-
-	for(int i=0; i< nodeList_block.size() ; i++){
-		for(int d=0; d<dofs; d++)
-			resArray_block[nodeList_block[i]*dofs+d] += rhsVec[i*dofs+d];
 	}
 
 }

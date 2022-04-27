@@ -52,7 +52,7 @@ public:
 	/*! 
 		\brief Main Function of partitioner called 
 	*/
-    void readAndPartition();
+    void readAndPartition(int volumeID = 10);
         
     /*! \brief Only used in 3D to set the edges as subelements to surfaces*/
     void setEdgesToSurfaces(int meshNumber);

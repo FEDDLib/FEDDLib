@@ -84,7 +84,20 @@ void SCI<SC,LO,GO,NO>::info()
     //this->infoNonlinProblem();
 }
 
-// Alle linearen Probleme
+/*! 
+    Generally in assemble() all linear equations are assembled. Suppose we have a linear elasticity and reaction-diffusion equation,
+    we get a system with linear Diagonal entries.
+    The Offdiagonal parts of the system Matrix can then either be treated as nonliarities or eliminated by treating them explicitly 
+    in the time stepping scheme at hand.
+
+    We start with the latter approach.
+
+    type:
+    " " -> assembly of constant matrices
+    " EMod " -> assembly E module with concentration of previous timestep
+    " MoveMesh " -> the move mesh operation moves the mesh, then the reaction diffusion includes the diplacement
+
+*/
 template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 {
@@ -104,6 +117,23 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         solChemRep->importFromVector(this->problemChem_->getSolution());
 
         this->feFactory_->determineEMod(FEType,solChemRep,eModVec,this->getDomain(1));
+
+        /*
+
+        MultiVectorPtr_Type solChemRep = Teuchos::rcp(new MultiVector_Type ( this->getDomain(0)->getMapRepeated()));
+
+        Teuchos::ArrayRCP< SC > c = solChemRep->getDataNonConst(0);
+        vec2D_dbl_ptr_Type pointsRep = this->getDomain(0)->getPointsRepeated();
+        int dim = this->getDomain(0)->getDimension();
+        for(int i=0; i< pointsRep->size(); i++){
+            c[i] = 1.; //(1.-pointsRep->at(i).at(dim-1));        
+        }
+
+        MultiVectorPtr_Type eModVec = Teuchos::rcp(new MultiVector_Type ( this->getDomain(0)->getElementMap()));
+        this->feFactory_->determineEMod(this->getDomain(0)->getFEType(),solChemRep,eModVec,this->getDomain(0));
+        
+        //this->feFactory_->assemblyLinElasXDimE(this->dim_,this->getDomain(0)->getFEType(), K, eModVec, poissonRatio, true);
+        */
 
 
         // steady rhs wird hier assembliert.

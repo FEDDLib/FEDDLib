@@ -218,6 +218,7 @@ public:
 		\brief Building an edgemap from scratch when edges are already distributed parallel
 	*/
 	void buildEdgeMap();
+
     /* ###################################################################### */
     
     MeshInterfacePtr_Type meshInterface_;

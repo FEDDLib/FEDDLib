@@ -24,7 +24,7 @@ AssembleFEAceNonLinElas<SC,LO,GO,NO>::AssembleFEAceNonLinElas(int flag, vec2D_db
 AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 {
 	/// Extracting values from ParameterList params:
-	E_ = this->params_->sublist("Parameter").get("E",3500.0); // the last value is the dafault value, in case no parameter is set
+	E_ = this->params_->sublist("Parameter").get("E",1000.0); // the last value is the dafault value, in case no parameter is set
     //lambda_ = this->params_->sublist("Parameter").get("lambda",1.);
     poissonRatio_ = this->params_->sublist("Parameter").get("Poisson Ratio",0.4e-0);
 
@@ -146,8 +146,9 @@ void AssembleFEAceNonLinElas<SC,LO,GO,NO>::assembleRHS() {
 	d[0] = this->E_; // TODO: Check order if there is a problem
 	d[1] = this->poissonRatio_;
 
-	for(int i=0;i<30;i++)
+	for(int i=0;i<30;i++){
 		ul[i] = this->getSolution()[i];
+	}
 
 	int count = 0;
 	for(int i=0;i<this->numNodes_;i++)
@@ -164,6 +165,7 @@ void AssembleFEAceNonLinElas<SC,LO,GO,NO>::assembleRHS() {
 	// std::cout << "[DEBUG] SKR-Rhs Calls after this line!" << std::endl;
 	skr(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
 	// std::cout << "[DEBUG] SKR-Rhs Call successful!" << std::endl;
+
 	this->rhsVec_ = p;
 }
 

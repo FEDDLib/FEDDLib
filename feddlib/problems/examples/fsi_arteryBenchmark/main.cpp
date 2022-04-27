@@ -546,8 +546,8 @@ int main(int argc, char *argv[])
             {
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryLaplace(new BCBuilder<SC,LO,GO,NO>( ));
                 
-                bcFactoryLaplace->addBC(zeroBC, 2, 0, domainFluidVelocity, "Dirichlet", 1); //inflow ring
-                bcFactoryLaplace->addBC(zeroBC, 3, 0, domainFluidVelocity, "Dirichlet", 1); //outflow ring
+                bcFactoryLaplace->addBC(zeroBC, 4, 0, domainFluidVelocity, "Dirichlet", 1); //inflow ring
+                bcFactoryLaplace->addBC(zeroBC, 4, 0, domainFluidVelocity, "Dirichlet", 1); //outflow ring
                 bcFactoryLaplace->addBC(zeroBC, 6, 0, domainFluidVelocity, "Dirichlet", 1); //surface
                 
                 ParameterListPtr_Type parameterListProblemL = Teuchos::getParametersFromXmlFile(xmlProbL);
@@ -570,7 +570,7 @@ int main(int argc, char *argv[])
                 }
                 
                 //We need the values in the inflow area. Therefore, we use the above bcFactory and the volume flag 10 and the outlet flag 5 and set zero Dirichlet boundary values
-                bcFactoryLaplace->addBC(zeroBC, 5, 0, domainFluidVelocity, "Dirichlet", 1);
+                bcFactoryLaplace->addBC(zeroBC, 3, 0, domainFluidVelocity, "Dirichlet", 1);
                 bcFactoryLaplace->addBC(zeroBC, 10, 0, domainFluidVelocity, "Dirichlet", 1);
                 bcFactoryLaplace->setRHS( laplace.getSolution(), 0./*time; does not matter here*/ );
                 solutionLaplace = laplace.getSolution()->getBlock(0);
@@ -644,19 +644,19 @@ int main(int argc, char *argv[])
             		}
                 
 
-                    bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
+                    //bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
                  }
                 
-                bcFactory->addBC(zeroDirichlet3D, 3, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // outflow ring
+                //bcFactory->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // outflow ring
                 
-                bcFactoryFluid->addBC(zeroDirichlet3D, 3, 0, domainFluidVelocity, "Dirichlet", dim); // outflow ring
+                //bcFactoryFluid->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet", dim); // outflow ring
                 
                 if (zeroPressure) {
-                    bcFactory->addBC(zeroBC, 3, 1, domainFluidPressure, "Dirichlet", 1); // outflow ring
-                    bcFactory->addBC(zeroBC, 5, 1, domainFluidPressure, "Dirichlet", 1); // outflow
+                    //bcFactory->addBC(zeroBC, 3, 1, domainFluidPressure, "Dirichlet", 1); // outflow ring
+                    bcFactory->addBC(zeroBC, 3, 1, domainFluidPressure, "Dirichlet", 1); // outflow
                     
-                    bcFactoryFluid->addBC(zeroBC, 3, 1, domainFluidPressure, "Dirichlet", 1); // outflow ring
-                    bcFactoryFluid->addBC(zeroBC, 5, 1, domainFluidPressure, "Dirichlet", 1); // outflow
+                    //bcFactoryFluid->addBC(zeroBC, 3, 1, domainFluidPressure, "Dirichlet", 1); // outflow ring
+                    bcFactoryFluid->addBC(zeroBC, 3, 1, domainFluidPressure, "Dirichlet", 1); // outflow
                 }
                 
                 // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
@@ -667,15 +667,15 @@ int main(int argc, char *argv[])
             // Struktur-RW
             {
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryStructure( new BCBuilder<SC,LO,GO,NO>( ) );
-                bcFactory->addBC(zeroDirichlet3D, 2, 2, domainStructure, "Dirichlet", dim); // ring inflow
-                bcFactory->addBC(zeroDirichlet3D, 3, 2, domainStructure, "Dirichlet", dim); // ring outflow
-                bcFactory->addBC(zeroDirichlet3D, 4, 2, domainStructure, "Dirichlet", dim); // donut inflow
-                bcFactory->addBC(zeroDirichlet3D, 5, 2, domainStructure, "Dirichlet", dim); // donut outflow
+                /*bcFactory->addBC(zeroDirichlet3D, 4, 2, domainStructure, "Dirichlet", dim); // ring inflow
+                bcFactory->addBC(zeroDirichlet3D, 4, 2, domainStructure, "Dirichlet", dim); // ring outflow
+                bcFactory->addBC(zeroDirichlet3D, 2, 2, domainStructure, "Dirichlet", dim); // donut inflow*/
+                bcFactory->addBC(zeroDirichlet3D, 1, 2, domainStructure, "Dirichlet_Y", dim); // donut outflow
                 
-                bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet", dim); // ring inflow
-                bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet", dim); // ring outflow
-                bcFactoryStructure->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet", dim); // donut inflow
-                bcFactoryStructure->addBC(zeroDirichlet3D, 5, 0, domainStructure, "Dirichlet", dim); // donut outflow
+                /*bcFactoryStructure->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet", dim); // ring inflow
+                bcFactoryStructure->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet", dim); // ring outflow
+                bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet", dim); // donut inflow*/
+                bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Y", dim); // donut outflow
                 // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
                 // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
                 if (!fsi.problemStructure_.is_null())
@@ -701,10 +701,10 @@ int main(int argc, char *argv[])
                 bcFactoryFluidInterface = Teuchos::rcp( new BCBuilder<SC,LO,GO,NO>( ) );
 
 //                TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "fix Randwerte für Richter Benchmark");
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow ring
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // outflow ring
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // inflow
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // outflow
+            bcFactoryGeometry->addBC(zeroDirichlet3D, 1, 0, domainGeometry, "Dirichlet_Y", dim); // inflow ring
+           // bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // outflow ring
+           // bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // inflow
+           // bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // outflow
             // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand.
             // Hier erstmal Dirichlet Nullrand, wird spaeter von der Sturkturloesung vorgegeben
             bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface

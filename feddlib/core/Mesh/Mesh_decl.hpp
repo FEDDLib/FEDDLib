@@ -83,12 +83,7 @@ public:
     vec_int_ptr_Type getBCFlagRepeated() const;
     
     vec_int_ptr_Type getBCFlagUnique() const;
-    
-    vec2D_int_ptr_Type getElements() {
-        vec2D_int_ptr_Type tmp;
-        return tmp;
-    };
-    
+        
     virtual void dummy() = 0;
     
     ElementsPtr_Type getElementsC();
@@ -128,6 +123,11 @@ public:
     
     void deleteSurfaceElements(){ surfaceElements_.reset(); };
     
+
+	/*! 
+		\brief Returns elements as a vector type
+	*/
+	vec2D_int_ptr_Type getElements();
     
     /* ###################################################################### */
     
@@ -145,6 +145,7 @@ public:
     ElementsPtr_Type        surfaceElements_;
 
     ElementsPtr_Type        elementsC_;
+    vec2D_int_ptr_Type      elementsVec_;
     MapPtr_Type				elementMap_;
     MapPtr_Type				edgeMap_;
 

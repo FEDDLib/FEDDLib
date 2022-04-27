@@ -334,6 +334,7 @@ int main(int argc, char *argv[])
 		errorValues->abs(errorValuesAbs);
 
 		Teuchos::Array<SC> norm(1); 
+		errorValues->print();
 		errorValues->norm2(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
 		double res = norm[0];
 		if(comm->getRank() ==0)
