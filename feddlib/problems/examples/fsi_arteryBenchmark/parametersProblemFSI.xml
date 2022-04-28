@@ -1,7 +1,7 @@
 <ParameterList name="FSI">
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="3"/>
-        <Parameter name="Discretization" type="string" value="P1"/><!--P2-->
+        <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
         <Parameter name="BC Type" type="string" value="Compute Inflow"/><!--partialCFD,Richter3DFull-->
         <Parameter name="Geometry Type" type ="string" value="Artery"/><!--partialCFD,Richter3DFull-->
         
