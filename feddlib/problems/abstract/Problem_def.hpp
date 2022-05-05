@@ -341,7 +341,7 @@ void Problem<SC,LO,GO,NO>::initializeVectors(int nmbVectors){
     solution_.reset(new BlockMultiVector_Type(size));
     rhs_.reset(new BlockMultiVector_Type(size));
     sourceTerm_.reset(new BlockMultiVector_Type(size));
-    rhsFuncVec_.resize(0);
+    rhsFuncVec_.resize(size);
 
     for (UN i=0; i<size; i++) {
         if ( dofsPerNode_vec_[i] > 1 ){
