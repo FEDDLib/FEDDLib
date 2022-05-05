@@ -7,8 +7,8 @@
         
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
         
-        <Parameter name="Max Velocity" type="double" value="1.0"/>        
-        <Parameter name="Max Ramp Time" type="double" value=".5"/>
+        <Parameter name="Max Velocity" type="double" value="3.0"/>        
+        <Parameter name="Max Ramp Time" type="double" value=".1"/>
         
         <Parameter name="Model Geometry" type="string" value="Elasticity"/>
         
@@ -16,40 +16,40 @@
         <Parameter name="Geometry Explicit" type="bool" value="true"/>
         
         <Parameter name="relNonLinTol" type="double" value="1.0e-6"/>
-        <Parameter name="absNonLinTol" type="double" value="1.0e-2"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-7"/>
         <Parameter name="updateTol" type="double" value="1.0e-6"/>
-        <Parameter name="Combo" type="string" value="AND"/>
+        <Parameter name="Combo" type="string" value="OR"/>
         <Parameter name="Use update tol" type="bool" value="true"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
         
-        <Parameter name="MaxNonLinIts" type="int" value="10"/>
+        <Parameter name="MaxNonLinIts" type="int" value="20"/>
 
         <Parameter name="Criterion" type="string" value="Residual"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
     </ParameterList>
     <ParameterList name="Parameter Solid">        
-        <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
-        <Parameter name="Density" type="double"   value="1.3e-6"/>
+        <Parameter name="Material model" type="string" value="Saint Venant-Kirchhoff"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
+        <Parameter name="Density" type="double"   value="1.2"/>
         <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
         <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
-        <Parameter name="Mu" type="double" value="305.369128"/>  
+        <Parameter name="Mu" type="double" value="402684.564"/>
         <!-- Parameter for Neo-Hooke and Mooney-Rivlin, additioanlly poisson ratio is used -->
-        <Parameter name="E" type="double"   value="910"/>
+        <Parameter name="E" type="double"   value="1.2e+6"/>
         <!-- Parameter for Mooney-Rivlin-->
         <Parameter name="C" type="double" value="1."/><!-- Mooney-Rivlin parameter -->
     </ParameterList>
     
     <ParameterList name="Parameter Fluid">
-        <Parameter name="Viscosity" type="double" value="3.0e-6"/>
-        <Parameter name="Density" type="double" value="1.0e-6"/>
+        <Parameter name="Viscosity" type="double" value="0.03"/>
+        <Parameter name="Density" type="double" value="1.0"/>
         <Parameter name="Symmetric gradient" type="bool"       value="true"/>
         
-        <Parameter name="Ramp type" type="string" value="linear"/><!--cos, linear -->
+        <Parameter name="Ramp type" type="string" value="cos"/><!--cos, linear -->
         <Parameter name="Set Outflow Pressure to Zero" type="bool" value="false"/>
     </ParameterList>
     
     <ParameterList name="Parameter Geometry">
         <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
-        <Parameter name="Mu" type="double" value="305.369128"/>  
+        <Parameter name="Mu" type="double" value="402684.564"/>
         
         <Parameter name="Distance Laplace" type="double" value="0.1"/>
         <Parameter name="Coefficient Laplace" type="double" value="1000."/>
@@ -110,8 +110,8 @@
         <Parameter name="Class" type="string" value="Multistep"/>
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value="0.5"/>
-        <Parameter name="dt" type="double" value="0.001"/>
+        <Parameter name="Final time" type="double" value="0.1"/>
+        <Parameter name="dt" type="double" value="0.0001"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
     </ParameterList>

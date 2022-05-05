@@ -24,7 +24,7 @@
                 </ParameterList>
             </ParameterList>
             <ParameterList name="Amesos2">
-                <Parameter name="Solver Type" type="string"   value="KLU2"/>
+                <Parameter name="Solver Type" type="string"   value="umfpack"/>
             </ParameterList>
         </ParameterList>
     </ParameterList>

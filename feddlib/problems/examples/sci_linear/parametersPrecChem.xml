@@ -10,6 +10,7 @@
             <ParameterList name="FROSch">
                 <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
                 <Parameter name="Recycling" type="bool" value="true"/>
+                <Parameter name="Dimension"                                         type="int"      value="3"/>
                 <Parameter name="DofsPerNode1" type="int" value="1"/>
                 <Parameter name="DofOrdering1" type="string" value="NodeWise"/>
                 <Parameter name="Overlap" type="int" value="1"/>
@@ -17,6 +18,7 @@
                 <Parameter name="TwoLevel" type="bool" value="true"/>
                 
                 <Parameter name="Level Combination" type="string" value="Additive"/><!--Multiplicative,Additive-->
+                <Parameter name="Pre Apply" type="bool" value="false"/>
                 <Parameter name="OverlappingOperator Type" type="string" value="AlgebraicOverlappingOperator"/>
                 
                 <Parameter name="CoarseOperator Type" type="string" value="GDSWCoarseOperator"/><!--GDSWCoarseOperator,IPOUHarmonicCoarseOperator-->
@@ -31,7 +33,7 @@
                     <Parameter name="Level ID" type="int" value="1"/>
                     <ParameterList name="Solver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="klu"/>
+                        <Parameter name="Solver" type="string" value="umfpack"/>
                         <ParameterList name="Amesos">
                             <Parameter name="MatrixProperty" type="string" value="general"/>
                             <Parameter name="DroppingTolerance" type="double" value="1.0e-14"/>
@@ -97,7 +99,7 @@
                     
                     <ParameterList name="ExtensionSolver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="Klu"/>
+                        <Parameter name="Solver" type="string" value="umfpack"/>
                     </ParameterList>
                     
                     <ParameterList name="Distribution">
@@ -109,7 +111,7 @@
                     
                     <ParameterList name="CoarseSolver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="Klu"/>
+                        <Parameter name="Solver" type="string" value="umfpack"/>
                     </ParameterList>
                 </ParameterList>
                 
@@ -153,7 +155,7 @@
                     
                     <ParameterList name="ExtensionSolver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="klu"/>
+                        <Parameter name="Solver" type="string" value="umfpack"/>
                         <ParameterList name="Amesos">
                         </ParameterList>
                         <ParameterList name="Amesos2">
@@ -196,7 +198,7 @@
                     
                     <ParameterList name="CoarseSolver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="klu"/>
+                        <Parameter name="Solver" type="string" value="umfpack"/>
                         <ParameterList name="Amesos">
                         </ParameterList>
                         <ParameterList name="Amesos2">
@@ -252,7 +254,7 @@
                     
                     <ParameterList name="ExtensionSolver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="klu"/>
+                        <Parameter name="Solver" type="string" value="umfpack"/>
                         <ParameterList name="Amesos2">
                             <ParameterList name="MUMPS">
                                 <!-- Not supported in standard Amesos2_MUMPS interface. Use Version of Christian Hochmuth
@@ -291,7 +293,7 @@
                     
                     <ParameterList name="CoarseSolver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="klu"/>
+                        <Parameter name="Solver" type="string" value="umfpack"/>
                         <ParameterList name="Amesos">
                         </ParameterList>
                         <ParameterList name="Amesos2">

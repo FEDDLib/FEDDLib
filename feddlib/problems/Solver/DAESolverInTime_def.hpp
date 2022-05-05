@@ -140,6 +140,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTime(){
     {
         advanceInTimeFSI();
     }
+    else if(this->parameterList_->sublist("Parameter").get("SCI",false))
+    {
+        advanceInTimeSCI();
+    }
     else{
         if (!parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep").compare("Singlestep")) {
             NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
@@ -720,15 +724,16 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearNewmark()
         closeExporter();
     }
 }
-/*template<class SC,class LO,class GO,class NO>
+
+template<class SC,class LO,class GO,class NO>
 void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 {
     // problemCoeff vor A (= komplettes steady-System)
     // massCoeff vor M (= Massematrix)
     // coeffSourceTerm vor f (= rechte Seite der DGL)
+    cout << " Advance in time SCI " << endl;
     
-    
-    FSIProblemPtr_Type fsi = Teuchos::rcp_dynamic_cast<FSIProblem_Type>( this->problemTime_->getUnderlyingProblem() );
+    SCIProblemPtr_Type sci = Teuchos::rcp_dynamic_cast<SCIProblem_Type>( this->problemTime_->getUnderlyingProblem() );
     
     bool print = parameterList_->sublist("General").get("ParaViewExport",false);
     bool printData = parameterList_->sublist("General").get("Export Data",false);
@@ -781,7 +786,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     }
     
     // Notwendige Parameter
-    int sizeFSI = timeStepDef_.size();
+    int sizeSCI = timeStepDef_.size();
 
     // ACHTUNG
     int sizeChem = 1; //  c
@@ -793,30 +798,30 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     int nmbBDF = timeSteppingTool_->getBDFNumber();
 
     // ######################
-    // Fluid: Mass-, Problem, SourceTerm Koeffizienten
+    // Chem: Mass-, Problem, SourceTerm Koeffizienten
     // ######################
-    SmallMatrix<double> massCoeffFluid(sizeFluid);
-    SmallMatrix<double> problemCoeffFluid(sizeFluid);
-    double coeffSourceTermFluid = 0.0;
+    SmallMatrix<double> massCoeffChem(sizeChem);
+    SmallMatrix<double> problemCoeffChem(sizeChem);
+    double coeffSourceTermChem = 0.0;
 
-    for (int i=0; i<sizeFluid; i++) {
-        for (int j=0; j<sizeFluid; j++) {
+    for (int i=0; i<sizeChem; i++) {
+        for (int j=0; j<sizeChem; j++) {
             if (timeStepDef_[i][j]>0 && i==j) {
-                massCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
+                massCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
             }
             else{
-                massCoeffFluid[i][j] = 0.0;
+                massCoeffChem[i][j] = 0.0;
             }
         }
     }
-    for (int i=0; i<sizeFluid; i++) {
-        for (int j=0; j<sizeFluid; j++){
+    for (int i=0; i<sizeChem; i++) {
+        for (int j=0; j<sizeChem; j++){
             if (timeStepDef_[i][j]>0){
-                problemCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(1);
-                coeffSourceTermFluid = timeSteppingTool_->getInformationBDF(1);
+                problemCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(1);
+                coeffSourceTermChem = timeSteppingTool_->getInformationBDF(1);
             }
             else{
-                problemCoeffFluid[i][j] = 1.;
+                problemCoeffChem[i][j] = 1.;
             }
         }
     }
@@ -837,7 +842,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         {
             // Falls in dem Block von timeStepDef_ zeitintegriert werden soll.
             // i == j, da vektorwertige Massematrix blockdiagonal ist
-            if(timeStepDef_[i + sizeChem][j + sizeChem] > 0  && i == j) // Weil: (u_f, p, d_s,...) und timeStepDef_ von FSI
+            if(timeStepDef_[i + sizeChem][j + sizeChem] > 0  && i == j) // Weil: (c, d_s,...) und timeStepDef_ von FSI
             {
                // Vorfaktor der Massematrix in der LHS
                 massCoeffStructure[i][j] = 1.0/(dt*dt*beta);
@@ -855,7 +860,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     {
         for(int j = 0; j < sizeStructure; j++)
         {
-            if(timeStepDef_[i + sizeFluid][j + sizeFluid] > 0 )
+            if(timeStepDef_[i + sizeChem][j + sizeChem] > 0 )
             {
                 problemCoeffStructure[i][j] =  1.0;
                 // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
@@ -870,16 +875,16 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
 
     // ######################
-    // FSI: Mass-, Problem-Koeffizienten
+    // SCI: Mass-, Problem-Koeffizienten
     // ######################
-    SmallMatrix<double> massCoeffFSI(sizeFSI);
-    SmallMatrix<double> problemCoeffFSI(sizeFSI);
-    for (int i = 0; i < sizeFluid; i++)
+    SmallMatrix<double> massCoeffSCI(sizeSCI);
+    SmallMatrix<double> problemCoeffSCI(sizeSCI);
+    for (int i = 0; i < sizeChem; i++)
     {
-        for (int j = 0; j < sizeFluid; j++)
+        for (int j = 0; j < sizeChem; j++)
         {
-            massCoeffFSI[i][j] = massCoeffFluid[i][j];
-            problemCoeffFSI[i][j] = problemCoeffFluid[i][j];
+            massCoeffSCI[i][j] = massCoeffChem[i][j];
+            problemCoeffSCI[i][j] = problemCoeffChem[i][j];
         }
     }
 
@@ -887,12 +892,12 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     {
         for (int j = 0; j < sizeStructure; j++)
         {
-            massCoeffFSI[i + sizeFluid][j + sizeFluid] = massCoeffStructure[i][j];
-            problemCoeffFSI[i + sizeFluid][j + sizeFluid] = problemCoeffStructure[i][j];
+            massCoeffSCI[i + sizeChem][j + sizeChem] = massCoeffStructure[i][j];
+            problemCoeffSCI[i + sizeChem][j + sizeChem] = problemCoeffStructure[i][j];
         }
     }
 
-    this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+    this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
     
     if (printExtraData) {
         exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
@@ -917,7 +922,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // immer die korrekten previousSolution_ haben.
         // TODO: Vermutlich reicht lediglich (da erstmal nur BDF2):
         // this->problemTime_->updateSolutionMultiPreviousStep(nmbBDF);
-        /*if(nmbBDF<2 && !parameterList_->sublist("General").get("Linearization","FixedPoint").compare("Extrapolation"))
+        if(nmbBDF<2 && !parameterList_->sublist("General").get("Linearization","FixedPoint").compare("Extrapolation"))
         {// we need the last two solution for a second order extrapolation.
             if (timeSteppingTool_->currentTime() != 0.0)
             {
@@ -928,19 +933,38 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
                 this->problemTime_->updateSolutionMultiPreviousStep(1);
             }
         }
-        else
+        //else
         //{
           //  this->problemTime_->updateSolutionMultiPreviousStep(nmbBDF);
         //}
         
-        {
 
         // Alte Gitterbewegung mit der Geometrieloesung ueberschreiben.
-        this->problemTime_->assemble("UpdateMeshDisplacement");
-    
-    
+        // -- we can keep this as expicit update for the reaction-diffusion displacement
+        this->problemTime_->assemble("UpdateMeshDisplacement");   
         this->problemTime_->assemble("MoveMesh");
         
+        // ######################
+        // Fluid Zeitsystem
+        // ######################
+        // Fluid-Loesung aktualisieren fuer die naechste(n) BDF2-Zeitintegration(en)
+        // in diesem Zeitschritt.
+        {
+            //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
+            this->problemTime_->assemble("UpdateChemInTime");
+        }
+        // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
+        // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
+        // In der ersten nichtlinearen Iteration wird bei GI also die Massematrix zweimal assembliert.
+        // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
+        MatrixPtr_Type massmatrix;
+        sci->setChemMassmatrix( massmatrix );
+        this->problemTime_->systemMass_->addBlock( massmatrix, 0, 0);
+        
+
+        // RHS nach BDF2
+        this->problemTime_->assemble( "ComputeChemRHSInTime" ); // hier ist massmatrix nicht relevant
+        //this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
 
 
         // ######################
@@ -951,8 +975,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // in der Struktur.
         {
             
-            
-
             // Hier wird auch direkt ein Update der Loesung bei der Struktur gemacht.
             // Aehnlich zu "UpdateFluidInTime".
             
@@ -960,36 +982,14 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             {
                 // We extract the underlying FSI problem
                 MatrixPtr_Type massmatrix;
-                fsi->setSolidMassmatrix( massmatrix );
-                this->problemTime_->systemMass_->addBlock( massmatrix, 2, 2 );
+                sci->setSolidMassmatrix( massmatrix );
+                this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1 );
             }
             // this should be done automatically rhs will not be used here
             //  this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 2 );
             this->problemTime_->assemble("ComputeSolidRHSInTime");
         }
 
-        // ######################
-        // Fluid Zeitsystem
-        // ######################
-        // Fluid-Loesung aktualisieren fuer die naechste(n) BDF2-Zeitintegration(en)
-        // in diesem Zeitschritt.
-        {
-
-            //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
-            this->problemTime_->assemble("UpdateChemInTime");
-        }
-        // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
-        // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
-        // In der ersten nichtlinearen Iteration wird bei GI also die Massematrix zweimal assembliert.
-        // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
-        MatrixPtr_Type massmatrix;
-        fsi->setChemMassmatrix( massmatrix );
-        this->problemTime_->systemMass_->addBlock( massmatrix, 0, 0 );
-        
-
-        // RHS nach BDF2
-        this->problemTime_->assemble( "ComputeFluidRHSInTime" ); // hier ist massmatrix nicht relevant
-        //this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
 
 
         // ######################
@@ -997,14 +997,14 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // ######################
         // Use BDF1 Parameters for first system
         if (timeSteppingTool_->currentTime() == 0.) {
-            for (int i = 0; i < sizeFluid; i++)
+            for (int i = 0; i < sizeChem; i++)
             {
-                for (int j = 0; j < sizeFluid; j++){
-                    if (massCoeffFSI[i][j] != 0.)
-                        massCoeffFSI[i][j] = 1./dt ;
+                for (int j = 0; j < sizeChem; j++){
+                    if (massCoeffSCI[i][j] != 0.)
+                        massCoeffSCI[i][j] = 1./dt ;
                 }
             }
-            this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+            this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
         }
         
         
@@ -1013,17 +1013,23 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         //NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
 
         //nlSolver.solve(*this->problemTime_, time, its);
+        //problemTime_->getSystem()->getBlock(1,1)->print();
+
+         // Uebergabeparameter fuer BC noch hinzu nehmen!
+        problemTime_->setBoundaries(time);
+        
         problemTime_->solve();
 
 
-        if (timeSteppingTool_->currentTime() <= dt+1.e-10) {
-            for (int i = 0; i < sizeFluid; i++)
+        if (timeSteppingTool_->currentTime() <= dt+1.e-10) 
+        {
+            for (int i = 0; i < sizeChem; i++)
             {
-                for (int j = 0; j < sizeFluid; j++){
-                    massCoeffFSI[i][j] = massCoeffFluid[i][j];
+                for (int j = 0; j < sizeChem; j++){
+                    massCoeffSCI[i][j] = massCoeffChem[i][j];
                 }
             }
-            this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+            this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
         }
         
         this->problemTime_->computeValuesOfInterestAndExport();
@@ -1064,7 +1070,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         closeExporter();
     }
 }
-*/
+
 
 
 template<class SC,class LO,class GO,class NO>
@@ -1937,7 +1943,7 @@ void DAESolverInTime<SC,LO,GO,NO>::setupTimeStepping(){
     problemTime_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problem_,comm_));
     
     // Fuer FSI
-    if(this->parameterList_->sublist("Parameter").get("FSI",false))
+    if(this->parameterList_->sublist("Parameter").get("FSI",false) || this->parameterList_->sublist("Parameter").get("SCI",false))
     {
         // Beachte: Massematrix ist schon vektorwertig!
         // Reset auf Massesystem von problemTime_ (=FSI), da auf problemTime_ kein assemble() bzw. assembleMassSystem() aufgerufen wird.
