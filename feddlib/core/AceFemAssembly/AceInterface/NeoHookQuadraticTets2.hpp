@@ -1,5 +1,5 @@
-#ifndef NEOHOOKQUADRATICTETS_hpp
-#define NEOHOOKQUADRATICTETS_hpp
+#ifndef NEOHOOKQUADRATICTETS2_hpp
+#define NEOHOOKQUADRATICTETS2_hpp
 
 #ifdef __cplusplus
 extern "C"{
@@ -23,7 +23,7 @@ extern "C"{
  @param[in] ht History parameters at time n. Currently unused.
  @param[in] hp History parameters at time n+1. Currently unused.
  */
-void skr(double* v, double* d, double* ul, double* ul0, double* xl, double* s, double* p, double* ht, double* hp);
+void skr2(double* v, double* d, double* ul, double* ul0, double* xl, double* s, double* p, double* ht, double* hp);
 
 /*!
 \brief Fortran-C binding for computing Post-processing values. All Values must be passed by reference!
@@ -42,8 +42,8 @@ void skr(double* v, double* d, double* ul, double* ul0, double* xl, double* s, d
  @param[in] gpost Gauss Point Post-processing data. Size gpost(64,21).
  @param[in] npost Nodal Post-processing data. Size npost(10,6).
  */
-void spp(double* v, double* d, double* ul, double* ul0, double* xl, double* s, double* p, double* ht, double* hp, double* sg, double* sg0, double* sxd, double* gpost, double* npost);
+void spp2(double* v, double* d, double* ul, double* ul0, double* xl, double* s, double* p, double* ht, double* hp, double* sg, double* sg0, double* sxd, double* gpost, double* npost);
 #ifdef __cplusplus
 }
 #endif// __cplusplus
-#endif// NEOHOOKQUADRATICTETS_hpp
+#endif// NEOHOOKQUADRATICTETS2_hpp

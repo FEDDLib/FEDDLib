@@ -106,7 +106,7 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assemblyLinElas(SmallMatrixPtr_Type &ele
 		p[i]=0.0;
 
 	// std::cout << "[DEBUG] SKR-Jacobian Calls after this line!" << std::endl;
-	skr(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
+	skr1(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
 	// std::cout << "[DEBUG] SKR-Jacobian Call successful!" << std::endl;
 	// Note: FEAP/Fortran returns matrices unrolled in column major form. This must be converted for use here.
 
@@ -162,7 +162,7 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assembleRHS() {
 		p[i]=0.0;
 
 	// std::cout << "[DEBUG] SKR-Rhs Calls after this line!" << std::endl;
-	skr(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
+	skr1(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
 	// std::cout << "[DEBUG] SKR-Rhs Call successful!" << std::endl;
 	this->rhsVec_ = p;
 }
