@@ -22,7 +22,7 @@ C
       INTEGER i1,i2,i206,i233,icode
       DOUBLE PRECISION v(1060),d(2),ul(3,10),ul0(3,10),xl(3
      &,10),s(30,30),p(30),ht(*),hp(*)
-      icode=18
+      icode=19
       call SMSIntPoints(icode,ngpo,gp)
       v(194)=d(2)
       v(197)=d(1)/(2d0*(1d0+v(194)))

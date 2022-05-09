@@ -3,7 +3,7 @@
         use f_routines
         implicit none
       contains
-        subroutine skr1(v,d,ul,ul0,xl,s,p,ht,hp) bind(c,name='skr')
+        subroutine skr1(v,d,ul,ul0,xl,s,p,ht,hp) bind(c,name='skr1')
             implicit NONE
             real(c_double), intent(inout) :: v(1002)
             real(c_double), intent(inout) :: d(2)
@@ -18,7 +18,7 @@
         end subroutine skr1
 
         subroutine spp1(v,d,ul,ul0,xl,s,p,ht,hp,sg,sg0,sxd,gpost,npost) 
-     &  bind(c,name='spp')
+     &  bind(c,name='spp1')
             implicit NONE
             real(c_double), intent(inout) :: v(1002)
             real(c_double), intent(inout) :: d(2)
