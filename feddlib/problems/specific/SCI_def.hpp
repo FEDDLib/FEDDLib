@@ -2,20 +2,16 @@
 #define SCI_def_hpp
 #include "SCI_decl.hpp"
 
-double OneFunc(double* x, int* parameter)
-{
-    return 1.0;
-}
 
 namespace FEDD {
-// Funktionen fuer die rechte Seite der Struktur/ Fluid/ Geometrie sind im jeweiligen Problem
+// Funktionen fuer die rechte Seite der Struktur/ Chem/ Geometrie sind im jeweiligen Problem
 
 template<class SC,class LO,class GO,class NO>
 SCI<SC,LO,GO,NO>::SCI(const DomainConstPtr_Type &domainStructure, std::string FETypeStructure,
-					const DomainConstPtr_Type &domainChem, std::string FETypeChem,
-                    ParameterListPtr_Type parameterListChem, ParameterListPtr_Type parameterListStructure,
+					const DomainConstPtr_Type &domainChem, std::string FETypeChem, vec2D_dbl_Type diffusionTensor, RhsFunc_Type reactionFunc,
+                    ParameterListPtr_Type parameterListStructure, ParameterListPtr_Type parameterListChem,
                     ParameterListPtr_Type parameterListSCI, Teuchos::RCP<SmallMatrix<int> > &defTS):
-Problem<SC,LO,GO,NO>( parameterListFSI, domainVelocity->getComm() ),
+NonLinearProblem<SC,LO,GO,NO>( parameterListSCI, domainChem->getComm() ),
 // hasSourceTerm = drittes Arguement. assembleSourceTerm() fuer NS nicht programmiert.
 // Deswegen hier erstmal false (default Parameter).
 // Fuer Struktur hingegen ist default Parameter true, da programmiert.
@@ -24,14 +20,10 @@ problemChem_(),
 //problemStructureNonLin_(),
 meshDisplacementOld_rep_(),
 meshDisplacementNew_rep_(),
-u_rep_(),
-w_rep_(),
-u_minus_w_rep_(),
+c_rep_(),
 defTS_(defTS),
 timeSteppingTool_(),
-materialModel_( parameterListStructure->sublist("Parameter").get("Material model","linear") ),
-valuesForExport_(0),
-exporterGeo_()
+materialModel_( parameterListStructure->sublist("Parameter").get("Material model","linear") )
 {
     //this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
 
@@ -42,13 +34,12 @@ exporterGeo_()
     
     //TEUCHOS_TEST_FOR_EXCEPTION( !(linearization == "Newton" || linearization == "NOX")  && materialModel_ != "linear", std::runtime_error, "Nonlinear material models can only be used with Newton's method or FixedPoint (nonlinear material Jacobian will still be used).");
     
-    this->addVariable( domainStructure, FETypeStructure, "d_s", domainStructure->getDimension() ); // Struktur
-    this->addVariable( domainChem, FETypeChem, "c", domainChem->getDimension()); // Chemistry
+    this->addVariable( domainChem, FETypeChem, "c", 1); // Chemistry scalar valued problem
+    this->addVariable( domainStructure, FETypeStructure, "d_s", domainStructure->getDimension() ); // Structure
 
     this->dim_ = this->getDomain(0)->getDimension();
     
-    problemChem_ = Teuchos::rcp( new ChemProblem_Type( domainVelocity, FETypeVelocity, domainPressure, FETypePressure, parameterListFluid ) );
-    problemChem_->initializeProblem();
+  
     
     //if (materialModel_=="linear"){
         problemStructure_ = Teuchos::rcp( new StructureProblem_Type( domainStructure, FETypeStructure, parameterListStructure ) );
@@ -59,13 +50,17 @@ exporterGeo_()
         problemStructureNonLin_->initializeProblem();
     }*/
     
+     problemChem_ = Teuchos::rcp( new ChemProblem_Type( domainChem, FETypeChem, parameterListChem, diffusionTensor, reactionFunc ) );
+    problemChem_->initializeProblem();
+
     //We initialize the subproblems. In the main routine, we need to call initializeFSI(). There, we first initialize the vectors of the FSI problem and then we set the pointers of the subproblems to the vectors of the full monolithic FSI system. This way all values are only saved once in the subproblems and can be used by the monolithic FSI system.
     
-    meshDisplacementNew_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(4)->getMapVecFieldRepeated() ) );
-    meshDisplacementOld_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(4)->getMapVecFieldRepeated() ) );
-    u_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
-    w_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
-    u_minus_w_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
+    meshDisplacementNew_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
+    meshDisplacementOld_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
+    
+    c_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
+    //w_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
+    //u_minus_w_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
 }
 
 
@@ -111,43 +106,35 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         this->problemChem_->assemble();
         
         // Elementwise determined E Module
-        MultiVectorPtr_Type eModVec = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getElementMap() ) );
+        MultiVectorPtr_Type eModVec = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getElementMap() ) );
 
-        MultiVectorPtr_Type solChemRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) )
-        solChemRep->importFromVector(this->problemChem_->getSolution());
+        MultiVectorPtr_Type solChemRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapRepeated() ) );
+        solChemRep->importFromVector(this->problemChem_->getSolution()->getBlock(0));
 
-        this->feFactory_->determineEMod(FEType,solChemRep,eModVec,this->getDomain(1));
+        //this->feFactory_->determineEMod(this->getDomain(1)->getFEType(),solChemRep,eModVec,this->getDomain(1));
 
-        /*
-
-        MultiVectorPtr_Type solChemRep = Teuchos::rcp(new MultiVector_Type ( this->getDomain(0)->getMapRepeated()));
-
-        Teuchos::ArrayRCP< SC > c = solChemRep->getDataNonConst(0);
-        vec2D_dbl_ptr_Type pointsRep = this->getDomain(0)->getPointsRepeated();
         int dim = this->getDomain(0)->getDimension();
-        for(int i=0; i< pointsRep->size(); i++){
-            c[i] = 1.; //(1.-pointsRep->at(i).at(dim-1));        
-        }
 
-        MultiVectorPtr_Type eModVec = Teuchos::rcp(new MultiVector_Type ( this->getDomain(0)->getElementMap()));
-        this->feFactory_->determineEMod(this->getDomain(0)->getFEType(),solChemRep,eModVec,this->getDomain(0));
+        this->feFactory_->determineEMod(this->getDomain(1)->getFEType(),solChemRep,eModVec,this->getDomain(1));
         
         //this->feFactory_->assemblyLinElasXDimE(this->dim_,this->getDomain(0)->getFEType(), K, eModVec, poissonRatio, true);
-        */
+        
+        double nu = this->parameterList_->sublist("Parameter").get("PoissonRatio",0.4);
 
+        MatrixPtr_Type A(new Matrix_Type( this->getDomain(1)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) ); // Structure-Matrix
 
         // steady rhs wird hier assembliert.
         // rhsFunc auf 0 (=x) und 0 (=y) abaendern bei LinElas!
         //if (materialModel_=="linear"){
-            this->feFactory_->assemblyLinElasXDimE(int dim, FEType,tr_Type &A, eModVec, nu, true);
-
+        this->feFactory_->assemblyLinElasXDimE(this->dim_, this->getDomain(0)->getFEType(), A, eModVec, nu, true);
+        this->problemStructure_->system_->addBlock(A,0,0);
             //this->problemStructure_->assemble();
         /*}
         else
             this->problemStructureNonLin_->assemble();*/
       
        
-        MatrixPtr_Type C1_T(new Matrix_Type( this->getDomain(1)->getMapVecUnique(), 1 ) ); // Chem-Kopplung
+        MatrixPtr_Type C1_T(new Matrix_Type( this->getDomain(1)->getMapVecFieldUnique(), 1 ) ); // Chem-Kopplung
         MatrixPtr_Type C1(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) ); // Struktur-Kopplung
        
         // ###########################
@@ -163,21 +150,18 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
          
         // Struktur
-        this->system_->addBlock( this->problemStructure_->system_->getBlock(0,0), 0, 0);
+        this->system_->addBlock( this->problemStructure_->system_->getBlock(0,0), 1, 1);
         
         // Chemistry
-        this->system_->addBlock( this->probleChem_->system_->getBlock(0,0), 1, 1 );
+        this->system_->addBlock( this->problemChem_->system_->getBlock(0,0), 0, 0 );
        
         // We set the vector from the partial problems
         this->setFromPartialVectorsInit();
         
         // Fuer die Zeitprobleme
-        timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
-        ParameterListPtr_Type plStructure;
+        timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));      
         
-        plStructure = this->problemStructure_->getParameterList();
-        
-        setupSubTimeProblems(this->problemFluid_->getParameterList(), plStructure);
+        setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructure_->getParameterList());
         
         if (this->verbose_)
         {
@@ -188,10 +172,40 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
          moveMesh();
     else if (type == "UpdateMeshDisplacement")
          updateMeshDisplacement();
-    else if (type == "ComputeSolidRHSInTime")
+    else if (type == "ComputeSolidRHSInTime"){
+        if(this->verbose_)
+            std::cout << "-- Assembly (ComputeSolidRHSInTime)" << '\n';
+          
          computeSolidRHSInTime();
-    else if (type == "UpdateChemInTime")
-          updateChemInTime();
+    }
+    else if (type == "ComputeChemRHSInTime"){
+        if(this->verbose_)
+            std::cout << "-- Assembly (ComputeChemRHSInTime)" << '\n';
+          
+         computeChemRHSInTime();
+    }
+    else if (type == "UpdateChemInTime"){
+        if(this->verbose_)
+            std::cout << "-- Assembly (UpdateChemInTime)" << '\n';
+          updateChemInTime();}
+
+    else if(type == "UpdateTime")
+    {
+        if(this->verbose_)
+            std::cout << "-- Reassembly (UpdateTime)" << '\n';
+
+        updateTime();
+        return;
+    }
+    else if(type == "SetBoundaries")
+    {
+        if(this->verbose_)
+            std::cout << "-- set Boundaries" << '\n';
+
+        setBoundariesSubProblems();
+        return;
+    }
+
 
 }
 
@@ -202,68 +216,113 @@ void SCI<SC,LO,GO,NO>::updateMeshDisplacement() const
      *meshDisplacementOld_rep_ = *meshDisplacementNew_rep_;
 
 }
-
+// Muss derzeit nur am Anfang jeder Zeititeration aufgerufen werden, damit
+// problemTimeFluid_ und problemTimeStructure_ die aktuelle Loesung haben.
+// ACHTUNG: Wenn wir irgendwann einmal anfangen reAssemble() auf problemFluid_ und
+// problemStructure_ aufzurufen, dann muessen wir in jeder nichtlinearen Iteration
+// diese setPartialSolutions() aufrufen, damit problemFluid_ und problemStructure_
+// den korrekten nichtlinearen Term ausrechnen koennen.
+// CH: Ist das noch relevant?
+// We need to build FSI so this method is not needed anymore
+template<class SC,class LO,class GO,class NO>
+void SCI<SC,LO,GO,NO>::setFromPartialVectorsInit() const
+{
+    
+    //Chem 
+    this->solution_->addBlock( this->problemChem_->getSolution()->getBlockNonConst(0), 0);
+    //this->residualVec_->addBlock( this->problemChem_->getResidualVector()->getBlockNonConst(0), 0 );
+    this->rhs_->addBlock( this->problemChem_->getRhs()->getBlockNonConst(0), 0 );
+    this->sourceTerm_->addBlock( this->problemChem_->getSourceTerm()->getBlockNonConst(0), 0 );
+   
+    if (materialModel_=="linear"){
+        this->solution_->addBlock( this->problemStructure_->getSolution()->getBlockNonConst(0), 1 );
+        // we dont have a residual vector for linear problems
+        this->rhs_->addBlock( this->problemStructure_->getRhs()->getBlockNonConst(0), 1 );
+        this->sourceTerm_->addBlock( this->problemStructure_->getSourceTerm()->getBlockNonConst(0), 1 );
+    }
+    /*else{
+        this->solution_->addBlock( this->problemStructureNonLin_->getSolution()->getBlockNonConst(0), 2 );
+        this->residualVec_->addBlock( this->problemStructureNonLin_->getResidualVector()->getBlockNonConst(0), 2 );
+        this->rhs_->addBlock( this->problemStructureNonLin_->getRhs()->getBlockNonConst(0), 2 );
+        this->previousSolution_->addBlock( this->problemStructureNonLin_->getPreviousSolution()->getBlockNonConst(0), 2 );
+        this->sourceTerm_->addBlock( this->problemStructureNonLin_->getSourceTerm()->getBlockNonConst(0), 2 );
+    }*/
+      
+}
 
 
 
 template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListFluid, ParameterListPtr_Type parameterListStructure) const
+void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListChem, ParameterListPtr_Type parameterListStructure) const
 {
     if(this->verbose_)
-        std::cout << "-- Setup FSI Sub-TimeProblems \n" << std::flush;
+        std::cout << "-- Setup SCI Sub-TimeProblems \n" << std::flush;
 
     double dt = timeSteppingTool_->get_dt();
     double beta = timeSteppingTool_->get_beta();
 
-    int sizeFluid = this->problemFluid_->getSystem()->size();
+    int sizeChem = this->problemChem_->getSystem()->size();
     int sizeStructure;
     if (materialModel_=="linear")
         sizeStructure = this->problemStructure_->getSystem()->size();
     else
         sizeStructure = this->problemStructureNonLin_->getSystem()->size();
     
-    problemTimeFluid_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemFluid_, this->comm_));
+    if(this->verbose_)
+        std::cout << "-- Setup SCI Sub-TimeProblem for Chem \n" << std::flush;
+
+    problemTimeChem_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemChem_, this->comm_));
+        
+    if(this->verbose_)
+        std::cout << "-- done \n" << std::flush;
+
+    if(this->verbose_)
+        std::cout << "-- Setup SCI Sub-TimeProblem for Elasticity \n" << std::flush;
+
     if (materialModel_=="linear")
         problemTimeStructure_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemStructure_, this->comm_));
     else
         problemTimeStructure_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemStructureNonLin_, this->comm_));
 
-    // ######################
-    // Fluid: Mass-, Problem, SourceTerm Koeffizienten
-    // ######################
-    SmallMatrix<double> massCoeffFluid(sizeFluid);
-    SmallMatrix<double> problemCoeffFluid(sizeFluid);
-    SmallMatrix<int> defFluid(sizeFluid);
+    if(this->verbose_)
+        std::cout << "-- done \n" << std::flush;
 
-    double coeffSourceTermFluid = 0.0;
+    // ######################
+    // Chem: Mass-, Problem, SourceTerm Koeffizienten
+    // ######################
+    SmallMatrix<double> massCoeffChem(sizeChem);
+    SmallMatrix<double> problemCoeffChem(sizeChem);
+    SmallMatrix<int> defChem(sizeChem);
+
+    double coeffSourceTermChem = 0.0;
     if ( this->getParameterList()->sublist("Timestepping Parameter").get("Class","Multistep") == "Multistep" ) {
-        for (int i=0; i<sizeFluid; i++) {
-            for (int j=0; j<sizeFluid; j++) {
+        for (int i=0; i<sizeChem; i++) {
+            for (int j=0; j<sizeChem; j++) {
                 if ((*defTS_)[i][j]==1 && i==j) {
-                    defFluid[i][j] = 1;
-                    massCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
+                    defChem[i][j] = 1;
+                    massCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
                 }
                 else{
-                    massCoeffFluid[i][j] = 0.0;
+                    massCoeffChem[i][j] = 0.0;
                 }
             }
         }
-        for (int i=0; i<sizeFluid; i++) {
-            for (int j=0; j<sizeFluid; j++){
+        for (int i=0; i<sizeChem; i++) {
+            for (int j=0; j<sizeChem; j++){
                 if ((*defTS_)[i][j]==1){
-                    problemCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(1);
-                    coeffSourceTermFluid = timeSteppingTool_->getInformationBDF(1);
+                    problemCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(1);
+                    coeffSourceTermChem = timeSteppingTool_->getInformationBDF(1);
                 }
                 else{
-                    problemCoeffFluid[i][j] = 1.;
+                    problemCoeffChem[i][j] = 1.;
                 }
             }
         }
-        this->problemTimeFluid_->setTimeDef(defFluid);
-        this->problemTimeFluid_->setTimeParameters(massCoeffFluid,problemCoeffFluid);
+        this->problemTimeChem_->setTimeDef(defChem);
+        this->problemTimeChem_->setTimeParameters(massCoeffChem,problemCoeffChem);
     }
     else{
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Implement other FSI fluid time stepping than BDF.");
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Implement other FSI Chem time stepping than BDF.");
     }
     // ######################
     // Struktur: Mass-, Problem, SourceTerm Koeffizienten
@@ -281,7 +340,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListF
         {
             // Falls in dem Block von timeStepDef_ zeitintegriert werden soll.
             // i == j, da vektorwertige Massematrix blockdiagonal ist
-            if((*defTS_)[i + sizeFluid][j + sizeFluid] == 1 && i == j) // Weil: (u_f, p, d_s,...) und timeStepDef_ von FSI
+            if((*defTS_)[i + sizeChem][j + sizeChem] == 1 && i == j) // Weil: (u_f, p, d_s,...) und timeStepDef_ von FSI
             {
                 defStructure[i][j] = 1;
             // Vorfaktor der Massematrix in der LHS
@@ -299,7 +358,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListF
     {
         for(int j = 0; j < sizeStructure; j++)
         {
-            if((*defTS_)[i + sizeFluid][j + sizeFluid] == 1)
+            if((*defTS_)[i + sizeChem][j + sizeChem] == 1)
             {
                 problemCoeffStructure[i][j] =  1.0;
                 // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
@@ -314,7 +373,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListF
     this->problemTimeStructure_->setTimeDef(defStructure);
     this->problemTimeStructure_->setTimeParameters(massCoeffStructure,problemCoeffStructure);
 
-    this->problemTimeFluid_->assemble( "MassSystem" );
+    this->problemTimeChem_->assemble( "MassSystem" );
     this->problemTimeStructure_->assemble( "MassSystem" );
 }
 
@@ -323,33 +382,33 @@ template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
 {
     //######################
-    // Massematrix fuer FSI combineSystems(), ggf nichtlinear.
+    // Massematrix fuer SCI combineSystems(), ggf nichtlinear. Mass Matrix same as for Chem.
     //######################
     double density = this->problemTimeChem_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
     int size = this->problemTimeChem_->getSystem()->size();
 
     this->problemTimeChem_->systemMass_.reset(new BlockMatrix_Type(size));
     {
-        massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapdUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
-        // 0 = Fluid
-        this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Vector",  massmatrix, 0, true );
+        massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+        // 0 = Chem
+        this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 0, true );
         massmatrix->resumeFill();
         massmatrix->scale(density);
-        massmatrix->fillComplete( this->problemTimeFluid_->getDomain(0)->getMapVecFieldUnique(), this->problemTimeFluid_->getDomain(0)->getMapVecFieldUnique() );
+        massmatrix->fillComplete( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->problemTimeChem_->getDomain(0)->getMapUnique() );
 
         this->problemTimeChem_->systemMass_->addBlock(massmatrix, 0, 0);
     }
 }
 
-
+// For now: Leave it like that. ProblemChem. We use BDF2 for the chemistry as well
 // TODO: updateMultistepRhsFSI() einbauen!
 template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
+void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
 {
     //######################
     // RHS nach BDF2
     //######################
-    int sizeFluid = this->problemFluid_->getSystem()->size();
+    int sizeChem = this->problemChem_->getSystem()->size();
     double dt = timeSteppingTool_->get_dt();
     int nmbBDF = timeSteppingTool_->getBDFNumber();
 
@@ -360,10 +419,10 @@ void SCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
     }
 
     if (timeSteppingTool_->currentTime()==0.) {
-        SmallMatrix<double> tmpmassCoeff(sizeFluid);
-        SmallMatrix<double> tmpproblemCoeff(sizeFluid);
-        for (int i=0; i<sizeFluid; i++) {
-            for (int j=0; j<sizeFluid; j++) {
+        SmallMatrix<double> tmpmassCoeff(sizeChem);
+        SmallMatrix<double> tmpproblemCoeff(sizeChem);
+        for (int i=0; i<sizeChem; i++) {
+            for (int j=0; j<sizeChem; j++) {
                 if ((*defTS_)[i][j]==1 && i==j) {
                     tmpmassCoeff[i][j] = 1. / dt;
                 }
@@ -372,8 +431,8 @@ void SCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
                 }
             }
         }
-        for (int i=0; i<sizeFluid; i++) {
-            for (int j=0; j<sizeFluid; j++){
+        for (int i=0; i<sizeChem; i++) {
+            for (int j=0; j<sizeChem; j++){
                 if ((*defTS_)[i][j]==1){
                     tmpproblemCoeff[i][j] =  1.; // ist das richtig? Vermutlich schon, da BDF so geschrieben ist, dass zu berechnende Lsg den Koeffizienten 1 hat
                 }
@@ -382,54 +441,54 @@ void SCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
                 }
             }
         }
-        this->problemTimeFluid_->setTimeParameters(tmpmassCoeff, tmpproblemCoeff);
+        this->problemTimeChem_->setTimeParameters(tmpmassCoeff, tmpproblemCoeff);
     }
     if (timeSteppingTool_->currentTime()==0.) {
         vec_dbl_Type tmpcoeffPrevSteps(1, 1. / dt);
-        this->problemTimeFluid_->updateMultistepRhsFSI(tmpcoeffPrevSteps,1);/*apply (mass matrix_t / dt) to u_t*/
+        this->problemTimeChem_->updateMultistepRhsFSI(tmpcoeffPrevSteps,1);/*apply (mass matrix_t / dt) to u_t*/
     }
     else{
-        this->problemTimeFluid_->updateMultistepRhsFSI(coeffPrevSteps,nmbBDF);/*apply (mass matrix_t / dt) to u_t and more*/
+        this->problemTimeChem_->updateMultistepRhsFSI(coeffPrevSteps,nmbBDF);/*apply (mass matrix_t / dt) to u_t and more*/
     }
 
     // TODO
-    if (this->problemTimeFluid_->hasSourceTerm()) {
+    if (this->problemTimeChem_->hasSourceTerm()) {
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Check sourceterm.");
     }
 
     // Wieder zu den eigentlichen Parametern zuruecksetzen, nachdem die temporaeren
     // genommen wurden.
     if (timeSteppingTool_->currentTime()==0.) {
-        SmallMatrix<double> massCoeffFluid(sizeFluid);
-        SmallMatrix<double> problemCoeffFluid(sizeFluid);
+        SmallMatrix<double> massCoeffChem(sizeChem);
+        SmallMatrix<double> problemCoeffChem(sizeChem);
 
-        for (int i=0; i<sizeFluid; i++) {
-            for (int j=0; j<sizeFluid; j++) {
+        for (int i=0; i<sizeChem; i++) {
+            for (int j=0; j<sizeChem; j++) {
                 if ((*defTS_)[i][j]==1 && i==j) {
-                    massCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
+                    massCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
                 }
                 else{
-                    massCoeffFluid[i][j] = 0.0;
+                    massCoeffChem[i][j] = 0.0;
                 }
             }
         }
-        for (int i=0; i<sizeFluid; i++) {
-            for (int j=0; j<sizeFluid; j++){
+        for (int i=0; i<sizeChem; i++) {
+            for (int j=0; j<sizeChem; j++){
                 if ((*defTS_)[i][j]==1){
-                    problemCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(1);
+                    problemCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(1);
                 }
                 else{
-                    problemCoeffFluid[i][j] = 1.;
+                    problemCoeffChem[i][j] = 1.;
                 }
             }
         }
 
-        this->problemTimeFluid_->setTimeParameters(massCoeffFluid, problemCoeffFluid);
+        this->problemTimeChem_->setTimeParameters(massCoeffChem, problemCoeffChem);
     }
 }
 
 
-
+// This is equivalent to the FSI Structure part.
 template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     //######################
@@ -459,6 +518,9 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     // if(time == 0){nur dann konstanten SourceTerm berechnen}
     if (this->problemTimeStructure_->hasSourceTerm())
     {
+        cout << " Assemble Sourceterm " << endl;
+        //this->problemTimeStructure_->getUnderlyingProblem()->addRhsFunction( rhsX3D );
+
         this->problemTimeStructure_->assembleSourceTerm( time );
         
         // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
@@ -468,10 +530,12 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
         double coeffSourceTermStructure = 1.0;
         BlockMultiVectorPtr_Type tmpPtr = this->problemTimeStructure_->getSourceTerm();
         this->problemTimeStructure_->getRhs()->update(coeffSourceTermStructure, *tmpPtr, 1.);
+
     }
 
 }
 
+// Can stay the same
 template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
 {
@@ -487,8 +551,8 @@ void SCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
         {
 
             massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
-            // 2 = Struktur
-            this->feFactory_->assemblyMass(this->dim_, this->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 2, true);
+            // 1 = Struktur
+            this->feFactory_->assemblyMass(this->dim_, this->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 1, true);
             massmatrix->resumeFill();
             massmatrix->scale(density);
             massmatrix->fillComplete( this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique());
@@ -498,24 +562,26 @@ void SCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
     }
 }
 
+// Can stay the same
+template<class SC,class LO,class GO,class NO>
+void SCI<SC,LO,GO,NO>::setBoundariesSubProblems( ) const
+{
+    //######################
+    // Boundaries 
+    //######################
+  
+    this->problemTimeStructure_->setBoundaries();
+    this->problemTimeChem_->setBoundaries();
+
+        
+}
+
 
 // Damit die richtige timeSteppingTool_->currentTime() genommen wird.
 template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateTime() const
 {
     timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
-}
-
-
-
-
-template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::addInterfaceBlockRHS() const
-{
-    MultiVectorPtr_Type vectorToAdd = Teuchos::rcp( new MultiVector_Type( this->rhs_->getBlock(3) ) );
-
-    C2_->apply(*(this->solution_->getBlock(2)), *vectorToAdd);
-    this->rhs_->addBlock(vectorToAdd, 3);
 }
 
 
@@ -533,107 +599,16 @@ void SCI<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::InArgs<SC>
 //    }
 //    else
 //        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Unkown preconditioner/solver type.");
-}
-
-
+}   
     
-    
-template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::getValuesOfInterest3DBenchmark( vec_dbl_Type& values ){
-    
-    if ( valuesForExport_[0] >= 0.   ) { // we set the displacement of the 3D Richter Benchmark in x, y, and z direction
-        LO loc = valuesForExport_[0] + 10*Teuchos::ScalarTraits<SC>::eps();
-        values[0] = this->getSolution()->getBlock(2)->getData(0)[3*loc];
-        values[1] = this->getSolution()->getBlock(2)->getData(0)[3*loc+1];
-        values[2] = this->getSolution()->getBlock(2)->getData(0)[3*loc+2];
-    }
-}
-    
-template<class SC,class LO,class GO,class NO>
-void SCI<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
-    if ( this->getParameterList()->sublist("General").get("Export drag and lift",false) ) {
-        
-        int dim = this->dim_;
-        TEUCHOS_TEST_FOR_EXCEPTION( this->parameterList_->sublist("Parameter").get("Criterion","Residual") == "Update",  std::runtime_error, "Wrong nonlinear criterion to calculate the drag coefficient. The last system is the Newton system but we need the fixed point system. Either use Criterion=Residual or implement for Criterion=Update." );
-        
-        TEUCHOS_TEST_FOR_EXCEPTION( this->problemFluid_->hasSourceTerm(),  std::runtime_error, "We need to substract the additional source term: drag = < F*u + B_T*p + C1_T*lamba - f, v >" );
-        
-        Teuchos::Array<SC> drag(1);
-        Teuchos::Array<SC> lift(1);
-        
-        BlockMultiVectorPtr_Type uDrag = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
-        BlockMultiVectorPtr_Type uLift = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
-        // should be the last fixed point system without boundary conditions or the last extrapolation system without boundary values.
-        // We need to reassemble B and BT, because we might have set Dirichlet boundary conditions in BT (less likely in B)
-        this->problemFluid_->assembleDivAndStab();
-        
-        this->problemFluid_->getSystem()->apply( *this->problemFluid_->getSolution(), *uDrag );
-        this->problemFluid_->getSystem()->apply( *this->problemFluid_->getSolution(), *uLift );
-        
-        MultiVectorPtr_Type C1T_lambda = Teuchos::rcp( new MultiVector_Type( this->getSolution()->getBlock(0) ) );
-        this->system_->getBlock(0,3)->apply( *this->getSolution()->getBlock(3), *C1T_lambda );
-        
-        uDrag->getBlockNonConst(0)->update( 1., *C1T_lambda, 1. ); // velocity + C1_T * lambda
-        uLift->getBlockNonConst(0)->update( 1., *C1T_lambda, 1. ); // velocity + C1_T * lambda
-        
-        BCPtr_Type bcFactoryDrag = Teuchos::rcp( new BC_Type( ) );
-        BCPtr_Type bcFactoryLift = Teuchos::rcp( new BC_Type( ) );
-        
-        DomainConstPtr_Type domainVelocityConst = this->problemFluid_->getDomain(0);
-        DomainPtr_Type domainVelocity = Teuchos::rcp_const_cast<Domain_Type>(domainVelocityConst);
-        if( dim == 2 ){
-            bcFactoryDrag->addBC(drag2D, 4, 0, domainVelocity, "Dirichlet", dim); // obstacle
-            bcFactoryDrag->addBC(drag2D, 5, 0, domainVelocity, "Dirichlet", dim); // interface; check main fsi for matching flags at the obstacle and interface
-            bcFactoryLift->addBC(lift2D, 4, 0, domainVelocity, "Dirichlet", dim);
-            bcFactoryLift->addBC(lift2D, 5, 0, domainVelocity, "Dirichlet", dim);
-        }
-        else if( dim == 3 ){
-            bcFactoryDrag->addBC(drag3D, 3, 0, domainVelocity, "Dirichlet", dim); // check main fsi for matching
-            bcFactoryDrag->addBC(drag3D, 6, 0, domainVelocity, "Dirichlet", dim); // check main fsi for matching flags at the obstacle and interface
-            bcFactoryLift->addBC(lift3D, 3, 0, domainVelocity, "Dirichlet", dim);
-            bcFactoryLift->addBC(lift3D, 6, 0, domainVelocity, "Dirichlet", dim);
-        }
-        
-        BlockMultiVectorPtr_Type vD = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
-        BlockMultiVectorPtr_Type vL = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
-        
-        vD->putScalar(0.);
-        vL->putScalar(0.);
-        
-        bcFactoryDrag->setRHS( vD );
-        bcFactoryLift->setRHS( vL );
-        
-        uDrag->dot( vD, drag() );
-        uLift->dot( vL, lift() );
-        
-//        double density = this->problemFluid_->getParameterList()->sublist("Parameter").get("Density",1.);
-//        double uMean = this->getParameterList()->sublist("Parameter").get("MeanVelocity",2.0);
-//        double L = 0.;
-//        if ( dim == 2)
-//            L = 2.*0.05;
-//        else
-//            L = 1.;
-//        
-//        drag[0] *= -(2./(density*uMean*uMean*L));
-//        lift[0] *= -(2./(density*uMean*uMean*L));
-
-        drag[0] *= -1.;
-        lift[0] *= -1.;
-        
-        exporterTxtDrag_->exportData( drag[0] );
-        exporterTxtLift_->exportData( lift[0] );
-    }
-}
-
 template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::moveMesh() const
 {
 
     MultiVectorConstPtr_Type displacementUniqueConst;
 
-    displacementUniqueConst = this->solution_->getBlock(0);
-    
-    MultiVectorPtr_Type displacementRepeated = Teuchos::rcp( new MultiVector_Type( this->problemGeometry_->getDomain(0)->getMapVecFieldRepeated() ) );
+    displacementUniqueConst = this->solution_->getBlock(1);
+    MultiVectorPtr_Type displacementRepeated = Teuchos::rcp( new MultiVector_Type( this->problemStructure_->getDomain(0)->getMapVecFieldRepeated() ) );
 
     displacementRepeated->importFromVector( displacementUniqueConst );
     MultiVectorPtr_Type displacementUnique = Teuchos::rcp_const_cast<MultiVector_Type>(displacementUniqueConst);
@@ -642,7 +617,7 @@ void SCI<SC,LO,GO,NO>::moveMesh() const
     // Verschiebe die Gitter fuer Chemistry
     // ACHTUNG: Klappt nur, weil die P2-Knoten hinter den P1-Knoten kommen.
     // Sonst muessen fuer den Druck die P1-Knoten extrahiert werden.
-    // TODO: Wahrscheinlich reicht nur FSI-Domain, da selbes Objekt bei problemFluid_ und problemTimeFluid_.
+    // TODO: Wahrscheinlich reicht nur FSI-Domain, da selbes Objekt bei problemChem_ und problemTimeChem_.
     ( Teuchos::rcp_const_cast<Domain_Type>(this->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
     ( Teuchos::rcp_const_cast<Domain_Type>(this->problemChem_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
     ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeChem_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);

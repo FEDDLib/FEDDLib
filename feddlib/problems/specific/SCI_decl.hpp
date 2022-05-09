@@ -1,7 +1,7 @@
 #ifndef SCI_decl_hpp
 #define SCI_decl_hpp
 #include "feddlib/problems/abstract/TimeProblem.hpp"
-#include "feddlib/problems/specific/NavierStokes.hpp"
+#include "feddlib/problems/specific/DiffusionReaction.hpp"
 #include "feddlib/problems/specific/LinElas.hpp"
 #include "feddlib/problems/specific/NonLinElasticity.hpp"
 #include "feddlib/problems/specific/Geometry.hpp"
@@ -15,15 +15,13 @@ namespace FEDD{
 template <class SC , class LO , class GO , class NO >
 class TimeProblem;
 template <class SC , class LO , class GO , class NO >
-class Geometry;
-template <class SC , class LO , class GO , class NO >
-class NavierStokes;
+class DiffusionReaction;
 template <class SC , class LO , class GO , class NO >
 class LinElas;
 template <class SC , class LO , class GO , class NO >
 class NonLinElasticity;
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class FSI : public Problem<SC,LO,GO,NO>  {
+class SCI : public NonLinearProblem<SC,LO,GO,NO>  {
 
 public:
     typedef Problem<SC,LO,GO,NO> Problem_Type;
@@ -55,15 +53,13 @@ public:
     typedef TimeProblem<SC,LO,GO,NO> TimeProblem_Type;
     typedef Teuchos::RCP<TimeProblem_Type> TimeProblemPtr_Type;
 
-    typedef ReactionDiffusion<SC,LO,GO,NO> ChemProblem_Type;
+    typedef DiffusionReaction<SC,LO,GO,NO> ChemProblem_Type;
     typedef LinElas<SC,LO,GO,NO> StructureProblem_Type;
     typedef NonLinElasticity<SC,LO,GO,NO> StructureNonLinProblem_Type;
-    typedef Geometry<SC,LO,GO,NO> GeometryProblem_Type;
-    
-    typedef Teuchos::RCP<FluidProblem_Type> FluidProblemPtr_Type;
+
+    typedef Teuchos::RCP<ChemProblem_Type> ChemProblemPtr_Type;
     typedef Teuchos::RCP<StructureProblem_Type> StructureProblemPtr_Type;
     typedef Teuchos::RCP<StructureNonLinProblem_Type> StructureNonLinProblemPtr_Type;
-    typedef Teuchos::RCP<GeometryProblem_Type> GeometryProblemPtr_Type;
 
     typedef typename Problem_Type::MapConstPtr_Type MapConstPtr_Type;
 
@@ -84,19 +80,16 @@ public:
 
     // FETypeVelocity muss gleich FETypeStructure sein, wegen Interface.
     // Zudem wird FETypeVelocity auch fuer das Geometrieproblem genutzt.
-    SCI( const DomainConstPtr_Type &domainVelocity, std::string FETypeVelocity,
-         const DomainConstPtr_Type &domainStructure, std::string FETypeStructure,
-         ParameterListPtr_Type parameterListFluid, ParameterListPtr_Type parameterListStructure,
-         ParameterListPtr_Type parameterListFSI, ParameterListPtr_Type parameterListGeometry,
-         Teuchos::RCP<SmallMatrix<int> > &defTS );
+    SCI(const DomainConstPtr_Type &domainStructure, std::string FETypeStructure,
+					const DomainConstPtr_Type &domainChem, std::string FETypeChem,vec2D_dbl_Type diffusionTensor, RhsFunc_Type reactionFunc,
+                    ParameterListPtr_Type parameterListStructure, ParameterListPtr_Type parameterListChem,
+                    ParameterListPtr_Type parameterListSCI, Teuchos::RCP<SmallMatrix<int> > &defTS);
 
     ~SCI();
 
     virtual void info();
 
     virtual void assemble( std::string type = "" ) const;
-  
-    virtual void getValuesOfInterest( vec_dbl_Type& values );
     
     // init FSI vectors from partial problems
     void setFromPartialVectorsInit() const;
@@ -117,20 +110,23 @@ public:
 
     void computeSolidRHSInTime() const;
     
+    void computeChemRHSInTime() const;
+
     // Hier wird timeSteppingTool_->t_ inkrementiert
     void updateTime() const;
+
+    // Hier wird im Prinzip updateSolution() fuer problemTimeChem_ aufgerufen
+    void updateChemInTime() const;
 
     // Verschiebt die notwendigen Gitter
     void moveMesh() const;
 
-    // Fuegt den Block C2*d_s^n in die RHS in den Interface-Block
-    void addInterfaceBlockRHS() const;
-
     // Macht setupTimeStepping() auf problemTimeFluid_ und problemTimeStructure_
     void setupSubTimeProblems(ParameterListPtr_Type parameterListFluid, ParameterListPtr_Type parameterListStructure) const;
 
-    FluidProblemPtr_Type getFluidProblem(){
-        return problemFluid_;
+    void setBoundariesSubProblems() const;
+    ChemProblemPtr_Type getChemProblem(){
+        return problemChem_;
     }
     
     StructureProblemPtr_Type getStructureProblem(){
@@ -155,17 +151,23 @@ public:
 
     void getValuesOfInterest3DBenchmark( vec_dbl_Type& values );
     
-    virtual void computeValuesOfInterestAndExport();
+    virtual void getValuesOfInterest( vec_dbl_Type& values ) {}  ;
+
+    virtual void computeValuesOfInterestAndExport() {} ;
+
+     virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
+    
+    virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions) {};
+
+    virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const {}; //standard or reverse    
+    
     /*####################*/
 
     // Alternativ wie in reAssembleExtrapolation() in NS?
 
     MultiVectorPtr_Type meshDisplacementOld_rep_;
     MultiVectorPtr_Type meshDisplacementNew_rep_;
-    MultiVectorPtr_Type u_rep_;
-    MultiVectorPtr_Type w_rep_;
-    MultiVectorPtr_Type u_minus_w_rep_;
-    MultiVectorPtr_Type p_rep_;
+    MultiVectorPtr_Type c_rep_;
 
     mutable MatrixPtr_Type C2_;
 
@@ -175,10 +177,9 @@ public:
     ChemProblemPtr_Type problemChem_;
     StructureProblemPtr_Type problemStructure_;
     StructureNonLinProblemPtr_Type problemStructureNonLin_; // CH: we want to combine both structure models to one general model later
-    GeometryProblemPtr_Type problemGeometry_;
 
     // zeitabhaengige Systeme
-    mutable TimeProblemPtr_Type problemTimeFluid_;
+    mutable TimeProblemPtr_Type problemTimeChem_;
     mutable TimeProblemPtr_Type problemTimeStructure_;
 
     Teuchos::RCP<SmallMatrix<int>> defTS_;

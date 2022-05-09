@@ -1,17 +1,17 @@
-<ParameterList name="FSI">
+<ParameterList name="SCI">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension" type="int" value="2"/>
-        <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization" type="string" value="P1"/><!--P2-->
         <Parameter name="BC Type" type="string" value="partialCFD"/><!--partialCFD,Richter3DFull-->
         
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
         
         <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
-        
+        <Parameter name="Volume force" type="double" value="1"/>
+        <Parameter name="Source Type" type="string"   value="surface"/>
         <Parameter name="Model Geometry" type="string" value="Laplace"/>
         
-        <Parameter name="FSI" type="bool" value="true"/>
-        <Parameter name="Geometry Explicit" type="bool" value="true"/>
+        <Parameter name="SCI" type="bool" value="true"/>
         
         <Parameter name="relNonLinTol" type="double" value="1.0e-6"/>
         <Parameter name="absNonLinTol" type="double" value="1.0e-2"/>
@@ -45,8 +45,8 @@
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h004.mesh"/>
-        <Parameter name="Mesh 2 Name" type="string" value="dfg_fsi_solid_h004.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="cube_0_1.mesh"/>
+        <Parameter name="Mesh 2 Name" type="string" value="cube_0_1.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
         
@@ -60,14 +60,11 @@
     <ParameterList name="Exporter">
         <Parameter name="Write new mesh" type="bool" value="false"/>
         <Parameter name="Export every X timesteps" type="int" value="1"/>
-        
-        <Parameter name="Export GE geometry solution" type="bool" value="true"/>
-        
+               
         <Parameter name="Export coarse functions" type="bool" value="false"/>
-        
-        <Parameter name="Name coarse functions block1" type="string" value="phiU"/>
-        <Parameter name="Name coarse functions block2" type="string" value="phiP"/>
-        <Parameter name="Name coarse functions block3" type="string" value="phiD"/>
+       
+        <Parameter name="Name coarse functions block1" type="string" value="phiC"/>
+        <Parameter name="Name coarse functions block2" type="string" value="phiD"/>
         <Parameter name="Exclude coarse functions block4" type="bool" value="true"/>
         
     </ParameterList>
@@ -82,10 +79,8 @@
         <Parameter name="Export Extra Data" type="bool" value="false"/>
         <Parameter name="Export drag and lift" type="bool" value="true"/>
         
-        <Parameter name="Preconditioner Method" type="string" value="FaCSI"/><!-- Monolithic, FaCSI, FaCSI-Teko -->
-        <Parameter name="Use Fluid Preconditioner" type="bool" value="true"/>
-        <Parameter name="Use Solid Preconditioner" type="bool" value="true"/>
-
+       <!-- <Parameter name="Preconditioner Method" type="string" value="Monolithic"/>--> <!-- Monolithic, FaCSI, FaCSI-Teko -->
+       
         <Parameter name="Only Diagonal" type="bool" value="false"/>
 
         <Parameter name="Scale mass matrix" type="bool" value="true"/>
@@ -99,7 +94,7 @@
         <Parameter name="Class" type="string" value="Multistep"/>
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value="0.002"/>
+        <Parameter name="Final time" type="double" value="0.005"/>
         <Parameter name="dt" type="double" value="0.001"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->

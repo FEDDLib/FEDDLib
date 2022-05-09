@@ -905,9 +905,19 @@ void MeshPartitioner<SC,LO,GO,NO>::findAndSetSurfaceEdges( vec2D_int_Type& edgeE
                 
                 // If no partition was performed, all information is still global at this point. We still use the function below and partition the mesh and surfaces later.
                 FiniteElement feEdge( tmpEdgeLocal, edgeElementsFlag_vec[loc] );
-                ElementsPtr_Type surfaces = element.getSubElements();
-                // We set the edge to the corresponding element(s)
-                surfaces->setToCorrectElement( feEdge );
+
+                // In some cases an edge is the only part of the surface of an Element. In that case there does no exist a triangle subelement. 
+                // We then have to initialize the edge as subelement.                       
+                if ( !element.subElementsInitialized() ){
+                    element.initializeSubElements( "P1", 2 ); // only P1 for now                
+                    element.addSubElement( feEdge );
+                }
+                else {
+                    ElementsPtr_Type surfaces = element.getSubElements();
+                    // We set the edge to the corresponding element(s)
+                    surfaces->setToCorrectElement( feEdge );
+                }
+               
                                 
             }
         }

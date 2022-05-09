@@ -4002,7 +4002,7 @@ void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solu
         }
         //uLoc = uLoc*absDetB;           
 
-        eModVecA[T] = E0-(E0-E1)*(uLoc); ///(uLoc+c1));
+        eModVecA[T] = E0-(E0-E1)*(uLoc+c1);
                 //cout << " eMOD " << eModVecA[T] << endl;
 
     }

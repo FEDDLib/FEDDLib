@@ -299,7 +299,9 @@ void MeshUnstructured<SC,LO,GO,NO>::setP2SurfaceElements( MeshUnstrPtr_Type mesh
         ElementsPtr_Type subEl = fe.getSubElements(); //might be null
         for (int j=0; j<fe.numSubElements(); j++) {
             FiniteElement feSurf = subEl->getElement(j);
-            this->setSurfaceP2(feP2, feSurf, surfacePermutation, this->dim_);
+            // In some instances a element has only an edge as subelement. In that case this step is not required
+            if(feSurf.getVectorNodeList().size() == this->dim_)
+                this->setSurfaceP2(feP2, feSurf, surfacePermutation, this->dim_);
             
             // set edges for 3D case and if there are any edges, for 2D the edges are handled above
             ElementsPtr_Type subElSurf = feSurf.getSubElements(); //might be null

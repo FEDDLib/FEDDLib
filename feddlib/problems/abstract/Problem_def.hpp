@@ -98,7 +98,7 @@ void Problem<SC,LO,GO,NO>::infoProblem(){
         std::cout << "\t ### ### ###" << std::endl;
         std::cout << "\t ### Preconditioner Information ###" << std::endl;
         std::cout << "\t ### Type: " << parameterList_->sublist("General").get("Preconditioner Method","Monolithic") << std::endl;
-        std::cout << "\t ### Prec.: " << pListThyraPrec->get("Preconditioner Type", "FROSch") << std::endl;
+        std::cout << "\t ### Prec.: " << pListThyraPrec->get("Preconditioner Type", "Chameleon") << std::endl;
         
         
         if ( !pListThyraPrec->get("Preconditioner Type","FROSch").compare("FROSch") && parameterList_->sublist("General").get("Preconditioner Method","Monolithic") == "Monolithic") {
@@ -116,7 +116,7 @@ void Problem<SC,LO,GO,NO>::infoProblem(){
             std::cout << "\t CoarseOperator Type: "
                 << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("CoarseOperator Type","GDSWCoarseOperator") << std::endl;
 
-            for (int i=0; i<this->parameterList_->get("Number of blocks",1); i++) {
+            for (int i=0; i<this->parameterList_->get("Number of blocks",2); i++) {
                 std::cout << "\t \t # Block "<< i+1 << "\t d.o.f.s: "
                     << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("DofsPerNode" + std::to_string(i+1), 1)
                     << "\t d.o.f. ordering: "
@@ -170,7 +170,6 @@ template<class SC,class LO,class GO,class NO>
 void Problem<SC,LO,GO,NO>::assembleSourceTerm(double time) const{
     
     TEUCHOS_TEST_FOR_EXCEPTION(sourceTerm_.is_null(), std::runtime_error, "Initialize source term before you assemble it - sourceTerm pointer is null");
-    
     this->sourceTerm_->putScalar(0.);
     std::string sourceType = parameterList_->sublist("Parameter").get("Source Type","volume");
     if ( sourceType == "volume")
@@ -183,34 +182,37 @@ void Problem<SC,LO,GO,NO>::assembleSourceTerm(double time) const{
 template<class SC,class LO,class GO,class NO>
 void Problem<SC,LO,GO,NO>::assembleVolumeTerm(double time) const{
     for (UN i=0; i<sourceTerm_->size(); i++) {
-        if ( !this->rhsFuncVec_[i].empty() ) {
-            
-            MultiVectorPtr_Type FERhs;
-            //funcParameter[0] is always the time
-            vec_dbl_Type funcParameter(1,0.);
-            funcParameter[0] = time;
-            
-            // how can we use different parameters for different blocks here?
-            for (int j=0; j<parasSourceFunc_.size(); j++)
-                funcParameter.push_back(parasSourceFunc_[j]);
+        if(this->rhsFuncVec_.size() > i){
+            if ( !this->rhsFuncVec_[i].empty() ) {
+                MultiVectorPtr_Type FERhs;
+                //funcParameter[0] is always the time
+                vec_dbl_Type funcParameter(1,0.);
+                funcParameter[0] = time;
+                
+                // how can we use different parameters for different blocks here?
+                for (int j=0; j<parasSourceFunc_.size(); j++)
+                    funcParameter.push_back(parasSourceFunc_[j]);
 
-            std::string type;
-            if ( this->getDofsPerNode(i)>1 ) {
-                FERhs = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(i)->getMapVecFieldRepeated() ) );
-                type="Vector";
-            } else {
-                FERhs = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(i)->getMapRepeated() ) );
-                type="Scalar";
+                std::string type;
+                if ( this->getDofsPerNode(i)>1 ) {
+                    FERhs = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(i)->getMapVecFieldRepeated() ) );
+                    type="Vector";
+                } else {
+                    FERhs = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(i)->getMapRepeated() ) );
+                    type="Scalar";
+                }
+                            
+                this->feFactory_->assemblyRHS(  this->dim_,
+                                                this->domain_FEType_vec_.at(i),
+                                                FERhs,
+                                                type,
+                                                this->rhsFuncVec_[i],
+                                                funcParameter);
+                
+                this->sourceTerm_->getBlockNonConst(i)->exportFromVector( FERhs, false, "Add" );
             }
-                        
-            this->feFactory_->assemblyRHS(  this->dim_,
-                                            this->domain_FEType_vec_.at(i),
-                                            FERhs,
-                                            type,
-                                            this->rhsFuncVec_[i],
-                                            funcParameter);
-            
-            this->sourceTerm_->getBlockNonConst(i)->exportFromVector( FERhs, false, "Add" );
+            else    
+                cout << " No rhs function " << endl;
         }
     }
 }
@@ -218,36 +220,39 @@ void Problem<SC,LO,GO,NO>::assembleVolumeTerm(double time) const{
 template<class SC,class LO,class GO,class NO>
 void Problem<SC,LO,GO,NO>::assembleSurfaceTerm(double time) const{
     for (UN i=0; i<sourceTerm_->size(); i++) {
-        if ( !this->rhsFuncVec_[i].empty() ) {
-            
-            MultiVectorPtr_Type FERhs;
-            //funcParameter[0] is always the time
-            vec_dbl_Type funcParameter(1,0.);
-            funcParameter[0] = time;
-            
-            // how can we use different parameters for different blocks here?
-            for (int j=0; j<parasSourceFunc_.size(); j++)
-                funcParameter.push_back( parasSourceFunc_[j] );
+        if(this->rhsFuncVec_.size() > i){
 
-            // we add an additional parameter to place the surface flag of the element there during the assembly and shift the degree of the function to the last place now
-            funcParameter.push_back( funcParameter[funcParameter.size()-1]  );
-            std::string type;
-            if ( this->getDofsPerNode(i)>1 ) {
-                FERhs = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(i)->getMapVecFieldRepeated() ) );
-                type="Vector";
-            } else {
-                FERhs = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(i)->getMapRepeated() ) );
-                type="Scalar";
+            if ( !this->rhsFuncVec_[i].empty() ) {
+                
+                MultiVectorPtr_Type FERhs;
+                //funcParameter[0] is always the time
+                vec_dbl_Type funcParameter(1,0.);
+                funcParameter[0] = time;
+                
+                // how can we use different parameters for different blocks here?
+                for (int j=0; j<parasSourceFunc_.size(); j++)
+                    funcParameter.push_back( parasSourceFunc_[j] );
+
+                // we add an additional parameter to place the surface flag of the element there during the assembly and shift the degree of the function to the last place now
+                funcParameter.push_back( funcParameter[funcParameter.size()-1]  );
+                std::string type;
+                if ( this->getDofsPerNode(i)>1 ) {
+                    FERhs = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(i)->getMapVecFieldRepeated() ) );
+                    type="Vector";
+                } else {
+                    FERhs = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(i)->getMapRepeated() ) );
+                    type="Scalar";
+                }
+                
+                this->feFactory_->assemblySurfaceIntegral( this->getDomain(i)->getDimension(),
+                                                        this->getDomain(i)->getFEType(),
+                                                        FERhs,
+                                                        "Vector",
+                                                        this->rhsFuncVec_[i],
+                                                        funcParameter);
+                
+                this->sourceTerm_->getBlockNonConst(i)->exportFromVector( FERhs, false, "Add" );
             }
-            
-            this->feFactory_->assemblySurfaceIntegral( this->getDomain(i)->getDimension(),
-                                                       this->getDomain(i)->getFEType(),
-                                                       FERhs,
-                                                       "Vector",
-                                                       this->rhsFuncVec_[i],
-                                                       funcParameter);
-            
-            this->sourceTerm_->getBlockNonConst(i)->exportFromVector( FERhs, false, "Add" );
         }
     }
 //    this->sourceTerm_->scale(-1.); // this scaling is needed for TPM problem
