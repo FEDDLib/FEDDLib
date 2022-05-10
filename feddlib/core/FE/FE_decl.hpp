@@ -219,7 +219,8 @@ class FE {
     void determineEMod(std::string FEType, 
                        MultiVectorPtr_Type solution,
                        MultiVectorPtr_Type &eModVec,
-                       DomainConstPtr_Type domain);
+                       DomainConstPtr_Type domain,
+                       ParameterListPtr_Type params);
     void assemblyLaplaceDiffusion(int Dimension,
                         std::string FEType,
                         int degree,

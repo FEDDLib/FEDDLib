@@ -23,6 +23,7 @@ meshDisplacementNew_rep_(),
 c_rep_(),
 defTS_(defTS),
 timeSteppingTool_(),
+exporterEMod_(),
 materialModel_( parameterListStructure->sublist("Parameter").get("Material model","linear") )
 {
     //this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
@@ -61,14 +62,18 @@ materialModel_( parameterListStructure->sublist("Parameter").get("Material model
     c_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
     //w_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
     //u_minus_w_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
+    exportedEMod_ = false;
+    setUpTimeStep_=false;
+    eModVec_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getElementMap() ) );
+
 }
 
 
 template<class SC,class LO,class GO,class NO>
 SCI<SC,LO,GO,NO>::~SCI()
 {
-    if (!exporterGeo_.is_null()) {
-       exporterGeo_->closeExporter();
+    if (!exporterEMod_.is_null()) {
+       exporterEMod_->closeExporter();
     }
 }
 
@@ -106,19 +111,13 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         this->problemChem_->assemble();
         
         // Elementwise determined E Module
-        MultiVectorPtr_Type eModVec = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getElementMap() ) );
-
         MultiVectorPtr_Type solChemRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapRepeated() ) );
         solChemRep->importFromVector(this->problemChem_->getSolution()->getBlock(0));
 
-        //this->feFactory_->determineEMod(this->getDomain(1)->getFEType(),solChemRep,eModVec,this->getDomain(1));
-
         int dim = this->getDomain(0)->getDimension();
 
-        this->feFactory_->determineEMod(this->getDomain(1)->getFEType(),solChemRep,eModVec,this->getDomain(1));
-        
-        //this->feFactory_->assemblyLinElasXDimE(this->dim_,this->getDomain(0)->getFEType(), K, eModVec, poissonRatio, true);
-        
+        this->feFactory_->determineEMod(this->getDomain(1)->getFEType(),solChemRep,eModVec_,this->getDomain(1),this->parameterList_);
+                
         double nu = this->parameterList_->sublist("Parameter").get("PoissonRatio",0.4);
 
         MatrixPtr_Type A(new Matrix_Type( this->getDomain(1)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) ); // Structure-Matrix
@@ -126,16 +125,17 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         // steady rhs wird hier assembliert.
         // rhsFunc auf 0 (=x) und 0 (=y) abaendern bei LinElas!
         //if (materialModel_=="linear"){
-        this->feFactory_->assemblyLinElasXDimE(this->dim_, this->getDomain(0)->getFEType(), A, eModVec, nu, true);
-        this->problemStructure_->system_->addBlock(A,0,0);
+        this->feFactory_->assemblyLinElasXDimE(this->dim_, this->getDomain(0)->getFEType(), A, eModVec_, nu, true);
+        
+        this->problemStructure_->system_->addBlock(A,0,0);// assemble(); //
             //this->problemStructure_->assemble();
         /*}
         else
             this->problemStructureNonLin_->assemble();*/
       
        
-        MatrixPtr_Type C1_T(new Matrix_Type( this->getDomain(1)->getMapVecFieldUnique(), 1 ) ); // Chem-Kopplung
-        MatrixPtr_Type C1(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) ); // Struktur-Kopplung
+        //MatrixPtr_Type C1_T(new Matrix_Type( this->getDomain(1)->getMapVecFieldUnique(), 1 ) ); // Chem-Kopplung
+        //MatrixPtr_Type C1(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) ); // Struktur-Kopplung
        
         // ###########################
         // Korrekte Skalierung der entsprechenden Bloecke
@@ -155,14 +155,37 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         // Chemistry
         this->system_->addBlock( this->problemChem_->system_->getBlock(0,0), 0, 0 );
        
+
+        
+
+        // Fuer die Zeitprobleme
+        timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_)); 
+        setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructure_->getParameterList());
         // We set the vector from the partial problems
         this->setFromPartialVectorsInit();
         
-        // Fuer die Zeitprobleme
-        timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));      
         
-        setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructure_->getParameterList());
-        
+        if ( this->parameterList_->sublist("Exporter").get("Export EMod", true)){
+            if(exportedEMod_ == false){
+                exporterEMod_ = Teuchos::rcp(new Exporter_Type());
+                
+                DomainConstPtr_Type dom = this->getDomain(1);
+                MultiVectorConstPtr_Type exportVector = eModVec_;
+
+                MeshPtr_Type meshNonConst = Teuchos::rcp_const_cast<Mesh_Type>( dom->getMesh() );
+                exporterEMod_->setup("EModuleValues", meshNonConst, "P0",  this->parameterList_);
+                
+                
+                exporterEMod_->addVariable( exportVector, "EModule", "Scalar", 1, dom->getElementMap() );
+                exporterEMod_->save( 0.0);
+                exportedEMod_ = true;
+            }
+            else {
+                exporterEMod_->save( timeSteppingTool_->t_);
+            }
+        }
+  
+
         if (this->verbose_)
         {
             std::cout << "done -- " << std::endl;
@@ -203,6 +226,35 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             std::cout << "-- set Boundaries" << '\n';
 
         setBoundariesSubProblems();
+        return;
+    }
+    else if(type == "UpdateEMod")
+    {
+        if(this->verbose_)
+            std::cout << "-- set Boundaries" << '\n';
+
+        MultiVectorPtr_Type solChemRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapRepeated() ) );
+        solChemRep->importFromVector(this->problemTimeChem_->getSolution()->getBlock(0));
+
+        int dim = this->getDomain(0)->getDimension();
+
+        this->feFactory_->determineEMod(this->getDomain(1)->getFEType(),solChemRep,eModVec_,this->getDomain(1),this->parameterList_);
+                
+        double nu = this->parameterList_->sublist("Parameter").get("PoissonRatio",0.4);
+
+        MatrixPtr_Type A(new Matrix_Type( this->getDomain(1)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) ); // Structure-Matrix
+
+        // steady rhs wird hier assembliert.
+        // rhsFunc auf 0 (=x) und 0 (=y) abaendern bei LinElas!
+        //if (materialModel_=="linear"){
+        this->feFactory_->assemblyLinElasXDimE(this->dim_, this->getDomain(0)->getFEType(), A, eModVec_, nu, true);
+        
+        this->problemStructure_->system_->addBlock(A,0,0);// assemble(); //
+        this->system_->addBlock( this->problemStructure_->system_->getBlock(0,0), 1, 1);
+
+        exporterEMod_->save( timeSteppingTool_->t_);
+
+
         return;
     }
 
@@ -445,10 +497,10 @@ void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
     }
     if (timeSteppingTool_->currentTime()==0.) {
         vec_dbl_Type tmpcoeffPrevSteps(1, 1. / dt);
-        this->problemTimeChem_->updateMultistepRhsFSI(tmpcoeffPrevSteps,1);/*apply (mass matrix_t / dt) to u_t*/
+        this->problemTimeChem_->updateMultistepRhs(tmpcoeffPrevSteps,1);/*apply (mass matrix_t / dt) to u_t*/
     }
     else{
-        this->problemTimeChem_->updateMultistepRhsFSI(coeffPrevSteps,nmbBDF);/*apply (mass matrix_t / dt) to u_t and more*/
+        this->problemTimeChem_->updateMultistepRhs(coeffPrevSteps,nmbBDF);/*apply (mass matrix_t / dt) to u_t and more*/
     }
 
     // TODO

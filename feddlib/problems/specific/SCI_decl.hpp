@@ -155,7 +155,7 @@ public:
 
     virtual void computeValuesOfInterestAndExport() {} ;
 
-     virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
+    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
     
     virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions) {};
 
@@ -191,7 +191,10 @@ private:
     bool geometryExplicit_;
     ExporterTxtPtr_Type exporterTxtDrag_;
     ExporterTxtPtr_Type exporterTxtLift_;
-    mutable ExporterPtr_Type exporterGeo_;
+    mutable ExporterPtr_Type exporterEMod_;
+    mutable bool exportedEMod_ ;
+    mutable bool setUpTimeStep_;
+    mutable MultiVectorPtr_Type eModVec_;
     /*####################*/
 
 public:

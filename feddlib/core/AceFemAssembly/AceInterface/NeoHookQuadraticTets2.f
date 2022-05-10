@@ -640,7 +640,7 @@ C
       DOUBLE PRECISION v(1060),d(2),ul(3,10),ul0(3,10),xl(3
      &,10),s(30,30),p(30),ht(*),hp(*),sg(*),sg0(*),sxd(30),gpost(64
      &,21),npost(10,6)
-      icode=18
+      icode=19
       call SMSIntPoints(icode,ngpo,gp)
       v(476)=d(2)
       v(479)=d(1)/(2d0*(1d0+v(476)))

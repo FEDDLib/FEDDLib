@@ -982,7 +982,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 	cout << " DiffusionTensor " << endl;
 	for(int i=0; i< dim; i++){
 		for(int j=0; j<dim; j++){
-			cout << " [" << i << "]" << "[" << j << "] = " << diffusionTensor[i][j] ;
+			//cout << " [" << i << "]" << "[" << j << "] = " << diffusionTensor[i][j] ;
 			diffusionT[i][j]=diffusionTensor[i][j];
 
 		}
@@ -3957,7 +3957,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
 
 // Determine the change of emodule depending on concentration
 template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solution,MultiVectorPtr_Type &eModVec, DomainConstPtr_Type domain){
+void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solution,MultiVectorPtr_Type &eModVec, DomainConstPtr_Type domain, 	ParameterListPtr_Type params){
 
 
     ElementsPtr_Type elements = domain->getElementsC();
@@ -3983,9 +3983,11 @@ void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solu
     Teuchos::ArrayRCP< const SC > uArray = solution->getData(0);
     Teuchos::ArrayRCP< SC > eModVecA = eModVec->getDataNonConst(0);
 
-    double E0 = 1000;
-    double E1 = 600;
-    double c1 = 1;
+    double E0 = params->sublist("Parameter").get("E",3.0e+6);
+    double E1 = params->sublist("Parameter").get("E1",1.0e+6);
+    double c1 = 1.;
+    double eModMax =E1;
+    double eModMin = E0;
     for (UN T=0; T<elements->numberElements(); T++) {
    
         buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
@@ -4002,10 +4004,13 @@ void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solu
         }
         //uLoc = uLoc*absDetB;           
 
-        eModVecA[T] = E0-(E0-E1)*(uLoc+c1);
-                //cout << " eMOD " << eModVecA[T] << endl;
-
+        eModVecA[T] = E0-(E0-E1)*(uLoc/(uLoc+c1));
+        if(eModVecA[T] > eModMax )
+            eModMax = eModVecA[T];
+        if(eModVecA[T] < eModMin)
+            eModMin = eModVecA[T];
     }
+    cout << " #################  eMOD Min \t " << eModMin << " eModMax \t " << eModMax<< " ############# " <<endl;
 
 
 }
@@ -4022,7 +4027,6 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
 {
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     int FEloc = this->checkFE(dim,FEType);
-
     // Hole Elemente und Knotenliste
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();

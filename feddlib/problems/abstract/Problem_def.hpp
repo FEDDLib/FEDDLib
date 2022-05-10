@@ -142,6 +142,17 @@ template<class SC,class LO,class GO,class NO>
 void Problem<SC,LO,GO,NO>::addRhsFunction(RhsFunc_Type func){
     this->rhsFuncVec_.push_back(func);
 }
+template<class SC,class LO,class GO,class NO>
+void Problem<SC,LO,GO,NO>::addRhsFunction(RhsFunc_Type func, int i){
+    if(this->rhsFuncVec_.size() <= i+1)
+        this->rhsFuncVec_[i] = func; 
+    else if(this->rhsFuncVec_.size() == i)
+        this->rhsFuncVec_.push_back(func);
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Insertion Index smaller then size of vector");
+
+
+}
 
 template<class SC,class LO,class GO,class NO>
 RhsFunc_Type& Problem<SC,LO,GO,NO>::getRhsFunction( int i){
