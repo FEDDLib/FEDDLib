@@ -3983,25 +3983,29 @@ void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solu
     Teuchos::ArrayRCP< const SC > uArray = solution->getData(0);
     Teuchos::ArrayRCP< SC > eModVecA = eModVec->getDataNonConst(0);
 
-    double E0 = params->sublist("Parameter").get("E",3.0e+6);
-    double E1 = params->sublist("Parameter").get("E1",1.0e+6);
-    double c1 = 1.;
+    double E0 = params->sublist("Parameter Solid").get("E",3.0e+6);
+    double E1 = params->sublist("Parameter Solid").get("E1",3.0e+5);
+    double c1 = params->sublist("Parameter Solid").get("c1",1.0);
     double eModMax =E1;
     double eModMin = E0;
+
+    int nodesElement = elements->getElement(0).getVectorNodeList().size();
     for (UN T=0; T<elements->numberElements(); T++) {
    
-        buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
+        /*buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
         detB = B.computeInverse(Binv);
-        absDetB = std::fabs(detB);
+        absDetB = std::fabs(detB);*/
         
         double uLoc = 0.;
 
-       for (int w=0; w<phi->size(); w++){ //quads points
-            for (int i=0; i < phi->at(0).size(); i++) {
+       //for (int w=0; w<phi->size(); w++){ //quads points
+       //     for (int i=0; i < phi->at(0).size(); i++) {
+            for(int i=0; i< nodesElement;i++){
                 LO index = elements->getElement(T).getNode(i) ;
-                uLoc += weights->at(w)*uArray[index] * phi->at(w).at(i);
-            } 
-        }
+                uLoc += 1./nodesElement*uArray[index];
+            }
+       //     } 
+       // }
         //uLoc = uLoc*absDetB;           
 
         eModVecA[T] = E0-(E0-E1)*(uLoc/(uLoc+c1));
@@ -4010,7 +4014,11 @@ void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solu
         if(eModVecA[T] < eModMin)
             eModMin = eModVecA[T];
     }
-    cout << " #################  eMOD Min \t " << eModMin << " eModMax \t " << eModMax<< " ############# " <<endl;
+    Teuchos::reduceAll<int, double> (*(domain->getComm()), Teuchos::REDUCE_MIN, eModMin, Teuchos::outArg (eModMin));
+    Teuchos::reduceAll<int, double> (*(domain->getComm()), Teuchos::REDUCE_MAX, eModMax, Teuchos::outArg (eModMax));
+
+    if(domain->getComm()->getRank()==0)
+        cout << " #################  eMOD Min: " << eModMin << " \t eModMax: " << eModMax<< " ############# " <<endl;
 
 
 }
@@ -4210,6 +4218,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
 
             for (int i = 0; i < dPhi->at(0).size(); i++)
             {
+                
                 Teuchos::Array<SC> value11( 1, 0. );
                 Teuchos::Array<SC> value12( 1, 0. );
                 Teuchos::Array<SC> value13( 1, 0. );
