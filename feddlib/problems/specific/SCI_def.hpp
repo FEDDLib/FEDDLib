@@ -570,7 +570,6 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     // if(time == 0){nur dann konstanten SourceTerm berechnen}
     if (this->problemTimeStructure_->hasSourceTerm())
     {
-        cout << " Assemble Sourceterm " << endl;
         //this->problemTimeStructure_->getUnderlyingProblem()->addRhsFunction( rhsX3D );
 
         this->problemTimeStructure_->assembleSourceTerm( time );

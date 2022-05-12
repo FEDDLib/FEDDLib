@@ -75,12 +75,44 @@ void inflowChem(double* x, double* res, double t, const double* parameters)
 
 void rhsX(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
-    cout << " force " << parameters[1] << endl;
+    
     res[0] = parameters[1];
     res[1] = 0.;
     res[2] = 0.;
     return;
 }
+
+void rhsY(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[0] = 0.;
+    res[1] =  parameters[1];
+    res[2] = 0.;
+    return;
+}
+
+void rhsZ(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[0] = 0.;
+    res[1] = 0.;
+    res[2] = parameters[1];
+    return;
+}
+
+void rhsYZ(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[0] = 0.;
+    if(parameters[2] == 5)
+        res[1] = parameters[1];
+    else
+        res[1] =0.;
+    if (parameters[2] == 4)
+        res[2] = parameters[1];
+    else
+        res[2] = 0.;
+    return;
+}
+
+
 
 
 
@@ -175,11 +207,15 @@ int main(int argc, char *argv[])
         
         ParameterListPtr_Type parameterListChemAll(new Teuchos::ParameterList(*parameterListPrecChem)) ;
         sublist(parameterListChemAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Chem") );
+        sublist(parameterListChemAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter") );
         parameterListChemAll->setParameters(*parameterListPrecChem);
+
         
         ParameterListPtr_Type parameterListStructureAll(new Teuchos::ParameterList(*parameterListPrecStructure));
         sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Solid") );
         parameterListStructureAll->setParameters(*parameterListPrecStructure);
+        parameterListStructureAll->setParameters(*parameterListProblem);
+
                  
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
         string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
@@ -422,7 +458,7 @@ int main(int argc, char *argv[])
         else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
-                sci.problemStructure_->addRhsFunction( rhsX,0 );
+                sci.problemStructure_->addRhsFunction( rhsYZ,0 );
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
                 double degree = 0.;

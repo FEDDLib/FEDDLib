@@ -154,6 +154,25 @@ void Problem<SC,LO,GO,NO>::addRhsFunction(RhsFunc_Type func, int i){
 
 }
 
+/*template<class SC,class LO,class GO,class NO>
+void Problem<SC,LO,GO,NO>::addRhsFunctionAndFlag(RhsFunc_Type func, int i, int flag){
+
+    TEUCHOS_TEST_FOR_EXCEPTION(!parameterList_->sublist("Parameter").get("Source Type","volume").compare("volume") , std::runtime_error, "Source Type Error: RHS Flags only make sence with surface source type.");
+
+    if(this->rhsFuncVec_.size() <= i+1){
+        this->rhsFuncVec_[i] = func; 
+        this->rhsFuncFlagVec_[i] = flag;
+    }
+    else if(this->rhsFuncVec_.size() == i){
+        this->rhsFuncVec_.push_back(func);
+        this->rhsFuncFlagVec_.push_back(flag);
+    }
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Insertion Index smaller then size of vector");
+
+
+}*/
+
 template<class SC,class LO,class GO,class NO>
 RhsFunc_Type& Problem<SC,LO,GO,NO>::getRhsFunction( int i){
     return rhsFuncVec_[i];
@@ -183,6 +202,7 @@ void Problem<SC,LO,GO,NO>::assembleSourceTerm(double time) const{
     TEUCHOS_TEST_FOR_EXCEPTION(sourceTerm_.is_null(), std::runtime_error, "Initialize source term before you assemble it - sourceTerm pointer is null");
     this->sourceTerm_->putScalar(0.);
     std::string sourceType = parameterList_->sublist("Parameter").get("Source Type","volume");
+
     if ( sourceType == "volume")
         assembleVolumeTerm(time);
     else if( sourceType == "surface")
@@ -234,7 +254,7 @@ void Problem<SC,LO,GO,NO>::assembleSurfaceTerm(double time) const{
         if(this->rhsFuncVec_.size() > i){
 
             if ( !this->rhsFuncVec_[i].empty() ) {
-                
+
                 MultiVectorPtr_Type FERhs;
                 //funcParameter[0] is always the time
                 vec_dbl_Type funcParameter(1,0.);

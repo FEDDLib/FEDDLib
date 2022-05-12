@@ -979,7 +979,6 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 		//diffusionTensor->putScalar(1.);
 	}
 
-	cout << " DiffusionTensor " << endl;
 	for(int i=0; i< dim; i++){
 		for(int j=0; j<dim; j++){
 			//cout << " [" << i << "]" << "[" << j << "] = " << diffusionTensor[i][j] ;
@@ -989,7 +988,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 		cout << endl;
 	}
 	//Teuchos::ArrayRCP< SC >  linearDiff = diffusionTensor->getDataNonConst( 0 );
-	cout << "Assembly Info " << "num Elements " <<  elements->numberElements() << " num Nodes " << pointsRep->size()  << endl;
+	//cout << "Assembly Info " << "num Elements " <<  elements->numberElements() << " num Nodes " << pointsRep->size()  << endl;
     for (UN T=0; T<elements->numberElements(); T++) {
 
         buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
@@ -5819,7 +5818,6 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
     
     // degree of function funcParameter[0]
     TEUCHOS_TEST_FOR_EXCEPTION( funcParameter[funcParameter.size()-1] > 0., std::logic_error, "We only support constant functions for now.");
-    
     UN FEloc = checkFE(dim,FEType);
 
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();

@@ -112,7 +112,9 @@ public:
     /*! Add right hand side function for block i   */
     void addRhsFunction(RhsFunc_Type func,int i);
 
-        
+    /*! Adds rhs function and specifies it so certain flag */
+   // void addRhsFunctionAndFlag(RhsFunc_Type func, int i, int flag);    
+
     RhsFunc_Type& getRhsFunction( int i );
 
     virtual void assemble( std::string type ) const = 0;
