@@ -261,6 +261,90 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	
 }
 
+/*!
+
+ \brief Assembly of Jacobian for nonlinear Elasticity
+@param[in] dim Dimension
+@param[in] FEType FE Discretization
+@param[in] degree Degree of basis function
+@param[in] A Resulting matrix
+@param[in] callFillComplete If Matrix A should be completely filled at end of function
+@param[in] FELocExternal 
+
+*/				
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
+	                                    string FEType,
+	                                    int degree,
+										int dofs,
+										MultiVectorPtr_Type d_rep,
+	                                    BlockMatrixPtr_Type &A,
+										BlockMultiVectorPtr_Type &resVec,
+ 										ParameterListPtr_Type params, 									
+                                        DomainConstPtr_Type domain,
+                                        MultiVectorPtr_Type eModVec,
+	                                    bool callFillComplete,
+	                                    int FELocExternal){
+	
+	ElementsPtr_Type elements = domain->getElementsC();
+
+	int dofsElement = elements->getElement(0).getVectorNodeList().size();
+
+	vec2D_dbl_ptr_Type pointsRep = domain->getPointsRepeated();
+
+	MapConstPtr_Type map = domain->getMapRepeated();
+
+	vec_dbl_Type solution(0);
+	vec_dbl_Type solution_d;
+
+	vec_dbl_Type rhsVec;
+
+	/// Tupel construction follows follwing pattern:
+	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	int numNodes=6;
+	if(dim==3){
+		numNodes=10;
+	}
+	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
+	tuple_ssii_Type displacement ("Displacement",FEType,dofs,numNodes);
+	problemDisk->push_back(displacement);
+
+	if(assemblyFEElements_.size()== 0)
+	 	initAssembleFEElements("NonLinearElasticity",problemDisk,elements, params,pointsRep);
+	else if(assemblyFEElements_.size() != elements->numberElements())
+	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
+	
+    Teuchos::ArrayRCP<SC>  eModVecA = eModVec->getDataNonConst(0);
+
+ 	SmallMatrixPtr_Type elementMatrix;
+	for (UN T=0; T<assemblyFEElements_.size(); T++) {
+		vec_dbl_Type solution(0);
+
+		solution_d = getSolution(elements->getElement(T).getVectorNodeList(), d_rep,dofs);
+
+		solution.insert( solution.end(), solution_d.begin(), solution_d.end() );
+
+		assemblyFEElements_[T]->updateSolution(solution);
+        assemblyFEElements_[T]->updateParameter("E",eModVecA[T]);
+        assemblyFEElements_[T]->assembleJacobian();
+        elementMatrix = assemblyFEElements_[T]->getJacobian();              
+        addFeBlock(A, elementMatrix, elements->getElement(T), map, 0, 0, problemDisk);
+
+        assemblyFEElements_[T]->assembleRHS();
+        rhsVec = assemblyFEElements_[T]->getRHS(); 
+        addFeBlockMv(resVec, rhsVec, elements->getElement(T),  dofs);
+
+        assemblyFEElements_[T]->advanceNewtonStep();
+
+
+	}
+	if (callFillComplete)
+	    A->getBlock(0,0)->fillComplete( domainVec_.at(0)->getMapVecFieldUnique(),domainVec_.at(0)->getMapVecFieldUnique());
+	
+}
+
+
 
 /*!
 
@@ -981,11 +1065,8 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 
 	for(int i=0; i< dim; i++){
 		for(int j=0; j<dim; j++){
-			//cout << " [" << i << "]" << "[" << j << "] = " << diffusionTensor[i][j] ;
 			diffusionT[i][j]=diffusionTensor[i][j];
-
 		}
-		cout << endl;
 	}
 	//Teuchos::ArrayRCP< SC >  linearDiff = diffusionTensor->getDataNonConst( 0 );
 	//cout << "Assembly Info " << "num Elements " <<  elements->numberElements() << " num Nodes " << pointsRep->size()  << endl;

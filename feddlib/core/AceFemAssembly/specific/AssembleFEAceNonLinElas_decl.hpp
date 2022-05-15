@@ -37,6 +37,12 @@ class AssembleFEAceNonLinElas : public AssembleFE<SC,LO,GO,NO> {
 	*/
 	virtual void assembleRHS();	
 
+	/*!
+		\brief Update the parameter read from the ParameterList.
+		@param[in] Parameter as read from the xml file
+	*/
+    virtual void updateParameter(string type, double value);
+
    protected:
 	AssembleFEAceNonLinElas(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); 
    private:

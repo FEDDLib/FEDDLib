@@ -101,12 +101,15 @@ void rhsZ(double* x, double* res, double* parameters){
 void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
+    double force = parameters[1];
+    if(parameters[0] < 2.)
+        force = parameters[1] * force * 0.5;
     if(parameters[2] == 5)
-        res[1] = parameters[1];
+        res[1] = force;
     else
         res[1] =0.;
     if (parameters[2] == 4)
-        res[2] = parameters[1];
+        res[2] = force;
     else
         res[2] = 0.;
     return;
@@ -465,8 +468,15 @@ int main(int argc, char *argv[])
                 sci.problemStructure_->addParemeterRhs( degree );
 
             }
-            else
-                sci.problemStructureNonLin_->addRhsFunction( rhsX,0 );
+            else{
+                
+                sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+                double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
+                sci.problemStructureNonLin_->addParemeterRhs( force );
+                double degree = 0.;
+                sci.problemStructureNonLin_->addParemeterRhs( degree );
+
+            }
             
 
         }

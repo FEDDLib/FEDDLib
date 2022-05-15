@@ -736,7 +736,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     SCIProblemPtr_Type sci = Teuchos::rcp_dynamic_cast<SCIProblem_Type>( this->problemTime_->getUnderlyingProblem() );
     
     bool print = parameterList_->sublist("General").get("ParaViewExport",false);
-    bool printData = parameterList_->sublist("General").get("Export Data",false);
+    bool printData = parameterList_->sublist("General").get("Export Data",true);
     bool printExtraData = parameterList_->sublist("General").get("Export Extra Data",false);
         
     if (print)
@@ -1018,15 +1018,15 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         
         double time = timeSteppingTool_->currentTime() + dt;
         problemTime_->updateTime ( time );        
-        //NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
+        NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
 
-        //nlSolver.solve(*this->problemTime_, time, its);
+        nlSolver.solve(*this->problemTime_, time, its);
         //problemTime_->getSystem()->getBlock(1,1)->print();
 
          // Uebergabeparameter fuer BC noch hinzu nehmen!
-        problemTime_->setBoundaries(time);
+        //problemTime_->setBoundaries(time);
         
-        problemTime_->solve();
+        //problemTime_->solve();
 
         //problemTime_->getSolution()->getBlock(0)->print();
         if (timeSteppingTool_->currentTime() <= dt+1.e-10) 

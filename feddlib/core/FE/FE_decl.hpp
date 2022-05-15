@@ -469,6 +469,19 @@ class FE {
                                     ParameterListPtr_Type params,
                                     bool callFillComplete=true,
                                     int FELocExternal=-1);
+                                    
+    void assemblyNonLinearElasticity(int dim,
+                                    string FEType,
+                                    int degree,
+                                    int dofs,
+                                    MultiVectorPtr_Type d_rep,
+                                    BlockMatrixPtr_Type &A,
+                                    BlockMultiVectorPtr_Type &resVec,
+                                    ParameterListPtr_Type params, 									
+                                    DomainConstPtr_Type domain,
+                                    MultiVectorPtr_Type eModVec,
+                                    bool callFillComplete = true,
+                                    int FELocExternal=-1);
 /* ----------------------------------------------------------------------------------------*/
 private:
 	void addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstColumn,MapConstPtr_Type mapSecondColumn, tuple_disk_vec_ptr_Type problemDisk);

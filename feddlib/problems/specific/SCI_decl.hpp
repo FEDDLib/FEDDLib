@@ -3,7 +3,7 @@
 #include "feddlib/problems/abstract/TimeProblem.hpp"
 #include "feddlib/problems/specific/DiffusionReaction.hpp"
 #include "feddlib/problems/specific/LinElas.hpp"
-#include "feddlib/problems/specific/NonLinElasticity.hpp"
+#include "feddlib/problems/specific/NonLinElasAssFE.hpp"
 #include "feddlib/problems/specific/Geometry.hpp"
 #include "feddlib/problems/Solver/TimeSteppingTools.hpp"
 #include "Xpetra_ThyraUtils.hpp"
@@ -55,7 +55,7 @@ public:
 
     typedef DiffusionReaction<SC,LO,GO,NO> ChemProblem_Type;
     typedef LinElas<SC,LO,GO,NO> StructureProblem_Type;
-    typedef NonLinElasticity<SC,LO,GO,NO> StructureNonLinProblem_Type;
+    typedef NonLinElasAssFE<SC,LO,GO,NO> StructureNonLinProblem_Type;
 
     typedef Teuchos::RCP<ChemProblem_Type> ChemProblemPtr_Type;
     typedef Teuchos::RCP<StructureProblem_Type> StructureProblemPtr_Type;
@@ -157,9 +157,11 @@ public:
 
     virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
     
+    virtual void reAssemble(std::string type) const;
+
     virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions) {};
 
-    virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const {}; //standard or reverse    
+    virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const; //standard or reverse    
     
     /*####################*/
 

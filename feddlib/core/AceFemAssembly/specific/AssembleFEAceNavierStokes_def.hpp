@@ -80,7 +80,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleJacobian() {
 
 		constantMatrix_->add( (*elementMatrixA),(*constantMatrix_));
 
-		assemblyDivAndDivT(elementMatrixB);
+		assemblyDivAndDivT(elementMatrixB); // For Matrix B
 
 		elementMatrixB->scale(-1.);
 
