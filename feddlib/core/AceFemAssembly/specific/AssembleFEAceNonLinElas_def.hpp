@@ -171,7 +171,7 @@ void AssembleFEAceNonLinElas<SC,LO,GO,NO>::assembleRHS() {
 template <class SC, class LO, class GO, class NO>
 void AssembleFEAceNonLinElas<SC,LO,GO,NO>:: updateParameter(string type, double value){
 	if(type == "E")
-		E_ = value;
+		this->E_ = value;
 
 
 }

@@ -130,7 +130,8 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             //this->problemStructure_->assemble();
         }
-        else{           
+        else{  
+            this->problemStructureNonLin_->updateEMod(eModVec_);        
             this->problemStructureNonLin_->assemble(); //system_->addBlock(A,0,0);// assemble(); //                               
         }
 
