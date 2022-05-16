@@ -1020,13 +1020,16 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         problemTime_->updateTime ( time );        
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
 
-        nlSolver.solve(*this->problemTime_, time, its);
+        if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
+            nlSolver.solve(*this->problemTime_, time, its);
+        else{
+            problemTime_->setBoundaries(time);       
+            problemTime_->solve();
+        }
         //problemTime_->getSystem()->getBlock(1,1)->print();
 
          // Uebergabeparameter fuer BC noch hinzu nehmen!
-        //problemTime_->setBoundaries(time);
-        
-        //problemTime_->solve();
+        //
 
         //problemTime_->getSolution()->getBlock(0)->print();
         if (timeSteppingTool_->currentTime() <= dt+1.e-10) 
