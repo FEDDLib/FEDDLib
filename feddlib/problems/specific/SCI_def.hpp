@@ -637,13 +637,13 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     coeffTemp.at(0) = 1.0;
     
     // Update u und berechne u' und u'' mit Hilfe der Newmark-Vorschrift
-    this->problemTimeStructure_->updateSolutionNewmarkPreviousStep(dt, beta, gamma);
+    //this->problemTimeStructure_->updateSolutionNewmarkPreviousStep(dt, beta, gamma);
     
     // Stelle die rechte Seite des zeitdiskretisierten Systems auf (ohne f_{n+1}).
     // Bei Newmark lautet dies:
     // M*[\frac{1}{dt^2*beta}*u_n + \frac{1}{dt*beta}*u'_n + \frac{0.5 - beta}{beta}*u''_n],
     // wobei u' = v (velocity) und u'' = w (acceleration).
-    this->problemTimeStructure_->updateNewmarkRhs(dt, beta, gamma, coeffTemp);
+    //this->problemTimeStructure_->updateNewmarkRhs(dt, beta, gamma, coeffTemp);
     
     //can we get rid of this?
     double time = timeSteppingTool_->currentTime() + dt;
@@ -685,7 +685,7 @@ void SCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
 
             massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
             // 1 = Struktur
-            this->feFactory_->assemblyMass(this->dim_, this->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 1, true);
+            //this->feFactory_->assemblyMass(this->dim_, this->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 1, true);
             massmatrix->resumeFill();
             massmatrix->scale(density);
             massmatrix->fillComplete( this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique());
