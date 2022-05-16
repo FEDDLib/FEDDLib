@@ -51,7 +51,7 @@ void zeroDirichlet(double* x, double* res, double t, const double* parameters)
 
 void reactionFunc(double* x, double* res, double* parameters){
 	
-    double m = 0.001;	
+    double m = 0.0;	
     res[0] = m * x[0];
 
 }
@@ -103,7 +103,7 @@ void rhsYZ(double* x, double* res, double* parameters){
     res[0] = 0.;
     double force = parameters[1];
     double TRamp = 3.;
-    if(parameters[0] < TRamp)
+    if(parameters[0] <= TRamp+1e-06)
         force = parameters[1] * force * 1./(TRamp);
     else
         force = 0.;
@@ -345,9 +345,9 @@ int main(int argc, char *argv[])
 
         vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
         for(int i=0; i<dim; i++){
-            diffusionTensor[0][0] =1;
-            diffusionTensor[1][1] =1;
-            diffusionTensor[2][2] =1;
+            diffusionTensor[0][0] =0.0175;
+            diffusionTensor[1][1] =0.0175;
+            diffusionTensor[2][2] =0.0175;
 
             if(i>0){
                 diffusionTensor[i][i-1] = 0;
