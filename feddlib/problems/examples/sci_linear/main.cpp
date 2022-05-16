@@ -102,8 +102,11 @@ void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
     double force = parameters[1];
-    if(parameters[0] < 2.)
+    if(parameters[0] < 3.)
         force = parameters[1] * force * 0.5;
+    else
+        force = 0.;
+        
     if(parameters[2] == 5)
         res[1] = force;
     else
@@ -468,8 +471,7 @@ int main(int argc, char *argv[])
                 sci.problemStructure_->addParemeterRhs( degree );
 
             }
-            else{
-                
+            else{             
                 sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( force );
