@@ -104,7 +104,7 @@ void rhsYZ(double* x, double* res, double* parameters){
     double force = parameters[1];
     double TRamp = 3.;
     if(parameters[0] < TRamp)
-        force = parameters[1] * force * 1./(TRamp);
+        force =  1./(TRamp*100); // 1/300
     else
         force = 0.;
 
