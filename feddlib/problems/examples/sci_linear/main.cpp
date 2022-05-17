@@ -345,9 +345,9 @@ int main(int argc, char *argv[])
 
         vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
         for(int i=0; i<dim; i++){
-            diffusionTensor[0][0] =0.0175;
-            diffusionTensor[1][1] =0.0175;
-            diffusionTensor[2][2] =0.0175;
+            diffusionTensor[0][0] =0.07;
+            diffusionTensor[1][1] =0.07;
+            diffusionTensor[2][2] =0.07;
 
             if(i>0){
                 diffusionTensor[i][i-1] = 0;

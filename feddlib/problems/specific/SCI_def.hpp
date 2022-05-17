@@ -131,7 +131,8 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             //this->problemStructure_->assemble();
         }
         else{  
-            this->problemStructureNonLin_->updateEMod(eModVec_);        
+            MultiVectorConstPtr_Type eModVecConst = eModVec_;
+            this->problemStructureNonLin_->updateEMod(eModVecConst);        
             this->problemStructureNonLin_->assemble(); //system_->addBlock(A,0,0);// assemble(); //                               
         }
 
@@ -275,9 +276,9 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             //this->problemStructure_->assemble();
         }
         else{
-            this->problemStructureNonLin_->updateEMod(eModVec_);
-            this->problemStructureNonLin_->reAssemble("Newton");
-            this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 2, 2 );                                
+            MultiVectorConstPtr_Type eModVecConst = eModVec_;
+            this->problemStructureNonLin_->updateEMod(eModVecConst);                
+            this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 1, 1 );                                
         }
       
         exporterEMod_->save( timeSteppingTool_->t_);

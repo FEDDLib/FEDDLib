@@ -76,7 +76,7 @@ public:
     
     virtual void computeValuesOfInterestAndExport() {};
     
-    void updateEMod (MultiVectorPtr_Type eModVecNew) {eModVec_ = eModVecNew;};
+    void updateEMod (MultiVectorConstPtr_Type eModVecNew) {eModVec_.reset(new MultiVector_Type (eModVecNew));};
 //    virtual void assembleExternal( std::string type ){};
     
     Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
