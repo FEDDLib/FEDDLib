@@ -1,116 +1,77 @@
-#ifndef ASSEMBLEFEACENAVIERSTOKES_DEF_hpp
-#define ASSEMBLEFEACENAVIERSTOKES_DEF_hpp
+#ifndef ASSEMBLEFENAVIERSTOKESNONNEWTONIAN_DEF_hpp
+#define ASSEMBLEFENAVIERSTOKESNONNEWTONIAN_DEF_hpp
 
-#include "AssembleFEAceNavierStokes_decl.hpp"
+#include "AssembleFENavierStokes_decl.hpp"
 
 namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>
-AssembleFEAceNavierStokes<SC,LO,GO,NO>::AssembleFEAceNavierStokes(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
-AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
+AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>::AssembleFENavierStokesNonNewtonian(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
+AssembleFENavierStokes<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 {
-	int locVelocity=0;
-	int locPressure=0;		
-	if(std::get<0>(this->diskTuple_->at(0))=="Velocity"){
-		locVelocity=0;
-		locPressure=1;
-	}
-	else if(std::get<0>(this->diskTuple_->at(1))=="Velocity"){
-		locVelocity=1;
-		locPressure=0;
-	}
-	else
-    	TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "No discretisation Information for Velocity in Navier Stokes Element." );
-		
-
-	/// Tupel construction follows follwing pattern:
-	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
-	FETypeVelocity_ = std::get<1>(this->diskTuple_->at(locVelocity));
-	FETypePressure_ =std::get<1>(this->diskTuple_->at(locPressure));
-
-	dofsVelocity_ = std::get<2>(this->diskTuple_->at(locVelocity));
-	dofsPressure_ =std::get<2>(this->diskTuple_->at(locPressure));
-
-	numNodesVelocity_ = std::get<3>(this->diskTuple_->at(locVelocity));
-	numNodesPressure_=std::get<3>(this->diskTuple_->at(locPressure));
-
-	dofsElementVelocity_ = dofsVelocity_*numNodesVelocity_;
-	dofsElementPressure_  = dofsPressure_*numNodesPressure_;	
-
-	//this->solution_ = vec_dbl_Type(dofsElementVelocity_); //dofsElementPressure_+
-	this->solutionVelocity_ = vec_dbl_Type(dofsElementVelocity_);
-	this->solutionPressure_ = vec_dbl_Type(dofsElementPressure_);
-
- 	viscosity_ = this->params_->sublist("Parameter").get("Viscosity",1.);
-    density_ = this->params_->sublist("Parameter").get("Density",1.);
-
-	dofsElement_ = dofsElementVelocity_+ dofsElementPressure_;
-
-	SmallMatrix_Type coeff(2);
-	coeff[0][0]=1.; coeff[0][1] = 1.; coeff[1][0] = 1.; coeff[1][1] = 1.;
-	coeff_ = coeff;
+	// All important things are so far defined in AssembleFENavierStokes. Please check there.
 }
 
-template <class SC, class LO, class GO, class NO>
-void AssembleFEAceNavierStokes<SC,LO,GO,NO>::setCoeff(SmallMatrix_Type coeff) {
-	// We only substitute the coefficients if the matrix has the same 
-	// size. In some non timedepenent cases the coeff matrix can be empty. 
-	// We prevent that case.
-	if(coeff.size() == 2)
-		coeff_ = coeff;		
-
-}
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleJacobian() {
+void AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>::assembleJacobian() {
 
-	SmallMatrixPtr_Type elementMatrixN =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
-	SmallMatrixPtr_Type elementMatrixW =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+	SmallMatrixPtr_Type elementMatrixN =Teuchos::rcp( new SmallMatrix_Type( this->dofsElementVelocity_+this->numNodesPressure_));
+	SmallMatrixPtr_Type elementMatrixW =Teuchos::rcp( new SmallMatrix_Type( this->dofsElementVelocity_+this->numNodesPressure_));
 
 	if(this->newtonStep_ ==0){
-		SmallMatrixPtr_Type elementMatrixA =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
-		SmallMatrixPtr_Type elementMatrixB =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+		SmallMatrixPtr_Type elementMatrixA =Teuchos::rcp( new SmallMatrix_Type( this->dofsElementVelocity_+this->numNodesPressure_));
+		SmallMatrixPtr_Type elementMatrixB =Teuchos::rcp( new SmallMatrix_Type( this->dofsElementVelocity_+this->numNodesPressure_));
 
-		constantMatrix_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+		this->constantMatrix_.reset(new SmallMatrix_Type( this->dofsElementVelocity_+this->numNodesPressure_));
 
-		assemblyLaplacian(elementMatrixA);
+		assemblyLaplacian(elementMatrixA); // Here inser new routine
 
-		elementMatrixA->scale(viscosity_);
-		elementMatrixA->scale(density_);
+		elementMatrixA->scale(this->viscosity_);
+		elementMatrixA->scale(this->density_);
 
-		constantMatrix_->add( (*elementMatrixA),(*constantMatrix_));
+		this->constantMatrix_->add( (*elementMatrixA),(*this->constantMatrix_));
 
-		assemblyDivAndDivT(elementMatrixB); // For Matrix B
+		this->assemblyDivAndDivT(elementMatrixB); // For Matrix B
 
 		elementMatrixB->scale(-1.);
 
-		constantMatrix_->add( (*elementMatrixB),(*constantMatrix_));
+		this->constantMatrix_->add( (*elementMatrixB),(*this->constantMatrix_));
     }
 
-	ANB_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_)); // A + B + N
-	ANB_->add( (*constantMatrix_),(*ANB_));
+    // ANB is the FixedPoint Formulation. Matrix A + N for advection part and B for div-Pressure Part.
+	this->ANB_.reset(new SmallMatrix_Type( this->dofsElementVelocity_+this->numNodesPressure_)); // A + B + N
+	this->ANB_->add( ((*this->constantMatrix_)),((*this->ANB_)));
 
-	assemblyAdvection(elementMatrixN);
-	elementMatrixN->scale(density_);
-	ANB_->add( (*elementMatrixN),(*ANB_));
-	assemblyAdvectionInU(elementMatrixW);
-	elementMatrixW->scale(density_);
+	this->assemblyAdvection(elementMatrixN);
+	elementMatrixN->scale(this->density_);
+	this->ANB_->add( (*elementMatrixN),((*this->ANB_)));
+
+    // If linearization is not FixdPoint (so NOX or Newton) we add the derivative to the Jacobian matrix. Otherwise the FixedPoint formulation becomes the jacobian.
+    if(this->linearization_ != "FixedPoint"){
+	    this->assemblyAdvectionInU(elementMatrixW);
+	    elementMatrixW->scale(this->density_);
+    }
 
 	//elementMatrix->add((*constantMatrix_),(*elementMatrix));
-	this->jacobian_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+	this->jacobian_.reset(new SmallMatrix_Type( this->dofsElementVelocity_+this->numNodesPressure_));
 
-	this->jacobian_->add((*ANB_),(*this->jacobian_));
-	this->jacobian_->add((*elementMatrixW),(*this->jacobian_));  // int add(SmallMatrix<T> &bMat, SmallMatrix<T> &cMat); //this+B=C elementMatrix + constantMatrix_;
+	this->jacobian_->add((*this->ANB_),(*this->jacobian_));
+    // If the linearization is Newtons Method we need to add W-Matrix
+    if(this->linearization_ != "FixedPoint"){
+    	this->jacobian_->add((*elementMatrixW),(*this->jacobian_));  // int add(SmallMatrix<T> &bMat, SmallMatrix<T> &cMat); //this+B=C elementMatrix + constantMatrix_;
+    }
 }
 
+// Laplacian in  ' \Delta u ' sense. Here apply new assembly :D  
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type &elementMatrix) {
+void AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type &elementMatrix) {
 
 	int dim = this->getDim();
-	int numNodes= numNodesVelocity_;
+	int numNodes= this->numNodesVelocity_;
 	int Grad =2; // Needs to be fixed	
-	string FEType = FETypeVelocity_;
-	int dofs = dofsVelocity_;
+	string FEType = this->FETypeVelocity_;
+	int dofs = this->dofsVelocity_;
 
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
@@ -151,41 +112,39 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Ty
     }
 }
 
+// Here update please to unlinearized System Matrix accordingly.
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assembleRHS(){
+void AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>::assembleRHS(){
 
-	SmallMatrixPtr_Type elementMatrixN =Teuchos::rcp( new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_));
+	SmallMatrixPtr_Type elementMatrixN =Teuchos::rcp( new SmallMatrix_Type( this->dofsElementVelocity_+this->numNodesPressure_));
 
-	ANB_.reset(new SmallMatrix_Type( dofsElementVelocity_+numNodesPressure_)); // A + B + N
-	ANB_->add( (*constantMatrix_),(*ANB_));
+	this->ANB_.reset(new SmallMatrix_Type( this->dofsElementVelocity_+this->numNodesPressure_)); // A + B + N
+	this->ANB_->add( (*this->constantMatrix_),(*this->ANB_));
 
-	assemblyAdvection(elementMatrixN);
-	elementMatrixN->scale(density_);
-	ANB_->add( (*elementMatrixN),(*ANB_));
+	this->assemblyAdvection(elementMatrixN);
+	elementMatrixN->scale(this->density_);
+	this->ANB_->add( (*elementMatrixN),(*this->ANB_));
 
-	this->rhsVec_ = vec_dbl_Type(dofsElement_,0);
-	// Multiplying ANB_ * solution
+	this->rhsVec_ = vec_dbl_Type(this->dofsElement_,0);
+	// Multiplying ANB_ * solution // System Matrix times solution
 	int s=0,t=0;
-	for(int i=0 ; i< ANB_->size();i++){
-		if (i >= dofsElementVelocity_)
+	for(int i=0 ; i< this->ANB_->size();i++){
+		if (i >= this->dofsElementVelocity_)
 			s=1;
-		for(int j=0; j < ANB_->size(); j++){
-			if(j >= dofsElementVelocity_)
+		for(int j=0; j < this->ANB_->size(); j++){
+			if(j >= this->dofsElementVelocity_)
 				t=1;
-			this->rhsVec_[i] += (*ANB_)[i][j]*this->solution_[j]*coeff_[s][t];
+			this->rhsVec_[i] += (*this->ANB_)[i][j]*this->solution_[j]*this->coeff_[s][t];
 			//cout <<"Solution["<<j <<"]" << this->solution_[i] << endl;
 		}
 		t=0;
 		//cout <<"RHS["<<i <<"]" << this->rhsVec_[i] << endl;
 	}
-
-	//this->jacobian_ = ANB_; // int add(SmallMatrix<T> &bMat, SmallMatrix<T> &cMat); //this+B=C elementMatrix + constantMatrix_;
-
 }
 
-
+/*
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Type &elementMatrix){
+void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Type &elementMatrix){
 
 	int dim = this->getDim();
 	int numNodes= numNodesVelocity_;
@@ -240,10 +199,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Ty
 				}
             }
             value[j] *= absDetB;
-
-            /*if (setZeros_ && std::fabs(value[j]) < myeps_) {
-                value[j] = 0.;
-            }*/
+         
 
      
 		}
@@ -255,11 +211,11 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Ty
         
     }
 
-}
+}*/
 
-
+/*
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Type &elementMatrix){
+void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Type &elementMatrix){
 
 	int dim = this->getDim();
 	int numNodes= numNodesVelocity_;
@@ -326,12 +282,12 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr
           
         }
     }
-}
+}*/
  
 
-
+/*
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyDivAndDivT(SmallMatrixPtr_Type &elementMatrix) {
+void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyDivAndDivT(SmallMatrixPtr_Type &elementMatrix) {
 
     vec3D_dbl_ptr_Type 	dPhi;
     vec2D_dbl_ptr_Type 	phi;
@@ -415,10 +371,10 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyDivAndDivT(SmallMatrixPtr_T
             BTmat->insertGlobalValues( row, indices(), valueVec[d]() );
         }
 
-    }*/
+    }
 
 
-}
+}*/
 
 
 /*!
@@ -430,7 +386,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::assemblyDivAndDivT(SmallMatrixPtr_T
 */
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceNavierStokes<SC,LO,GO,NO>::buildTransformation(SmallMatrix<SC>& B){
+void AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>::buildTransformation(SmallMatrix<SC>& B){
 
     TEUCHOS_TEST_FOR_EXCEPTION( (B.size()<2 || B.size()>3), std::logic_error, "Initialize SmallMatrix for transformation.");
     UN index;
@@ -445,7 +401,7 @@ void AssembleFEAceNavierStokes<SC,LO,GO,NO>::buildTransformation(SmallMatrix<SC>
 }
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceNavierStokes<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,
+void AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,
                                     vec3D_dbl_Type& dPhiOut,
                                     SmallMatrix<SC>& Binv){
     UN dim = Binv.size();

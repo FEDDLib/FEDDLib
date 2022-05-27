@@ -11,7 +11,7 @@
 #include "Domain.hpp"
 #include "sms.hpp"
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
-#include "feddlib/core/AceFemAssembly/specific/AssembleFEAceNavierStokes_decl.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokes_decl.hpp"
 #include "feddlib/core/AceFemAssembly/AssembleFEFactory.hpp"
 
 #include <Teuchos_Array.hpp>
@@ -80,8 +80,8 @@ class FE {
 	typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
     typedef Teuchos::RCP<AssembleFE_Type> AssembleFEPtr_Type;
 
-	typedef AssembleFEAceNavierStokes<SC,LO,GO,NO> AssembleFEAceNavierStokes_Type;
-    typedef Teuchos::RCP<AssembleFEAceNavierStokes_Type> AssembleFEAceNavierStokesPtr_Type;
+	typedef AssembleFENavierStokes<SC,LO,GO,NO> AssembleFENavierStokes_Type;
+    typedef Teuchos::RCP<AssembleFENavierStokes_Type> AssembleFENavierStokesPtr_Type;
 
     typedef std::vector<AssembleFEPtr_Type> AssembleFEPtr_vec_Type;	
 

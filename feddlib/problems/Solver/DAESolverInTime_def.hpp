@@ -433,7 +433,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinear(){
         BlockMultiVectorPtrArray_Type       solutionPrevStages;
         
         BlockMatrixPtr_Type blockMatrix = Teuchos::rcp( new BlockMatrix_Type( problemTime_->getSystem()->size() ) );
-        problemTime_->reAssembleAndFill( blockMatrix );
+        problemTime_->reAssembleAndFill( blockMatrix ); // Reassemble FixedPoint
         
         matrixPrevStages.push_back( blockMatrix );
         

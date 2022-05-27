@@ -425,9 +425,13 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int dofs;
-	int numVelo=6;
+	int numVelo=3;
+    if(FETypeVelocity == "P2")
+        numVelo=6;
 	if(dim==3){
-		numVelo=10;
+		numVelo=4;
+        if(FETypeVelocity == "P2")
+            numVelo=10;
 	}
 	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
 	tuple_ssii_Type vel ("Velocity",FETypeVelocity,dofsVelocity,numVelo);
@@ -435,8 +439,12 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 	problemDisk->push_back(vel);
 	problemDisk->push_back(pres);
 
-	if(assemblyFEElements_.size()== 0)
-	 	initAssembleFEElements("NavierStokes",problemDisk,elements, params,pointsRep);
+	if(assemblyFEElements_.size()== 0){
+        if(params->sublist("Parameter").get("Newtonian",true) == false)
+	 	    initAssembleFEElements("NavierStokesNonNewtonian",problemDisk,elements, params,pointsRep); // In cas of non Newtonian Fluid
+        else
+        	initAssembleFEElements("NavierStokes",problemDisk,elements, params,pointsRep);
+    }
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
 
@@ -462,27 +470,38 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 		assemblyFEElements_[T]->updateSolution(solution);
  
  		SmallMatrixPtr_Type elementMatrix;
-		if(assembleMode == "Jacobian" || assembleMode == "FixedPoint"){
+
+		if(assembleMode == "Jacobian"){
 			assemblyFEElements_[T]->assembleJacobian();
-		    elementMatrix = assemblyFEElements_[T]->getJacobian(); 
-			if(assembleMode == "FixedPoint"){
-         	   AssembleFEAceNavierStokesPtr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFEAceNavierStokes_Type>(assemblyFEElements_[T] );
-			   elTmp->assembleRHS();
-			   elementMatrix = elTmp->getFixedPointMatrix(); 
-			}
+		    
+            elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+
+			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
+
+			if(reAssemble)
+				addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
 			else
-				assemblyFEElements_[T]->advanceNewtonStep();
+				addFeBlockMatrix(A, elementMatrix, elements->getElement(T), mapVel, mapPres, problemDisk);
+		}
+   		if(assembleMode == "FixedPoint"){
+
+            AssembleFENavierStokesPtr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFENavierStokes_Type>(assemblyFEElements_[T] );
+            
+            elTmp->assembleFixedPoint();
+		    
+            elementMatrix = elTmp->getFixedPointMatrix(); 
+
+			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
 
 			if(reAssemble)
 				addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
 			else
 				addFeBlockMatrix(A, elementMatrix, elements->getElement(T), mapVel, mapPres, problemDisk);
 
-
-		}
+        }
 		if(assembleMode == "Rhs"){
-			AssembleFEAceNavierStokesPtr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFEAceNavierStokes_Type>(assemblyFEElements_[T] );
-			elTmp->setCoeff(coeff);
+			AssembleFENavierStokesPtr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFENavierStokes_Type>(assemblyFEElements_[T] );
+			elTmp->setCoeff(coeff);// Coeffs from time discretization. Right now default [1][1] // [0][0]
 		    assemblyFEElements_[T]->assembleRHS();
 		    rhsVec = assemblyFEElements_[T]->getRHS(); 
 			addFeBlockMv(resVecRep, rhsVec, elements->getElement(T),elementsPres->getElement(T), dofsVelocity,dofsPressure);
@@ -490,7 +509,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 			
 	}
-	if (callFillComplete && reAssemble )
+	if (callFillComplete && reAssemble && assembleMode != "Rhs" )
 	    A->getBlock(0,0)->fillComplete( domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocVel)->getMapVecFieldUnique());
 	else if(callFillComplete && !reAssemble && assembleMode != "Rhs"){
 		A->getBlock(0,0)->fillComplete();

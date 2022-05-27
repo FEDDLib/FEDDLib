@@ -1,6 +1,6 @@
-#ifndef ASSEMBLEFEACENAVIERSTOKES_hpp
-#define ASSEMBLEFEACENAVIERSTOKES_hpp
-#include "AssembleFEAceNavierStokes_decl.hpp"
+#ifndef ASSEMBLEFENAVIERSTOKES_hpp
+#define ASSEMBLEFENAVIERSTOKES_hpp
+#include "AssembleFENavierStokes_decl.hpp"
 // #ifndef HAVE_EXPLICIT_INSTANTIATION
 //     #include "AssembleFEAceNavierStokes_def.hpp"
 // #endif

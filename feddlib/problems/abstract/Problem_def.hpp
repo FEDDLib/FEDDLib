@@ -98,8 +98,7 @@ void Problem<SC,LO,GO,NO>::infoProblem(){
         std::cout << "\t ### ### ###" << std::endl;
         std::cout << "\t ### Preconditioner Information ###" << std::endl;
         std::cout << "\t ### Type: " << parameterList_->sublist("General").get("Preconditioner Method","Monolithic") << std::endl;
-        std::cout << "\t ### Prec.: " << pListThyraPrec->get("Preconditioner Type", "Chameleon") << std::endl;
-        
+        std::cout << "\t ### Prec.: " << pListThyraPrec->get("Preconditioner Type", "FROSch") << std::endl;        
         
         if ( !pListThyraPrec->get("Preconditioner Type","FROSch").compare("FROSch") && parameterList_->sublist("General").get("Preconditioner Method","Monolithic") == "Monolithic") {
             std::cout << "\t ### Variant: " << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("FROSch Preconditioner Type","TwoLevelBlockPreconditioner") << std::endl;

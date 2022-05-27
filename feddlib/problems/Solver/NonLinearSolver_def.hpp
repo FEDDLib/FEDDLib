@@ -497,7 +497,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
                 break;
         }
 
-        // Systems are combine in reAssemble("Newton")
+        // Systems are combined in reAssemble("Newton")
         problem.assemble("Newton"); // Nothing should happen here.
         
         problem.setBoundariesSystem();

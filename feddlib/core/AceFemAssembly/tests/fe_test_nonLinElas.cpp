@@ -121,7 +121,6 @@ int main(int argc, char *argv[]) {
                                                   
 
     }
-    f->print();
     cout << " ... done " << endl;
     //A->print();
 	// Class for assembling linear Elasticity via Acefem implementation
@@ -138,7 +137,6 @@ int main(int argc, char *argv[]) {
         fe_test.assemblyNonLinElas(dim, FEType, 2,dofs,d_rep, A_test,f_test,params,false,"Rhs",true);
         
     }
-    f_test->print();
     cout << " ... done " << endl;
 
 	//A_test->print();
@@ -197,20 +195,19 @@ int main(int argc, char *argv[]) {
 			}	
 		}	
 	}
+		    
+	//MultiVectorPtr_Type A_AssMV;
+	//MultiVectorPtr_Type A_AssFEMV;
 	
+	//A->toMV( A_AssMV );
+	//A_test->toMV( A_AssFEMV ); // A_test is Acegen
 
-	    
-	MultiVectorPtr_Type A_AssMV;
-	MultiVectorPtr_Type A_AssFEMV;
-	
-	A->toMV( A_AssMV );
-	A_test->toMV( A_AssFEMV ); // A_test is Acegen
+	//Teuchos::Array<SC> normMatrix(1); 
+   // A_AssMV->normInf(normMatrix);
 
-	Teuchos::Array<SC> normMatrix(1); 
-    A_AssMV->normInf(normMatrix);
-	double resInfA = normMatrix[0];
-    A_AssFEMV->normInf(normMatrix);
-    double resInfA_test = normMatrix[0];
+	//Teuchos::Array<SC> normMatrix2(1); 
+    //A_AssFEMV->normInf(normMatrix2);
+
     
 	reduceAll<int, double> (*comm, REDUCE_MAX, res, outArg (res));
 
@@ -219,47 +216,15 @@ int main(int argc, char *argv[]) {
 	reduceAll<int, int> (*comm, REDUCE_MIN, essentEqual, outArg (essentEqual));
 
 	if(comm->getRank() == 0){
-		cout << "Max Difference between StiffnessMatrices:\t \t \t " << res << endl;
-		cout << "Max Difference between StiffnessMatrices relative to A: \t \t " << res/resInfA << endl;
-		cout << "Max Difference between StiffnessMatrices relative to A from AceGen: \t " << res/resInfA_test << endl;
+		cout << "Max Difference between StiffnessMatrices:\t \t \t \t" << res << endl;
+		//cout << "Max Difference between StiffnessMatrices relative to A: \t \t " << res/normMatrix[0] << endl;
+		//cout << "Max Difference between StiffnessMatrices relative to A from AceGen: \t " << res/normMatrix[0] << endl;
 
 		if( essentEqual >0)
 			cout << "Matrices are essentially equal" << endl;
 		if( approxEqual >0)
 			cout << "Matrices are approximately equal" <<  endl;
 	}
-
-	MultiVectorPtr_Type errorValuesRhsVec = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( f->getMap()) ); 
-	
-    MultiVectorConstPtr_Type f_const = f;
-    MultiVectorConstPtr_Type f_test_const = f_test;
-
-    // Calculating the error per node
-
-    //this = alpha*A + beta*B + gamma*this
-    errorValuesRhsVec->update( 1., f_const, 1. ,f_test_const, 0.);
-
-    // Taking abs norm
-    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > errorValuesAbs = errorValuesRhsVec;
-    errorValuesRhsVec->abs(errorValuesAbs);
-
-    Teuchos::Array<SC> norm(1); 
-    errorValuesRhsVec->normInf(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
-    res = norm[0];
-    if(comm->getRank() ==0)
-        cout << "Inf Norm of Error of right-hand sides " << res << endl;
-    double infNormError = res;
-
-    f->normInf(norm);
-    res = norm[0];
-    if(comm->getRank() ==0)
-        cout << " Relative error Norm of rhs nonlinear elasticity " << infNormError/res << endl;
-
-    f_test->normInf(norm);
-    res = norm[0];
-    if(comm->getRank() ==0)
-        cout << " Relative error Norm of rhs nonlinear elasticity assemFE " << infNormError/res << endl;
-    
 
     return(EXIT_SUCCESS);
 }
