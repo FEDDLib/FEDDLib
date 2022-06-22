@@ -1,15 +1,15 @@
 <ParameterList name="Problem">
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="2"/>
-        <Parameter name="Discretization Velocity" type="string" value="P1"/><!--P1, P2; velocity -->
+        <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
         <Parameter name="Discretization Pressure" type="string" value="P1"/>
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
         <Parameter name="BC Type" type="string" value="partialCFD"/><!-- parabolic, parabolic_benchmark, partialCFD-->
         <Parameter name="Mesh Delimiter" type="string" value=" "/>
-	<Parameter name="H/h" type="int" value="1.0"/>
+        <Parameter name="H/h" type="int" value="3"/>
         <Parameter name="Symmetric gradient" type="bool" value="false"/>
-        <Parameter name="Viscosity" type="double" value="1.0e-2"/> <!-- kinematic Viscosity-->
-        <Parameter name="Density" type="double" value="1000"/>
+        <Parameter name="Viscosity" type="double" value="1.0e-3"/>
+        <Parameter name="Density" type="double" value="1.0"/>
         <Parameter name="MaxVelocity" type="double" value="1.0"/>
         <Parameter name="MeanVelocity" type="double"   value="0.2"/>
         <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
@@ -25,7 +25,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="rectangleCouette.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h008.mesh"/>
     </ParameterList>
     <ParameterList name="Exporter">
         
@@ -41,7 +41,7 @@
     
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
-        <Parameter name="Linearization" type="string" value="FixedPoint"/> <!-- FixedPoint, Newton, NOX-->
+        <Parameter name="Linearization" type="string" value="Newton"/> <!-- FixedPoint, Newton, NOX-->
         <Parameter name="ParaViewExport" type="bool" value="true"/>
         <Parameter name="ParaViewCoarse" type="bool" value="false"/>
         <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>

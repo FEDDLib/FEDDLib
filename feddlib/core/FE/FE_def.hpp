@@ -424,10 +424,10 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
-	int dofs;
 	int numVelo=3;
     if(FETypeVelocity == "P2")
         numVelo=6;
+        
 	if(dim==3){
 		numVelo=4;
         if(FETypeVelocity == "P2")

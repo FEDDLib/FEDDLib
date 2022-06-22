@@ -211,7 +211,7 @@ namespace FEDD {
         vec2D_dbl_Type nodesRefConfig_;
         bool timeProblem_;
         int flag_;
-        double timeStep_ ;
+        double timeStep_ ; 
         int newtonStep_ ;
         ParameterListPtr_Type paramsMaterial_;
         ParameterListPtr_Type params_;
