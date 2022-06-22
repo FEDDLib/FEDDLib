@@ -11,7 +11,7 @@
 #include "Domain.hpp"
 #include "sms.hpp"
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
-#include "feddlib/core/AceFemAssembly/specific/AssembleFEAceNavierStokes_decl.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokes_decl.hpp"
 #include "feddlib/core/AceFemAssembly/AssembleFEFactory.hpp"
 
 #include <Teuchos_Array.hpp>
@@ -80,8 +80,8 @@ class FE {
 	typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
     typedef Teuchos::RCP<AssembleFE_Type> AssembleFEPtr_Type;
 
-	typedef AssembleFEAceNavierStokes<SC,LO,GO,NO> AssembleFEAceNavierStokes_Type;
-    typedef Teuchos::RCP<AssembleFEAceNavierStokes_Type> AssembleFEAceNavierStokesPtr_Type;
+	typedef AssembleFENavierStokes<SC,LO,GO,NO> AssembleFENavierStokes_Type;
+    typedef Teuchos::RCP<AssembleFENavierStokes_Type> AssembleFENavierStokesPtr_Type;
 
     typedef std::vector<AssembleFEPtr_Type> AssembleFEPtr_vec_Type;	
 
@@ -219,7 +219,8 @@ class FE {
     void determineEMod(std::string FEType, 
                        MultiVectorPtr_Type solution,
                        MultiVectorPtr_Type &eModVec,
-                       DomainConstPtr_Type domain);
+                       DomainConstPtr_Type domain,
+                       ParameterListPtr_Type params);
     void assemblyLaplaceDiffusion(int Dimension,
                         std::string FEType,
                         int degree,
@@ -467,6 +468,19 @@ class FE {
                                     BlockMultiVectorPtr_Type &resVec,
                                     ParameterListPtr_Type params,
                                     bool callFillComplete=true,
+                                    int FELocExternal=-1);
+                                    
+    void assemblyNonLinearElasticity(int dim,
+                                    string FEType,
+                                    int degree,
+                                    int dofs,
+                                    MultiVectorPtr_Type d_rep,
+                                    BlockMatrixPtr_Type &A,
+                                    BlockMultiVectorPtr_Type &resVec,
+                                    ParameterListPtr_Type params, 									
+                                    DomainConstPtr_Type domain,
+                                    MultiVectorPtr_Type eModVec,
+                                    bool callFillComplete = true,
                                     int FELocExternal=-1);
 /* ----------------------------------------------------------------------------------------*/
 private:

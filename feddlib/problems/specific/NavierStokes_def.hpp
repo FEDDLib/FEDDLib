@@ -736,7 +736,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
 
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
-    
     this->reAssemble("FixedPoint");
 
     // We need to account for different parameters of time discretizations here

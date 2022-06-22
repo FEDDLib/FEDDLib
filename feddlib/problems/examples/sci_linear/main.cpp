@@ -51,7 +51,7 @@ void zeroDirichlet(double* x, double* res, double t, const double* parameters)
 
 void reactionFunc(double* x, double* res, double* parameters){
 	
-    double m = 10.;	
+    double m = 0.0;	
     res[0] = m * x[0];
 
 }
@@ -75,12 +75,51 @@ void inflowChem(double* x, double* res, double t, const double* parameters)
 
 void rhsX(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
-    cout << " force " << parameters[1] << endl;
+    
     res[0] = parameters[1];
     res[1] = 0.;
     res[2] = 0.;
     return;
 }
+
+void rhsY(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[0] = 0.;
+    res[1] =  parameters[1];
+    res[2] = 0.;
+    return;
+}
+
+void rhsZ(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[0] = 0.;
+    res[1] = 0.;
+    res[2] = parameters[1];
+    return;
+}
+
+void rhsYZ(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[0] = 0.;
+    double force = parameters[1];
+    double TRamp = 3.;
+    if(parameters[0] <= TRamp+1e-06)
+        force = parameters[1] * force * 1./(TRamp);
+    else
+        force = 0.;
+
+    if(parameters[2] == 5)
+        res[1] = force;
+    else
+        res[1] =0.;
+    if (parameters[2] == 4)
+        res[2] = force;
+    else
+        res[2] = 0.;
+    return;
+}
+
+
 
 
 
@@ -175,11 +214,15 @@ int main(int argc, char *argv[])
         
         ParameterListPtr_Type parameterListChemAll(new Teuchos::ParameterList(*parameterListPrecChem)) ;
         sublist(parameterListChemAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Chem") );
+        sublist(parameterListChemAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter") );
         parameterListChemAll->setParameters(*parameterListPrecChem);
+
         
         ParameterListPtr_Type parameterListStructureAll(new Teuchos::ParameterList(*parameterListPrecStructure));
         sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Solid") );
         parameterListStructureAll->setParameters(*parameterListPrecStructure);
+        parameterListStructureAll->setParameters(*parameterListProblem);
+
                  
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
         string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
@@ -248,6 +291,27 @@ int main(int argc, char *argv[])
             domainChem = domainP1chem;
         }
 
+       // ########################
+        // Flags check
+        // ########################
+
+		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaF(new ExporterParaView<SC,LO,GO,NO>());
+
+		Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapUnique()));
+		vec_int_ptr_Type BCFlags = domainStructure->getBCFlagUnique();
+
+		Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
+		for(int i=0; i< entries.size(); i++){
+			entries[i] = BCFlags->at(i);
+		}
+
+		Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+		exParaF->setup("Flags", domainStructure->getMesh(), discType);
+
+		exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
+
+		exParaF->save(0.0);
 
 
         if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
@@ -281,9 +345,9 @@ int main(int argc, char *argv[])
 
         vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
         for(int i=0; i<dim; i++){
-            diffusionTensor[0][0] =1;
-            diffusionTensor[1][1] =1;
-            diffusionTensor[2][2] =1;
+            diffusionTensor[0][0] =0.07;
+            diffusionTensor[1][1] =0.07;
+            diffusionTensor[2][2] =0.07;
 
             if(i>0){
                 diffusionTensor[i][i-1] = 0;
@@ -297,9 +361,9 @@ int main(int argc, char *argv[])
 
         defTS.reset( new SmallMatrix<int> (2) );
 
-        // structure
+        // Chem
         (*defTS)[0][0] = 1;
-        // chem
+        // Structure
         (*defTS)[1][1] = 1;
 
 
@@ -326,27 +390,28 @@ int main(int argc, char *argv[])
 
             bcFactory->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1); // inflow of Chem
             bcFactory->addBC(inflowChem, 1, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-
-            bcFactory->addBC(zeroDirichlet, 2, 0, domainChem, "Dirichlet", 1);
+            bcFactory->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);            		
+            //bcFactory->addBC(zeroDirichlet, 8, 0, domainChem, "Dirichlet", 1);
+            bcFactory->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
+            /*bcFactory->addBC(zeroDirichlet, 2, 0, domainChem, "Dirichlet", 1);
             bcFactory->addBC(zeroDirichlet, 3, 0, domainChem, "Dirichlet", 1);            
             bcFactory->addBC(zeroDirichlet, 4, 0, domainChem, "Dirichlet", 1);            
             bcFactory->addBC(zeroDirichlet, 5, 0, domainChem, "Dirichlet", 1);            
-            bcFactory->addBC(zeroDirichlet, 6, 0, domainChem, "Dirichlet", 1);            
-            bcFactory->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);            		
-            bcFactory->addBC(zeroDirichlet, 8, 0, domainChem, "Dirichlet", 1);
-            bcFactory->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
+           // bcFactory->addBC(zeroDirichlet, 6, 0, domainChem, "Dirichlet", 1);            
+            */
             
             bcFactoryChem->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1); // inflow of Chem
             bcFactoryChem->addBC(inflowChem, 1, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            
-            bcFactoryChem->addBC(zeroDirichlet, 2, 0, domainChem, "Dirichlet", 1);
+            bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);            		
+            bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
+           /* bcFactoryChem->addBC(zeroDirichlet, 2, 0, domainChem, "Dirichlet", 1);
             bcFactoryChem->addBC(zeroDirichlet, 3, 0, domainChem, "Dirichlet", 1);            
             bcFactoryChem->addBC(zeroDirichlet, 4, 0, domainChem, "Dirichlet", 1);            
             bcFactoryChem->addBC(zeroDirichlet, 5, 0, domainChem, "Dirichlet", 1);            
-            bcFactoryChem->addBC(zeroDirichlet, 6, 0, domainChem, "Dirichlet", 1);            
-            bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);            		
+            //bcFactoryChem->addBC(zeroDirichlet, 6, 0, domainChem, "Dirichlet", 1);
             bcFactoryChem->addBC(zeroDirichlet, 8, 0, domainChem, "Dirichlet", 1);
-            bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
+            
+            */
         }
 
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
@@ -364,13 +429,13 @@ int main(int argc, char *argv[])
         else if(dim == 3)
         {
 
-            bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
-            bcFactory->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
-            bcFactory->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
-            bcFactory->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet", dim);
-            bcFactory->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
-            bcFactory->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
-            bcFactory->addBC(zeroDirichlet2D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
+            bcFactory->addBC(zeroDirichlet, 1, 1, domainStructure, "Dirichlet_X", dim);
+            bcFactory->addBC(zeroDirichlet, 2, 1, domainStructure, "Dirichlet_Y", dim);
+            bcFactory->addBC(zeroDirichlet, 3, 1, domainStructure, "Dirichlet_Z", dim);
+            bcFactory->addBC(zeroDirichlet3D, 0, 1, domainStructure, "Dirichlet", dim);
+            bcFactory->addBC(zeroDirichlet2D, 7, 1, domainStructure, "Dirichlet_X_Y", dim);
+            bcFactory->addBC(zeroDirichlet2D, 8, 1, domainStructure, "Dirichlet_Y_Z", dim);
+            bcFactory->addBC(zeroDirichlet2D, 9, 1, domainStructure, "Dirichlet_X_Z", dim);
             
             bcFactoryStructure->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
             bcFactoryStructure->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
@@ -392,23 +457,29 @@ int main(int argc, char *argv[])
         // RHS dummy for structure
         if (dim==2) {
             if (!sci.problemStructure_.is_null())
-                sci.problemStructure_->addRhsFunction( rhsX );
+                sci.problemStructure_->addRhsFunction( rhsX,0 );
             else
-                sci.problemStructureNonLin_->addRhsFunction( rhsX );
+                sci.problemStructureNonLin_->addRhsFunction( rhsX,0 );
             
         }
         else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
-                sci.problemStructure_->addRhsFunction( rhsX );
-                double force = parameterListAll->sublist("Parameter").get("Volume force",0.);
+                sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+                double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
                 double degree = 0.;
                 sci.problemStructure_->addParemeterRhs( degree );
 
             }
-            else
-                sci.problemStructureNonLin_->addRhsFunction( rhsX );
+            else{             
+                sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+                double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
+                sci.problemStructureNonLin_->addParemeterRhs( force );
+                double degree = 0.;
+                sci.problemStructureNonLin_->addParemeterRhs( degree );
+
+            }
             
 
         }

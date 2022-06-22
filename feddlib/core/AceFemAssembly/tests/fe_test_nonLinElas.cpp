@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
 	d_rep->putScalar(solConst);
     MatrixPtr_Type A= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) ); // Jacobi Matrix
     MultiVectorPtr_Type f = Teuchos::rcp( new MultiVector_Type( domain->getMapVecFieldRepeated(), 1 ) ); // RHS vector
-
+    cout << " FEDDLib Implementation .... " << endl;
     {
         //fe.assemblyElasticityJacobianAndStressAceFEM(dim, domain->getFEType(), A, f, d_rep, params, 1);
         fe.assemblyElasticityJacobianAceFEM(dim, domain->getFEType(), A,d_rep, "Neo-Hooke",youngModulus,poissonRatio,1.,true);
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
                                                   
 
     }
-    f->print();
+    cout << " ... done " << endl;
     //A->print();
 	// Class for assembling linear Elasticity via Acefem implementation
  	FE_Test<SC,LO,GO,NO> fe_test;
@@ -129,12 +129,16 @@ int main(int argc, char *argv[]) {
     
     MatrixPtr_Type A_test= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(),domain->getDimension() * domain->getApproxEntriesPerRow()   ) );
     MultiVectorPtr_Type f_test = Teuchos::rcp( new MultiVector_Type( domain->getMapVecFieldRepeated(), 1 ) ); // RHS vector
+    
+    cout << " ACEGen Implementation .... " << endl;
+
     {
         fe_test.assemblyNonLinElas(dim, FEType, 2,dofs,d_rep, A_test,f_test,params,false,"Jacobian",true);
         fe_test.assemblyNonLinElas(dim, FEType, 2,dofs,d_rep, A_test,f_test,params,false,"Rhs",true);
         
     }
-    f_test->print();
+    cout << " ... done " << endl;
+
 	//A_test->print();
 
     // Comparing matrices
@@ -191,7 +195,20 @@ int main(int argc, char *argv[]) {
 			}	
 		}	
 	}
+		    
+	//MultiVectorPtr_Type A_AssMV;
+	//MultiVectorPtr_Type A_AssFEMV;
+	
+	//A->toMV( A_AssMV );
+	//A_test->toMV( A_AssFEMV ); // A_test is Acegen
 
+	//Teuchos::Array<SC> normMatrix(1); 
+   // A_AssMV->normInf(normMatrix);
+
+	//Teuchos::Array<SC> normMatrix2(1); 
+    //A_AssFEMV->normInf(normMatrix2);
+
+    
 	reduceAll<int, double> (*comm, REDUCE_MAX, res, outArg (res));
 
 	reduceAll<int, int> (*comm, REDUCE_MIN, approxEqual, outArg (approxEqual));
@@ -199,43 +216,15 @@ int main(int argc, char *argv[]) {
 	reduceAll<int, int> (*comm, REDUCE_MIN, essentEqual, outArg (essentEqual));
 
 	if(comm->getRank() == 0){
-		cout << "Max Difference between StiffnessMatrices: " << res << endl;
+		cout << "Max Difference between StiffnessMatrices:\t \t \t \t" << res << endl;
+		//cout << "Max Difference between StiffnessMatrices relative to A: \t \t " << res/normMatrix[0] << endl;
+		//cout << "Max Difference between StiffnessMatrices relative to A from AceGen: \t " << res/normMatrix[0] << endl;
+
 		if( essentEqual >0)
 			cout << "Matrices are essentially equal" << endl;
 		if( approxEqual >0)
 			cout << "Matrices are approximately equal" <<  endl;
 	}
-
-
-    MultiVectorConstPtr_Type f_const = f;
-    MultiVectorConstPtr_Type f_test_const = f_test;
-
-    // Calculating the error per node
-    Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValuesRhsVec = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( f->getMap() ) ); 
-    //this = alpha*A + beta*B + gamma*this
-    errorValuesRhsVec->update( 1., f_const, -1. ,f_test_const, 0.);
-
-    // Taking abs norm
-    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > errorValuesAbs = errorValuesRhsVec;
-    errorValuesRhsVec->abs(errorValuesAbs);
-
-    Teuchos::Array<SC> norm(1); 
-    errorValuesRhsVec->normInf(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
-    res = norm[0];
-    if(comm->getRank() ==0)
-        cout << " Inf Norm of Error of right-hand sides " << res << endl;
-    double infNormError = res;
-
-    /*f->norm2(norm);
-    res = norm[0];
-    if(comm->getRank() ==0)
-        cout << " Relative error Norm of rhs nonlinear elasticity " << infNormError/res << endl;
-
-    f_test->norm2(norm);
-    res = norm[0];
-    if(comm->getRank() ==0)
-        cout << " Relative error Norm of rhs nonlinear elasticity assemFE " << infNormError/res << endl;
-    */
 
     return(EXIT_SUCCESS);
 }

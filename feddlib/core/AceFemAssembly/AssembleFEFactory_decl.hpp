@@ -7,7 +7,8 @@
 #include "feddlib/core/AceFemAssembly/specific/AssembleFEAceLaplace.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFEAceLinElas.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFEAceNonLinElas.hpp"
-#include "feddlib/core/AceFemAssembly/specific/AssembleFEAceNavierStokes.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokes.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian.hpp"
 namespace FEDD {
 
     /*!

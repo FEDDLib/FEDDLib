@@ -25,7 +25,11 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 		assembleFE = assembleFESpecific;
 	}
 	else if(problemType == "NavierStokes"){
-		Teuchos::RCP<AssembleFEAceNavierStokes<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceNavierStokes<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		Teuchos::RCP<AssembleFENavierStokes<SC,LO,GO,NO>> assembleFESpecific(new AssembleFENavierStokes<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		assembleFE = assembleFESpecific;
+	}
+	else if(problemType == "NavierStokesNonNewtonian"){
+		Teuchos::RCP<AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>> assembleFESpecific(new AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
 	else if(problemType == "LinearElasticity"){
@@ -36,6 +40,7 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 		Teuchos::RCP<AssembleFEAceNonLinElas<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceNonLinElas<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
+
 	else
     		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "No specific implementation for your request.");
 

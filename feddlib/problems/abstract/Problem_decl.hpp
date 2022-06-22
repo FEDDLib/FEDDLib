@@ -102,9 +102,19 @@ public:
 
     void addVariable(const DomainConstPtr_Type &domain, std::string FEType, std::string name, int dofsPerNode);
 
-    /*! Add right hand side function for each block, if you want to skip a block add a dummy function*/
+    /*! Add right hand side function for each block, if you want to skip a block add a dummy function
+        -> Error Warning. In case initializeProblem() is called beforehand the rhsVec is already initialized with a certain size.
+        --> This leads to a problem, if addRhsFunction is called after, as it is a push_back operation.
+    
+    */
     void addRhsFunction(RhsFunc_Type func);
-        
+
+    /*! Add right hand side function for block i   */
+    void addRhsFunction(RhsFunc_Type func,int i);
+
+    /*! Adds rhs function and specifies it so certain flag */
+   // void addRhsFunctionAndFlag(RhsFunc_Type func, int i, int flag);    
+
     RhsFunc_Type& getRhsFunction( int i );
 
     virtual void assemble( std::string type ) const = 0;

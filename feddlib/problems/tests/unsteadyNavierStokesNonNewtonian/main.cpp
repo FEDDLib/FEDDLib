@@ -271,11 +271,7 @@ int main(int argc, char *argv[]) {
                 bcFactory->addBC(zeroDirichlet3D, 2, 0, domainVelocity, "Dirichlet", dim);
                 
             }
-
-            
-
-            
-//          
+   
                      
             int timeDisc = parameterListProblem->sublist("Timestepping Parameter").get("Butcher table",0);
 
@@ -288,28 +284,6 @@ int main(int argc, char *argv[]) {
 
             daeTimeSolver.defineTimeStepping(defTS);
 
-			// ###########################################################################################################
-			// OLD ASSEMBLY
-			MAIN_TIMER_START(FE," Old: Solve equation");
-            NavierStokes<SC,LO,GO,NO> navierStokes( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
-
-            navierStokes.addBoundaries(bcFactory);
-            
-            navierStokes.initializeProblem();
-            
-            navierStokes.assemble();
-
-            navierStokes.setBoundariesRHS();
-
-            daeTimeSolver.setProblem(navierStokes);
-
-            daeTimeSolver.setupTimeStepping();
-
-            daeTimeSolver.advanceInTime();
-			MAIN_TIMER_STOP(FE);	
-
-			// ###########################################################################################################
-
 			DAESolverInTime<SC,LO,GO,NO> daeTimeSolverAssFE(parameterListAll, comm);
 
 
@@ -319,16 +293,16 @@ int main(int argc, char *argv[]) {
 			// New Assembly
 			MAIN_TIMER_START(FE_test," New: Solve equation");
 
-  			NavierStokesAssFE<SC,LO,GO,NO> navierStokesAssFE( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
-			navierStokesAssFE.addBoundaries(bcFactory);
+  			NavierStokesAssFE<SC,LO,GO,NO> navierStokesFE( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
+			navierStokesFE.addBoundaries(bcFactory);
             
-            navierStokesAssFE.initializeProblem();
+            navierStokesFE.initializeProblem();
             
-            navierStokesAssFE.assemble();
+            navierStokesFE.assemble();
 
-            navierStokesAssFE.setBoundariesRHS();
+            navierStokesFE.setBoundariesRHS();
 
-            daeTimeSolverAssFE.setProblem(navierStokesAssFE);
+            daeTimeSolverAssFE.setProblem(navierStokesFE);
 
             daeTimeSolverAssFE.setupTimeStepping();
 
@@ -336,69 +310,6 @@ int main(int argc, char *argv[]) {
 			MAIN_TIMER_STOP(FE_test);	
 			Teuchos::TimeMonitor::report(cout,"Main");
 			// ###########################################################################################################
-
-
-			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());
-            Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaPressure(new ExporterParaView<SC,LO,GO,NO>());
-
-            Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = navierStokes.getSolution()->getBlock(0);
-            Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = navierStokes.getSolution()->getBlock(1);
-
-            Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionVAssFE = navierStokesAssFE.getSolution()->getBlock(0);
-            Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionPAssFE = navierStokesAssFE.getSolution()->getBlock(1);
-
-
-
-
-			// Calculating the error per node
-			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValues = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( navierStokes.getSolution()->getBlock(0)->getMap() ) ); 
-			//this = alpha*A + beta*B + gamma*this
-			errorValues->update( 1., exportSolutionV, -1. ,exportSolutionVAssFE, 0.);
-
-			// Taking abs norm
-			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > errorValuesAbs = errorValues;
-
-			errorValues->abs(errorValuesAbs);
-
- 			Teuchos::Array<SC> norm(1); 
-    		errorValues->norm2(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
-			double res = norm[0];
-			if(comm->getRank() ==0)
-				cout << " 2 Norm of Error of Solution Velocity " << res << endl;
-			double NormError = res;
-		
-			navierStokes.getSolution()->norm2(norm);
-			res = norm[0];
-			if(comm->getRank() ==0)
-				cout << " 2 rel. Norm to solution navier stokes " << NormError/res << endl;
-
-			navierStokesAssFE.getSolution()->norm2(norm);
-			res = norm[0];
-			if(comm->getRank() ==0)
-				cout << " 2 rel. Norm to solutions navier stokes assemFE " << NormError/res << endl;
-
-            DomainPtr_Type dom = domainVelocity;
-
-            exParaVelocity->setup("velocity", dom->getMesh(), dom->getFEType());
-                                
-            UN dofsPerNode = dim;
-            exParaVelocity->addVariable(exportSolutionV, "u", "Vector", dofsPerNode, dom->getMapUnique());
-            exParaVelocity->addVariable(exportSolutionVAssFE, "uAssFE", "Vector", dofsPerNode, dom->getMapUnique());
-            exParaVelocity->addVariable(errorValuesAbs, "u-uAssFE", "Vector", dofsPerNode, dom->getMapUnique());
-
-            dom = domainPressure;
-            exParaPressure->setup("pressure", dom->getMesh(), dom->getFEType());
-
-            exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getMapUnique());
-            exParaPressure->addVariable(exportSolutionPAssFE, "pAssFE", "Scalar", 1, dom->getMapUnique());
-
-
-            exParaVelocity->save(0.0);
-            exParaPressure->save(0.0); 	
-
-
-           //TEUCHOS_TEST_FOR_EXCEPTION( infNormError > 1e-11 , std::logic_error, "Inf Norm of Error between calculated solutions is too great. Exceeded 1e-11. ");
-
 
         }
     }

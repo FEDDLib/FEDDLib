@@ -70,7 +70,7 @@ void DiffusionReaction<SC,LO,GO,NO>::assembleConstantMatrices( std::string type 
     }
 
     this->feFactory_->assemblyLinearReactionTerm( this->dim_, this->domain_FEType_vec_.at(0), N,  true, param, reactionFunc_);
-
+    N->scale(-1.0);
     MatrixPtr_Type AN = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
 
     N->addMatrix(1.,AN,0.);

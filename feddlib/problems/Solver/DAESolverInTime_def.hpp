@@ -433,7 +433,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinear(){
         BlockMultiVectorPtrArray_Type       solutionPrevStages;
         
         BlockMatrixPtr_Type blockMatrix = Teuchos::rcp( new BlockMatrix_Type( problemTime_->getSystem()->size() ) );
-        problemTime_->reAssembleAndFill( blockMatrix );
+        problemTime_->reAssembleAndFill( blockMatrix ); // Reassemble FixedPoint
         
         matrixPrevStages.push_back( blockMatrix );
         
@@ -736,7 +736,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     SCIProblemPtr_Type sci = Teuchos::rcp_dynamic_cast<SCIProblem_Type>( this->problemTime_->getUnderlyingProblem() );
     
     bool print = parameterList_->sublist("General").get("ParaViewExport",false);
-    bool printData = parameterList_->sublist("General").get("Export Data",false);
+    bool printData = parameterList_->sublist("General").get("Export Data",true);
     bool printExtraData = parameterList_->sublist("General").get("Export Extra Data",false);
         
     if (print)
@@ -786,7 +786,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     }
     
     // Notwendige Parameter
-    int sizeSCI = timeStepDef_.size();
+    int sizeSCI = 2; //timeStepDef_.size();
 
     // ACHTUNG
     int sizeChem = 1; //  c
@@ -804,7 +804,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     SmallMatrix<double> problemCoeffChem(sizeChem);
     double coeffSourceTermChem = 0.0;
 
-    for (int i=0; i<sizeChem; i++) {
+    /*for (int i=0; i<sizeChem; i++) {
         for (int j=0; j<sizeChem; j++) {
             if (timeStepDef_[i][j]>0 && i==j) {
                 massCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
@@ -824,8 +824,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
                 problemCoeffChem[i][j] = 1.;
             }
         }
-    }
-
+    }*/
+    
+    massCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(0) / dt; // 3/(2\Delta t)
+    problemCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(1); // 1
+    coeffSourceTermChem = timeSteppingTool_->getInformationBDF(1); // 1
 
     // ######################
     // Struktur: Mass-, Problem, SourceTerm Koeffizienten
@@ -836,7 +839,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     double coeffSourceTermStructure = 0.0; // Koeffizient fuer den Source-Term (= rechte Seite der DGL); mit Null initialisieren
 
     // Koeffizient vor der Massematrix
-    for(int i = 0; i < sizeStructure; i++)
+    /*for(int i = 0; i < sizeStructure; i++)
     {
         for(int j = 0; j < sizeStructure; j++)
         {
@@ -852,11 +855,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
                 massCoeffStructure[i][j] = 0.;
             }
         }
-    }
-
+    }*/
     
     // Die anderen beiden Koeffizienten
-    for(int i = 0; i < sizeStructure; i++)
+    /*for(int i = 0; i < sizeStructure; i++)
     {
         for(int j = 0; j < sizeStructure; j++)
         {
@@ -871,7 +873,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
                 problemCoeffStructure[i][j] = 1.0;
             }
         }
-    }
+    }*/
+
+    massCoeffStructure[0][0] = 1.0/(dt*dt*beta);
+    problemCoeffStructure[0][0] =  1.0;
+    coeffSourceTermStructure = 1.0; // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
 
 
     // ######################
@@ -912,6 +918,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     // Time loop
     // ######################
 
+
+    double inflowRamp = parameterList_->sublist("Parameter").get("Inflow Ramp",0.01);
     while(timeSteppingTool_->continueTimeStepping())
     {
         problemTime_->updateTime ( timeSteppingTool_->currentTime() );
@@ -922,7 +930,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // immer die korrekten previousSolution_ haben.
         // TODO: Vermutlich reicht lediglich (da erstmal nur BDF2):
         // this->problemTime_->updateSolutionMultiPreviousStep(nmbBDF);
-        if(nmbBDF<2 && !parameterList_->sublist("General").get("Linearization","FixedPoint").compare("Extrapolation"))
+        if(nmbBDF<2  && !parameterList_->sublist("General").get("Linearization","FixedPoint").compare("Extrapolation"))
         {// we need the last two solution for a second order extrapolation.
             if (timeSteppingTool_->currentTime() != 0.0)
             {
@@ -933,10 +941,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
                 this->problemTime_->updateSolutionMultiPreviousStep(1);
             }
         }
-        //else
-        //{
-          //  this->problemTime_->updateSolutionMultiPreviousStep(nmbBDF);
-        //}
+        else
+        {
+          this->problemTime_->updateSolutionMultiPreviousStep(nmbBDF);
+        }
         
 
         // Alte Gitterbewegung mit der Geometrieloesung ueberschreiben.
@@ -1010,17 +1018,21 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         
         double time = timeSteppingTool_->currentTime() + dt;
         problemTime_->updateTime ( time );        
-        //NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
+        NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
 
-        //nlSolver.solve(*this->problemTime_, time, its);
+        if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
+            nlSolver.solve(*this->problemTime_, time, its);
+        else{
+            problemTime_->setBoundaries(time);       
+            problemTime_->solve();
+
+            }
         //problemTime_->getSystem()->getBlock(1,1)->print();
 
          // Uebergabeparameter fuer BC noch hinzu nehmen!
-        problemTime_->setBoundaries(time);
-        
-        problemTime_->solve();
+        //
 
-
+        //problemTime_->getSolution()->getBlock(0)->print();
         if (timeSteppingTool_->currentTime() <= dt+1.e-10) 
         {
             for (int i = 0; i < sizeChem; i++)
@@ -1032,10 +1044,13 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
         }
         
-        this->problemTime_->computeValuesOfInterestAndExport();
+        //this->problemTime_->computeValuesOfInterestAndExport();
 
         timeSteppingTool_->advanceTime(true);//output info);
-        this->problemTime_->assemble("UpdateTime"); // Zeit in FSI inkrementieren
+        this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
+        if(timeSteppingTool_->t_ >= inflowRamp)
+            this->problemTime_->assemble("UpdateEMod");
+
         if (printData) {
             exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
             exporterIterations->exportData( (*its)[0] );

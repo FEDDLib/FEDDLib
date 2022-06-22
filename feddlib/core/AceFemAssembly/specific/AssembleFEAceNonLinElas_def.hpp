@@ -168,6 +168,14 @@ void AssembleFEAceNonLinElas<SC,LO,GO,NO>::assembleRHS() {
 
 	this->rhsVec_ = p;
 }
+template <class SC, class LO, class GO, class NO>
+void AssembleFEAceNonLinElas<SC,LO,GO,NO>:: updateParameter(string type, double value){
+	if(type == "E")
+		this->E_ = value;
+
+
+}
+
 
 }
 #endif

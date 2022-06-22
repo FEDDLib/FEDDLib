@@ -5,7 +5,7 @@
         <Parameter name="Discretization Pressure" type="string" value="P1"/>
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
         <Parameter name="BC Type" type="string"   value="partialCFD"/><!-- parabolic, parabolic_benchmark, partialCFD, parabolic_benchmark_sin-->
-        <Parameter name="Compute Inflow" type="bool" value="true"/>
+        <Parameter name="Newtonian" type="bool" value="false"/>
         <Parameter name="Mesh Delimiter" type="string" value=" "/>
         <Parameter name="H/h" type="int" value="3"/>
         <Parameter name="Viscosity" type="double" value=".001"/>
@@ -29,7 +29,7 @@
     <ParameterList name="Mesh Partitioner">
         
         <Parameter name="Contiguous" type="bool" value="true"/>        
-        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h008.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h004.mesh"/>
     </ParameterList>
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
@@ -48,7 +48,7 @@
         <Parameter name="Correct pressure"                      type="bool"         value="false"/>
         <Parameter name="Semi implicit pressure"                type="bool"         value="false"/>
         <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
-        <Parameter name="Final time"	                    	type="double"   	value="0.2"/>
+        <Parameter name="Final time"	                    	type="double"   	value="0.3"/>
         <Parameter name="dt"			                    	type="double"   	value="0.1"/>
         <!-- adaptive variables -->
         <Parameter name="Print Solution Short" type="bool" value="true"/>

@@ -15,7 +15,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="square_h02.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="square.mesh"/>
     </ParameterList>
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse"		                type="int"      value="0"/>

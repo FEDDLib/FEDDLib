@@ -1,5 +1,5 @@
-#ifndef ASSEMBLEFEACENAVIERSTOKES_DECL_hpp
-#define ASSEMBLEFEACENAVIERSTOKES_DECL_hpp
+#ifndef ASSEMBLEFENAVIERSTOKES_DECL_hpp
+#define ASSEMBLEFENAVIERSTOKES_DECL_hpp
 
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
 #include "feddlib/core/AceFemAssembly/Helper.hpp"
@@ -10,7 +10,7 @@
 namespace FEDD {
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
+class AssembleFENavierStokes : public AssembleFE<SC,LO,GO,NO> {
   public:
 
     typedef Matrix<SC,LO,GO,NO> Matrix_Type;
@@ -35,13 +35,16 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	*/
 	virtual void assembleRHS();
 
+	void setCoeff(SmallMatrix_Type coeff);
+
+	/*! 
+	\brief Assembly of FixedPoint- Matrix (System Matrix K with current u) 
+	*/
+	void assembleFixedPoint();
+
 	SmallMatrixPtr_Type getFixedPointMatrix(){return ANB_;};
 
-	void setCoeff(SmallMatrix_Type coeff);
    protected:
-
-
-   private:
 
 	/*!
 
@@ -52,7 +55,7 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	@param[in] params Parameterlist for current problem
 	@param[in] tuple vector of element information tuples. 
 	*/
-	AssembleFEAceNavierStokes(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,tuple_disk_vec_ptr_Type tuple); 
+	AssembleFENavierStokes(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,tuple_disk_vec_ptr_Type tuple); 
 
 	/*!
 
@@ -84,8 +87,6 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 
 	*/
 	void assemblyDivAndDivT(SmallMatrixPtr_Type &elementMatrix);
-
-
 
     friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 
@@ -122,7 +123,11 @@ class AssembleFEAceNavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	SmallMatrix_Type coeff_;
 
 	double viscosity_ ;
-   	 double density_ ;
+   	double density_ ;
+
+	string linearization_;
+
+   private:
 
 	
  };

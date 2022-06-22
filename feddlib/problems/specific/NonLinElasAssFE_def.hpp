@@ -25,7 +25,7 @@ u_rep_()
     C_ = this->parameterList_->sublist("Parameter").get("C",1.);
     
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
-    
+    eModVec_.reset(new MultiVector_Type(domain->getElementMap(),1));
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -93,22 +93,12 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         MultiVectorPtr_Type fRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) ); 
         fRep->putScalar(0.);   
         this->residualVec_->addBlock( fRep, 0 ); 
-        this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,true);
-        MatrixPtr_Type V = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+        if(this->parameterList_->sublist("Parameter").get("SCI",false) == true)
+       		 this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,this->getDomain(0), this->eModVec_,true);
+       	else 
+ 			this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,true);
         fRep->scale(-1.);
-        this->feFactory_->assemblyElasticityJacobianAndStressAceFEM(this->dim_, this->getDomain(0)->getFEType(), V, f, u_rep_, this->parameterList_, C_);
         
-        Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValues = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( fRep->getMap() ) ); 
-        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > fConst = f; 
-        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > fRepConst = fRep; 
-
-		//this = alpha*A + beta*B + gamma*this
-		errorValues->update( 1., fRepConst, -1. , fConst,0.);
-        Teuchos::Array<SC> norm(1); 
-    	errorValues->normInf(norm);
-        cout << " \n " << endl;
-        cout << "############### Difference between RHS " << norm[0]  << " ############### " << endl;
-
         MultiVectorPtr_Type fUnique = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
         fUnique->putScalar(0.);
         fUnique->exportFromVector( fRep, true, "Add" );

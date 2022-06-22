@@ -52,7 +52,6 @@ time_(0.)
     systemMass_.reset(new BlockMatrix_Type(1));
     systemCombined_.reset( new BlockMatrix_Type( 1 ) );
 
-    
 }
 
 template<class SC,class LO,class GO,class NO>
