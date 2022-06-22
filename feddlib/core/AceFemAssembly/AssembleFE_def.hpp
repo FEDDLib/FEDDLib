@@ -68,6 +68,7 @@ void AssembleFE<SC,LO,GO,NO>::updateParams( ParameterListPtr_Type params){
 
 template <class SC, class LO, class GO, class NO>
 void AssembleFE<SC,LO,GO,NO>::advanceInTime( double dt){
+	timeIncrement_= dt;
 	timeStep_ = timeStep_ + dt;
 
 };
@@ -98,6 +99,8 @@ void AssembleFE<SC,LO,GO,NO>::updateSolution( vec_dbl_Type solution){
 	solution_ = solution;
 
 };
+
+
 
 
 template <class SC, class LO, class GO, class NO>

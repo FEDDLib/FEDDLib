@@ -176,6 +176,12 @@ namespace FEDD {
         */
 		tuple_sd_vec_ptr_Type getTupleElement(){return elementIntormation_;};
 
+        /*!
+         \brief Returns the time increment. Required by AceGen implementation.
+            \return timeIncrement
+        */
+        double getTimeIncrement(){return timeIncrement_;};
+
     protected:
 
         /*!
@@ -211,6 +217,7 @@ namespace FEDD {
         ParameterListPtr_Type paramsMaterial_;
         ParameterListPtr_Type params_;
         vec_dbl_Type solution_ ;
+        double timeIncrement_;
 
         friend class AssembleFEFactory<SC,LO,GO,NO>;
     };

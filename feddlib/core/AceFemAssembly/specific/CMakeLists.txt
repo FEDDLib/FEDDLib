@@ -11,6 +11,9 @@ SET(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/AssembleFEAceNonLinElas_decl.hpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas_def.hpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas.hpp
+	AceFemAssembly/specific/AssembleFEAceDeformDiffu_decl.hpp
+	AceFemAssembly/specific/AssembleFEAceDeformDiffu_def.hpp
+	AceFemAssembly/specific/AssembleFEAceDeformDiffu.hpp
 CACHE INTERNAL "")
 
 SET(AceFemAssemblySpecific_SOURCES
@@ -18,6 +21,7 @@ SET(AceFemAssemblySpecific_SOURCES
 	AceFemAssembly/specific/AssembleFEAceNavierStokes.cpp
 	AceFemAssembly/specific/AssembleFEAceLinElas.cpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas.cpp
+	AceFemAssembly/specific/AssembleFEAceDeformDiffu.cpp
 CACHE INTERNAL "")
 
 
