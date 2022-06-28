@@ -63,6 +63,8 @@ template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
     // If timestepping class is external, it is assumed that the full timedependent problem matrix and rhs are assembled during the assemble call(s)
     std::string timestepping = parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep");
+    std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
+
     if (type == "MassSystem"){
         // is not used in FSI
         // systemMass_ wird gebaut (Massematrix), welche schon mit der Dichte \rho skaliert wurde
@@ -73,7 +75,7 @@ void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
         if (!nonLinProb.is_null()){// we combine the nonlinear system with the mass matrix in the NonLinearSolver after the reassembly of each linear system
         }
         else{
-            if (timestepping=="External")
+            if (timestepping=="External" || couplingType == "implicit")
                 this->systemCombined_ = problem_->getSystem();
             else
                 this->combineSystems();
@@ -82,7 +84,7 @@ void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
     else{
         //we need to tell the problem about the last solution if we use extrapolation!
         problem_->assemble(type);
-        if (timestepping=="External")
+        if (timestepping=="External"|| couplingType == "implicit")
             this->systemCombined_ = problem_->getSystem();
         else
             this->combineSystems();

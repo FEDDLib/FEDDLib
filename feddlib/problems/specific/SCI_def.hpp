@@ -601,7 +601,7 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
     this->problemTimeChem_->systemMass_.reset(new BlockMatrix_Type(size));
     {
         massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
-        // 0 = Chem
+        // 1 = Chem
         this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 0, true );
         massmatrix->resumeFill();
         massmatrix->scale(density);
@@ -768,6 +768,9 @@ void SCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
             //this->feFactory_->assemblyMass(this->dim_, this->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 1, true);
             massmatrix->resumeFill();
             massmatrix->scale(density);
+            if(loadStepping_ == true)
+                massmatrix->scale(0.0);
+
             massmatrix->fillComplete( this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique());
 
             this->problemTimeStructure_->systemMass_->addBlock( massmatrix, 0, 0 );

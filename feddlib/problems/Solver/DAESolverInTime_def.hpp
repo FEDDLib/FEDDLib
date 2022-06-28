@@ -971,8 +971,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
         MatrixPtr_Type massmatrix;
         sci->setChemMassmatrix( massmatrix );
-        if(externalMassChem == false)
-             this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
+        this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
         
 
         // RHS nach BDF2

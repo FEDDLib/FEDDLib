@@ -115,8 +115,6 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 	{
 		for(int i = 0; i < 40; i++){
 			this->rhsVec_[i] = p[i];
-			if(this->rhsVec_[i] > 1.e-03)
-				cout << "rhsvec " << this->rhsVec_[i] << endl;
 		}	
 	}
 	else
