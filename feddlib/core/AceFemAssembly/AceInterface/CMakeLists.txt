@@ -1,6 +1,7 @@
 SET(AceFemAssemblyAceInterface_HEADERS
 	AceFemAssembly/AceInterface/NeoHookQuadraticTets.hpp
   AceFemAssembly/AceInterface/NeoHookQuadraticTets2.hpp
+   AceFemAssembly/AceInterface/DeformationDiffusionNeoHook.hpp
   AceFemAssembly/AceInterface/sms.h
   AceFemAssembly/AceInterface/bdata.h
   AceFemAssembly/AceInterface/pdata6.h
@@ -24,6 +25,8 @@ SET(AceFemAssemblyAceInterface_SOURCES
   AceFemAssembly/AceInterface/NeoHookQuadraticTets_cbinding.f
   AceFemAssembly/AceInterface/NeoHookQuadraticTets2.f
   AceFemAssembly/AceInterface/NeoHookQuadraticTets2_cbinding.f
+  AceFemAssembly/AceInterface/DeformationDiffusionNeoHook.f
+  AceFemAssembly/AceInterface/DeformationDiffusionNeoHook_cbinding.f
 	AceFemAssembly/AceInterface/SMSUtility.f
 CACHE INTERNAL "")
 

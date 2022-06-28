@@ -103,10 +103,10 @@ void rhsYZ(double* x, double* res, double* parameters){
     res[0] = 0.;
     double force = parameters[1];
     double TRamp = 3.;
-    if(parameters[0] <= TRamp+1e-06)
-        force = parameters[1] * force * 1./(TRamp);
-    else
-        force = 0.;
+    //if(parameters[0] <= TRamp+1e-06)
+    //    force = parameters[1] * force * 1./(TRamp);
+    //else
+    //    force = 0.;
 
     if(parameters[2] == 5)
         res[1] = force;
@@ -380,43 +380,7 @@ int main(int argc, char *argv[])
         Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) ); 
             
         Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryChem( new BCBuilder<SC,LO,GO,NO>( ) ); 
-        if (dim==2)
-        {
-                TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Only 3D Test available");                               
-                            
-        }
-        else if(dim==3)
-        {
-
-            bcFactory->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactory->addBC(inflowChem, 1, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactory->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);            		
-            //bcFactory->addBC(zeroDirichlet, 8, 0, domainChem, "Dirichlet", 1);
-            bcFactory->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
-            /*bcFactory->addBC(zeroDirichlet, 2, 0, domainChem, "Dirichlet", 1);
-            bcFactory->addBC(zeroDirichlet, 3, 0, domainChem, "Dirichlet", 1);            
-            bcFactory->addBC(zeroDirichlet, 4, 0, domainChem, "Dirichlet", 1);            
-            bcFactory->addBC(zeroDirichlet, 5, 0, domainChem, "Dirichlet", 1);            
-           // bcFactory->addBC(zeroDirichlet, 6, 0, domainChem, "Dirichlet", 1);            
-            */
-            
-            bcFactoryChem->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactoryChem->addBC(inflowChem, 1, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);            		
-            bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
-           /* bcFactoryChem->addBC(zeroDirichlet, 2, 0, domainChem, "Dirichlet", 1);
-            bcFactoryChem->addBC(zeroDirichlet, 3, 0, domainChem, "Dirichlet", 1);            
-            bcFactoryChem->addBC(zeroDirichlet, 4, 0, domainChem, "Dirichlet", 1);            
-            bcFactoryChem->addBC(zeroDirichlet, 5, 0, domainChem, "Dirichlet", 1);            
-            //bcFactoryChem->addBC(zeroDirichlet, 6, 0, domainChem, "Dirichlet", 1);
-            bcFactoryChem->addBC(zeroDirichlet, 8, 0, domainChem, "Dirichlet", 1);
-            
-            */
-        }
-
-        // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
-        // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
-        sci.problemChem_->addBoundaries(bcFactoryChem);
+        
     
         // Struktur-RW
         
@@ -429,13 +393,13 @@ int main(int argc, char *argv[])
         else if(dim == 3)
         {
 
-            bcFactory->addBC(zeroDirichlet, 1, 1, domainStructure, "Dirichlet_X", dim);
-            bcFactory->addBC(zeroDirichlet, 2, 1, domainStructure, "Dirichlet_Y", dim);
-            bcFactory->addBC(zeroDirichlet, 3, 1, domainStructure, "Dirichlet_Z", dim);
-            bcFactory->addBC(zeroDirichlet3D, 0, 1, domainStructure, "Dirichlet", dim);
-            bcFactory->addBC(zeroDirichlet2D, 7, 1, domainStructure, "Dirichlet_X_Y", dim);
-            bcFactory->addBC(zeroDirichlet2D, 8, 1, domainStructure, "Dirichlet_Y_Z", dim);
-            bcFactory->addBC(zeroDirichlet2D, 9, 1, domainStructure, "Dirichlet_X_Z", dim);
+            bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
+            bcFactory->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
+            bcFactory->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
+            bcFactory->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet", dim);
+            bcFactory->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
+            bcFactory->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
+            bcFactory->addBC(zeroDirichlet2D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
             
             bcFactoryStructure->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
             bcFactoryStructure->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
@@ -483,6 +447,43 @@ int main(int argc, char *argv[])
             
 
         }
+        if (dim==2)
+        {
+                TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Only 3D Test available");                               
+                            
+        }
+        else if(dim==3)
+        {
+
+            bcFactory->addBC(inflowChem, 0, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+            bcFactory->addBC(inflowChem, 1, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+            bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1);            		
+            //bcFactory->addBC(zeroDirichlet, 8, 1, domainChem, "Dirichlet", 1);
+            bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1);
+            /*bcFactory->addBC(zeroDirichlet, 2, 1, domainChem, "Dirichlet", 1);
+            bcFactory->addBC(zeroDirichlet, 3, 1, domainChem, "Dirichlet", 1);            
+            bcFactory->addBC(zeroDirichlet, 4, 1, domainChem, "Dirichlet", 1);            
+            bcFactory->addBC(zeroDirichlet, 5, 1, domainChem, "Dirichlet", 1);            
+           // bcFactory->addBC(zeroDirichlet, 6, 1, domainChem, "Dirichlet", 1);            
+            */
+            
+            bcFactoryChem->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1); // inflow of Chem
+            bcFactoryChem->addBC(inflowChem, 1, 0, domainChem, "Dirichlet", 1); // inflow of Chem
+            bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);            		
+            bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
+           /* bcFactoryChem->addBC(zeroDirichlet, 2, 0, domainChem, "Dirichlet", 1);
+            bcFactoryChem->addBC(zeroDirichlet, 3, 0, domainChem, "Dirichlet", 1);            
+            bcFactoryChem->addBC(zeroDirichlet, 4, 0, domainChem, "Dirichlet", 1);            
+            bcFactoryChem->addBC(zeroDirichlet, 5, 0, domainChem, "Dirichlet", 1);            
+            //bcFactoryChem->addBC(zeroDirichlet, 6, 0, domainChem, "Dirichlet", 1);
+            bcFactoryChem->addBC(zeroDirichlet, 8, 0, domainChem, "Dirichlet", 1);
+            
+            */
+        }
+
+        // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
+        // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
+        sci.problemChem_->addBoundaries(bcFactoryChem);
         
           
         // #####################

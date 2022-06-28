@@ -24,7 +24,7 @@ extern "C"{
  @param[in] hp History parameters at time n+1. Currently unused.
  @param[in] deltat Time increment. Double value.
  */
-void skr_DeformationDiffusionNeoHook(double* v, double* d, double* ul, double* ul0, double* xl, double* s, double* p, double* ht, double* hp, double deltat);
+void skr_DDNH(double* v, double* d, double* ul, double* ul0, double* xl, double* s, double* p, double* ht, double* hp, double deltat);
 
 #ifdef __cplusplus
 }

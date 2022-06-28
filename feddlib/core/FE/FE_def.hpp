@@ -370,6 +370,243 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type r
 	}
 }
 
+// Check the order of chemistry and solid in system matrix
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
+                        string FETypeChem,
+                        string FETypeSolid,
+                        int degree,
+                        int dofsChem,
+                        int dofsSolid,
+                        MultiVectorPtr_Type c_rep,
+                        MultiVectorPtr_Type d_rep,
+                        BlockMatrixPtr_Type &A,
+                        BlockMultiVectorPtr_Type &resVec,
+                        ParameterListPtr_Type params,
+                        string assembleMode,
+                        bool callFillComplete,
+                        int FELocExternal){
+
+    if((FETypeChem != "P2") || (FETypeSolid != "P2") || dim != 3)
+    	TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "No AceGen Implementation available for Discretization and Dimension." );
+
+
+    UN FElocChem = checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype
+    UN FElocSolid = checkFE(dim,FETypeSolid); // Checks for different domains which belongs to a certain fetype
+
+	ElementsPtr_Type elementsChem= domainVec_.at(FElocChem)->getElementsC();
+
+	ElementsPtr_Type elementsSolid = domainVec_.at(FElocSolid)->getElementsC();
+
+	//int dofsElement = elements->getElement(0).getVectorNodeList().size();
+
+	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FElocSolid)->getPointsRepeated();
+
+	MapConstPtr_Type mapChem = domainVec_.at(FElocChem)->getMapRepeated();
+
+	MapConstPtr_Type mapSolid = domainVec_.at(FElocSolid)->getMapRepeated();
+
+	vec_dbl_Type solution(0);
+	vec_dbl_Type solution_c;
+	vec_dbl_Type solution_d;
+
+	vec_dbl_Type rhsVec;
+
+	/// Tupel construction follows follwing pattern:
+	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	int numChem=3;
+    if(FETypeChem == "P2")
+        numChem=6;
+        
+	if(dim==3){
+		numChem=4;
+        if(FETypeChem == "P2")
+            numChem=10;
+	}
+    int numSolid=3;
+    if(FETypeSolid == "P2")
+        numSolid=6;
+        
+	if(dim==3){
+		numSolid=4;
+        if(FETypeSolid == "P2")
+            numSolid=10;
+	}
+	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
+	tuple_ssii_Type chem ("Chemistry",FETypeChem,dofsChem,numChem);
+	tuple_ssii_Type solid ("Solid",FETypeSolid,dofsSolid,numSolid);
+	problemDisk->push_back(solid);
+	problemDisk->push_back(chem);
+
+	if(assemblyFEElements_.size()== 0){
+       	initAssembleFEElements("SCI",problemDisk,elementsChem, params,pointsRep);
+    }
+	else if(assemblyFEElements_.size() != elementsChem->numberElements())
+	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
+
+	//SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
+
+	MultiVectorPtr_Type resVec_c = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocChem)->getMapRepeated(), 1 ) );
+    MultiVectorPtr_Type resVec_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocSolid)->getMapVecFieldRepeated(), 1 ) );
+	
+	BlockMultiVectorPtr_Type resVecRep = Teuchos::rcp( new BlockMultiVector_Type( 2) );
+    resVecRep->addBlock(resVec_d,0);
+    resVecRep->addBlock(resVec_c,1);
+
+    for (UN T=0; T<assemblyFEElements_.size(); T++) {
+		vec_dbl_Type solution(0);
+
+		solution_c = getSolution(elementsChem->getElement(T).getVectorNodeList(), c_rep,dofsChem);
+		solution_d = getSolution(elementsSolid->getElement(T).getVectorNodeList(), d_rep,dofsSolid);
+
+        // First Solid, then Chemistry
+		solution.insert( solution.end(), solution_d.begin(), solution_d.end() );
+		solution.insert( solution.end(), solution_c.begin(), solution_c.end() );
+
+		assemblyFEElements_[T]->updateSolution(solution);
+
+ 		SmallMatrixPtr_Type elementMatrix;
+
+		if(assembleMode == "Jacobian"){
+			assemblyFEElements_[T]->assembleJacobian();
+		    
+            elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
+			
+			addFeBlockMatrix(A, elementMatrix, elementsSolid->getElement(T),  mapSolid, mapChem, problemDisk);
+
+		}
+		if(assembleMode == "Rhs"){
+		    assemblyFEElements_[T]->assembleRHS();
+		    rhsVec = assemblyFEElements_[T]->getRHS(); 
+			addFeBlockMv(resVecRep, rhsVec, elementsSolid->getElement(T),elementsChem->getElement(T), dofsSolid,dofsChem);
+		}
+
+			
+	}
+
+	if ( assembleMode != "Rhs"){
+		A->getBlock(0,0)->fillComplete();
+	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
+	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
+	    A->getBlock(1,1)->fillComplete();
+	}
+    
+    if(assembleMode == "Rhs"){
+
+		MultiVectorPtr_Type resVecUnique_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocSolid)->getMapVecFieldUnique(), 1 ) );
+		MultiVectorPtr_Type resVecUnique_c = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocChem)->getMapUnique(), 1 ) );
+
+		resVecUnique_d->putScalar(0.);
+		resVecUnique_c->putScalar(0.);
+
+		resVecUnique_d->exportFromVector( resVec_d, true, "Add" );
+		resVecUnique_c->exportFromVector( resVec_c, true, "Add" );
+
+		resVec->addBlock(resVecUnique_d,0);
+		resVec->addBlock(resVecUnique_c,1);
+	}
+
+
+}
+/*!
+
+ \brief Inserting element stiffness matrices into global stiffness matrix
+
+
+@param[in] &A Global Block Matrix
+@param[in] elementMatrix Stiffness matrix of one element
+@param[in] element Corresponding finite element
+@param[in] map Map that corresponds to repeated nodes of first block
+@param[in] map Map that corresponds to repeated nodes of second block
+
+*/
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstRow,MapConstPtr_Type mapSecondRow, tuple_disk_vec_ptr_Type problemDisk){
+		
+		int numDisk = problemDisk->size();
+
+		int dofs1 = std::get<2>(problemDisk->at(0));
+		int dofs2 = std::get<2>(problemDisk->at(1));
+
+		int numNodes1 = std::get<3>(problemDisk->at(0));
+		int numNodes2=std::get<3>(problemDisk->at(1));
+
+		int dofsBlock1 = dofs1*numNodes1;
+		int dofsBlock2  = dofs2*numNodes2;
+
+		Teuchos::Array<SC> value1( numNodes1, 0. );
+        Teuchos::Array<GO> columnIndices1( numNodes1, 0 );
+
+        Teuchos::Array<SC> value2( numNodes2, 0. );
+        Teuchos::Array<GO> columnIndices2( numNodes2, 0 );
+
+		for (UN i=0; i < numNodes1 ; i++) {
+			for(int di=0; di<dofs1; di++){
+				GO row =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+di);
+				for(int d=0; d<dofs1; d++){
+					for (UN j=0; j < columnIndices1.size(); j++){
+		                columnIndices1[j] = GO ( dofs1 * mapFirstRow->getGlobalElement( element.getNode(j) ) + d );
+						value1[j] = (*elementMatrix)[dofs1*i+di][dofs1*j+d];	
+					}
+			  		A->getBlock(0,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
+				}          
+            }
+		}
+		int offset= numNodes1*dofs1;
+
+        Teuchos::Array<SC> value( 1, 0. );
+        Teuchos::Array<GO> columnIndex( 1, 0 );
+        for (UN i=0; i < numNodes2 ; i++) {
+            for(int di=0; di<dofs2; di++){
+                GO row =GO (dofs2* mapSecondRow->getGlobalElement( element.getNode(i) )+di);
+                for(int d=0; d<dofs2; d++){
+                    for (UN j=0; j < columnIndices2.size(); j++){
+                        double tmpValue =  (*elementMatrix)[offset+dofs2*i+di][offset+dofs2*j+d];
+                        if(std::fabs(tmpValue) > 1e-13){
+                            columnIndex[0] = GO ( dofs2 * mapSecondRow->getGlobalElement( element.getNode(j) ) + d );
+                            value[0] = tmpValue;
+                            A->getBlock(1,1)->insertGlobalValues( row, columnIndex(), value() ); // Automatically adds entries if a value already exists 
+
+                        }
+                    }
+                }          
+            }
+        }
+        
+
+
+		for (UN i=0; i < numNodes1; i++){
+			for(int di=0; di<dofs1; di++){				
+                GO row =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+di);
+                for(int d=0; d<dofs2; d++){				
+                    for (UN j=0; j < numNodes2 ; j++) {
+                        value2[j] = (*elementMatrix)[i*dofs1+di][offset+j*dofs2+d];			    				    		
+                        columnIndices2[j] =GO (dofs2* mapSecondRow->getGlobalElement( element.getNode(j) )+d);
+                    }
+                    A->getBlock(0,1)->insertGlobalValues( row, columnIndices2(), value2() ); // Automatically adds entries if a value already exists                            
+                }
+            }      
+		}
+
+        for (UN j=0; j < numNodes2; j++){
+            for(int di=0; di<dofs2; di++){	
+                GO row = GO (dofs2* mapSecondRow->getGlobalElement( element.getNode(j) ) +di );
+                for(int d=0; d<dofs1; d++){				
+                    for (UN i=0; i < numNodes1 ; i++) {
+                        value1[i] = (*elementMatrix)[offset+j*dofs2+di][dofs1*i+d];			    				    		
+                        columnIndices1[i] =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+d);
+                    }
+                    A->getBlock(1,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists                       
+                }    
+            }  
+		}
+
+
+
+}
+
+
 /*!
 
  \brief Assembly of Jacobian for NavierStokes 
@@ -571,69 +808,6 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type r
 
 }
 
-/*!
-
- \brief Inserting element stiffness matrices into global stiffness matrix
-
-
-@param[in] &A Global Block Matrix
-@param[in] elementMatrix Stiffness matrix of one element
-@param[in] element Corresponding finite element
-@param[in] map Map that corresponds to repeated nodes of first block
-@param[in] map Map that corresponds to repeated nodes of second block
-
-*/
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstRow,MapConstPtr_Type mapSecondRow, tuple_disk_vec_ptr_Type problemDisk){
-		
-		int numDisk = problemDisk->size();
-
-		int dofs1 = std::get<2>(problemDisk->at(0));
-		int dofs2 = std::get<2>(problemDisk->at(1));
-
-		int numNodes1 = std::get<3>(problemDisk->at(0));
-		int numNodes2=std::get<3>(problemDisk->at(1));
-
-		int dofsBlock1 = dofs1*numNodes1;
-		int dofsBlock2  = dofs2*numNodes2;
-
-		Teuchos::Array<SC> value1( numNodes1, 0. );
-        Teuchos::Array<GO> columnIndices1( numNodes1, 0 );
-
-		for (UN i=0; i < numNodes1 ; i++) {
-			for(int di=0; di<dofs1; di++){
-				GO row =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+di);
-				for(int d=0; d<dofs1; d++){
-					for (UN j=0; j < columnIndices1.size(); j++){
-		                columnIndices1[j] = GO ( dofs1 * mapFirstRow->getGlobalElement( element.getNode(j) ) + d );
-						value1[j] = (*elementMatrix)[dofs1*i+di][dofs1*j+d];	
-					}
-			  		A->getBlock(0,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
-				}          
-            }
-		}
-
-		Teuchos::Array<SC> value2( 1, 0. );
-        Teuchos::Array<GO> columnIndex( 1, 0. );
-        Teuchos::Array<GO> rowIndex( 1, 0. );
-
-		int offset= numNodes1*dofs1;
-		//Teuchos::ArrayView<const LO> indices;
-		//Teuchos::ArrayView<const SC> values;
-
-		for (UN j=0; j < numNodes2; j++){
-            rowIndex[0] = GO ( mapSecondRow->getGlobalElement( element.getNode(j) ) );
-			for (UN i=0; i < numNodes1 ; i++) {
-				for(int d=0; d<dofs1; d++){				
-					value2[0] = (*elementMatrix)[i*dofs1+d][offset+j];			    				    		
-					columnIndex[0] =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+d);
-
-			  		A->getBlock(1,0)->insertGlobalValues( rowIndex[0], columnIndex(), value2() ); // Automatically adds entries if a value already exists   
-			  		A->getBlock(0,1)->insertGlobalValues( columnIndex[0], rowIndex(), value2() ); // Automatically adds entries if a value already exists        
-				}
-			}      
-		}
-}
 
 /*!
 

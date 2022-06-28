@@ -143,6 +143,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTime(){
     else if(this->parameterList_->sublist("Parameter").get("SCI",false))
     {
         advanceInTimeSCI();
+        
     }
     else{
         if (!parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep").compare("Singlestep")) {
@@ -738,12 +739,14 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     bool print = parameterList_->sublist("General").get("ParaViewExport",false);
     bool printData = parameterList_->sublist("General").get("Export Data",true);
     bool printExtraData = parameterList_->sublist("General").get("Export Extra Data",false);
-        
+
+    // Massmatrix might be included in AceGen Implementation. 
+    bool externalMassChem = parameterList_->sublist("General").get("External Massmatrix",false);
+
     if (print)
     {
         exportTimestep();
     }
-
 
     vec_dbl_ptr_Type its = Teuchos::rcp(new vec_dbl_Type ( 2, 0. ) ); //0:linear iterations, 1: nonlinear iterations
     ExporterTxtPtr_Type exporterTimeTxt;
@@ -827,6 +830,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     }*/
     
     massCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(0) / dt; // 3/(2\Delta t)
+
     problemCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(1); // 1
     coeffSourceTermChem = timeSteppingTool_->getInformationBDF(1); // 1
 
@@ -885,21 +889,21 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     // ######################
     SmallMatrix<double> massCoeffSCI(sizeSCI);
     SmallMatrix<double> problemCoeffSCI(sizeSCI);
-    for (int i = 0; i < sizeChem; i++)
-    {
-        for (int j = 0; j < sizeChem; j++)
-        {
-            massCoeffSCI[i][j] = massCoeffChem[i][j];
-            problemCoeffSCI[i][j] = problemCoeffChem[i][j];
-        }
-    }
-
     for (int i = 0; i < sizeStructure; i++)
     {
         for (int j = 0; j < sizeStructure; j++)
         {
-            massCoeffSCI[i + sizeChem][j + sizeChem] = massCoeffStructure[i][j];
-            problemCoeffSCI[i + sizeChem][j + sizeChem] = problemCoeffStructure[i][j];
+            massCoeffSCI[i][j] = massCoeffStructure[i][j];
+            problemCoeffSCI[i][j] = problemCoeffStructure[i][j];
+        }
+    }
+
+    for (int i = 0; i < sizeChem; i++)
+    {
+        for (int j = 0; j < sizeChem; j++)
+        {
+            massCoeffSCI[i + sizeStructure][j + sizeStructure] = massCoeffChem[i][j];
+            problemCoeffSCI[i + sizeStructure][j + sizeStructure] = problemCoeffChem[i][j];
         }
     }
 
@@ -967,7 +971,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
         MatrixPtr_Type massmatrix;
         sci->setChemMassmatrix( massmatrix );
-        this->problemTime_->systemMass_->addBlock( massmatrix, 0, 0);
+        if(externalMassChem == false)
+             this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
         
 
         // RHS nach BDF2
@@ -991,7 +996,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
                 // We extract the underlying FSI problem
                 MatrixPtr_Type massmatrix;
                 sci->setSolidMassmatrix( massmatrix );
-                this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1 );
+                this->problemTime_->systemMass_->addBlock( massmatrix, 0, 0 );
             }
             // this should be done automatically rhs will not be used here
             //  this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 2 );
@@ -1008,8 +1013,9 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             for (int i = 0; i < sizeChem; i++)
             {
                 for (int j = 0; j < sizeChem; j++){
-                    if (massCoeffSCI[i][j] != 0.)
-                        massCoeffSCI[i][j] = 1./dt ;
+                    if (massCoeffSCI[i+sizeStructure][j+sizeStructure] != 0.){
+                        massCoeffSCI[i+sizeStructure][j+sizeStructure] = 1./dt ;
+                    }
                 }
             }
             this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
@@ -1029,16 +1035,13 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             }
         //problemTime_->getSystem()->getBlock(1,1)->print();
 
-         // Uebergabeparameter fuer BC noch hinzu nehmen!
-        //
-
         //problemTime_->getSolution()->getBlock(0)->print();
         if (timeSteppingTool_->currentTime() <= dt+1.e-10) 
         {
             for (int i = 0; i < sizeChem; i++)
             {
                 for (int j = 0; j < sizeChem; j++){
-                    massCoeffSCI[i][j] = massCoeffChem[i][j];
+                    massCoeffSCI[i+sizeStructure][j+sizeStructure] = massCoeffChem[i][j];
                 }
             }
             this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
@@ -1048,6 +1051,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
         timeSteppingTool_->advanceTime(true);//output info);
         this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
+
+        // Should be some place else
         if(timeSteppingTool_->t_ >= inflowRamp)
             this->problemTime_->assemble("UpdateEMod");
 
@@ -1085,8 +1090,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         closeExporter();
     }
 }
-
-
 
 template<class SC,class LO,class GO,class NO>
 void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()

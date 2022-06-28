@@ -516,6 +516,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
             if ( criterionValue < tol )
                 break;
         }
+        //problem.getSolution()->getBlock(1)->print();
+
         // ####### end FPI #######
     }
 

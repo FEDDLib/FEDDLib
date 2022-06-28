@@ -54,9 +54,11 @@ class AssembleFEAceDeformDiffu : public AssembleFE<SC,LO,GO,NO> {
 	    
 	    string FEType_ ; // FEType of Disk
 
-	    int dofs_ ; // Degrees of freedom per node
+	    int dofsSolid_ ; // Degrees of freedom per node
+		int dofsChem_;
+	    int numNodesSolid_ ; // Number of nodes of element
+		int numNodesChem_ ; // Number of nodes of element
 
-	    int numNodes_ ; // Number of nodes of element
 
 	    int dofsElement_; // "Dimension of return matrix"
 		

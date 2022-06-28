@@ -170,6 +170,8 @@ public:
     MultiVectorPtr_Type meshDisplacementOld_rep_;
     MultiVectorPtr_Type meshDisplacementNew_rep_;
     MultiVectorPtr_Type c_rep_;
+    MultiVectorPtr_Type d_rep_;
+
 
     mutable MatrixPtr_Type C2_;
 
@@ -197,6 +199,8 @@ private:
     mutable bool exportedEMod_ ;
     mutable bool setUpTimeStep_;
     mutable MultiVectorPtr_Type eModVec_;
+    bool loadStepping_;
+    string couplingType_;
     /*####################*/
 
 public:

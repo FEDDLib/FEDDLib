@@ -3,7 +3,8 @@
         use f_routines_DeformationDiffusionNeoHook
         implicit none
       contains
-        subroutine skr_DeformationDiffusionNeoHook(v,d,ul,ul0,xl,s,p,ht,hp,deltat) bind(c,name='skr_DeformationDiffusionNeoHook')
+        subroutine skr_DDNH(v,d,ul,ul0,xl,s,p,ht,hp,deltat) 
+     &  bind(c,name='skr_DDNH')
             implicit NONE
             real(c_double), intent(inout) :: v(2238)
             real(c_double), intent(inout) :: d(6) 
@@ -16,5 +17,5 @@
             real(c_double), intent(inout) :: hp(*)
             real(c_double), intent(inout) :: deltat
             call SKR10(v,d,ul,ul0,xl,s,p,ht,hp,deltat)
-         end subroutine skr_DeformationDiffusionNeoHook
+         end subroutine skr_DDNH
       end module c_routines_DeformationDiffusionNeoHook   

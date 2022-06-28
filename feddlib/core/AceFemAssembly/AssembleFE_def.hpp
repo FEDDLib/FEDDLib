@@ -13,12 +13,14 @@ AssembleFE<SC,LO,GO,NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, Par
 	nodesRefConfig_ = nodesRefConfig;
 
 	timeStep_ =0. ;
-	newtonStep_ =0;
+	newtonStep_ =0 ;
 
 	params_=params;
 
 	// Reading through parameterlist
 	dim_= params_->sublist("Parameter").get("Dimension",-1);
+
+	timeIncrement_= params_->sublist("Timestepping Parameter").get("dt",0.1);
 
 	diskTuple_= tuple;
 	
@@ -68,9 +70,8 @@ void AssembleFE<SC,LO,GO,NO>::updateParams( ParameterListPtr_Type params){
 
 template <class SC, class LO, class GO, class NO>
 void AssembleFE<SC,LO,GO,NO>::advanceInTime( double dt){
-	timeIncrement_= dt;
+	timeIncrement_ = dt;
 	timeStep_ = timeStep_ + dt;
-
 };
 
 template <class SC, class LO, class GO, class NO>

@@ -446,6 +446,22 @@ class FE {
 							    string assembleMode,
 								bool callFillComplete = true,
 								int FELocExternal=-1);
+
+    void assemblyAceDeformDiffu(int dim,
+								string FETypeChem,
+								string FETypeSolid,
+								int degree,
+								int dofsChem,
+								int dofsSolid,
+								MultiVectorPtr_Type c_rep,
+								MultiVectorPtr_Type d_rep,
+								BlockMatrixPtr_Type &A,
+								BlockMultiVectorPtr_Type &resVec,
+								ParameterListPtr_Type params,
+							    string assembleMode,
+								bool callFillComplete = true,
+								int FELocExternal=-1);
+
 	void assemblyLinearElasticity(int dim,
                                 string FEType,
                                 int degree,
