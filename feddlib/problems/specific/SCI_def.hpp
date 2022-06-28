@@ -768,9 +768,7 @@ void SCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
             //this->feFactory_->assemblyMass(this->dim_, this->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 1, true);
             massmatrix->resumeFill();
             massmatrix->scale(density);
-            if(loadStepping_ == true)
-                massmatrix->scale(0.0);
-
+           
             massmatrix->fillComplete( this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique());
 
             this->problemTimeStructure_->systemMass_->addBlock( massmatrix, 0, 0 );
