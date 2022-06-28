@@ -139,9 +139,6 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             }
 
        
-            //MatrixPtr_Type C1_T(new Matrix_Type( this->getDomain(1)->getMapVecFieldUnique(), 1 ) ); // Chem-Kopplung
-            //MatrixPtr_Type C1(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) ); // Struktur-Kopplung
-        
             // ###########################
             // Korrekte Skalierung der entsprechenden Bloecke
             // ###########################
@@ -201,10 +198,6 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         }
         else if(couplingType_ == "implicit")
         {
-            timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
-
-            setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructureNonLin_->getParameterList());
-            this->setFromPartialVectorsInit();
 
             // Maybe nothing should happen here as there are no constant matrices
             this->system_.reset(new BlockMatrix_Type(2));
@@ -223,6 +216,11 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             this->system_->addBlock(BT,0,1);
             this->system_->addBlock(B,1,0);
             this->system_->addBlock(C,1,1);
+
+            timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
+
+            setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructureNonLin_->getParameterList());
+            this->setFromPartialVectorsInit();
 
             MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
             c_rep_->importFromVector(c, true);
@@ -290,7 +288,7 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
     else if(type == "UpdateEMod")
     {
         if(this->verbose_)
-            std::cout << "-- set Boundaries" << '\n';
+            std::cout << "-- Update EModule" << '\n';
 
         MultiVectorPtr_Type solChemRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
         solChemRep->importFromVector(this->problemTimeChem_->getSolution()->getBlock(1));
@@ -602,7 +600,7 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
 
     this->problemTimeChem_->systemMass_.reset(new BlockMatrix_Type(size));
     {
-        massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(1)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+        massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
         // 0 = Chem
         this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 0, true );
         massmatrix->resumeFill();
