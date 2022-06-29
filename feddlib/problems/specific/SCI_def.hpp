@@ -503,7 +503,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
     if ( this->getParameterList()->sublist("Timestepping Parameter").get("Class","Multistep") == "Multistep" ) {
         for (int i=0; i<sizeChem; i++) {
             for (int j=0; j<sizeChem; j++) {
-                if ((*defTS_)[i][j]==1 && i==j) {
+                if ((*defTS_)[i+sizeStructure][j+sizeStructure]==1 && i==j) {
                     defChem[i][j] = 1;
                     massCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
                 }
@@ -514,7 +514,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
         }
         for (int i=0; i<sizeChem; i++) {
             for (int j=0; j<sizeChem; j++){
-                if ((*defTS_)[i][j]==1){
+                if ((*defTS_)[i+sizeStructure][j+sizeStructure]==1){
                     problemCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(1);
                     coeffSourceTermChem = timeSteppingTool_->getInformationBDF(1);
                 }
@@ -550,7 +550,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
             {
                 // Falls in dem Block von timeStepDef_ zeitintegriert werden soll.
                 // i == j, da vektorwertige Massematrix blockdiagonal ist
-                if((*defTS_)[i + sizeChem][j + sizeChem] == 1 && i == j) // Weil: (u_f, p, d_s,...) und timeStepDef_ von FSI
+                if((*defTS_)[i][j] == 1 && i == j) // Weil: (u_f, p, d_s,...) und timeStepDef_ von FSI
                 {
                     defStructure[i][j] = 1;
                 // Vorfaktor der Massematrix in der LHS
@@ -568,7 +568,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
         {
             for(int j = 0; j < sizeStructure; j++)
             {
-                if((*defTS_)[i + sizeChem][j + sizeChem] == 1)
+                if((*defTS_)[i ][j] == 1)
                 {
                     problemCoeffStructure[i][j] =  1.0;
                     // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
@@ -620,6 +620,12 @@ void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
     // RHS nach BDF2
     //######################
     int sizeChem = this->problemChem_->getSystem()->size();
+    int sizeStructure;
+    if (materialModel_=="linear")
+        sizeStructure = this->problemStructure_->getSystem()->size();
+    else
+        sizeStructure = this->problemStructureNonLin_->getSystem()->size();
+    
     double dt = timeSteppingTool_->get_dt();
     int nmbBDF = timeSteppingTool_->getBDFNumber();
 
@@ -675,7 +681,7 @@ void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
 
         for (int i=0; i<sizeChem; i++) {
             for (int j=0; j<sizeChem; j++) {
-                if ((*defTS_)[i][j]==1 && i==j) {
+                if ((*defTS_)[i+sizeStructure][j+sizeStructure]==1 && i==j) {
                     massCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
                 }
                 else{
@@ -685,7 +691,7 @@ void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
         }
         for (int i=0; i<sizeChem; i++) {
             for (int j=0; j<sizeChem; j++){
-                if ((*defTS_)[i][j]==1){
+                if ((*defTS_)[i+sizeStructure][j+sizeStructure]==1){
                     problemCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(1);
                 }
                 else{
@@ -768,7 +774,9 @@ void SCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
             //this->feFactory_->assemblyMass(this->dim_, this->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 1, true);
             massmatrix->resumeFill();
             massmatrix->scale(density);
-           
+            if(loadStepping_ == true)
+                massmatrix->scale(0.0);
+
             massmatrix->fillComplete( this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique());
 
             this->problemTimeStructure_->systemMass_->addBlock( massmatrix, 0, 0 );

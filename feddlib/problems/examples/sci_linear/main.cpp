@@ -344,10 +344,11 @@ int main(int argc, char *argv[])
         domainChem->setReferenceConfiguration();
 
         vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
+        double D0 = parameterListAll->sublist("Parameter Diffusion").get("D0",1.);
         for(int i=0; i<dim; i++){
-            diffusionTensor[0][0] =0.07;
-            diffusionTensor[1][1] =0.07;
-            diffusionTensor[2][2] =0.07;
+            diffusionTensor[0][0] =D0;
+            diffusionTensor[1][1] =D0;
+            diffusionTensor[2][2] =D0;
 
             if(i>0){
                 diffusionTensor[i][i-1] = 0;
@@ -365,7 +366,11 @@ int main(int argc, char *argv[])
         (*defTS)[0][0] = 1;
         // Structure
         (*defTS)[1][1] = 1;
-
+		if(parameterListAll->sublist("Parameter").get("Coupling Type","explicit") == "implicit"){
+		        (*defTS)[0][1] = 1;
+		        (*defTS)[1][0] = 1;
+		}
+		
 
         SCI<SC,LO,GO,NO> sci(domainStructure, discType,
                                 domainChem, discType, diffusionTensor, reactionFunc,
