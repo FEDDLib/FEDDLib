@@ -291,7 +291,7 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             std::cout << "-- Update EModule" << '\n';
 
         MultiVectorPtr_Type solChemRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
-        solChemRep->importFromVector(this->problemTimeChem_->getSolution()->getBlock(1));
+        solChemRep->importFromVector(this->problemTimeChem_->getSolution()->getBlock(0));
 
         int dim = this->getDomain(0)->getDimension();
 
@@ -301,9 +301,6 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
 
         MatrixPtr_Type A(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) ); // Structure-Matrix
 
-        // steady rhs wird hier assembliert.
-        // rhsFunc auf 0 (=x) und 0 (=y) abaendern bei LinElas!
-        //if (materialModel_=="linear"){
         if (materialModel_=="linear"){
             this->feFactory_->assemblyLinElasXDimE(this->dim_, this->getDomain(0)->getFEType(), A, eModVec_, nu, true);
             this->problemStructure_->system_->addBlock(A,0,0);// assemble(); //
@@ -602,7 +599,7 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
     {
         massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
         // 1 = Chem
-        this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 0, true );
+        this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 1, true );
         massmatrix->resumeFill();
         massmatrix->scale(density);
         massmatrix->fillComplete( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->problemTimeChem_->getDomain(0)->getMapUnique() );
@@ -771,7 +768,7 @@ void SCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
 
             massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
             // 0 = Struktur
-            //this->feFactory_->assemblyMass(this->dim_, this->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 1, true);
+            this->feFactory_->assemblyMass(this->dim_, this->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 0, true);
             massmatrix->resumeFill();
             massmatrix->scale(density);
             if(loadStepping_ == true)
