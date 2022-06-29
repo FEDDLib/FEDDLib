@@ -165,6 +165,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(NonLinearProblem_Type &problem){
 template<class SC,class LO,class GO,class NO>
 void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_ptr_Type valuesForExport){
     
+    
     bool verbose = problem.getVerbose();
     Teuchos::RCP<TimeProblem_Type> problemPtr = Teuchos::rcpFromRef(problem);
     Teuchos::RCP<Teuchos::ParameterList> p = sublist(problemPtr->getParameterList(),"ThyraSolver");
@@ -348,6 +349,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton( NonLinearProblem_Type &problem )
     double criterionValue = 1.;
     std::string criterion = problem.getParameterList()->sublist("Parameter").get("Criterion","Residual");
 
+
     while ( nlIts < maxNonLinIts ) {
         //this makes only sense for Navier-Stokes/Stokes, for other problems, e.g., non linear elasticity, it should do nothing.
 
@@ -358,6 +360,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton( NonLinearProblem_Type &problem )
         problem.assemble("Newton");
 
         problem.setBoundariesSystem();
+
 
         if (nlIts==0)
             residual0 = residual;

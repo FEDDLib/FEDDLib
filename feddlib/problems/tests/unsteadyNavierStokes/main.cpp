@@ -27,7 +27,24 @@ void zeroDirichlet(double* x, double* res, double t, const double* parameters){
 
     return;
 }
+void oneDirichlet(double* x, double* res, double t, const double* parameters){
 
+    res[0] = 1.;
+
+    return;
+}
+void constDirichlet10(double* x, double* res, double t, const double* parameters){
+
+    res[0] = t*1000.;
+
+    return;
+}
+void constDirichlet5(double* x, double* res, double t, const double* parameters){
+
+    res[0] = 5.;
+
+    return;
+}
 void zeroDirichlet2D(double* x, double* res, double t, const double* parameters){
 
     res[0] = 0.;
@@ -362,7 +379,7 @@ int main(int argc, char *argv[]) {
 //            std::cout << "done" << '\n';
             
             std::vector<double> parameter_vec(1);
-            if ( !bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark") || !bcType.compare("parabolic_benchmark_sin") )
+            if ( !bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark") || !bcType.compare("parabolic_benchmark_sin")| !bcType.compare("Couette") )
                 parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MaxVelocity",1.5);
             else if ( !bcType.compare("partialCFD") ) //  Fuer CFD3
                 parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MeanVelocity",2.);
@@ -430,8 +447,19 @@ int main(int argc, char *argv[]) {
 
             }
             else if (!bcType.compare("Couette")){
-              bcFactory->addBC(couette2D, 1, 0, domainVelocity, "Dirichlet", dim, parameter_vec); // wall
+            
+            	cout << " Couette RW " << endl;
+            	
+              //bcFactory->addBC(couette2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec); // wall
+              bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim); // wall
               bcFactory->addBC(zeroDirichlet2D, 2, 0, domainVelocity, "Dirichlet", dim); // wall
+              //bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim); // wall
+              bcFactory->addBC(constDirichlet10, 4, 1, domainPressure, "Dirichlet", 1); // wall
+              bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1); // wall
+              //bcFactory->addBC(zeroDirichlet, 2, 1, domainPressure, "Dirichlet", 1); // wall
+              //bcFactory->addBC(zeroDirichlet, 1, 1, domainPressure, "Dirichlet", 1); // wall
+              //bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1); // wall
+              //bcFactory->addBC(zeroDirichlet, 10, 1, domainPressure, "Dirichlet", 1); // interior
               //bcFactory->addBC(inflow3DRichter, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec); // inflow
               //bcFactory->addBC(zeroDirichlet3D, 3, 0, domainVelocity, "Dirichlet_Z", dim);
               //bcFactory->addBC(zeroDirichlet3D, 5, 0, domainVelocity, "Dirichlet", dim);

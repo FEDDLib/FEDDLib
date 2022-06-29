@@ -361,7 +361,7 @@ int main(int argc, char *argv[]) {
 			flag3Func = zeroDirichlet2D; //three;
 			flag4Func = four;
 			flag5Func = five;
-			//flag7Func = zeroDirichlet;
+			flag7Func = zeroDirichlet;
 		}
 		else if(modellProblem == "LDC" && dim ==3){
 			rhs = rhs0;
@@ -372,7 +372,7 @@ int main(int argc, char *argv[]) {
 			flag3Func = zeroDirichlet2D; //three;
 			flag4Func = four;
 			flag5Func = five;
-			//flag7Func = zeroDirichlet;
+			flag7Func = zeroDirichlet;
 			//flag6Func = six;
 		}
 		else if(modellProblem == "BFS" && dim ==2){
@@ -464,7 +464,7 @@ int main(int argc, char *argv[]) {
 			//bcFactory->addBC(flag3Func, 3, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 			bcFactory->addBC(flag4Func, 4, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 			bcFactory->addBC(flag5Func, 5, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-			//bcFactory->addBC(flag7Func, 7, 0, domainPressure, "Dirichlet", dim, parameter_vec);
+			bcFactory->addBC(flag7Func, 7, 1, domainPressure, "Dirichlet", 1);
       
 			MAIN_TIMER_STOP(Bounds);	
 			MAIN_TIMER_START(Solver," Step 2:	 solving PDE");
