@@ -740,9 +740,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     bool printData = parameterList_->sublist("General").get("Export Data",true);
     bool printExtraData = parameterList_->sublist("General").get("Export Extra Data",false);
 
-    // Massmatrix might be included in AceGen Implementation. 
-    bool externalMassChem = parameterList_->sublist("General").get("External Massmatrix",false);
-
     if (print)
     {
         exportTimestep();
@@ -830,7 +827,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     }*/
     
     massCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(0) / dt; // 3/(2\Delta t)
-
     problemCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(1); // 1
     coeffSourceTermChem = timeSteppingTool_->getInformationBDF(1); // 1
 
@@ -955,31 +951,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // -- we can keep this as expicit update for the reaction-diffusion displacement
         this->problemTime_->assemble("UpdateMeshDisplacement");   
         this->problemTime_->assemble("MoveMesh");
-        
-        // ######################
-        // Fluid Zeitsystem
-        // ######################
-        // Fluid-Loesung aktualisieren fuer die naechste(n) BDF2-Zeitintegration(en)
-        // in diesem Zeitschritt.
-        {
-            //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
-            this->problemTime_->assemble("UpdateChemInTime");
-        }
-        // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
-        // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
-        // In der ersten nichtlinearen Iteration wird bei GI also die Massematrix zweimal assembliert.
-        // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
-        MatrixPtr_Type massmatrix;
-        sci->setChemMassmatrix( massmatrix );
-        this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
-        
-
-        // RHS nach BDF2
-        this->problemTime_->assemble( "ComputeChemRHSInTime" ); // hier ist massmatrix nicht relevant
-        //this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
-
-
-        // ######################
+          // ######################
         // Struktur Zeitsystem
         // ######################
         // In jedem Zeitschritt die RHS der Struktur holen.
@@ -1002,8 +974,28 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             this->problemTime_->assemble("ComputeSolidRHSInTime");
         }
 
+        // ######################
+        // Chem Zeitsystem
+        // ######################
+        // Fluid-Loesung aktualisieren fuer die naechste(n) BDF2-Zeitintegration(en)
+        // in diesem Zeitschritt.
+        {
+            //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
+            this->problemTime_->assemble("UpdateChemInTime");
+        }
+        // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
+        // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
+        // In der ersten nichtlinearen Iteration wird bei GI also die Massematrix zweimal assembliert.
+        // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
+        MatrixPtr_Type massmatrix;
+        sci->setChemMassmatrix( massmatrix );
+        this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
 
+        // RHS nach BDF2
+        this->problemTime_->assemble( "ComputeChemRHSInTime" ); // hier ist massmatrix nicht relevant
+        //this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
 
+      
         // ######################
         // System loesen
         // ######################
@@ -1032,7 +1024,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             problemTime_->solve();
 
             }
-        //problemTime_->getSystem()->getBlock(1,1)->print();
+        //problemTime_->getSystem()->getBlock(0,0)->print();
 
         //problemTime_->getSolution()->getBlock(0)->print();
         if (timeSteppingTool_->currentTime() <= dt+1.e-10) 

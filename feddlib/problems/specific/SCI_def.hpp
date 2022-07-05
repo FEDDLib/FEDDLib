@@ -118,7 +118,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             int dim = this->getDomain(0)->getDimension();
 
-            this->feFactory_->determineEMod(this->getDomain(0)->getFEType(),solChemRep,eModVec_,this->getDomain(1),this->parameterList_);
+            this->feFactory_->determineEMod(this->getDomain(0)->getFEType(),solChemRep,eModVec_,this->getDomain(0),this->parameterList_);
                     
             double nu = this->parameterList_->sublist("Parameter").get("PoissonRatio",0.4);
 
@@ -248,26 +248,35 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
 
     double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
 
-    if (type == "MoveMesh")
-         moveMesh();
-    else if (type == "UpdateMeshDisplacement")
-         updateMeshDisplacement();
+    if (type == "MoveMesh"){
+        moveMesh();
+        return;
+    }
+    else if (type == "UpdateMeshDisplacement"){
+        updateMeshDisplacement();
+        return;
+    }
+
     else if (type == "ComputeSolidRHSInTime"){
         if(this->verbose_)
             std::cout << "-- Assembly (ComputeSolidRHSInTime)" << '\n';
           
-         computeSolidRHSInTime();
+        computeSolidRHSInTime();
+        return;
     }
     else if (type == "ComputeChemRHSInTime"){
         if(this->verbose_)
             std::cout << "-- Assembly (ComputeChemRHSInTime)" << '\n';
           
-         computeChemRHSInTime();
+        computeChemRHSInTime();
+        return;
     }
     else if (type == "UpdateChemInTime"){
         if(this->verbose_)
             std::cout << "-- Assembly (UpdateChemInTime)" << '\n';
-          updateChemInTime();}
+        updateChemInTime();
+        return;
+    }
 
     else if(type == "UpdateTime")
     {
@@ -396,7 +405,7 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         c_rep_->importFromVector(c, true);
         MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
         d_rep_->importFromVector(d, true); 
-        // For implicit the system is ordered differently with solid block in 0,0 and diffusion in 1,1
+
         this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Rhs", true/*call fillComplete*/);
     }
     // might also be called in the sub calculateNonLinResidualVec() methods which were used above
@@ -523,9 +532,6 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
         this->problemTimeChem_->setTimeDef(defChem);
         this->problemTimeChem_->setTimeParameters(massCoeffChem,problemCoeffChem);
     }
-    else if ( this->getParameterList()->sublist("Timestepping Parameter").get("Class","Multistep") == "External" ) {
-
-    }
     else{
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Implement other FSI Chem time stepping than BDF.");
     }
@@ -533,56 +539,55 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
     // Struktur: Mass-, Problem, SourceTerm Koeffizienten
     // ######################
     // Koeffizienten vor der Massematrix und vor der Systemmatrix des steady-Problems
-    if ( this->getParameterList()->sublist("Timestepping Parameter").get("Class","Multistep") != "External" ) {
 
-        SmallMatrix<double> massCoeffStructure(sizeStructure);
-        SmallMatrix<double> problemCoeffStructure(sizeStructure);
-        SmallMatrix<int> defStructure(sizeStructure);
-        double coeffSourceTermStructure = 0.0; // Koeffizient fuer den Source-Term (= rechte Seite der DGL); mit Null initialisieren
+    SmallMatrix<double> massCoeffStructure(sizeStructure);
+    SmallMatrix<double> problemCoeffStructure(sizeStructure);
+    SmallMatrix<int> defStructure(sizeStructure);
+    double coeffSourceTermStructure = 0.0; // Koeffizient fuer den Source-Term (= rechte Seite der DGL); mit Null initialisieren
 
-        // Koeffizient vor der Massematrix
-        for(int i = 0; i < sizeStructure; i++)
+    // Koeffizient vor der Massematrix
+    for(int i = 0; i < sizeStructure; i++)
+    {
+        for(int j = 0; j < sizeStructure; j++)
         {
-            for(int j = 0; j < sizeStructure; j++)
+            // Falls in dem Block von timeStepDef_ zeitintegriert werden soll.
+            // i == j, da vektorwertige Massematrix blockdiagonal ist
+            if((*defTS_)[i][j] == 1 && i == j) // Weil: (d_s,c) und timeStepDef_ von SCI
             {
-                // Falls in dem Block von timeStepDef_ zeitintegriert werden soll.
-                // i == j, da vektorwertige Massematrix blockdiagonal ist
-                if((*defTS_)[i][j] == 1 && i == j) // Weil: (u_f, p, d_s,...) und timeStepDef_ von FSI
-                {
-                    defStructure[i][j] = 1;
-                // Vorfaktor der Massematrix in der LHS
-                    massCoeffStructure[i][j] = 1.0/(dt*dt*beta);
-                }
-                else
-                {
-                    massCoeffStructure[i][j] = 0.;
-                }
+                defStructure[i][j] = 1;
+            // Vorfaktor der Massematrix in der LHS
+                massCoeffStructure[i][j] = 1.0/(dt*dt*beta);
+            }
+            else
+            {
+                massCoeffStructure[i][j] = 0.;
             }
         }
-
-        // Die anderen beiden Koeffizienten
-        for(int i = 0; i < sizeStructure; i++)
-        {
-            for(int j = 0; j < sizeStructure; j++)
-            {
-                if((*defTS_)[i ][j] == 1)
-                {
-                    problemCoeffStructure[i][j] =  1.0;
-                    // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
-                    coeffSourceTermStructure = 1.0; // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
-                }
-                else // Die steady-Systemmatrix ist nicht zwingend blockdiagonal
-                {
-                    problemCoeffStructure[i][j] = 1.0;
-                }
-            }
-        }
-        this->problemTimeStructure_->setTimeDef(defStructure);
-        this->problemTimeStructure_->setTimeParameters(massCoeffStructure,problemCoeffStructure);
-
-        this->problemTimeChem_->assemble( "MassSystem" );
-        this->problemTimeStructure_->assemble( "MassSystem" );
     }
+
+    // Die anderen beiden Koeffizienten
+    for(int i = 0; i < sizeStructure; i++)
+    {
+        for(int j = 0; j < sizeStructure; j++)
+        {
+            if((*defTS_)[i ][j] == 1)
+            {
+                problemCoeffStructure[i][j] =  1.0;
+                // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
+                coeffSourceTermStructure = 1.0; // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
+            }
+            else // Die steady-Systemmatrix ist nicht zwingend blockdiagonal
+            {
+                problemCoeffStructure[i][j] = 1.0;
+            }
+        }
+    }
+    this->problemTimeStructure_->setTimeDef(defStructure);
+    this->problemTimeStructure_->setTimeParameters(massCoeffStructure,problemCoeffStructure);
+
+    this->problemTimeChem_->assemble( "MassSystem" );
+    this->problemTimeStructure_->assemble( "MassSystem" );
+    
 }
 
 
@@ -597,7 +602,7 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
 
     this->problemTimeChem_->systemMass_.reset(new BlockMatrix_Type(size));
     {
-        massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+        massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         // 1 = Chem
         this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 1, true );
         massmatrix->resumeFill();
@@ -637,7 +642,7 @@ void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
         SmallMatrix<double> tmpproblemCoeff(sizeChem);
         for (int i=0; i<sizeChem; i++) {
             for (int j=0; j<sizeChem; j++) {
-                if ((*defTS_)[i][j]==1 && i==j) {
+                if ((*defTS_)[i+sizeStructure][j+sizeStructure]==1 && i==j) {
                     tmpmassCoeff[i][j] = 1. / dt;
                 }
                 else{
@@ -647,7 +652,7 @@ void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
         }
         for (int i=0; i<sizeChem; i++) {
             for (int j=0; j<sizeChem; j++){
-                if ((*defTS_)[i][j]==1){
+                if ((*defTS_)[i+sizeStructure][j+sizeStructure]==1){
                     tmpproblemCoeff[i][j] =  1.; // ist das richtig? Vermutlich schon, da BDF so geschrieben ist, dass zu berechnende Lsg den Koeffizienten 1 hat
                 }
                 else{
@@ -827,7 +832,7 @@ void SCI<SC,LO,GO,NO>::moveMesh() const
     MultiVectorConstPtr_Type displacementUniqueConst;
 
     displacementUniqueConst = this->solution_->getBlock(0);
-    MultiVectorPtr_Type displacementRepeated = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapVecFieldRepeated() ) );
+    MultiVectorPtr_Type displacementRepeated = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
 
     displacementRepeated->importFromVector( displacementUniqueConst );
     MultiVectorPtr_Type displacementUnique = Teuchos::rcp_const_cast<MultiVector_Type>(displacementUniqueConst);

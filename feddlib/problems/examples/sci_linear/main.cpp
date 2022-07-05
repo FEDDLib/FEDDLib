@@ -103,10 +103,10 @@ void rhsYZ(double* x, double* res, double* parameters){
     res[0] = 0.;
     double force = parameters[1];
     double TRamp = 3.;
-    //if(parameters[0] <= TRamp+1e-06)
-    //    force = parameters[1] * force * 1./(TRamp);
-    //else
-    //    force = 0.;
+    if(parameters[0] <= TRamp+1e-06)
+        force = parameters[1] * force * 1./(TRamp);
+    else
+        force = 0.;
 
     if(parameters[2] == 5)
         res[1] = force;
@@ -118,10 +118,6 @@ void rhsYZ(double* x, double* res, double* parameters){
         res[2] = 0.;
     return;
 }
-
-
-
-
 
 void dummyFunc(double* x, double* res, double t, const double* parameters)
 {
@@ -357,7 +353,8 @@ int main(int argc, char *argv[])
             else
                 diffusionTensor[i][i+1] = 0;				
         }
-
+ 
+        
         Teuchos::RCP<SmallMatrix<int>> defTS;
 
         defTS.reset( new SmallMatrix<int> (2) );
@@ -366,11 +363,7 @@ int main(int argc, char *argv[])
         (*defTS)[0][0] = 1;
         // Structure
         (*defTS)[1][1] = 1;
-		if(parameterListAll->sublist("Parameter").get("Coupling Type","explicit") == "implicit"){
-		        (*defTS)[0][1] = 1;
-		        (*defTS)[1][0] = 1;
-		}
-		
+			
 
         SCI<SC,LO,GO,NO> sci(domainStructure, discType,
                                 domainChem, discType, diffusionTensor, reactionFunc,
