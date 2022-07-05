@@ -416,9 +416,6 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         MultiVectorPtr_Type resChemNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(1) );
         resChemNonConst->update(1., *this->problemChem_->getRhs()->getBlock(0), 1.);
 
-        MultiVectorPtr_Type resSolidNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(0) );
-        resSolidNonConst->update(1., *this->problemStructureNonLin_->getRhs()->getBlock(0), 1.);
-
     }
     Teuchos::Array<SC> norm_d(1); 
     Teuchos::Array<SC> norm_c(1); 
