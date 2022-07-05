@@ -223,11 +223,11 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             this->setFromPartialVectorsInit();
 
             if (materialModel_!="linear"){
-                MultiVectorConstPtr_Type d = this->problemStructure_->getSolution()->getBlock(0);
+                MultiVectorConstPtr_Type d = this->problemStructureNonLin_->getSolution()->getBlock(0);
                 d_rep_->importFromVector(d, true); 
             }
             else{
-                MultiVectorConstPtr_Type d = this->problemStructureNonLin_->getSolution()->getBlock(0);
+                MultiVectorConstPtr_Type d = this->problemStructure_->getSolution()->getBlock(0);
                 d_rep_->importFromVector(d, true); 
             }
 	        this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
@@ -365,11 +365,11 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             MultiVectorConstPtr_Type c = this->problemChem_->getSolution()->getBlock(0);
             c_rep_->importFromVector(c, true);
             if (materialModel_!="linear"){
-                MultiVectorConstPtr_Type d = this->problemStructure_->getSolution()->getBlock(0);
+                MultiVectorConstPtr_Type d = this->problemStructureNonLin_->getSolution()->getBlock(0);
                 d_rep_->importFromVector(d, true); 
             }
             else{
-                MultiVectorConstPtr_Type d = this->problemStructureNonLin_->getSolution()->getBlock(0);
+                MultiVectorConstPtr_Type d = this->problemStructure_->getSolution()->getBlock(0);
                 d_rep_->importFromVector(d, true); 
             }
 
@@ -412,12 +412,13 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     else if(couplingType_ == "implicit"){
         MultiVectorConstPtr_Type c = this->problemChem_->getSolution()->getBlock(0);
         c_rep_->importFromVector(c, true);
+
         if (materialModel_!="linear"){
-            MultiVectorConstPtr_Type d = this->problemStructure_->getSolution()->getBlock(0);
+            MultiVectorConstPtr_Type d = this->problemStructureNonLin_->getSolution()->getBlock(0);
             d_rep_->importFromVector(d, true); 
         }
         else{
-            MultiVectorConstPtr_Type d = this->problemStructureNonLin_->getSolution()->getBlock(0);
+            MultiVectorConstPtr_Type d = this->problemStructure_->getSolution()->getBlock(0);
             d_rep_->importFromVector(d, true); 
         }
 
