@@ -411,8 +411,13 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         MultiVectorConstPtr_Type d = this->problemTimeStructure_->getSolution()->getBlock(0);
         d_rep_->importFromVector(d, true); 
        
-
         this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Rhs", true/*call fillComplete*/);
+
+        MultiVectorPtr_Type resChemNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(1) );
+        resChemNonConst->update(1., *this->problemChem_->getRhs()->getBlock(0), 1.);
+
+        MultiVectorPtr_Type resSolidNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(0) );
+        resSolidNonConst->update(1., *this->problemStructureNonLin_->getRhs()->getBlock(0), 1.);
 
     }
     Teuchos::Array<SC> norm_d(1); 
