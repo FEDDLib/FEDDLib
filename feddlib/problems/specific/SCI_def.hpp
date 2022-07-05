@@ -407,7 +407,16 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         d_rep_->importFromVector(d, true); 
 
         this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Rhs", true/*call fillComplete*/);
+        this->residualVec_->scale(-1.);
+
     }
+    Teuchos::Array<SC> norm_d(1); 
+    Teuchos::Array<SC> norm_c(1); 
+
+     this->residualVec_->getBlock(0)->normInf(norm_d);
+    this->residualVec_->getBlock(1)->normInf(norm_c);
+
+    cout << "###### Residual Inf-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
     // might also be called in the sub calculateNonLinResidualVec() methods which were used above
     if (type == "reverse")
         this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
@@ -751,6 +760,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
         double coeffSourceTermStructure = 1.0;
         BlockMultiVectorPtr_Type tmpPtr = this->problemTimeStructure_->getSourceTerm();
         this->problemTimeStructure_->getRhs()->update(coeffSourceTermStructure, *tmpPtr, 1.);
+
     }
     //this->problemTimeStructure_->getRhs()->print();
 

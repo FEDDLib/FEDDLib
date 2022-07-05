@@ -1042,9 +1042,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
         timeSteppingTool_->advanceTime(true);//output info);
         this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
+        std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
 
         // Should be some place else
-        if(timeSteppingTool_->t_ >= inflowRamp)
+        if(timeSteppingTool_->t_ >= inflowRamp && couplingType == "explicit")
             this->problemTime_->assemble("UpdateEMod");
 
         if (printData) {
