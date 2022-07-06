@@ -180,9 +180,21 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 		
 	if(dofOrdering_ == 2)
 	{
-	for (UN i=0; i < this->dofsElement_; i++) {
+
+		std::vector<double> s_temp(1600);
+		int counter=0;
+		for(int i=0;i<40;i++)
+		{	
+			for(int j=0;j<40;j++)
+			{
+				s_temp[counter] = s[60*i+j];
+				counter++;
+			}
+		}
+
+		for (UN i=0; i < this->dofsElement_; i++) {
 			for (UN j=0; j < this->dofsElement_; j++) {
-				(*elementMatrix)[i][j] = -s[60*j+i]; // Rolling into a matrix using column major (m*j+i)
+				(*elementMatrix)[i][j] = -s_temp[40*j+i]; // Rolling into a matrix using column major (m*j+i)
 			}
 		}
 

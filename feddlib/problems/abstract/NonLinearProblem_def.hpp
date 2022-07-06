@@ -131,7 +131,6 @@ int NonLinearProblem<SC,LO,GO,NO>::solveUpdate(  ){
 
     //solution COPY!
     *previousSolution_ = *this->solution_;
-
     int its = this->solve( residualVec_ );
 
     return its;
