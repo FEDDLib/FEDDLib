@@ -1051,7 +1051,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         if (printData) {
             exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
             exporterIterations->exportData( (*its)[0] );
-            //exporterNewtonIterations->exportData( (*its)[1] );
+            exporterNewtonIterations->exportData( (*its)[1] );
         }
         if (printExtraData) {
             vec_dbl_Type v(3,-9999.);

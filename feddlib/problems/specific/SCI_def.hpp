@@ -220,7 +220,13 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
 
             setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructureNonLin_->getParameterList());
+            
+            this->problemTimeStructure_->assembleSourceTerm( 0. );
+            this->problemTimeStructure_->addToRhs( this->problemTimeStructure_->getSourceTerm() );       
+            this->problemTimeStructure_->setBoundariesRHS();
+
             this->setFromPartialVectorsInit();
+
 
             MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
             c_rep_->importFromVector(c, true);
@@ -384,6 +390,7 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     // we need to account for the coupling in the residuals
     if(this->verbose_)
         cout << " Calculate Nonlinear Residual Vec in SCI_def with " << couplingType_  << " coupling "<<endl;
+
     if(couplingType_ == "explicit"){
 
         if (materialModel_!="linear"){
@@ -412,28 +419,42 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         d_rep_->importFromVector(d, true); 
        
         this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Rhs", true/*call fillComplete*/);
+        this->residualVec_->getBlockNonConst(0)->scale(-1.0);
+
+
+        if (!type.compare("standard")){
+            this->residualVec_->getBlockNonConst(0)->update(-1.,*this->rhs_->getBlockNonConst(0),1.);
+            //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
+            //     this->residualVec_->getBlockNonConst(0)->update(-1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);    
+            this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
+       
+        }
+        else if(!type.compare("reverse")){
+            this->residualVec_->getBlockNonConst(0)->update(1.,*this->rhs_->getBlockNonConst(0),-1.);
+            //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
+            //     this->residualVec_->getBlockNonConst(0)->update(1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);
+            this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
+           
+        }
 
         MultiVectorPtr_Type resChemNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(1) );
         resChemNonConst->update(1., *this->problemChem_->getRhs()->getBlock(0), 1.);
+        
+    
 
     }
     Teuchos::Array<SC> norm_d(1); 
     Teuchos::Array<SC> norm_c(1); 
 
-     //this->residualVec_->getBlock(0)->print();
 
-     this->residualVec_->getBlock(0)->normInf(norm_d);
+    this->residualVec_->getBlock(0)->normInf(norm_d);
     this->residualVec_->getBlock(1)->normInf(norm_c);
 
     cout << "###### Residual Inf-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
-    // might also be called in the sub calculateNonLinResidualVec() methods which were used above
-    if (type == "reverse")
-        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-    else if (type == "standard"){
-        this->residualVec_->scale(-1.);
-        this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
-    }
 
+ // might also be called in the sub calculateNonLinResidualVec() methods which were used above
+  
+    //this->residualVec_->getBlockNonConst(0)->print();
 
 }
 

@@ -14,7 +14,7 @@ AssembleFEAceDeformDiffu<SC,LO,GO,NO>::AssembleFEAceDeformDiffu(int flag, vec2D_
 AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 {
     // Extracting values from ParameterList
-    E0_ = this->params_->sublist("Parameter Solid").get("E0",379.95e-6);
+    E0_ = this->params_->sublist("Parameter Solid").get("E",379.95e-6);
     E1_ = this->params_->sublist("Parameter Solid").get("E1",300.0e-6);
     poissonRatio_ = this->params_->sublist("Parameter Solid").get("Poisson Ratio",0.49e-0);
     c1_ = this->params_->sublist("Parameter Solid").get("c1",0.25e-0);

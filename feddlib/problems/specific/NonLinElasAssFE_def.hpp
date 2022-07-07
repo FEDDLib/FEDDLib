@@ -105,7 +105,7 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
         this->residualVec_->addBlock( fUnique, 0 );
 
-        //        MultiVectorPtr_Type f = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) );
+ //        MultiVectorPtr_Type f = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) );
 //        this->feFactory_->assemblyElasticityStressesAceFEM(this->dim_, this->getDomain(0)->getFEType(), f, u_rep_, material_model, E_, nu_, C_);
 //        MultiVectorPtr_Type fUnique = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
 //        fUnique->putScalar(0.);
@@ -256,13 +256,13 @@ void NonLinElasAssFE<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, 
     this->reAssemble("Newton-Residual");
     if (!type.compare("standard")){
         this->residualVec_->update(-1.,*this->rhs_,1.);
-        if ( !this->sourceTerm_.is_null() )
-            this->residualVec_->update(-1.,*this->sourceTerm_,1.);
+        //if ( !this->sourceTerm_.is_null() )
+        //    this->residualVec_->update(-1.,*this->sourceTerm_,1.);
     }
     else if(!type.compare("reverse")){
         this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
-        if ( !this->sourceTerm_.is_null() )
-            this->residualVec_->update(1.,*this->sourceTerm_,1.);
+        //if ( !this->sourceTerm_.is_null() )
+        //    this->residualVec_->update(1.,*this->sourceTerm_,1.);
     }
     else{
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Unknown type for residual computation.");

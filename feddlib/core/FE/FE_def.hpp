@@ -796,8 +796,9 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type r
 	vec_LO_Type nodeList_block2 = elementBlock2.getVectorNodeList();
 
 	for(int i=0; i< nodeList_block1.size() ; i++){
-		for(int d=0; d<dofs1; d++)
+		for(int d=0; d<dofs1; d++){
 			resArray_block1[nodeList_block1[i]*dofs1+d] += rhsVec[i*dofs1+d];
+        }
 	}
 	int offset = nodeList_block1.size()*dofs1;
 

@@ -84,6 +84,7 @@ void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
     else{
         //we need to tell the problem about the last solution if we use extrapolation!
         problem_->assemble(type);
+
         if (timestepping=="External") //|| couplingType == "implicit")
             this->systemCombined_ = problem_->getSystem();
         else
@@ -515,7 +516,6 @@ int TimeProblem<SC,LO,GO,NO>::solveUpdate(  ){
     TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
     
     *nonLinProb->previousSolution_ = *nonLinProb->getSolution();
-
     int its = this->solve( nonLinProb->residualVec_ );
 
     return its;
