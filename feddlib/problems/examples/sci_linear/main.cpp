@@ -67,7 +67,7 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 
 void inflowChem(double* x, double* res, double t, const double* parameters)
 {
-    res[0] = 0.; //1.;
+    res[0] = 1.;
     
     return;
 }
@@ -102,7 +102,7 @@ void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
     double force = parameters[1];
-    double TRamp = 5.;
+    double TRamp = 3.;
     if(parameters[0] <= TRamp+1e-06)
         force = parameters[1] * force * 1./(TRamp);
     else
