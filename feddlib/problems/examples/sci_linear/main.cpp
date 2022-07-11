@@ -102,9 +102,9 @@ void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
     double force = parameters[1];
-    double TRamp = 3.;
+    double TRamp = 1.5;
     if(parameters[0] <= TRamp+1e-06)
-        force = parameters[1] * force * 1./(TRamp);
+        force = parameters[0] * force * 1./(TRamp);
     else
         force = 0.;
 
