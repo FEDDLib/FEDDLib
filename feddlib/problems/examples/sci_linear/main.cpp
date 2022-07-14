@@ -102,7 +102,7 @@ void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
     double force = parameters[1];
-    double TRamp = 1.5;
+    double TRamp = 2.0;
     if(parameters[0] <= TRamp+1e-06)
         force = parameters[0] * force * 1./(TRamp);
     else
@@ -112,10 +112,12 @@ void rhsYZ(double* x, double* res, double* parameters){
         res[1] = force;
     else
         res[1] =0.;
+        
     if (parameters[2] == 4)
         res[2] = force;
     else
         res[2] = 0.;
+    
     return;
 }
 
@@ -359,9 +361,9 @@ int main(int argc, char *argv[])
 
         defTS.reset( new SmallMatrix<int> (2) );
 
-        // Chem
+        // Stucture
         (*defTS)[0][0] = 1;
-        // Structure
+        // Chem
         (*defTS)[1][1] = 1;
 			
 

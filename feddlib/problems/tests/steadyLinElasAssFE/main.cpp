@@ -91,6 +91,24 @@ void rhsX(double* x, double* res, double* parameters){
     return;
 }
 
+void rhsYZ(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[0] = 0.;
+    double force = parameters[1];
+
+    if(parameters[2] == 5)
+        res[1] = force;
+    else
+        res[1] =0.;
+        
+    if (parameters[2] == 4)
+        res[2] = force;
+    else
+        res[2] = 0.;
+    
+    return;
+}
+
 typedef unsigned UN;
 typedef default_sc SC;
 typedef default_lo LO;
@@ -223,16 +241,13 @@ int main(int argc, char *argv[])
         if (dim == 2)
             bcFactory->addBC(zeroDirichlet2D, 1, 0, domain, "Dirichlet", dim);
         else if (dim == 3){
-            bcFactory->addBC(zeroDirichlet, 1, 0, domain, "Dirichlet_X", dim);
+           bcFactory->addBC(zeroDirichlet, 1, 0, domain, "Dirichlet_X", dim);
             bcFactory->addBC(zeroDirichlet, 2, 0, domain, "Dirichlet_Y", dim);
             bcFactory->addBC(zeroDirichlet, 3, 0, domain, "Dirichlet_Z", dim);
             bcFactory->addBC(zeroDirichlet3D, 0, 0, domain, "Dirichlet", dim);
+            bcFactory->addBC(zeroDirichlet2D, 7, 0, domain, "Dirichlet_X_Y", dim);
             bcFactory->addBC(zeroDirichlet2D, 8, 0, domain, "Dirichlet_Y_Z", dim);
             bcFactory->addBC(zeroDirichlet2D, 9, 0, domain, "Dirichlet_X_Z", dim);
-            bcFactory->addBC(zeroDirichlet2D, 7, 0, domain, "Dirichlet_X_Y", dim);
-            //bcFactory->addBC(dummyFunc, 4, 0, domain, "Dirichlet", dim);
-            //bcFactory->addBC(dummyFunc, 5, 0, domain, "Dirichlet", dim);
-            bcFactory->addBC(dummyFunc, 6, 0, domain, "Neumann", dim);
 
 		}
             
@@ -245,7 +260,7 @@ int main(int argc, char *argv[])
         if (dim==2)
             LinElas.addRhsFunction( rhs2D );
         else if(dim==3)
-            LinElas.addRhsFunction( rhsX );
+            LinElas.addRhsFunction( rhsYZ );
 
         double force = parameterListAll->sublist("Parameter").get("Volume force",0.);
         double degree = 0;
@@ -271,7 +286,7 @@ int main(int argc, char *argv[])
         if (dim==2)
             LinElasAssFE.addRhsFunction( rhs2D );
         else if(dim==3)
-            LinElasAssFE.addRhsFunction( rhsX );
+            LinElasAssFE.addRhsFunction( rhsYZ);
         
         LinElasAssFE.addParemeterRhs( force );
         LinElasAssFE.addParemeterRhs( degree );

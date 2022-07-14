@@ -120,7 +120,12 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             this->feFactory_->determineEMod(this->getDomain(0)->getFEType(),solChemRep,eModVec_,this->getDomain(0),this->parameterList_);
                     
-            double nu = this->parameterList_->sublist("Parameter").get("PoissonRatio",0.4);
+            ParameterListPtr_Type plStructure;
+            if (materialModel_=="linear")
+                plStructure = this->problemStructure_->getParameterList();
+            else
+                plStructure = this->problemStructureNonLin_->getParameterList();        
+            double nu = plStructure->sublist("Parameter Solid").get("PoissonRatio",0.49);
 
             MatrixPtr_Type A(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) ); // Structure-Matrix
 
@@ -129,6 +134,13 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             if (materialModel_=="linear"){
                 this->feFactory_->assemblyLinElasXDimE(this->dim_, this->getDomain(0)->getFEType(), A, eModVec_, nu, true);
                 this->problemStructure_->system_->addBlock(A,0,0);// assemble(); //
+
+                double density = this->problemStructure_->getParameterList()->sublist("Parameter Solid").get("Density",1000.e-0);
+
+                this->problemStructure_->assembleSourceTerm( 0. );
+                this->problemStructure_->getSourceTerm()->scale(density);
+                this->problemStructure_->addToRhs( this->problemStructure_->getSourceTerm() );       
+                this->problemStructure_->setBoundariesRHS();
 
                 //this->problemStructure_->assemble();
             }
@@ -165,11 +177,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             // Fuer die Zeitprobleme
             timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
-            ParameterListPtr_Type plStructure;
-            if (materialModel_=="linear")
-                plStructure = this->problemStructure_->getParameterList();
-            else
-                plStructure = this->problemStructureNonLin_->getParameterList();
+           
 
             setupSubTimeProblems(this->problemChem_->getParameterList(), plStructure);
             // We set the vector from the partial problems
@@ -221,7 +229,10 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructureNonLin_->getParameterList());
             
+            double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter Solid").get("Density",1000.e-0);
+
             this->problemTimeStructure_->assembleSourceTerm( 0. );
+            this->problemTimeStructure_->getSourceTerm()->scale(density);
             this->problemTimeStructure_->addToRhs( this->problemTimeStructure_->getSourceTerm() );       
             this->problemTimeStructure_->setBoundariesRHS();
 
@@ -424,15 +435,15 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
         if (!type.compare("standard")){
             this->residualVec_->getBlockNonConst(0)->update(-1.,*this->rhs_->getBlockNonConst(0),1.);
-            //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
-            //     this->residualVec_->getBlockNonConst(0)->update(-1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);    
+            if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
+               this->residualVec_->getBlockNonConst(0)->update(-1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);    
             this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
        
         }
         else if(!type.compare("reverse")){
             this->residualVec_->getBlockNonConst(0)->update(1.,*this->rhs_->getBlockNonConst(0),-1.);
-            //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
-            //     this->residualVec_->getBlockNonConst(0)->update(1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);
+            if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
+                 this->residualVec_->getBlockNonConst(0)->update(1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);
             this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
            
         }
@@ -449,12 +460,16 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
     this->residualVec_->getBlock(0)->normInf(norm_d);
     this->residualVec_->getBlock(1)->normInf(norm_c);
+    if(this->verbose_)
+        cout << "###### Residual Inf-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
 
-    cout << "###### Residual Inf-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
-
- // might also be called in the sub calculateNonLinResidualVec() methods which were used above
-  
-    //this->residualVec_->getBlockNonConst(0)->print();
+   // might also be called in the sub calculateNonLinResidualVec() methods which where used above
+   /* if (type == "reverse")
+        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
+    else if (type == "standard"){
+        this->residualVec_->scale(-1.);
+        this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
+    }*/
 
 }
 
@@ -636,7 +651,7 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
     //######################
     // Massematrix fuer SCI combineSystems(), ggf nichtlinear. Mass Matrix same as for Chem.
     //######################
-    double density = this->problemTimeChem_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
+    double density = this->problemTimeChem_->getParameterList()->sublist("Parameter Diffusions").get("Density",1000.e-0);
     int size = this->problemTimeChem_->getSystem()->size();
 
     this->problemTimeChem_->systemMass_.reset(new BlockMatrix_Type(size));
@@ -757,6 +772,8 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     double beta = timeSteppingTool_->get_beta();
     double gamma = timeSteppingTool_->get_gamma();
     
+    double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter Solid").get("Density",1000.e-0);
+
     // Temporaerer Koeffizienten fuer die Skalierung der Massematrix in der rechten Seite des Systems in UpdateNewmarkRhs()
     vec_dbl_Type coeffTemp(1);
     coeffTemp.at(0) = 1.0;
@@ -771,6 +788,10 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
         // wobei u' = v (velocity) und u'' = w (acceleration).
         this->problemTimeStructure_->updateNewmarkRhs(dt, beta, gamma, coeffTemp);
     }
+    else{
+        // The if condition resets the rhs. If we skip it when we attemp loadstepping, the rhs will be updated continously and wrongly increase with each timestep
+        this->problemTimeStructure_->getRhs()->scale(0.0);
+    }
 
     //can we get rid of this?
     double time = timeSteppingTool_->currentTime() + dt;
@@ -782,7 +803,8 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
         //this->problemTimeStructure_->getUnderlyingProblem()->addRhsFunction( rhsX3D );
 
         this->problemTimeStructure_->assembleSourceTerm( time );
-        
+        this->problemTimeStructure_->getSourceTerm()->scale(density);
+
         // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
         // Die Skalierung mit der Dichte erfolgt schon in der Assemblierungsfunktion!
         
@@ -790,11 +812,9 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
         double coeffSourceTermStructure = 1.0;
         BlockMultiVectorPtr_Type tmpPtr = this->problemTimeStructure_->getSourceTerm();
         this->problemTimeStructure_->getRhs()->update(coeffSourceTermStructure, *tmpPtr, 1.);
-
         this->rhs_->addBlock( this->problemTimeStructure_->getRhs()->getBlockNonConst(0), 0 );
 
     }
-    //this->problemTimeStructure_->getRhs()->print();
 
 }
 
@@ -805,7 +825,7 @@ void SCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
     //######################
     // Massematrix
     //######################
-    double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
+    double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter Solid").get("Density",1000.e-0);
     int size = this->problemTimeStructure_->getSystem()->size();
 
     if(timeSteppingTool_->currentTime() == 0.0)

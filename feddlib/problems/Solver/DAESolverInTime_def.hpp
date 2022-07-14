@@ -875,7 +875,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         }
     }*/
 
-    massCoeffStructure[0][0] = 1.0/(dt*dt*beta);
+    massCoeffStructure[0][0] = 1./(dt*dt*beta);
     problemCoeffStructure[0][0] =  1.0;
     coeffSourceTermStructure = 1.0; // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
 
@@ -1022,7 +1022,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         else{
             problemTime_->setBoundaries(time);       
             problemTime_->solve();
-
             }
         //problemTime_->getSystem()->getBlock(0,0)->print();
 

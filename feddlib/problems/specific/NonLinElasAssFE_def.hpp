@@ -53,7 +53,10 @@ void NonLinElasAssFE<SC,LO,GO,NO>::assemble(std::string type) const{
         this->system_.reset(new BlockMatrix_Type(1));
         this->system_->addBlock( A, 0, 0 );
                 
+        double density = this->parameterList_->sublist("Parameter").get("Density",1000.);
+
         this->assembleSourceTerm( 0. );
+        this->sourceTerm_->scale(density);
         this->addToRhs( this->sourceTerm_ );
         
         this->setBoundariesRHS();

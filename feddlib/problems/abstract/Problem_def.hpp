@@ -253,7 +253,6 @@ void Problem<SC,LO,GO,NO>::assembleSurfaceTerm(double time) const{
         if(this->rhsFuncVec_.size() > i){
 
             if ( !this->rhsFuncVec_[i].empty() ) {
-
                 MultiVectorPtr_Type FERhs;
                 //funcParameter[0] is always the time
                 vec_dbl_Type funcParameter(1,0.);
