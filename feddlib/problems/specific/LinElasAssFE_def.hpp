@@ -53,9 +53,10 @@ void LinElasAssFE<SC,LO,GO,NO>::assemble( std::string type ) const
     // Ein Objekt der Klasse Bmat ist eine Blockmatrix; also ist system_ eine Blockmatrix (Objekt von BMat)
      
     double density = this->parameterList_->sublist("Parameter").get("Density",1000.);
-
+    string sourceType = 	this->parameterList_->sublist("Parameter").get("Source Type","volume");
     this->assembleSourceTerm( 0. );
-    this->sourceTerm_->scale(density);
+    if(sourceType == "volume")
+        this->sourceTerm_->scale(density);
     this->addToRhs( this->sourceTerm_ );
     
     if (this->verbose_)

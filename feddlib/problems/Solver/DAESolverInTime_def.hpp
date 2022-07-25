@@ -732,7 +732,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     // problemCoeff vor A (= komplettes steady-System)
     // massCoeff vor M (= Massematrix)
     // coeffSourceTerm vor f (= rechte Seite der DGL)
-    cout << " Advance in time SCI " << endl;
     
     SCIProblemPtr_Type sci = Teuchos::rcp_dynamic_cast<SCIProblem_Type>( this->problemTime_->getUnderlyingProblem() );
     
@@ -902,7 +901,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             problemCoeffSCI[i + sizeStructure][j + sizeStructure] = problemCoeffChem[i][j];
         }
     }
-
+   
     this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
     
     if (printExtraData) {
@@ -1016,16 +1015,16 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         double time = timeSteppingTool_->currentTime() + dt;
         problemTime_->updateTime ( time );        
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
-
+        massCoeffSCI.print();
+        problemCoeffSCI.print();
         if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
             nlSolver.solve(*this->problemTime_, time, its);
         else{
+            problemTime_->combineSystems();
             problemTime_->setBoundaries(time);       
             problemTime_->solve();
             }
-        //problemTime_->getSystem()->getBlock(0,0)->print();
 
-        //problemTime_->getSolution()->getBlock(0)->print();
         if (timeSteppingTool_->currentTime() <= dt+1.e-10) 
         {
             for (int i = 0; i < sizeChem; i++)

@@ -126,8 +126,6 @@ void DiffusionReaction<SC,LO,GO,NO>::reAssemble(std::string type) const {
     if (this->verbose_)
         std::cout << "-- Reassembly Reaction-Diffusion ("<< type <<") ... " << std::flush;
     
-	// Sensible input is the reaction function. Might distinguish between linear and nonlinear Reaction term.
-    double density = this->parameterList_->sublist("Parameter").get("Density",1.);
     
     MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
 
@@ -176,9 +174,6 @@ void DiffusionReaction<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtr
     if (this->verbose_)
         std::cout << "-- Reassembly Reaction Diffusion (Extrapolation) ... " << std::flush;
 
-    
-    double density = this->parameterList_->sublist("Parameter").get("Density",1.);
-
     if (previousSolutions.size()>=2) {
 
         MultiVectorPtr_Type extrapolatedVector = Teuchos::rcp( new MultiVector_Type( previousSolutions[0]->getBlock(0) ) );
@@ -208,7 +203,6 @@ void DiffusionReaction<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtr
 
 
     N->resumeFill();
-    N->scale(density);
     N->fillComplete( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getMapUnique());
 
     A_->addMatrix(1.,ANW,0.);

@@ -138,7 +138,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
                 double density = this->problemStructure_->getParameterList()->sublist("Parameter Solid").get("Density",1000.e-0);
 
                 this->problemStructure_->assembleSourceTerm( 0. );
-                this->problemStructure_->getSourceTerm()->scale(density);
+                //this->problemStructure_->getSourceTerm()->scale(density); // Scaling with density is not an issue, as we only think in terms of surface force, not volume force
                 this->problemStructure_->addToRhs( this->problemStructure_->getSourceTerm() );       
                 this->problemStructure_->setBoundariesRHS();
 
@@ -188,7 +188,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
                 if(exportedEMod_ == false){
                     exporterEMod_ = Teuchos::rcp(new Exporter_Type());
                     
-                    DomainConstPtr_Type dom = this->getDomain(1);
+                    DomainConstPtr_Type dom = this->getDomain(0);
                     MultiVectorConstPtr_Type exportVector = eModVec_;
 
                     MeshPtr_Type meshNonConst = Teuchos::rcp_const_cast<Mesh_Type>( dom->getMesh() );
@@ -229,10 +229,8 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructureNonLin_->getParameterList());
             
-            double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter Solid").get("Density",1000.e-0);
 
             this->problemTimeStructure_->assembleSourceTerm( 0. );
-            this->problemTimeStructure_->getSourceTerm()->scale(density);
             this->problemTimeStructure_->addToRhs( this->problemTimeStructure_->getSourceTerm() );       
             this->problemTimeStructure_->setBoundariesRHS();
 
@@ -435,15 +433,15 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
         if (!type.compare("standard")){
             this->residualVec_->getBlockNonConst(0)->update(-1.,*this->rhs_->getBlockNonConst(0),1.);
-            if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
-               this->residualVec_->getBlockNonConst(0)->update(-1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);    
+            //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
+            //   this->residualVec_->getBlockNonConst(0)->update(-1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);    
             this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
        
         }
         else if(!type.compare("reverse")){
             this->residualVec_->getBlockNonConst(0)->update(1.,*this->rhs_->getBlockNonConst(0),-1.);
-            if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
-                 this->residualVec_->getBlockNonConst(0)->update(1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);
+            //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
+            //     this->residualVec_->getBlockNonConst(0)->update(1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);
             this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
            
         }
@@ -651,7 +649,6 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
     //######################
     // Massematrix fuer SCI combineSystems(), ggf nichtlinear. Mass Matrix same as for Chem.
     //######################
-    double density = this->problemTimeChem_->getParameterList()->sublist("Parameter Diffusions").get("Density",1000.e-0);
     int size = this->problemTimeChem_->getSystem()->size();
 
     this->problemTimeChem_->systemMass_.reset(new BlockMatrix_Type(size));
@@ -660,7 +657,6 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
         // 1 = Chem
         this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 1, true );
         massmatrix->resumeFill();
-        massmatrix->scale(density);
         massmatrix->fillComplete( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->problemTimeChem_->getDomain(0)->getMapUnique() );
 
         this->problemTimeChem_->systemMass_->addBlock(massmatrix, 0, 0);
@@ -718,10 +714,10 @@ void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
     }
     if (timeSteppingTool_->currentTime()==0.) {
         vec_dbl_Type tmpcoeffPrevSteps(1, 1. / dt);
-        this->problemTimeChem_->updateMultistepRhs(tmpcoeffPrevSteps,1);/*apply (mass matrix_t / dt) to u_t*/
+        this->problemTimeChem_->updateMultistepRhsFSI(coeffPrevSteps,1);/*apply (mass matrix_t / dt) to u_t and more*/
     }
     else{
-        this->problemTimeChem_->updateMultistepRhs(coeffPrevSteps,nmbBDF);/*apply (mass matrix_t / dt) to u_t and more*/
+        this->problemTimeChem_->updateMultistepRhsFSI(coeffPrevSteps,nmbBDF);/*apply (mass matrix_t / dt) to u_t and more*/
     }
 
     // TODO
@@ -772,7 +768,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     double beta = timeSteppingTool_->get_beta();
     double gamma = timeSteppingTool_->get_gamma();
     
-    double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter Solid").get("Density",1000.e-0);
+    //double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter Solid").get("Density",1000.e-0);
 
     // Temporaerer Koeffizienten fuer die Skalierung der Massematrix in der rechten Seite des Systems in UpdateNewmarkRhs()
     vec_dbl_Type coeffTemp(1);
@@ -800,10 +796,9 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     // if(time == 0){nur dann konstanten SourceTerm berechnen}
     if (this->problemTimeStructure_->hasSourceTerm())
     {
-        //this->problemTimeStructure_->getUnderlyingProblem()->addRhsFunction( rhsX3D );
 
         this->problemTimeStructure_->assembleSourceTerm( time );
-        this->problemTimeStructure_->getSourceTerm()->scale(density);
+        //this->problemTimeStructure_->getSourceTerm()->scale(density);
 
         // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
         // Die Skalierung mit der Dichte erfolgt schon in der Assemblierungsfunktion!

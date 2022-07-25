@@ -1251,10 +1251,8 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 	if(diffusionTensor.size()==0 || diffusionTensor.size() < dim ){
 		vec2D_dbl_Type diffusionTensor(3,vec_dbl_Type(3,0));
 		for(int i=0; i< dim; i++){
-			diffusionT[i][i]=1.;
+			diffusionTensor[i][i]=1.;
 		}
-		//diffusionTensor =  Teuchos::rcp( new MultiVector_Type(domainVec_.at(FEloc)->getElementMap(), 1 ) );
-		//diffusionTensor->putScalar(1.);
 	}
 
 	for(int i=0; i< dim; i++){

@@ -75,7 +75,7 @@ void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
         if (!nonLinProb.is_null()){// we combine the nonlinear system with the mass matrix in the NonLinearSolver after the reassembly of each linear system
         }
         else{
-            if (timestepping=="External" )//|| couplingType == "implicit")
+            if (timestepping=="External" )
                 this->systemCombined_ = problem_->getSystem();
             else
                 this->combineSystems();
@@ -85,12 +85,11 @@ void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
         //we need to tell the problem about the last solution if we use extrapolation!
         problem_->assemble(type);
 
-        if (timestepping=="External") //|| couplingType == "implicit")
+        if (timestepping=="External") 
             this->systemCombined_ = problem_->getSystem();
         else
             this->combineSystems();
     }
-
 }
 
 
