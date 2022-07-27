@@ -986,7 +986,7 @@ void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
 		Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesActiveArray, 0, this->comm_) );
 
 	MultiVectorLOPtr_Type flagsImport = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesNeeded, 1 ) );
-	flagsImport->putScalar(10);
+	flagsImport->putScalar(this->volumeID_);
 
 	MultiVectorLOPtr_Type flagsExport = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesActive, 1 ) );
 	Teuchos::ArrayRCP< LO > flagExportEntries  = flagsExport->getDataNonConst(0);

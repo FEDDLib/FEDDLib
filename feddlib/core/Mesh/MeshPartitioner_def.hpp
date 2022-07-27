@@ -39,14 +39,14 @@ MeshPartitioner<SC,LO,GO,NO>::~MeshPartitioner(){
 
     
 template <class SC, class LO, class GO, class NO>
-void MeshPartitioner<SC,LO,GO,NO>::readAndPartition( )
+void MeshPartitioner<SC,LO,GO,NO>::readAndPartition( int volumeID)
 {
     //Read
     string delimiter = pList_->get( "Delimiter", " " );
     for (int i=0; i<domains_.size(); i++) {
         std::string meshName = pList_->get( "Mesh " + std::to_string(i+1) + " Name", "noName" );
         TEUCHOS_TEST_FOR_EXCEPTION( meshName == "noName", std::runtime_error, "No mesh name given.");
-        domains_[i]->initializeUnstructuredMesh( domains_[i]->getDimension(), "P1" ); //we only allow to read P1 meshes.
+        domains_[i]->initializeUnstructuredMesh( domains_[i]->getDimension(), "P1",volumeID ); //we only allow to read P1 meshes.
         domains_[i]->readMeshSize( meshName, delimiter );
     }
     
@@ -905,9 +905,17 @@ void MeshPartitioner<SC,LO,GO,NO>::findAndSetSurfaceEdges( vec2D_int_Type& edgeE
                 
                 // If no partition was performed, all information is still global at this point. We still use the function below and partition the mesh and surfaces later.
                 FiniteElement feEdge( tmpEdgeLocal, edgeElementsFlag_vec[loc] );
-                ElementsPtr_Type surfaces = element.getSubElements();
-                // We set the edge to the corresponding element(s)
-                surfaces->setToCorrectElement( feEdge );
+                // In some cases an edge is the only part of the surface of an Element. In that case there does not exist a triangle subelement. 
+                // We then have to initialize the edge as subelement.                       
+                if ( !element.subElementsInitialized() ){
+                    element.initializeSubElements( "P1", 2 ); // only P1 for now                
+                    element.addSubElement( feEdge );
+                }
+                else {
+                    ElementsPtr_Type surfaces = element.getSubElements();
+                    // We set the edge to the corresponding element(s)
+                    surfaces->setToCorrectElement( feEdge );
+                }
                                 
             }
         }
