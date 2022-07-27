@@ -41,6 +41,11 @@ MeshPartitioner<SC,LO,GO,NO>::~MeshPartitioner(){
 template <class SC, class LO, class GO, class NO>
 void MeshPartitioner<SC,LO,GO,NO>::readAndPartition( int volumeID)
 {
+	if(volumeID != 10 ){
+		if(this->comm_->getRank()==0){
+			cout << " #### WARNING: The volumeID was set manually and is no longer 10. Please make sure your volumeID corresponds to the volumeID in your mesh file. #### " << endl;
+		}
+	}
     //Read
     string delimiter = pList_->get( "Delimiter", " " );
     for (int i=0; i<domains_.size(); i++) {
