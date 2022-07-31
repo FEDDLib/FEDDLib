@@ -6125,46 +6125,48 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
         ElementsPtr_Type subEl = fe.getSubElements(); // might be null
         for (int surface=0; surface<fe.numSubElements(); surface++) {
             FiniteElement feSub = subEl->getElement( surface  );
-            // Setting flag to the placeholder (second last entry). The last entry at (funcParameter.size() - 1) should always be the degree of the surface function
-            params[ funcParameter.size() - 2 ] = feSub.getFlag();
-            vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
-            buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
-            elScaling = B.computeScaling( );
-            // loop over basis functions
-            for (UN i=0; i < phi->at(0).size(); i++) {
-                Teuchos::Array<SC> value(0);
-                if ( fieldType == "Scalar" )
-                    value.resize( 1, 0. );
-                else if ( fieldType == "Vector" )
-                    value.resize( dim, 0. );
-                // loop over basis functions quadrature points
-                for (UN w=0; w<phi->size(); w++) {
-                    vec_dbl_Type x(dim,0.); //coordinates
-                    for (int k=0; k<dim; k++) {// transform quad points to global coordinates
-                        for (int l=0; l<dim-1; l++)
-                            x[ k ] += B[k][l] * (*quadPoints)[ w ][ l ] + b[k];
-                    }
-
-                    func( &x[0], &valueFunc[0], params);
+            if(subEl->getDimension() == dim-1){
+                // Setting flag to the placeholder (second last entry). The last entry at (funcParameter.size() - 1) should always be the degree of the surface function
+                params[ funcParameter.size() - 2 ] = feSub.getFlag();
+                vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                elScaling = B.computeScaling( );
+                // loop over basis functions
+                for (UN i=0; i < phi->at(0).size(); i++) {
+                    Teuchos::Array<SC> value(0);
                     if ( fieldType == "Scalar" )
-                        value[0] += weights->at(w) * valueFunc[0] * (*phi)[w][i];
-                    else if ( fieldType == "Vector" ){
-                        for (int j=0; j<value.size(); j++){
-                            value[j] += weights->at(w) * valueFunc[j] * (*phi)[w][i];
+                        value.resize( 1, 0. );
+                    else if ( fieldType == "Vector" )
+                        value.resize( dim, 0. );
+                    // loop over basis functions quadrature points
+                    for (UN w=0; w<phi->size(); w++) {
+                        vec_dbl_Type x(dim,0.); //coordinates
+                        for (int k=0; k<dim; k++) {// transform quad points to global coordinates
+                            for (int l=0; l<dim-1; l++)
+                                x[ k ] += B[k][l] * (*quadPoints)[ w ][ l ] + b[k];
+                        }
+
+                        func( &x[0], &valueFunc[0], params);
+                        if ( fieldType == "Scalar" )
+                            value[0] += weights->at(w) * valueFunc[0] * (*phi)[w][i];
+                        else if ( fieldType == "Vector" ){
+                            for (int j=0; j<value.size(); j++){
+                                value[j] += weights->at(w) * valueFunc[j] * (*phi)[w][i];
+                            }
                         }
                     }
-                }
 
-                for (int j=0; j<value.size(); j++)
-                    value[j] *= elScaling;
-                
-                if ( fieldType== "Scalar" )
-                    valuesF[ nodeList[ i ] ] += value[0];
-
-
-                else if ( fieldType== "Vector" ){
                     for (int j=0; j<value.size(); j++)
-                        valuesF[ dim * nodeList[ i ] + j ] += value[j];
+                        value[j] *= elScaling;
+                    
+                    if ( fieldType== "Scalar" )
+                        valuesF[ nodeList[ i ] ] += value[0];
+
+
+                    else if ( fieldType== "Vector" ){
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ i ] + j ] += value[j];
+                    }
                 }
             }
         }

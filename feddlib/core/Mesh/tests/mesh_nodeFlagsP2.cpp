@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     std::string FEType="P2";
     int numProcsCoarseSolve = 0;
     bool boolExportMesh = true;
-    int volumeID = 10;
+    int volumeID = 99;
 
     DomainPtr_Type domainP1;
     DomainPtr_Type domain;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 
     MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
     
-    partitionerP1.readAndPartition();
+    partitionerP1.readAndPartition(volumeID);
 
     domain.reset( new Domain_Type( comm, dim ) );
     domain->buildP2ofP1Domain( domainP1 );
