@@ -125,8 +125,8 @@ void rhsYZ(double* x, double* res, double* parameters){
 void rhsImp(double* x, double* res, double* parameters){
     
 	double r = sqrt(pow(x[0],2)+pow(x[1],2));
-	if(parameters[2] == 6){
-		if(parameters[0] <= 2.0 && abs(x[2]) < 0.25){
+	if(parameters[2] == 4){
+		if(parameters[0] <= 2.0 ){
 	   		 res[0] = (x[0]/r)*parameters[1]*sin(M_PI *1./4*(parameters[0]));
 	  	 	 res[1] = (x[1]/r)*parameters[1]*sin(M_PI *1./4*(parameters[0]));
 		}
@@ -149,37 +149,30 @@ void rhsImp(double* x, double* res, double* parameters){
 void rhsImpTime(double* x, double* res, double* parameters){
     
 	double r = sqrt(pow(x[0],2)+pow(x[1],2));
-	double T_Ramp = 2.;
+	double T_Ramp = 0.1;
 	double a =2.;
-
-	if(parameters[2] == 6){
-		if(parameters[0]<=T_Ramp){
-			if((x[2] < 0.5 ) && (x[2] > 0.0 )){
-				res[0] = sin(2*M_PI*(x[2]))*(x[0]/r)*parameters[1]*sin(M_PI *1./(2*T_Ramp)*(parameters[0]));
-				res[1] = sin(2*M_PI*(x[2]))*(x[1]/r)*parameters[1]*sin(M_PI *1./(2*T_Ramp)*(parameters[0]));
-			}
-			else{
-				res[0] = 0.0;
-				res[1] = 0.0;
-			}
+	if(parameters[0]<=T_Ramp){
+		if((x[2] < 0.5 ) && (x[2] > 0.0 )){
+			res[0] = sin(2*M_PI*(x[2]))*(x[0]/r)*parameters[1]*sin(M_PI *1./(2*T_Ramp)*(parameters[0]));
+			res[1] = sin(2*M_PI*(x[2]))*(x[1]/r)*parameters[1]*sin(M_PI *1./(2*T_Ramp)*(parameters[0]));
 		}
 		else{
-
-			if((x[2] < 0.5 + a*(parameters[0]-T_Ramp)/2.) && (x[2] > 0.0+a*(parameters[0]-T_Ramp)/2.)){
-				res[0] = sin(a*M_PI*(x[2]-2*(parameters[0]-T_Ramp)/2.))*(x[0]/r)*parameters[1];
-				res[1] = sin(a*M_PI*(x[2]-2*(parameters[0]-T_Ramp)/2.))*(x[1]/r)*parameters[1];
-			}	
-			else{
-				res[0] = 0.0;
-				res[1] = 0.0;
-				
-			}
-			
+			res[0] = 0.0;
+			res[1] = 0.0;
 		}
 	}
 	else{
-		res[0] = 0.;
-		res[1] = 0.;
+
+		if((x[2] < 0.5 + a*(parameters[0]-T_Ramp)/2.) && (x[2] > 0.0+a*(parameters[0]-T_Ramp)/2.)){
+			res[0] = sin(a*M_PI*(x[2]-2*(parameters[0]-T_Ramp)/2.))*(x[0]/r)*parameters[1];
+			res[1] = sin(a*M_PI*(x[2]-2*(parameters[0]-T_Ramp)/2.))*(x[1]/r)*parameters[1];
+		}	
+		else{
+			res[0] = 0.0;
+			res[1] = 0.0;
+			
+		}
+		
 	}
 	res[2] = 0.0;
 
@@ -457,13 +450,16 @@ int main(int argc, char *argv[])
         }
         else if(dim == 3)
         {
-            bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_Y", dim); // donut outflow
-			bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Z", dim); // donut outflow
-	        bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_X", dim); // donut outflow
-                          
-            bcFactoryStructure->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_Y", dim); // donut outflow
-            bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Z", dim); // donut outflow
-            bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_X", dim); // donut outflow           
+            bcFactory->addBC(zeroDirichlet3D, 5, 0, domainStructure, "Dirichlet_Y_Z", dim); // donut outflow
+            bcFactory->addBC(zeroDirichlet3D, 6, 0, domainStructure, "Dirichlet_X_Z", dim); // donut outflow 
+			bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim); // donut outflow
+	        bcFactory->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim); // donut outflow
+
+             
+            bcFactoryStructure->addBC(zeroDirichlet3D, 5, 0, domainStructure, "Dirichlet_Y_Z", dim); // donut outflow
+            bcFactoryStructure->addBC(zeroDirichlet3D, 6, 0, domainStructure, "Dirichlet_X_Z", dim); // donut outflow
+            bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim); // donut outflow
+            bcFactoryStructure->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim); // donut outflow           
            
         }
         
@@ -485,7 +481,7 @@ int main(int argc, char *argv[])
         else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
-                sci.problemStructure_->addRhsFunction( rhsImp,0 );
+                sci.problemStructure_->addRhsFunction( rhsImpTime,0 );
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
                 double degree = 0.;
@@ -493,7 +489,7 @@ int main(int argc, char *argv[])
 
             }
             else{             
-                sci.problemStructureNonLin_->addRhsFunction( rhsImp,0 );
+                sci.problemStructureNonLin_->addRhsFunction( rhsImpTime,0 );
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( force );
                 double degree = 0.;
@@ -511,10 +507,9 @@ int main(int argc, char *argv[])
         else if(dim==3)
         {
 
-            bcFactory->addBC(inflowChem, 6, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactory->addBC(inflowChem, 4, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactoryChem->addBC(inflowChem, 6, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactoryChem->addBC(inflowChem, 4, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+            bcFactory->addBC(inflowChem, 2, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+            bcFactoryChem->addBC(inflowChem, 2, 0, domainChem, "Dirichlet", 1); // inflow of Chem
+           // bcFactoryChem->addBC(inflowChem, 4, 1, domainChem, "Dirichlet", 1); // inflow of Chem
         }
 
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems

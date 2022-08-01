@@ -20,8 +20,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_sciBenchmark
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_sciBenchmark
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES structureBenchmark3.mesh 
+    SOURCE_FILES channel_13k.mesh 
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES structureBenchmark3.mesh 
+	DEST_FILES channel_13k.mesh 
 	EXEDEPS sci_Benchmark
 )
