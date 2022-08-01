@@ -125,21 +125,21 @@ void rhsYZ(double* x, double* res, double* parameters){
 void rhsImp(double* x, double* res, double* parameters){
     
 	double r = sqrt(pow(x[0],2)+pow(x[1],2));
-	if(parameters[2] == 4){
-		if(parameters[0] <= 2.0 ){
-	   		 res[0] = (x[0]/r)*parameters[1]*sin(M_PI *1./4*(parameters[0]));
-	  	 	 res[1] = (x[1]/r)*parameters[1]*sin(M_PI *1./4*(parameters[0]));
-		}
-		else{ 
-		  	res[0] = (x[0]/r)*parameters[1];
-			res[1] = (x[1]/r)*parameters[1];
-		}
+
+	if(parameters[0] <= 2.0 ){
+   		 res[0] = (x[0]/r)*parameters[1]*sin(M_PI *1./4*(parameters[0]));
+  	 	 res[1] = (x[1]/r)*parameters[1]*sin(M_PI *1./4*(parameters[0]));
 	}
+	else{ 
+	  	res[0] = (x[0]/r)*parameters[1];
+		res[1] = (x[1]/r)*parameters[1];
+	}
+
 	else{
 		res[0] = 0.0;
 		res[1] = 0.0;
-		
-	}
+	}		
+	
   
     res[2] = 0.;
     return;
@@ -481,7 +481,7 @@ int main(int argc, char *argv[])
         else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
-                sci.problemStructure_->addRhsFunction( rhsImpTime,0 );
+                sci.problemStructure_->addRhsFunction( rhsImp,0 );
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
                 double degree = 0.;
@@ -489,7 +489,7 @@ int main(int argc, char *argv[])
 
             }
             else{             
-                sci.problemStructureNonLin_->addRhsFunction( rhsImpTime,0 );
+                sci.problemStructureNonLin_->addRhsFunction( rhsImp,0 );
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( force );
                 double degree = 0.;
