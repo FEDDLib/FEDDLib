@@ -135,11 +135,6 @@ void rhsImp(double* x, double* res, double* parameters){
 		res[1] = (x[1]/r)*parameters[1];
 	}
 
-	else{
-		res[0] = 0.0;
-		res[1] = 0.0;
-	}		
-	
   
     res[2] = 0.;
     return;
