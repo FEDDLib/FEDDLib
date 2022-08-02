@@ -241,8 +241,6 @@ void Problem<SC,LO,GO,NO>::assembleVolumeTerm(double time) const{
                 
                 this->sourceTerm_->getBlockNonConst(i)->exportFromVector( FERhs, false, "Add" );
             }
-            else    
-                cout << " No rhs function " << endl;
         }
     }
 }

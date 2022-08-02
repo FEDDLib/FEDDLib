@@ -146,29 +146,27 @@ void rhsImpTime(double* x, double* res, double* parameters){
 	double r = sqrt(pow(x[0],2)+pow(x[1],2));
 	double T_Ramp = 0.1;
 	double a =2.;
-	if(parameters[0]<=T_Ramp){
-		if((x[2] < 0.5 ) && (x[2] > 0.0 )){
-			res[0] = sin(2*M_PI*(x[2]))*(x[0]/r)*parameters[1]*sin(M_PI *1./(2*T_Ramp)*(parameters[0]));
-			res[1] = sin(2*M_PI*(x[2]))*(x[1]/r)*parameters[1]*sin(M_PI *1./(2*T_Ramp)*(parameters[0]));
-		}
-		else{
-			res[0] = 0.0;
-			res[1] = 0.0;
-		}
+	double t= parameters[0];
+	double forceS = parameters[1];
+	
+	if(parameters[2] == 2){
+		res[0] =  1./2*cos(1.5*M_PI*x[2]-4.0*t)*(x[0]/r)*forceS +0.5*(x[0]/r)*forceS; //sin(2*M_PI*(x[2]))*(x[0]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));
+		res[1] =  1./2*cos(1.5*M_PI*x[2]-4.0*t)*(x[1]/r)*forceS +0.5*(x[1]/r)*forceS;; //sin(2*M_PI*(x[2]))*(x[1]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));	
 	}
 	else{
-
-		if((x[2] < 0.5 + a*(parameters[0]-T_Ramp)/2.) && (x[2] > 0.0+a*(parameters[0]-T_Ramp)/2.)){
-			res[0] = sin(a*M_PI*(x[2]-2*(parameters[0]-T_Ramp)/2.))*(x[0]/r)*parameters[1];
-			res[1] = sin(a*M_PI*(x[2]-2*(parameters[0]-T_Ramp)/2.))*(x[1]/r)*parameters[1];
-		}	
-		else{
-			res[0] = 0.0;
-			res[1] = 0.0;
-			
-		}
+		res[0] = 0.0;
+		res[1] = 0.0;
 		
 	}
+
+
+	/*	if((x[2] < 0.5 + a*(parameters[0]-T_Ramp)/2.) && (x[2] > 0.0+a*(parameters[0]-T_Ramp)/2.)){
+			res[0] = sin(a*M_PI*(x[2]-2*(parameters[0]-T_Ramp)/2.))*(x[0]/r)*parameters[1];
+			res[1] = sin(a*M_PI*(x[2]-2*(parameters[0]-T_Ramp)/2.))*(x[1]/r)*parameters[1];
+		}	*/
+		
+		
+	
 	res[2] = 0.0;
 
     return;
@@ -363,6 +361,57 @@ int main(int argc, char *argv[])
 		exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
 
 		exParaF->save(0.0);
+		
+		exParaF->closeExporter();
+		// #####################
+		// BC Check
+		// #####################
+		// Checking BCs
+		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+
+
+		exportSolution.reset(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapVecFieldUnique()));
+		exportSolution->putScalar(0.0);
+		
+	    exportSolutionConst = exportSolution;
+		exPara->setup("BC COND", domainStructure->getMesh(), discType);
+	    
+	    exPara->addVariable(exportSolutionConst, "BC Cond", "Vector", dim, domainStructure->getMapUnique());
+
+		vec_int_ptr_Type flags = domainStructure->getBCFlagUnique();
+		vec2D_dbl_ptr_Type nodes = domainStructure->getPointsUnique();
+
+		entries  = exportSolution->getDataNonConst(0);
+
+		double T_Ramp = 2.;
+        double dt = parameterListAll->sublist("Timestepping Parameter").get("dt",1.0);
+	    double tMax = parameterListAll->sublist("Timestepping Parameter").get("Final time",1.0);
+    	double forceS = parameterListProblem->sublist("Parameter").get("Volume force",10.);
+		double r=0.;
+		vec_dbl_Type res(3);
+		double a = 2.;
+		for(double t=0.; t < tMax ; t= t+dt){
+
+			for(int i=0; i< nodes->size(); i++){
+
+				if(flags->at(i) == 2){
+					vec_dbl_Type x = nodes->at(i);
+					r = sqrt(pow(x[0],2)+pow(x[1],2));
+
+
+					res[0] =  1./2*cos(1.5*M_PI*x[2]-4.0*t)*(x[0]/r)*forceS +0.5*(x[0]/r)*forceS; //sin(2*M_PI*(x[2]))*(x[0]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));
+					res[1] =  1./2*cos(1.5*M_PI*x[2]-4.0*t)*(x[1]/r)*forceS +0.5*(x[1]/r)*forceS;; //sin(2*M_PI*(x[2]))*(x[1]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));
+						
+					res[2] = 0.0;
+
+				
+					for(int d=0; d<dim ; d++)
+						entries[i*dim+d] = res[d];
+				}
+			}
+	    	exPara->save(t);
+
+		}
 
 
         if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
@@ -476,7 +525,7 @@ int main(int argc, char *argv[])
         else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
-                sci.problemStructure_->addRhsFunction( rhsImp,0 );
+                sci.problemStructure_->addRhsFunction( rhsImpTime,0 );
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
                 double degree = 0.;
@@ -484,7 +533,7 @@ int main(int argc, char *argv[])
 
             }
             else{             
-                sci.problemStructureNonLin_->addRhsFunction( rhsImp,0 );
+                sci.problemStructureNonLin_->addRhsFunction( rhsImpTime,0 );
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( force );
                 double degree = 0.;

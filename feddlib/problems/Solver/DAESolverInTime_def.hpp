@@ -1021,7 +1021,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         else{
             problemTime_->combineSystems();
             problemTime_->setBoundaries(time);       
-            problemTime_->solve();
+            (*its)[0]=problemTime_->solve();
             }
 
         if (timeSteppingTool_->currentTime() <= dt+1.e-10) 
