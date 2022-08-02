@@ -150,8 +150,8 @@ void rhsImpTime(double* x, double* res, double* parameters){
 	double forceS = parameters[1];
 	
 	if(parameters[2] == 2){
-		res[0] =  1./2*cos(1.5*M_PI*x[2]-4.0*t)*(x[0]/r)*forceS +0.5*(x[0]/r)*forceS; //sin(2*M_PI*(x[2]))*(x[0]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));
-		res[1] =  1./2*cos(1.5*M_PI*x[2]-4.0*t)*(x[1]/r)*forceS +0.5*(x[1]/r)*forceS;; //sin(2*M_PI*(x[2]))*(x[1]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));	
+		res[0] =  1./2*cos(1.0*M_PI*x[2]-4.0*t)*(x[0]/r)*forceS +0.5*(x[0]/r)*forceS; //sin(2*M_PI*(x[2]))*(x[0]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));
+		res[1] =  1./2*cos(1.0*M_PI*x[2]-4.0*t)*(x[1]/r)*forceS +0.5*(x[1]/r)*forceS;; //sin(2*M_PI*(x[2]))*(x[1]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));	
 	}
 	else{
 		res[0] = 0.0;
@@ -399,8 +399,8 @@ int main(int argc, char *argv[])
 					r = sqrt(pow(x[0],2)+pow(x[1],2));
 
 
-					res[0] =  1./2*cos(1.5*M_PI*x[2]-4.0*t)*(x[0]/r)*forceS +0.5*(x[0]/r)*forceS; //sin(2*M_PI*(x[2]))*(x[0]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));
-					res[1] =  1./2*cos(1.5*M_PI*x[2]-4.0*t)*(x[1]/r)*forceS +0.5*(x[1]/r)*forceS;; //sin(2*M_PI*(x[2]))*(x[1]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));
+					res[0] =  1./2*cos(1.0*M_PI*x[2]-4.0*t)*(x[0]/r)*forceS +0.5*(x[0]/r)*forceS; //sin(2*M_PI*(x[2]))*(x[0]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));
+					res[1] =  1./2*cos(1.0*M_PI*x[2]-4.0*t)*(x[1]/r)*forceS +0.5*(x[1]/r)*forceS;; //sin(2*M_PI*(x[2]))*(x[1]/r)*forceS*sin(M_PI *1./(2*T_Ramp)*(t));
 						
 					res[2] = 0.0;
 
