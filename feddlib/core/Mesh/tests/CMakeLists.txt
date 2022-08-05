@@ -119,9 +119,9 @@ TRIBITS_ADD_TEST(
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_nodeFlagsP2
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES meshNodeTestP23D.mesh
+    SOURCE_FILES meshNodeTestP23D_2.mesh
     DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    DEST_FILES meshNodeTestP23D.mesh
+    DEST_FILES meshNodeTestP23D_2.mesh
     EXEDEPS mesh_nodeFlagsP2
 )
 
