@@ -223,29 +223,14 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
     this->system_->addBlock( BT, 0, 1 );
     this->system_->addBlock( B, 1, 0 );
     
-    
-    
     if ( !this->getFEType(0).compare("P1") ) {
         C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-        this->feFactory_->assemblyBDStabilization( this->dim_, "P1", C, true); 
+        this->feFactory_->assemblyBDStabilization( this->dim_, "P1", C, true);
         C->resumeFill();
         C->scale( -1. / ( viscosity * density ) );
         C->fillComplete( pressureMap, pressureMap );
         
         this->system_->addBlock( C, 1, 1 );
-    }
-    else{
-    	// In order to set Dirichlet Boundary Conditions to the pressure block, we need to add an "empty" Matrix at (1,1)
-    	// Otherwise the builder will skip the pressure block.
-    	// We have to preallocate the diagonal indices of the Matrix, as the 'preset' values structure is used to change them to 
-    	// ones and zeros for dirichlet values. 
-      	C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-        this->feFactory_->assemblyIdentity(C); // assemble as identity matrix with diagonal entries
-        C->resumeFill();
-        C->scale( 0. );	// Scale ones back to zeros
-        C->fillComplete( pressureMap, pressureMap );       
-        this->system_->addBlock( C, 1, 1 );
-    
     }
 
 };
@@ -508,6 +493,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
                                                         const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
 {
 
+
     using Teuchos::RCP;
     using Teuchos::rcp;
     using Teuchos::rcp_dynamic_cast;
@@ -612,6 +598,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
                                                    const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
 {
 
+
     using Teuchos::RCP;
     using Teuchos::rcp;
     using Teuchos::rcp_dynamic_cast;
@@ -690,7 +677,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
 
             W_tpetraMat->resumeFill();
 
-
             for (auto i=0; i<tpetraMatXpetra->getMap()->getNodeNumElements(); i++) {
                 ArrayView< const LO > indices;
                 ArrayView< const SC > values;
@@ -698,7 +684,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
                 W_tpetraMat->replaceLocalValues( i, indices.size(), values.getRawPtr(), indices.getRawPtr() );
             }
             W_tpetraMat->fillComplete();
-           
 
         }
 
@@ -856,13 +841,6 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     this->setBoundariesSystem();
 
-
-	cout << " ############################################################################# " << endl;
-	cout << " CREATE W PREC " << endl;
-	cout << " ############################################################################# " << endl;
-
-	this->getSystem()->getBlock(0,1)->print();
-			
     if (!type.compare("Teko")) { //
         this->setupPreconditioner( type );
         stokesTekoPrecUsed_ = false;

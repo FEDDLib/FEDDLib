@@ -187,10 +187,10 @@ LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
         }
     } else {
         if ( this->FEType_ == "P1" ) {
-            return 500;
+            return 100;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 560;
+            return 160;
             }
         else {
             return 100;
