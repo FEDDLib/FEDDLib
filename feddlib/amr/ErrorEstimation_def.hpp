@@ -491,12 +491,12 @@ void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type inputMeshP1,vec2D_
 		cout << "	__________________________________________________________________________________________________________ " << endl;
 		cout << " " << endl;
 		cout << " 	The area you requested for Refinement is :" << endl ;
-			cout << "	 x in [" << area[0][0] << ", " << area[0][1] << "] " << endl;
+			cout << "	x in [" << area[0][0] << ", " << area[0][1] << "] " << endl;
 		if(this->dim_>1)
-			cout << " 	y in [" << area[1][0] << ", " << area[1][1] << "] " << endl;
+			cout << "	y in [" << area[1][0] << ", " << area[1][1] << "] " << endl;
 		if(this->dim_>2)
-			cout << " 	z in [" << area[2][0] << ", " << area[2][1] << "] " << endl;
-		cout << "__________________________________________________________________________________________________________ " << endl;
+			cout << "	z in [" << area[2][0] << ", " << area[2][1] << "] " << endl;
+		cout << "	__________________________________________________________________________________________________________ " << endl;
 	}
 	vec_int_Type edgeNum(6); 
 	edgeElements->matchEdgesToElements(elementMap);
@@ -564,6 +564,45 @@ void ErrorEstimation<SC,LO,GO,NO>::tagArea( MeshUnstrPtr_Type inputMeshP1,vec2D_
 		cout << "	__________________________________________________________________________________________________________ " << endl;
 		cout << " " << endl;
 		cout << "	 With the 'tagArea tool' " << taggedElements << " Elements were tagged for Refinement " << endl;
+		cout << "	__________________________________________________________________________________________________________ " << endl;
+	}
+
+}
+
+/*!
+\brief Tags only a certain Area for refinement and is independent of any error estimation.
+
+@param[in] inputMeshP1 The P1 Mesh that is used for later refinement.
+@param[in] area  Area that is suppose to be refined. If is a vector defining the area as follows: row1:[x_0,x_1] x-limits, row2: [y_0,y_1] y-limits, row3: [z_0,z_1] z-limits .
+*/
+template <class SC, class LO, class GO, class NO>
+void ErrorEstimation<SC,LO,GO,NO>::tagAll( MeshUnstrPtr_Type inputMeshP1){
+
+	inputMesh_ = inputMeshP1;
+
+	ElementsPtr_Type elements = inputMesh_->getElementsC();
+   	EdgeElementsPtr_Type edgeElements = inputMesh_->getEdgeElements();
+	MapConstPtr_Type elementMap = inputMesh_->getElementMap();
+	int myRank = inputMesh_->comm_->getRank();
+
+	int numberEl = elements->numberElements();
+	int numberPoints =dim_+1;
+
+	vec2D_dbl_ptr_Type vecPoints= inputMesh_->getPointsRepeated();
+
+	int taggedElements=0;
+
+	for(int i=0; i<numberEl; i++){
+		elements->getElement(i).tagForRefinement();
+		taggedElements++;						
+	}
+		
+	reduceAll<int, int> (*inputMesh_->getComm(), REDUCE_MAX, taggedElements, outArg (taggedElements));
+
+	if(inputMesh_->getComm()->getRank()==0){
+		cout << "	__________________________________________________________________________________________________________ " << endl;
+		cout << " " << endl;
+		cout << "	With tag all:' " << taggedElements << " Elements were tagged for Refinement " << endl;
 		cout << "	__________________________________________________________________________________________________________ " << endl;
 	}
 

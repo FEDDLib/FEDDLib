@@ -8,7 +8,7 @@ TRIBITS_ADD_TEST(
     NAME laplaceAdaptive2D
     ARGS 
 	--problemfile=parametersProblem.xml
-    NUM_MPI_PROCS 8
+    NUM_MPI_PROCS 4
 )
 
 TRIBITS_ADD_TEST(

@@ -47,6 +47,49 @@ void dummyFuncSol(double* x, double* res){
 
     return;
 }
+/*!
+\brief Initializing mesh refinement with minimal information. This is only useful for refining either uniformaly or only a certain area.
+
+@param[in] int dim
+
+*/
+template <class SC, class LO, class GO, class NO>
+AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(ParameterListPtr_Type parameterListAll):
+inputMeshP1_(),
+inputMeshP12_(),
+outputMesh_(),
+errorElementsMv_(),
+errorEstimationMv_(0),
+domainsP1_(0)
+{
+	parameterListAll_ = parameterListAll;
+	this->dim_ = parameterListAll->sublist("Parameter").get("Dimension",2);;
+	hasProblemType_ = false;
+
+	FEType1_ = "P1";
+	FEType2_ = parameterListAll->sublist("Parameter").get("Discretization","P1");
+
+	exportWithParaview_ = false;
+
+	tol_= parameterListAll->sublist("Mesh Refinement").get("Toleranz",0.001);
+	theta_ = parameterListAll->sublist("Mesh Refinement").get("Theta",0.35);
+	markingStrategy_ = parameterListAll->sublist("Mesh Refinement").get("RefinementType","Uniform");
+	maxIter_ = parameterListAll->sublist("Mesh Refinement").get("MaxIter",3);
+
+	writeRefinementInfo_ = parameterListAll->sublist("Mesh Refinement").get("Write Refinement Info",true);
+	writeMeshQuality_ = parameterListAll->sublist("Mesh Refinement").get("Write Mesh Quality",true);
+
+	coarseningCycle_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening Cycle",0);
+	coarseningM_ =  parameterListAll->sublist("Mesh Refinement").get("Coarsening m",1);
+	coarseningN_  = parameterListAll->sublist("Mesh Refinement").get("Coarsening n" ,1);
+
+	refinementMode_  = parameterListAll->sublist("Mesh Refinement").get("Refinement Mode" ,"Regular");
+
+	exactSolFunc_ = dummyFuncSol;
+	exactSolPFunc_ = dummyFuncSol;
+
+
+}
 
 /*!
 \brief Initializing problem with the kind of problem we are solving for determining the correct error estimation. ParameterListAll delivers all necessary information (i.e. dim, feType). This constructor is used if no exact solutions are known.
@@ -203,6 +246,8 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	inputMeshP1_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1->getMesh() , true);
 	inputMeshP1_->FEType_ = domainP1->getFEType();
 
+	inputMeshP1_->assignEdgeFlags();
+
 	MeshUnstrPtr_Type outputMesh(new MeshUnstr_Type(domainP1->getComm(),  inputMeshP1_->volumeID_));
 
 	domainRefined->initWithDomain(domainP1);
@@ -220,6 +265,51 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	int currentLevel =0;
 	while(currentLevel < level){		
 		errorEstimator.tagArea(inputMeshP1_,area);
+		refinementFactory.refineMesh(inputMeshP1_,currentLevel, outputMesh, refinementMode_);
+
+		inputMeshP1_ = outputMesh;
+		currentLevel++;
+	}
+
+    domainRefined->setMesh(outputMesh);
+	
+	return domainRefined;
+
+}
+/*!
+\brief Initializing problem if uniform refinement is requested.
+
+@param[in] domainP1 P_1 Domain
+@param[in] level intensity of refinement. Number of levels equals number of performed refinements.
+
+*/
+template <class SC, class LO, class GO, class NO>
+typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>:: refineUniform(DomainPtr_Type domainP1, int level ){
+
+	DomainPtr_Type domainRefined(new Domain<SC,LO,GO,NO>( domainP1->getComm() , dim_ ));
+
+	inputMeshP1_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1->getMesh() , true);
+	inputMeshP1_->FEType_ = domainP1->getFEType();
+
+	inputMeshP1_->assignEdgeFlags();
+		
+	MeshUnstrPtr_Type outputMesh(new MeshUnstr_Type(domainP1->getComm(),  inputMeshP1_->volumeID_));
+
+	domainRefined->initWithDomain(domainP1);
+
+	inputMeshP1_ = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1->getMesh() , true);
+	inputMeshP1_->FEType_ = domainP1->getFEType();
+
+	// Error Estimation object
+    ErrorEstimation<SC,LO,GO,NO> errorEstimator (dim_, problemType_ , writeMeshQuality_);
+
+	// Refinement Factory object
+	RefinementFactory<SC,LO,GO,NO> refinementFactory( domainP1->getComm(), inputMeshP1_->volumeID_, parameterListAll_); // refinementRestriction_, refinement3DDiagonal_, restrictionLayer_); 
+
+	// Estimating the error with the Discretizations Mesh.
+	int currentLevel =0;
+	while(currentLevel < level){		
+		errorEstimator.tagAll(inputMeshP1_);
 		refinementFactory.refineMesh(inputMeshP1_,currentLevel, outputMesh, refinementMode_);
 
 		inputMeshP1_ = outputMesh;
@@ -278,7 +368,8 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::identifyProblem(BlockMultiVectorConstP
 
 template <class SC, class LO, class GO, class NO>
 typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinement<SC,LO,GO,NO>::globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP12, BlockMultiVectorConstPtr_Type solution,ProblemPtr_Type problem, RhsFunc_Type rhsFunc ){
-
+    TEUCHOS_TEST_FOR_EXCEPTION( !hasProblemType_ , std::runtime_error, "No consideration of Problem Type. Please specify or only use: refineArea or refineUniform.");
+		
 	solution_ = solution;
 
 	currentIter_ = domainsP1_.size() ;

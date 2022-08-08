@@ -115,6 +115,8 @@ public:
 
 	void tagArea(MeshUnstrPtr_Type meshUnstr,vec2D_dbl_Type area);
 
+	void tagAll(MeshUnstrPtr_Type meshUnstr);
+
 	string refinementRestriction_ = "none";
 	string markingStrategy_ = "Maximum";
 	double theta_ = 0.5;

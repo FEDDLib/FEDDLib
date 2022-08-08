@@ -895,8 +895,8 @@ void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
 		newFlags[i]=this->determineFlagP2(p1ID, p2ID, i , markedPoints );
 		if(newFlags[i] != -1){ // questionable point that were given a flag, but that is not certain yet
 			vec_LO_Type elementsOfEdge = edgeElements->getElementsOfEdge( (int) i );		
-       		for (int j=0; j<elementsOfEdge.size(); j++) {
-           		if ( elementsOfEdge[j] == -1 ) 
+	   		for (int j=0; j<elementsOfEdge.size(); j++) {
+	       		if ( elementsOfEdge[j] == -1 ) 
 					markedTrue[i] =1;
 			}
 		}	

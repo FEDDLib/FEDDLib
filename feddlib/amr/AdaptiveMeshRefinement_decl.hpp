@@ -85,8 +85,9 @@ public:
     typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
     typedef Teuchos::RCP<const BlockMultiVector_Type> BlockMultiVectorConstPtr_Type;
   
-
     AdaptiveMeshRefinement();
+
+    AdaptiveMeshRefinement(ParameterListPtr_Type parameterListAll);
     
     AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll);
 
@@ -98,6 +99,8 @@ public:
 	DomainPtr_Type globalAlgorithm(DomainPtr_Type domainP1, DomainPtr_Type domainP12, BlockMultiVectorConstPtr_Type solution,ProblemPtr_Type problem, RhsFunc_Type rhsFunc );
 
 	DomainPtr_Type refineArea(DomainPtr_Type domainP1, vec2D_dbl_Type area, int level);
+    
+    DomainPtr_Type refineUniform(DomainPtr_Type domainP1, int level);
     
 	MultiVectorConstPtr_Type calcExactSolution();
 	MultiVectorConstPtr_Type calcExactSolutionP();
@@ -197,6 +200,7 @@ private:
 	bool writeRefinementInfo_ = true ;
 	bool writeMeshQuality_ = true ;
 
+	bool hasProblemType_=true;
 
 	ParameterListPtr_Type parameterListAll_ ;
 
