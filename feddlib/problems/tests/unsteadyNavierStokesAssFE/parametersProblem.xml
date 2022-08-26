@@ -23,7 +23,7 @@
         <Parameter name="Use WRMS" type="bool" value="false"/>
         
         <Parameter name="MaxNonLinIts" type="int" value="10"/>
-        <Parameter name="Cancel MaxNonLinIts" type="bool" value="true"/>
+        <Parameter name="Cancel MaxNonLinIts" type="bool" value="false"/>
         <Parameter name="Symmetric gradient" type="bool" value="false"/>
     </ParameterList>
     <ParameterList name="Mesh Partitioner">

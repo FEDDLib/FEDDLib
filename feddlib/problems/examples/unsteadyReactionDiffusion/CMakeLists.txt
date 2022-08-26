@@ -20,9 +20,9 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyReactionDiffusion
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_unsteadyReactionDiffusion
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-	SOURCE_FILES square.mesh
+	SOURCE_FILES cube_0_5.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES square.mesh
+	DEST_FILES cube_0_5.mesh
 	EXEDEPS unsteadyReactionDiffusion
 )
 

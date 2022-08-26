@@ -96,15 +96,10 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 
 void inflowParabolic2D(double* x, double* res, double t, const double* parameters){
 
-     //double H = parameters[1];
-    double H = 0.1;
-    // res[0] = 4*parameters[0]*x[1]*(H-x[1])/(H*H);
-    // For v = 0.01 with rho=1000 so mu = 10
-    // and dp/dx should be= -10^4
-    res[0] = 0.05*(-1.0)*10000.0*(x[1]*x[1] - x[1]*H);
-    //*10.0;
+    double H = parameters[1];
+    res[0] = 4.*parameters[0]*x[1]*(H-x[1])/(H*H);
     res[1] = 0.;
-
+    
     return;
 }
 
@@ -261,32 +256,16 @@ int main(int argc, char *argv[]) {
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
 
-          	 parameter_vec.push_back(0.1);//height of inflow region
+          	 parameter_vec.push_back(0.41);//height of inflow region
 
-            if (dim==2){
-                /* COUETTE
-// So for Couette Flow we have a moving upper plate and rigid lower plate  
-                bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim); // wall
-                bcFactory->addBC(couette2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec); // wall
-// The flow will be induced by the moving plate so there should be no pressure gradient in this testcase
-                bcFactory->addBC(zeroDirichlet2D, 3, 1, domainPressure, "Dirichlet", 1); // outflow
-                bcFactory->addBC(zeroDirichlet2D, 4, 1, domainPressure, "Dirichlet", 1); // inflow
-*/
-/* POISEUILLE */
-         bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim); // wall
-                bcFactory->addBC(zeroDirichlet2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec); // wall
-                //bcFactory->addBC(, 3, 0, domainVelocity, "Dirichlet_Z", dim); // flag 3 is neumann 0, müssen wir nicht explizit angeben, da das defaulr ist 
-                //bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
-              
-                  bcFactory->addBC(inflowParabolic2D, 4, 0, domainVelocity, "Dirichlet", dim, parameter_vec); 
-               //  bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1); //Outflow
-           //    bcFactory->addBC(FixedDirichlet, 4, 1, domainPressure, "Dirichlet", 1, parameter_vec); // inflow
-           // FESTLEGEN VON WERT AM RECHTEN RAND GEHT NICHT
-                           //  bcFactory->addBC(zeroDirichlet, 4, 1, domainPressure, "Dirichlet", 1, parameter_vec); // inflow
-           // bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1); //Outflow
-
-
-
+			if (dim==2){
+                bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+//                       bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
+//                        bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
+                //bcFactory->addBC(zeroDirichlet2D, 3, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(zeroDirichlet2D, 5, 0, domainVelocity, "Dirichlet", dim);
             }
             else if (dim==3){
                 bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
@@ -336,7 +315,7 @@ int main(int argc, char *argv[]) {
 
 
            	// ---------------------
-			// New Assembly Rouine
+			// New Assembly Routine
        // /*
 
         if (verbose) {

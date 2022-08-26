@@ -355,6 +355,44 @@ void MultiVector<SC,LO,GO,NO>::writeMM(std::string fileName) const{
     tpetraWriter.writeDenseFile(fileName, tpetraMultiVector, "multivector", "");
 }
     
+
+template <class SC, class LO, class GO, class NO>
+void MultiVector<SC,LO,GO,NO>::readMM(std::string fileName) const{
+    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in writeMM is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION( !(multiVector_->getMap()->lib()==Xpetra::UseTpetra), std::logic_error,"Only available for Tpetra underlying lib.");
+
+    typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
+    typedef Teuchos::RCP<TpetraCrsMatrix> TpetraCrsMatrixPtr;
+
+    typedef Tpetra::MultiVector<SC,LO,GO,NO> TpetraMultiVector;
+    typedef Teuchos::RCP<TpetraMultiVector> TpetraMultiVectorPtr;
+
+    typedef Tpetra::Map<LO,GO,NO> TpetraMap;
+    typedef Teuchos::RCP<TpetraMap> TpetraMapPtr;
+
+    Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
+
+
+    Xpetra::TpetraMultiVector<SC,LO,GO,NO>& xTpetraMultiVector = dynamic_cast<Xpetra::TpetraMultiVector<SC,LO,GO,NO> &>(*multiVector_);
+    TpetraMultiVectorPtr tpetraMultiVector = xTpetraMultiVector.getTpetra_MultiVector();
+
+    Teuchos::RCP<const Tpetra::Map<LO,GO,NO> > tpetraMap = tpetraMultiVector->getMap();
+
+    Tpetra::MatrixMarket::Reader< TpetraCrsMatrix > tpetraReader;
+
+    tpetraMultiVector = tpetraReader.readDenseFile(fileName, multiVector_->getMap()->getComm() ,tpetraMap);
+
+    for (UN j=0; j<this->getNumVectors(); j++) {
+        Teuchos::ArrayRCP< const SC > valuesIn = tpetraMultiVector->getData(j);
+        Teuchos::ArrayRCP< SC > valuesThis = this->getDataNonConst(j);
+        for (UN i=0; i<valuesThis.size(); i++)//can this be quicker?
+            valuesThis[i] = valuesIn[i];
+    }
+
+    //multiVector_->describe(*out,Teuchos::VERB_EXTREME);
+}
+
+
 template <class SC, class LO, class GO, class NO>
 typename MultiVector<SC,LO,GO,NO>::MultiVectorConstPtr_Type MultiVector<SC,LO,GO,NO>::getVector( int i ) const{
 
