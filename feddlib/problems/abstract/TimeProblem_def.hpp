@@ -63,7 +63,6 @@ template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
     // If timestepping class is external, it is assumed that the full timedependent problem matrix and rhs are assembled during the assemble call(s)
     std::string timestepping = parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep");
-    std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
 
     if (type == "MassSystem"){
         // is not used in FSI
@@ -103,6 +102,7 @@ void TimeProblem<SC,LO,GO,NO>::reAssembleAndFill( BlockMatrixPtr_Type bMat, std:
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
 
+    cout << " COMBINE SYSTEMS " << endl;
     BlockMatrixPtr_Type tmpSystem = problem_->getSystem();
     int size = tmpSystem->size();
 

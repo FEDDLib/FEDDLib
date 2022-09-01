@@ -16,6 +16,8 @@
         <Parameter name="Load Stepping" type="bool" value="true"/>
         <Parameter name="Coupling Type" type="string" value="implicit"/>
 
+        <Parameter name="Write File" type="string" value="Implicit_Solution"/>
+        <Parameter name="Read File" type="string" value="Implicit_Solution"/>
        
         <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
         <Parameter name="absNonLinTol" type="double" value="1.0e-2"/>

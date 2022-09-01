@@ -66,7 +66,7 @@ materialModel_( parameterListStructure->sublist("Parameter").get("Material model
     couplingType_ =    parameterListSCI->sublist("Parameter").get("Coupling Type","explicit");
     loadStepping_ =    parameterListSCI->sublist("Parameter").get("Load Stepping",false);
 
-
+    this->info();
 }
 
 
@@ -585,7 +585,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
         this->problemTimeChem_->setTimeParameters(massCoeffChem,problemCoeffChem);
     }
     else{
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Implement other FSI Chem time stepping than BDF.");
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Implement other SCI Chem time stepping than BDF.");
     }
     // ######################
     // Struktur: Mass-, Problem, SourceTerm Koeffizienten
@@ -638,8 +638,14 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
     this->problemTimeStructure_->setTimeParameters(massCoeffStructure,problemCoeffStructure);
 
     this->problemTimeChem_->assemble( "MassSystem" );
+    if(this->verbose_)
+        std::cout << "done for chem -- \n" <<endl;
     this->problemTimeStructure_->assemble( "MassSystem" );
-    
+    if(this->verbose_)
+        std::cout << "done for displacement -- \n" << endl;
+    if(this->verbose_)
+        std::cout << "done -- \n" << endl;
+
 }
 
 

@@ -484,11 +484,16 @@ int main(int argc, char *argv[])
 
         daeTimeSolver.advanceInTime();
         
-        sci.getSolution()->getBlock(0)->writeMM("FEDDLib_Solution");
+
+        string	writeFile   	= parameterListProblem->sublist("Parameter").get("Write File","FEDDLib_Solution");
+
+        sci.getSolution()->getBlock(0)->writeMM(writeFile);
         
         Teuchos::RCP<MultiVector<SC,LO,GO,NO> > solutionRead = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( sci.getSolution()->getBlock(0)->getMap() ) ); 
 
-		solutionRead->readMM("FEDDLib_Solution");
+        string	readFile= parameterListProblem->sublist("Parameter").get("Read File","FEDDLib_Solution");
+
+		solutionRead->readMM(readFile);
         Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solReadConst= solutionRead;
         Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solConst = sci.getSolution()->getBlock(0);
 

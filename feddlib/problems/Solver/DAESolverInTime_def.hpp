@@ -145,6 +145,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTime(){
         advanceInTimeSCI();
         
     }
+    else if(this->parameterList_->sublist("Parameter").get("FSCI",false))
+    {
+        advanceInTimeFSCI();
+        
+    }
     else{
         if (!parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep").compare("Singlestep")) {
             NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
@@ -1081,6 +1086,458 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 }
 
 template<class SC,class LO,class GO,class NO>
+void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
+{
+    // problemCoeff vor A (= komplettes steady-System)
+    // massCoeff vor M (= Massematrix)
+    // coeffSourceTerm vor f (= rechte Seite der DGL)
+    cout << " ###### advanceInTimeFSCI #########" << endl;
+  
+    
+    FSCIProblemPtr_Type fsci = Teuchos::rcp_dynamic_cast<FSCIProblem_Type>( this->problemTime_->getUnderlyingProblem() );
+    
+    bool print = parameterList_->sublist("General").get("ParaViewExport",false);
+    bool printData = parameterList_->sublist("General").get("Export Data",false);
+    bool printExtraData = parameterList_->sublist("General").get("Export Extra Data",false);
+        
+    if (print)
+    {
+        exportTimestep();
+    }
+
+
+    vec_dbl_ptr_Type its = Teuchos::rcp(new vec_dbl_Type ( 2, 0. ) ); //0:linear iterations, 1: nonlinear iterations
+    ExporterTxtPtr_Type exporterTimeTxt;
+    ExporterTxtPtr_Type exporterDisplXTxt;
+    ExporterTxtPtr_Type exporterDisplYTxt;
+    ExporterTxtPtr_Type exporterIterations;
+    ExporterTxtPtr_Type exporterNewtonIterations;
+    
+    if (printData) {
+        exporterTimeTxt = Teuchos::rcp(new ExporterTxt());
+        exporterDisplXTxt = Teuchos::rcp(new ExporterTxt());
+        exporterDisplYTxt = Teuchos::rcp(new ExporterTxt());
+        exporterTimeTxt->setup( "time", this->comm_ );
+
+        std::string suffix = parameterList_->sublist("General").get("Export Suffix","");
+        
+        exporterNewtonIterations = Teuchos::rcp(new ExporterTxt());
+        exporterNewtonIterations->setup( "newtonIterations" + suffix, this->comm_ );
+        
+        exporterIterations = Teuchos::rcp(new ExporterTxt());
+        exporterIterations->setup( "linearIterations" + suffix, this->comm_ );
+    }
+    if (printExtraData) {
+
+        vec_dbl_Type v(3,-9999.);
+        this->problemTime_->getValuesOfInterest(v);
+        vec_dbl_Type vGathered(this->comm_->getSize());
+        Teuchos::gatherAll<int,double>( *this->comm_, 1, &v[0], vGathered.size(), &vGathered[0] );
+        int targetRank=0;
+        while (vGathered[targetRank] < 0){
+            targetRank++;
+            TEUCHOS_TEST_FOR_EXCEPTION( targetRank == vGathered.size(), std::runtime_error, "No targetRank for export of displacements was found!" );
+        }
+        
+        std::string suffix = parameterList_->sublist("General").get("Export Suffix","");
+        
+        exporterDisplXTxt->setup( "displ_x" + suffix, this->comm_ , targetRank);
+        exporterDisplYTxt->setup( "displ_y" + suffix, this->comm_ , targetRank);
+        
+    }
+    
+    // Notwendige Parameter
+    bool geometryExplicit = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
+    int sizeFSI = timeStepDef_.size();
+
+    // ACHTUNG
+    int sizeFluid = 2; // u_f  + p
+    int sizeStructure = 1; // d_s
+    int sizeChem =1; // c
+
+    double dt = timeSteppingTool_->get_dt();
+    double beta = timeSteppingTool_->get_beta();
+    double gamma = timeSteppingTool_->get_gamma();
+    int nmbBDF = timeSteppingTool_->getBDFNumber();
+
+    // ######################
+    // Fluid: Mass-, Problem, SourceTerm Koeffizienten
+    // ######################
+    SmallMatrix<double> massCoeffFluid(sizeFluid);
+    SmallMatrix<double> problemCoeffFluid(sizeFluid);
+    double coeffSourceTermFluid = 0.0;
+
+    for (int i=0; i<sizeFluid; i++) {
+        for (int j=0; j<sizeFluid; j++) {
+            if (timeStepDef_[i][j]>0 && i==j) {
+                massCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
+            }
+            else{
+                massCoeffFluid[i][j] = 0.0;
+            }
+        }
+    }
+    for (int i=0; i<sizeFluid; i++) {
+        for (int j=0; j<sizeFluid; j++){
+            if (timeStepDef_[i][j]>0){
+                problemCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(1);
+                coeffSourceTermFluid = timeSteppingTool_->getInformationBDF(1);
+            }
+            else{
+                problemCoeffFluid[i][j] = 1.;
+            }
+        }
+    }
+
+
+    // ######################
+    // Struktur: Mass-, Problem, SourceTerm Koeffizienten
+    // ######################
+    // Koeffizienten vor der Massematrix und vor der Systemmatrix des steady-Problems
+    SmallMatrix<double> massCoeffStructure(sizeStructure);
+    SmallMatrix<double> problemCoeffStructure(sizeStructure);
+    double coeffSourceTermStructure = 0.0; // Koeffizient fuer den Source-Term (= rechte Seite der DGL); mit Null initialisieren
+
+    // Koeffizient vor der Massematrix
+    for(int i = 0; i < sizeStructure; i++)
+    {
+        for(int j = 0; j < sizeStructure; j++)
+        {
+            // Falls in dem Block von timeStepDef_ zeitintegriert werden soll.
+            // i == j, da vektorwertige Massematrix blockdiagonal ist
+            if(timeStepDef_[i + sizeFluid][j + sizeFluid] > 0  && i == j) // Weil: (u_f, p, d_s,...) und timeStepDef_ von FSI
+            {
+               // Vorfaktor der Massematrix in der LHS
+                massCoeffStructure[i][j] = 1.0/(dt*dt*beta);
+            }
+            else
+            {
+                massCoeffStructure[i][j] = 0.;
+            }
+        }
+    }
+
+    
+    // Die anderen beiden Koeffizienten
+    for(int i = 0; i < sizeStructure; i++)
+    {
+        for(int j = 0; j < sizeStructure; j++)
+        {
+            if(timeStepDef_[i + sizeFluid][j + sizeFluid] > 0 )
+            {
+                problemCoeffStructure[i][j] =  1.0;
+                // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
+                coeffSourceTermStructure = 1.0; // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
+            }
+            else // Die steady-Systemmatrix ist nicht zwingend blockdiagonal
+            {
+                problemCoeffStructure[i][j] = 1.0;
+            }
+        }
+    }
+
+        // ######################
+    // Chem: Mass-, Problem, SourceTerm Koeffizienten
+    // ######################
+    SmallMatrix<double> massCoeffChem(sizeChem);
+    SmallMatrix<double> problemCoeffChem(sizeChem);
+    double coeffSourceTermChem = 0.0;
+
+    /*for (int i=0; i<sizeChem; i++) {
+        for (int j=0; j<sizeChem; j++) {
+            if (timeStepDef_[i][j]>0 && i==j) {
+                massCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
+            }
+            else{
+                massCoeffChem[i][j] = 0.0;
+            }
+        }
+    }
+    for (int i=0; i<sizeChem; i++) {
+        for (int j=0; j<sizeChem; j++){
+            if (timeStepDef_[i][j]>0){
+                problemCoeffChem[i][j] = timeSteppingTool_->getInformationBDF(1);
+                coeffSourceTermChem = timeSteppingTool_->getInformationBDF(1);
+            }
+            else{
+                problemCoeffChem[i][j] = 1.;
+            }
+        }
+    }*/
+    
+    massCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(0) / dt; // 3/(2\Delta t)
+    problemCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(1); // 1
+    coeffSourceTermChem = timeSteppingTool_->getInformationBDF(1); // 1
+
+    // ######################
+    // FSI: Mass-, Problem-Koeffizienten
+    // ######################
+    SmallMatrix<double> massCoeffFSI(sizeFSI);
+    SmallMatrix<double> problemCoeffFSI(sizeFSI);
+    for (int i = 0; i < sizeFluid; i++)
+    {
+        for (int j = 0; j < sizeFluid; j++)
+        {
+            massCoeffFSI[i][j] = massCoeffFluid[i][j];
+            problemCoeffFSI[i][j] = problemCoeffFluid[i][j];
+        }
+    }
+
+    for (int i = 0; i < sizeStructure; i++)
+    {
+        for (int j = 0; j < sizeStructure; j++)
+        {
+            massCoeffFSI[i + sizeFluid][j + sizeFluid] = massCoeffStructure[i][j];
+            problemCoeffFSI[i + sizeFluid][j + sizeFluid] = problemCoeffStructure[i][j];
+        }
+    }
+
+    for (int i = 0; i < sizeChem; i++)
+    {
+        for (int j = 0; j < sizeChem; j++)
+        {
+            massCoeffFSI[i + sizeFluid+ sizeStructure][j + sizeFluid + sizeStructure] = massCoeffChem[i][j];
+            problemCoeffFSI[i + sizeFluid + sizeStructure][j + sizeFluid + sizeStructure] = problemCoeffChem[i][j];
+        }
+    }
+
+    // Setze noch Einsen an die Stellen, wo Eintraege (Kopplungsbloecke) vorhanden sind.
+    problemCoeffFSI[0][4] = 1.0; // C1_T
+    problemCoeffFSI[2][4] = 1.0; // C3_T
+    problemCoeffFSI[4][0] = 1.0; // C1
+    problemCoeffFSI[4][2] = 1.0; // C2
+    if(!geometryExplicit)
+    {
+        problemCoeffFSI[5][2] = 1.0; // C4
+        problemCoeffFSI[5][5] = 1.0; // H (Geometrie)
+        string linearization = this->parameterList_->sublist("General").get("Linearization","Extrapolation");
+        if(linearization == "Newton" || linearization == "NOX")
+        {
+            problemCoeffFSI[0][5] = 1.0; // Shape-Derivatives Velocity
+            problemCoeffFSI[1][5] = 1.0; // Shape-Derivatives Div-Nebenbedingung
+        }
+    }
+
+    this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+    
+    if (printExtraData) {
+        exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
+        vec_dbl_Type v(3,0.);
+        this->problemTime_->getValuesOfInterest( v );
+
+        exporterDisplXTxt->exportData( v[0] );
+        exporterDisplYTxt->exportData( v[1] );
+    }
+
+//    {
+//        // Initialize mass matrix for fluid problem
+//        MatrixPtr_Type massmatrix;
+//        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Fix reassembly of mass matrix for FSI.");
+//        MatrixPtr_Type massmatrix;
+//        fsi->setSolidMassmatrix( massmatrix );
+////        this->problemTime_->assemble( massmatrix, "GetFluidMassmatrix" );
+//    }
+    // ######################
+    // Time loop
+    // ######################
+#ifdef FEDD_TIMER
+    TimeMonitor_Type solveTM(*solveProblemTimer_);
+#endif
+    while(timeSteppingTool_->continueTimeStepping())
+    {
+        cout << " ###### Timeloop #########" << endl;
+
+        problemTime_->updateTime ( timeSteppingTool_->currentTime() );
+
+        string linearization = this->parameterList_->sublist("General").get("Linearization","Extrapolation");
+
+        // Ist noetig, falls wir extrapolieren, damit wir
+        // immer die korrekten previousSolution_ haben.
+        // TODO: Vermutlich reicht lediglich (da erstmal nur BDF2):
+        // this->problemTime_->updateSolutionMultiPreviousStep(nmbBDF);
+        if(nmbBDF<2 && !parameterList_->sublist("General").get("Linearization","FixedPoint").compare("Extrapolation"))
+        {// we need the last two solution for a second order extrapolation.
+            if (timeSteppingTool_->currentTime() != 0.0)
+            {
+                this->problemTime_->updateSolutionMultiPreviousStep(2);
+            }
+            else
+            {
+                this->problemTime_->updateSolutionMultiPreviousStep(1);
+            }
+        }
+        else
+        {
+            this->problemTime_->updateSolutionMultiPreviousStep(nmbBDF);
+        }
+        {
+#ifdef FEDD_DETAIL_TIMER
+            TimeMonitor_Type reassmbleTM(*reassmbleAddInterfaceRHSTimer_);
+#endif
+            // Den Block C2*d_s^n in der RHS im Interface-Block setzen.
+            this->problemTime_->assemble("AddInterfaceBlockRHS");
+        }
+        {
+#ifdef FEDD_DETAIL_TIMER
+            TimeMonitor_Type reassmbleTM(*reassmbleUpdateMeshDisplacementTimer_);
+#endif
+            // Alte Gitterbewegung mit der Geometrieloesung ueberschreiben.
+            this->problemTime_->assemble("UpdateMeshDisplacement");
+        }
+        // Das Geometry-Problem separat loesen, falls GE.
+        if(geometryExplicit)
+        {
+            {
+#ifdef FEDD_DETAIL_TIMER
+                TimeMonitor_Type reassmbleTM(*reassmbleSolveGeometryTimer_);
+#endif
+                this->problemTime_->assemble("SolveGeometryProblem");
+            }
+#ifdef FEDD_DETAIL_TIMER
+            TimeMonitor_Type reassmbleTM(*reassmbleMoveMeshTimer_);
+#endif
+            this->problemTime_->assemble("MoveMesh");
+        }
+
+
+        // ######################
+        // Struktur Zeitsystem
+        // ######################
+        // In jedem Zeitschritt die RHS der Struktur holen.
+        // Die Massematrix wird in FSI jedoch nur fuer t = 0 berechnet, da Referenzkonfiguration
+        // in der Struktur.
+        {
+            
+            cout << " ###### Timeloop: set Mass Systems #########" << endl;
+    
+#ifdef FEDD_DETAIL_TIMER
+            TimeMonitor_Type reassmbleTM(*reassmbleSolidMassAndRHSTimer_);
+#endif
+            // Hier wird auch direkt ein Update der Loesung bei der Struktur gemacht.
+            // Aehnlich zu "UpdateFluidInTime".
+            
+            if(timeSteppingTool_->currentTime() == 0.0)
+            {
+                // We extract the underlying FSI problem
+                MatrixPtr_Type massmatrix;
+                fsci->setSolidMassmatrix( massmatrix );
+                this->problemTime_->systemMass_->addBlock( massmatrix, 2, 2 );
+            }
+            // this should be done automatically rhs will not be used here
+//            this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 2 );
+            this->problemTime_->assemble("ComputeSolidRHSInTime");
+        }
+
+            cout << " ###### Timeloop: assemble time problem #########" << endl;
+
+        if(geometryExplicit) //  && linearization != "Extrapolation"
+        {
+#ifdef FEDD_DETAIL_TIMER
+            TimeMonitor_Type reassmbleTM(*reassmbleForTimeTimer_);
+#endif
+            this->problemTime_->assemble("ForTime");
+        }
+
+        // ######################
+        // Fluid Zeitsystem
+        // ######################
+        // Fluid-Loesung aktualisieren fuer die naechste(n) BDF2-Zeitintegration(en)
+        // in diesem Zeitschritt.
+        {
+#ifdef FEDD_DETAIL_TIMER
+            TimeMonitor_Type reassmbleTM(*reassmbleUpdateFluidInTimeTimer_);
+#endif
+            //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
+            this->problemTime_->assemble("UpdateFluidInTime");
+        }
+        // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
+        // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
+        // In der ersten nichtlinearen Iteration wird bei GI also die Massematrix zweimal assembliert.
+        // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
+        MatrixPtr_Type massmatrix;
+        fsci->setFluidMassmatrix( massmatrix );
+        this->problemTime_->systemMass_->addBlock( massmatrix, 0, 0 );
+        
+
+        // RHS nach BDF2
+        this->problemTime_->assemble( "ComputeFluidRHSInTime" ); // hier ist massmatrix nicht relevant
+//        this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
+
+
+        // ######################
+        // System loesen
+        // ######################
+        // Use BDF1 Parameters for first system
+        if (timeSteppingTool_->currentTime() == 0.) {
+            for (int i = 0; i < sizeFluid; i++)
+            {
+                for (int j = 0; j < sizeFluid; j++){
+                    if (massCoeffFSI[i][j] != 0.)
+                        massCoeffFSI[i][j] = 1./dt ;
+                }
+            }
+            this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+        }
+        
+        
+        double time = timeSteppingTool_->currentTime() + dt;
+        problemTime_->updateTime ( time );        
+        NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
+
+        nlSolver.solve(*this->problemTime_, time, its);
+        
+        if (timeSteppingTool_->currentTime() <= dt+1.e-10) {
+            for (int i = 0; i < sizeFluid; i++)
+            {
+                for (int j = 0; j < sizeFluid; j++){
+                    massCoeffFSI[i][j] = massCoeffFluid[i][j];
+                }
+            }
+            this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+        }
+        
+        this->problemTime_->computeValuesOfInterestAndExport();
+
+        timeSteppingTool_->advanceTime(true/*output info*/);
+        this->problemTime_->assemble("UpdateTime"); // Zeit in FSI inkrementieren
+        if (printData) {
+            exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
+            exporterIterations->exportData( (*its)[0] );
+            exporterNewtonIterations->exportData( (*its)[1] );
+        }
+        if (printExtraData) {
+            vec_dbl_Type v(3,-9999.);
+            this->problemTime_->getValuesOfInterest(v);
+            
+            exporterDisplXTxt->exportData( v[0] );
+            exporterDisplYTxt->exportData( v[1] );
+        }
+        if (print)
+        {
+            exportTimestep();
+        }
+
+    }
+
+    comm_->barrier();
+    if (printExtraData) {
+        exporterTimeTxt->closeExporter();
+        exporterIterations->closeExporter();
+        exporterNewtonIterations->closeExporter();
+    }
+    if (printExtraData) {
+        exporterDisplXTxt->closeExporter();
+        exporterDisplYTxt->closeExporter();        
+    }
+    if (print)
+    {
+        closeExporter();
+    }
+}
+
+
+
+template<class SC,class LO,class GO,class NO>
 void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
 {
     // problemCoeff vor A (= komplettes steady-System)
@@ -1863,7 +2320,7 @@ void DAESolverInTime<SC,LO,GO,NO>::setupExporter(){
     for (int i=0; i<timeStepDef_.size(); i++) {
         // \lambda in FSI, koennen wir nicht exportieren, weil keine Elementliste dafuer vorhanden
         bool exportThisBlock  = true;
-        exportThisBlock = !(this->parameterList_->sublist("Parameter").get("FSI",false) && i == 3);
+        exportThisBlock = !((this->parameterList_->sublist("Parameter").get("FSI",false)||(this->parameterList_->sublist("Parameter").get("FSCI",false))) && i == 4);
         if(exportThisBlock)
         {
             ExporterPtr_Type exporterPtr(new Exporter_Type());
