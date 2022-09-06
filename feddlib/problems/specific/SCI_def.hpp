@@ -105,7 +105,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
     if (type == "") {
         if (this->verbose_)
         {
-            std::cout << "-- Assembly SCI ... " << std::endl;
+            std::cout << "-- Assembly SCI " << couplingType_  << " ... " << std::endl;
         }
         if(couplingType_ == "explicit"){
 
@@ -519,7 +519,7 @@ template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListChem, ParameterListPtr_Type parameterListStructure) const
 {
     if(this->verbose_)
-        std::cout << "-- Setup SCI Sub-TimeProblems \n" << std::flush;
+        std::cout << "-- Setup SCI Sub-TimeProblems \n" << endl;
 
     double dt = timeSteppingTool_->get_dt();
     double beta = timeSteppingTool_->get_beta();
@@ -532,15 +532,15 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
         sizeStructure = this->problemStructureNonLin_->getSystem()->size();
     
     if(this->verbose_)
-        std::cout << "-- Setup SCI Sub-TimeProblem for Chem \n" << std::flush;
+        std::cout << "-- Setup SCI Sub-TimeProblem for Chem \n" << endl;
 
     problemTimeChem_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemChem_, this->comm_));
         
     if(this->verbose_)
-        std::cout << "-- done \n" << std::flush;
+        std::cout << "-- done \n" << endl;
 
     if(this->verbose_)
-        std::cout << "-- Setup SCI Sub-TimeProblem for Elasticity \n" << std::flush;
+        std::cout << "-- Setup SCI Sub-TimeProblem for Elasticity \n" << endl;
 
     if (materialModel_=="linear")
         problemTimeStructure_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemStructure_, this->comm_));
@@ -548,7 +548,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
         problemTimeStructure_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemStructureNonLin_, this->comm_));
 
     if(this->verbose_)
-        std::cout << "-- done \n" << std::flush;
+        std::cout << "-- done \n" << endl;
 
     // ######################
     // Chem: Mass-, Problem, SourceTerm Koeffizienten

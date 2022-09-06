@@ -343,6 +343,8 @@ void TimeProblem<SC,LO,GO,NO>::initializeCombinedSystems() const{
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::assembleMassSystem( ) const {
 
+    cout << " Assemble Mass System " << endl;
+
     ProblemPtr_Type tmpProblem;
     SC eps100 = 100.*Teuchos::ScalarTraits<SC>::eps();
 
@@ -351,6 +353,7 @@ void TimeProblem<SC,LO,GO,NO>::assembleMassSystem( ) const {
 
     int size = problem_->getSystem()->size();
     systemMass_->resize( size );
+    cout << "SystemMass_ size: " << size << endl;
     int dofsPerNode;
     for (int i=0; i<size; i++ ) {
 
@@ -358,7 +361,7 @@ void TimeProblem<SC,LO,GO,NO>::assembleMassSystem( ) const {
         MatrixPtr_Type M;
         if ( timeStepDef_[i][i]>0 ) {
             if (dofsPerNode>1) {
-                M = Teuchos::rcp(new Matrix_Type( this->getDomain(i)->getMapVecFieldUnique(), this->getDomain(i)->getApproxEntriesPerRow() ) );
+                M = Teuchos::rcp(new Matrix_Type( this->getDomain(i)->getMapVecFieldUnique(), dimension_*this->getDomain(i)->getApproxEntriesPerRow() ) );
                 feFactory_->assemblyMass(dimension_, problem_->getFEType(i), "Vector", M, true);
 
                 M->resumeFill();

@@ -1319,7 +1319,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
     }
 
     this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
-    
+    massCoeffFSI.print();
     if (printExtraData) {
         exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
         vec_dbl_Type v(3,0.);
@@ -1478,7 +1478,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
             }
             this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
         }
-        
+        massCoeffFSI.print();
         
         double time = timeSteppingTool_->currentTime() + dt;
         problemTime_->updateTime ( time );        

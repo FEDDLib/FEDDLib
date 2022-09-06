@@ -538,11 +538,11 @@ int main(int argc, char *argv[])
                 (*defTS)[0][0] = 1;
                 (*defTS)[0][1] = 1;
                 // TODO: [0][4] und [1][4] bei GI + Newton noetig?
-                if (verbose)
+               /* if (verbose)
                     std::cout << "### Double check temporal discretization of Shape Derivatives! ###" << std::endl;
                 
                 (*defTS)[0][5] = 1;
-                (*defTS)[1][5] = 1;
+                (*defTS)[1][5] = 1;*/
                 
                 // Struktur
                 (*defTS)[2][2] = 1;
@@ -794,8 +794,12 @@ int main(int argc, char *argv[])
             
             fsci.initializeGE();
             // Matrizen assemblieren
+            cout << "################################" << endl;
+            cout << "Main : Assemble() " << endl;
             fsci.assemble();
-            
+            cout << "done with assemble() " << endl;
+            cout << "################################" << endl;
+
             DAESolverInTime<SC,LO,GO,NO> daeTimeSolver(parameterListAll, comm);
 
             // Uebergebe auf welchen Bloecken die Zeitintegration durchgefuehrt werden soll

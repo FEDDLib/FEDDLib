@@ -104,7 +104,7 @@ exporterGeo_()
     (*defTSSCI)[0][0] = (*defTS)[2][2];
     (*defTSSCI)[1][1] = (*defTS)[3][3];
     problemSCI_ = Teuchos::rcp( new SCIProblem_Type( domainStructure, FETypeStructure, domainChem, FETypeChem, diffusionTensor,reactionFunc, parameterListStructure, parameterListChem, parameterListFSCI, defTSSCI ) );
-    //problemSCI_->initializeProblem();
+    problemSCI_->initializeProblem();
 
     /*if (materialModel_=="linear"){
         problemStructure_ = Teuchos::rcp( new StructureProblem_Type( domainStructure, FETypeStructure, parameterListStructure ) );
@@ -194,11 +194,14 @@ void FSCI<SC,LO,GO,NO>::assemble( std::string type ) const
         else
             this->problemStructureNonLin_->assemble();
         */
+        cout << " Hier 1 " << endl;
 
         this->problemSCI_->assemble();
         
+        cout << " Hier 2" << endl;
+
         this->problemGeometry_->assemble();
-        
+        cout << " Hier " << endl;
         if ( geometryExplicit_ && this->parameterList_->sublist("Exporter").get("Export GE geometry solution",false)){
             exporterGeo_ = Teuchos::rcp(new Exporter_Type());
             
@@ -1106,7 +1109,7 @@ void FSCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterList
 
    this->problemTimeFluid_->assemble( "MassSystem" );
    // this->problemTimeStructure_->assemble( "MassSystem" );
-   this->problemSCI_->setupSubTimeProblems(parameterListStructure,parameterListChem);
+  // this->problemSCI_->setupSubTimeProblems(parameterListStructure,parameterListChem); // already called in SCI
     if(this->verbose_)
         std::cout << " Setup Sub-Timeproblems done-- \n" << endl;
 
