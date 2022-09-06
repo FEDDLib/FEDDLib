@@ -44,6 +44,21 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
     return;
 }
 
+void zdisDirichlet3D(double* x, double* res, double t, const double* parameters){
+    
+    res[0] = 0.;
+    res[1] = 0.;
+     if (t<=parameters[1])
+            res[2] =  -0.1*parameters[0]/parameters[1];
+        else
+            res[2] =  0.;
+    
+    return;
+}
+
+
+
+
 void lineLoad2D(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
@@ -64,7 +79,7 @@ void lineLoad3D(double* x, double* res, double* parameters){
     res[0] = 0.;
     res[1] = 0.;
     res[2] = 0.;
-    if (parameters[2] == 8. /*surface at the top*/){
+    if (parameters[2] == 4. /*surface at the top*/){
         if (parameters[0]<parameters[1]/*max time ramp*/)
             res[2] = - 3000. * parameters[0] / parameters[1];
         else
@@ -200,10 +215,10 @@ int main(int argc, char *argv[]) {
                         domainPressure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
                         domainVelocity.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
                     }
-                    TEUCHOS_TEST_FOR_EXCEPTION( true , std::logic_error, "Flags and surface elements must be adjusted for tpm.");
+     //               TEUCHOS_TEST_FOR_EXCEPTION( true , std::logic_error, "Flags and surface elements must be adjusted for tpm.");
 
-                    domainPressure->buildMesh( 1, "Square", dim, discPressure, n, m, numProcsCoarseSolve);
-                    domainVelocity->buildMesh( 1, "Square", dim, discVelocity, n, m, numProcsCoarseSolve);
+                    domainPressure->buildMesh( 3, "Square", dim, discPressure, n, m, numProcsCoarseSolve);
+                    domainVelocity->buildMesh( 3, "Square", dim, discVelocity, n, m, numProcsCoarseSolve);
                 }
                 else if (!meshType.compare("unstructured")) {
                     domainPressure.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
@@ -252,129 +267,8 @@ int main(int argc, char *argv[]) {
             }
             
             
-            {
-//                ///////////////////////////
-//                // Mesh Export
-//                ///////////////////////////
-//                ofstream myFile;
-//                FILE * pFile;
-//                std::cout << "P2Elements ..." << '\n';
-//                myFile.open ("ElementsP2.txt");
-//                for(int i = 0; i < domainVelocity->getElements()->size(); i++)
-//                {
-//                    for(int j= 0; j < domainVelocity->getElements()->at(i).size(); j++)
-//                    {
-//                        int el = domainVelocity->getElements()->at(i).at(j)+1;
-//                        myFile << el;
-//                        myFile << " ";
-//                    }
-//                    myFile << endl;
-//                }
-//                myFile.close();
-//                std::cout << "done" << '\n';
-//
-////                std::cout << "P2 Surfaces..." << '\n';
-////                myFile.open ("SurfacesP2.txt");
-////                typedef ElementsNew Elements_Type;
-////                typedef Teuchos::RCP<Elements_Type> ElementsPtr_Type;
-////                int counterP2Surf = 0;
-////                for(int i = 0; i < domainVelocity->getElements()->size(); i++)
-////                {
-////                    ElementsPtr_Type subEl =
-////                        domainVelocity->getElementsC()->getElement(i).getSubElements();
-////                    if (!subEl.is_null()) {
-////                        for (int j=0; j < subEl->numberElements(); j++) {
-////                            FiniteElementNew subFe = subEl->getElement(j);
-////                            for (int l=0; l<subFe.size(); l++) {
-////                                myFile << subFe.getNode(l) + 1<<" ";
-////                            }
-////                            counterP2Surf++;
-////                            myFile << endl;
-////                        }
-////                    }
-////                }
-////                myFile.close();
-////                std::cout << "done" << '\n';
-////                std::cout << "Number P2 Surf:" << counterP2Surf << std::endl;
-//
-//
-//                std::cout << "P1Elements..." << '\n';
-//                myFile.open ("ElementsP1.txt");
-//                for(int i = 0; i < domainPressure->getElements()->size(); i++)
-//                {
-//                    for(int j= 0; j < domainPressure->getElements()->at(i).size(); j++)
-//                    {
-//                        int el = domainPressure->getElements()->at(i).at(j)+1;
-//                        myFile << el;
-//                        myFile << " ";
-//                    }
-//                    myFile << endl;
-//                }
-//                myFile.close();
-//                std::cout << "done" << '\n';
 
-//                std::cout << "P1 Surfaces..." << '\n';
-//                myFile.open ("SurfacesP1.txt");
-//                int counterP1Surf = 0;
-//                for(int i = 0; i < domainPressure->getElements()->size(); i++)
-//                {
-//                    ElementsPtr_Type subEl =
-//                        domainPressure->getElementsC()->getElement(i).getSubElements();
-//                    if (!subEl.is_null()) {
-//                        for (int j=0; j < subEl->numberElements(); j++) {
-//                            FiniteElementNew subFe = subEl->getElement(j);
-//                            for (int l=0; l<subFe.size(); l++) {
-//                                myFile << subFe.getNode(l) + 1<<" ";
-//                            }
-//                            counterP1Surf++;
-//                             myFile << endl;
-//                        }
-//                    }
-//                }
-//                myFile.close();
-//                std::cout << "done" << '\n';
-//                std::cout << "Number P1 Surf:" << counterP1Surf << std::endl;
 
-//                std::cout << "P2Nodes..." << '\n';
-//                //            myFile.open ("FluidP2NodesH00.txt");
-//                pFile = fopen ("NodesP2.txt","w");
-//
-//                for(int i = 0; i < domainVelocity->getPointsUnique()->size(); i++)
-//                {
-//                    for(int j= 0; j < domainVelocity->getPointsUnique()->at(i).size(); j++)
-//                    {
-//                        fprintf(pFile,"%4.10f ", domainVelocity->getPointsUnique()->at(i).at(j) );
-//
-//                        //                    printf("%4.10f ", domainFluidVelocity->getPointsUnique()->at(i).at(j) );
-//                        //                    myFile << domainFluidVelocity->getPointsUnique()->at(i).at(j);
-//                        //                    myFile << " ";
-//                    }
-//                    fprintf(pFile,"\n");
-//                    //                myFile << endl;
-//                }
-//                fclose(pFile);
-//                //            myFile.close();
-//                std::cout << "done" << '\n';
-//
-//                std::cout << "P1Nodes..." << '\n';
-//                //            myFile.open ("FluidP1NodesH00.txt");
-//                pFile = fopen ("NodesP1.txt","w");
-//
-//                for(int i = 0; i < domainPressure->getPointsUnique()->size(); i++)
-//                {
-//                    for(int j= 0; j < domainPressure->getPointsUnique()->at(i).size(); j++)
-//                    {
-//                        fprintf(pFile,"%4.10f ", domainPressure->getPointsUnique()->at(i).at(j) );
-//                        //                    myFile << domainFluidPressure->getPointsUnique()->at(i).at(j);
-//                        //                    myFile << " ";
-//                    }
-//                    fprintf(pFile,"\n");
-//                    //                myFile << endl;
-//                }
-//                fclose(pFile);
-//                //            myFile.close();
-//                std::cout << "done" << '\n';
-            }
 
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
             
@@ -388,7 +282,7 @@ int main(int argc, char *argv[]) {
                  |          |
                  2          3
                  |          |
-                 |          |
+                 |          |s
                   ----1-----
                  */
                                 
@@ -432,6 +326,22 @@ int main(int argc, char *argv[]) {
                 bcFactory->addBC(zeroDirichlet3D, 6, 0, domainVelocity, "Dirichlet_X", dim);
                 bcFactory->addBC(zeroDirichlet3D, 7, 0, domainVelocity, "Dirichlet_Y", dim);
                 bcFactory->addBC(zeroDirichlet, 8, 1, domainPressure, "Dirichlet", 1);//part of top boundary
+            }
+            else if(dim==3 && problemType == "structured"){
+                // cube 1x1x1
+               
+                std::vector<double>	parameters;
+               parameters.push_back(parameterListProblem->sublist("Timestepping Parameter").get("dt",0.1));
+               parameters.push_back(parameterListProblem->sublist("Timestepping Parameter").get("Final time ramp",0.1));
+               
+                bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(zeroDirichlet3D, 2, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(zeroDirichlet3D, 3, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
+                bcFactory->addBC(zeroDirichlet3D, 6, 0, domainVelocity, "Dirichlet", dim);
+
+                bcFactory->addBC(zdisDirichlet3D, 5, 0, domainVelocity, "Dirichlet", dim, parameters);
+                bcFactory->addBC(zeroDirichlet, 5, 1, domainPressure, "Dirichlet", 1);//part of top boundary
             }
             else if(dim==3 && problemType == "Excavation1"){
                 bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
