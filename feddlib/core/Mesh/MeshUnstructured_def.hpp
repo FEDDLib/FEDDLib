@@ -129,7 +129,8 @@ template <class SC, class LO, class GO, class NO>
 void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP1 ){
     
     // If flags of line segments should be used over surface flags, this functions must be checked
-     int rank = this->comm_->getRank();
+    
+    int rank = this->comm_->getRank();
     this->rankRange_ = meshP1->rankRange_;
     bool verbose( this->comm_->getRank() == 0 );
     this->elementMap_ = meshP1->elementMap_;
@@ -137,7 +138,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     this->dim_ = meshP1->getDimension();
     this->FEType_ = "P2";
     this->numElementsGlob_ = meshP1->numElementsGlob_;
-	//this->surfaceTriangleElements_ = meshP1->surfaceTriangleElements_; // for later
+	this->surfaceTriangleElements_ = meshP1->surfaceTriangleElements_; // for later
     
 	meshP1->assignEdgeFlags(); // Function that determines the flag for each edge. That way the P2 flags can easily be determined
     GO P1Offset = meshP1->mapUnique_->getMaxAllGlobalIndex()+1;
@@ -894,8 +895,8 @@ void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
 		newFlags[i]=this->determineFlagP2(p1ID, p2ID, i , markedPoints );
 		if(newFlags[i] != -1){ // questionable point that were given a flag, but that is not certain yet
 			vec_LO_Type elementsOfEdge = edgeElements->getElementsOfEdge( (int) i );		
-       		for (int j=0; j<elementsOfEdge.size(); j++) {
-           		if ( elementsOfEdge[j] == -1 ) 
+	   		for (int j=0; j<elementsOfEdge.size(); j++) {
+	       		if ( elementsOfEdge[j] == -1 ) 
 					markedTrue[i] =1;
 			}
 		}	

@@ -653,7 +653,6 @@ void ExporterParaView<SC,LO,GO,NO>::initXmfTimes(){
     }
 
 }
-
 template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::writeXmf(double time){
 
@@ -661,6 +660,8 @@ void ExporterParaView<SC,LO,GO,NO>::writeXmf(double time){
     std::string nameP_Y;
     std::string nameP_Z;
     std::string nameConn = "Connections";
+	if(redo_ == true)
+    	nameConn = "Connections" + std::to_string(timeIndex_);
     if (!parameterList_.is_null()){
         if ( parameterList_->sublist("Exporter").get("Write new mesh",false) ) {
             nameP_X = "PointsX" + std::to_string(timeIndex_);
@@ -683,6 +684,7 @@ void ExporterParaView<SC,LO,GO,NO>::writeXmf(double time){
     writeXmfVariables();
 
 }
+
 template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::writeXmfElements( std::string nameConn, double time ){
 

@@ -94,6 +94,19 @@ class FiniteElement {
     void setPredecessorElement(GO id) {predecessorElement_ = id; };
 
 	GO getPredecessorElement(){return predecessorElement_; };
+
+	void setRefinementEdge(LO id){refinementEdge_=id;};
+
+	LO getRefinementEdge(){return refinementEdge_;};
+
+	void setMarkedEdges(LO id){markedEdges_.push_back(id);};
+
+	vec_LO_Type getMarkedEdges(){return markedEdges_;};
+
+	void markEdge(){markedEdge_ = true;};
+
+	bool isMarkedEdge(){return markedEdge_;};
+
 private:
     
     vec_LO_Type localNodeIDs_; /*! Node IDs that define this element. */
@@ -101,9 +114,12 @@ private:
     ElementsPtr_Type subElements_;
     int numSubElements_;
     bool taggedForRefinement_ = false;
+    bool markedEdge_ = false;
     std::string refinementType_;  // Tag of finite Element
 	bool isInterfaceElement_ = false;
 	GO predecessorElement_ = -1;
+	LO refinementEdge_=-1;
+	vec_LO_Type markedEdges_;
     
     
 public:    

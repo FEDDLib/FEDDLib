@@ -193,6 +193,12 @@ public:
     
     void addParemeterRhs(double para){ parasSourceFunc_.push_back( para ); }
     
+
+	double calculateH1Norm(MultiVectorConstPtr_Type mv, int blockId1=0, int blockId2=0, int domainInd=0); // Function that calculates H1 Error in the 'mv * K * mv' sense, with K beeing the Stiffness Matrix
+
+	double calculateL2Norm(MultiVectorConstPtr_Type mv, int domainInd=0); // Function that calculates L2 Error in the 'mv * M * mv' sense, with M beeing the Mass Matrix
+
+
     int dim_;
     mutable CommConstPtr_Type comm_;
     mutable BlockMatrixPtr_Type system_;

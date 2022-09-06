@@ -183,7 +183,7 @@ LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
             return 48;
         }
         else {
-            return 40;
+            return 400;
         }
     } else {
         if ( this->FEType_ == "P1" ) {
@@ -191,7 +191,7 @@ LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
         }
         else if ( this->FEType_ == "P2" ) {
             return 160;
-        }
+            }
         else {
             return 100;
         }
@@ -354,53 +354,26 @@ void Domain<SC,LO,GO,NO>::buildP2ofP1Domain( DomainPtr_Type domainP1 ){ //P1 mes
 }
 
 template <class SC, class LO, class GO, class NO>
-vec_dbl_Type Domain<SC,LO,GO,NO>::errorEstimation(MultiVectorPtrConst_Type valuesSolution, double theta, string strategy){
-	// A-Posteriori Error Estimation, right now based in MeshUnstructuredRefinement, maybe reallocated later
+void Domain<SC,LO,GO,NO>::initWithDomain(DomainPtr_Type domainP1){ 
 
-	MeshUnstrRefPtr_Type meshUnstrRef =Teuchos::rcp_dynamic_cast<MeshUnstrRef_Type>(mesh_, true );
-
-	vec_dbl_Type errorElements = meshUnstrRef->errorEstimation(valuesSolution, theta, strategy);
-
-	return errorElements;
-
-}
-
-template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::initMeshRef( DomainPtr_Type domainP1 ){ 
-	// Initialize MeshRefinementType as through other function like meshPartitioner and buildP2OfP1 Mesh meshUnstr Type is required
-
-	MeshUnstrPtr_Type meshUnstr = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1->mesh_ , true);
-	MeshUnstrRefPtr_Type meshUnstrRefTmp = Teuchos::rcp( new MeshUnstrRef_Type( comm_, meshUnstr->volumeID_, meshUnstr ) );
-	mesh_ = meshUnstrRefTmp;
-
-}
-template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::refineMesh(DomainPtrArray_Type domainsP1, int j ,  bool checkRestrictions, string restriction){ 
-
-	// We pass on all previously refined meshes 
-	// Useful for later coarsening of elements or determining restrictions of refinement strategies 
-	// i.e. no previously green refined element is refined green again
-	MeshUnstrRefPtr_Type meshUnstructuredRefined;
-	MeshUnstrRefPtrArray_Type meshUnstructuredP1(j+1);
-	for(int i=0; i<j+1; i++)
-		meshUnstructuredP1[i] = Teuchos::rcp_dynamic_cast<MeshUnstrRef_Type>( domainsP1[i]->mesh_ );
-		
-	meshUnstructuredRefined = Teuchos::rcp( new MeshUnstrRef_Type( comm_, meshUnstructuredP1[j]->volumeID_) );
-
-	n_ = domainsP1[j]->n_;
-	m_ = domainsP1[j]->m_;
-    dim_ = domainsP1[j]->dim_;
-	FEType_ = domainsP1[j]->FEType_;
+	n_ = domainP1->n_;
+	m_ = domainP1->m_;
+    dim_ = domainP1->dim_;
+	FEType_ = domainP1->FEType_;
 
     numProcsCoarseSolve_ = 0;
     flagsOption_ = -1;
 
-    meshType_ = "unstructured";
-
-	// refining the mesh
-    meshUnstructuredRefined->refineMesh(meshUnstructuredP1,j, checkRestrictions, restriction);
+    meshType_ = domainP1->meshType_;
 	
-    mesh_ = meshUnstructuredRefined;
+    mesh_ = domainP1->mesh_;
+}
+
+
+template <class SC, class LO, class GO, class NO>
+void Domain<SC,LO,GO,NO>::setMesh(MeshUnstrPtr_Type meshUnstr){ 
+
+    mesh_ = meshUnstr;
 }
 
 template <class SC, class LO, class GO, class NO>

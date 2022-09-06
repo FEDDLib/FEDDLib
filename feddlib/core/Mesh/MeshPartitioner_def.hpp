@@ -430,6 +430,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
                     int index = mapRepeated->getLocalElement( (long long) eind[j] );
                     tmpElement.push_back(index);
                 }
+		std::sort(tmpElement.begin(), tmpElement.end());
                 FiniteElement fe( tmpElement, elementsGlobal->getElement( locepart.at(i) ).getFlag()  );
                 // convert global IDs of (old) globally owned subelements to local IDs
                 if (buildSurfaces) {

@@ -10,6 +10,10 @@
  @copyright CH
  */
 
+using Teuchos::reduceAll;
+using Teuchos::REDUCE_SUM;
+using Teuchos::REDUCE_MAX;
+using Teuchos::outArg;
 
 namespace FEDD {
 template<class SC,class LO,class GO,class NO>
@@ -450,7 +454,6 @@ template<class SC,class LO,class GO,class NO>
 void Problem<SC,LO,GO,NO>::addToRhs(BlockMultiVectorPtr_Type x) const{
 
     rhs_->update( 1. , *x , 1. );
-
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -484,5 +487,58 @@ void Problem<SC,LO,GO,NO>::initializeSolverBuilder() const{
     linearSolverBuilder_->setParameterList(pListThyraPrec);
 
 }
+
+
+// Functions that return the H1 and L2 Norm of a given Vector. The Norms being defined as:
+// || mv ||_L2 = mv^T * M * mv
+// || mv ||_H1 = mv^T * K * mv
+// with M beeing the mass matrix and K beeing the stiffness matrix
+
+template<class SC,class LO,class GO,class NO>
+double Problem<SC,LO,GO,NO>::calculateL2Norm(MultiVectorConstPtr_Type mv, int domainInd){
+
+  	MatrixPtr_Type M;
+	M = Teuchos::rcp(new Matrix_Type( this->domainPtr_vec_.at(domainInd)->getMapUnique(), this->getDomain(domainInd)->getApproxEntriesPerRow() ) );
+	this->feFactory_->assemblyMass(this->dim_,this->domain_FEType_vec_.at(domainInd),"Scalar", M);
+
+	Teuchos::RCP<MultiVector<SC,LO,GO,NO> > mvOutput = Teuchos::rcp(new MultiVector_Type( this->domainPtr_vec_.at(domainInd)->getMapUnique()  )); 
+
+	M->apply(*mv, *mvOutput);
+
+	Teuchos::ArrayRCP<SC> vector = mv->getDataNonConst(0);
+	Teuchos::ArrayRCP<SC> outputVector = mvOutput->getDataNonConst(0);
+
+	double result=0;
+	for(int i=0; i<vector.size() ; i++){
+		result += vector[i] * outputVector[i];
+	
+	}
+	reduceAll<int, double> (*comm_, REDUCE_SUM, result, outArg (result));
+
+	return result;
+
+}
+template<class SC,class LO,class GO,class NO>
+double Problem<SC,LO,GO,NO>::calculateH1Norm(MultiVectorConstPtr_Type mv, int blockId1, int blockId2, int domainInd){
+
+  	MatrixPtr_Type K  = this->getSystem()->getBlock(blockId1,blockId2);
+	
+	Teuchos::RCP<MultiVector<SC,LO,GO,NO> > mvOutput = Teuchos::rcp(new MultiVector_Type( K->getMap() )); 
+
+   	K->apply(*mv, *mvOutput ) ; // this represents mvOutput = K * mv ;
+
+	Teuchos::ArrayRCP<SC> vector = mv->getDataNonConst(0);
+	Teuchos::ArrayRCP<SC> outputVector = mvOutput->getDataNonConst(0);
+
+	double result=0;
+	for(int i=0; i<vector.size() ; i++){
+		result += vector[i] * outputVector[i];
+	
+	}
+	reduceAll<int, double> (*comm_, REDUCE_SUM, result, outArg (result));
+
+	return result;
+}
+
 }
 #endif
