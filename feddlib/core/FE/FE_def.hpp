@@ -391,13 +391,15 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
     	TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "No AceGen Implementation available for Discretization and Dimension." );
 
 
-    UN FElocChem = checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype
-    UN FElocSolid = checkFE(dim,FETypeSolid); // Checks for different domains which belongs to a certain fetype
+    UN FElocChem = 1; //checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype
+    UN FElocSolid = 0; //checkFE(dim,FETypeSolid); // Checks for different domains which belongs to a certain fetype
 
 	ElementsPtr_Type elementsChem= domainVec_.at(FElocChem)->getElementsC();
 
 	ElementsPtr_Type elementsSolid = domainVec_.at(FElocSolid)->getElementsC();
 
+    this->domainVec_.at(FElocChem)->info();
+    this->domainVec_.at(FElocSolid)->info();
 	//int dofsElement = elements->getElement(0).getVectorNodeList().size();
 
 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FElocSolid)->getPointsRepeated();
@@ -469,7 +471,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
 		if(assembleMode == "Jacobian"){
 			assemblyFEElements_[T]->assembleJacobian();
-		    
+
             elementMatrix = assemblyFEElements_[T]->getJacobian(); 
 			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
 			
@@ -484,14 +486,20 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
 			
 	}
+    cout << " Done with Assembly " << endl;
 
 	if ( assembleMode != "Rhs"){
 		A->getBlock(0,0)->fillComplete();
+      /*  A->getBlock(0,0)->writeMM();
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
+        A->getBlock(1,0)->writeMM();
+
 	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
-	    A->getBlock(1,1)->fillComplete();
+        A->getBlock(0,1)->writeMM();
+
+	    A->getBlock(1,1)->fillComplete();*/
 	}
-    
+
     if(assembleMode == "Rhs"){
 
 		MultiVectorPtr_Type resVecUnique_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocSolid)->getMapVecFieldUnique(), 1 ) );
@@ -1286,6 +1294,9 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
                 }
                 value[j] *= absDetB;
                 indices[j] = map->getGlobalElement( elements->getElement(T).getNode(j) );
+                if (setZeros_ && std::fabs(value[j]) < myeps_) {
+                    value[j] = 0.;
+                }
             }
             GO row = map->getGlobalElement( elements->getElement(T).getNode(i) );
 
@@ -1647,7 +1658,6 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
 
     TEUCHOS_TEST_FOR_EXCEPTION( FEType == "P0", std::logic_error, "Not implemented for P0" );
     UN FEloc = checkFE(dim,FEType);
-
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();

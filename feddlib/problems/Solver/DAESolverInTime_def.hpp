@@ -1319,7 +1319,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
     }
 
     this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
-    massCoeffFSI.print();
     if (printExtraData) {
         exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
         vec_dbl_Type v(3,0.);
@@ -1407,9 +1406,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
         // Die Massematrix wird in FSI jedoch nur fuer t = 0 berechnet, da Referenzkonfiguration
         // in der Struktur.
         {
-            
-            cout << " ###### Timeloop: set Mass Systems #########" << endl;
-    
+                
 #ifdef FEDD_DETAIL_TIMER
             TimeMonitor_Type reassmbleTM(*reassmbleSolidMassAndRHSTimer_);
 #endif
@@ -1427,8 +1424,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
 //            this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 2 );
             this->problemTime_->assemble("ComputeSolidRHSInTime");
         }
-
-            cout << " ###### Timeloop: assemble time problem #########" << endl;
 
         if(geometryExplicit) //  && linearization != "Extrapolation"
         {
@@ -1461,7 +1456,24 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
 
         // RHS nach BDF2
         this->problemTime_->assemble( "ComputeFluidRHSInTime" ); // hier ist massmatrix nicht relevant
-//        this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
+        // this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
+
+
+        {
+        //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
+            this->problemTime_->assemble("UpdateChemInTime");
+        }
+        // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
+        // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
+        // In der ersten nichtlinearen Iteration wird bei GI also die Massematrix zweimal assembliert.
+        // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
+        MatrixPtr_Type massmatrixC;
+        fsci->setChemMassmatrix( massmatrixC );
+        this->problemTime_->systemMass_->addBlock( massmatrixC, 3, 3);
+
+        // RHS nach BDF2
+        this->problemTime_->assemble( "ComputeChemRHSInTime" ); // hier ist massmatrix nicht relevant
+        //this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
 
 
         // ######################
@@ -1478,7 +1490,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
             }
             this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
         }
-        massCoeffFSI.print();
         
         double time = timeSteppingTool_->currentTime() + dt;
         problemTime_->updateTime ( time );        
@@ -1500,6 +1511,13 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
 
         timeSteppingTool_->advanceTime(true/*output info*/);
         this->problemTime_->assemble("UpdateTime"); // Zeit in FSI inkrementieren
+
+         std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
+
+        // Should be some place else
+        if(couplingType == "explicit")
+            this->problemTime_->assemble("UpdateEMod");
+
         if (printData) {
             exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
             exporterIterations->exportData( (*its)[0] );
@@ -2320,7 +2338,11 @@ void DAESolverInTime<SC,LO,GO,NO>::setupExporter(){
     for (int i=0; i<timeStepDef_.size(); i++) {
         // \lambda in FSI, koennen wir nicht exportieren, weil keine Elementliste dafuer vorhanden
         bool exportThisBlock  = true;
-        exportThisBlock = !((this->parameterList_->sublist("Parameter").get("FSI",false)||(this->parameterList_->sublist("Parameter").get("FSCI",false))) && i == 4);
+        if(this->parameterList_->sublist("Parameter").get("FSI",false) == true  )
+            exportThisBlock = (i != 3);
+       else if(this->parameterList_->sublist("Parameter").get("FSCI",false) == true)
+            exportThisBlock = (i != 4);
+
         if(exportThisBlock)
         {
             ExporterPtr_Type exporterPtr(new Exporter_Type());
@@ -2407,7 +2429,7 @@ void DAESolverInTime<SC,LO,GO,NO>::setupTimeStepping(){
     problemTime_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problem_,comm_));
     
     // Fuer FSI
-    if(this->parameterList_->sublist("Parameter").get("FSI",false) || this->parameterList_->sublist("Parameter").get("SCI",false))
+    if(this->parameterList_->sublist("Parameter").get("FSI",false) || this->parameterList_->sublist("Parameter").get("SCI",false) || this->parameterList_->sublist("Parameter").get("FSCI",false))
     {
         // Beachte: Massematrix ist schon vektorwertig!
         // Reset auf Massesystem von problemTime_ (=FSI), da auf problemTime_ kein assemble() bzw. assembleMassSystem() aufgerufen wird.

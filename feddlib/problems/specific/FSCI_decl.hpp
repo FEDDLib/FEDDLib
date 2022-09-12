@@ -159,6 +159,8 @@ public:
     // innerhalb einer Zeitschleife konstant ist.
     void setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const;
 
+    void setChemMassmatrix( MatrixPtr_Type& massmatrix ) const;
+
     void computeSolidRHSInTime() const;
     
     // Hier wird timeSteppingTool_->t_ inkrementiert

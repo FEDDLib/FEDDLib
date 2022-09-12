@@ -47,7 +47,6 @@ materialModel_( parameterListStructure->sublist("Parameter").get("Material model
         problemStructureNonLin_ = Teuchos::rcp( new StructureNonLinProblem_Type( domainStructure, FETypeStructure, parameterListStructure) );
         problemStructureNonLin_->initializeProblem();
     }
-    
     problemChem_ = Teuchos::rcp( new ChemProblem_Type( domainChem, FETypeChem, parameterListChem, diffusionTensor, reactionFunc ) );
     problemChem_->initializeProblem();
 
@@ -174,12 +173,21 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             // Chemistry
             this->system_->addBlock( this->problemChem_->system_->getBlock(0,0), 1, 1 );
         
+            // Dummy blocks
+            MatrixPtr_Type B(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+            B->fillComplete(this->getDomain(1)->getMapUnique(),this->getDomain(0)->getMapUnique());
+            MatrixPtr_Type BT(new Matrix_Type(this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) );
+            BT->fillComplete(this->getDomain(0)->getMapUnique(),this->getDomain(1)->getMapUnique());
+
+            this->system_->addBlock( B, 0, 1 );
+            this->system_->addBlock( BT, 1, 0 );
+
 
             // Fuer die Zeitprobleme
             timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
            
 
-            setupSubTimeProblems(this->problemChem_->getParameterList(), plStructure);
+            this->setupSubTimeProblems(this->problemChem_->getParameterList(), plStructure);
             // We set the vector from the partial problems
             this->setFromPartialVectorsInit();
             
@@ -227,23 +235,30 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
 
-            setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructureNonLin_->getParameterList());
-            
+            this->setupSubTimeProblems(this->problemChem_->getParameterList(), this->problemStructureNonLin_->getParameterList());
 
             this->problemTimeStructure_->assembleSourceTerm( 0. );
             this->problemTimeStructure_->addToRhs( this->problemTimeStructure_->getSourceTerm() );       
             this->problemTimeStructure_->setBoundariesRHS();
+            cout << "###### Back in assemble ######## " << endl;
 
             this->setFromPartialVectorsInit();
+            std::cout << " Step 1 " << std::endl;
 
 
             MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
             c_rep_->importFromVector(c, true);
 
+            std::cout << " Step 2 " << std::endl;
+
             MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
             d_rep_->importFromVector(d, true); 
         
+             std::cout << " Step 3 " << std::endl;
+
             this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
+             std::cout << " Step 4 " << std::endl;
+
         }
         else 
             TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Coupling Type unknown. Please choose either implicit or explicit coupling.");
@@ -360,7 +375,8 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
                 this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 0, 0 );
         }
         else if( couplingType_ == "implicit"){
-            
+
+            cout << " Assemble Newton for imlicit SCI Coupling " << endl;
             // Maybe nothing should happen here as there are no constant matrices
             this->system_.reset(new BlockMatrix_Type(2));
 
@@ -368,24 +384,29 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             MatrixPtr_Type B(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
             MatrixPtr_Type BT(new Matrix_Type(this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) );
             MatrixPtr_Type C(new Matrix_Type( this->getDomain(1)->getMapUnique(),this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ));
+                        cout << " Step 1 " << endl;
 
             // For implicit the system is ordered differently with solid block in 0,0 and diffusion in 1,1
             this->system_->addBlock(A,0,0);
             this->system_->addBlock(BT,0,1);
             this->system_->addBlock(B,1,0);
             this->system_->addBlock(C,1,1);
+                        cout << " Step 2 " << endl;
 
              MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
              c_rep_->importFromVector(c, true);
+                        cout << " Step 3 " << endl;
 
  
             MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
             d_rep_->importFromVector(d, true); 
-            
+                                    cout << " Step 4 " << endl;
+
 
 	        this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2,1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
                          
-        }
+        }                        cout << " Step 5 " << endl;
+
         
     }
 }
@@ -645,6 +666,8 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
         std::cout << "done for displacement -- \n" << endl;
     if(this->verbose_)
         std::cout << "done -- \n" << endl;
+
+    // TIMER ERSTELLEN AN DER
 
 }
 

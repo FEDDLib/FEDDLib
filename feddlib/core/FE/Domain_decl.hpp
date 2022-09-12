@@ -77,7 +77,7 @@ public:
     
     vec_int_ptr_Type getElementsFlag() const;
 
-    void info();
+    void info() const;
 
     void buildMesh(int flags, std::string meshType, int dim, std::string FEType, int N, int M, int numProcsCoarseSolve = 0);
     

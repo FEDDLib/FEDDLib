@@ -194,14 +194,9 @@ void FSCI<SC,LO,GO,NO>::assemble( std::string type ) const
         else
             this->problemStructureNonLin_->assemble();
         */
-        cout << " Hier 1 " << endl;
-
         this->problemSCI_->assemble();
         
-        cout << " Hier 2" << endl;
-
         this->problemGeometry_->assemble();
-        cout << " Hier " << endl;
         if ( geometryExplicit_ && this->parameterList_->sublist("Exporter").get("Export GE geometry solution",false)){
             exporterGeo_ = Teuchos::rcp(new Exporter_Type());
             
@@ -367,7 +362,7 @@ void FSCI<SC,LO,GO,NO>::assemble( std::string type ) const
         else
             plStructure = this->problemStructureNonLin_->getParameterList();*/
 
-        setupSubTimeProblems(this->problemFluid_->getParameterList(), this->problemSCI_->getParameterList(),this->problemSCI_->getParameterList());
+        this->setupSubTimeProblems(this->problemFluid_->getParameterList(), this->problemSCI_->getParameterList(),this->problemSCI_->getParameterList());
         
         if (this->verbose_)
         {
@@ -427,6 +422,15 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
         return;
     }
 
+    if(type == "UpdateChemInTime")
+    {
+        if(this->verbose_)
+            std::cout << "-- Reassembly (UpdateChemInTime)" << '\n';
+
+        this->problemSCI_->updateChemInTime();
+        return;
+    }
+
     if(type == "MoveMesh")
     {
         if(this->verbose_)
@@ -445,7 +449,16 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
         return;
     }
 
-    if(type == "ComputeFluidRHSInTime")
+    if(type == "ComputeChemRHSInTime")
+    {
+        if(this->verbose_)
+            std::cout << "-- Reassembly (ComputeChemRHSInTime)" << '\n';
+        
+        this->problemSCI_->computeChemRHSInTime( );
+        return;
+    }
+
+      if(type == "ComputeFluidRHSInTime")
     {
         if(this->verbose_)
             std::cout << "-- Reassembly (ComputeFluidRHSInTime)" << '\n';
@@ -453,6 +466,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
         computeFluidRHSInTime( );
         return;
     }
+
     if(type == "ComputeSolidRHSInTime")
     {
         if(this->verbose_)
@@ -477,7 +491,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
     }
     else
     {
-        geometrySolution = this->solution_->getBlock(4);
+        geometrySolution = this->solution_->getBlock(5);
     }
     meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
 
@@ -562,7 +576,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             }
             
             problemFluid_->reAssemble( "Newton" );
-            
+            cout << "Assemble Newton for Fluid done" <<endl;
             //if (materialModel_ != "linear")
             this->problemSCI_->reAssemble("Newton");
             
@@ -609,10 +623,10 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
     this->system_->addBlock( problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
     
     //if (materialModel_ != "linear")
-    this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 2, 2 );
-    this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(1,1), 3, 3 );
-    this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,1), 2, 3 );
-    this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(1,0), 3, 2 );
+    this->system_->addBlock(  this->problemSCI_->getSystem()->getBlock(0,0), 2, 2 );
+    this->system_->addBlock(  this->problemSCI_->getSystem()->getBlock(1,1), 3, 3 );
+    this->system_->addBlock(  this->problemSCI_->getSystem()->getBlock(0,1), 2, 3 );
+    this->system_->addBlock(  this->problemSCI_->getSystem()->getBlock(1,0), 3, 2 );
 
 }
 
@@ -757,23 +771,10 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
     
     // we need to account for the coupling in the residuals
     this->problemSCI_->calculateNonLinResidualVec( "reverse", time );
-    this->residualVec_->addBlock( this->problemStructureNonLin_->getResidualVector()->getBlockNonConst(0) , 2);
-    this->residualVec_->addBlock( this->problemStructureNonLin_->getResidualVector()->getBlockNonConst(1) , 3);
 
-    /*if (materialModel_!="linear"){
-        this->problemStructureNonLin_->calculateNonLinResidualVec( "reverse", time );
-        this->residualVec_->addBlock( this->problemStructureNonLin_->getResidualVector()->getBlockNonConst(0) , 2);
-        // we need to add a possible source term
-    }
-    else{
-        MultiVectorPtr_Type residualSolidFSCI =
-            Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(2) );
-        this->problemStructure_->getSystem()->getBlock(0,0)->apply( *this->problemStructure_->getSolution()->getBlock(0), *residualSolidFSCI, Teuchos::NO_TRANS, -1. ); // y= -Ax + 0*y
-        MultiVectorPtr_Type resSolidNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(2) );
-        resSolidNonConst->update(1., *this->problemStructure_->getRhs()->getBlock(0), 1.);
-        // we need to add a possible source term
-    }*/
-    
+    this->residualVec_->addBlock(  this->problemSCI_->getResidualVector()->getBlockNonConst(0) , 2);
+    this->residualVec_->addBlock(  this->problemSCI_->getResidualVector()->getBlockNonConst(1) , 3);
+
     MultiVectorPtr_Type residualFluidVelocityFSCI =
         Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(0) );
     MultiVectorPtr_Type residualSolidFSCI =
@@ -798,12 +799,12 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
     if (!geometryExplicit_) {
         
         MultiVectorPtr_Type residualGeometryFSCI =
-            Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(4) );
-        residualGeometryFSCI->update( 1. , *this->rhs_->getBlock(4), 0. ); // change to -1 for standard
+            Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(5) );
+        residualGeometryFSCI->update( 1. , *this->rhs_->getBlock(5), 0. ); // change to -1 for standard
 
-        this->system_->getBlock(4,4)->apply( *this->solution_->getBlock(4) , *residualGeometryFSCI, Teuchos::NO_TRANS, -1., 1. );
+        this->system_->getBlock(5,5)->apply( *this->solution_->getBlock(5) , *residualGeometryFSCI, Teuchos::NO_TRANS, -1., 1. );
         
-        this->system_->getBlock(4,2)->apply( *this->solution_->getBlock(2) , *residualGeometryFSCI, Teuchos::NO_TRANS, -1., 1. );
+        this->system_->getBlock(5,2)->apply( *this->solution_->getBlock(2) , *residualGeometryFSCI, Teuchos::NO_TRANS, -1., 1. );
         
     }
     // might also be called in the sub calculateNonLinResidualVec() methods which where used above
@@ -871,10 +872,10 @@ void FSCI<SC,LO,GO,NO>::setFromPartialVectorsInit() const
     this->sourceTerm_->addBlock( this->problemSCI_->getSourceTerm()->getBlockNonConst(1), 3 );
 
     if(!geometryExplicit_){
-        this->solution_->addBlock( this->problemGeometry_->getSolution()->getBlockNonConst(0), 4 );
+        this->solution_->addBlock( this->problemGeometry_->getSolution()->getBlockNonConst(0), 5 );
         // we dont have a previous solution for linear problems
-        this->rhs_->addBlock( this->problemGeometry_->getRhs()->getBlockNonConst(0), 4 );
-        this->sourceTerm_->addBlock( this->problemGeometry_->getSourceTerm()->getBlockNonConst(0), 4 );
+        this->rhs_->addBlock( this->problemGeometry_->getRhs()->getBlockNonConst(0), 5 );
+        this->sourceTerm_->addBlock( this->problemGeometry_->getSourceTerm()->getBlockNonConst(0), 5 );
     }
 }
     
@@ -1295,10 +1296,14 @@ void FSCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
 template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
 {
+
     //######################
     // Massematrix
     //######################
-    double density = this->problemSCI_->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
+    this->problemSCI_->setSolidMassmatrix(massmatrix);
+
+
+    /*double density = this->problemSCI_->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
     int size = this->problemSCI_->problemTimeStructure_->getSystem()->size();
 
     if(timeSteppingTool_->currentTime() == 0.0)
@@ -1315,7 +1320,37 @@ void FSCI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
 
             this->problemSCI_->problemTimeStructure_->systemMass_->addBlock( massmatrix, 0, 0 );
         }
-    }
+    }*/
+}
+
+// --------------
+// Set chem mass matrix
+template<class SC,class LO,class GO,class NO>
+void FSCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
+{
+    this->problemSCI_->setChemMassmatrix(massmatrix);
+    //######################
+    // Massematrix
+    //######################
+
+    /*double density = this->problemSCI_->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
+    int size = this->problemSCI_->problemTimeStructure_->getSystem()->size();
+
+    if(timeSteppingTool_->currentTime() == 0.0)
+    {
+        this->problemSCI_->problemTimeStructure_->systemMass_.reset(new BlockMatrix_Type(size));
+        {
+
+            massmatrix = Teuchos::rcp(new Matrix_Type( this->problemSCI_->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+            // 2 = Struktur
+            this->feFactory_->assemblyMass(this->dim_, this->problemSCI_->problemTimeStructure_->getFEType(0), "Vector", massmatrix, 2, true);
+            massmatrix->resumeFill();
+            massmatrix->scale(density);
+            massmatrix->fillComplete( this->problemSCI_->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique(), this->problemSCI_->problemTimeStructure_->getDomain(0)->getMapVecFieldUnique());
+
+            this->problemSCI_->problemTimeStructure_->systemMass_->addBlock( massmatrix, 0, 0 );
+        }
+    }*/
 }
 
 

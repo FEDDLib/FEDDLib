@@ -102,7 +102,6 @@ void TimeProblem<SC,LO,GO,NO>::reAssembleAndFill( BlockMatrixPtr_Type bMat, std:
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
 
-    cout << " COMBINE SYSTEMS " << endl;
     BlockMatrixPtr_Type tmpSystem = problem_->getSystem();
     int size = tmpSystem->size();
 
@@ -343,7 +342,6 @@ void TimeProblem<SC,LO,GO,NO>::initializeCombinedSystems() const{
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::assembleMassSystem( ) const {
 
-    cout << " Assemble Mass System " << endl;
 
     ProblemPtr_Type tmpProblem;
     SC eps100 = 100.*Teuchos::ScalarTraits<SC>::eps();
@@ -353,10 +351,8 @@ void TimeProblem<SC,LO,GO,NO>::assembleMassSystem( ) const {
 
     int size = problem_->getSystem()->size();
     systemMass_->resize( size );
-    cout << "SystemMass_ size: " << size << endl;
     int dofsPerNode;
     for (int i=0; i<size; i++ ) {
-
         dofsPerNode = problem_->getDofsPerNode(i);
         MatrixPtr_Type M;
         if ( timeStepDef_[i][i]>0 ) {

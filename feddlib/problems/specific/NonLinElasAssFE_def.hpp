@@ -98,7 +98,7 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         MultiVectorPtr_Type fRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) ); 
         fRep->putScalar(0.);   
         this->residualVec_->addBlock( fRep, 0 ); 
-        if(this->parameterList_->sublist("Parameter").get("SCI",false) == true)
+        if(this->parameterList_->sublist("Parameter").get("SCI",false) == true || this->parameterList_->sublist("Parameter").get("FSCI",false) == true )
        		 this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,this->getDomain(0), this->eModVec_,true);
        	else 
  			this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,true);

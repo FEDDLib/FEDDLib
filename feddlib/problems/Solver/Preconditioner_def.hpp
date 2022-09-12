@@ -266,7 +266,8 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
     bool useNodeLists = parameterList->get( "Use node lists", true );
     ParameterListPtr_Type pListThyraPrec = sublist( parameterList, "ThyraPreconditioner" );
     ParameterListPtr_Type plFrosch = sublist( sublist( pListThyraPrec, "Preconditioner Types" ), "FROSch");
-    
+    if(!timeProblem_.is_null())
+        timeProblem_->getSystem()->writeMM();
     ThyraLinOpConstPtr_Type thyraMatrix;
     if (!problem_.is_null())
         thyraMatrix = problem_->getSystem()->getThyraLinOp();

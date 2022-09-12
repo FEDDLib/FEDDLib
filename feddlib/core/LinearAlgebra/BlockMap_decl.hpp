@@ -42,6 +42,10 @@ public:
     void addBlock(MapConstPtr_Type map, int i);
     
     void merge();
+
+    void print();
+
+    void info();
     
     std::string getUnderlyingLib( ) const;
         
