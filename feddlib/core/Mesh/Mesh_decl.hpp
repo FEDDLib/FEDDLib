@@ -145,7 +145,6 @@ public:
     ElementsPtr_Type        surfaceElements_;
 
     ElementsPtr_Type        elementsC_;
-    vec2D_int_ptr_Type      elementsVec_;
     MapPtr_Type				elementMap_;
     MapPtr_Type				edgeMap_;
 

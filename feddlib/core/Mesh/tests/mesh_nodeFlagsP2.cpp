@@ -51,13 +51,14 @@ int main(int argc, char *argv[]) {
     Teuchos::CommandLineProcessor myCLP;
     string ulib_str = "Tpetra"; //this does nothing atm
     myCLP.setOption("ulib",&ulib_str,"Underlying lib");
-    string filename = "meshNodeTestP23D.mesh";
+    string filename = "meshNodeTestP23D_2.mesh";
     myCLP.setOption("file",&filename,"Mesh filename");
     int dim = 3;
     myCLP.setOption("dim",&dim,"Dimension");
     string delimiter = " ";
     myCLP.setOption("delimiter",&delimiter,"Delimiter in mesh-file");
-
+	int volumeID = 99;
+    myCLP.setOption("volumeID",&volumeID,"Volume ID");
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
     Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = myCLP.parse(argc,argv);

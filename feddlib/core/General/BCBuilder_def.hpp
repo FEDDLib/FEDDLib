@@ -212,8 +212,9 @@ void BCBuilder<SC,LO,GO,NO>::setDirichletBoundaryFromExternal(Teuchos::ArrayRCP<
     int dofs = resultPtr_->size();
     if ( !vecBCType_.at(loc).compare("Dirichlet") ) {
         if (type == "standard") {
-            for (int dd=0; dd < dofs; dd++)
+            for (int dd=0; dd < dofs; dd++){
                 values[ dofs * index + dd ] = (*resultPtr_)[dd];
+			}
         }
         else if (type == "BCMinusVec"){
             for (int dd=0; dd < dofs; dd++)

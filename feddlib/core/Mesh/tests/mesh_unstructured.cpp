@@ -155,7 +155,6 @@ int main(int argc, char *argv[]) {
     bcFactory->setRHS( valuesBlock );
 
     if (boolExportMesh) {
-
         Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
         std::string filename = "unstructuredMesh";
         

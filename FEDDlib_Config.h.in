@@ -1,3 +1,4 @@
 // the configured options and settings
 #cmakedefine FEDD_HAVE_CORE
 #cmakedefine FEDD_HAVE_PROBLEMS
+#cmakedefine FEDD_HAVE_AMR

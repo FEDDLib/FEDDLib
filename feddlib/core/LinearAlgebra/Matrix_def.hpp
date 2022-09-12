@@ -314,6 +314,14 @@ LO Matrix<SC,LO,GO,NO>::getGlobalMaxNumRowEntries() const{
 }
 
 template <class SC, class LO, class GO, class NO>
+void Matrix<SC,LO,GO,NO>::insertLocalValues(LO localRow, const Teuchos::ArrayView< const LO > &cols, const Teuchos::ArrayView< const SC > &vals){
+
+    TEUCHOS_TEST_FOR_EXCEPTION(matrix_.is_null(),std::runtime_error,"");
+    matrix_->insertLocalValues( localRow, cols, vals );
+}
+
+
+template <class SC, class LO, class GO, class NO>
 void Matrix<SC,LO,GO,NO>::importFromVector( MatrixPtr_Type mvIn, bool reuseImport, std::string combineMode, std::string type) {
 
     //TEUCHOS_TEST_FOR_EXCEPTION( getNodeNumCols() != mvIn->getNodeNumCols(), std::logic_error,"MultiVectors for fillFromVector have different number of vectors.");
