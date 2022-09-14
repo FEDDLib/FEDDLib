@@ -11,8 +11,7 @@
         <Parameter name="H/h" type="int"   	value="4"/>
         <Parameter name="Symmetric gradient" type="bool" value="false"/>        
         <Parameter name="Viscosity" type="double"   value="1.e-0"/>
-        <Parameter name="MaxVelocity" type="double"   value="3."/>
-<!-- Fehlerschätzer -->
+        <Parameter name="MaxVelocity" type="double"   value="3."/><!-- Fehlerschätzer -->
     </ParameterList>
 
     <ParameterList name="Mesh Refinement">

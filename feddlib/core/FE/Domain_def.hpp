@@ -369,9 +369,15 @@ void Domain<SC,LO,GO,NO>::initWithDomain(DomainPtr_Type domainP1){
     mesh_ = domainP1->mesh_;
 }
 
-template <class SC, class LO, class GO, class NO>
+/*template <class SC, class LO, class GO, class NO>
 void Domain<SC,LO,GO,NO>::initMeshRef( DomainPtr_Type domainP1 ){ 
 	// Initialize MeshRefinementType as through other function like meshPartitioner and buildP2OfP1 Mesh meshUnstr Type is required
+
+	MeshUnstrPtr_Type meshUnstr = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1->mesh_ , true);
+	MeshUnstrRefPtr_Type meshUnstrRefTmp = Teuchos::rcp( new MeshUnstrRef_Type( comm_, meshUnstr->volumeID_, meshUnstr ) );
+	mesh_ = meshUnstrRefTmp;
+
+}*/
 
 template <class SC, class LO, class GO, class NO>
 void Domain<SC,LO,GO,NO>::setMesh(MeshUnstrPtr_Type meshUnstr){ 

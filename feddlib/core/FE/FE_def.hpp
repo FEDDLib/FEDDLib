@@ -490,14 +490,14 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
 	if ( assembleMode != "Rhs"){
 		A->getBlock(0,0)->fillComplete();
-      /*  A->getBlock(0,0)->writeMM();
+        A->getBlock(0,0)->writeMM();
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
         A->getBlock(1,0)->writeMM();
 
 	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
         A->getBlock(0,1)->writeMM();
 
-	    A->getBlock(1,1)->fillComplete();*/
+	    A->getBlock(1,1)->fillComplete();
 	}
 
     if(assembleMode == "Rhs"){

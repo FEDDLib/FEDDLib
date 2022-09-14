@@ -9,9 +9,10 @@
         <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
         <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>
         <Parameter name="updateTol" type="double" value="1.0e-4"/>
-         <Parameter name="D0" type="double" value="6.e-0"/>
+         <Parameter name="D0" type="double" value="6.e-06"/>
 	<Parameter name="E1" type="double" value="0.5"/>
         <Parameter name="E0" type="double" value="1."/>
+        <Parameter name="Refinement Level" type="int" value="2"/>
     </ParameterList>
     
     <ParameterList name="Mesh Partitioner">

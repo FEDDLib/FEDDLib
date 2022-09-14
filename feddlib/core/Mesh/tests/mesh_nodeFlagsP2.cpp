@@ -71,7 +71,6 @@ int main(int argc, char *argv[]) {
     std::string FEType="P2";
     int numProcsCoarseSolve = 0;
     bool boolExportMesh = true;
-    int volumeID = 99;
 
     DomainPtr_Type domainP1;
     DomainPtr_Type domain;

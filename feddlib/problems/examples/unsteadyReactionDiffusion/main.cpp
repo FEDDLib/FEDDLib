@@ -9,6 +9,7 @@
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
+#include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 
 
 /*!
@@ -120,6 +121,7 @@ int main(int argc, char *argv[]) {
 
         // Mesh
         int dim = parameterListProblem->sublist("Parameter").get("Dimension",2);
+        int level = parameterListProblem->sublist("Parameter").get("Refinement Level",2);
         int m = parameterListProblem->sublist("Parameter").get("H/h",5);
         std::string FEType = parameterListProblem->sublist("Parameter").get("Discretization","P1");
         std::string meshType = parameterListProblem->sublist("Parameter").get("Mesh Type","structured");
@@ -154,19 +156,16 @@ int main(int argc, char *argv[]) {
         
         partitionerP1.readAndPartition();
 
-        /*Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
-		domainP1->initMeshRef(domainP1);
-			
+		// Refining mesh uniformly
+		// ----------
+		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner(parameterListProblem); // exactSolLShape
+		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
 		domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-
-		for(int i=0; i< domainP1->getElementsC()->numberElements() ; i++)
-			domainP1->getElementsC()->getElement(i).tagForRefinement();
-
-
-		domainRefined->refineMesh(domainP1Array,0,true ,"keepRegularity"); // always use the P1 domain, P2 Domain has has lost its' edge (höhö)
-
-		domainP1 = domainRefined;*/
-	
+		{
+			domainRefined = meshRefiner.refineUniform(domainP1,level );
+		}
+		domainP1=domainRefined;
+			
         if (FEType=="P2") {
             domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
             domainP2->buildP2ofP1Domain( domainP1 );

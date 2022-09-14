@@ -41,18 +41,17 @@ void parabolicInflow3D(double* x, double* res, double t, const double* parameter
     // parameters[1] end of ramp
     // parameters[2] is the maxium solution value of the laplacian parabolic inflow problme
     // we use x[0] for the laplace solution in the considered point. Therefore, point coordinates are missing
-    
     if(t < parameters[1])
     {
         res[0] = 0.;
         res[1] = 0.;
-        res[2] = parameters[0] / parameters[2] * x[0] * 0.5 * ( ( 1 - cos( M_PI*t/parameters[1]) ));
+        res[2] = parameters[0] / 1. * x[0] * 0.5 * ( ( 1 - cos( M_PI*t/parameters[1]) ));
     }
     else
     {
         res[0] = 0.;
         res[1] = 0.;
-        res[2] = parameters[0] / parameters[2] * x[0];
+        res[2] = parameters[0] / 1. * x[0];
 
     }
 
@@ -410,7 +409,7 @@ int main(int argc, char *argv[])
             //                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
         }
 
-        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+        /*Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
         Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainFluidVelocity->getMapUnique()));
         vec_int_ptr_Type BCFlags = domainFluidVelocity->getBCFlagUnique();
@@ -449,7 +448,7 @@ int main(int argc, char *argv[])
 
         if (verbose){
             cout << "done! -- " << endl;
-        }
+        }*/
             
                         
         // Baue die Interface-Maps in der Interface-Nummerierung
@@ -469,7 +468,7 @@ int main(int argc, char *argv[])
         
 
         
-        if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
+        /*if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
             
             if (verbose)
                 std::cout << "\t### Exporting fluid and solid subdomains ###\n";
@@ -506,7 +505,7 @@ int main(int argc, char *argv[])
                 exPara->save(0.0);
                 exPara->closeExporter();
             }
-        }
+        }*/
 
 
 
@@ -594,7 +593,7 @@ int main(int argc, char *argv[])
         //#### Compute parabolic inflow with laplacian
         //#############################################
         //#############################################
-        MultiVectorConstPtr_Type solutionLaplace;
+        /*MultiVectorConstPtr_Type solutionLaplace;
         {
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryLaplace(new BCBuilder<SC,LO,GO,NO>( ));
             
@@ -624,7 +623,7 @@ int main(int argc, char *argv[])
             //We need the values in the inflow area. Therefore, we use the above bcFactory and the volume flag 10 and the outlet flag 5 and set zero Dirichlet boundary values
                 bcFactoryLaplace->addBC(zeroBC, 3, 0, domainFluidVelocity, "Dirichlet", 1);
             bcFactoryLaplace->addBC(zeroBC, 10, 0, domainFluidVelocity, "Dirichlet", 1);
-            bcFactoryLaplace->setRHS( laplace.getSolution(), 0./*time; does not matter here*/ );
+            bcFactoryLaplace->setRHS( laplace.getSolution(), 0.);
             solutionLaplace = laplace.getSolution()->getBlock(0);
         
             SC maxValue = solutionLaplace->getMax();
@@ -644,7 +643,7 @@ int main(int argc, char *argv[])
             exPara->closeExporter();
 
         }
-        
+        */
         Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
         // TODO: Vermutlich braucht man keine bcFactoryFluid und bcFactoryStructure,
@@ -655,9 +654,9 @@ int main(int argc, char *argv[])
             bool zeroPressure = parameterListProblem->sublist("Parameter Fluid").get("Set Outflow Pressure to Zero",false);
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryFluid( new BCBuilder<SC,LO,GO,NO>( ) );
                             
-            bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow 
+            bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);//, solutionLaplace); // inflow 
             //bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
-            bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow 
+            bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);//, solutionLaplace); // inflow 
             //bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
 
             bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
@@ -666,7 +665,7 @@ int main(int argc, char *argv[])
             bcFactory->addBC(zeroDirichlet3D, 2, 0, domainFluidVelocity, "Dirichlet", dim); // inflow ring                
             bcFactoryFluid->addBC(zeroDirichlet3D, 2, 0, domainFluidVelocity, "Dirichlet", dim); // inflow ring
 
-                bcFactory->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring                
+                bcFactory->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);//, solutionLaplace); // inflow ring                
                 bcFactoryFluid->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet", dim); // inflow ring
             
             if (zeroPressure) {

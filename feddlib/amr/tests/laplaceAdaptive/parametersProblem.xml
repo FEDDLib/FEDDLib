@@ -10,10 +10,7 @@
     
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
-        
-<<<<<<<< HEAD:feddlib/problems/examples/laplace/parametersProblem.xml
         <Parameter name="Mesh 1 Name" type="string" value="square.mesh"/>
-========
         <Parameter name="Mesh 1 Name" type="string" value="lShape4.mesh"/>
     </ParameterList>
 
@@ -29,7 +26,6 @@
 	<Parameter name="Coarsening Cycle" type="int" value="0"/>
 	<Parameter name="Coarsening m" type="int" value="1"/>
 	<Parameter name="Coarsening n" type="int" value="2"/>
->>>>>>>> 480c13dbeae6327c968af3fe9a95f12e5c69170d:feddlib/amr/tests/laplaceAdaptive/parametersProblem.xml
     </ParameterList>
     
     <ParameterList name="Exporter">
