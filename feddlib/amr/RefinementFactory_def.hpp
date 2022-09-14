@@ -2935,12 +2935,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElemen
 				element = this->elementsC_->getElement(i+offsetElements);
 			else
 				element = this->elementsC_->getElement(indexElement);
+			bool init=false;
 			for(int j=0; j<24 ; j++){
 				FiniteElement feEdge = this->edgeElements_->getElement(j+offsetEdges);
 				if(feEdge.getFlag() != this->volumeID_){
-					if ( !element.subElementsInitialized() ){
-				        element.initializeSubElements( "P1", 2 ); // only P1 for now                
+					if(init == true)
+						element.addSubElement( feEdge );
+					else if ( !element.subElementsInitialized() ){
+				        element.initializeSubElements( "P1", 1 ); // only P1 for now                
 				        element.addSubElement( feEdge );
+				        init= true;
 				    }
 				    else {
 				        ElementsPtr_Type surfaces = element.getSubElements();
@@ -3361,12 +3365,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 				element = this->elementsC_->getElement(i+offsetElements);
 			else
 				element = this->elementsC_->getElement(indexElement);
+			bool init=false;
 			for(int j=0; j<18 ; j++){
 				FiniteElement feEdge = this->edgeElements_->getElement(j+offsetEdges);
 				if(feEdge.getFlag() != this->volumeID_){
-					if ( !element.subElementsInitialized() ){
-				        element.initializeSubElements( "P1", 2 ); // only P1 for now                
+					if(init == true)
+						element.addSubElement( feEdge );
+					else if ( !element.subElementsInitialized() ){
+				        element.initializeSubElements( "P1", 1 ); // only P1 for now                
 				        element.addSubElement( feEdge );
+				        init= true;
 				    }
 				    else {
 				        ElementsPtr_Type surfaces = element.getSubElements();
@@ -3712,12 +3720,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElemen
 				element = this->elementsC_->getElement(i+offsetElements);
 			else
 				element = this->elementsC_->getElement(indexElement);
+			bool init=false;
 			for(int j=0; j<12 ; j++){
 				FiniteElement feEdge = this->edgeElements_->getElement(j+offsetEdges);
 				if(feEdge.getFlag() != this->volumeID_){
-					if ( !element.subElementsInitialized() ){
-				        element.initializeSubElements( "P1", 2 ); // only P1 for now                
+					if(init == true)
+						element.addSubElement( feEdge );
+					else if ( !element.subElementsInitialized() ){
+				        element.initializeSubElements( "P1", 1 ); // only P1 for now                
 				        element.addSubElement( feEdge );
+				        init= true;
 				    }
 				    else {
 				        ElementsPtr_Type surfaces = element.getSubElements();
@@ -4146,12 +4158,16 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
 				element = this->elementsC_->getElement(i+offsetElements);
 			else
 				element = this->elementsC_->getElement(indexElement);
+			bool init=false;
 			for(int j=0; j<24 ; j++){
 				FiniteElement feEdge = this->edgeElements_->getElement(j+offsetEdges);
 				if(feEdge.getFlag() != this->volumeID_){
-					if ( !element.subElementsInitialized() ){
-				        element.initializeSubElements( "P1", 2 ); // only P1 for now                
+					if(init == true)
+						element.addSubElement( feEdge );
+					else if ( !element.subElementsInitialized() ){
+				        element.initializeSubElements( "P1", 1 ); // only P1 for now                
 				        element.addSubElement( feEdge );
+				        init= true;
 				    }
 				    else {
 				        ElementsPtr_Type surfaces = element.getSubElements();
@@ -5395,16 +5411,22 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		FiniteElement element;
 		FiniteElement feEdge;
 		for( int i=0;i<8; i++){	
-			if(i<7)	
+			if(i<7)	{
 				element = this->elementsC_->getElement(i+offsetElements);
-			else
+				}
+			else{
 				element = this->elementsC_->getElement(indexElement);
+				}
+			bool init=false;
 			for(int j=0; j<48 ; j++){
 				FiniteElement feEdge = this->edgeElements_->getElement(j+offsetEdges);
 				if(feEdge.getFlag() != this->volumeID_){
-					if ( !element.subElementsInitialized() ){
-				        element.initializeSubElements( "P1", 2 ); // only P1 for now                
+					if(init == true)
+						element.addSubElement( feEdge );
+					else if ( !element.subElementsInitialized() ){
+				        element.initializeSubElements( "P1", 1 ); // only P1 for now                
 				        element.addSubElement( feEdge );
+				        init= true;
 				    }
 				    else {
 				        ElementsPtr_Type surfaces = element.getSubElements();
