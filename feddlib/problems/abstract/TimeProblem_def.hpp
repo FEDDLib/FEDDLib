@@ -68,7 +68,6 @@ void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
         // is not used in FSI
         // systemMass_ wird gebaut (Massematrix), welche schon mit der Dichte \rho skaliert wurde
         assembleMassSystem();
-
         initializeCombinedSystems();
         NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
         if (!nonLinProb.is_null()){// we combine the nonlinear system with the mass matrix in the NonLinearSolver after the reassembly of each linear system

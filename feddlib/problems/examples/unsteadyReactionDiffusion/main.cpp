@@ -48,7 +48,7 @@ void oneFunc(double* x, double* res, double* parameters){
 }
 
 void zeroFunc(double* x, double* res, double* parameters){
-    res[0] = 1.;
+    res[0] = 0.;
 }
 
 
@@ -161,10 +161,22 @@ int main(int argc, char *argv[]) {
 		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner(parameterListProblem); // exactSolLShape
 		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
 		domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-		{
-			domainRefined = meshRefiner.refineUniform(domainP1,level );
+		vec2D_dbl_Type area(dim,vec_dbl_Type(2));
+		area[0][0] = 0.;
+		area[0][1] = 0.001;
+		area[1][0] = 0.;
+		area[1][1] = 1.;
+		if(dim==3){
+			area[2][0] = 0.;
+			area[2][1] = 1.;
 		}
-		domainP1=domainRefined;
+		{
+			if(level>0){
+				domainRefined = meshRefiner.refineArea(domainP1,area,level );
+				domainP1=domainRefined;
+			}
+		}
+
 			
         if (FEType=="P2") {
             domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
@@ -180,6 +192,7 @@ int main(int argc, char *argv[]) {
         // ####################
         Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
         
+        if(dim==3){
        // bcFactory->addBC(threeBC, 1, 0, domain, "Dirichlet", 1);
       // bcFactory->addBC(zeroBC, 4, 0, domain, "Dirichlet", 1);
       //  bcFactory->addBC(zeroBC, 2, 0, domain, "Dirichlet", 1);
@@ -195,17 +208,19 @@ int main(int argc, char *argv[]) {
 		bcFactory->addBC(zeroDirichlet, 5, 1, domainChem, "Dirichlet", 1);            
 		// bcFactory->addBC(zeroDirichlet, 6, 1, domainChem, "Dirichlet", 1);            
 		*/
-
+		}
+		else if(dim==2){
+		bcFactory->addBC(inflowChem, 2, 0, domain, "Dirichlet", 1); // inflow of Chem
+		  		
+		
+		}
 	
         
 
-	    vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
+	    vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(dim));
         double D0 = parameterListAll->sublist("Parameter").get("D0",1.);
         for(int i=0; i<dim; i++){
-            diffusionTensor[0][0] =D0;
-            diffusionTensor[1][1] =D0;
-            diffusionTensor[2][2] =D0;
-
+            diffusionTensor[i][i] =D0;
             if(i>0){
                 diffusionTensor[i][i-1] = 0;
                 diffusionTensor[i-1][i] = 0;
