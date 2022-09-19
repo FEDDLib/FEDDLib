@@ -174,9 +174,9 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             this->system_->addBlock( this->problemChem_->system_->getBlock(0,0), 1, 1 );
         
             // Dummy blocks
-            MatrixPtr_Type B(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+            MatrixPtr_Type B(new Matrix_Type( this->getDomain(1)->getMapUnique(), 0 ) );
             B->fillComplete(this->getDomain(1)->getMapUnique(),this->getDomain(0)->getMapUnique());
-            MatrixPtr_Type BT(new Matrix_Type(this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) );
+            MatrixPtr_Type BT(new Matrix_Type(this->getDomain(0)->getMapVecFieldUnique(), 0 ) );
             BT->fillComplete(this->getDomain(0)->getMapUnique(),this->getDomain(1)->getMapUnique());
 
             this->system_->addBlock( B, 0, 1 );
