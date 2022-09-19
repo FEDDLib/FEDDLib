@@ -5,7 +5,7 @@
 #include "feddlib/core/AceFemAssembly/AceInterface/DeformationDiffusionNeoHook.hpp"
 
 #include <vector>
-//#include <iostream>
+#include <iostream>
 
 namespace FEDD {
 
@@ -144,6 +144,8 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	d[4] = this->D0_;
 	d[5] = this->m_;
 
+	for(int i=0; i< 6; i++)
+		cout << " d " << i << " = " << d[i] << endl;
 	if(dofOrdering_ == 1)
 	{
 		for(int i = 0; i < 40; i++)
@@ -169,7 +171,6 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	for(int i=0;i<10;i++)
 		for(int j=0;j<3;j++){
 			xl[count] = this->getNodesRefConfig()[i][j];
-			cout << xl[count] << endl;
 			count++;
 			
 			}
