@@ -181,7 +181,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	if(dofOrdering_ == 2)
 	{
 
-		std::vector<double> s_temp(1600);
+		std::vector<double> s_temp(1600,0.);
 		int counter=0;
 		for(int i=0;i<40;i++)
 		{	
@@ -190,7 +190,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 				s_temp[counter] = s[60*i+j];
 				counter++;
 				if(counter>1000)
-					cout << s_temp[counter] << endl;
+					cout << s_temp[counter] << " " << counter<< endl;
 			}
 		}
 
