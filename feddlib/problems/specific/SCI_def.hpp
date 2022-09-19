@@ -743,10 +743,10 @@ void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
     }
     if (timeSteppingTool_->currentTime()==0.) {
         vec_dbl_Type tmpcoeffPrevSteps(1, 1. / dt);
-        this->problemTimeChem_->updateMultistepRhsFSI(coeffPrevSteps,1);/*apply (mass matrix_t / dt) to u_t and more*/
+        this->problemTimeChem_->updateMultistepRhs(coeffPrevSteps,1);/*apply (mass matrix_t / dt) to u_t and more*/
     }
     else{
-        this->problemTimeChem_->updateMultistepRhsFSI(coeffPrevSteps,nmbBDF);/*apply (mass matrix_t / dt) to u_t and more*/
+        this->problemTimeChem_->updateMultistepRhs(coeffPrevSteps,nmbBDF);/*apply (mass matrix_t / dt) to u_t and more*/
     }
 
     // TODO
