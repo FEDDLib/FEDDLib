@@ -398,8 +398,8 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
 	ElementsPtr_Type elementsSolid = domainVec_.at(FElocSolid)->getElementsC();
 
-    this->domainVec_.at(FElocChem)->info();
-    this->domainVec_.at(FElocSolid)->info();
+    //this->domainVec_.at(FElocChem)->info();
+    //this->domainVec_.at(FElocSolid)->info();
 	//int dofsElement = elements->getElement(0).getVectorNodeList().size();
 
 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FElocSolid)->getPointsRepeated();
@@ -486,17 +486,10 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
 			
 	}
-    cout << " Done with Assembly " << endl;
-
 	if ( assembleMode != "Rhs"){
 		A->getBlock(0,0)->fillComplete();
-        A->getBlock(0,0)->writeMM();
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
-        A->getBlock(1,0)->writeMM();
-
 	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
-        A->getBlock(0,1)->writeMM();
-
 	    A->getBlock(1,1)->fillComplete();
 	}
 

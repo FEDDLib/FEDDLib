@@ -1,11 +1,11 @@
 TRIBITS_ADD_EXECUTABLE(
-	sci_linear
+	sci_Test
     SOURCES main.cpp
 )
 
 TRIBITS_ADD_TEST(
-    sci_linear
-    NAME sci_linear
+    sci_Test
+    NAME sci_Test
     ARGS
     NUM_MPI_PROCS 4
 )
@@ -15,7 +15,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_sciTest
 	SOURCE_FILES parametersPrecChem.xml parametersPrec.xml parametersProblemSCI.xml parametersSolverSCI.xml parametersPrecStructure.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
 	DEST_FILES parametersPrecChem.xml parametersPrec.xml parametersProblemSCI.xml parametersSolverSCI.xml parametersPrecStructure.xml
-	EXEDEPS sci_linear
+	EXEDEPS sci_Test
 )
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_sciTest
@@ -23,5 +23,5 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_sciTest
     SOURCE_FILES cube_0_1.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
 	DEST_FILES cube_0_1.mesh
-	EXEDEPS sci_linear
+	EXEDEPS sci_Test
 )
