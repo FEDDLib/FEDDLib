@@ -114,11 +114,14 @@ void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
                 MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( tmpSystem->getBlock(i,j)->getMap(), maxNumEntriesPerRow ) );
                 
                 systemCombined_->addBlock( matrix, i, j );
+                cout << " Adding Block " << i << " , " << j << " to the matrix systmeCombined with " << maxNumEntriesPerRow <<" entries" << endl;
+
             }
             else if (systemMass_->blockExists(i,j)) {
                 LO maxNumEntriesPerRow = systemMass_->getBlock(i,j)->getGlobalMaxNumRowEntries();
                 MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( systemMass_->getBlock(i,j)->getMap(), maxNumEntriesPerRow ) );
                 systemCombined_->addBlock( matrix, i, j );
+                cout << " Adding Block " << i << " , " << j << " to the matrix with " << maxNumEntriesPerRow << " entries "<< endl;
             }
         }
     }
