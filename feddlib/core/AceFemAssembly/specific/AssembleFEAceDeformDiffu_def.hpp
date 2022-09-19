@@ -180,6 +180,9 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 
 	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],deltat);
 		
+	for(int i=0; i< 3600; i++)
+		cout << s[i] << endl;	
+		
 	if(dofOrdering_ == 2)
 	{
 
