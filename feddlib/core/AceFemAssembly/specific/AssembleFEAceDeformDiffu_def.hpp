@@ -51,7 +51,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 	std::vector<double> v(2238);
 	std::vector<double> d(6);
 	std::vector<double> ul(60,0.); 
-	std::vector<double> ul0(60);
+	std::vector<double> ul0(60,0.);
 	std::vector<double> xl(60);
 	std::vector<double> s(3600);
 	std::vector<double> p(60);
@@ -128,9 +128,9 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	std::vector<double> v(2238);
 	std::vector<double> d(6);
 	std::vector<double> ul(60,0.);
-	std::vector<double> ul0(60);
+	std::vector<double> ul0(60,0.);
 	std::vector<double> xl(60);
-	std::vector<double> s(3600);
+	std::vector<double> s(3600,0);
 	std::vector<double> p(60);
 	std::vector<double> ht(10);
 	std::vector<double> hp(10);
