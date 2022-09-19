@@ -125,6 +125,7 @@ void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
 
     SmallMatrix<SC> ones( size , Teuchos::ScalarTraits<SC>::one());
     SmallMatrix<SC> zeros( size , Teuchos::ScalarTraits<SC>::zero());
+    systemMass_->print();
     systemMass_->addMatrix( massParameters_, systemCombined_, zeros );
     tmpSystem->addMatrix( timeParameters_, systemCombined_, ones );
     
