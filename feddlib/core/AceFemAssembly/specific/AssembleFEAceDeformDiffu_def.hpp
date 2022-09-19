@@ -20,7 +20,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
     c1_ = this->params_->sublist("Parameter Solid").get("c1",0.25e-0);
     D0_ = this->params_->sublist("Parameter Diffusion").get("D0",6.0e-5);
     m_ = this->params_->sublist("Parameter Diffusion").get("m",0.0);
-    dofOrdering_ = 2; // this->params_->sublist("Parameter").get("Ordering", 2);
+    dofOrdering_ = this->params_->sublist("Parameter").get("Ordering", 2);
 
     FEType_ = std::get<1>(this->diskTuple_->at(0)); // FEType of Disk
 	dofsSolid_ = std::get<2>(this->diskTuple_->at(0)); // Degrees of freedom per node
@@ -50,7 +50,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 
 	std::vector<double> v(2238);
 	std::vector<double> d(6);
-	std::vector<double> ul(60); 
+	std::vector<double> ul(60,0.); 
 	std::vector<double> ul0(60);
 	std::vector<double> xl(60);
 	std::vector<double> s(3600);
@@ -127,7 +127,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 
 	std::vector<double> v(2238);
 	std::vector<double> d(6);
-	std::vector<double> ul(60);
+	std::vector<double> ul(60,0.);
 	std::vector<double> ul0(60);
 	std::vector<double> xl(60);
 	std::vector<double> s(3600);
