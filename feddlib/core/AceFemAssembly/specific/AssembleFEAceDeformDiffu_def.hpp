@@ -190,7 +190,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 				s_temp[counter] = s[60*i+j];
 				counter++;
 				if(counter>1000)
-					cout << s_temp[counter] << " " << counter<< endl;
+					cout << s_temp[counter-1] << " " << counter-1<< endl;
 			}
 		}
 
