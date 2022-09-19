@@ -491,7 +491,6 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
 	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
 	    A->getBlock(1,1)->fillComplete();
-         A->getBlock(1,1)->print();
 	}
 
     if(assembleMode == "Rhs"){
@@ -565,12 +564,12 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
                 for(int d=0; d<dofs2; d++){
                     for (UN j=0; j < columnIndices2.size(); j++){
                         double tmpValue =  (*elementMatrix)[offset+dofs2*i+di][offset+dofs2*j+d];
-                        if(std::fabs(tmpValue) > 1e-13){
+                        //if(std::fabs(tmpValue) > 1e-13){
                             columnIndex[0] = GO ( dofs2 * mapSecondRow->getGlobalElement( element.getNode(j) ) + d );
                             value[0] = tmpValue;
                             A->getBlock(1,1)->insertGlobalValues( row, columnIndex(), value() ); // Automatically adds entries if a value already exists 
 
-                        }
+                        //}
                     }
                 }          
             }

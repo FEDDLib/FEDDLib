@@ -297,7 +297,6 @@ int main(int argc, char *argv[])
 		{
 		if(level>0){
 			domainRefined = meshRefiner.refineUniform(domainP1struct,level );
-			domainP1chem=domainRefined;
 			domainP1struct = domainRefined;
 			}
 		}
@@ -305,7 +304,7 @@ int main(int argc, char *argv[])
 
 
 		if (!discType.compare("P2")){
-			domainP2chem->buildP2ofP1Domain( domainP1chem );
+			domainP2chem->buildP2ofP1Domain( domainP1struct );
 			domainP2struct->buildP2ofP1Domain( domainP1struct );
 
 			domainChem = domainP2chem;
@@ -313,7 +312,7 @@ int main(int argc, char *argv[])
 		}        
 		else{
 			domainStructure = domainP1struct;
-			domainChem = domainP1chem;
+			domainChem = domainP1struct;
 		}
 
        // ########################
