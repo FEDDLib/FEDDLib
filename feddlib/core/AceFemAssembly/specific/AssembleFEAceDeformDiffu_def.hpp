@@ -132,8 +132,8 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	std::vector<double> xl(60);
 	std::vector<double> s(3600);
 	std::vector<double> p(60);
-	std::vector<double> ht(10);
-	std::vector<double> hp(10);
+	std::vector<double> ht(10,0.);
+	std::vector<double> hp(10,0.);
 
 	double deltat=this->getTimeIncrement();
 
@@ -144,10 +144,6 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	d[4] = this->D0_;
 	d[5] = this->m_;
 
-	for(int i=0; i< 6; i++)
-		cout << " d " << i << " = " << d[i] << endl;
-	cout << " delta t " << deltat;
-	
 	if(dofOrdering_ == 1)
 	{
 		for(int i = 0; i < 40; i++)
