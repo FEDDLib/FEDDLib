@@ -5,7 +5,7 @@
 #include "feddlib/core/AceFemAssembly/AceInterface/DeformationDiffusionNeoHook.hpp"
 
 #include <vector>
-#include <iostream>
+//#include <iostream>
 
 namespace FEDD {
 
@@ -50,10 +50,10 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 
 	std::vector<double> v(2238);
 	std::vector<double> d(6);
-	std::vector<double> ul(60,0.); 
-	std::vector<double> ul0(60,0.);
+	std::vector<double> ul(60); 
+	std::vector<double> ul0(60);
 	std::vector<double> xl(60);
-	std::vector<double> s(3600,0.);
+	std::vector<double> s(3600);
 	std::vector<double> p(60);
 	std::vector<double> ht(10);
 	std::vector<double> hp(10);
@@ -99,7 +99,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],deltat);
+	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat);
 
 	if(dofOrdering_ == 1)
 	{
@@ -127,13 +127,13 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 
 	std::vector<double> v(2238);
 	std::vector<double> d(6);
-	std::vector<double> ul(60,0.);
-	std::vector<double> ul0(60,0.);
+	std::vector<double> ul(60);
+	std::vector<double> ul0(60);
 	std::vector<double> xl(60);
 	std::vector<double> s(3600);
 	std::vector<double> p(60);
-	std::vector<double> ht(10,0.);
-	std::vector<double> hp(10,0.);
+	std::vector<double> ht(10);
+	std::vector<double> hp(10);
 
 	double deltat=this->getTimeIncrement();
 
@@ -169,24 +169,19 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	for(int i=0;i<10;i++)
 		for(int j=0;j<3;j++){
 			xl[count] = this->getNodesRefConfig()[i][j];
-			count++;
-			
-			}
+			count++;}
 
 	for(int i=0;i<s.size();i++)
 		s[i]=0.0;
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],deltat);
-		
-	for(int i=0; i< 3600; i++)
-		cout << s[i] << endl;	
+	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat);
 		
 	if(dofOrdering_ == 2)
 	{
 
-		std::vector<double> s_temp(1600,0.);
+		std::vector<double> s_temp(1600);
 		int counter=0;
 		for(int i=0;i<40;i++)
 		{	
