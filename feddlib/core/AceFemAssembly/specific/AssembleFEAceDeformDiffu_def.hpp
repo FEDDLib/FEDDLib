@@ -146,6 +146,8 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 
 	for(int i=0; i< 6; i++)
 		cout << " d " << i << " = " << d[i] << endl;
+	cout << " delta t " << deltat;
+	
 	if(dofOrdering_ == 1)
 	{
 		for(int i = 0; i < 40; i++)
