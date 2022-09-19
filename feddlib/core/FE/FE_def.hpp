@@ -463,7 +463,12 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
         // First Solid, then Chemistry
 		solution.insert( solution.end(), solution_d.begin(), solution_d.end() );
 		solution.insert( solution.end(), solution_c.begin(), solution_c.end() );
-
+        
+        cout << " Solution Vec : "; 
+        for(int i=0; i< solution.size(); i++){
+            cout << solution[i] << " " ;
+        }
+        cout << endl;
 		assemblyFEElements_[T]->updateSolution(solution);
 
  		SmallMatrixPtr_Type elementMatrix;
