@@ -408,7 +408,6 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
 	MapConstPtr_Type mapSolid = domainVec_.at(FElocSolid)->getMapRepeated();
 
-	vec_dbl_Type solution(0);
 	vec_dbl_Type solution_c;
 	vec_dbl_Type solution_d;
 
@@ -473,7 +472,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 			assemblyFEElements_[T]->assembleJacobian();
 
             elementMatrix = assemblyFEElements_[T]->getJacobian(); 
-            elementMatrix->print();
+          //  elementMatrix->print();
 			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
 			
 			addFeBlockMatrix(A, elementMatrix, elementsSolid->getElement(T),  mapSolid, mapChem, problemDisk);

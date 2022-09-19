@@ -248,7 +248,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
             c_rep_->importFromVector(c, true);
-
+            c_rep_->print();
            //std::cout << " Step 2 " << std::endl;
 
             MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
