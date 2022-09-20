@@ -1026,7 +1026,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         else{
             problemTime_->combineSystems();
             problemTime_->setBoundaries(time); 
-            problemTime_->getSystem()->writeMM();      
             (*its)[0]=problemTime_->solve();
             }
 
