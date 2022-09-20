@@ -265,9 +265,9 @@ int main(int argc, char *argv[])
         domainP2chem.reset( new Domain_Type( comm, dim ) );
         domainP2struct.reset( new Domain_Type( comm, dim ) );
                                 
-        MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(2);
-        domainP1Array[0] = domainP1chem;
-        domainP1Array[1] = domainP1struct;
+        MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
+        domainP1Array[0] = domainP1struct;
+       // domainP1Array[1] = domainP1struct;
     
         ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );                    
 
