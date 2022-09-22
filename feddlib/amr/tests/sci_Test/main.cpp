@@ -279,9 +279,10 @@ int main(int argc, char *argv[])
         partitionerP1.readAndPartition();
                     
                     
-		// Refining mesh uniformly
+		// Refining mesh uniformly or area wise
 		// ----------
 		int level = parameterListProblem->sublist("Parameter").get("Refinement Level",2);
+		string type = parameterListProblem->sublist("Parameter").get("Refinement Type", "uniform");
 		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner(parameterListProblem); // exactSolLShape
 		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
 		domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
@@ -294,12 +295,16 @@ int main(int argc, char *argv[])
 			area[2][0] = 0.;
 			area[2][1] = 1.;
 		}
-		{
+		
 		if(level>0){
-			domainRefined = meshRefiner.refineUniform(domainP1struct,level );
+			if(type == "area")
+				domainRefined = meshRefiner.refineArea(domainP1struct,area,level );
+			else if(type == "uniform")
+				domainRefined = meshRefiner.refineUniform(domainP1struct,level );
+				
 			domainP1struct = domainRefined;
-			}
 		}
+		
 
 
 

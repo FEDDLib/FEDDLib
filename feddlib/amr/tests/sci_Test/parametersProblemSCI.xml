@@ -17,6 +17,7 @@
         <Parameter name="Coupling Type" type="string" value="implicit"/>
 
         <Parameter name="Refinement Level" type="int" value="0"/>
+        <Parameter name="Refinement Type" type="string" value="uniform"/>
        
         <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
         <Parameter name="absNonLinTol" type="double" value="1.0e-2"/>
@@ -103,8 +104,8 @@
         <Parameter name="Class" type="string" value="Multistep"/> <!-- External, Multistep-->
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value=".02"/>
-        <Parameter name="dt" type="double" value="0.01"/>
+        <Parameter name="Final time" type="double" value=".5"/>
+        <Parameter name="dt" type="double" value="0.1"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
     </ParameterList>
