@@ -9,6 +9,8 @@
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
+#include "feddlib/amr/AdaptiveMeshRefinement.hpp"
+
 
 /*!
  main of unsteadyLinearDiffusion problem
@@ -154,7 +156,29 @@ int main(int argc, char *argv[]) {
         
         partitionerP1.readAndPartition();
 
-	if (FEType=="P2") {
+		// Refining mesh uniformly
+		// ----------
+		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner(parameterListProblem); // exactSolLShape
+		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
+		domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+		vec2D_dbl_Type area(dim,vec_dbl_Type(2));
+		area[0][0] = 0.;
+		area[0][1] = 0.001;
+		area[1][0] = 0.;
+		area[1][1] = 1.;
+		if(dim==3){
+			area[2][0] = 0.;
+			area[2][1] = 1.;
+		}
+		{
+			if(level>0){
+				domainRefined = meshRefiner.refineArea(domainP1,area,level );
+				domainP1=domainRefined;
+			}
+		}
+
+			
+        if (FEType=="P2") {
             domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
             domainP2->buildP2ofP1Domain( domainP1 );
             domain = domainP2;

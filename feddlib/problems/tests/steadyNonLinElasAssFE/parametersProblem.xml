@@ -4,7 +4,7 @@
         <Parameter name="Discretization"                        type="string"   value="P2"/><!--P1, P2-->
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
         <Parameter name="Volume force" type="double" value="0.1"/>
-	    <Parameter name="Source Type" type="string"   value="volume"/>
+	    <Parameter name="Source Type" type="string"   value="surface"/>
         <Parameter name="Mesh Delimiter"					    type="string"   value=" "/>
         <Parameter name="H/h"							    	type="int"   	value="6"/>   
           <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
