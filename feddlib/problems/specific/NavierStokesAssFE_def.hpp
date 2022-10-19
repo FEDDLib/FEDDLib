@@ -393,11 +393,11 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelE
 
             W_tpetraMat->resumeFill();
 
-            for (auto i=0; i<tpetraMatXpetra->getMap()->getNodeNumElements(); i++) {
-                ArrayView< const LO > indices;
-                ArrayView< const SC > values;
+            for (auto i=0; i<tpetraMatXpetra->getMap()->getLocalNumElements(); i++) {
+               typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
+                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;
                 tpetraMatXpetra->getLocalRowView( i, indices, values);
-                W_tpetraMat->replaceLocalValues( i, indices.size(), values.getRawPtr(), indices.getRawPtr() );
+                W_tpetraMat->replaceLocalValues( i, indices ,values);
             }
             W_tpetraMat->fillComplete();
 
@@ -513,11 +513,11 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvalua
 
             W_tpetraMat->resumeFill();
 
-            for (auto i=0; i<tpetraMatXpetra->getMap()->getNodeNumElements(); i++) {
-                ArrayView< const LO > indices;
-                ArrayView< const SC > values;
+            for (auto i=0; i<tpetraMatXpetra->getMap()->getLocalNumElements(); i++) {
+                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
+                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;
                 tpetraMatXpetra->getLocalRowView( i, indices, values);
-                W_tpetraMat->replaceLocalValues( i, indices.size(), values.getRawPtr(), indices.getRawPtr() );
+                W_tpetraMat->replaceLocalValues( i, indices, values);
             }
             W_tpetraMat->fillComplete();
 
