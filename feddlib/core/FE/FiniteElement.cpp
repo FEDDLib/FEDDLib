@@ -145,8 +145,7 @@ bool FiniteElement::findEdgeInElement( const vec_LO_Type& edgeIDs, vec_int_Type&
         for (int j=0; j<partIDsEl.size(); j++){
             partIDsEl[j] = localNodeIDs_[permutation[i][j]];
         }
-                
-        
+
         std::sort( partIDsEl.begin(),partIDsEl.end() );
         if (edgeIDs == partIDsEl){        
             flags.push_back(flag_);

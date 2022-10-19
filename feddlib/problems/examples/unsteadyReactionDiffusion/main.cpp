@@ -10,7 +10,6 @@
 #include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
 
-
 /*!
  main of unsteadyLinearDiffusion problem
 
@@ -47,7 +46,7 @@ void oneFunc(double* x, double* res, double* parameters){
 }
 
 void zeroFunc(double* x, double* res, double* parameters){
-    res[0] = 1.;
+    res[0] = 0.;
 }
 
 
@@ -120,6 +119,7 @@ int main(int argc, char *argv[]) {
 
         // Mesh
         int dim = parameterListProblem->sublist("Parameter").get("Dimension",2);
+        int level = parameterListProblem->sublist("Parameter").get("Refinement Level",2);
         int m = parameterListProblem->sublist("Parameter").get("H/h",5);
         std::string FEType = parameterListProblem->sublist("Parameter").get("Discretization","P1");
         std::string meshType = parameterListProblem->sublist("Parameter").get("Mesh Type","structured");
@@ -154,20 +154,7 @@ int main(int argc, char *argv[]) {
         
         partitionerP1.readAndPartition();
 
-        /*Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
-		domainP1->initMeshRef(domainP1);
-			
-		domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-
-		for(int i=0; i< domainP1->getElementsC()->numberElements() ; i++)
-			domainP1->getElementsC()->getElement(i).tagForRefinement();
-
-
-		domainRefined->refineMesh(domainP1Array,0,true ,"keepRegularity"); // always use the P1 domain, P2 Domain has has lost its' edge (höhö)
-
-		domainP1 = domainRefined;*/
-	
-        if (FEType=="P2") {
+	if (FEType=="P2") {
             domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
             domainP2->buildP2ofP1Domain( domainP1 );
             domain = domainP2;
@@ -181,6 +168,7 @@ int main(int argc, char *argv[]) {
         // ####################
         Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
         
+        if(dim==3){
        // bcFactory->addBC(threeBC, 1, 0, domain, "Dirichlet", 1);
       // bcFactory->addBC(zeroBC, 4, 0, domain, "Dirichlet", 1);
       //  bcFactory->addBC(zeroBC, 2, 0, domain, "Dirichlet", 1);
@@ -196,17 +184,19 @@ int main(int argc, char *argv[]) {
 		bcFactory->addBC(zeroDirichlet, 5, 1, domainChem, "Dirichlet", 1);            
 		// bcFactory->addBC(zeroDirichlet, 6, 1, domainChem, "Dirichlet", 1);            
 		*/
-
+		}
+		else if(dim==2){
+		bcFactory->addBC(inflowChem, 2, 0, domain, "Dirichlet", 1); // inflow of Chem
+		  		
+		
+		}
 	
         
 
-	    vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
+	    vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(dim));
         double D0 = parameterListAll->sublist("Parameter").get("D0",1.);
         for(int i=0; i<dim; i++){
-            diffusionTensor[0][0] =D0;
-            diffusionTensor[1][1] =D0;
-            diffusionTensor[2][2] =D0;
-
+            diffusionTensor[i][i] =D0;
             if(i>0){
                 diffusionTensor[i][i-1] = 0;
                 diffusionTensor[i-1][i] = 0;

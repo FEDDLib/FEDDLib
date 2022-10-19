@@ -63,13 +63,11 @@ template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
     // If timestepping class is external, it is assumed that the full timedependent problem matrix and rhs are assembled during the assemble call(s)
     std::string timestepping = parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep");
-    std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
 
     if (type == "MassSystem"){
         // is not used in FSI
         // systemMass_ wird gebaut (Massematrix), welche schon mit der Dichte \rho skaliert wurde
         assembleMassSystem();
-
         initializeCombinedSystems();
         NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
         if (!nonLinProb.is_null()){// we combine the nonlinear system with the mass matrix in the NonLinearSolver after the reassembly of each linear system
@@ -116,6 +114,7 @@ void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
                 MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( tmpSystem->getBlock(i,j)->getMap(), maxNumEntriesPerRow ) );
                 
                 systemCombined_->addBlock( matrix, i, j );
+
             }
             else if (systemMass_->blockExists(i,j)) {
                 LO maxNumEntriesPerRow = systemMass_->getBlock(i,j)->getGlobalMaxNumRowEntries();
@@ -343,6 +342,7 @@ void TimeProblem<SC,LO,GO,NO>::initializeCombinedSystems() const{
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::assembleMassSystem( ) const {
 
+
     ProblemPtr_Type tmpProblem;
     SC eps100 = 100.*Teuchos::ScalarTraits<SC>::eps();
 
@@ -353,12 +353,11 @@ void TimeProblem<SC,LO,GO,NO>::assembleMassSystem( ) const {
     systemMass_->resize( size );
     int dofsPerNode;
     for (int i=0; i<size; i++ ) {
-
         dofsPerNode = problem_->getDofsPerNode(i);
         MatrixPtr_Type M;
         if ( timeStepDef_[i][i]>0 ) {
             if (dofsPerNode>1) {
-                M = Teuchos::rcp(new Matrix_Type( this->getDomain(i)->getMapVecFieldUnique(), this->getDomain(i)->getApproxEntriesPerRow() ) );
+                M = Teuchos::rcp(new Matrix_Type( this->getDomain(i)->getMapVecFieldUnique(), dimension_*this->getDomain(i)->getApproxEntriesPerRow() ) );
                 feFactory_->assemblyMass(dimension_, problem_->getFEType(i), "Vector", M, true);
 
                 M->resumeFill();

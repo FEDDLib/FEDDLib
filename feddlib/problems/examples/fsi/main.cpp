@@ -427,7 +427,7 @@ int main(int argc, char *argv[])
             DomainPtr_Type domainInterface;
             domainInterface.reset( new Domain_Type( comm ) );
             domainInterface->setDummyInterfaceDomain(domainFluidVelocity);
-            
+
             domainFluidVelocity->setReferenceConfiguration();
             domainFluidPressure->setReferenceConfiguration();
 

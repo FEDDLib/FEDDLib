@@ -67,7 +67,6 @@ public:
     typedef Xpetra::Export<LO,GO,NO> XpetraExport_Type;
     typedef Teuchos::RCP<XpetraExport_Type> XpetraExportPtr_Type;
 
-
     Matrix();
 
     Matrix( XpetraMatrixPtr_Type& xpetraMatPtrIn );
@@ -210,9 +209,11 @@ public:
 	*/
     LO getGlobalMaxNumRowEntries() const;
 
+    void insertLocalValues (LO localRow, const Teuchos::ArrayView< const LO > &cols, const Teuchos::ArrayView< const SC > &vals);
 	/* !
 		Matrix Analogue to MultiVector Import. Based on Row Map of Matrix mvIn. 
 	*/
+
     void importFromVector( MatrixPtr_Type mvIn, bool reuseImport = false, std::string combineMode = "Insert", std::string type="Forward" );
 
 	/* !

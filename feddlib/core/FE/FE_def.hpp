@@ -391,13 +391,15 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
     	TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "No AceGen Implementation available for Discretization and Dimension." );
 
 
-    UN FElocChem = checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype
-    UN FElocSolid = checkFE(dim,FETypeSolid); // Checks for different domains which belongs to a certain fetype
+    UN FElocChem = 1; //checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype
+    UN FElocSolid = 0; //checkFE(dim,FETypeSolid); // Checks for different domains which belongs to a certain fetype
 
 	ElementsPtr_Type elementsChem= domainVec_.at(FElocChem)->getElementsC();
 
 	ElementsPtr_Type elementsSolid = domainVec_.at(FElocSolid)->getElementsC();
 
+    //this->domainVec_.at(FElocChem)->info();
+    //this->domainVec_.at(FElocSolid)->info();
 	//int dofsElement = elements->getElement(0).getVectorNodeList().size();
 
 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FElocSolid)->getPointsRepeated();
@@ -406,7 +408,6 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
 	MapConstPtr_Type mapSolid = domainVec_.at(FElocSolid)->getMapRepeated();
 
-	vec_dbl_Type solution(0);
 	vec_dbl_Type solution_c;
 	vec_dbl_Type solution_d;
 
@@ -462,15 +463,16 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
         // First Solid, then Chemistry
 		solution.insert( solution.end(), solution_d.begin(), solution_d.end() );
 		solution.insert( solution.end(), solution_c.begin(), solution_c.end() );
-
-		assemblyFEElements_[T]->updateSolution(solution);
+        
+  		assemblyFEElements_[T]->updateSolution(solution);
 
  		SmallMatrixPtr_Type elementMatrix;
 
 		if(assembleMode == "Jacobian"){
 			assemblyFEElements_[T]->assembleJacobian();
-		    
+
             elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+          //  elementMatrix->print();
 			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
 			
 			addFeBlockMatrix(A, elementMatrix, elementsSolid->getElement(T),  mapSolid, mapChem, problemDisk);
@@ -484,14 +486,13 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
 			
 	}
-
 	if ( assembleMode != "Rhs"){
 		A->getBlock(0,0)->fillComplete();
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
 	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
 	    A->getBlock(1,1)->fillComplete();
 	}
-    
+
     if(assembleMode == "Rhs"){
 
 		MultiVectorPtr_Type resVecUnique_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocSolid)->getMapVecFieldUnique(), 1 ) );
@@ -1286,6 +1287,9 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
                 }
                 value[j] *= absDetB;
                 indices[j] = map->getGlobalElement( elements->getElement(T).getNode(j) );
+                if (setZeros_ && std::fabs(value[j]) < myeps_) {
+                    value[j] = 0.;
+                }
             }
             GO row = map->getGlobalElement( elements->getElement(T).getNode(i) );
 
@@ -1647,7 +1651,6 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
 
     TEUCHOS_TEST_FOR_EXCEPTION( FEType == "P0", std::logic_error, "Not implemented for P0" );
     UN FEloc = checkFE(dim,FEType);
-
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
@@ -6125,46 +6128,48 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
         ElementsPtr_Type subEl = fe.getSubElements(); // might be null
         for (int surface=0; surface<fe.numSubElements(); surface++) {
             FiniteElement feSub = subEl->getElement( surface  );
-            // Setting flag to the placeholder (second last entry). The last entry at (funcParameter.size() - 1) should always be the degree of the surface function
-            params[ funcParameter.size() - 2 ] = feSub.getFlag();
-            vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
-            buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
-            elScaling = B.computeScaling( );
-            // loop over basis functions
-            for (UN i=0; i < phi->at(0).size(); i++) {
-                Teuchos::Array<SC> value(0);
-                if ( fieldType == "Scalar" )
-                    value.resize( 1, 0. );
-                else if ( fieldType == "Vector" )
-                    value.resize( dim, 0. );
-                // loop over basis functions quadrature points
-                for (UN w=0; w<phi->size(); w++) {
-                    vec_dbl_Type x(dim,0.); //coordinates
-                    for (int k=0; k<dim; k++) {// transform quad points to global coordinates
-                        for (int l=0; l<dim-1; l++)
-                            x[ k ] += B[k][l] * (*quadPoints)[ w ][ l ] + b[k];
-                    }
-
-                    func( &x[0], &valueFunc[0], params);
+            if(subEl->getDimension() == dim-1){
+                // Setting flag to the placeholder (second last entry). The last entry at (funcParameter.size() - 1) should always be the degree of the surface function
+                params[ funcParameter.size() - 2 ] = feSub.getFlag();
+                vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                elScaling = B.computeScaling( );
+                // loop over basis functions
+                for (UN i=0; i < phi->at(0).size(); i++) {
+                    Teuchos::Array<SC> value(0);
                     if ( fieldType == "Scalar" )
-                        value[0] += weights->at(w) * valueFunc[0] * (*phi)[w][i];
-                    else if ( fieldType == "Vector" ){
-                        for (int j=0; j<value.size(); j++){
-                            value[j] += weights->at(w) * valueFunc[j] * (*phi)[w][i];
+                        value.resize( 1, 0. );
+                    else if ( fieldType == "Vector" )
+                        value.resize( dim, 0. );
+                    // loop over basis functions quadrature points
+                    for (UN w=0; w<phi->size(); w++) {
+                        vec_dbl_Type x(dim,0.); //coordinates
+                        for (int k=0; k<dim; k++) {// transform quad points to global coordinates
+                            for (int l=0; l<dim-1; l++)
+                                x[ k ] += B[k][l] * (*quadPoints)[ w ][ l ] + b[k];
+                        }
+
+                        func( &x[0], &valueFunc[0], params);
+                        if ( fieldType == "Scalar" )
+                            value[0] += weights->at(w) * valueFunc[0] * (*phi)[w][i];
+                        else if ( fieldType == "Vector" ){
+                            for (int j=0; j<value.size(); j++){
+                                value[j] += weights->at(w) * valueFunc[j] * (*phi)[w][i];
+                            }
                         }
                     }
-                }
 
-                for (int j=0; j<value.size(); j++)
-                    value[j] *= elScaling;
-                
-                if ( fieldType== "Scalar" )
-                    valuesF[ nodeList[ i ] ] += value[0];
-
-
-                else if ( fieldType== "Vector" ){
                     for (int j=0; j<value.size(); j++)
-                        valuesF[ dim * nodeList[ i ] + j ] += value[j];
+                        value[j] *= elScaling;
+                    
+                    if ( fieldType== "Scalar" )
+                        valuesF[ nodeList[ i ] ] += value[0];
+
+
+                    else if ( fieldType== "Vector" ){
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ i ] + j ] += value[j];
+                    }
                 }
             }
         }
@@ -6290,6 +6295,10 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
     UN deg = determineDegree( dim, FEType, Std) + degFunc;
 
+    vec2D_dbl_ptr_Type quadPoints;
+    getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values
+
+
     getPhi(phi, weights, dim, FEType, deg);
 
     SC detB;
@@ -6308,26 +6317,42 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     
     func( &x, &valueFunc[0], paras );
     SC value;
+
     for (UN T=0; T<elements->numberElements(); T++) {
 
         buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
         detB = B.computeDet( );
         absDetB = std::fabs(detB);
 
+		vec2D_dbl_Type quadPointsTrans(weights->size(),vec_dbl_Type(dim));
+		for(int i=0; i< weights->size(); i++){
+			 for(int j=0; j< dim ; j++){
+				for(int k=0; k< dim; k++){
+		 			quadPointsTrans[i][j] += B[j][k]* quadPoints->at(i).at(k) ; 
+				}
+				quadPointsTrans[i][j] += pointsRep->at(elements->getElement(T).getNode(0)).at(j); 
+			 }
+		}
         for (UN i=0; i < phi->at(0).size(); i++) {
-            value = Teuchos::ScalarTraits<SC>::zero();
-            for (UN w=0; w<weights->size(); w++)
-                value += weights->at(w) * phi->at(w).at(i);
-
             if ( !fieldType.compare("Scalar") ) {
-                value *= absDetB * valueFunc[0];
-                LO row = (LO) elements->getElement(T).getNode(i);
-                valuesRhs[row] += value;
+		  	    value = Teuchos::ScalarTraits<SC>::zero();
+ 				for (UN w=0; w<weights->size(); w++){
+					func(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
+	           		value += weights->at(w) * phi->at(w).at(i)*valueFunc[0];
+				}
+	            value *= absDetB;
+	            LO row = (LO) elements->getElement(T).getNode(i);
+	            valuesRhs[row] += value;
             }
             else if( !fieldType.compare("Vector") ) {
-                value *= absDetB;
                 for (UN d=0; d<dim; d++) {
-                    SC v_i = value*valueFunc[d];
+		    		value = Teuchos::ScalarTraits<SC>::zero();
+ 					for (UN w=0; w<weights->size(); w++){
+						func(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
+               			value += weights->at(w) * phi->at(w).at(i)*valueFunc[d];
+					}
+              		value *= absDetB;
+                    SC v_i = value;
                     LO row = (LO) ( dim * elements->getElement(T).getNode(i)  + d );
                     valuesRhs[row] += v_i;
                 }

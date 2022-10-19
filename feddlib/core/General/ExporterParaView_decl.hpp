@@ -171,7 +171,7 @@ public:
     
     void makePostfix();
     
-private:
+protected:
     
     HDF5Ptr_Type hdf5exporter_;
     CommConstPtr_Type comm_;
@@ -207,6 +207,10 @@ private:
     bool verbose_;
     ParameterListPtr_Type parameterList_;
     vec2D_dbl_ptr pointsUnique_;
+
+	bool redo_ = false;
+	MeshPtr_Type mesh_;
+    MapConstPtr_Type mapUniqueVariables_;
     
     };
 }

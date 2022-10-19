@@ -205,6 +205,7 @@ void Elements::setToCorrectElement( FiniteElement& feSub ){
 }
 
 vec2D_int_Type Elements::getSubElementPermutation(){
+
     if (dim_ == 2) {
         vec2D_int_Type permutation( 3, vec_int_Type(2,0) );
         permutation[0][1] = 1;

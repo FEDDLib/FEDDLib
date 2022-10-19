@@ -1,0 +1,18 @@
+<ParameterList name="FlagTest">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Level" type="int" value="2"/>
+        <Parameter name="Discretization" type="string" value="P2"/><!--P1, P2; velocity, pressure always P1 -->
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured, structured_bfs -->
+        <Parameter name="Mesh Name" type="string" value="meshNodeTestP23D_2.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh-->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+        <Parameter name="H/h" type="int" value="10"/>   
+        <Parameter name="VolumeID" type="int" value="99"/>
+    </ParameterList>
+    
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        
+        <Parameter name="Mesh 1 Name" type="string" value="lShape4.mesh"/>
+    </ParameterList>
+</ParameterList>

@@ -8,7 +8,7 @@ TRIBITS_ADD_TEST(
 	NAME unsteadyNavierStokes
 	ARGS
 	#--precfile=parametersPrecMumps.xml
-	NUM_MPI_PROCS 4
+	NUM_MPI_PROCS 2
 )
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_unsteadyNavierStokes
