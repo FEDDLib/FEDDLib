@@ -99,7 +99,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat);
+	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],deltat);
 
 	if(dofOrdering_ == 1)
 	{
@@ -176,7 +176,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat);
+	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],deltat);
 		
 	if(dofOrdering_ == 2)
 	{

@@ -369,12 +369,12 @@ int main(int argc, char *argv[])
 			NonLinElas.getSolution()->getBlock(0)->normInf(norm);
 			res = norm[0];
 			if(comm->getRank() ==0)
-				cout << " Relative error Inf-Norm of solution linear elasticity " << infNormError/res << endl;
+				cout << " Relative error Inf-Norm of solution nonlinear elasticity " << infNormError/res << endl;
 
 			NonLinElasAssFE.getSolution()->getBlock(0)->normInf(norm);
 			res = norm[0];
 			if(comm->getRank() ==0)
-				cout << " Relative error Inf-Norm of solutions linear elasticity assemFE " << infNormError/res << endl;
+				cout << " Relative error Inf-Norm of solutions nonlinear elasticity assemFE " << infNormError/res << endl;
 		
 
           // TEUCHOS_TEST_FOR_EXCEPTION( infNormError > 1e-11 , std::logic_error, "Inf Norm of Error between calculated solutions is too great. Exceeded 1e-11. ");
