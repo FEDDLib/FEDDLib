@@ -126,16 +126,19 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_fe_test_nonlinElas
 	EXEDEPS fe_test_nonlinElas
 )
 
-### Test for new interfacce
-### FE LAPLACE
-TRIBITS_ADD_EXECUTABLE(
-interface_test
-SOURCES test.c
-)
+if(FEDD_HAVE_ACEGENINTERFACE)
+	### Test for new interfacce
+	### FE LAPLACE
+	TRIBITS_ADD_EXECUTABLE(
+	interface_test
+	SOURCES test.c
+	)
 
-TRIBITS_ADD_TEST(
-interface_test
-NAME interface_test
-ARGS
-NUM_MPI_PROCS 1
-)
+	TRIBITS_ADD_TEST(
+	interface_test
+	NAME interface_test
+	ARGS
+	NUM_MPI_PROCS 1
+	)
+endif()
+#ifdef FEDD_HAVE_ACEGENINTERFACE

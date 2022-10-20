@@ -16,9 +16,6 @@ SET(Mesh_HEADERS
 	Mesh/MeshUnstructured.hpp
 	Mesh/MeshUnstructured_decl.hpp
 	Mesh/MeshUnstructured_def.hpp
-	Mesh/MeshUnstructuredRefinement.hpp
-	Mesh/MeshUnstructuredRefinement_decl.hpp
-	Mesh/MeshUnstructuredRefinement_def.hpp
     Mesh/AABBTree.hpp
     Mesh/AABBTree_decl.hpp
     Mesh/AABBTree_def.hpp
@@ -32,7 +29,6 @@ SET(Mesh_SOURCES
     Mesh/MeshInterface.cpp
     Mesh/MeshStructured.cpp
     Mesh/MeshUnstructured.cpp
-    Mesh/MeshUnstructuredRefinement.cpp
     Mesh/AABBTree.cpp
 CACHE INTERNAL "")
 
