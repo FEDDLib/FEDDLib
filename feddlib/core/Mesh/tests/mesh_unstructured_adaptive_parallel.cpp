@@ -10,6 +10,8 @@
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 
+
+
 /*!
  MeshUnstructured test
 
@@ -83,9 +85,9 @@ int main(int argc, char *argv[]) {
     Teuchos::CommandLineProcessor myCLP;
     string ulib_str = "Tpetra"; //this does nothing atm
     myCLP.setOption("ulib",&ulib_str,"Underlying lib");
-    string filename = "dfg_fsi_fluid_h004.mesh";
+    string filename ="tetrahedrons_4.mesh";
     myCLP.setOption("file",&filename,"Mesh filename");
-    int dim = 2;
+    int dim = 3;
     myCLP.setOption("dim",&dim,"Dimension");
     string delimiter = " ";
     myCLP.setOption("delimiter",&delimiter,"Delimiter in mesh-file");
@@ -125,15 +127,20 @@ int main(int argc, char *argv[]) {
     
     partitionerP1.readAndPartition();
 
+
+  	MeshPartitioner_Type::DomainPtrArray_Type domainP1RefinedArray(1);
+	domainP1->initMeshRef(domainP1);
+    domainP1RefinedArray[0] = domainP1;
+    Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
+
     if (FEType == "P2") {
         domainP2->buildP2ofP1Domain( domainP1 );
-        domain = domainP2;
+        domain = domainP1;
     }
     else
         domain = domainP1;
 
-    
-    Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+ 	Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
     bcFactory->addBC(x1, 1, 0, domain, "Dirichlet", 1);
     bcFactory->addBC(x2, 2, 0, domain, "Dirichlet", 1);
@@ -147,44 +154,67 @@ int main(int argc, char *argv[]) {
     bcFactory->addBC(x10, 10, 0, domain, "Dirichlet", 1);
     bcFactory->addBC(x11, 11, 0, domain, "Dirichlet", 1);
 
-    MultiVectorPtr_Type values = rcp(new MultiVector_Type( domain->getMapUnique() ) );
-    BlockMultiVectorPtr_Type valuesBlock = rcp(new BlockMultiVector_Type( 1 ) );
+   
+	const int myRank = comm->getRank ();
 
-    valuesBlock->addBlock( values, 0 );
+	for(int i=0;i<3;i++){
+		domain->initMeshRef(domain);
+		domainP1->initMeshRef(domainP1);
+			
+		domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
 
-    bcFactory->setRHS( valuesBlock );
+		for(int i=0; i< domain->getElementsC()->numberElements() ; i++)
+			domain->getElementsC()->getElement(i).tagForRefinement();
 
-    if (boolExportMesh) {
 
-        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-        std::string filename = "unstructuredMesh";
+		domainRefined->refineMesh(domainP1RefinedArray,i,true ,"keepRegularity"); // always use the P1 domain, P2 Domain has has lost its' edge (höhö)
+		domainP1RefinedArray.push_back(domainRefined); 
+
+		domainP1 = domainRefined;
+	
+
+
+		if (FEType == "P2") {
+		    domainP2->buildP2ofP1Domain( domainP1 );
+		    domain = domainP2;
+		}
+		else
+		    domain = domainP1;
+
+		Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+
+		bcFactory->addBC(x1, 1, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x2, 2, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x3, 3, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x4, 4, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x5, 5, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x6, 6, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x7, 7, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x8, 8, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x9, 9, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x10, 10, 0, domain, "Dirichlet", 1);
+		bcFactory->addBC(x11, 11, 0, domain, "Dirichlet", 1);
+
+	 	MultiVectorPtr_Type values = rcp(new MultiVector_Type( domain->getMapUnique() ) );
+
+		BlockMultiVectorPtr_Type valuesBlock = rcp(new BlockMultiVector_Type( 1 ) );
+
+		valuesBlock->addBlock( values, 0 );
+
+		bcFactory->setRHS( valuesBlock );
+
+		MultiVectorConstPtr_Type valuesConst = valuesBlock->getBlock( 0 );
+
+		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
         
-        exPara->setup(filename, domain->getMesh(), FEType);
+        exPara->setup("Refinement", domain->getMesh(), FEType);
+        
+		exPara->addVariable( valuesConst, "values", "Scalar", 1, domain->getMapUnique() );
 
-        MultiVectorConstPtr_Type valuesConst = valuesBlock->getBlock( 0 );
-        exPara->addVariable( valuesConst, "values", "Scalar", 1, domain->getMapUnique() );
-
-        exPara->save(0.0);
-        exPara->closeExporter();
-
-    }
-
-    if (boolExportSubdomains) {
-
-        MultiVectorPtr_Type vecDecomposition = rcp(new MultiVector_Type( domainP1->getElementMap() ) );
-        MultiVectorConstPtr_Type vecDecompositionConst = vecDecomposition;
-        vecDecomposition->putScalar(comm->getRank()+1.);
-
-        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-
-        exPara->setup( "subdomains", domainP1->getMesh(), "P0" );
-
-        exPara->addVariable( vecDecompositionConst, "subdomain", "Scalar", 1, domainP1->getElementMap());
-
-        exPara->save(0.0);
-        exPara->closeExporter();
-    }
-
+		exPara->save(0.0);
+		exPara->closeExporter();
+	}
+    
 
     return(EXIT_SUCCESS);
-}
+} 

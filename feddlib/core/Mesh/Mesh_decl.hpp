@@ -145,13 +145,12 @@ public:
     ElementsPtr_Type        surfaceElements_;
 
     ElementsPtr_Type        elementsC_;
+    vec2D_int_ptr_Type      elementsVec_;
     MapPtr_Type				elementMap_;
     MapPtr_Type				edgeMap_;
 
 
     CommConstPtrConst_Type  comm_;
-    
-	vec2D_int_ptr_Type  elementsVec_;
     
     vec2D_dbl_ptr_Type		pointsRepRef_; // Repeated Referenzkonfiguration
     vec2D_dbl_ptr_Type		pointsUniRef_; // Unique Referenzkonfiguration

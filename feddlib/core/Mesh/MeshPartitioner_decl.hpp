@@ -50,10 +50,9 @@ public:
     ~MeshPartitioner();
     
 	/*! 
-		\brief Main Function of partitioner. Called with volume ID in order to set in case it is not equal to ten. Always make sure the volumeID corresponds to the
-		highest given flag. 
+		\brief Main Function of partitioner called 
 	*/
-    void readAndPartition(int volumeID=10);
+    void readAndPartition(int volumeID = 10);
         
     /*! \brief Only used in 3D to set the edges as subelements to surfaces*/
     void setEdgesToSurfaces(int meshNumber);
