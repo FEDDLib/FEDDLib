@@ -7,14 +7,14 @@
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
         
         <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
-        <Parameter name="Inflow Ramp" type="double" value="3.0"/><!--2d:2.0, Richter 3d: 1.0-->
+        <Parameter name="Inflow Ramp" type="double" value="0.0"/><!--2d:2.0, Richter 3d: 1.0-->
         <Parameter name="Volume force" type="double" value="0.016"/>
         <Parameter name="Source Type" type="string"   value="surface"/>
         <Parameter name="Model Geometry" type="string" value="Laplace"/>
         
         <Parameter name="SCI" type="bool" value="true"/>
         <Parameter name="Load Stepping" type="bool" value="true"/>
-        <Parameter name="Coupling Type" type="string" value="implicit"/>
+        <Parameter name="Coupling Type" type="string" value="explicit"/>
 
         <Parameter name="Refinement Level" type="int" value="0"/>
        
@@ -47,7 +47,7 @@
         <Parameter name="Viscosity" type="double" value="1.0"/>
         <Parameter name="Density" type="double" value="1000.0"/>
         <Parameter name="m" type="double" value="0."/>
-        <Parameter name="D0" type="double" value="6.e-05"/>
+        <Parameter name="D0" type="double" value="6.e-03"/>
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
     </ParameterList>
     
@@ -103,8 +103,8 @@
         <Parameter name="Class" type="string" value="Multistep"/> <!-- External, Multistep-->
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value=".02"/>
-        <Parameter name="dt" type="double" value="0.01"/>
+        <Parameter name="Final time" type="double" value="5.0"/>
+        <Parameter name="dt" type="double" value="1.0"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
     </ParameterList>

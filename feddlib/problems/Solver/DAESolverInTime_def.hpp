@@ -991,8 +991,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
         // In der ersten nichtlinearen Iteration wird bei GI also die Massematrix zweimal assembliert.
         // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
+        std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
+
         MatrixPtr_Type massmatrix;
         sci->setChemMassmatrix( massmatrix );
+      
         this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
 
         // RHS nach BDF2
@@ -1020,8 +1023,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         double time = timeSteppingTool_->currentTime() + dt;
         problemTime_->updateTime ( time );        
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
-        massCoeffSCI.print();
-        problemCoeffSCI.print();
+        //massCoeffSCI.print();
+        //problemCoeffSCI.print();
         if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
             nlSolver.solve(*this->problemTime_, time, its);
         else{
@@ -1045,7 +1048,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
         timeSteppingTool_->advanceTime(true);//output info);
         this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
-        std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
 
         // Should be some place else
         if(timeSteppingTool_->t_ >= inflowRamp && couplingType == "explicit")

@@ -20,8 +20,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_sciTest
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_sciTest
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES cube_0_1.mesh
+    SOURCE_FILES cube_0_1.mesh cube_0_5.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES cube_0_1.mesh
+	DEST_FILES cube_0_1.mesh cube_0_5.mesh
 	EXEDEPS sci_Test
 )
