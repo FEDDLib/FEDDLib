@@ -1,6 +1,7 @@
- MeshVersionFormatted 2
-Dimension
-3
+MeshVersionFormatted 2
+
+Dimension 3
+
 Vertices
 1147
 0 0 0 0
@@ -1183,6 +1184,7 @@ Edges
 87 88 7
 88 89 7
 89 5 7
+
 Triangles
 1468
 1 44 216 1

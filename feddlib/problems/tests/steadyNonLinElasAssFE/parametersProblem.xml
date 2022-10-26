@@ -3,7 +3,7 @@
         <Parameter name="Dimension"							    type="int"   	value="3"/>
         <Parameter name="Discretization"                        type="string"   value="P2"/><!--P1, P2-->
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
-        <Parameter name="Volume force" type="double" value="0.1"/>
+        <Parameter name="Volume force" type="double" value="0.016"/>
 	    <Parameter name="Source Type" type="string"   value="surface"/>
         <Parameter name="Mesh Delimiter"					    type="string"   value=" "/>
         <Parameter name="H/h"							    	type="int"   	value="6"/>   
@@ -13,14 +13,14 @@
  	<Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
         <Parameter name="Neo-Hooke Modell" type="int" value="2"/><!--different energy functions -->
         <Parameter name="Density" type="double"   value="1."/>
-	 <Parameter name="Poisson Ratio"					        type="double"   value="0.4e-0"/>        
+	 <Parameter name="Poisson Ratio"					        type="double"   value="0.49e-0"/>        
          <Parameter name="Mu" type="double" value="2.0e+6"/>
         <Parameter name="Mu1" type="double" value="2.0e+6"/>
         <Parameter name="Mu2" type="double" value="2.0e+8"/>
         <!-- Parameter for Neo-Hooke and Mooney-Rivlin, additioanlly poisson ratio is used -->
-        <Parameter name="E" type="double"   value="3.0e+6"/>
-        <Parameter name="E1" type="double"   value="1."/>
-        <Parameter name="E2" type="double"   value="1.e+4"/>
+        <Parameter name="E" type="double"   value="0.3160"/>
+        <Parameter name="E1" type="double"   value="0.3160"/>
+        <Parameter name="E2" type="double"   value="0.3160"/>
         
         <!-- Parameter for Mooney-Rivlin-->
         <Parameter name="C" type="double" value="1."/><!-- Mooney-Rivlin parameter -->
@@ -41,7 +41,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="cube_0_1.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="cube_h_0_1.mesh"/>
     </ParameterList>
     
     <ParameterList name="General">

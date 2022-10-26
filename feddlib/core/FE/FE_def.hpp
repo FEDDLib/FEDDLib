@@ -234,7 +234,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
     if(neoHookeNum == 1)
         nonLinElasModell = "NonLinearElasticity";
 
-    cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  endl;
+    //cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  endl;
 
 
 	if(assemblyFEElements_.size()== 0)
@@ -325,7 +325,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
     if(neoHookeNum == 1)
         nonLinElasModell = "NonLinearElasticity";
 
-    cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  endl;
+    //cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  endl;
 
 	if(assemblyFEElements_.size()== 0)
 	 	initAssembleFEElements(nonLinElasModell,problemDisk,elements, params,pointsRep);
