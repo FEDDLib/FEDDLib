@@ -14,6 +14,9 @@ SET(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/AssembleFEAceNonLinElas_decl.hpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas_def.hpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas.hpp
+	AceFemAssembly/specific/AssembleFEAceNonLinElas2_decl.hpp
+	AceFemAssembly/specific/AssembleFEAceNonLinElas2_def.hpp
+	AceFemAssembly/specific/AssembleFEAceNonLinElas2.hpp
 	AceFemAssembly/specific/AssembleFEAceDeformDiffu_decl.hpp
 	AceFemAssembly/specific/AssembleFEAceDeformDiffu_def.hpp
 	AceFemAssembly/specific/AssembleFEAceDeformDiffu.hpp
@@ -25,6 +28,7 @@ SET(AceFemAssemblySpecific_SOURCES
 	AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian.cpp
 	AceFemAssembly/specific/AssembleFEAceLinElas.cpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas.cpp
+	AceFemAssembly/specific/AssembleFEAceNonLinElas2.cpp
 	AceFemAssembly/specific/AssembleFEAceDeformDiffu.cpp
 CACHE INTERNAL "")
 

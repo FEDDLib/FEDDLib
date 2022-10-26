@@ -5,10 +5,10 @@
       include 'sms.h'
       INTEGER i1,i2,i338,i373,icode
       DOUBLE PRECISION v(2238),d(6),ul(3,20),ul0(3,20),xl(3
-     &,20),s(60,60),p(60),ht(*),hp(*),deltat
+     &,20),s(60,60),p(60),ht(*),hp(*),deltat(1)
       icode=19
       call SMSIntPoints(icode,ngpo,gp)
-      v(290)=deltat
+      v(290)=deltat(1)
       v(289)=d(6)
       v(288)=d(5)
       v(277)=d(3)

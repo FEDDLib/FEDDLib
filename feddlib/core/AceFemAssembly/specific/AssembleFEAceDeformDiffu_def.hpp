@@ -57,8 +57,10 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 	std::vector<double> p(60);
 	std::vector<double> ht(10);
 	std::vector<double> hp(10);
+	
+	std::vector<double> deltat(1);
 
-	double deltat=this->getTimeIncrement();
+	deltat[0]=this->getTimeIncrement();
 
 	d[0] = this->E0_;
 	d[1] = this->E1_;
@@ -99,7 +101,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],deltat);
+	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat[0]);
 
 	if(dofOrdering_ == 1)
 	{
@@ -135,8 +137,11 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	std::vector<double> ht(10);
 	std::vector<double> hp(10);
 
-	double deltat=this->getTimeIncrement();
+	//double deltat=this->getTimeIncrement();
+	std::vector<double> deltat(1);
 
+	deltat[0]=this->getTimeIncrement();
+	
 	d[0] = this->E0_;
 	d[1] = this->E1_;
 	d[2] = this->poissonRatio_;
@@ -176,7 +181,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],deltat);
+	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat[0]);
 		
 	if(dofOrdering_ == 2)
 	{

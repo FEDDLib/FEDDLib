@@ -228,8 +228,17 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	tuple_ssii_Type displacement ("Displacement",FEType,dofs,numNodes);
 	problemDisk->push_back(displacement);
 
+    int neoHookeNum = params->sublist("Parameter").get("Neo-Hooke Modell",2);
+
+    string nonLinElasModell = "NonLinearElasticity2";
+    if(neoHookeNum == 1)
+        nonLinElasModell = "NonLinearElasticity";
+
+    cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  endl;
+
+
 	if(assemblyFEElements_.size()== 0)
-	 	initAssembleFEElements("NonLinearElasticity",problemDisk,elements, params,pointsRep);
+	 	initAssembleFEElements(nonLinElasModell,problemDisk,elements, params,pointsRep);
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
 	
@@ -310,8 +319,16 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	tuple_ssii_Type displacement ("Displacement",FEType,dofs,numNodes);
 	problemDisk->push_back(displacement);
 
+    int neoHookeNum = params->sublist("Parameter").get("Neo-Hooke Modell",2);
+
+    string nonLinElasModell = "NonLinearElasticity2";
+    if(neoHookeNum == 1)
+        nonLinElasModell = "NonLinearElasticity";
+
+    cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  endl;
+
 	if(assemblyFEElements_.size()== 0)
-	 	initAssembleFEElements("NonLinearElasticity",problemDisk,elements, params,pointsRep);
+	 	initAssembleFEElements(nonLinElasModell,problemDisk,elements, params,pointsRep);
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
 	

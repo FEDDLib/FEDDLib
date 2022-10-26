@@ -15,7 +15,7 @@
             real(c_double), intent(inout) :: p(60)
             real(c_double), intent(inout) :: ht(*)
             real(c_double), intent(inout) :: hp(*)
-            real(c_double), intent(inout) :: deltat
+            real(c_double), intent(inout) :: deltat(1)
             call SKR10(v,d,ul,ul0,xl,s,p,ht,hp,deltat)
          end subroutine skr_DDNH
       end module c_routines_DeformationDiffusionNeoHook   

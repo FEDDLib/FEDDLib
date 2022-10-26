@@ -31,6 +31,7 @@
     </ParameterList>
     <ParameterList name="Parameter Solid">        
         <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
+        <Parameter name="Neo-Hooke Modell" type="int" value="2"/><!--differen energy functions -->
         <Parameter name="Density" type="double"   value="1000."/>
         <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
         <Parameter name="Poisson Ratio" type="double" value="0.49"/>

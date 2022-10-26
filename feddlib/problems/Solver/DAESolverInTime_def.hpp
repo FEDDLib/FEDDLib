@@ -995,8 +995,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
         MatrixPtr_Type massmatrix;
         sci->setChemMassmatrix( massmatrix );
-      
-        this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
+        if(couplingType=="explicit")
+            this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
 
         // RHS nach BDF2
         this->problemTime_->assemble( "ComputeChemRHSInTime" ); // hier ist massmatrix nicht relevant
