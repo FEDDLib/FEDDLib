@@ -496,6 +496,15 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		
 	// Finally we set all changed mesh enteties for outputMesh
 
+	for(int i=0; i< elementsTmp->numberElements(); i++){
+		vec_int_Type ids =  elementsTmp->getElement(i).getVectorNodeList();
+		cout << "Element " << i << " "<< ids[0] << " " << ids[1] << " " << ids[2] << " " << ids[3] << endl;
+	}
+
+	for(int i=0; i< this->elementsC_->numberElements(); i++){
+		vec_int_Type ids =  this->elementsC_->getElement(i).getVectorNodeList();
+		cout << "Element " << i << " " << ids[0] << " " << ids[1] << " " << ids[2] << " " << ids[3] << endl;
+	}
 	outputMesh->dim_ = this->dim_ ;
 	outputMesh->FEType_ = this->FEType_ ;
 	outputMesh->rankRange_ =  this->rankRange_;

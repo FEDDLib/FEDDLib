@@ -162,13 +162,13 @@ int main(int argc, char *argv[]) {
 		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
 		domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
 		vec2D_dbl_Type area(dim,vec_dbl_Type(2));
-		area[0][0] = 0.;
-		area[0][1] = 0.001;
-		area[1][0] = 0.;
-		area[1][1] = 1.;
+		area[0][0] = 0.1;
+		area[0][1] = 0.1;
+		area[1][0] = 0.1;
+		area[1][1] = 0.1;
 		if(dim==3){
-			area[2][0] = 0.;
-			area[2][1] = 1.;
+			area[2][0] = 0.1;
+			area[2][1] = 0.1;
 		}
 		{
 			if(level>0){

@@ -222,13 +222,28 @@ int main(int argc, char *argv[])
 		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner(parameterListProblem); // exactSolLShape
 		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
 		domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-
-		
-		
-		if(level>0){	
-			domainRefined = meshRefiner.refineUniform(domain,level );		
-			domain = domainRefined;
+		vec2D_dbl_Type area(dim,vec_dbl_Type(2));
+	    area[0][0] = 0.0;
+		area[0][1] = 0.15;
+		area[1][0] = 0.0;
+		area[1][1] = 0.15;
+		if(dim==3){
+			area[2][0] = 0.0;
+			area[2][1] = 0.15;
 		}
+		
+		if(level>0){
+			if(type=="area"){
+				domainRefined = meshRefiner.refineArea(domain,area,level );
+				domain=domainRefined;
+			}
+			else if(type=="uniform"){
+				domainRefined = meshRefiner.refineUniform(domain,level );
+				domain=domainRefined;
+			}
+				
+		}
+		
 		
        if (FEType=="P2") {
             Teuchos::RCP<Domain<SC,LO,GO,NO> > domainP2;

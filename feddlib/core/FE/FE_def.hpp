@@ -228,7 +228,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	tuple_ssii_Type displacement ("Displacement",FEType,dofs,numNodes);
 	problemDisk->push_back(displacement);
 
-    int neoHookeNum = params->sublist("Parameter").get("Neo-Hooke Modell",2);
+    int neoHookeNum = params->sublist("Parameter").get("Neo-Hooke Modell",1);
 
     string nonLinElasModell = "NonLinearElasticity2";
     if(neoHookeNum == 1)
@@ -319,7 +319,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	tuple_ssii_Type displacement ("Displacement",FEType,dofs,numNodes);
 	problemDisk->push_back(displacement);
 
-    int neoHookeNum = params->sublist("Parameter").get("Neo-Hooke Modell",2);
+    int neoHookeNum = params->sublist("Parameter").get("Neo-Hooke Modell",1);
 
     string nonLinElasModell = "NonLinearElasticity2";
     if(neoHookeNum == 1)
@@ -3964,6 +3964,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
     vec2D_dbl_ptr_Type			quadPts;
 
     UN deg = determineDegree( dim, FEType, FEType, Grad, Grad);
+    cout << " DEGREEEE LinElas " << deg << endl;
 
     // Hole die grad_phi, hier DPhi
     this->getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
@@ -6122,6 +6123,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
     UN deg = determineDegree( dim-1, FEType, Std) + degFunc;
+    cout << " DEGREEEE 1 " << deg << endl;
 
     getPhi(phi, weights, dim-1, FEType, deg);
 
@@ -6215,6 +6217,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralFlag(int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     UN degFunc = funcParameter[0] + 1.e-14;
     UN deg = determineDegree( dim-1, FEType, Std) + degFunc;
+    cout << " DEGREEEE 2 " << deg << endl;
 
     getPhi(phi, weights, dim-1, FEType, deg);
 

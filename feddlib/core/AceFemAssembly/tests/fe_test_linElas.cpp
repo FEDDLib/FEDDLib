@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
     {
 		fe.assemblyLinElasXDim( dim, domain->getFEType(), A, lambda, mu );
     }
-    
+    A->writeMM("A");
 	// Class for assembling linear Elasticity via Acefem implementation
  	FE_Test<SC,LO,GO,NO> fe_test;
     fe_test.addFE(domain);
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
     {
         fe_test.assemblyLinElas(dim, FEType, 2,dofs, A_test, true/*call fillComplete*/);
     }
-	//A_test->writeMM();
+	A_test->writeMM("A_ACE");
 
     // Comparing matrices
 	MatrixPtr_Type Sum= Teuchos::rcp(new Matrix_Type( domain->getMapVecFieldUnique(), domain->getDimension() * domain->getApproxEntriesPerRow()  ) );
