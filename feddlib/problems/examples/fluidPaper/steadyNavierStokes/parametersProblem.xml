@@ -1,12 +1,12 @@
 <ParameterList name="Problem">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension" type="int" value="2"/>
+        <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
         <Parameter name="Discretization Pressure" type="string" value="P1"/>
-        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
-        <Parameter name="BC Type" type="string" value="partialCFD"/><!-- parabolic, parabolic_benchmark, partialCFD-->
+        <Parameter name="Mesh Type" type="string" value="structured_bfs"/> <!--structured, unstructured -->
+        <Parameter name="BC Type" type="string" value="parabolic"/><!-- parabolic, parabolic_benchmark, partialCFD-->
         <Parameter name="Mesh Delimiter" type="string" value=" "/>
-        <Parameter name="H/h" type="int" value="3"/>
+        <Parameter name="H/h" type="int" value="9"/>
         <Parameter name="Symmetric gradient" type="bool" value="false"/>
         <Parameter name="Viscosity" type="double" value="1.0e-3"/>
         <Parameter name="Density" type="double" value="1.0"/>
