@@ -779,7 +779,7 @@ int main(int argc, char *argv[])
                     bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // interface line and symmetry wall
                     bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // symmetry-wall
                 }
-                bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // outflow
+                bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // outflow
                 bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
                 if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
                     bcFactoryFluidInterface->addBC(zeroDirichlet2D, 6, 0, domainFluidVelocity, "Dirichlet", dim);

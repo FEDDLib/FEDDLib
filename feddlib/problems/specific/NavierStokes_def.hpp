@@ -232,9 +232,9 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
         
         this->system_->addBlock( C, 1, 1 );
     }
-    else 
-        C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-        this->feFactory_->assemblyEmptyMatrix(C);
+    //else 
+    //    C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+    //    this->feFactory_->assemblyEmptyMatrix(C);
                
         //this->system_->addBlock( C, 1, 1 );
 
@@ -535,18 +535,18 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
     const bool fill_W = nonnull(W_out);
     const bool fill_W_prec = nonnull(W_prec_out);
 
+
     if ( fill_f || fill_W || fill_W_prec ) {
 
         // ****************
         // Get the underlying xpetra objects
         // ****************
-        bool system_updated = false;
         if (fill_f) {
 
             this->calculateNonLinResidualVec("standard"); // Calculating residual Vector
 
 			// Changing the residualVector into a ThyraMultivector
-            system_updated = true;
+
             Teuchos::RCP<Thyra::MultiVectorBase<SC> > f_thyra = this->getResidualVector()->getThyraMultiVector();
             f_out->assign(*f_thyra);
         }
@@ -582,6 +582,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
         }
 
         if (fill_W_prec) {
+        
             this->setupPreconditioner( "Monolithic" );
 
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
@@ -708,8 +709,9 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
         }
 
         if (fill_W_prec) {
-            if (stokesTekoPrecUsed_)
+            if (stokesTekoPrecUsed_){
                 this->setupPreconditioner( "Teko" );
+            }
             else
                 stokesTekoPrecUsed_ = true;
 
@@ -864,8 +866,9 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
         stokesTekoPrecUsed_ = false;
     }
     else{
-        this->initializePreconditioner( type );
+       this->initializePreconditioner( type ); // this->setupPreconditioner( type ); //
     }
+    
 
     Teuchos::RCP<const Thyra::PreconditionerBase<SC> > thyraPrec =  this->getPreconditionerConst()->getThyraPrecConst();
     Teuchos::RCP<Thyra::PreconditionerBase<SC> > thyraPrecNonConst = Teuchos::rcp_const_cast<Thyra::PreconditionerBase<SC> >(thyraPrec);

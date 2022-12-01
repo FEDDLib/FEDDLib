@@ -9,8 +9,8 @@
                     <ParameterList name="Block GMRES">
 <!--                        <Parameter name="PreconditionerPosition" type="string" value="right"/>-->
                         <Parameter name="Convergence Tolerance" type="double" value="1e-8"/>
-                        <Parameter name="Maximum Iterations" type="int" value="10000"/>
-                        <Parameter name="Num Blocks" type="int" value="100"/>
+                        <Parameter name="Maximum Iterations" type="int" value="2000"/>
+                        <Parameter name="Num Blocks" type="int" value="1000"/>
                         <Parameter name="Block Size" type="int" value="1"/>
                         <Parameter name="Output Frequency" type="int" value="1"/>
                         <!--<Parameter name="Verbosity" type="int" value="1"/>-->
@@ -22,7 +22,7 @@
                 </ParameterList>
             </ParameterList>
             <ParameterList name="Amesos2">
-                <Parameter name="Solver Type" type="string"   value="KLU2"/>
+                <Parameter name="Solver Type" type="string"   value="pardisomkl"/>
             </ParameterList>
         </ParameterList>
     </ParameterList>

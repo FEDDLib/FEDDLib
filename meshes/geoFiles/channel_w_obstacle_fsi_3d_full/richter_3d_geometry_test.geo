@@ -1,6 +1,6 @@
 // Gmsh project created on Fri Jun 01 15:23:36 2018
 // Punkte
-h = 0.025; 
+h = 0.001; 
 
 // Die Richtungen beziehen sich, wenn man wie bei Richter S. 286 die Geometrie betrachtet
 

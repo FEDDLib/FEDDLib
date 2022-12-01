@@ -882,6 +882,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 
 				detB1 = B1.computeInverse(Binv1);
 				detB1 = std::fabs(detB1);
+
 				vec2D_dbl_Type quadPointsT1(quadPSize,vec_dbl_Type(dim_));
 				for(int l=0; l< quadPSize; l++){
 
@@ -1545,7 +1546,7 @@ vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::getQuadValues(int dim, string FETyp
 				QuadPts[1][0] =  (x0+x2)/2.;
 				QuadPts[1][1] =  (y0+y2)/2.;
 				QuadPts[1][2] =  (z0+z2)/2.;
-				QuadPts[2][0] = 	(x1+x2)/2.;
+				QuadPts[2][0] =  (x1+x2)/2.;
 				QuadPts[2][1] =  (y1+y2)/2.;
 				QuadPts[2][2] =  (z1+z2)/2.;
 

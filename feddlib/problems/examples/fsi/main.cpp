@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
         sublist( parameterListGeometry, "Parameter" )->set( "Poisson Ratio", 0.4 );
         sublist( parameterListGeometry, "Parameter" )->set( "Mu", 2.0e+6 );
             
-        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
+        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
         string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
         
         string      discType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");

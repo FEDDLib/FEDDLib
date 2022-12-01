@@ -131,6 +131,8 @@ void Preconditioner<SC,LO,GO,NO>::initializePreconditioner( std::string type )
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::initPreconditionerMonolithic( )
 {
+
+	cout << " #### INIT PRECONDITIONER MONOLITHIC ### " << endl;
     LinSolverBuilderPtr_Type solverBuilder;
     Teuchos::RCP<const Thyra::VectorSpaceBase<SC> > thyraRangeSpace;
     Teuchos::RCP<const Thyra::VectorSpaceBase<SC> > thyraDomainSpace;
@@ -266,8 +268,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
     bool useNodeLists = parameterList->get( "Use node lists", true );
     ParameterListPtr_Type pListThyraPrec = sublist( parameterList, "ThyraPreconditioner" );
     ParameterListPtr_Type plFrosch = sublist( sublist( pListThyraPrec, "Preconditioner Types" ), "FROSch");
-    //if(!timeProblem_.is_null())
-    //    timeProblem_->getSystem()->writeMM();
+    
     ThyraLinOpConstPtr_Type thyraMatrix;
     if (!problem_.is_null())
         thyraMatrix = problem_->getSystem()->getThyraLinOp();
@@ -435,7 +436,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
             if (!problem_.is_null())
                 solverBuilder = problem_->getLinearSolverBuilder();
             else if(!timeProblem_.is_null())
-                solverBuilder = timeProblem_->getUnderlyingProblem()->getLinearSolverBuilder();
+                solverBuilder = timeProblem_->getLinearSolverBuilder();
 
             // We save the pointer to the coarse matrix in this parameter list inside FROSch
             pListPhiExport_ = pListThyraSolver;
@@ -443,12 +444,14 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
             solverBuilder->setParameterList(pListThyraSolver);
             precFactory_ = solverBuilder->createPreconditioningStrategy("");
 
-            if ( thyraPrec_.is_null() )
+            if ( thyraPrec_.is_null() ){
                 thyraPrec_ = precFactory_->createPrec();
-
-
-            Thyra::initializePrec<SC>(*precFactory_, thyraMatrix, thyraPrec_.ptr());
+               	cout << " #### SETUP PRECOND MONO: createPrec() ### " << endl;
+           	}     
+           
+            Thyra::initializePrec<SC>(*precFactory_, thyraMatrix, thyraPrec_.ptr()); // (precfactory, fwdOp, prec) Problem: PreconditionerBase<SC>* thyraPrec_
             precondtionerIsBuilt_ = true;
+            cout << " #### SETUP : preconditionerIsBuilt_ ### " << endl;
             
         }
         else
@@ -767,15 +770,18 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
 
         }
 
-        if ( thyraPrec_.is_null() )
+        if ( thyraPrec_.is_null() ){
             thyraPrec_ = precFactory_->createPrec();
+        }   
 
         Teuchos::RCP< const Thyra::DefaultLinearOpSource< SC > > thyraMatrixSourceOp =  defaultLinearOpSource (tekoLinOp_);
         //    Thyra::initializePrec<SC>(*precFactory, thyraMatrixSourceOp, thyraPrec_.ptr());
 
         precFactory_->initializePrec(thyraMatrixSourceOp, thyraPrec_.get());
         precondtionerIsBuilt_ = true;
+        
     }
+    
     else{
 
         Teuchos::RCP< const Thyra::DefaultLinearOpSource< SC > > thyraMatrixSourceOp =  defaultLinearOpSource (tekoLinOp_);

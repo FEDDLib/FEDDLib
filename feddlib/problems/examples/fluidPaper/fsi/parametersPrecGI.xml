@@ -5,19 +5,18 @@
         <ParameterList name="Preconditioner Types">
             <ParameterList name="FROSch">
                 <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
-                <Parameter name="Recycling" type="bool" value="true"/>
-                <Parameter name="Dimension"                                         type="int"      value="2"/>
-                <Parameter name="DofsPerNode1"                                      type="int"      value="2"/>
+                <Parameter name="Recycling"						                    type="bool"   value="false"/>
+                <Parameter name="DofsPerNode1"                                      type="int"      value="3"/>
                 <Parameter name="DofsPerNode2"                                      type="int"      value="1"/>
-                <Parameter name="DofsPerNode3"                                      type="int"      value="2"/>
-                <Parameter name="DofsPerNode4"                                      type="int"      value="2"/>
-                <Parameter name="DofsPerNode5"                                      type="int"      value="2"/>
+                <Parameter name="DofsPerNode3"                                      type="int"      value="3"/>
+                <Parameter name="DofsPerNode4"                                      type="int"      value="3"/>
+                <Parameter name="DofsPerNode5"                                      type="int"      value="3"/>
                 <Parameter name="DofOrdering1"                                      type="string"   value="NodeWise"/>
                 <Parameter name="DofOrdering2"                                      type="string"   value="NodeWise"/>
                 <Parameter name="DofOrdering3"                                      type="string"   value="NodeWise"/>
                 <Parameter name="DofOrdering4"                                      type="string"   value="NodeWise"/>
                 <Parameter name="DofOrdering5"                                      type="string"   value="NodeWise"/>
-                <Parameter name="Overlap"                                           type="int"      value="1"/>
+                <Parameter name="Overlap"                                           type="int"      value="2"/>
                 <Parameter name="TwoLevel"                                          type="bool"     value="false"/>
                 <!--<Parameter name="Use OverlappingOperator" 							type="bool" 	value="true">-->
                 <Parameter name="Level Combination"                                 type="string"   value="Additive"/><!--Multiplicative,Additive-->
@@ -25,17 +24,26 @@
                 <!--<Parameter name="Use CoarseOperator" 								type="bool" 	value="true">-->
                 <Parameter name="CoarseOperator Type"                               type="string"   value="RGDSWCoarseOperator"/><!--GDSWCoarseOperator,IPOUHarmonicCoarseOperator-->
                 <ParameterList name="AlgebraicOverlappingOperator">
-                    
-                    <Parameter name="Reuse: Symbolic Factorization" type="bool" value="true"/>
+                    <Parameter name="Reuse Symbolic Factorization"                  type="bool"     value="true"/>
                     <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
-                    <Parameter name="Adding Layers Strategy" type="string" value="CrsGraph"/>
-                    <Parameter name="Level ID" type="int" value="1"/>
+                    <Parameter name="Overlapping Operator Combination"              type="string"   value="Averaging"/><!--Restricted,Averaging,Full-->
+                    <Parameter name="Level ID"                                      type="int"      value="1"/>
                     <ParameterList name="Solver">
-                        <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="klu"/>
+                        <Parameter name="SolverType"                                type="string"   value="Amesos2"/>
+                        <Parameter name="Solver"                                    type="string"   value="pardisomkl"/>
+                        <ParameterList name="Amesos">
+                            <Parameter name="MatrixProperty"                        type="string"   value="general"/>
+                            <Parameter name="DroppingTolerance"                     type="double"   value="1.0e-14"/>
+                            <Parameter name="PrintTiming"                           type="bool"     value="false"/>
+                            <Parameter name="PrintStatus"                           type="bool"     value="false"/>
+                            <Parameter name="MaxProcs"                              type="int"      value="1"/>
+                            <Parameter name="OutputLevel"                           type="int"      value="1"/>
+                        </ParameterList>
+                        <ParameterList name="Amesos2">
+
+                        </ParameterList>
                     </ParameterList>
                 </ParameterList>
-                
                 <ParameterList name="GDSWCoarseOperator">
                     <Parameter name="Use Triple MatrixMultiply"                     type="bool"     value="false"/>
                     <Parameter name="Test Unconnected Interface"                    type="bool"     value="false"/>
@@ -75,9 +83,8 @@
                     </ParameterList>
 
                     <ParameterList name="ExtensionSolver">
-                        <Parameter name="Check for empty columns" type="bool" value="true"/>
                         <Parameter name="SolverType"                                type="string"   value="Amesos2"/>
-                        <Parameter name="Solver"                                    type="string"   value="klu"/>
+                        <Parameter name="Solver"                                    type="string"   value="pardisomkl"/>
                         <ParameterList name="Amesos">
                             <Parameter name="MatrixProperty"                        type="string"   value="general"/>
                             <Parameter name="DroppingTolerance"                     type="double"   value="1.0e-14"/>
@@ -85,12 +92,6 @@
                             <Parameter name="PrintStatus"                           type="bool"     value="false"/>
                             <Parameter name="MaxProcs"                              type="int"      value="1"/>
                             <Parameter name="OutputLevel"                           type="int"      value="1"/>
-                            <!-- Mumps -->
-                            <ParameterList name="mumps">
-                                <Parameter name="ICNTL(2)"                          type="int"      value="-1"/>
-                                <Parameter name="ICNTL(3)"                          type="int"      value="-1"/>
-                                <Parameter name="ICNTL(14)"                         type="int"      value="20"/>
-                            </ParameterList>
                         </ParameterList>
                         <ParameterList name="Amesos2">
 
@@ -104,7 +105,7 @@
                         <!-- How to use NumProcs
                          -> 0 stands for all processes
                          -> 1 stands for 1 process
-                         -> -1 stands corresponds to MaxProcs -1 from Mumps
+                         -> -1 stands corresponds to MaxProcs -1 from pardisomkl
                          -> n stands for a factor of 1/n
                          -> -n stands for the n-th root
                          -->
@@ -123,7 +124,7 @@
 
                     <ParameterList name="CoarseSolver">
                         <Parameter name="SolverType"                                type="string"   value="Amesos2"/>
-                        <Parameter name="Solver"                                    type="string"   value="klu"/>
+                        <Parameter name="Solver"                                    type="string"   value="pardisomkl"/>
                         <ParameterList name="Amesos">
                             <Parameter name="MatrixProperty"                        type="string"   value="general"/>
                             <Parameter name="DroppingTolerance"                     type="double"   value="1.0e-14"/>
@@ -131,12 +132,6 @@
                             <Parameter name="PrintStatus"                           type="bool"     value="false"/>
                             <Parameter name="MaxProcs"                              type="int"      value="1"/>
                             <Parameter name="OutputLevel"                           type="int"      value="1"/>
-                            <!-- Mumps -->
-                            <ParameterList name="mumps">
-                                <Parameter name="ICNTL(2)"                          type="int"      value="-1"/>
-                                <Parameter name="ICNTL(3)"                          type="int"      value="-1"/>
-                                <Parameter name="ICNTL(14)"                         type="int"      value="20"/>
-                            </ParameterList>
                         </ParameterList>
                         <ParameterList name="Amesos2">
 
@@ -223,9 +218,8 @@
                     </ParameterList>
 
                     <ParameterList name="ExtensionSolver">
-                        <Parameter name="Check for empty columns" type="bool" value="true"/>                        
                         <Parameter name="SolverType"                                type="string"   value="Amesos2"/>
-                        <Parameter name="Solver"                                    type="string"   value="klu"/>
+                        <Parameter name="Solver"                                    type="string"   value="pardisomkl"/>
                         <ParameterList name="Amesos">
                             <Parameter name="MatrixProperty"                        type="string"   value="general"/>
                             <Parameter name="DroppingTolerance"                     type="double"   value="1.0e-14"/>
@@ -233,12 +227,6 @@
                             <Parameter name="PrintStatus"                           type="bool"     value="false"/>
                             <Parameter name="MaxProcs"                              type="int"      value="1"/>
                             <Parameter name="OutputLevel"                           type="int"      value="1"/>
-                            <!-- Mumps -->
-                            <ParameterList name="mumps">
-                                <Parameter name="ICNTL(2)"                          type="int"      value="-1"/>
-                                <Parameter name="ICNTL(3)"                          type="int"      value="-1"/>
-                                <Parameter name="ICNTL(14)"                         type="int"      value="20"/>
-                            </ParameterList>
                         </ParameterList>
                         <ParameterList name="Amesos2">
                         </ParameterList>
@@ -251,7 +239,7 @@
                         <!-- How to use NumProcs
                          -> 0 stands for all processes
                          -> 1 stands for 1 process
-                         -> -1 stands corresponds to MaxProcs -1 from Mumps
+                         -> -1 stands corresponds to MaxProcs -1 from pardisomkl
                          -> n stands for a factor of 1/n
                          -> -n stands for the n-th root
                          -->
@@ -270,7 +258,7 @@
 
                     <ParameterList name="CoarseSolver">
                         <Parameter name="SolverType"                                type="string"   value="Amesos2"/>
-                        <Parameter name="Solver"                                    type="string"   value="klu"/>
+                        <Parameter name="Solver"                                    type="string"   value="pardisomkl"/>
                         <ParameterList name="Amesos">
                             <Parameter name="MatrixProperty"                        type="string"   value="general"/>
                             <Parameter name="DroppingTolerance"                     type="double"   value="1.0e-14"/>
@@ -278,12 +266,6 @@
                             <Parameter name="PrintStatus"                           type="bool"     value="false"/>
                             <Parameter name="MaxProcs"                              type="int"      value="1"/>
                             <Parameter name="OutputLevel"                           type="int"      value="1"/>
-                            <!-- Mumps -->
-                            <ParameterList name="mumps">
-                                <Parameter name="ICNTL(2)"                          type="int"      value="-1"/>
-                                <Parameter name="ICNTL(3)"                          type="int"      value="-1"/>
-                                <Parameter name="ICNTL(14)"                         type="int"      value="20"/>
-                            </ParameterList>
                         </ParameterList>
                         <ParameterList name="Amesos2">
 

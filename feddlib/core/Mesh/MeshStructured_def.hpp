@@ -1868,6 +1868,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2BFS(int N,
             }
         }
     }
+    buildElementsClass(elementsVec);
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -2965,6 +2966,7 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DBFS(int N,
 
     this->mapUnique_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
+    buildElementsClass(elementsVec);
 
     if (verbose)
         cout << "done!" << endl;
