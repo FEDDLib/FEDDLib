@@ -446,12 +446,10 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
 
             if ( thyraPrec_.is_null() ){
                 thyraPrec_ = precFactory_->createPrec();
-               	cout << " #### SETUP PRECOND MONO: createPrec() ### " << endl;
            	}     
            
             Thyra::initializePrec<SC>(*precFactory_, thyraMatrix, thyraPrec_.ptr()); // (precfactory, fwdOp, prec) Problem: PreconditionerBase<SC>* thyraPrec_
             precondtionerIsBuilt_ = true;
-            cout << " #### SETUP : preconditionerIsBuilt_ ### " << endl;
             
         }
         else
