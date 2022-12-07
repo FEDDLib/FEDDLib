@@ -132,7 +132,6 @@ template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::initPreconditionerMonolithic( )
 {
 
-	cout << " #### INIT PRECONDITIONER MONOLITHIC ### " << endl;
     LinSolverBuilderPtr_Type solverBuilder;
     Teuchos::RCP<const Thyra::VectorSpaceBase<SC> > thyraRangeSpace;
     Teuchos::RCP<const Thyra::VectorSpaceBase<SC> > thyraDomainSpace;

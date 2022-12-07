@@ -102,7 +102,7 @@ void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
     double force = parameters[1];
-    double TRamp = 10.0;
+    double TRamp = 0.0;
     if(parameters[0] <= TRamp+1e-06)
         force = parameters[0] * force * 1./(TRamp);
     else
@@ -119,6 +119,31 @@ void rhsYZ(double* x, double* res, double* parameters){
         res[2] = 0.;
     
     return;
+}
+
+void rhsArtery(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[2] = 0.;
+    double force = parameters[1];
+    double TRamp = 0.0;
+    double r = sqrt(x[0]*x[0]+x[1]*x[1]);
+    
+    if(parameters[0] <= TRamp+1e-06)
+        force = parameters[0] * force * 1./(TRamp);
+    else
+        force = parameters[1];
+
+    if(parameters[2] == 6){
+        res[0] = x[0]*force;
+        res[1] = x[1]*force;
+        
+    }
+    else{
+        res[0] =0.;
+        res[1] =0.;
+    }
+        
+        
 }
 
 void dummyFunc(double* x, double* res, double t, const double* parameters)
@@ -256,7 +281,7 @@ int main(int argc, char *argv[])
         DomainPtr_Type domainChem;
         DomainPtr_Type domainStructure;
         
-        std::string bcType = parameterListAll->sublist("Parameter").get("BC Type","parabolic");
+        std::string bcType = parameterListAll->sublist("Parameter").get("BC Type","cube");
         
     
         domainP1chem.reset( new Domain_Type( comm, dim ) );
@@ -390,7 +415,7 @@ int main(int argc, char *argv[])
         {
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Only 3D Test available");                               
         }
-        else if(dim == 3)
+        else if(dim == 3 && bcType=="Cube")
         {
 
             bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
@@ -409,6 +434,23 @@ int main(int argc, char *argv[])
             bcFactoryStructure->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
             bcFactoryStructure->addBC(zeroDirichlet2D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
 
+        }
+        else if(dim==3 && bcType=="Artery"){
+        
+            bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
+            bcFactory->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
+            bcFactory->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
+            bcFactory->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
+            bcFactory->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
+
+            
+            bcFactoryStructure->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
+            bcFactoryStructure->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
+            bcFactoryStructure->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
+            bcFactoryStructure->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
+            bcFactoryStructure->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
+
+        
         }
         
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
@@ -429,7 +471,11 @@ int main(int argc, char *argv[])
         else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
-                sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+                if(dim==3 && bcType=="Cube")
+               		 sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+                else if(dim==3 && bcType=="Artery")
+                     sci.problemStructure_->addRhsFunction( rhsArtery,0 );
+                     
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
                 double degree = 0.;
@@ -437,7 +483,11 @@ int main(int argc, char *argv[])
 
             }
             else{             
-                sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+				if(dim==3 && bcType=="Cube")
+					 sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+				else if(dim==3 && bcType=="Artery")
+            		 sci.problemStructureNonLin_->addRhsFunction( rhsArtery,0 );
+
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( force );
                 double degree = 0.;
@@ -452,7 +502,7 @@ int main(int argc, char *argv[])
                 TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Only 3D Test available");                               
                             
         }
-        else if(dim==3)
+        else if(dim==3 && bcType=="Cube")
         {
 
             bcFactory->addBC(inflowChem, 0, 1, domainChem, "Dirichlet", 1); // inflow of Chem
@@ -480,6 +530,13 @@ int main(int argc, char *argv[])
             
             */
         }
+        else if(dim==3 && bcType=="Artery"){
+           bcFactory->addBC(inflowChem, 6, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+           
+           bcFactoryChem->addBC(inflowChem, 6, 0, domainChem, "Dirichlet", 1);
+
+        
+        }
 
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
         // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
@@ -494,6 +551,8 @@ int main(int argc, char *argv[])
         sci.initializeProblem();
         // Matrizen assemblieren
         sci.assemble();
+                    
+
                     
         DAESolverInTime<SC,LO,GO,NO> daeTimeSolver(parameterListAll, comm);
 

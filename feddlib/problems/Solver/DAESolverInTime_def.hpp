@@ -1025,6 +1025,18 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
         //massCoeffSCI.print();
         //problemCoeffSCI.print();
+        problemTime_->getSystem()->getBlock(0,1)->resumeFill();
+        problemTime_->getSystem()->getBlock(0,1)->scale(0.0);
+        problemTime_->getSystem()->getBlock(0,1)->fillComplete();
+
+        problemTime_->getSystem()->getBlock(0,0)->resumeFill();
+        problemTime_->getSystem()->getBlock(0,0)->scale(0.0);
+        problemTime_->getSystem()->getBlock(0,0)->fillComplete();
+        
+        problemTime_->getSystem()->getBlock(1,0)->resumeFill();
+        problemTime_->getSystem()->getBlock(1,0)->scale(0.0);
+        problemTime_->getSystem()->getBlock(1,0)->fillComplete();
+                
         if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
             nlSolver.solve(*this->problemTime_, time, its);
         else{
@@ -1966,78 +1978,76 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
 template<class SC,class LO,class GO,class NO>
 void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeLinearMultistep(){
 
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "advanceInTimeLinearMultistep rework.");
-//    bool print = parameterList_->sublist("General").get("ParaViewExport",false);
-//    if (print) {
-//        exportTimestep();
-//    }
-//    int size = timeStepDef_.size();
-//    double dt = timeSteppingTool_->Get_dt();
-//    int nmbBDF = timeSteppingTool_->GetBDFNumber();
-//    vec_dbl_Type coeffPrevSteps(nmbBDF);
-//    for (int i=0; i<coeffPrevSteps.size(); i++) {
-//        coeffPrevSteps.at(i) = timeSteppingTool_->GetInformationBDF(i+2) / dt;
-//    }
-//
-//    SmallMatrix<double> massCoeff(size);
-//    SmallMatrix<double> problemCoeff(size);
-//    double coeffSourceTerm = 0.;
-//
-//    for (int i=0; i<size; i++) {
-//        for (int j=0; j<size; j++) {
-//            if (timeStepDef_[i][j]==1 && i==j) {
-//                massCoeff[i][j] = timeSteppingTool_->GetInformationBDF(0) / dt;
-//            }
-//            else{
-//                massCoeff[i][j] = 0.;
-//            }
-//        }
-//    }
-//    for (int i=0; i<size; i++) {
-//        for (int j=0; j<size; j++){
-//            if (timeStepDef_[i][j]==1){
-//                problemCoeff[i][j] =  timeSteppingTool_->GetInformationBDF(1);
-//                coeffSourceTerm = timeSteppingTool_->GetInformationBDF(1); // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
-//            }
-//            else{
-//                problemCoeff[i][j] = 1.;
-//            }
-//        }
-//    }
-//    problemTime_->SetTimeParameters(massCoeff, problemCoeff);
-//
-//    //#########
-//    //time loop
-//    //#########
-//    while (timeSteppingTool_->ContinueTimeStepping()) {
-//
-//        problemTime_->UpdateSolutionMultiPreviousStep(nmbBDF);
-//
-//        double time = timeSteppingTool_->CurrentTime() + dt;
-//        problemTime_->UpdateMultistepRhs(coeffPrevSteps,nmbBDF);/*apply mass matrix to u_t*/
-//        if (problemTime_->HasSourceTerm()) {
-//            problemTime_->AssembleSourceTerm(time);
-//            AddSourceTermToRHS(coeffSourceTerm);
-//        }
-//
-//        problemTime_->CombineSystems();
-//        // Uebergabeparameter fuer BC noch hinzunehmen!
-//        problemTime_->SetBoundaries(time);
-//        problemTime_->Solve();
-//
-//        timeSteppingTool_->AdvanceTime(true/*output info*/);
-//
-//        if (print) {
-//            exportTimestep();
-//        }
-//
-//    }
-//    comm_->Barrier();
-//    if (print) {
-//        CloseExporter();
-//    }
-//
+    //TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "advanceInTimeLinearMultistep rework.");
+    bool print = parameterList_->sublist("General").get("ParaViewExport",false);
+    if (print) {
+        exportTimestep();
+    }
+    int size = timeStepDef_.size();
+    double dt = timeSteppingTool_->get_dt();
+    int nmbBDF = timeSteppingTool_->getBDFNumber();
+    vec_dbl_Type coeffPrevSteps(nmbBDF);
+    for (int i=0; i<coeffPrevSteps.size(); i++) {
+       coeffPrevSteps.at(i) = timeSteppingTool_->getInformationBDF(i+2) / dt;
+    }
 
+    SmallMatrix<double> massCoeff(size);
+    SmallMatrix<double> problemCoeff(size);
+    double coeffSourceTerm = 0.;
+
+    for (int i=0; i<size; i++) {
+        for (int j=0; j<size; j++) {
+            if (timeStepDef_[i][j]==1 && i==j) {
+                massCoeff[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
+            }
+            else{
+                massCoeff[i][j] = 0.;
+            }
+        }
+    }
+    for (int i=0; i<size; i++) {
+        for (int j=0; j<size; j++){
+            if (timeStepDef_[i][j]==1){
+                problemCoeff[i][j] =  timeSteppingTool_->getInformationBDF(1);
+                coeffSourceTerm = timeSteppingTool_->getInformationBDF(1); // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
+            }
+            else{
+                problemCoeff[i][j] = 1.;
+            }
+        }
+    }
+    problemTime_->setTimeParameters(massCoeff, problemCoeff);
+
+	//#########
+    //time loop
+    //#########
+    while (timeSteppingTool_->continueTimeStepping()) {
+
+        problemTime_->updateSolutionMultiPreviousStep(nmbBDF);
+
+        double time = timeSteppingTool_->currentTime() + dt;
+        problemTime_->updateMultistepRhs(coeffPrevSteps,nmbBDF);/*apply mass matrix to u_t*/
+        if (problemTime_->hasSourceTerm()) {
+            problemTime_->assembleSourceTerm(time);
+            addSourceTermToRHS(coeffSourceTerm);
+        }
+
+        problemTime_->combineSystems();
+        // Uebergabeparameter fuer BC noch hinzunehmen!
+        problemTime_->setBoundaries(time);
+        problemTime_->solve();
+
+        timeSteppingTool_->advanceTime(true/*output info*/);
+
+        if (print) {
+            exportTimestep();
+        }
+
+    }
+    comm_->barrier();
+    if (print) {
+        closeExporter();
+    }
 
 }
 
