@@ -12,6 +12,7 @@
  @copyright CH
  */
 
+
 int MMAInitialisationCode[]={
     0,0
 };
@@ -455,9 +456,11 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	tuple_ssii_Type solid ("Solid",FETypeSolid,dofsSolid,numSolid);
 	problemDisk->push_back(solid);
 	problemDisk->push_back(chem);
+	
+	string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_Simple");
 
 	if(assemblyFEElements_.size()== 0){
-       	initAssembleFEElements("SCI",problemDisk,elementsChem, params,pointsRep);
+       	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep);
     }
 	else if(assemblyFEElements_.size() != elementsChem->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );

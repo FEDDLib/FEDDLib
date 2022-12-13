@@ -42,6 +42,10 @@ int main()
     double **stiffnessMatrixKuu = (double **)malloc(30 * sizeof(double *));
     for (int i = 0; i < 30; i++)
         stiffnessMatrixKuu[i] = (double *)malloc(30 * sizeof(double));
+        
+    double **stiffnessMatrixKcc = (double **)malloc(10 * sizeof(double *));
+    for (int i = 0; i < 10; i++)
+        stiffnessMatrixKcc[i] = (double *)malloc(10 * sizeof(double));
     // find number of entries in concentrations
     int n3 = sizeof(concentrations) / sizeof(concentrations[0]);
     // find number of entries in rates
@@ -53,6 +57,11 @@ int main()
     //printf("n5=%d\n", n5);
 
     getStiffnessMatrixKuu(&positions[0], &displacements[0], &concentrations[0], &rates[0], &accelerations[0], &defd[0], &history[0], deltaT, time, subIterationTolerance, integrationCode, &historyUpdated[0], stiffnessMatrixKuu);
+    
+   // getStiffnessMatrixKuu(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &defd[0], &history[0], subIterationTolerance, deltaT, time, integrationCode, &historyUpdated[0], stiffnessMatrixKuu);
+   //getStiffnessMatrixKcc(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &defd[0], &history[0], subIterationTolerance, deltaT, time, integrationCode, stiffnessMatrixKcc);
+    
+    
     for (int i = 0; i < 30; i++)
     {
         for (int j = 0; j < 30; j++)
