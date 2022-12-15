@@ -223,6 +223,7 @@ namespace FEDD {
         ParameterListPtr_Type params_;
         vec_dbl_Type solution_ ;
         double timeIncrement_;
+        bool advancedInTime_=false; // tells you if you just advanced time step
 
         friend class AssembleFEFactory<SC,LO,GO,NO>;
     };

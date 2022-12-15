@@ -72,6 +72,7 @@ template <class SC, class LO, class GO, class NO>
 void AssembleFE<SC,LO,GO,NO>::advanceInTime( double dt){
 	timeIncrement_ = dt;
 	timeStep_ = timeStep_ + dt;
+	advancedInTime_=true;
 };
 
 template <class SC, class LO, class GO, class NO>

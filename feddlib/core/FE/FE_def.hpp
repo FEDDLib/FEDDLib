@@ -434,9 +434,9 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int numChem=3;
-    if(FETypeChem == "P2")
+    if(FETypeChem == "P2"){
         numChem=6;
-        
+    }    
 	if(dim==3){
 		numChem=4;
         if(FETypeChem == "P2")
@@ -457,7 +457,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	problemDisk->push_back(solid);
 	problemDisk->push_back(chem);
 	
-	string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_Simple");
+	string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
 
 	if(assemblyFEElements_.size()== 0){
        	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep);

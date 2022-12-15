@@ -67,7 +67,7 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 
 void inflowChem(double* x, double* res, double t, const double* parameters)
 {
-    res[0] = 1.;
+    res[0] = 0.;
     
     return;
 }
@@ -133,7 +133,7 @@ void rhsArtery(double* x, double* res, double* parameters){
     else
         force = parameters[1];
 
-    if(parameters[2] == 6){
+    if(parameters[2]== 6){
         res[0] = x[0]*force;
         res[1] = x[1]*force;
         
@@ -440,6 +440,8 @@ int main(int argc, char *argv[])
             bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
             bcFactory->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
             bcFactory->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
+            bcFactory->addBC(zeroDirichlet, 4, 0, domainStructure, "Dirichlet_Z", dim);
+
             bcFactory->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
             bcFactory->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
 
@@ -447,6 +449,8 @@ int main(int argc, char *argv[])
             bcFactoryStructure->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
             bcFactoryStructure->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
             bcFactoryStructure->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
+            bcFactoryStructure->addBC(zeroDirichlet, 4, 0, domainStructure, "Dirichlet_Z", dim);
+
             bcFactoryStructure->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
             bcFactoryStructure->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
 
@@ -471,9 +475,9 @@ int main(int argc, char *argv[])
         else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
-                if(dim==3 && bcType=="Cube")
+                if(bcType=="Cube")
                		 sci.problemStructure_->addRhsFunction( rhsYZ,0 );
-                else if(dim==3 && bcType=="Artery")
+                else if(bcType=="Artery")
                      sci.problemStructure_->addRhsFunction( rhsArtery,0 );
                      
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
@@ -483,9 +487,9 @@ int main(int argc, char *argv[])
 
             }
             else{             
-				if(dim==3 && bcType=="Cube")
+				if(bcType=="Cube")
 					 sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
-				else if(dim==3 && bcType=="Artery")
+				else if(bcType=="Artery")
             		 sci.problemStructureNonLin_->addRhsFunction( rhsArtery,0 );
 
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
