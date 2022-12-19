@@ -37,7 +37,11 @@ class AssembleFENavierStokesNonNewtonian : public AssembleFENavierStokes<SC,LO,G
 	virtual void assembleRHS();
 
 	//SmallMatrixPtr_Type getFixedPointMatrix(){return ANB_;};
-
+	/*!
+		\brief Assemble the element Jacobian matrix.
+		@param[in] block ID i
+	*/
+	virtual void assembleJacobianBlock(LO i) {};
 	//void setCoeff(SmallMatrix_Type coeff);
    protected:
 

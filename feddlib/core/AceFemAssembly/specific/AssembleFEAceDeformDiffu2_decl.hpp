@@ -2,6 +2,7 @@
 #define AssembleFEAceDeformDiffu22_DECL_hpp
 
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
+#include "feddlib/core/AceFemAssembly/AssembleFEBlock.hpp"
 #include "feddlib/core/AceFemAssembly/Helper.hpp"
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"
@@ -18,7 +19,7 @@
 namespace FEDD {
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class AssembleFEAceDeformDiffu2 : public AssembleFE<SC,LO,GO,NO> {
+class AssembleFEAceDeformDiffu2 : public AssembleFEBlock<SC,LO,GO,NO> {
     public:
 
         typedef Matrix<SC,LO,GO,NO> Matrix_Type;
@@ -34,15 +35,20 @@ class AssembleFEAceDeformDiffu2 : public AssembleFE<SC,LO,GO,NO> {
 
         /*!
 	    \brief Assemble the element Jacobian matrix.
-	    \return the element Jacobian matrix
 	    */
 	    virtual void assembleJacobian();
 
         /*!
 	    \brief Assemble the element right hand side vector.
-	    \return the element right hand side vector
 	    */
 	    virtual void assembleRHS();
+
+ 		/*!
+	    \brief Assemble block parts of the element Jacobian matrix.
+	    \return the element Jacobian matrix of block i 
+	    */
+		virtual void assembleJacobianBlock(LO i){};
+
 
     protected:
         AssembleFEAceDeformDiffu2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);

@@ -15,7 +15,7 @@ namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>
 AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::AssembleFEAceDeformDiffu2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
-AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
+AssembleFEBlock<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 {
 		/*
 		fA -Fibre angle_1  							30e0, 
@@ -114,53 +114,93 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 
 	this->rhsVec_ = vec_dbl_Type(dofsElement_,0);
 
-	std::vector<double> v(2238);
-	std::vector<double> d(6);
-	std::vector<double> ul(60); 
-	std::vector<double> ul0(60);
-	std::vector<double> xl(60);
-	std::vector<double> s(3600);
-	std::vector<double> p(60);
-	std::vector<double> ht(10);
-	std::vector<double> hp(10);
-	
-	std::vector<double> deltat(1);
+#ifdef FEDD_HAVE_ACEGENINTERFACE
 
-	deltat[0]=this->getTimeIncrement();
 
-	if(dofOrdering_ == 1)
-	{
-		for(int i = 0; i < 40; i++)
-			if((i+1)%4 == 0)
-				ul[27 + 3*(i+1)/4] = this->getSolution()[i];
-			else
-				ul[i - ((i+1) - (i+1)%4)/4] = this->getSolution()[i];
-	}
-	else if(dofOrdering_ == 2)
-	{
-		for(int i = 0; i < 40; i++)
-		{
-			if(i<30)
-				ul[i]=this->getSolution()[i];
-			else
-				ul[30 + 3*(i-30)] = this->getSolution()[i];
-		}
-	}
-	else
-		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown DOF ordering sequence. Known identifiers: 1 and 2. Check parameters file!");
+	double deltaT=this->getTimeIncrement();
 
+	double positions[30];
 	int count = 0;
 	for(int i=0;i<10;i++)
 		for(int j=0;j<3;j++){
-			xl[count] = this->getNodesRefConfig()[i][j];
-			count++;}
+			positions[count] = this->getNodesRefConfig()[i][j];
+			count++;
+	}
+	double displacements[30];
+	for(int i = 0; i < 30; i++)
+	{
+		displacements[i]=this->getSolution()[i];			
+	}
+	double history[] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
+    //if (integrationCode==19)
+    //   history = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 60 values, 12 variables, 5 gausspoints
+  
+	if(this->advancedInTime_ ==true){ // eigentlich Loadstep, aber hier ist das das selbe wie Zeitschritt
+		for(int i=0; i< historyUpdated_.size(); i++)
+			history[i] = historyUpdated_[i];
+		for(int i=0; i< 10 ; i++)
+			solutionC_n_[i]=solutionC_n1_[i];
+		this->advancedInTime_=false;
+	}
+	
+    // find number of entries in positions
+    int n1 = sizeof(positions) / sizeof(positions[0]);
+    // find number of entries in displacements
+    int n2 = sizeof(displacements) / sizeof(displacements[0]);
+    // printf("n1=%d\n", n1);
+    // printf("n2=%d\n", n2);
+    char **a = getDataNames();
+    
+   
+    double concentrations[10];
+    for(int i = 30; i < 40; i++)
+	{
+		concentrations[i]=this->getSolution()[i];	
+		solutionC_n1_[i] = this->getSolution()[i];		// in each newtonstep solution for n+1 is updated.
+	}
+	
+    double accelerations[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+   
+    // Print all entries in a
+     int i = 0;
+     while (a[i] != NULL)
+     {
+         printf("%s\n", a[i]);
+         i++;
+     }
 
-	for(int i=0;i<s.size();i++)
-		s[i]=0.0;
-	for(int i=0;i<p.size();i++)
-		p[i]=0.0;
+   	
+    double domainData[] = {fA_, lambdaC50_, gamma3_, lambdaBarCDotMax_, lambdaBarCDotMin_, 
+							gamma2_ , gamma1_, eta1_, ca50_, k2_, k5_, k3_, k4_, k7_ , kappaC_ , 
+							beta1_ , muA_ , alpha_, epsilon1_,epsilon2_,c1_,alpha1_,alpha2_,
+							p1_,p3_,c50_,d0_,m_,startTime_,rho_};
 
+    double rates[10];
+	for(int i=0; i<10 ; i++){
+		rates[i] = (solutionC_n1_[i]-solutionC_n_[i])/deltaT;
+	}
+
+    
+    double time = this->getTimeStep();
+    double subIterationTolerance = 1e-7;
+ 
+    // immer speicher und wenn es konvergiert, dann zur history machen
+    double historyUpdated[] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
+   		
+ 	double *residuumRint = (double *)malloc(30);
+
+ 	double *residuumRc = (double *)malloc(10);
+
+	getResiduumVectorRint(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, &historyUpdated[0], &residuumRint[0]);
+    getResiduumVectorRc(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, &historyUpdated[0], &residuumRc[0]);
+	
+	for(int i=0; i< 30 ; i++)
+	this->rhsVec_ [i] = residuumRint[i];
+
+	for(int i=0; i< 10 ; i++)
+	this->rhsVec_ [i+30] = residuumRc[i];
 	//skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat[0]);
+#endif
 
 }
 
@@ -177,7 +217,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
  * @param timeIncrement [in] Time increment
  * @param time [in] Current time
  * @param integrationScheme [in] Integration code (18 for 4 point, 19 for 5 point, 40 for 14 point, 43 for 8 point)
- * param historyUpdated [out] Updated values of the history variables after the Newton-Raphson iteration
+ * @param historyUpdated [out] Updated values of the history variables after the Newton-Raphson iteration
  * @param stiffnessMatrixKuc [out] The stiffness matrix Kuc
  */
 
@@ -324,9 +364,6 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 			(*elementMatrix)[i+30][j+30]=stiffnessMatrixKcc[i][j];
 		}
 	}
-	
-	elementMatrix->print();
-
 	// Safe history updated in each timestep, as it could always be the last.
 	for(int i=0; i< historyUpdated_.size(); i++)
 		historyUpdated_[i] = historyUpdated[i];

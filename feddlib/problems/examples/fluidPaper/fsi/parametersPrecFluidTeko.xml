@@ -49,7 +49,7 @@
                         
                         <ParameterList name="AlgebraicOverlappingOperator">
                         
-                            <Parameter name="Reuse Symbolic Factorization" type="bool"     value="true"/>
+                            <Parameter name="Reuse: Symbolic Factorization" type="bool" value="false"/>
                             <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Overlapping Operator Combination" type="string"   value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Level ID" type="int"      value="1"/>
@@ -59,13 +59,7 @@
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
                                 <Parameter name="Solver" type="string" value="pardisomkl"/>
 
-                                <ParameterList name="Amesos2">
-                                    <ParameterList name="pardisomkl">
-                                        <Parameter name="ICNTL(14)" type="int" value="30"/>
-                                        <Parameter name="Reuse SymbolicFactorization" type="bool" value="true"/>
-                                    </ParameterList>
-                                </ParameterList>
-
+                             
                                 
                             </ParameterList>
                         </ParameterList>
@@ -91,13 +85,7 @@
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
                                 <Parameter name="Solver" type="string" value="pardisomkl"/>
                                 
-                                <ParameterList name="Amesos2">
-                                    <ParameterList name="pardisomkl">
-                                        <Parameter name="ICNTL(14)" type="int" value="30"/>
-                                        <Parameter name="Reuse SymbolicFactorization" type="bool" value="true"/>
-                                    </ParameterList>
-                                </ParameterList>
-                                
+                              
                             </ParameterList>
                             
                             <ParameterList name="Distribution">
@@ -147,7 +135,7 @@
                         <Parameter name="OverlappingOperator Type" type="string" value="AlgebraicOverlappingOperator"/>
                         <Parameter name="CoarseOperator Type" type="string" value="RGDSWCoarseOperator"/>
                         <ParameterList name="AlgebraicOverlappingOperator">
-                            <Parameter name="Reuse Symbolic Factorization" type="bool" value="true"/>
+                            <Parameter name="Reuse: Symbolic Factorization" type="bool" value="false"/>
                             <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Overlapping Operator Combination" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Level ID" type="int" value="1"/>
@@ -175,13 +163,7 @@
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
                                 <Parameter name="Solver" type="string" value="pardisomkl"/>
                                 
-                                <ParameterList name="Amesos2">
-                                    <ParameterList name="pardisomkl">
-                                        <Parameter name="ICNTL(14)" type="int" value="30"/>
-                                        <Parameter name="Reuse SymbolicFactorization" type="bool" value="true"/>
-                                    </ParameterList>
-                                </ParameterList>
-                                
+                              
                             </ParameterList>
                             
                             <ParameterList name="Distribution">
@@ -204,12 +186,7 @@
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
                                 <Parameter name="Solver" type="string" value="pardisomkl"/>
                                 
-                                <ParameterList name="Amesos2">
-                                    <ParameterList name="pardisomkl">
-                                        <Parameter name="ICNTL(14)" type="int" value="30"/>
-                                        <Parameter name="Reuse SymbolicFactorization" type="bool" value="false"/>
-                                    </ParameterList>
-                                </ParameterList>
+                              
                                 
                             </ParameterList>
                             

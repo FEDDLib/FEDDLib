@@ -3,6 +3,7 @@
 
 
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
+#include "feddlib/core/AceFemAssembly/AssembleFEBlock.hpp"
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFEAceLaplace.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFEAceLinElas.hpp"

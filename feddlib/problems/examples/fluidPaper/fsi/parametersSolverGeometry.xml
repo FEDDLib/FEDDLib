@@ -31,9 +31,10 @@
         <Parameter name="Nonlinear Solver" type="string" value="Line Search Based"/>
         <ParameterList name="Direction">
             <ParameterList name="Newton">
-                <Parameter name="Forcing Term Method" type="string" value="Constant"/> <!-- Constant, Type 1, Type 2-->
+                <Parameter name="Forcing Term Method" type="string" value="Type 2"/> <!-- Constant, Type 1, Type 2-->
+                <Parameter name="Forcing Term Initial Tolerance" type="double" value="0.001"/>
                 <Parameter name="Forcing Term Minimum Tolerance" type="double" value="1.e-6"/>
-                <Parameter name="Forcing Term Maximum Tolerance" type="double" value="0.001"/>
+                <Parameter name="Forcing Term Maximum Tolerance" type="double" value="0.01"/>
                 <ParameterList name="Linear Solver">
                     <Parameter name="Tolerance" type="double" value="1e-6"/>
                 </ParameterList>

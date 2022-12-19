@@ -3967,7 +3967,6 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
     vec2D_dbl_ptr_Type			quadPts;
 
     UN deg = determineDegree( dim, FEType, FEType, Grad, Grad);
-    cout << " DEGREEEE LinElas " << deg << endl;
 
     // Hole die grad_phi, hier DPhi
     this->getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
@@ -6219,7 +6218,6 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralFlag(int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     UN degFunc = funcParameter[0] + 1.e-14;
     UN deg = determineDegree( dim-1, FEType, Std) + degFunc;
-    cout << " DEGREEEE 2 " << deg << endl;
 
     getPhi(phi, weights, dim-1, FEType, deg);
 

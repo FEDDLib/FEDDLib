@@ -38,6 +38,11 @@ class  AssembleFEAceNonLinElas2 : public AssembleFE<SC,LO,GO,NO> {
 	virtual void assembleRHS();	
 
 	/*!
+		\brief Assemble the element Jacobian matrix.
+		@param[in] block ID i
+	*/
+	virtual void assembleJacobianBlock(LO i) {};
+	/*!
 		\brief Update the parameter read from the ParameterList.
 		@param[in] Parameter as read from the xml file
 	*/

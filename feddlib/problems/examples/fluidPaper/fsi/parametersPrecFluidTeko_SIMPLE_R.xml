@@ -36,7 +36,7 @@
                     <ParameterList name="FROSch-Pressure">
                         <Parameter name="Type" type="string" value="FROSch"/>
                         <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
-                        <Parameter name="Recycling" type="bool" value="false"/>
+                        <Parameter name="Recycling" type="bool" value="true"/>
                         <Parameter name="Dimension" type="int" value="3"/>
                         <Parameter name="DofsPerNode" type="int" value="1"/>
                         <Parameter name="DofOrdering" type="string" value="NodeWise"/>
@@ -49,7 +49,7 @@
                         
                         <ParameterList name="AlgebraicOverlappingOperator">
                         
-                            <Parameter name="Reuse Symbolic Factorization" type="bool"     value="true"/>
+                            <Parameter name="Reuse: Symbolic Factorization" type="bool" value="false"/>
 							<Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Overlapping Operator Combination" type="string"   value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Level ID" type="int"      value="1"/>
@@ -57,9 +57,7 @@
                             <ParameterList name="Solver">
                             
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
-                                <Parameter name="Solver" type="string" value="pardisomkl"/>
-
-                               
+                                <Parameter name="Solver" type="string" value="pardisomkl"/>                               
                                 
                             </ParameterList>
                         </ParameterList>
@@ -68,6 +66,8 @@
                             <Parameter name="Write Coarse matrix" type="bool" value="false"/>
                             <Parameter name="Use Triple MatrixMultiply" type="bool" value="false"/>                            
                             <Parameter name="Test Unconnected Interface" type="bool" value="false"/>
+                            <Parameter name="Reuse: Coarse Basis" type="bool" value="true"/>
+              			    <Parameter name="Reuse: Coarse Matrix" type="bool" value="false"/>
                             
                             <ParameterList name="Blocks">
                             
@@ -129,7 +129,7 @@
                         <Parameter name="OverlappingOperator Type" type="string" value="AlgebraicOverlappingOperator"/>
                         <Parameter name="CoarseOperator Type" type="string" value="RGDSWCoarseOperator"/>
                         <ParameterList name="AlgebraicOverlappingOperator">
-                            <Parameter name="Reuse Symbolic Factorization" type="bool" value="true"/>
+                            <Parameter name="Reuse: Symbolic Factorization" type="bool" value="false"/>
                             <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Overlapping Operator Combination" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Level ID" type="int" value="1"/>
@@ -145,6 +145,8 @@
                             <Parameter name="Write Coarse matrix" type="bool" value="false"/>
                             <Parameter name="Use Triple MatrixMultiply"  type="bool" value="false"/>
                             <Parameter name="Test Unconnected Interface" type="bool" value="false"/>
+                            <Parameter name="Reuse: Coarse Basis" type="bool" value="true"/>
+                   			<Parameter name="Reuse: Coarse Matrix" type="bool" value="false"/>
                             <ParameterList name="Blocks">
                                 <ParameterList name="1">
                                     <Parameter name="Exclude" type="string" value="2"/>

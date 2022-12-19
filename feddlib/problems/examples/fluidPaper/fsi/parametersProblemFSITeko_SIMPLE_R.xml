@@ -38,11 +38,11 @@
     </ParameterList>
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
-        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewExport" type="bool" value="false"/>
         <Parameter name="ParaViewCoarse" type="bool" value="false"/>
-        <Parameter name="ParaView export subdomains" type="bool" value="true"/>
+        <Parameter name="ParaView export subdomains" type="bool" value="false"/>
         
-
+        <Parameter name="Export Data" type="bool" value="true"/>
         <Parameter name="Export drag and lift" type="bool" value="false"/>
         
         <Parameter name="Preconditioner Method" type="string" value="FaCSI-Teko"/><!-- Monolithic, FaCSI, FaCSI-Teko -->

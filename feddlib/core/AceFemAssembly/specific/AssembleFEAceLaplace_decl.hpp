@@ -37,6 +37,12 @@ class AssembleFEAceLaplace : public AssembleFE<SC,LO,GO,NO> {
 	*/
 	virtual void assembleRHS();	
 
+	/*!
+		\brief Assemble the element Jacobian matrix.
+		@param[in] block ID i
+	*/
+	virtual void assembleJacobianBlock(LO i) {};
+
    protected:
 	AssembleFEAceLaplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); /// \todo Tupel for Disk Anzahl Knoten, Anzahl Freiheitsgrade
 

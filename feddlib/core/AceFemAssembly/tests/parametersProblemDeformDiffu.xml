@@ -12,6 +12,31 @@
         <Parameter name="m"                                     type="double"   value="0.0"/>
         <Parameter name="Dofs"                                  type="int"      value="4"/>
         <Parameter name="Structure Model"                       type="string"      value="SCI_sophisticated"/>
+
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
     </ParameterList>																	  
   
     <ParameterList name="Mesh Partitioner">        

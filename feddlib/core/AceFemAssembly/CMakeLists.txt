@@ -2,6 +2,9 @@ SET(AceFemAssembly_HEADERS
 	AceFemAssembly/AssembleFE_decl.hpp
 	AceFemAssembly/AssembleFE_def.hpp
 	AceFemAssembly/AssembleFE.hpp
+	AceFemAssembly/AssembleFEBlock_decl.hpp
+	AceFemAssembly/AssembleFEBlock_def.hpp
+	AceFemAssembly/AssembleFEBlock.hpp
 	AceFemAssembly/Helper.hpp
 	AceFemAssembly/AssembleFEFactory_decl.hpp
 	AceFemAssembly/AssembleFEFactory_def.hpp
@@ -10,6 +13,7 @@ CACHE INTERNAL "")
 
 SET(AceFemAssembly_SOURCES
 	AceFemAssembly/AssembleFE.cpp
+	AceFemAssembly/AssembleFEBlock.cpp
 	AceFemAssembly/Helper.cpp
 	AceFemAssembly/AssembleFEFactory.cpp
 CACHE INTERNAL "")

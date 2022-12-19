@@ -1025,17 +1025,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
         //massCoeffSCI.print();
         //problemCoeffSCI.print();
-        problemTime_->getSystem()->getBlock(0,1)->resumeFill();
-        problemTime_->getSystem()->getBlock(0,1)->scale(0.0);
-        problemTime_->getSystem()->getBlock(0,1)->fillComplete();
-
-        problemTime_->getSystem()->getBlock(0,0)->resumeFill();
-        problemTime_->getSystem()->getBlock(0,0)->scale(0.0);
-        problemTime_->getSystem()->getBlock(0,0)->fillComplete();
-        
-        problemTime_->getSystem()->getBlock(1,0)->resumeFill();
-        problemTime_->getSystem()->getBlock(1,0)->scale(0.0);
-        problemTime_->getSystem()->getBlock(1,0)->fillComplete();
                 
         if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
             nlSolver.solve(*this->problemTime_, time, its);

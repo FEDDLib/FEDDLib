@@ -103,6 +103,7 @@ void rhsYZ(double* x, double* res, double* parameters){
     res[0] = 0.;
     double force = parameters[1];
     double TRamp = 10.0;
+       
     if(parameters[0] <= TRamp+1e-06)
         force = parameters[0] * force * 1./(TRamp);
     else
@@ -128,14 +129,15 @@ void rhsArtery(double* x, double* res, double* parameters){
     double TRamp = 0.0;
     double r = sqrt(x[0]*x[0]+x[1]*x[1]);
     
+    
     if(parameters[0] <= TRamp+1e-06)
         force = parameters[0] * force * 1./(TRamp);
     else
         force = parameters[1];
 
     if(parameters[2]== 6){
-        res[0] = x[0]*force;
-        res[1] = x[1]*force;
+        res[0] = -x[0]*force;
+        res[1] = -x[1]*force;
         
     }
     else{
@@ -437,6 +439,7 @@ int main(int argc, char *argv[])
         }
         else if(dim==3 && bcType=="Artery"){
         
+        
             bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
             bcFactory->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
             bcFactory->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
@@ -538,8 +541,6 @@ int main(int argc, char *argv[])
            bcFactory->addBC(inflowChem, 6, 1, domainChem, "Dirichlet", 1); // inflow of Chem
            
            bcFactoryChem->addBC(inflowChem, 6, 0, domainChem, "Dirichlet", 1);
-
-        
         }
 
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems

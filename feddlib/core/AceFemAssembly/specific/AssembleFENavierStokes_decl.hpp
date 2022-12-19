@@ -35,6 +35,12 @@ class AssembleFENavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	*/
 	virtual void assembleRHS();
 
+	/*!
+		\brief Assemble the element Jacobian matrix.
+		@param[in] block ID i
+	*/
+	virtual void assembleJacobianBlock(LO i) {};
+	
 	void setCoeff(SmallMatrix_Type coeff);
 
 	/*! 

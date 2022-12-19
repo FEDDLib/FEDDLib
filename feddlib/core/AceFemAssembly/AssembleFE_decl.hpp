@@ -71,13 +71,18 @@ namespace FEDD {
 
         /*!
          \brief Assemble the element Jacobian matrix.
-         \return the element Jacobian matrix
         */
         virtual void assembleJacobian() = 0;
 
+
+        /*!
+         \brief Assemble the element Jacobian matrix.
+         @param[in] block ID i
+        */
+        virtual void assembleJacobianBlock(LO i) = 0;
+
         /*!
          \brief Assemble the element right hand side vector.
-         \return the element right hand side vector
         */
         virtual void assembleRHS() = 0;
 
@@ -86,6 +91,12 @@ namespace FEDD {
          \return the element Jacobian matrix
         */
         SmallMatrixPtr_Type getJacobian() {return jacobian_;}; 
+
+        /*!
+         \brief Get the currently assembled element Jacobian matrix
+         \return the element Jacobian matrix
+        */
+        SmallMatrixPtr_Type getJacobianBlock(LO i) {return jacobianBlock_;}; 
 
         /*!
          \brief Get the currently assembled right hand side vector.
@@ -205,6 +216,8 @@ namespace FEDD {
 		//tuple_disk_vec_ptr_Type getTuple();  
 
 		SmallMatrixPtr_Type jacobian_;
+   		SmallMatrixPtr_Type jacobianBlock_;
+
 		vec_dbl_Type rhsVec_;
 
         RhsFunc_Type rhsFunc_;
