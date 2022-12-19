@@ -589,7 +589,6 @@ bool BCBuilder<SC,LO,GO,NO>::findFlag(LO flag, int block, int &loc) const{
 template<class SC,class LO,class GO,class NO>
 void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) const{
 
-    cout << "##### SEET SYSTEM ##### " << endl;
     UN numBlocks = blockMatrix->size();
     int loc;
     for (UN blockRow = 0; blockRow < numBlocks; blockRow++) {
