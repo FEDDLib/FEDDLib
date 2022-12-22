@@ -430,7 +430,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
                     int index = mapRepeated->getLocalElement( (long long) eind[j] );
                     tmpElement.push_back(index);
                 }
-		std::sort(tmpElement.begin(), tmpElement.end());
+		        //std::sort(tmpElement.begin(), tmpElement.end());
                 FiniteElement fe( tmpElement, elementsGlobal->getElement( locepart.at(i) ).getFlag()  );
                 // convert global IDs of (old) globally owned subelements to local IDs
                 if (buildSurfaces) {
@@ -913,16 +913,16 @@ void MeshPartitioner<SC,LO,GO,NO>::findAndSetSurfaceEdges( vec2D_int_Type& edgeE
                 FiniteElement feEdge( tmpEdgeLocal, edgeElementsFlag_vec[loc] );
                 // In some cases an edge is the only part of the surface of an Element. In that case there does not exist a triangle subelement. 
                 // We then have to initialize the edge as subelement.                       
+                                       
                 if ( !element.subElementsInitialized() ){
-                    element.initializeSubElements( "P1", 2 ); // only P1 for now                
+                    element.initializeSubElements( "P1", 1 ); // only P1 for now                
                     element.addSubElement( feEdge );
                 }
                 else {
                     ElementsPtr_Type surfaces = element.getSubElements();
                     // We set the edge to the corresponding element(s)
                     surfaces->setToCorrectElement( feEdge );
-                }
-                                
+                }                                
             }
         }
     }

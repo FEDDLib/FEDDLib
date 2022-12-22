@@ -66,16 +66,6 @@ template <class SC, class LO, class GO, class NO>
 MeshUnstructured<SC,LO,GO,NO>::~MeshUnstructured(){
 }
 
-//template <class SC, class LO, class GO, class NO>
-//vec2D_int_ptr_Type MeshUnstructured<SC,LO,GO,NO>::getElements(){
-//
-//
-//    this->elementsVec_ = Teuchos::rcp( new vec2D_int_Type( this->elementsC_->numberElements() ) );
-//    for (int i=0; i<this->elementsVec_->size(); i++)
-//        this->elementsVec_->at(i) = this->elementsC_->getElement(i).getVectorNodeList();
-//
-//    return this->elementsVec_;
-//}
 
 
 template <class SC, class LO, class GO, class NO>
@@ -310,7 +300,9 @@ void MeshUnstructured<SC,LO,GO,NO>::setP2SurfaceElements( MeshUnstrPtr_Type mesh
         ElementsPtr_Type subEl = fe.getSubElements(); //might be null
         for (int j=0; j<fe.numSubElements(); j++) {
             FiniteElement feSurf = subEl->getElement(j);
-            this->setSurfaceP2(feP2, feSurf, surfacePermutation, this->dim_);
+            // In some instances a element has only an edge as subelement. In that case this step is not required
+            if(feSurf.getVectorNodeList().size() == this->dim_)
+                this->setSurfaceP2(feP2, feSurf, surfacePermutation, this->dim_);
             
             // set edges for 3D case and if there are any edges, for 2D the edges are handled above
             ElementsPtr_Type subElSurf = feSurf.getSubElements(); //might be null
