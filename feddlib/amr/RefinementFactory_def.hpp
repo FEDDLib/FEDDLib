@@ -835,8 +835,8 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 	edgeElements->matchEdgesToElements(elementMap);
 
 
-	for(int i=0; i<elements->numberElements(); i++){
-		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(i); // indeces of edges belonging to element
+	for(int j=0; j<elements->numberElements(); j++){
+		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(j); // indeces of edges belonging to element
 
 		// Extract the four points of tetraeder
 		vec_int_Type nodeInd(0);
@@ -902,16 +902,16 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
 		int entry; 
-		if (elements->getElement(i).subElementsInitialized() ){
-			numberSubElSurf = elements->getElement(i).getSubElements()->numberElements();
+		if (elements->getElement(j).subElementsInitialized() ){
+			numberSubElSurf = elements->getElement(j).getSubElements()->numberElements();
 			for(int k=0; k< numberSubElSurf ; k++){
-				triTmp =elements->getElement(i).getSubElements()->getElement(k).getVectorNodeList();
-				for(int j=0; j<4 ; j++){
-					originTriangleTmp = originTriangles[j];
+				triTmp =elements->getElement(j).getSubElements()->getElement(k).getVectorNodeList();
+				for(int l=0; l<4 ; l++){
+					originTriangleTmp = originTriangles[l];
 					sort(originTriangleTmp.begin(),originTriangleTmp.end());
 					sort(triTmp.begin(),triTmp.end());
 					if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] &&  triTmp[2] == originTriangleTmp[2] ) 
-						originFlag[j] = elements->getElement(i).getSubElements()->getElement(k).getFlag();
+						originFlag[l] = elements->getElement(j).getSubElements()->getElement(k).getFlag();
 				
 				}
 			}
@@ -922,13 +922,13 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 		// A triangle is part of the interface if all of its edges are part of the interface (the information if edges are part of the interface was determined
 		// in the beginning of the Mesh Refinement by 'determineInterfaceEdges')
 
-		vec_bool_Type interfaceSurface = checkInterfaceSurface(edgeElements,originFlag, edgeNumbers,i);
+		vec_bool_Type interfaceSurface = checkInterfaceSurface(edgeElements,originFlag, edgeNumbers,j);
 		
-		for(int j=0; j<4; j++){	
-			sort( newTriangles.at(j).begin(), newTriangles.at(j).end() );
-			FiniteElement feNew(originTriangles[j],originFlag[j]);
-			feNew.setInterfaceElement(interfaceSurface[j]);
-			surfaceTriangleElements->addSurface(feNew, i);
+		for(int k=0; k<4; k++){	
+			sort( newTriangles.at(k).begin(), newTriangles.at(k).end() );
+			FiniteElement feNew(originTriangles[k],originFlag[k]);
+			feNew.setInterfaceElement(interfaceSurface[k]);
+			surfaceTriangleElements->addSurface(feNew, j);
 		}
 	}
 	vec2D_GO_Type combinedSurfaceElements;

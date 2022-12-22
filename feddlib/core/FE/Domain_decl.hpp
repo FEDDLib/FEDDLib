@@ -19,6 +19,21 @@ namespace FEDD {
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class Domain {
 
+  /*!
+    \class Domain
+    \brief This class defines the finite-element domain of your finite element problem for the respective variable/component.
+    
+
+    \tparam SC The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.g., for using complex instead
+    \tparam LO The local ordinal type. The is the index type for local indices
+    \tparam GO The global ordinal type. The is the index type for global indices
+    @todo This should actually be removed since the class should operate only on element level)
+    \tparam NO The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.
+    
+    Example: If you construct a Stokes finite element problem you get a velocity and pressure 'P2-P1' discretisation and ,thus , a domain for the P2 elements and one for the P2 elements with the respective node list etc.
+     
+	*/
+
 public:
     typedef Teuchos::RCP<Domain<SC,LO,GO,NO> > DomainPtr_Type;
     typedef std::vector<DomainPtr_Type> DomainPtrArray_Type; // Array of domains for meshrefinement
@@ -58,141 +73,452 @@ public:
     
     /* ------------------------------------------------------------------------ */
 
+	 /*!
+         \brief Constructor
+        
+     */
     Domain();
 
+ 	/*!
+         \brief Constructor
+         @param[in] comm
+    */
     Domain(CommConstPtr_Type comm);
     
+    /*!
+         \brief Constructor
+         @param[in] comm
+         @param[in] dimension 
+    */
     Domain(CommConstPtr_Type comm, int dimension);
 
+    /*!
+         \brief Constructor for structured meshes build in FEDDLib
+         @param[in] coor
+         @param[in] l
+         @param[in] h
+         @param[in] comm 
+    */
     Domain(vec_dbl_Type coor, double l, double h, CommConstPtr_Type comm);
 
+ 	/*!
+         \brief Constructor for strucutred meshes build in FEDDLib
+         @param[in] coor
+         @param[in] l length
+         @param[in] w width
+         @param[in] h height
+         @param[in] comm 
+    */
     Domain(vec_dbl_Type coor, double l, double w, double h, CommConstPtr_Type comm);
+    
+    /*!
+         \brief initializeFEData
+    */
     
     void initializeFEData();
     
+    /*!
+         \brief Returns flags of elements as vector of type int
+         \return elementFlags
+    */
     vec_int_ptr_Type getElementsFlag() const;
 
+    /*!
+         \brief Information about the domain
+    */
     void info();
 
+ 	/*!
+         \brief Build structured mesh in FEDDLib 
+         @param[in] flags
+         @param[in] meshType
+         @param[in] dim 
+         @param[in] FEType discretization
+         @param[in] N
+         @param[in] M
+         @param[in] numProcsCoarseSolve
+         
+    */
+    
     void buildMesh(int flags, std::string meshType, int dim, std::string FEType, int N, int M, int numProcsCoarseSolve = 0);
     
+     /*!
+         \brief Estimate depending on FEType and dimension for the numer of entries in system matrix, as approximate number of entries is requiered for matrix initialization.
+         		This serves as a upper bound.
+         \return approxEntriesPerRow
+    */
     LO getApproxEntriesPerRow() const;
 
+	/*!
+         \brief Set mesh parameter list
+         @param[in] pl Parameterlist
+
+    */
     void setMeshParameterList( ParameterListPtr_Type& pl );
     
+    /*!
+         \brief Get dimension
+         \return dimension
+
+    */
     UN getDimension() const;
 
+    /*!
+         \brief  Get map of all uniquely distributed nodes of the processors. 
+         \return mapUnique
+
+    */
     MapConstPtr_Type getMapUnique() const;
 
+    /*!
+         \brief Get map of all repeated (not uniquely distributed) nodes of processors
+         \return mepRepeated
+
+    */
     MapConstPtr_Type getMapRepeated() const;
 
+    /*!
+         \brief Get map of uniquely distributed P2 nodes of the processors.
+         \return mapUniqueP2
+
+    */
     MapConstPtr_Type getMapUniqueP2() const;
 
+    /*!
+         \brief Get map of repeated (not uniquely distributed) P1 nodes of processors
+         \return mapRepeatedP2
+
+    */
     MapConstPtr_Type getMapRepeatedP2() const;
     
+    /*!
+         \brief Get map of elements
+         \return elementMap
+
+    */
     MapConstPtr_Type getElementMap() const;
 
+    /*!
+         \brief Get map of edges
+         \return edgeMap
+
+    */
     MapConstPtr_Type getEdgeMap() const; // edgeMap
 
+    /*!
+         \brief Get vector of repeated points (on your processor). 2D Vector with size: numPoints x dim
+         \return pointsRepeated
+
+    */
     vec2D_dbl_ptr_Type getPointsRepeated() const;
 
+    /*!
+         \brief Get vector of unique points (on your processor). 2D Vector with size: numPoints x dim
+         \return pointsUnique
+
+    */
     vec2D_dbl_ptr_Type getPointsUnique() const;
 
+    /*!
+         \brief Get vector of the flags corrsponding to the repeated points (on your processor)
+         \return BCFlagsRepeated
+
+    */
     vec_int_ptr_Type getBCFlagRepeated() const;
 
+    /*!
+         \brief Get vector of the flags corrsponding to the unique points (on your processor)
+         \return BCFlagsUnique
+
+    */
     vec_int_ptr_Type getBCFlagUnique() const;
 
+    /*!
+         \brief Get the elements (on your processor) as vector data type. 
+         \return elements
+
+    */
     vec2D_int_ptr_Type getElements() const;
 
+    /*!
+         \brief Get the elements (on your processor) as Elements_Type 
+         \return elementsC
+
+    */
     ElementsPtr_Type getElementsC() const;
     
+    /*!
+         \brief Get map of all unique (not uniquely distributed) nodes of processors in a vector field point of view. Here, a node has more than one degree of freedom. For Example in with dofs=2: 1_x , 1_y , 2_x , 2_y ,... . This degree of freedom map captures this. 
+         \return mepVecFieldUnique
+
+    */
     MapConstPtr_Type getMapVecFieldUnique() const;
 
+    /*!
+         brief Get map of all repeated (not uniquely distributed) nodes of processors in a vector field point of view. Here, a node has more than one degree of freedom. For Example in with dofs=2: 1_x , 1_y , 2_x , 2_y ,... . This degree of freedom map captures this. 
+         \return mepVecFieldRepeated
+
+    */
     MapConstPtr_Type getMapVecFieldRepeated() const;
 
+    /*!
+         \brief Finite element discretization. Represented as string, i.e., P2
+         \return FEType
+
+    */
     std::string getFEType() const;
 
+    /*!
+         \brief Communicator
+         \return comm
+
+    */
     CommConstPtr_Type getComm() const;
 
+    /*!
+         \brief Reading mesh from .mesh file with name 'filename'
+         @param[in] filename
+         @param[in] delimiter
+         @param[in] dim
+         @param[in] FEType
+         @param[in] volumeID element flag 
+
+    */
     void readMesh(string filename, string delimiter, int dim, string FEType, int volumeID=10);
 
+    /*!
+         \brief Reading mesh size
+         @param[in] filename
+         @param[in] delimiter
+
+    */
     void readMeshSize(string filename, string delimiter);
     
+    /*!
+         \brief Partition mesh according to number of processors. Partition with parmetis.
+         @param[in] partitionDistance
+
+    */
     void partitionMesh( bool partitionDistance = false );
 
+    /*!
+         \brief Function called when mesh is read and paritioned. In turn it calls readMesh(...) and partitionMesh(...) 
+         @param[in] filename
+         @param[in] delimiter
+         @param[in] dim
+         @param[in] FEType
+         @param[in] volumeID element flag 
+
+    */
     void readAndPartitionMesh( std::string filename, std::string delimiter, int dim, std::string FEType, int volumeID=10 );
 
+    /*!
+         \brief Building a P2 mesh from the P1 one mesh. We generally habe P1-input meshes and build the P2 mesh on top of that.
+         @param[in] domainP1 the domain with the mesh we read from .mesh file
+
+    */
     void buildP2ofP1Domain( DomainPtr_Type domainP1 );
 
-    void initWithDomain(DomainPtr_Type domainsP1); // Mesh Refinement
+    /*!
+         \brief Initialize domain with already existing domain.
+         @param[in] domainP1 the domain with the mesh we read from .mesh file
 
+    */
+    void initWithDomain(DomainPtr_Type domainsP1); 
+    
+    /*!
+         \brief Settng mesh from domain
+         @param[in] meshUnstr mesh of MeshUnstr_Type which is generally the type of meshes from .mesh files
+
+    */
     void setMesh(MeshUnstrPtr_Type meshUnstr); 
     
-    // Baue unique node- und dof-InterfaceMap in der Interface-Nummerierung
+    /*!
+         \brief  Build unique node and dof interfaceMap in interface numbering
+    */
     void buildUniqueInterfaceMaps();
 
+    /*!
+         \brief  Set partial coupling
+         @param[in] flag
+         @param[in] type
+    */
     void setPartialCoupling(int flag, std::string type);
-    
-    // Baue die Interface-Maps in der globalen Nummerierung.
-    // Dies machen wir mit Hilfe des unique partitionierten Vektors indicesGlobalMatchedUnique_.
+
+     /*!
+         \brief  Build interface maps with global numbering with indicesGlobalMatchedUnique_
+    */
     void buildGlobalInterfaceMaps();
 
+     /*!
+         \brief  Build interface maps 
+    */
     void buildInterfaceMaps();
     
+    /*!
+         \brief Get interface map unique 
+         \return interfaceMapUnique
+    */
     MapConstPtr_Type getInterfaceMapUnique() const;
 
+    /*!
+         \brief Get interface vector field map unique
+         \return interfaceMapVecFieldUnique
+    */
     MapConstPtr_Type getInterfaceMapVecFieldUnique() const;
     
+    /*!
+         \brief Get global interface map vector field partial
+         \return partialGlobalInterfaceVecFieldMap
+    */    
     MapConstPtr_Type getGlobalInterfaceMapVecFieldPartial() const{ return partialGlobalInterfaceVecFieldMap_; };
 
+    /*!
+         \brief Get other global interface map vec field partial
+         \return otherPartialGlobalInterfaceVecFieldMap
+    */
     MapConstPtr_Type getOtherGlobalInterfaceMapVecFieldPartial() const{ return otherPartialGlobalInterfaceVecFieldMap_; };
 
-    MapConstPtr_Type getGlobalInterfaceMapUnique() const; // Brauchen wir fuer Kopplungsblock C4
+    /*!
+         \brief Get interface map unique (for fsi coupling block c4)
+         \return globalInterfaceMapUnique
+    */
+    MapConstPtr_Type getGlobalInterfaceMapUnique() const;
 
+    /*!
+         \brief Get interface vec field map unique (for fsi coupling block c4)
+         \return globalInterfaceMapUnique
+    */
     MapConstPtr_Type getGlobalInterfaceMapVecFieldUnique() const; // Brauchen wir fuer Kopplungsblock C4
-    
+
+ /*!
+         \brief Get other interface vec field map unique (for fsi coupling block c4)
+         \return globalInterfaceMapUnique
+    */   
     MapConstPtr_Type getOtherGlobalInterfaceMapVecFieldUnique() const; 
 
+    /*!
+         \brief Get global number of elements
+         \return numElementsGlobal
+    */
     GO getNumElementsGlobal() const;
 
+    /*!
+         \brief Get local number of elements (on your processor)
+         \return numElementsGlobal
+    */
     LO getNumElements() const;
 
+	/*!
+         \brief Get local number of points of type 'type' (unique/repeated)
+         \return numPoints
+    */
     LO getNumPoints(std::string type="Unique") const;/*local*/
 
+	/*!
+         \brief Check geometriy
+         @param[in] MeshType
+         @param[in] dim
+         \return 
+    */
     int checkGeomentry(std::string MeshType, int dim) const;
     
+    /*!
+         \brief Itentify interface parallal and distance
+         @param[in] domainOther
+         @param[in] interfaceID_vec
+    */
     void identifyInterfaceParallelAndDistance( DomainPtr_Type domainOther, vec_int_Type interfaceID_vec );
     
+     /*!
+         \brief Calculate distance to interface
+    */
     void calculateDistancesToInterface();
         
+    /*!
+         \brief Get distances to interface
+         \return 
+    */
     vec_dbl_ptr_Type getDistancesToInterface() const;
 
+    /*!
+         \brief Partition distance to interface
+    */
     void partitionDistanceToInterface();
 
+    /*!
+         \brief Set reference configuration
+    */
     void setReferenceConfiguration();
 
+    /*!
+         \brief Move mesh according to displacement (i.e. used in FSI)
+         @param[in] displacementUnique
+         @param[in] displacementRepeated
+    */
     void moveMesh(MultiVectorPtr_Type displacementUnique, MultiVectorPtr_Type displacementRepeated);
 
+    /*!
+         \brief Get mesh
+         \return mesh
+    */
     MeshPtr_Type getMesh();
 
+    /*!
+         \brief Get mesh constant
+         \return mesh
+    */
     MeshConstPtr_Type getMesh() const;
 
+    /*!
+         \brief Generally the domain object holds only meshes from type 'Mesh'. If we read a mesh from file it becomes the type 'MeshUnstructured' and needs to be initialized
+         @param[in] dimension
+         @param[in] FEType
+         @param[in] volumeID       
+    */
     void initializeUnstructuredMesh(int dimension, string feType, int volumeID=10);
 
-    // Hilfsfunktionen fuer buildLocalInterfaceIDInGlobal().
-    // Gibt fuer eine gegebene nodeID die entsprechende dofID und umgekehrt.
-    // localDofNumber entspricht dem Rest der Division, also ob es sich um die
-    // x- (=0), y- (=1) oder z-Komponente (=2) handelt.
+    /*!
+		 \brief Hilfsfunktion fuer buildLocalInterfaceIDInGlobal().
+		 Gibt fuer eine gegebene nodeID die entsprechende dofID und umgekehrt.
+		 localDofNumber entspricht dem Rest der Division, also ob es sich um die
+		 x- (=0), y- (=1) oder z-Komponente (=2) handelt.
+    */
     void toNodeID(UN dim, GO dofID, GO &nodeID, LO &localDofNumber);
 
+ 	/*!
+		 \brief Hilfsfunktion fuer buildLocalInterfaceIDInGlobal().
+		 Gibt fuer eine gegebene nodeID die entsprechende dofID und umgekehrt.
+		 localDofNumber entspricht dem Rest der Division, also ob es sich um die
+		 x- (=0), y- (=1) oder z-Komponente (=2) handelt.
+    */
     void toDofID(UN dim, GO nodeID, LO localDofNumber, GO &dofID );
 
+
+    /*!
+         \brief Get local interface id in global
+         \return globalInterfaceID      
+    */
     vec_long_Type getLocalInterfaceIDInGlobal() const;
 
+    /*!
+         \brief Set dummy interface domain
+         @param[in] domain     
+    */
     void setDummyInterfaceDomain(DomainPtr_Type domain);
     
+    /*!
+         \brief Find in points unique
+         @param[in] x point to be found in unique nodes
+         
+    */
     int findInPointsUnique(const vec_dbl_Type& x) const;
 
+    /*!
+         \brief Get node list in multi vector point
+         @param[in] nodeListMV
+         
+    */
     MultiVectorPtr_Type getNodeListMV() const;
 /* ----------------------------------------------------------------------------------------*/
 
