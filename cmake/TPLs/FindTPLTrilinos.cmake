@@ -124,7 +124,7 @@ endforeach (TPL)
 
 # Filling variables needed by the TriBITS system
 set (TPL_Trilinos_INCLUDE_DIRS ${XLib_Trilinos_INCLUDE_DIRS})
-set (TPL_Trilinos_LIBRARY_DIRS ${Trilinos_LIBRARY_DIRS})
-set (TPL_Trilinos_LIBRARIES ${XLib_Trilinos_LIBS})
+set (TPL_Trilinos_LIBRARY_DIRS Trilinos::all_selected_libs) 
+set (TPL_Trilinos_LIBRARIES Trilinos::all_selected_libs) 
 
 

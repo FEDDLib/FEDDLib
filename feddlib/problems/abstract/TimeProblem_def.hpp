@@ -1289,11 +1289,11 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
             
             W_tpetraMat->resumeFill();
             
-            for (auto i=0; i<tpetraMatXpetra->getMap()->getNodeNumElements(); i++) {
-                ArrayView< const LO > indices;
-                ArrayView< const SC > values;
+            for (auto i=0; i<tpetraMatXpetra->getMap()->getLocalNumElements(); i++) {
+                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
+                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;  //ArrayView< const LO > indices
                 tpetraMatXpetra->getLocalRowView( i, indices, values);
-                W_tpetraMat->replaceLocalValues( i, indices.size(), values.getRawPtr(), indices.getRawPtr() );
+                W_tpetraMat->replaceLocalValues( i,  indices, values);
             }
             W_tpetraMat->fillComplete();
             
@@ -1406,12 +1406,12 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBa
                         
                         W_tpetraMat->resumeFill();
                         
-                        for (auto i=0; i<tpetraMatXpetra->getMap()->getNodeNumElements(); i++) {
-                            ArrayView< const LO > indices;
-                            ArrayView< const SC > values;
-                            tpetraMatXpetra->getLocalRowView( i, indices, values);
-                            W_tpetraMat->replaceLocalValues( i, indices.size(), values.getRawPtr(), indices.getRawPtr() );
-                        }
+                        for (auto i=0; i<tpetraMatXpetra->getMap()->getLocalNumElements(); i++) {
+						    typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
+						    typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;  //ArrayView< const LO > indices
+						    tpetraMatXpetra->getLocalRowView( i, indices, values);
+						    W_tpetraMat->replaceLocalValues( i,  indices, values);
+						}
                         W_tpetraMat->fillComplete( W_tpetraMat->getDomainMap(), W_tpetraMat->getRangeMap() );
                     }
                 }
