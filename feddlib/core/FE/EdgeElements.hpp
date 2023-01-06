@@ -58,7 +58,7 @@ class EdgeElements : public Elements {
 
     void setMidpoint( int elementIndex, int nodeIndex );
 	
-	const int getMidpoint( int elementIndex );
+	int getMidpoint( int elementIndex );
 
 	void sortUniqueAndSetGlobalIDsParallel( MapConstPtr_Type elementMap, vec2D_GO_Type& combinedElements );
 

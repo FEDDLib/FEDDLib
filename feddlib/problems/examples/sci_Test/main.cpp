@@ -127,7 +127,7 @@ void rhsArtery(double* x, double* res, double* parameters){
     res[2] = 0.;
     double force = parameters[1];
     double TRamp = 0.0;
-    double r = sqrt(x[0]*x[0]+x[1]*x[1]);
+    //double r = sqrt(x[0]*x[0]+x[1]*x[1]);
     
     
    /* if(parameters[0] <= TRamp+1e-06)
@@ -135,9 +135,15 @@ void rhsArtery(double* x, double* res, double* parameters){
     else
         force = parameters[1];*/
 
+        //cout << " Punkt (" << x[0] << "|" << x[1] << "|" << x[2] << ")" << endl; 
     if(parameters[2]==6){
-        res[0] = (x[0]-1)/r*force;
-        res[1] = (x[1]-1)/r*force;
+        res[0] = (x[0]-1);
+        res[1] = (x[1]-1);
+        double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
+        res[0] = res[0] / r2 *force;
+        res[1] = res[1] / r2 *force;
+
+        //cout << " Force x" << res[0] << " Force y " << res[1] << " r " << r << " r2 "<< r2 << endl;
         
     }
     else{
@@ -255,6 +261,7 @@ int main(int argc, char *argv[])
         string      discType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");
         string preconditionerMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
         int         n;
+       
 
         TimePtr_Type totalTime(TimeMonitor_Type::getNewCounter("FEDD - main - Total Time"));
         TimePtr_Type buildMesh(TimeMonitor_Type::getNewCounter("FEDD - main - Build Mesh"));
@@ -302,7 +309,10 @@ int main(int argc, char *argv[])
                         
         MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
         
-        partitionerP1.readAndPartition();
+        int volumeID=10;
+        if(bcType=="Artery")
+        	volumeID = 12;
+        partitionerP1.readAndPartition(volumeID);
                     
         if (!discType.compare("P2")){
 			domainP2chem->buildP2ofP1Domain( domainP1struct );
@@ -448,6 +458,9 @@ int main(int argc, char *argv[])
             bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
             bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
 
+            bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X", dim);
+            bcFactory->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
+            bcFactory->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Z", dim);
             
             bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_X", dim);
             bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Y", dim);
@@ -456,6 +469,10 @@ int main(int argc, char *argv[])
 
             bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
             bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
+            
+            bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Z", dim);
 
         
         }
@@ -481,7 +498,7 @@ int main(int argc, char *argv[])
                 if(bcType=="Cube")
                		 sci.problemStructure_->addRhsFunction( rhsYZ,0 );
                 else if(bcType=="Artery")
-                     sci.problemStructure_->addRhsFunction( rhsArtery,0 );
+                     sci.problemStructure_->addRhsFunction( rhsArtery );
                      
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
@@ -539,8 +556,13 @@ int main(int argc, char *argv[])
         }
         else if(dim==3 && bcType=="Artery"){
            bcFactory->addBC(inflowChem, 6, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-           
+			bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+			bcFactory->addBC(inflowChem, 10, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+			bcFactory->addBC(inflowChem, 11, 1, domainChem, "Dirichlet", 1); // inflow of Chem
            bcFactoryChem->addBC(inflowChem, 6, 0, domainChem, "Dirichlet", 1);
+           bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
+           bcFactoryChem->addBC(inflowChem, 10, 0, domainChem, "Dirichlet", 1);
+           bcFactoryChem->addBC(inflowChem, 11, 0, domainChem, "Dirichlet", 1);
         }
 
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems

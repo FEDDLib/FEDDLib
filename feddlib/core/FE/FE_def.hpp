@@ -6140,6 +6140,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
     Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
     int parameters;
     
+    
     std::vector<double> valueFunc(dim);
     // The second last entry is a placeholder for the surface element flag. It will be set below
     SC* params = &(funcParameter[0]);
@@ -6165,9 +6166,13 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
                     for (UN w=0; w<phi->size(); w++) {
                         vec_dbl_Type x(dim,0.); //coordinates
                         for (int k=0; k<dim; k++) {// transform quad points to global coordinates
-                            for (int l=0; l<dim-1; l++)
-                                x[ k ] += B[k][l] * (*quadPoints)[ w ][ l ] + b[k];
+                            for (int l=0; l<dim-1; l++){
+                                x[ k ] += B[k][l] * (*quadPoints)[ w ][ l ];
+                            }   
+                            x[k] += b[k];
                         }
+                        //cout << " Quadpoint [" << w << "] = (" << (*quadPoints)[ w ][ 0 ] << ", " << (*quadPoints)[ w ][ 1 ] << ")"  << endl; 
+                        //cout << " Transformed = (" << x[ 0 ] << ", " << x[1] << "," << x[2] <<  ")"  << endl;
 
                         func( &x[0], &valueFunc[0], params);
                         if ( fieldType == "Scalar" )
@@ -6257,8 +6262,10 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralFlag(int dim,
                         vec_dbl_Type x(dim,0.); //coordinates
                         for (int k=0; k<dim; k++) {// transform quad points to global coordinates
                             for (int l=0; l<dim-1; l++)
-                                x[ k ] += B[k][l] * (*quadPoints)[ w ][ l ] + b[k];
+                                x[ k ] += B[k][l] * (*quadPoints)[ w ][ l ];
+                        	x[k] += b[k];
                         }
+                        
                         func( &x[0], &valueFunc[0], params[0], params);
 //                        func( &x[0], &valueFunc[0], params);
                         if ( fieldType == "Scalar" )

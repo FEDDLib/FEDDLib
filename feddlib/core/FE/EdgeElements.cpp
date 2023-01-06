@@ -225,7 +225,7 @@ void EdgeElements::setMidpoint( int elementIndex, int nodeIndex ){
 };
 
 // Returns local index of edge Midpoint
-const int EdgeElements::getMidpoint( int elementIndex){
+int EdgeElements::getMidpoint( int elementIndex){
 	
 	if(midPointsInd_.size()<1)
 		return -1;
