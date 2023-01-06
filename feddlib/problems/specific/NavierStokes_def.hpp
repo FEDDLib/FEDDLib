@@ -699,10 +699,10 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
             W_tpetraMat->resumeFill();
 
             for (auto i=0; i<tpetraMatXpetra->getMap()->getLocalNumElements(); i++) {
-               typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
+                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
                 typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;
                 tpetraMatXpetra->getLocalRowView( i, indices, values);
-                W_tpetraMat->replaceLocalValues( i, indices, values );
+                W_tpetraMat->replaceLocalValues( i, indices, values);
             }
             W_tpetraMat->fillComplete();
 

@@ -1,0 +1,78 @@
+<ParameterList name="unsteady nonlinear elasticity">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="3"/><!--only 3D-->
+        <Parameter name="Discretization" type="string" value="P2"/><!--P1, P2-->
+        <Parameter name="Mesh Type" type="string" value="structured"/> <!--structured, unstructured -->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+        <Parameter name="Source Type" type="string"   value="surface"/>
+        <Parameter name="BC Placement" type="string" value="standard"/><!-- standard, foamFine-->
+        <Parameter name="Volume force" type="double" value=".016"/>
+        <Parameter name="H/h" type="int" value="4"/>
+        
+        
+        <Parameter name="Refinement Level" type="int" value="1"/>
+        <Parameter name="Refinement Type" type="string" value="uniform"/>
+       
+
+        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
+        <Parameter name="MaxNonLinIts" type="int" value="6"/>
+        <Parameter name="Criterion" type="string" value="Residual"/>
+    
+        <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
+        <Parameter name="Density" type="double"   value="1."/>
+        <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
+        <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
+        <Parameter name="Mu" type="double" value="2.0e+6"/>
+        <Parameter name="Mu1" type="double" value="2.0e+6"/>
+        <Parameter name="Mu2" type="double" value="2.0e+8"/>
+        <!-- Parameter for Neo-Hooke and Mooney-Rivlin, additioanlly poisson ratio is used -->
+        <Parameter name="E" type="double"   value="3.0e-1"/>
+        <Parameter name="E1" type="double"   value="1."/>
+        <Parameter name="E2" type="double"   value="1.e-1"/>
+        
+        <!-- Parameter for Mooney-Rivlin-->
+        <Parameter name="C" type="double" value="1."/><!-- Mooney-Rivlin parameter -->
+    </ParameterList>
+    
+    
+    <ParameterList name="Exporter">
+        
+        <Parameter name="Suffix variable1" type="string" value=""/>
+        
+        <Parameter name="Export coarse functions" type="bool" value="false"/>
+        
+        <Parameter name="Name coarse functions block1" type="string" value="phiU"/>
+        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
+        
+        <Parameter name="Export Suffix" type="string" value=""/>
+        <Parameter name="Export Extra Data" type="bool" value="true"/>
+        
+    </ParameterList>
+    
+    <ParameterList name="Mesh Partitioner">
+        
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        
+        <Parameter name="Mesh 1 Name" type="string" value="cube_0_5.mesh"/>
+    </ParameterList>
+
+    
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse"		                type="int"      value="0"/>
+        <Parameter name="Linearization"                         type="string"   value="NOX"/> <!-- FixedPoint, Newton, Extrapolation-->
+        <Parameter name="ParaViewExport"                        type="bool"   	value="true"/>
+        <Parameter name="ParaView export subdomain"             type="bool"   	value="false"/>
+        <Parameter name="Preconditioner Method"                 type="string"   value="Monolithic"/><!-- Monolithic, Tri, Diag, TriBFBT, DiagBFBT-->
+    </ParameterList>
+    
+    <ParameterList name="Timestepping Parameter">
+        <Parameter name="Class"                                 type="string"		value="Newmark"/> <!--Multistep, Singlestep, Newmark-->
+        <Parameter name="BDF"		                    		type="int"		   	value="1"/>
+        <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
+        <Parameter name="Final time force"	                    type="double"   	value="1."/>
+        <Parameter name="Final time"	                    	type="double"   	value=".01"/>
+        <Parameter name="dt"			                    	type="double"   	value="0.01"/>
+        <Parameter name="beta"			                    	type="double"   	value="0.25"/> <!-- newmark method parameter-->
+        <Parameter name="gamma"			                    	type="double"   	value="0.5"/> <!-- newmark method parameter-->
+    </ParameterList>
+</ParameterList>
