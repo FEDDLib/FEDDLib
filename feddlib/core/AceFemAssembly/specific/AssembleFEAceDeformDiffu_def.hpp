@@ -46,7 +46,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleJacobian() {
 template <class SC, class LO, class GO, class NO>
 void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 
-	this->rhsVec_ = vec_dbl_Type(dofsElement_,0);
+	this->rhsVec_.reset( new vec_dbl_Type ( dofsElement_,0.) );
 
 	std::vector<double> v(2238);
 	std::vector<double> d(6);
@@ -73,18 +73,18 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 	{
 		for(int i = 0; i < 40; i++)
 			if((i+1)%4 == 0)
-				ul[27 + 3*(i+1)/4] = this->getSolution()[i];
+				ul[27 + 3*(i+1)/4] = (*this->solution_)[i];
 			else
-				ul[i - ((i+1) - (i+1)%4)/4] = this->getSolution()[i];
+				ul[i - ((i+1) - (i+1)%4)/4] = (*this->solution_)[i];
 	}
 	else if(dofOrdering_ == 2)
 	{
 		for(int i = 0; i < 40; i++)
 		{
 			if(i<30)
-				ul[i]=this->getSolution()[i];
+				ul[i]=(*this->solution_)[i];
 			else
-				ul[30 + 3*(i-30)] = this->getSolution()[i];
+				ul[30 + 3*(i-30)] = (*this->solution_)[i];
 		}
 	}
 	else
@@ -108,15 +108,19 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 		for(int i=0;i<40;i++)
 		{
 			if((i+1)%4==0)
-				this->rhsVec_[i] = p[29+(i+1)/4];
+				(*this->rhsVec_)[i] = p[29+(i+1)/4];
 			else
-				this->rhsVec_[i] = p[i - ((i+1) - (i+1)%4)/4];
+				(*this->rhsVec_)[i] = p[i - ((i+1) - (i+1)%4)/4];
 		}
 	}
 	else if(dofOrdering_ == 2)
 	{
 		for(int i = 0; i < 40; i++){
-			this->rhsVec_[i] = p[i];
+			if(fabs(p[i])>1e-14)
+				(*this->rhsVec_)[i] = p[i];
+			else
+				(*this->rhsVec_)[i] = 0.0;
+
 		}	
 	}
 	else
@@ -153,18 +157,18 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	{
 		for(int i = 0; i < 40; i++)
 			if((i+1)%4 == 0)
-				ul[27 + 3*(i+1)/4] = this->getSolution()[i];
+				ul[27 + 3*(i+1)/4] = (*this->solution_)[i];
 			else
-				ul[i - ((i+1) - (i+1)%4)/4] = this->getSolution()[i];
+				ul[i - ((i+1) - (i+1)%4)/4] = (*this->solution_)[i];
 	}
 	else if(dofOrdering_ == 2)
 	{
 		for(int i = 0; i < 40; i++)
 		{
 			if(i<30)
-				ul[i]=this->getSolution()[i];
+				ul[i]=(*this->solution_)[i];
 			else
-				ul[30 + 3*(i-30)] = this->getSolution()[i];
+				ul[30 + 3*(i-30)] = (*this->solution_)[i];
 		}
 	}
 	else

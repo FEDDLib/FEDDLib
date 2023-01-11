@@ -23,7 +23,6 @@ template<class SC,class LO,class GO,class NO>
 int LinearSolver<SC,LO,GO,NO>::solve(Problem_Type* problem, BlockMultiVectorPtr_Type rhs, std::string type ){
 
     int its=0;
-
     if (!type.compare("Monolithic") || !type.compare("MonolithicConstPrec"))
         its = solveMonolithic( problem, rhs, type );
     else if (!type.compare("Teko")){

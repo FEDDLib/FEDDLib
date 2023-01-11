@@ -125,7 +125,7 @@ void AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>::assembleRHS(){
 	elementMatrixN->scale(this->density_);
 	this->ANB_->add( (*elementMatrixN),(*this->ANB_));
 
-	this->rhsVec_ = vec_dbl_Type(this->dofsElement_,0);
+	this->rhsVec_.reset( new vec_dbl_Type ( dofsElement_,0.) );
 	// Multiplying ANB_ * solution // System Matrix times solution
 	int s=0,t=0;
 	for(int i=0 ; i< this->ANB_->size();i++){
@@ -134,7 +134,7 @@ void AssembleFENavierStokesNonNewtonian<SC,LO,GO,NO>::assembleRHS(){
 		for(int j=0; j < this->ANB_->size(); j++){
 			if(j >= this->dofsElementVelocity_)
 				t=1;
-			this->rhsVec_[i] += (*this->ANB_)[i][j]*this->solution_[j]*this->coeff_[s][t];
+			(*this->rhsVec_)[i] += (*this->ANB_)[i][j]*(*this->solution_)[j]*this->coeff_[s][t];
 			//cout <<"Solution["<<j <<"]" << this->solution_[i] << endl;
 		}
 		t=0;

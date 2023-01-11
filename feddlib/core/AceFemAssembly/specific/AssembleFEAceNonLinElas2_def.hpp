@@ -92,7 +92,7 @@ void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assemblyNonLinElas(SmallMatrixPtr_T
 	d[1] = this->poissonRatio_;
 
 	for(int i=0;i<30;i++)
-		ul[i] = this->getSolution()[i]; // What is the order? I need it in the form (u1,v1,w1,u2,v2,w2,...)
+		ul[i] = (*this->solution_)[i]; // What is the order? I need it in the form (u1,v1,w1,u2,v2,w2,...)
 
 	int count = 0;
 	for(int i=0;i<this->numNodes_;i++)
@@ -147,7 +147,7 @@ void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assembleRHS() {
 	d[1] = this->poissonRatio_;
 
 	for(int i=0;i<30;i++){
-		ul[i] = this->getSolution()[i];
+		ul[i] = (*this->solution_)[i];
 	}
 
 	int count = 0;
@@ -166,7 +166,7 @@ void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assembleRHS() {
 	skr3(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
 	// std::cout << "[DEBUG] SKR-Rhs Call successful!" << std::endl;
 
-	this->rhsVec_ = p;
+	(*this->rhsVec_) = p;
 }
 template <class SC, class LO, class GO, class NO>
 void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>:: updateParameter(string type, double value){

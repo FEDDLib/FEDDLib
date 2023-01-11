@@ -206,7 +206,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assembleRHS(){
 	elementMatrixN->scale(density_);
 	ANB_->add( (*elementMatrixN),(*ANB_));
 
-	this->rhsVec_ = vec_dbl_Type(dofsElement_,0);
+	this->rhsVec_.reset( new vec_dbl_Type ( dofsElement_,0.) );
 	// Multiplying ANB_ * solution // ANB Matrix without nonlinear part.
 	int s=0,t=0;
 	for(int i=0 ; i< ANB_->size();i++){
@@ -215,7 +215,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assembleRHS(){
 		for(int j=0; j < ANB_->size(); j++){
 			if(j >= dofsElementVelocity_)
 				t=1;
-			this->rhsVec_[i] += (*ANB_)[i][j]*this->solution_[j]*coeff_[s][t];
+			(*this->rhsVec_)[i] += (*ANB_)[i][j]*(*this->solution_)[j]*coeff_[s][t];
 		}
 		t=0;
 	}
@@ -262,7 +262,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Type 
             uLoc[d][w] = 0.;
             for (int i=0; i < phi->at(0).size(); i++) {
                 LO index = dim * i + d;
-                uLoc[d][w] += this->solution_[index] * phi->at(w).at(i);
+                uLoc[d][w] += (*this->solution_)[index] * phi->at(w).at(i);
             }
         }
 
@@ -340,7 +340,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Ty
             for (int i=0; i < dPhiTrans[0].size(); i++) {
                 LO index = dim *i+ d1;
                 for (int d2=0; d2<dim; d2++)
-                    duLoc[w][d2][d1] += this->solution_[index] * dPhiTrans[w][i][d2];
+                    duLoc[w][d2][d1] += (*this->solution_)[index] * dPhiTrans[w][i][d2];
             }
         }
     }

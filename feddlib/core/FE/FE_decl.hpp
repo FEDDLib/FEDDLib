@@ -462,6 +462,8 @@ class FE {
 								bool callFillComplete = true,
 								int FELocExternal=-1);
 
+    void advanceInTimeAssemblyFEElements(double dt) {for (UN T=0; T<assemblyFEElements_.size(); T++) {assemblyFEElements_[T]->advanceInTime(dt);}};
+
 	void assemblyLinearElasticity(int dim,
                                 string FEType,
                                 int degree,
@@ -498,15 +500,17 @@ class FE {
                                     MultiVectorPtr_Type eModVec,
                                     bool callFillComplete = true,
                                     int FELocExternal=-1);
+
+
 /* ----------------------------------------------------------------------------------------*/
 private:
 	void addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstColumn,MapConstPtr_Type mapSecondColumn, tuple_disk_vec_ptr_Type problemDisk);
 
 	void addFeBlock(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstRow, int row, int column, tuple_disk_vec_ptr_Type problemDisk);
 
-	void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock1,FiniteElement elementBlock2, int dofs1, int dofs2 );
+	void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Type rhsVec, FiniteElement elementBlock1,FiniteElement elementBlock2, int dofs1, int dofs2 );
 
-    void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock, int dofs);
+    void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Type rhsVec, FiniteElement elementBlock, int dofs);
 			
 	void initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep);
 

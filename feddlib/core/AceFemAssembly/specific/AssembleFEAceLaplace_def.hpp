@@ -148,7 +148,7 @@ void AssembleFEAceLaplace<SC,LO,GO,NO>::assembleRHS() {
         elementVector[i] += value;
     }
 
-	this->rhsVec_ = elementVector;
+	(*this->rhsVec_) = elementVector;
 }
 
 /*!

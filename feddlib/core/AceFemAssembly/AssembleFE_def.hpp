@@ -7,7 +7,10 @@ namespace FEDD {
 
 
 template <class SC, class LO, class GO, class NO>
-AssembleFE<SC,LO,GO,NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple)
+AssembleFE<SC,LO,GO,NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
+rhsVec_(0),
+jacobian_(0),
+solution_(0)
 {
 	flag_=flag;
 	nodesRefConfig_ = nodesRefConfig;
@@ -72,7 +75,6 @@ template <class SC, class LO, class GO, class NO>
 void AssembleFE<SC,LO,GO,NO>::advanceInTime( double dt){
 	timeIncrement_ = dt;
 	timeStep_ = timeStep_ + dt;
-	advancedInTime_=true;
 };
 
 template <class SC, class LO, class GO, class NO>
@@ -98,7 +100,10 @@ template <class SC, class LO, class GO, class NO>
 void AssembleFE<SC,LO,GO,NO>::updateSolution( vec_dbl_Type solution){
 
 	//TEUCHOS_TEST_FOR_EXCEPTION(solution_.size() != solution.size(), std::runtime_error, "Dofs of solutions is not the same");
-	solution_ = solution;
+	this->solution_.reset( new vec_dbl_Type (solution.size(),0.) );
+
+	for(int i=0; i< solution.size();i++)
+		(*solution_)[i] = solution[i];
 
 };
 
@@ -106,7 +111,7 @@ void AssembleFE<SC,LO,GO,NO>::updateSolution( vec_dbl_Type solution){
 
 
 template <class SC, class LO, class GO, class NO>
-vec_dbl_Type AssembleFE<SC,LO,GO,NO>::getSolution( ){
+vec_dbl_ptr_Type AssembleFE<SC,LO,GO,NO>::getSolution( ){
 	return solution_;
 
 };

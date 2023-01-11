@@ -217,7 +217,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	vec_dbl_Type solution(0);
 	vec_dbl_Type solution_d;
 
-	vec_dbl_Type rhsVec;
+	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
@@ -308,7 +308,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	vec_dbl_Type solution(0);
 	vec_dbl_Type solution_d;
 
-	vec_dbl_Type rhsVec;
+	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
@@ -376,7 +376,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 */
 
 template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock, int dofs){
+void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Type rhsVec, FiniteElement elementBlock, int dofs){
 
     Teuchos::ArrayRCP<SC>  resArray_block = res->getBlockNonConst(0)->getDataNonConst(0);
 
@@ -384,7 +384,7 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type r
 
 	for(int i=0; i< nodeList_block.size() ; i++){
 		for(int d=0; d<dofs; d++)
-			resArray_block[nodeList_block[i]*dofs+d] += rhsVec[i*dofs+d];
+			resArray_block[nodeList_block[i]*dofs+d] += (*rhsVec)[i*dofs+d];
 	}
 }
 
@@ -429,7 +429,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	vec_dbl_Type solution_c;
 	vec_dbl_Type solution_d;
 
-	vec_dbl_Type rhsVec;
+	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
@@ -492,7 +492,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 			assemblyFEElements_[T]->assembleJacobian();
 
             elementMatrix = assemblyFEElements_[T]->getJacobian(); 
-          //  elementMatrix->print();
+           // elementMatrix->print();
 			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
 			
 			addFeBlockMatrix(A, elementMatrix, elementsSolid->getElement(T),  mapSolid, mapChem, problemDisk);
@@ -584,7 +584,7 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
                 for(int d=0; d<dofs2; d++){
                     for (UN j=0; j < columnIndices2.size(); j++){
                         double tmpValue =  (*elementMatrix)[offset+dofs2*i+di][offset+dofs2*j+d];
-                        if(std::fabs(tmpValue) > 1e-13){
+                        if(std::fabs(tmpValue) > 1.e-13){
                             columnIndex[0] = GO ( dofs2 * mapSecondRow->getGlobalElement( element.getNode(j) ) + d );
                             value[0] = tmpValue;
                             A->getBlock(1,1)->insertGlobalValues( row, columnIndex(), value() ); // Automatically adds entries if a value already exists 
@@ -678,7 +678,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 	vec_dbl_Type solution_u;
 	vec_dbl_Type solution_p;
 
-	vec_dbl_Type rhsVec;
+	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
@@ -806,7 +806,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 */
 
 template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock1,FiniteElement elementBlock2, int dofs1, int dofs2 ){
+void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Type rhsVec, FiniteElement elementBlock1,FiniteElement elementBlock2, int dofs1, int dofs2 ){
 
     Teuchos::ArrayRCP<SC>  resArray_block1 = res->getBlockNonConst(0)->getDataNonConst(0);
 
@@ -818,14 +818,14 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_Type r
 
 	for(int i=0; i< nodeList_block1.size() ; i++){
 		for(int d=0; d<dofs1; d++){
-			resArray_block1[nodeList_block1[i]*dofs1+d] += rhsVec[i*dofs1+d];
+			resArray_block1[nodeList_block1[i]*dofs1+d] += (*rhsVec)[i*dofs1+d];
         }
 	}
 	int offset = nodeList_block1.size()*dofs1;
 
 	for(int i=0; i < nodeList_block2.size(); i++){
 		for(int d=0; d<dofs2; d++)
-			resArray_block2[nodeList_block2[i]*dofs2+d] += rhsVec[i*dofs2+d+offset];
+			resArray_block2[nodeList_block2[i]*dofs2+d] += (*rhsVec)[i*dofs2+d+offset];
 	}
 
 }

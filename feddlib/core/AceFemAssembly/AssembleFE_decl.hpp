@@ -102,7 +102,7 @@ namespace FEDD {
          \brief Get the currently assembled right hand side vector.
          \return the element right hand side vector
         */
-        vec_dbl_Type getRHS(){return rhsVec_;};
+        vec_dbl_ptr_Type getRHS(){return rhsVec_;};
 
         //virtual void assembleMass(MatrixPtr_Type &A) =0;
 
@@ -126,7 +126,7 @@ namespace FEDD {
          \brief This function is called every time the FEDDLib proceeds from one to the next time step. The size of the time step will always be provided as input.
          @param[in] dt Timestepping length
         */
-        void advanceInTime(double dt);
+        virtual void advanceInTime(double dt);
         /*!
          \brief Get the time state of the object.
          \return the timestep
@@ -155,7 +155,7 @@ namespace FEDD {
          \brief Get the current local solution vector.
          \return the solution vector.
         */
-        vec_dbl_Type getSolution();
+        vec_dbl_ptr_Type getSolution();
 
         /*!
          \brief This function is called in the beginning of each Newton step before actually assmblying anything.
@@ -218,7 +218,7 @@ namespace FEDD {
 		SmallMatrixPtr_Type jacobian_;
    		SmallMatrixPtr_Type jacobianBlock_;
 
-		vec_dbl_Type rhsVec_;
+		vec_dbl_ptr_Type rhsVec_;
 
         RhsFunc_Type rhsFunc_;
 
@@ -234,9 +234,8 @@ namespace FEDD {
         int newtonStep_ ;
         ParameterListPtr_Type paramsMaterial_;
         ParameterListPtr_Type params_;
-        vec_dbl_Type solution_ ;
+        vec_dbl_ptr_Type solution_ ;
         double timeIncrement_;
-        bool advancedInTime_=false; // tells you if you just advanced time step
 
         friend class AssembleFEFactory<SC,LO,GO,NO>;
     };

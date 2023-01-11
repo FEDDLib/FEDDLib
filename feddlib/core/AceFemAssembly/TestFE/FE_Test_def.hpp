@@ -156,7 +156,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyNonLinElas(int dim,
 	vec_dbl_Type solution(0);
 	vec_dbl_Type solution_d;
 
-	vec_dbl_Type rhsVec;
+	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
 	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
@@ -383,7 +383,7 @@ void FE_Test<SC,LO,GO,NO>::assemblyRHS(int dim,
     for (UN T=0; T<assemblyFEElements_.size(); T++) {
         assemblyFEElements_[T]->addRHSFunc(func);
         assemblyFEElements_[T]->assembleRHS();
-        vec_dbl_Type elementVec =  assemblyFEElements_[T]->getRHS();
+        vec_dbl_ptr_Type elementVec =  assemblyFEElements_[T]->getRHS();
         addFeMv(a, elementVec, elements->getElement(T),1); // if they are both multivectors its actually super simple! Import entries and add
     }
 }
@@ -427,7 +427,7 @@ void FE_Test<SC,LO,GO,NO>::addFeMatrix(MatrixPtr_Type &A, SmallMatrixPtr_Type el
 */
 
 template <class SC, class LO, class GO, class NO>
-void FE_Test<SC,LO,GO,NO>::addFeMv(MultiVectorPtr_Type &res, vec_dbl_Type rhsVec, FiniteElement elementBlock, int dofs){
+void FE_Test<SC,LO,GO,NO>::addFeMv(MultiVectorPtr_Type &res, vec_dbl_ptr_Type rhsVec, FiniteElement elementBlock, int dofs){
 
     Teuchos::ArrayRCP<SC>  resArray = res->getDataNonConst(0);
 
@@ -435,7 +435,7 @@ void FE_Test<SC,LO,GO,NO>::addFeMv(MultiVectorPtr_Type &res, vec_dbl_Type rhsVec
 
 	for(int i=0; i< nodeList.size() ; i++){
 		for(int d=0; d<dofs; d++)
-			resArray[nodeList[i]*dofs+d] += rhsVec[i*dofs+d];
+			resArray[nodeList[i]*dofs+d] += (*rhsVec)[i*dofs+d];
 	}
 
 }

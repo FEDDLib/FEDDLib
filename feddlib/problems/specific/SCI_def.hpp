@@ -28,7 +28,7 @@ materialModel_( parameterListStructure->sublist("Parameter").get("Material model
 {
     //this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
 
-    //this->initNOXParameters();
+    this->initNOXParameters();
     counterP = 0;
     
     //std::string linearization = parameterListSCI->sublist("General").get("Linearization","FixedPoint");
@@ -66,6 +66,8 @@ materialModel_( parameterListStructure->sublist("Parameter").get("Material model
     loadStepping_ =    parameterListSCI->sublist("Parameter").get("Load Stepping",false);
 
     this->info();
+
+    this->verbose_ =true;
 }
 
 
@@ -244,20 +246,14 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             //cout << "###### Back in assemble ######## " << endl;
 
             this->setFromPartialVectorsInit();
-            //std::cout << " Step 1 " << std::endl;
-
 
             MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
             c_rep_->importFromVector(c, true);
-           //std::cout << " Step 2 " << std::endl;
 
             MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
             d_rep_->importFromVector(d, true); 
         
-            // std::cout << " Step 3 " << std::endl;
-
             this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
-             //std::cout << " Step 4 " << std::endl;
             if(couplingType_ == "explicitAceGEN"){
                 B->resumeFill();
                 B->scale(0.0);
@@ -388,7 +384,7 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
         else if( couplingType_ == "implicit" || couplingType_ == "explicitAceGEN"){
 
             if(this->verbose_)
-                cout << " Assemble Newton for imlicit SCI Coupling " << endl;
+                cout << " Assemble Newton for implicit SCI Coupling " << endl;
             // Maybe nothing should happen here as there are no constant matrices
             this->system_.reset(new BlockMatrix_Type(2));
 
@@ -409,17 +405,6 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             d_rep_->importFromVector(d, true); 
 
 	        this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2,1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
-
-            if(couplingType_ == "explicitAceGEN"){
-                B->resumeFill();
-                B->scale(0.0);
-                B->fillComplete();
-
-                BT->resumeFill();
-                BT->scale(0.0);
-                BT->fillComplete();
-
-            } 
         }                    
 
         
@@ -488,15 +473,14 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     
 
     }
-    Teuchos::Array<SC> norm_d(1); 
+    /*Teuchos::Array<SC> norm_d(1); 
     Teuchos::Array<SC> norm_c(1); 
 
-
     this->residualVec_->getBlock(0)->normInf(norm_d);
-    this->residualVec_->getBlock(1)->normInf(norm_c);
-    if(this->verbose_)
-        cout << "###### Residual Inf-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
-
+    this->residualVec_->getBlock(1)->normInf(norm_c);*/
+   // if(this->verbose_)
+   //     cout << "###### Residual Inf-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
+    
    // might also be called in the sub calculateNonLinResidualVec() methods which where used above
    /* if (type == "reverse")
         this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
@@ -908,6 +892,8 @@ template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateTime() const
 {
     timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
+    if(couplingType_ == "implicit")
+         this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_prev_);
 }
 
 

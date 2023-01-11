@@ -49,6 +49,8 @@ class AssembleFEAceDeformDiffu2 : public AssembleFEBlock<SC,LO,GO,NO> {
 	    */
 		virtual void assembleJacobianBlock(LO i){};
 
+		virtual void advanceInTime(double dt);
+
 
     protected:
         AssembleFEAceDeformDiffu2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);
@@ -138,6 +140,7 @@ class AssembleFEAceDeformDiffu2 : public AssembleFEBlock<SC,LO,GO,NO> {
 
 		int iCode_; // Integration Code
 		vec_dbl_Type historyUpdated_;
+		vec_dbl_Type history_;
 
 		vec_dbl_Type solutionC_n_;
 		vec_dbl_Type solutionC_n1_; 
