@@ -8,7 +8,10 @@
 
 int main()
 {
-    double positions[] = {0.0, 0.5, 0.5, 0.5, 0.5, 1., 0.5, 0., 0.5, 0.5, 1., 0.5, 0.25, 0.5, 0.75, 0.5, 0.25, 0.75, 0.25, 0.25, 0.5, 0.25, 0.75, 0.5, 0.5, 0.75, 0.75, 0.5, 0.5, 0.5};
+
+
+    double positions[] = {0. , 0. ,0., 1., 0., 0., 0., 1., 0., 0., 0., 1., 0.5, 0., 0., 0.5, 0.5, 0., 0., 0.5, 0., 0., 0., 0.5, 0.5, 0., 0.5, 0., 0.5, 0.5};
+    //{0.0, 0.5, 0.5, 0.5, 0.5, 1., 0.5, 0., 0.5, 0.5, 1., 0.5, 0.25, 0.5, 0.75, 0.5, 0.25, 0.75, 0.25, 0.25, 0.5, 0.25, 0.75, 0.5, 0.5, 0.75, 0.75, 0.5, 0.5, 0.5};
     double displacements[] = {0.1, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     // find number of entries in positions
     int n1 = sizeof(positions) / sizeof(positions[0]);
@@ -24,7 +27,6 @@ int main()
     //     printf("%s\n", a[i]);
     //     i++;
     // }
-    for(int i=0; i< 2 ; i++){
     double concentrations[] = {0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double rates[] = {0.0, 0.5, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double accelerations[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -40,22 +42,27 @@ int main()
     double subIterationTolerance = 1e-7;
     int integrationCode = 18;
     double historyUpdated[] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0};
+           
+        
     double **stiffnessMatrixKuu = (double **)malloc(30 * sizeof(double *));
     for (int i = 0; i < 30; i++)
         stiffnessMatrixKuu[i] = (double *)malloc(30 * sizeof(double));
-        
         
     double **stiffnessMatrixKuc = (double **)malloc(30 * sizeof(double *));
     for (int i = 0; i < 30; i++)
         stiffnessMatrixKuc[i] = (double *)malloc(10 * sizeof(double));
         
-    double **stiffnessMatrixKcc = (double **)malloc(10 * sizeof(double *));
-    for (int i = 0; i < 10; i++)
-        stiffnessMatrixKcc[i] = (double *)malloc(10 * sizeof(double));
-        
     double **stiffnessMatrixKcu = (double **)malloc(10 * sizeof(double *));
     for (int i = 0; i < 10; i++)
         stiffnessMatrixKcu[i] = (double *)malloc(30 * sizeof(double));
+        
+    double **stiffnessMatrixKcc = (double **)malloc(10 * sizeof(double *));
+    for (int i = 0; i < 10; i++)
+        stiffnessMatrixKcc[i] = (double *)malloc(10 * sizeof(double));
+
+	double **massMatrixMc = (double **)malloc(10 * sizeof(double *));
+    for (int i = 0; i < 10; i++)
+        massMatrixMc[i] = (double *)malloc(10 * sizeof(double));
         
   //  double **stiffnessMatrixKcc = (double **)malloc(10 * sizeof(double *));
    // for (int i = 0; i < 10; i++)
@@ -122,7 +129,7 @@ int main()
     }
     free(stiffnessMatrixKcc);
     free(stiffnessMatrixKcu);
-	}
+	
 
 
     return 0;

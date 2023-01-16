@@ -19,7 +19,7 @@
 namespace FEDD {
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class AssembleFEAceDeformDiffu2 : public AssembleFEBlock<SC,LO,GO,NO> {
+class AssembleFEAceDeformDiffu2 : public AssembleFE<SC,LO,GO,NO> {
     public:
 
         typedef Matrix<SC,LO,GO,NO> Matrix_Type;

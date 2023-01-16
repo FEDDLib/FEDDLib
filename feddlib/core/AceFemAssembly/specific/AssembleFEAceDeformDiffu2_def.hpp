@@ -15,7 +15,7 @@ namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>
 AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::AssembleFEAceDeformDiffu2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
-AssembleFEBlock<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
+AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 {
 		/*
 		fA -Fibre angle_1  							30e0, 
@@ -133,18 +133,23 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 
 	this->rhsVec_.reset( new vec_dbl_Type ( dofsElement_,0.) );
 
-//#ifdef FEDD_HAVE_ACEGENINTERFACE
+#ifdef FEDD_HAVE_ACEGENINTERFACE
 
 
 	double deltaT=this->getTimeIncrement();
 
 	double positions[30];
 	int count = 0;
-	for(int i=0;i<10;i++)
+	cout << "Positions " << endl;
+	for(int i=0;i<10;i++){
 		for(int j=0;j<3;j++){
 			positions[count] = this->getNodesRefConfig()[i][j];
 			count++;
+			cout << positions[count-1] << " ";
+		}
 	}
+	cout << endl;
+
 	double displacements[30];
 	for(int i = 0; i < 30; i++)
 	{
@@ -198,8 +203,8 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 	getResiduumVectorRint(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, &historyUpdated[0], residuumRint);
     
 	for(int i=0; i< 30 ; i++){
-		//if(fabs(residuumRint[i]) > 1e5)
-		//		cout << " !!! Sus entry ResInt " << residuumRint[i] << endl; 
+		if(fabs(residuumRint[i]) > 1e5)
+				cout << " !!! Sus entry ResInt " << residuumRint[i] << endl; 
 		(*this->rhsVec_)[i] = residuumRint[i];
 	
 	}
@@ -215,8 +220,8 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
     printf("\n");*/
 
 	for(int i=0; i< 10 ; i++){
-		//if(fabs(residuumRc[i]) > 1e5)
-		//		cout << " !!! Sus entry ResC " << residuumRc[i] << endl; 
+		if(fabs(residuumRc[i]) > 1e5)
+				cout << " !!! Sus entry ResC " << residuumRc[i] << endl; 
 		(*this->rhsVec_)[i+30] = residuumRc[i];
 	}
 	//cout << " ###### " << endl;
@@ -225,7 +230,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 	free(residuumRc);
 
 	
-//#endif
+#endif
 
 }
 
@@ -253,7 +258,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 	std::vector<double> deltat(1);
 	deltat[0]=this->getTimeIncrement();
 	
-//#ifdef FEDD_HAVE_ACEGENINTERFACE
+#ifdef FEDD_HAVE_ACEGENINTERFACE
  	double **stiffnessMatrixKuu = (double **)malloc(30 * sizeof(double *));
     for (int i = 0; i < 30; i++)
         stiffnessMatrixKuu[i] = (double *)malloc(30 * sizeof(double));
@@ -419,7 +424,9 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
     free(stiffnessMatrixKcc);
     free(massMatrixMc);
 
-//#endif
+	elementMatrix->print();
+
+#endif
 
 	
 }
