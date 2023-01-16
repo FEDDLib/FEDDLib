@@ -13,8 +13,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fsiArteryBenchmark
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_fsiArteryBenchmark
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES fluidBenchmark3.mesh structureBenchmark3.mesh 
+    SOURCE_FILES fluidBenchmark2.mesh structureBenchmark2.mesh 
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES fluidBenchmark3.mesh structureBenchmark3.mesh 
+	DEST_FILES fluidBenchmark2.mesh structureBenchmark2.mesh 
 	EXEDEPS fsi_arteryBenchmark
 )

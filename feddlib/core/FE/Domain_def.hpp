@@ -766,10 +766,10 @@ void Domain<SC,LO,GO,NO>::buildInterfaceMaps()
     
     MapConstPtr_Type mapUni = this->getMapUnique();
     vec_int_ptr_Type flagPointsUni = this->getBCFlagUnique();
-    vec_GO_Type vecGlobalInterfaceID;
-    vec_GO_Type vecOtherGlobalInterfaceID;
-    vec_GO_Type vecInterfaceID;
-    vec_int_Type vecInterfaceFlag;
+    vec_GO_Type vecGlobalInterfaceID(0);
+    vec_GO_Type vecOtherGlobalInterfaceID(0);
+    vec_GO_Type vecInterfaceID(0);
+    vec_int_Type vecInterfaceFlag(0);
     LO localID = 0;
 
     for(int i = 0; i < indicesMatchedGlobalSerial->size(); i++) // Schleife ueber jede flag

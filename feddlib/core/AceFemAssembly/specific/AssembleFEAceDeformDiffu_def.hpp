@@ -36,7 +36,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 template <class SC, class LO, class GO, class NO>
 void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleJacobian() {
 
-    SmallMatrixPtr_Type elementMatrix = Teuchos::rcp( new SmallMatrix_Type(dofsElement_));
+    SmallMatrixPtr_Type elementMatrix = Teuchos::rcp( new SmallMatrix_Type(dofsElement_,0.));
 
     assembleDeformationDiffusionNeoHook(elementMatrix);
 
