@@ -424,7 +424,6 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
     free(stiffnessMatrixKcc);
     free(massMatrixMc);
 
-	elementMatrix->print();
 
 #endif
 
