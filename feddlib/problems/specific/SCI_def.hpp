@@ -67,7 +67,6 @@ materialModel_( parameterListStructure->sublist("Parameter").get("Material model
 
     this->info();
 
-    this->verbose_ =true;
 }
 
 
@@ -419,7 +418,7 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     //this->residualVec_->addBlock( this->problemChem_->getResidualVector()->getBlockNonConst(0) , 0);
     // we need to account for the coupling in the residuals
     if(this->verbose_)
-        cout << " Calculate Nonlinear Residual Vec in SCI_def with " << couplingType_  << " coupling "<<endl;
+        cout << " Calculate Nonlinear Residual Vec in SCI_def with " << couplingType_  << " coupling "<< endl;
 
     if(couplingType_ == "explicit"){
 
@@ -451,7 +450,7 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Rhs", true/*call fillComplete*/);
         this->residualVec_->getBlockNonConst(0)->scale(-1.0);
         //this->residualVec_->getBlockNonConst(1)->scale(0.0);
-
+        this->residualVec_->print();
         if (!type.compare("standard")){
             this->residualVec_->getBlockNonConst(0)->update(-1.,*this->rhs_->getBlockNonConst(0),1.);
             //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
@@ -473,21 +472,21 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     
 
     }
-    /*Teuchos::Array<SC> norm_d(1); 
+    Teuchos::Array<SC> norm_d(1); 
     Teuchos::Array<SC> norm_c(1); 
 
     this->residualVec_->getBlock(0)->normInf(norm_d);
-    this->residualVec_->getBlock(1)->normInf(norm_c);*/
-   // if(this->verbose_)
-   //     cout << "###### Residual Inf-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
+    this->residualVec_->getBlock(1)->normInf(norm_c);
+    if(this->verbose_)
+        cout << "###### Residual Inf-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
     
    // might also be called in the sub calculateNonLinResidualVec() methods which where used above
-   /* if (type == "reverse")
+   if (type == "reverse")
         this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
     else if (type == "standard"){
         this->residualVec_->scale(-1.);
         this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
-    }*/
+    }
 
 }
 
@@ -539,7 +538,7 @@ template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListChem, ParameterListPtr_Type parameterListStructure) const
 {
     if(this->verbose_)
-        std::cout << "-- Setup SCI Sub-TimeProblems \n" << endl;
+        std::cout << "-- Setup SCI Sub-TimeProblems " << std::endl;
 
     double dt = timeSteppingTool_->get_dt();
     double beta = timeSteppingTool_->get_beta();
@@ -552,15 +551,15 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
         sizeStructure = this->problemStructureNonLin_->getSystem()->size();
     
     if(this->verbose_)
-        std::cout << "-- Setup SCI Sub-TimeProblem for Chem \n" << endl;
+        std::cout << "-- Setup SCI Sub-TimeProblem for Chem " << std::endl;
 
     problemTimeChem_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemChem_, this->comm_));
         
     if(this->verbose_)
-        std::cout << "-- done \n" << endl;
+        std::cout << "-- done " << endl;
 
     if(this->verbose_)
-        std::cout << "-- Setup SCI Sub-TimeProblem for Elasticity \n" << endl;
+        std::cout << "-- Setup SCI Sub-TimeProblem for Elasticity " << endl;
 
     if (materialModel_=="linear")
         problemTimeStructure_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemStructure_, this->comm_));
@@ -568,7 +567,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
         problemTimeStructure_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemStructureNonLin_, this->comm_));
 
     if(this->verbose_)
-        std::cout << "-- done \n" << endl;
+        std::cout << "-- done " << endl;
 
     // ######################
     // Chem: Mass-, Problem, SourceTerm Koeffizienten
@@ -684,10 +683,10 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
         massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         // 1 = Chem
         this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 1, true );
-        massmatrix->resumeFill();
         
-        massmatrix->fillComplete( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->problemTimeChem_->getDomain(0)->getMapUnique() );
-
+       // massmatrix->resumeFill();
+        
+       // massmatrix->fillComplete( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->problemTimeChem_->getDomain(0)->getMapUnique() );
         this->problemTimeChem_->systemMass_->addBlock(massmatrix, 0, 0);
     }
 }

@@ -995,7 +995,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
         MatrixPtr_Type massmatrix;
         sci->setChemMassmatrix( massmatrix );
-        if(couplingType=="explicit")
+        massmatrix->print();
+        if(couplingType=="explicit")  
             this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
 
         // RHS nach BDF2
@@ -1025,7 +1026,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
         //massCoeffSCI.print();
         //problemCoeffSCI.print();
-                
+        problemTime_->getSystem()->getBlock(1,1)->print();
         if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
             nlSolver.solve(*this->problemTime_, time, its);
         else{

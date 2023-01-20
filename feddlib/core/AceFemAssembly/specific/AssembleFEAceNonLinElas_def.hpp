@@ -166,7 +166,8 @@ void AssembleFEAceNonLinElas<SC,LO,GO,NO>::assembleRHS() {
 	skr2(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
 	// std::cout << "[DEBUG] SKR-Rhs Call successful!" << std::endl;
 
-	(*this->rhsVec_) = p;
+	for(int i=0; i< p.size(); i++)
+		(*this->rhsVec_)[i] = p[i];
 }
 template <class SC, class LO, class GO, class NO>
 void AssembleFEAceNonLinElas<SC,LO,GO,NO>:: updateParameter(string type, double value){

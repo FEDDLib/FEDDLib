@@ -111,19 +111,18 @@ void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
         for (int j=0; j<size; j++) {
             if ( tmpSystem->blockExists(i,j) ) {
                 LO maxNumEntriesPerRow = tmpSystem->getBlock(i,j)->getGlobalMaxNumRowEntries();
-                MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( tmpSystem->getBlock(i,j)->getMap(), maxNumEntriesPerRow ) );
+                MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( tmpSystem->getBlock(i,j)->getMap(), maxNumEntriesPerRow *2) );
                 
                 systemCombined_->addBlock( matrix, i, j );
 
             }
             else if (systemMass_->blockExists(i,j)) {
                 LO maxNumEntriesPerRow = systemMass_->getBlock(i,j)->getGlobalMaxNumRowEntries();
-                MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( systemMass_->getBlock(i,j)->getMap(), maxNumEntriesPerRow ) );
+                MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( systemMass_->getBlock(i,j)->getMap(), maxNumEntriesPerRow*2) );
                 systemCombined_->addBlock( matrix, i, j );
             }
         }
     }
-
     SmallMatrix<SC> ones( size , Teuchos::ScalarTraits<SC>::one());
     SmallMatrix<SC> zeros( size , Teuchos::ScalarTraits<SC>::zero());
     systemMass_->addMatrix( massParameters_, systemCombined_, zeros );
