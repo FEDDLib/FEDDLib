@@ -230,8 +230,9 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 
 	//cout << " ###### " << endl;
 
-	free(residuumRint);
 	free(residuumRc);
+	free(residuumRint);
+	
 
 	
 #endif
@@ -263,25 +264,50 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 	deltat[0]=this->getTimeIncrement();
 	
 #ifdef FEDD_HAVE_ACEGENINTERFACE
- 	double **stiffnessMatrixKuu = (double **)calloc(30, sizeof(double *));
-    for (int i = 0; i < 30; i++)
-        stiffnessMatrixKuu[i] = (double *)calloc(30, sizeof(double));
-        
-    double **stiffnessMatrixKuc = (double **)calloc(30, sizeof(double *));
-    for (int i = 0; i < 30; i++)
-        stiffnessMatrixKuc[i] = (double *)calloc(10, sizeof(double));
-        
-    double **stiffnessMatrixKcu = (double **)calloc(10, sizeof(double *));
-    for (int i = 0; i < 10; i++)
-        stiffnessMatrixKcu[i] = (double *)calloc(30, sizeof(double));
-        
-    double **stiffnessMatrixKcc = (double **)calloc(10, sizeof(double *));
-    for (int i = 0; i < 10; i++)
-        stiffnessMatrixKcc[i] = (double *)calloc(10, sizeof(double));
 
-	double **massMatrixMc = (double **)calloc(10, sizeof(double *));
-    for (int i = 0; i < 10; i++)
-        massMatrixMc[i] = (double *)calloc(10, sizeof(double));
+	double *stiffnessMatrixKuuFlat = (double *) malloc(30*30*sizeof(double));
+	double **stiffnessMatrixKuu = (double**) malloc(30*sizeof(double*));
+	for(int i=0;i<30;i++)
+		stiffnessMatrixKuu[i] = &stiffnessMatrixKuuFlat[30*i];
+
+	double *stiffnessMatrixKucFlat = (double *) malloc(30*10*sizeof(double));
+	double **stiffnessMatrixKuc = (double**) malloc(30*sizeof(double*));
+	for(int i=0;i<30;i++)
+		stiffnessMatrixKuc[i] = &stiffnessMatrixKucFlat[10*i];
+
+	double *stiffnessMatrixKcuFlat = (double *) malloc(10*30*sizeof(double));
+	double **stiffnessMatrixKcu = (double **) malloc(10*sizeof(double*));
+	for(int i=0;i<10;i++)
+		stiffnessMatrixKcu[i] = &stiffnessMatrixKcuFlat[30*i];
+
+	double *stiffnessMatrixKccFlat = (double *) malloc(10*10*sizeof(double));
+	double **stiffnessMatrixKcc = (double **) malloc(10*sizeof(double*));
+	for(int i=0;i<10;i++)
+		stiffnessMatrixKcc[i] = &stiffnessMatrixKccFlat[10*i];
+
+	double *massMatrixMcFlat = (double *) malloc(10*10*sizeof(double));
+	double **massMatrixMc = (double **) malloc(10*sizeof(double*));
+	for(int i=0;i<10;i++)
+		massMatrixMc[i] = &massMatrixMcFlat[10*i];
+ 	// double **stiffnessMatrixKuu = (double **)malloc(30 * sizeof(double *));
+    // for (int i = 0; i < 30; i++)
+    //     stiffnessMatrixKuu[i] = (double *)malloc(30 * sizeof(double));
+        
+    // double **stiffnessMatrixKuc = (double **)malloc(30 * sizeof(double *));
+    // for (int i = 0; i < 30; i++)
+    //     stiffnessMatrixKuc[i] = (double *)malloc(10 * sizeof(double));
+        
+    // double **stiffnessMatrixKcu = (double **)malloc(10 * sizeof(double *));
+    // for (int i = 0; i < 10; i++)
+    //     stiffnessMatrixKcu[i] = (double *)malloc(30 * sizeof(double));
+        
+    // double **stiffnessMatrixKcc = (double **)malloc(10 * sizeof(double *));
+    // for (int i = 0; i < 10; i++)
+    //     stiffnessMatrixKcc[i] = (double *)malloc(10 * sizeof(double));
+
+	// double **massMatrixMc = (double **)malloc(10 * sizeof(double *));
+    // for (int i = 0; i < 10; i++)
+    //     massMatrixMc[i] = (double *)malloc(10 * sizeof(double));
 
 	double positions[30];
 	int count = 0;
@@ -411,23 +437,31 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 
 
 //  free pointer
-    for (int i = 0; i < 30; i++)
-    {
-        free(stiffnessMatrixKuu[i]);
-		free(stiffnessMatrixKuc[i]);
-    }
-	for(int i=0; i<10; i++){
-        free(stiffnessMatrixKcu[i]);
-        free(stiffnessMatrixKcc[i]);
-		free(massMatrixMc[i]);
+    // for (int i = 0; i < 30; i++)
+    // {
+    //     free(stiffnessMatrixKuu[i]);
+	// 	free(stiffnessMatrixKuc[i]);
+    // }
+	// for(int i=0; i<10; i++){
+    //     free(stiffnessMatrixKcu[i]);
+    //     free(stiffnessMatrixKcc[i]);
+	// 	free(massMatrixMc[i]);
 
-	}
+	// }
 
-    free(stiffnessMatrixKuu);
+	free(massMatrixMc);
+	free(massMatrixMcFlat);
+	free(stiffnessMatrixKcc);
+	free(stiffnessMatrixKccFlat);
 	free(stiffnessMatrixKcu);
-    free(stiffnessMatrixKuc);
-    free(stiffnessMatrixKcc);
-    free(massMatrixMc);
+	free(stiffnessMatrixKcuFlat);
+	free(stiffnessMatrixKuc);
+	free(stiffnessMatrixKucFlat);
+    free(stiffnessMatrixKuu);
+    free(stiffnessMatrixKuuFlat);
+	
+    
+    
 
 
 #endif
