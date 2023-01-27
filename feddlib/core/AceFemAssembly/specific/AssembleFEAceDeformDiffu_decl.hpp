@@ -42,6 +42,8 @@ class AssembleFEAceDeformDiffu : public AssembleFE<SC,LO,GO,NO> {
         */
         virtual void assembleJacobianBlock(LO i) {};
 
+		virtual void advanceInTime( double dt);
+
     protected:
         AssembleFEAceDeformDiffu(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);
 
@@ -71,6 +73,8 @@ class AssembleFEAceDeformDiffu : public AssembleFE<SC,LO,GO,NO> {
 		int dofOrdering_; // Order of DOFs: 
 						  // dofOrdering = 1 -> 'u1 v1 w1 c1 u2 v2 w2 c2 ... un vn wn cn'
 						  // dofOrdering = 2 -> 'u1 v1 w1 u2 v2 w2 ... un vn wn c1 c2 c3 ... cn'
+		vec_dbl_Type solution_n_;
+		vec_dbl_Type solution_n1_; 				  
 };
 
 }

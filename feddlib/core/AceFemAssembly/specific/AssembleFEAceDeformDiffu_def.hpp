@@ -31,6 +31,9 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 
 	dofsElement_ = dofsSolid_*numNodesSolid_ + dofsChem_*numNodesChem_; // "Dimension of return matrix"
 
+	solution_n_.resize(60,0.);
+	solution_n1_.resize(60,0.);
+
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -39,8 +42,20 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleJacobian() {
     SmallMatrixPtr_Type elementMatrix = Teuchos::rcp( new SmallMatrix_Type(dofsElement_,0.));
 
     assembleDeformationDiffusionNeoHook(elementMatrix);
-
+	//elementMatrix->print();
     this->jacobian_ = elementMatrix;
+}
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::advanceInTime( double dt){
+
+	//cout << " advanced in time for this element " << endl;
+	this->timeIncrement_ = dt;
+	this->timeStep_ = this->timeStep_ + dt;
+
+	for(int i=0; i< 60 ; i++)
+		solution_n_[i]=solution_n1_[i]; // this is not the LAST solution of newton iterations. Keep in mind for later.
+	
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -73,18 +88,18 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 	{
 		for(int i = 0; i < 40; i++)
 			if((i+1)%4 == 0)
-				ul[27 + 3*(i+1)/4] = (*this->solution_)[i];
+				solution_n1_[27 + 3*(i+1)/4] = (*this->solution_)[i];
 			else
-				ul[i - ((i+1) - (i+1)%4)/4] = (*this->solution_)[i];
+				solution_n1_[i - ((i+1) - (i+1)%4)/4] = (*this->solution_)[i];
 	}
 	else if(dofOrdering_ == 2)
 	{
 		for(int i = 0; i < 40; i++)
 		{
 			if(i<30)
-				ul[i]=(*this->solution_)[i];
+				solution_n1_[i]=(*this->solution_)[i];
 			else
-				ul[30 + 3*(i-30)] = (*this->solution_)[i];
+				solution_n1_[30 + 3*(i-30)] = (*this->solution_)[i];
 		}
 	}
 	else
@@ -101,7 +116,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleRHS(){
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat[0]);
+	skr_DDNH(&v[0],&d[0],&solution_n1_[0],&solution_n_[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat[0]);
 
 	if(dofOrdering_ == 1)
 	{
@@ -157,18 +172,18 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	{
 		for(int i = 0; i < 40; i++)
 			if((i+1)%4 == 0)
-				ul[27 + 3*(i+1)/4] = (*this->solution_)[i];
+				solution_n1_[27 + 3*(i+1)/4] = (*this->solution_)[i];
 			else
-				ul[i - ((i+1) - (i+1)%4)/4] = (*this->solution_)[i];
+				solution_n1_[i - ((i+1) - (i+1)%4)/4] = (*this->solution_)[i];
 	}
 	else if(dofOrdering_ == 2)
 	{
 		for(int i = 0; i < 40; i++)
 		{
 			if(i<30)
-				ul[i]=(*this->solution_)[i];
+				solution_n1_[i]=(*this->solution_)[i];
 			else
-				ul[30 + 3*(i-30)] = (*this->solution_)[i];
+				solution_n1_[30 + 3*(i-30)] = (*this->solution_)[i];
 		}
 	}
 	else
@@ -185,7 +200,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	for(int i=0;i<p.size();i++)
 		p[i]=0.0;
 
-	skr_DDNH(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat[0]);
+	skr_DDNH(&v[0],&d[0],&solution_n1_[0],&solution_n1_[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0],&deltat[0]);
 		
 	if(dofOrdering_ == 2)
 	{
@@ -203,7 +218,8 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 
 		for (UN i=0; i < this->dofsElement_; i++) {
 			for (UN j=0; j < this->dofsElement_; j++) {
-				(*elementMatrix)[i][j] = -s_temp[40*j+i]; // Rolling into a matrix using column major (m*j+i)
+				if(fabs(s_temp[40*j+i]) > 1e-14)
+					(*elementMatrix)[i][j] = -s_temp[40*j+i]; // Rolling into a matrix using column major (m*j+i)
 			}
 		}
 
@@ -250,6 +266,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	}
 	else
 		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown DOF ordering sequence. Known identifiers: 1 and 2. Check parameters file!");
+
 }
 
 // Need to modify the above based on dof ordering flag selected

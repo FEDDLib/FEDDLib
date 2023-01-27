@@ -79,7 +79,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	c50_ = this->params_->sublist("Parameter Solid").get("C50",0.5e0);
 	d0_ = this->params_->sublist("Parameter Diffusion").get("D0",1.0);
 	m_ = this->params_->sublist("Parameter Solid").get("m",0.e0);
-	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",1000.0e0);
+	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",10.0e0);
 	rho_ = this->params_->sublist("Parameter Solid").get("Rho",1.e0);
 
 	iCode_ = this->params_->sublist("Parameter Solid").get("Intergration Code",18);
@@ -159,18 +159,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 	double history[48];// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
     for(int i = 0; i < history_.size(); i++)
 		history[i] = history_[i];
-
-	//if (integrationCode==19)
-    //   history = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 60 values, 12 variables, 5 gausspoints
-	
-    // find number of entries in positions
-    //int n1 = sizeof(positions) / sizeof(positions[0]);
-    // find number of entries in displacements
-    //int n2 = sizeof(displacements) / sizeof(displacements[0]);
-    // printf("n1=%d\n", n1);
-    // printf("n2=%d\n", n2);
-    //char **a = getDataNames();
-    
+   
    
     double concentrations[10];
     for(int i = 0; i < 10; i++)
@@ -187,8 +176,9 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 							p1_,p3_,c50_,d0_,m_,startTime_,rho_};
 
     double rates[10];
+
 	for(int i=0; i<10 ; i++){
-		rates[i] =(solutionC_n1_[i]-solutionC_n_[i])/deltaT;
+		rates[i] =(solutionC_n1_[i]-solutionC_n_[i])/deltaT; //-solutionC_n_[i](solutionC_n1_[i]-solutionC_n_[i])/deltaT;//
 	}
 
     
@@ -200,38 +190,25 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
  	
 	double *residuumRint = (double *)calloc(30, sizeof(double));
 
+	double *residuumRDyn = (double *)calloc(30, sizeof(double));
+
 	getResiduumVectorRint(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, &historyUpdated[0], residuumRint);
-    //cout << "Res Int " << endl;
+    
+	getResiduumVectorRdyn(&positions[0], &displacements[0], &concentrations[0], &accelerations[0],&rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, &historyUpdated[0], residuumRDyn);
 	for(int i=0; i< 30 ; i++){
-		//if(fabs(residuumRint[i]) > 1e5)
-		//		cout << " !!! Sus entry ResInt " << residuumRint[i] << endl; 
-		(*this->rhsVec_)[i] = residuumRint[i];
-		//cout << (*this->rhsVec_)[i] << " ";	
+		(*this->rhsVec_)[i] = residuumRint[i]; //+residuumRDyn[i];
 	}
 	double *residuumRc = (double *)calloc(10, sizeof(double));
 	getResiduumVectorRc(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, &historyUpdated[0], residuumRc);
-	
 
- 	/*printf("Residuum");
-    for (int j = 0; j < 10; j++)
-    {
-        printf("%f ", residuumRc[j]);
-    }
-    printf("\n");*/
 
-	for(int i=0; i< 10 ; i++){
-		//if(fabs(residuumRc[i]) > 1e5)
-		//		cout << " !!! Sus entry ResC " << residuumRc[i] << endl; 
-		(*this->rhsVec_)[i+30] = 0.; //residuumRc[i];
-		//cout << (*this->rhsVec_)[i] << " ";	
-
+	for(int i=0; i< 10 ; i++){		
+		(*this->rhsVec_)[i+30] = -residuumRc[i];
 	}
-	//cout << endl;
-
-	//cout << " ###### " << endl;
 
 	free(residuumRc);
 	free(residuumRint);
+	free(residuumRDyn);
 	
 
 	
@@ -265,50 +242,31 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 	
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 
-	double *stiffnessMatrixKuuFlat = (double *) malloc(30*30*sizeof(double));
-	double **stiffnessMatrixKuu = (double**) malloc(30*sizeof(double*));
+	double *stiffnessMatrixKuuFlat = (double *) calloc(30*30,sizeof(double));
+	double **stiffnessMatrixKuu = (double**) calloc(30,sizeof(double*));
 	for(int i=0;i<30;i++)
 		stiffnessMatrixKuu[i] = &stiffnessMatrixKuuFlat[30*i];
 
-	double *stiffnessMatrixKucFlat = (double *) malloc(30*10*sizeof(double));
-	double **stiffnessMatrixKuc = (double**) malloc(30*sizeof(double*));
+	double *stiffnessMatrixKucFlat = (double *) calloc(30*10,sizeof(double));
+	double **stiffnessMatrixKuc = (double**) calloc(30,sizeof(double*));
 	for(int i=0;i<30;i++)
 		stiffnessMatrixKuc[i] = &stiffnessMatrixKucFlat[10*i];
 
-	double *stiffnessMatrixKcuFlat = (double *) malloc(10*30*sizeof(double));
-	double **stiffnessMatrixKcu = (double **) malloc(10*sizeof(double*));
+	double *stiffnessMatrixKcuFlat = (double *) calloc(10*30,sizeof(double));
+	double **stiffnessMatrixKcu = (double **) calloc(10,sizeof(double*));
 	for(int i=0;i<10;i++)
 		stiffnessMatrixKcu[i] = &stiffnessMatrixKcuFlat[30*i];
 
-	double *stiffnessMatrixKccFlat = (double *) malloc(10*10*sizeof(double));
-	double **stiffnessMatrixKcc = (double **) malloc(10*sizeof(double*));
+	double *stiffnessMatrixKccFlat = (double *) calloc(10*10,sizeof(double));
+	double **stiffnessMatrixKcc = (double **) calloc(10,sizeof(double*));
 	for(int i=0;i<10;i++)
 		stiffnessMatrixKcc[i] = &stiffnessMatrixKccFlat[10*i];
 
-	double *massMatrixMcFlat = (double *) malloc(10*10*sizeof(double));
-	double **massMatrixMc = (double **) malloc(10*sizeof(double*));
+	double *massMatrixMcFlat = (double *) calloc(10*10,sizeof(double));
+	double **massMatrixMc = (double **) calloc(10,sizeof(double*));
 	for(int i=0;i<10;i++)
 		massMatrixMc[i] = &massMatrixMcFlat[10*i];
- 	// double **stiffnessMatrixKuu = (double **)malloc(30 * sizeof(double *));
-    // for (int i = 0; i < 30; i++)
-    //     stiffnessMatrixKuu[i] = (double *)malloc(30 * sizeof(double));
-        
-    // double **stiffnessMatrixKuc = (double **)malloc(30 * sizeof(double *));
-    // for (int i = 0; i < 30; i++)
-    //     stiffnessMatrixKuc[i] = (double *)malloc(10 * sizeof(double));
-        
-    // double **stiffnessMatrixKcu = (double **)malloc(10 * sizeof(double *));
-    // for (int i = 0; i < 10; i++)
-    //     stiffnessMatrixKcu[i] = (double *)malloc(30 * sizeof(double));
-        
-    // double **stiffnessMatrixKcc = (double **)malloc(10 * sizeof(double *));
-    // for (int i = 0; i < 10; i++)
-    //     stiffnessMatrixKcc[i] = (double *)malloc(10 * sizeof(double));
-
-	// double **massMatrixMc = (double **)malloc(10 * sizeof(double *));
-    // for (int i = 0; i < 10; i++)
-    //     massMatrixMc[i] = (double *)malloc(10 * sizeof(double));
-
+ 	
 	double positions[30];
 	int count = 0;
 	for(int i=0;i<10;i++){
@@ -326,16 +284,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
     double history[48];// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
     for(int i = 0; i < history_.size(); i++)
 		history[i] = history_[i];   //if (integrationCode==19)
-    //   history = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0,1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 60 values, 12 variables, 5 gausspoints
-  
 
-    // find number of entries in positions
-   // int n1 = sizeof(positions) / sizeof(positions[0]);
-    // find number of entries in displacements
-    //int n2 = sizeof(displacements) / sizeof(displacements[0]);
-    // printf("n1=%d\n", n1);
-    // printf("n2=%d\n", n2);
-    //char **a = getDataNames();
 
     double concentrations[10];
     for(int i = 0; i < 10; i++)
@@ -346,50 +295,27 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 
     double accelerations[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
    
-    // Print all entries in a
-   /*int i = 0;
-     while (a[i] != NULL)
-     {
-         printf("%s\n", a[i]);
-         i++;
-     }*/
-	
-
     double domainData[] = {fA_, lambdaC50_, gamma3_, lambdaBarCDotMax_, lambdaBarCDotMin_, 
 							gamma2_ , gamma1_, eta1_, ca50_, k2_, k5_, k3_, k4_, k7_ , kappaC_ , 
 							beta1_ , muA_ , alpha_, epsilon1_,epsilon2_,c1_,alpha1_,alpha2_,
 							p1_,p3_,c50_,d0_,m_,startTime_,rho_};
 
-
-	// Function to determine rates as (c_n+1 - c_n )/ dt
-    double rates[10];
+	double rates[10];
 	for(int i=0; i<10 ; i++){
-		rates[i] = (solutionC_n1_[i]-solutionC_n_[i])/deltat[0];
+		rates[i] =(solutionC_n1_[i]-solutionC_n_[i]) / deltat[0];//
 	}
+	// ##########################
 
     // history  [in] Vector of history variables [Order: LambdaBarC1, LambdaBarC2, nA1, nA2, nB1, nB2, nC1, nC2, nD1, nD2, LambdaA1, LambdaA2] (The length must be equal to number of history variables per gauss point * number of gauss points)
     
     double deltaT = this->getTimeIncrement();
     double time = this->getTimeStep();
     double subIterationTolerance = 1.e-7;
-    // integrationScheme [in] Integration code (18 for 4 point, 19 for 5 point, 40 for 14 point, 43 for 8 point)
-    
-
-	// ZEITSCHRITT 1 Loadschritt 1
- 
-
-	
+    	
     // immer speicher und wenn es konvergiert, dann zur history machen
     double historyUpdated[] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
    
    
-    // find number of entries in concentrations
-    //int n3 = sizeof(concentrations) / sizeof(concentrations[0]);
-    // find number of entries in rates
-    //int n4 = sizeof(rates) / sizeof(rates[0]);
-    // find number of entries in accelerations
-    //int n5 = sizeof(accelerations) / sizeof(accelerations[0]);
-
     getStiffnessMatrixKuu(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, &historyUpdated[0], stiffnessMatrixKuu);
 	getStiffnessMatrixKuc(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_,  stiffnessMatrixKuc);
 	getStiffnessMatrixKcu(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_,  stiffnessMatrixKcu);
@@ -400,34 +326,35 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 
 	for(int i=0; i< 30; i++){
 		for(int j=0; j<30; j++){
-			//if(fabs(stiffnessMatrixKuu[i][j]) > 1e7)
-			//	cout << " !!! Sus entry Kuu [" << i << "][" << j << "] " << stiffnessMatrixKuu[i][j] << endl; 
+			if(fabs(stiffnessMatrixKuu[i][j]) > 1e7)
+				cout << " !!! Sus entry Kuu [" << i << "][" << j << "] " << stiffnessMatrixKuu[i][j] << endl; 
 			
 			(*elementMatrix)[i][j]=-stiffnessMatrixKuu[i][j];
 		}
 	}
 	for(int i=0; i< 30; i++){
 		for(int j=0; j<10; j++){
-			//if(fabs(stiffnessMatrixKuc[i][j]) > 1e7)
-			//	cout << " !!! Sus entry Kuc [" << i << "][" << j << "] " << stiffnessMatrixKuc[i][j] << endl; 
+			if(fabs(stiffnessMatrixKuc[i][j]) > 1e7)
+				cout << " !!! Sus entry Kuc [" << i << "][" << j << "] " << stiffnessMatrixKuc[i][j] << endl; 
 			
-			(*elementMatrix)[i][j+30]=-stiffnessMatrixKuc[i][j];
+			(*elementMatrix)[i][j+30]=0.; //-stiffnessMatrixKuc[i][j];
 		}
 	}
 	for(int i=0; i< 10; i++){
 		for(int j=0; j<30; j++){
-			//if(fabs(stiffnessMatrixKcu[i][j]) > 1e7)
-			//	cout << " !!! Sus entry Kcu [" << i << "][" << j << "] " << stiffnessMatrixKcu[i][j] << endl; 
+			if(fabs(stiffnessMatrixKcu[i][j]) > 1e7)
+				cout << " !!! Sus entry Kcu [" << i << "][" << j << "] " << stiffnessMatrixKcu[i][j] << endl; 
 			
-			(*elementMatrix)[i+30][j]=-stiffnessMatrixKcu[i][j];
+			if(fabs(stiffnessMatrixKcu[i][j]) > 1e-14)
+				(*elementMatrix)[i+30][j]=0.;//-stiffnessMatrixKcu[i][j];
 		}
 	}
 	for(int i=0; i< 10; i++){
 		for(int j=0; j<10; j++){
-			//if(fabs(massMatrixMc[i][j]) > 1e5 || fabs(stiffnessMatrixKcc[i][j]) > 1e5 )
-			//	cout << " !!! Sus entry Mass [" << i << "][" << j << "] " << massMatrixMc[i][j] << " or stiff Kcc " << stiffnessMatrixKcc[i][j] << endl; 
+			if(fabs(massMatrixMc[i][j]) > 1e5 || fabs(stiffnessMatrixKcc[i][j]) > 1e5 )
+				cout << " !!! Sus entry Mass [" << i << "][" << j << "] " << massMatrixMc[i][j] << " or stiff Kcc " << stiffnessMatrixKcc[i][j] << endl; 
 			 
-			(*elementMatrix)[i+30][j+30]= -stiffnessMatrixKcc[i][j] ;//
+			(*elementMatrix)[i+30][j+30] =-stiffnessMatrixKcc[i][j] -(1./deltaT)*massMatrixMc[i][j]; //
 		}
 	}
 
@@ -435,19 +362,6 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 	for(int i=0; i< historyUpdated_.size(); i++)
 		historyUpdated_[i] = historyUpdated[i];
 
-
-//  free pointer
-    // for (int i = 0; i < 30; i++)
-    // {
-    //     free(stiffnessMatrixKuu[i]);
-	// 	free(stiffnessMatrixKuc[i]);
-    // }
-	// for(int i=0; i<10; i++){
-    //     free(stiffnessMatrixKcu[i]);
-    //     free(stiffnessMatrixKcc[i]);
-	// 	free(massMatrixMc[i]);
-
-	// }
 
 	free(massMatrixMc);
 	free(massMatrixMcFlat);

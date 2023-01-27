@@ -103,7 +103,6 @@ void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
 
     BlockMatrixPtr_Type tmpSystem = problem_->getSystem();
     int size = tmpSystem->size();
-
     systemCombined_.reset( new BlockMatrix_Type ( size ) );
 
     for (int i=0; i<size; i++) {
@@ -111,7 +110,7 @@ void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
         for (int j=0; j<size; j++) {
             if ( tmpSystem->blockExists(i,j) ) {
                 LO maxNumEntriesPerRow = tmpSystem->getBlock(i,j)->getGlobalMaxNumRowEntries();
-                MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( tmpSystem->getBlock(i,j)->getMap(), maxNumEntriesPerRow *2) );
+                MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( tmpSystem->getBlock(i,j)->getMap(), maxNumEntriesPerRow*2 ) );
                 
                 systemCombined_->addBlock( matrix, i, j );
 

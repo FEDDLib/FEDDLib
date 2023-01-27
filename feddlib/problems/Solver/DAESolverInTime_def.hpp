@@ -983,24 +983,28 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // ######################
         // Fluid-Loesung aktualisieren fuer die naechste(n) BDF2-Zeitintegration(en)
         // in diesem Zeitschritt.
+        std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
+        std::string structureModel = parameterList_->sublist("Parameter").get("Structure Model","SCI");
         {
             //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
+          if(couplingType=="explicit")
             this->problemTime_->assemble("UpdateChemInTime");
         }
         // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
         // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
         // In der ersten nichtlinearen Iteration wird bei GI also die Massematrix zweimal assembliert.
         // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
-        std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
+      
 
         MatrixPtr_Type massmatrix;
         sci->setChemMassmatrix( massmatrix );
-        massmatrix->print();
-        if(couplingType=="explicit")  
+        //massmatrix->print();
+        if(couplingType=="explicit")// || structureModel == "SCI_sophisticated")  
             this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
 
         // RHS nach BDF2
-        this->problemTime_->assemble( "ComputeChemRHSInTime" ); // hier ist massmatrix nicht relevant
+        if(couplingType=="explicit")
+            this->problemTime_->assemble( "ComputeChemRHSInTime" ); // hier ist massmatrix nicht relevant
         //this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
 
       
@@ -1026,7 +1030,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
         //massCoeffSCI.print();
         //problemCoeffSCI.print();
-        problemTime_->getSystem()->getBlock(1,1)->print();
+        //problemTime_->getSystem()->getBlock(1,1)->print();
         if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
             nlSolver.solve(*this->problemTime_, time, its);
         else{
