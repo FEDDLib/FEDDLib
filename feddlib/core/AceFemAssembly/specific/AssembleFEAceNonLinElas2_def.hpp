@@ -77,7 +77,9 @@ void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assemblyNonLinElas(SmallMatrixPtr_T
 
 	/// Writing entries in the element matrix for nodes 1,2..n , n=numNodes_
 	/// 1_x 1_y 1_z 2_x 2_y 2_z .... n_x n_y n_z 
-	
+	this->rhsVec_.reset( new vec_dbl_Type ( dofsElement_,0.) );
+
+
 	std::vector<double> v(1066); //Working vector, size defined by AceGen-FEAP
 	std::vector<double> d(2); // Material parameters
 	std::vector<double> ul(30); // The solution vector(or displacement in this case)

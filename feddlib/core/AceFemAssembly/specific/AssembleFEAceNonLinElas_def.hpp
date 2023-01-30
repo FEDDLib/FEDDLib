@@ -132,6 +132,8 @@ template <class SC, class LO, class GO, class NO>
 void AssembleFEAceNonLinElas<SC,LO,GO,NO>::assembleRHS() {
 
 	// [Efficiency] Need to know which is called first: assembleRHS() or assembleJacobian(), so that multiple calls to skr() may be avoided.
+	this->rhsVec_.reset( new vec_dbl_Type ( dofsElement_,0.) );
+
 	// Note skr() computes both elementMatrix_ and rhsVec_
 	std::vector<double> v(1060); //Working vector, size defined by AceGen-FEAP
 	std::vector<double> d(2); // Material parameters

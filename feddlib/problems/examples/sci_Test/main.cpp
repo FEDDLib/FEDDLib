@@ -125,32 +125,22 @@ void rhsYZ(double* x, double* res, double* parameters){
 void rhsArtery(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[2] = 0.;
-    double force = parameters[1];
+    double force = pow(sin(parameters[0]/30.),2)*parameters[1];
     double TRamp = 0.0;
-    //double r = sqrt(x[0]*x[0]+x[1]*x[1]);
-    
-    
-   /* if(parameters[0] <= TRamp+1e-06)
-        force = parameters[0] * force * 1./(TRamp);
-    else
-        force = parameters[1];*/
-
-        //cout << " Punkt (" << x[0] << "|" << x[1] << "|" << x[2] << ")" << endl; 
+   
     if(parameters[2]==6){
         res[0] = (x[0]-1);
         res[1] = (x[1]-1);
         double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
-        res[0] = res[0] / r2 *force;
-        res[1] = res[1] / r2 *force;
-
-        //cout << " Force x" << res[0] << " Force y " << res[1] << " r " << r << " r2 "<< r2 << endl;
-        
+        res[0] = res[0]  *force;
+        res[1] = res[1]  *force;
+       
     }
     else{
         res[0] =0.;
         res[1] =0.;
     }
-    //cout << " Force for Flag " << parameters[2] << " x " << res[0] << " y " << res[1] << " z " << res[2] << endl;
+
         
 }
 
@@ -311,7 +301,7 @@ int main(int argc, char *argv[])
         
         int volumeID=10;
         if(bcType=="Artery")
-        	volumeID = 12;
+        	volumeID = 10;
         partitionerP1.readAndPartition(volumeID);
                     
         if (!discType.compare("P2")){
@@ -458,9 +448,9 @@ int main(int argc, char *argv[])
             bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
             bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
 
-            bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X", dim);
-            bcFactory->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
-            bcFactory->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Z", dim);
+            //bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X", dim);
+            //bcFactory->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
+            //bcFactory->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Z", dim);
             
             bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_X", dim);
             bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Y", dim);
@@ -470,9 +460,9 @@ int main(int argc, char *argv[])
             bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
             bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
             
-            bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X", dim);
-            bcFactoryStructure->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
-            bcFactoryStructure->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Z", dim);
+            //bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X", dim);
+            //bcFactoryStructure->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
+            //bcFactoryStructure->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Z", dim);
 
         
         }
@@ -556,13 +546,13 @@ int main(int argc, char *argv[])
         }
         else if(dim==3 && bcType=="Artery"){
            bcFactory->addBC(inflowChem, 6, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-			bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-			bcFactory->addBC(inflowChem, 10, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-			bcFactory->addBC(inflowChem, 11, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+			//bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+			//bcFactory->addBC(inflowChem, 10, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+			//bcFactory->addBC(inflowChem, 11, 1, domainChem, "Dirichlet", 1); // inflow of Chem
            bcFactoryChem->addBC(inflowChem, 6, 0, domainChem, "Dirichlet", 1);
-           bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
-           bcFactoryChem->addBC(inflowChem, 10, 0, domainChem, "Dirichlet", 1);
-           bcFactoryChem->addBC(inflowChem, 11, 0, domainChem, "Dirichlet", 1);
+          // bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
+          // bcFactoryChem->addBC(inflowChem, 10, 0, domainChem, "Dirichlet", 1);
+          // bcFactoryChem->addBC(inflowChem, 11, 0, domainChem, "Dirichlet", 1);
         }
 
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
