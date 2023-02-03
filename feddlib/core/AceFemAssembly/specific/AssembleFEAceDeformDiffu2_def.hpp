@@ -79,7 +79,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	c50_ = this->params_->sublist("Parameter Solid").get("C50",0.5e0);
 	d0_ = this->params_->sublist("Parameter Diffusion").get("D0",1.0);
 	m_ = this->params_->sublist("Parameter Solid").get("m",0.e0);
-	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",1000.0e0);
+	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",1000.0e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime
 	rho_ = this->params_->sublist("Parameter Solid").get("Rho",1.e0);
 
 	iCode_ = this->params_->sublist("Parameter Solid").get("Intergration Code",18);
@@ -325,33 +325,32 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 
 	for(int i=0; i< 30; i++){
 		for(int j=0; j<30; j++){
-			if(fabs(stiffnessMatrixKuu[i][j]) > 1e7)
-				cout << " !!! Sus entry Kuu [" << i << "][" << j << "] " << stiffnessMatrixKuu[i][j] << endl; 
+			//if(fabs(stiffnessMatrixKuu[i][j]) > 1e7)
+			//	cout << " !!! Sus entry Kuu [" << i << "][" << j << "] " << stiffnessMatrixKuu[i][j] << endl; 
 			
 			(*elementMatrix)[i][j]=-stiffnessMatrixKuu[i][j];
 		}
 	}
 	for(int i=0; i< 30; i++){
 		for(int j=0; j<10; j++){
-			if(fabs(stiffnessMatrixKuc[i][j]) > 1e7)
-				cout << " !!! Sus entry Kuc [" << i << "][" << j << "] " << stiffnessMatrixKuc[i][j] << endl; 
+			//if(fabs(stiffnessMatrixKuc[i][j]) > 1e7)
+			//	cout << " !!! Sus entry Kuc [" << i << "][" << j << "] " << stiffnessMatrixKuc[i][j] << endl; 
 			
 			(*elementMatrix)[i][j+30]=-stiffnessMatrixKuc[i][j];
 		}
 	}
 	for(int i=0; i< 10; i++){
 		for(int j=0; j<30; j++){
-			if(fabs(stiffnessMatrixKcu[i][j]) > 1e7)
-				cout << " !!! Sus entry Kcu [" << i << "][" << j << "] " << stiffnessMatrixKcu[i][j] << endl; 
+			//if(fabs(stiffnessMatrixKcu[i][j]) > 1e7)
+			//	cout << " !!! Sus entry Kcu [" << i << "][" << j << "] " << stiffnessMatrixKcu[i][j] << endl; 
 			
-			if(fabs(stiffnessMatrixKcu[i][j]) > 1e-14)
-				(*elementMatrix)[i+30][j]=-stiffnessMatrixKcu[i][j];
+			(*elementMatrix)[i+30][j]=-stiffnessMatrixKcu[i][j];
 		}
 	}
 	for(int i=0; i< 10; i++){
 		for(int j=0; j<10; j++){
-			if(fabs(massMatrixMc[i][j]) > 1e5 || fabs(stiffnessMatrixKcc[i][j]) > 1e5 )
-				cout << " !!! Sus entry Mass [" << i << "][" << j << "] " << massMatrixMc[i][j] << " or stiff Kcc " << stiffnessMatrixKcc[i][j] << endl; 
+			//if(fabs(massMatrixMc[i][j]) > 1e5 || fabs(stiffnessMatrixKcc[i][j]) > 1e5 )
+			//	cout << " !!! Sus entry Mass [" << i << "][" << j << "] " << massMatrixMc[i][j] << " or stiff Kcc " << stiffnessMatrixKcc[i][j] << endl; 
 			 
 			(*elementMatrix)[i+30][j+30] =-stiffnessMatrixKcc[i][j] -(1./deltaT)*massMatrixMc[i][j]; //
 		}
