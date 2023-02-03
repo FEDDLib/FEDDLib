@@ -79,7 +79,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	c50_ = this->params_->sublist("Parameter Solid").get("C50",0.5e0);
 	d0_ = this->params_->sublist("Parameter Diffusion").get("D0",1.0);
 	m_ = this->params_->sublist("Parameter Solid").get("m",0.e0);
-	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",10.0e0);
+	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",1000.0e0);
 	rho_ = this->params_->sublist("Parameter Solid").get("Rho",1.e0);
 
 	iCode_ = this->params_->sublist("Parameter Solid").get("Intergration Code",18);
@@ -152,7 +152,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 	double displacements[30];
 	for(int i = 0; i < 30; i++)
 	{
-		displacements[i]=(*this->solution_)[i];			
+		displacements[i]=(*this->solution_)[i];		
 	}
 
 	double history[48];// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
@@ -177,7 +177,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
     double rates[10];
 
 	for(int i=0; i<10 ; i++){
-		rates[i] =-(solutionC_n1_[i]-solutionC_n_[i])/deltaT;//(solutionC_n1_[i])/deltaT; //-solutionC_n_[i](solutionC_n1_[i]-solutionC_n_[i])/deltaT;//
+		rates[i] =(solutionC_n1_[i]-solutionC_n_[i])/deltaT;//(solutionC_n1_[i])/deltaT; //-solutionC_n_[i](solutionC_n1_[i]-solutionC_n_[i])/deltaT;//
 	}
 
     
@@ -202,7 +202,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 
 
 	for(int i=0; i< 10 ; i++){		
-		(*this->rhsVec_)[i+30] = -residuumRc[i];
+		(*this->rhsVec_)[i+30] = residuumRc[i];
 	}
 
 	free(residuumRc);
