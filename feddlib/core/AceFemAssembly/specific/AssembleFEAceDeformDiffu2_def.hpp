@@ -124,8 +124,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::advanceInTime( double dt){
 	for(int i=0; i< historyUpdated_.size(); i++)
 		history_[i] = historyUpdated_[i];
 	for(int i=0; i< 10 ; i++)
-		solutionC_n_[i]=solutionC_n1_[i]; // this is not the LAST solution of newton iterations. Keep in mind for later.
-	
+		solutionC_n_[i]=(*this->solution_)[i+30]; // this is the LAST solution of newton iterations
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -166,7 +165,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 	{
 		concentrations[i]= (*this->solution_)[i+30];	
 		solutionC_n1_[i] = (*this->solution_)[i+30];		// in each newtonstep solution for n+1 is updated.
-	}
+	}	
 	
     double accelerations[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
    	
@@ -178,7 +177,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
     double rates[10];
 
 	for(int i=0; i<10 ; i++){
-		rates[i] =(solutionC_n1_[i]-solutionC_n_[i])/deltaT; //-solutionC_n_[i](solutionC_n1_[i]-solutionC_n_[i])/deltaT;//
+		rates[i] =-(solutionC_n1_[i]-solutionC_n_[i])/deltaT;//(solutionC_n1_[i])/deltaT; //-solutionC_n_[i](solutionC_n1_[i]-solutionC_n_[i])/deltaT;//
 	}
 
     
@@ -337,7 +336,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 			if(fabs(stiffnessMatrixKuc[i][j]) > 1e7)
 				cout << " !!! Sus entry Kuc [" << i << "][" << j << "] " << stiffnessMatrixKuc[i][j] << endl; 
 			
-			(*elementMatrix)[i][j+30]=0.; //-stiffnessMatrixKuc[i][j];
+			(*elementMatrix)[i][j+30]=-stiffnessMatrixKuc[i][j];
 		}
 	}
 	for(int i=0; i< 10; i++){
@@ -346,7 +345,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 				cout << " !!! Sus entry Kcu [" << i << "][" << j << "] " << stiffnessMatrixKcu[i][j] << endl; 
 			
 			if(fabs(stiffnessMatrixKcu[i][j]) > 1e-14)
-				(*elementMatrix)[i+30][j]=0.;//-stiffnessMatrixKcu[i][j];
+				(*elementMatrix)[i+30][j]=-stiffnessMatrixKcu[i][j];
 		}
 	}
 	for(int i=0; i< 10; i++){

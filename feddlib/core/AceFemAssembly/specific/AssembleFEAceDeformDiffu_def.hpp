@@ -53,9 +53,14 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::advanceInTime( double dt){
 	this->timeIncrement_ = dt;
 	this->timeStep_ = this->timeStep_ + dt;
 
-	for(int i=0; i< 60 ; i++)
-		solution_n_[i]=solution_n1_[i]; // this is not the LAST solution of newton iterations. Keep in mind for later.
-	
+	for(int i = 0; i < 40; i++)
+		{
+			if(i<30)
+				solution_n_[i]=(*this->solution_)[i];
+			else
+				solution_n_[30 + 3*(i-30)] = (*this->solution_)[i];
+		} // this is not the LAST solution of newton iterations. Keep in mind for later.
+
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -267,9 +272,9 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 	else
 		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown DOF ordering sequence. Known identifiers: 1 and 2. Check parameters file!");
 
+// Need to modify the above based on dof ordering flag selected
 }
 
-// Need to modify the above based on dof ordering flag selected
 
 
 } // namespace FEDD

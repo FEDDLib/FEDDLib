@@ -125,7 +125,7 @@ void rhsYZ(double* x, double* res, double* parameters){
 void rhsArtery(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[2] = 0.;
-    double force = pow(sin(parameters[0]/30.),2)*parameters[1];
+    double force = pow(sin(parameters[0]/10.),2)*parameters[1];
     double TRamp = 0.0;
    
     if(parameters[2]==6){

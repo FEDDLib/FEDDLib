@@ -987,7 +987,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         std::string structureModel = parameterList_->sublist("Parameter").get("Structure Model","SCI");
         {
             //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
-          if(couplingType=="explicit")
+        if(couplingType=="explicit")// || structureModel=="SCI_sophisticated")
             this->problemTime_->assemble("UpdateChemInTime");
         }
         // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
@@ -999,11 +999,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         MatrixPtr_Type massmatrix;
         sci->setChemMassmatrix( massmatrix );
         //massmatrix->print();
-        if(couplingType=="explicit")// || structureModel == "SCI_sophisticated")  
+        if(couplingType=="explicit" ) //|| structureModel=="SCI_sophisticated")
             this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
 
         // RHS nach BDF2
-        if(couplingType=="explicit")
+        if(couplingType=="explicit" )//|| structureModel=="SCI_sophisticated")
             this->problemTime_->assemble( "ComputeChemRHSInTime" ); // hier ist massmatrix nicht relevant
         //this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
 

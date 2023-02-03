@@ -15,7 +15,7 @@
         <Parameter name="SCI" type="bool" value="true"/>
         <Parameter name="Load Stepping" type="bool" value="true"/>
         <Parameter name="Coupling Type" type="string" value="implicit"/>
-        <Parameter name="Structure Model" type="string" value="SCI_sophisticated"/>
+        <Parameter name="Structure Model" type="string" value="SCI_sophisticated"/> <!-- SCI_simple for simplified model -->
 
         <Parameter name="Refinement Level" type="int" value="0"/>
        

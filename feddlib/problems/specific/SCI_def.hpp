@@ -110,7 +110,8 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         if(couplingType_ == "explicit"){
 
             // First Assumption: Almost incompressible Material
-            this->problemChem_->system_->getBlock(0,0)->print();
+            this->problemChem_->assemble();
+            //this->problemChem_->system_->getBlock(0,0)->print();
             // Elementwise determined E Module
             MultiVectorPtr_Type solChemRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
             solChemRep->importFromVector(this->problemChem_->getSolution()->getBlock(0));
@@ -901,8 +902,15 @@ template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateTime() const
 {
     timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
-    if(couplingType_ == "implicit")
-         this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_prev_);
+    if(couplingType_ == "implicit"){
+        MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
+        c_rep_->importFromVector(c, true);
+
+        MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
+        d_rep_->importFromVector(d, true); 
+        this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_prev_, d_rep_, c_rep_ );
+
+    }    
 }
 
 

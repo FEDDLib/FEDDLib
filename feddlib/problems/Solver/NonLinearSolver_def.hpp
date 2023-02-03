@@ -508,7 +508,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
         }
         else
             gmresIts += problem.solveAndUpdate( criterion, criterionValue );
-                    
+        
         nlIts++;
         if(criterion=="Update"){
             if (verbose)
