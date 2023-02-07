@@ -79,7 +79,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	c50_ = this->params_->sublist("Parameter Solid").get("C50",0.5e0);
 	d0_ = this->params_->sublist("Parameter Diffusion").get("D0",1.0);
 	m_ = this->params_->sublist("Parameter Solid").get("m",0.e0);
-	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",15.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime
+	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",25.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime
 	rho_ = this->params_->sublist("Parameter Solid").get("Rho",1.e0);
 
 	iCode_ = this->params_->sublist("Parameter Solid").get("Intergration Code",18);
@@ -93,7 +93,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 
 	dofsElement_ = dofsSolid_*numNodesSolid_ + dofsChem_*numNodesChem_; // "Dimension of return matrix"
 
-	history_={1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
+	history_ ={1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
 	//.resize(48);
 	historyUpdated_.resize(48,0.);
 
@@ -119,19 +119,20 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::advanceInTime( double dt){
 	//cout << " advanced in time for this element " << endl;
 	this->timeIncrement_ = dt;
 	this->timeStep_ = this->timeStep_ + dt;
-	/*for(int i=0; i< history_.size(); i++){
-		if(history_[i] =! 0.)
-			printf( "------- History values not 0 at %d  = %f --------- \n " ,i,  history_[i]);
-	}
-
+	/*for(int i=0; i< 48; i++){
+		if(historyUpdated_[i] =! 0.)
+			printf( "------- History values not 0 at %d  = %f --------- \n " ,i,  historyUpdated_[i]);
+	}*/
+	/*
 	for(int i=0; i< historyUpdated_.size(); i++){
 		if(historyUpdated_[i] =! 0.)
 			printf( "------- History Updated values not 0 at %d  = %f --------- \n " ,i,  historyUpdated_[i]);
 	}*/
 
 	
-	for(int i=0; i< historyUpdated_.size(); i++){
-		history_[i] = historyUpdated_[i];
+	for(int i=0; i< 48; i++){
+		if(this->timeStep_  > startTime_ +dt )
+			history_[i] = historyUpdated_[i];
 		//if(history_[i] =! 0.)
 		//	printf( "------- History Updated values not 0 at %d  = %f --------- \n " ,i,  historyUpdated_[i]);
 	}
@@ -329,7 +330,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
    
    
     getStiffnessMatrixKuu(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, &historyUpdated[0], stiffnessMatrixKuu);
-	for(int i=0; i< historyUpdated_.size(); i++){
+	for(int i=0; i< 48; i++){
 		historyUpdated_[i] = historyUpdated[i];
 	}
 	
