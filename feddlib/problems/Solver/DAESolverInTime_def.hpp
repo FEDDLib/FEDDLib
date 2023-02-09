@@ -924,8 +924,28 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
 
     double inflowRamp = parameterList_->sublist("Parameter").get("Inflow Ramp",0.01);
+    std::string structureModel = parameterList_->sublist("Parameter").get("Structure Model","SCI_simple");
+
+
     while(timeSteppingTool_->continueTimeStepping())
     {
+
+        if(structureModel=="SCI_sophisticated"){
+            if(timeSteppingTool_->currentTime() < 1.)
+                dt = 0.1;
+            if(timeSteppingTool_->currentTime() >= 1.-1e-10 )
+                dt = 20.0;
+            if(timeSteppingTool_->currentTime()>= 1001.)
+                dt= 0.4;
+            if(timeSteppingTool_->currentTime() >= 2001.)
+                dt= 0.02;
+                
+            timeSteppingTool_->dt_prev_= dt;        
+            timeSteppingTool_->dt_= dt;
+        }
+        
+     
+
         problemTime_->updateTime ( timeSteppingTool_->currentTime() );
 
         //string linearization = this->parameterList_->sublist("General").get("Linearization","Extrapolation");
@@ -984,7 +1004,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // Fluid-Loesung aktualisieren fuer die naechste(n) BDF2-Zeitintegration(en)
         // in diesem Zeitschritt.
         std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
-        std::string structureModel = parameterList_->sublist("Parameter").get("Structure Model","SCI");
         {
             //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
         if(couplingType=="explicit")// || structureModel=="SCI_sophisticated")
@@ -1024,9 +1043,9 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
         }
         
+        double time = timeSteppingTool_->currentTime() +  timeSteppingTool_->dt_prev_;
+        problemTime_->updateTime ( time );
         
-        double time = timeSteppingTool_->currentTime() + dt;
-        problemTime_->updateTime ( time );        
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
         //massCoeffSCI.print();
         //problemCoeffSCI.print();

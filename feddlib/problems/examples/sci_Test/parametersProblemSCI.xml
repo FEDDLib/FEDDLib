@@ -3,12 +3,13 @@
         <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
         <Parameter name="BC Type" type="string" value="Cube"/><!--partialArtery-->
+        <Parameter name="RHS Type" type="string" value="Paper"/><!--partialArtery-->
         
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
         
         <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
         <Parameter name="Inflow Ramp" type="double" value="0.0"/><!--2d:2.0, Richter 3d: 1.0-->
-        <Parameter name="Volume force" type="double" value="0.016"/>
+        <Parameter name="Volume force" type="double" value="0.0213316"/>
         <Parameter name="Source Type" type="string"   value="surface"/>
         <Parameter name="Model Geometry" type="string" value="Laplace"/>
         
@@ -19,7 +20,7 @@
 
         <Parameter name="Refinement Level" type="int" value="0"/>
        
-        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
+        <Parameter name="relNonLinTol" type="double" value="1.0e-6"/>
         <Parameter name="absNonLinTol" type="double" value="1.0e-2"/>
         <Parameter name="updateTol" type="double" value="1.0e-4"/>
         <Parameter name="Combo" type="string" value="OR"/>
@@ -56,8 +57,8 @@
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="cube_h_1.mesh"/> <!-- partialArtery -->
-        <Parameter name="Mesh 2 Name" type="string" value="cube_h_1.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="cube_h_0_1.mesh"/> <!-- partialArtery -->
+        <Parameter name="Mesh 2 Name" type="string" value="cube_h_0_1.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
         
@@ -105,8 +106,8 @@
         <Parameter name="Class" type="string" value="Multistep"/> <!-- External, Multistep-->
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value="50.0"/>
-        <Parameter name="dt" type="double" value="1.0"/>
+        <Parameter name="Final time" type="double" value="2005.0"/>
+        <Parameter name="dt" type="double" value=".1"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
     </ParameterList>

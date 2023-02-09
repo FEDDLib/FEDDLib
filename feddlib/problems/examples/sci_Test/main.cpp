@@ -102,7 +102,7 @@ void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
     double force = parameters[1];
-    double TRamp = -1.0;
+    double TRamp = 0.0;
        
     if(parameters[0] <= TRamp+1e-06)
         force = parameters[0] * force * 1./(TRamp);
@@ -122,26 +122,154 @@ void rhsYZ(double* x, double* res, double* parameters){
     return;
 }
 
-void rhsArtery(double* x, double* res, double* parameters){
+void rhsHeartBeatCube(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[2] = 0.;
-    double force = pow(sin(parameters[0]/10.),2)*parameters[1];
-    double TRamp = 0.0;
-   
+    double force = parameters[1];
+    double TRamp = 2000.0;
+    
+	double a0    = 11.693284502463376;
+	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
+		  0.032666881040235,-0.019948718147876,0.006998975442773,-0.033021060067630,-0.015708267688123,-0.029038419813160,-0.003001255512608,-0.009549531539299, 
+		  0.007112349455861,0.001970095816773,0.015306208420903,0.006772571935245,0.009480436178357};
+	double b [20] = {-1.325494054863285,0.192277311734674,0.115316087615845,-0.067714675760648,0.207297536049255,-0.044080204999886,0.050362628821152,-0.063456242820606,
+		  -0.002046987314705,-0.042350454615554,-0.013150127522194,-0.010408847105535,0.011590255438424,0.013281630639807,0.014991955865968,0.016514327477078, 
+		  0.013717154383988,0.012016806933609,-0.003415634499995,0.003188511626163};
+		         
+    double Q = 0.5*a0;
+    
+
+    double t_min = parameters[0] - fmod(parameters[0],1.0); //FlowConditions::t_start_unsteady;
+    double t_max = t_min + 1.0; // One heartbeat lasts 1.5 second    
+    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -1.0  );
+    
+    for(int i=0; i< 20; i++)
+        Q += (a[i]*std::cos((i+1.)*y) + b[i]*std::sin((i+1.)*y) ) ;
+    
+    
+    // Remove initial offset due to FFT
+    Q -= 0.026039341343493;
+    Q = (Q - 2.85489)/(7.96908-2.85489);
+    
+    if(parameters[0]< TRamp)
+    	Q = 0.;
+    
+    if(parameters[2] == 5)
+        res[1] = force+Q*0.005329;
+    else
+        res[1] =0.;
+        
+    if (parameters[2] == 4)
+        res[2] = force+Q*0.005329;
+    else
+        res[2] = 0.;
+}
+
+void rhsHeartBeatArtery(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[2] = 0.;
+    double force = parameters[1];
+    double TRamp = 2001.0;
+    
+	double a0    = 11.693284502463376;
+	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
+		  0.032666881040235,-0.019948718147876,0.006998975442773,-0.033021060067630,-0.015708267688123,-0.029038419813160,-0.003001255512608,-0.009549531539299, 
+		  0.007112349455861,0.001970095816773,0.015306208420903,0.006772571935245,0.009480436178357};
+	double b [20] = {-1.325494054863285,0.192277311734674,0.115316087615845,-0.067714675760648,0.207297536049255,-0.044080204999886,0.050362628821152,-0.063456242820606,
+		  -0.002046987314705,-0.042350454615554,-0.013150127522194,-0.010408847105535,0.011590255438424,0.013281630639807,0.014991955865968,0.016514327477078, 
+		  0.013717154383988,0.012016806933609,-0.003415634499995,0.003188511626163};
+		         
+    double Q = 0.5*a0;
+    
+
+    double t_min = parameters[0] - fmod(parameters[0],1.0); //FlowConditions::t_start_unsteady;
+    double t_max = t_min + 1.0; // One heartbeat lasts 1.5 second    
+    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -1.0  );
+    
+    for(int i=0; i< 20; i++)
+        Q += (a[i]*std::cos((i+1.)*y) + b[i]*std::sin((i+1.)*y) ) ;
+    
+    
+    // Remove initial offset due to FFT
+    Q -= 0.026039341343493;
+    Q = (Q - 2.85489)/(7.96908-2.85489);
+    
+    if(parameters[0]< TRamp)
+    	Q = 0.;
+    
+    
     if(parameters[2]==6){
         res[0] = (x[0]-1);
         res[1] = (x[1]-1);
         double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
-        res[0] = res[0]  *force;
-        res[1] = res[1]  *force;
+        res[0] = res[0]*(force+Q*0.005329);
+        res[1] = res[1]*(force+Q*0.005329);
        
     }
     else{
         res[0] =0.;
         res[1] =0.;
     }
+  
+}
 
+void rhsArteryPaper(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[2] = 0.;
+    double force = parameters[1];
+    double TRamp = 2001.0;
+    double lambda=0.;
+    
+    if(parameters[0] < TRamp)
+    	lambda = 0.875;
+    else if( parameters[0] <= 2001.5 )
+		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
+    else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))<= 0.5)
+    	lambda= 0.75;
+    else
+        lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
+    
+    if(parameters[2]==6){
+        res[0] = (x[0]-1);
+        res[1] = (x[1]-1);
+        double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
+        res[0] = res[0]*lambda*force;
+        res[1] = res[1]*lambda*force;
+       
+    }
+    else{
+        res[0] =0.;
+        res[1] =0.;
+    }
+            
+}
+
+void rhsCubePaper(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[2] = 0.;
+    double force = parameters[1];
+    double TRamp = 2001.0;
+    double lambda=0.;
+    
+    if(parameters[0] < TRamp)
+    	lambda = 0.875;
+    else if( parameters[0] <= 2001.5 )
+		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
+    else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))<= 0.5)
+    	lambda= 0.75;
+    else
+        lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
+     
+    if(parameters[2] == 5)
+        res[1] = force*lambda;
+    else
+        res[1] =0.;
         
+    if (parameters[2] == 4)
+        res[2] = force*lambda;
+    else
+        res[2] = 0.;
+            
 }
 
 void dummyFunc(double* x, double* res, double t, const double* parameters)
@@ -280,8 +408,9 @@ int main(int argc, char *argv[])
         DomainPtr_Type domainChem;
         DomainPtr_Type domainStructure;
         
-        std::string bcType = parameterListAll->sublist("Parameter").get("BC Type","cube");
+        std::string bcType = parameterListAll->sublist("Parameter").get("BC Type","Cube");
         
+        std::string rhsType = parameterListAll->sublist("Parameter").get("RHS Type","Paper");
     
         domainP1chem.reset( new Domain_Type( comm, dim ) );
         domainP1struct.reset( new Domain_Type( comm, dim ) );
@@ -337,6 +466,65 @@ int main(int argc, char *argv[])
 		exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
 
 		exParaF->save(0.0);
+		
+		double a0    = 11.693284502463376;
+		double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
+		  0.032666881040235,-0.019948718147876,0.006998975442773,-0.033021060067630,-0.015708267688123,-0.029038419813160,-0.003001255512608,-0.009549531539299, 
+		  0.007112349455861,0.001970095816773,0.015306208420903,0.006772571935245,0.009480436178357};
+		double b [20] = {-1.325494054863285,0.192277311734674,0.115316087615845,-0.067714675760648,0.207297536049255,-0.044080204999886,0.050362628821152,-0.063456242820606,
+		  -0.002046987314705,-0.042350454615554,-0.013150127522194,-0.010408847105535,0.011590255438424,0.013281630639807,0.014991955865968,0.016514327477078, 
+		  0.013717154383988,0.012016806933609,-0.003415634499995,0.003188511626163};
+		
+		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaHeartBeat(new ExporterParaView<SC,LO,GO,NO>());
+
+		
+		Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolutionBeat(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapUnique()));
+
+		Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConstBeat = exportSolutionBeat;
+
+		exParaHeartBeat->setup("HeartBeat", domainStructure->getMesh(), discType);
+
+		exParaHeartBeat->addVariable(exportSolutionConstBeat, "Beat", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
+		
+
+	
+		Teuchos::ArrayRCP< SC > entriesPulse  = exportSolutionBeat->getDataNonConst(0);
+		double dt = 0.02;
+		double lambda =0.;
+		for(int i= 1; i<1500; i++){	         
+			/*double Q = 0.5*a0;
+		
+
+			double t_min = dt * i - fmod(dt*i,1.0); //FlowConditions::t_start_unsteady;
+			double t_max = t_min + 1.0; // One heartbeat lasts 1.5 second    
+			double y = M_PI * ( 2.0*( dt * i-t_min ) / ( t_max - t_min ) -1.0  );
+		
+		
+		
+			for(int j=0; j< 20; j++)
+				Q += (a[j]*std::cos((j+1.)*y) + b[j]*std::sin((j+1.)*y) ) ;
+			
+			
+			// Remove initial offset due to FFT
+			Q -= 0.026039341343493;
+			//Q = (Q - 4.3637)/3.5427;
+			entriesPulse[0] = Q ;*/
+			
+			if(dt*i < 20.)
+				lambda = 0.875;
+			else if( dt*i <= 20.5 )
+				lambda = 0.8125+0.0625*cos(2*M_PI*dt*i);
+			else if ( dt*i >= 20.5 && (dt*i - std::floor(dt*i))<= 0.5)
+				lambda= 0.75;
+			else
+				lambda = 0.875 - 0.125 * cos(4*M_PI*(dt*i+0.02));
+
+			entriesPulse[0] = 0.02133*lambda;
+			
+			
+			exParaHeartBeat->save(double (dt*i));
+		}
+
 
 
         if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
@@ -485,10 +673,21 @@ int main(int argc, char *argv[])
         else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
-                if(bcType=="Cube")
-               		 sci.problemStructure_->addRhsFunction( rhsYZ,0 );
-                else if(bcType=="Artery")
-                     sci.problemStructure_->addRhsFunction( rhsArtery );
+                if(bcType=="Cube"){
+					if(rhsType=="Constant")
+		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+		    		if(rhsType=="Paper")
+		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+		    		if(rhsType=="Heart Beat")
+		        		 	sci.problemStructure_->addRhsFunction( rhsHeartBeatCube,0 );
+					
+				}
+				else if(bcType=="Artery"){
+					if(rhsType=="Paper")
+            		 	sci.problemStructure_->addRhsFunction( rhsArteryPaper,0 );
+            		if(rhsType=="Heart Beat")
+            		 	sci.problemStructure_->addRhsFunction( rhsHeartBeatArtery,0 );
+				}
                      
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
@@ -497,11 +696,21 @@ int main(int argc, char *argv[])
 
             }
             else{             
-				if(bcType=="Cube")
-					 sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
-				else if(bcType=="Artery")
-            		 sci.problemStructureNonLin_->addRhsFunction( rhsArtery,0 );
-
+				if(bcType=="Cube"){
+					if(rhsType=="Constant")
+		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+		    		if(rhsType=="Paper")
+		        		 	sci.problemStructureNonLin_->addRhsFunction( rhsCubePaper,0 );
+		    		if(rhsType=="Heart Beat")
+		        		 	sci.problemStructureNonLin_->addRhsFunction( rhsHeartBeatCube,0 );
+					
+				}
+				else if(bcType=="Artery"){
+					if(rhsType=="Paper")
+            		 	sci.problemStructureNonLin_->addRhsFunction( rhsArteryPaper,0 );
+            		if(rhsType=="Heart Beat")
+            		 	sci.problemStructureNonLin_->addRhsFunction( rhsHeartBeatArtery,0 );
+				}
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( force );
                 double degree = 0.;
@@ -580,7 +789,7 @@ int main(int argc, char *argv[])
         // Uebergebe das (nicht) lineare Problem
         daeTimeSolver.setProblem(sci);
 
-        // Setup fuer die Zeitintegration, wie z.B. Aufstellen der Massematrizen auf den Zeilen, welche in
+        // Setup fuer die Zeitintegration, wie z.B. Aufstellen der Massmatrizen auf den Zeilen, welche in
         // defTS definiert worden sind.
         daeTimeSolver.setupTimeStepping();
 

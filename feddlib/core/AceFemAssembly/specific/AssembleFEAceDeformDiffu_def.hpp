@@ -34,6 +34,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	solution_n_.resize(60,0.);
 	solution_n1_.resize(60,0.);
 
+
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -54,12 +55,14 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::advanceInTime( double dt){
 	this->timeStep_ = this->timeStep_ + dt;
 
 	for(int i = 0; i < 40; i++)
-		{
-			if(i<30)
-				solution_n_[i]=(*this->solution_)[i];
-			else
-				solution_n_[30 + 3*(i-30)] = (*this->solution_)[i];
-		} // this is not the LAST solution of newton iterations. Keep in mind for later.
+	{
+		if(i<30)
+			solution_n_[i]=(*this->solution_)[i];
+		else
+			solution_n_[30 + 3*(i-30)] = (*this->solution_)[i];
+	} // this is not the LAST solution of newton iterations. Keep in mind for later.
+
+
 
 }
 

@@ -497,18 +497,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 			
 			addFeBlockMatrix(A, elementMatrix, elementsSolid->getElement(T),  mapSolid, mapChem, problemDisk);
 
-           /* if(T==0){
-                cout << "Kcc of Element T=0" << endl;
-                for(int i=0; i< 10; i++){
-                    for(int j=0; j< 10; j++){
-                        cout << (*elementMatrix)[i+30][j+30] << " \t " ;
-                    }
-                    cout << endl;
-
-                }
-                cout << endl;
-            
-            }*/
+          
 
 		}
 		if(assembleMode == "Rhs"){
@@ -516,15 +505,6 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 		    rhsVec = assemblyFEElements_[T]->getRHS(); 
 			addFeBlockMv(resVecRep, rhsVec, elementsSolid->getElement(T),elementsChem->getElement(T), dofsSolid,dofsChem);
 
-            /*if(T==0){
-                cout << "Residual of element T=0" << endl;
-                for(int i=30; i< 40; i++){
-                    cout << rhsVec->at(i) << " \t " ;
-
-                }
-                cout << endl;
-            
-             }*/
 		}
         
 

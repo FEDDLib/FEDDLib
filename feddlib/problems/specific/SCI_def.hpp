@@ -214,7 +214,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
                 }
             }
         }
-        else if(couplingType_ == "implicit" || "explicitAceGEN")
+        else if(couplingType_ == "implicit" )
         {
 
             // Maybe nothing should happen here as there are no constant matrices
@@ -253,15 +253,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             d_rep_->importFromVector(d, true); 
         
             this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
-            if(couplingType_ == "explicitAceGEN"){
-                B->resumeFill();
-                B->scale(0.0);
-                B->fillComplete();
-
-                BT->resumeFill();
-                BT->scale(0.0);
-                BT->fillComplete();
-            }
+            
 
         }
         else 
@@ -901,7 +893,7 @@ void SCI<SC,LO,GO,NO>::setBoundariesSubProblems( ) const
 template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateTime() const
 {
-    timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
+    //timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
     if(couplingType_ == "implicit"){
         MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
         c_rep_->importFromVector(c, true);

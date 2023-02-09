@@ -79,7 +79,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	c50_ = this->params_->sublist("Parameter Solid").get("C50",0.5e0);
 	d0_ = this->params_->sublist("Parameter Diffusion").get("D0",1.0);
 	m_ = this->params_->sublist("Parameter Solid").get("m",0.e0);
-	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",25.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime
+	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",1001.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime
 	rho_ = this->params_->sublist("Parameter Solid").get("Rho",1.e0);
 
 	iCode_ = this->params_->sublist("Parameter Solid").get("Intergration Code",18);
@@ -101,6 +101,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	solutionC_n1_.resize(10,0.);
 
 	this->solution_.reset( new vec_dbl_Type ( dofsElement_,0.) );
+
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -117,28 +118,27 @@ template <class SC, class LO, class GO, class NO>
 void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::advanceInTime( double dt){
 
 	//cout << " advanced in time for this element " << endl;
-	this->timeIncrement_ = dt;
-	this->timeStep_ = this->timeStep_ + dt;
-	/*for(int i=0; i< 48; i++){
-		if(historyUpdated_[i] =! 0.)
-			printf( "------- History values not 0 at %d  = %f --------- \n " ,i,  historyUpdated_[i]);
-	}*/
-	/*
-	for(int i=0; i< historyUpdated_.size(); i++){
-		if(historyUpdated_[i] =! 0.)
-			printf( "------- History Updated values not 0 at %d  = %f --------- \n " ,i,  historyUpdated_[i]);
-	}*/
+	if(this->timeStep_ < 1.)
+		this->timeIncrement_ = 0.1;
+	if(this->timeStep_ >= 1. )
+		this->timeIncrement_ = 20.0;
+	if(this->timeStep_ >= 1001.)
+		this->timeIncrement_= 0.4;
+	if(this->timeStep_ >= 2001.)
+		this->timeIncrement_= 0.02;
 
+	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 	
 	for(int i=0; i< 48; i++){
 		if(this->timeStep_  > startTime_ +dt )
 			history_[i] = historyUpdated_[i];
-		//if(history_[i] =! 0.)
-		//	printf( "------- History Updated values not 0 at %d  = %f --------- \n " ,i,  historyUpdated_[i]);
+		
 	}
 
 	for(int i=0; i< 10 ; i++)
 		solutionC_n_[i]=(*this->solution_)[i+30]; // this is the LAST solution of newton iterations
+
+	
 }
 
 template <class SC, class LO, class GO, class NO>
