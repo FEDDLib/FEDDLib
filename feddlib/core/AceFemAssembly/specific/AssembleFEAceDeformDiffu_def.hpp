@@ -51,8 +51,15 @@ template <class SC, class LO, class GO, class NO>
 void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::advanceInTime( double dt){
 
 	//cout << " advanced in time for this element " << endl;
-	this->timeIncrement_ = dt;
-	this->timeStep_ = this->timeStep_ + dt;
+	if(this->timeStep_ < 1.)
+		this->timeIncrement_ = 0.1;
+	if(this->timeStep_ >= 1. )
+		this->timeIncrement_ = 10.0;
+	if(this->timeStep_ >= 1001.)
+		this->timeIncrement_= 0.01;
+
+	//	this->timeIncrement_ = dt;
+	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 
 	for(int i = 0; i < 40; i++)
 	{

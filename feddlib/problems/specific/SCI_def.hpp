@@ -821,14 +821,13 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     }
 
     //can we get rid of this?
-    double time = timeSteppingTool_->currentTime() + dt;
-    
+   
     // TODO: SourceTerm wird in jedem Zeitschritt neu berechnet; auch wenn konstant!!!
     // if(time == 0){nur dann konstanten SourceTerm berechnen}
     if (this->problemTimeStructure_->hasSourceTerm())
     {
 
-        this->problemTimeStructure_->assembleSourceTerm( time );
+        this->problemTimeStructure_->assembleSourceTerm( timeSteppingTool_->t_ );
         //this->problemTimeStructure_->getSourceTerm()->scale(density);
 
         // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
@@ -893,7 +892,7 @@ void SCI<SC,LO,GO,NO>::setBoundariesSubProblems( ) const
 template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateTime() const
 {
-    //timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
+    timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
     if(couplingType_ == "implicit"){
         MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
         c_rep_->importFromVector(c, true);

@@ -929,11 +929,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
     while(timeSteppingTool_->continueTimeStepping())
     {
-
-        if(structureModel=="SCI_sophisticated"){
+        if(structureModel=="SCI_sophisticated" || structureModel=="SCI_simple" ){
             if(timeSteppingTool_->currentTime() < 1.)
                 dt = 0.1;
-            if(timeSteppingTool_->currentTime() >= 1.-1e-10 )
+            if(timeSteppingTool_->currentTime() >= 1. )
                 dt = 20.0;
             if(timeSteppingTool_->currentTime()>= 1001.)
                 dt= 0.4;
@@ -942,6 +941,25 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
                 
             timeSteppingTool_->dt_prev_= dt;        
             timeSteppingTool_->dt_= dt;
+
+            sci->timeSteppingTool_->dt_prev_= dt;        
+            sci->timeSteppingTool_->dt_= dt;
+
+        }
+
+        if( structureModel=="SCI_simple" ){
+            if(timeSteppingTool_->currentTime() < 1.)
+                dt = 0.1;
+            if(timeSteppingTool_->currentTime() >= 1. )
+                dt = 10.0;
+            if(timeSteppingTool_->currentTime()>= 1001.)
+                dt= 0.01;
+                
+            timeSteppingTool_->dt_prev_= dt;        
+            timeSteppingTool_->dt_= dt;
+
+            sci->timeSteppingTool_->dt_prev_= dt;        
+            sci->timeSteppingTool_->dt_= dt;
         }
         
      

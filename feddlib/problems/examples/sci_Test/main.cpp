@@ -126,7 +126,7 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 2000.0;
+    double TRamp = 1001.0;
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -151,8 +151,10 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     Q -= 0.026039341343493;
     Q = (Q - 2.85489)/(7.96908-2.85489);
     
-    if(parameters[0]< TRamp)
+    if(parameters[0]< TRamp){
     	Q = 0.;
+    }
+    
     
     if(parameters[2] == 5)
         res[1] = force+Q*0.005329;
@@ -169,7 +171,7 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 2001.0;
+    double TRamp = 1001.0;
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -194,13 +196,13 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     Q -= 0.026039341343493;
     Q = (Q - 2.85489)/(7.96908-2.85489);
     
-    if(parameters[0]< TRamp)
+    if(parameters[0]< TRamp){
     	Q = 0.;
-    
-    
-    if(parameters[2]==6){
-        res[0] = (x[0]-1);
-        res[1] = (x[1]-1);
+    }
+        
+    if(parameters[2]==5){
+        res[0] = x[0];
+        res[1] = x[1];
         double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
         res[0] = res[0]*(force+Q*0.005329);
         res[1] = res[1]*(force+Q*0.005329);
@@ -229,9 +231,9 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
     
-    if(parameters[2]==6){
-        res[0] = (x[0]-1);
-        res[1] = (x[1]-1);
+    if(parameters[2]==5){
+        res[0] = x[0];
+        res[1] = x[1];
         double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
         res[0] = res[0]*lambda*force;
         res[1] = res[1]*lambda*force;
@@ -410,7 +412,7 @@ int main(int argc, char *argv[])
         
         std::string bcType = parameterListAll->sublist("Parameter").get("BC Type","Cube");
         
-        std::string rhsType = parameterListAll->sublist("Parameter").get("RHS Type","Paper");
+        std::string rhsType = parameterListAll->sublist("Parameter").get("RHS Type","Constant");
     
         domainP1chem.reset( new Domain_Type( comm, dim ) );
         domainP1struct.reset( new Domain_Type( comm, dim ) );
@@ -430,7 +432,7 @@ int main(int argc, char *argv[])
         
         int volumeID=10;
         if(bcType=="Artery")
-        	volumeID = 10;
+        	volumeID = 15;
         partitionerP1.readAndPartition(volumeID);
                     
         if (!discType.compare("P2")){
@@ -467,7 +469,7 @@ int main(int argc, char *argv[])
 
 		exParaF->save(0.0);
 		
-		double a0    = 11.693284502463376;
+		/*double a0    = 11.693284502463376;
 		double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
 		  0.032666881040235,-0.019948718147876,0.006998975442773,-0.033021060067630,-0.015708267688123,-0.029038419813160,-0.003001255512608,-0.009549531539299, 
 		  0.007112349455861,0.001970095816773,0.015306208420903,0.006772571935245,0.009480436178357};
@@ -492,7 +494,7 @@ int main(int argc, char *argv[])
 		double dt = 0.02;
 		double lambda =0.;
 		for(int i= 1; i<1500; i++){	         
-			/*double Q = 0.5*a0;
+			double Q = 0.5*a0;
 		
 
 			double t_min = dt * i - fmod(dt*i,1.0); //FlowConditions::t_start_unsteady;
@@ -508,7 +510,7 @@ int main(int argc, char *argv[])
 			// Remove initial offset due to FFT
 			Q -= 0.026039341343493;
 			//Q = (Q - 4.3637)/3.5427;
-			entriesPulse[0] = Q ;*/
+			entriesPulse[0] = Q ;
 			
 			if(dt*i < 20.)
 				lambda = 0.875;
@@ -523,7 +525,7 @@ int main(int argc, char *argv[])
 			
 			
 			exParaHeartBeat->save(double (dt*i));
-		}
+		}*/
 
 
 
@@ -611,6 +613,8 @@ int main(int argc, char *argv[])
             bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
             bcFactory->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
             bcFactory->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
+            bcFactory->addBC(zeroDirichlet, 4, 0, domainStructure, "Dirichlet_Z", dim);
+            
             bcFactory->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet", dim);
             bcFactory->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
             bcFactory->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
@@ -619,6 +623,8 @@ int main(int argc, char *argv[])
             bcFactoryStructure->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
             bcFactoryStructure->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
             bcFactoryStructure->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
+           bcFactoryStructure->addBC(zeroDirichlet, 4, 0, domainStructure, "Dirichlet_Z", dim);
+            
             bcFactoryStructure->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet", dim);
             bcFactoryStructure->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
             bcFactoryStructure->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
@@ -627,31 +633,39 @@ int main(int argc, char *argv[])
         }
         else if(dim==3 && bcType=="Artery"){
         
-        
-            bcFactory->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_X", dim);
-            bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Y", dim);
-            bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
-            bcFactory->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_Y", dim);
+			bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_X", dim);
+			bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Z", dim);
 
-            bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
-            bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Y_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_X_Z", dim);
 
-            //bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X", dim);
-            //bcFactory->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
-            //bcFactory->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Z", dim);
-            
-            bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_X", dim);
-            bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Y", dim);
-            bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
-            bcFactoryStructure->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X", dim);
+			bcFactory->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
 
-            bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Z", dim);
-            bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
-            
-            //bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X", dim);
-            //bcFactoryStructure->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
-            //bcFactoryStructure->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Y_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 12, 0, domainStructure, "Dirichlet_X_Z", dim);
 
+
+			bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_Y", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_X", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Z", dim);
+
+
+			bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Y_Z", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_X_Z", dim);
+
+			bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X", dim);
+
+			bcFactoryStructure->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Y_Z", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 12, 0, domainStructure, "Dirichlet_X_Z", dim);
         
         }
         
@@ -677,7 +691,7 @@ int main(int argc, char *argv[])
 					if(rhsType=="Constant")
 		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
 		    		if(rhsType=="Paper")
-		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+		    		 	sci.problemStructure_->addRhsFunction( rhsCubePaper,0 );
 		    		if(rhsType=="Heart Beat")
 		        		 	sci.problemStructure_->addRhsFunction( rhsHeartBeatCube,0 );
 					
@@ -700,9 +714,9 @@ int main(int argc, char *argv[])
 					if(rhsType=="Constant")
 		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
 		    		if(rhsType=="Paper")
-		        		 	sci.problemStructureNonLin_->addRhsFunction( rhsCubePaper,0 );
+		        		sci.problemStructureNonLin_->addRhsFunction( rhsCubePaper,0 );
 		    		if(rhsType=="Heart Beat")
-		        		 	sci.problemStructureNonLin_->addRhsFunction( rhsHeartBeatCube,0 );
+		        		sci.problemStructureNonLin_->addRhsFunction( rhsHeartBeatCube,0 );
 					
 				}
 				else if(bcType=="Artery"){
@@ -754,14 +768,17 @@ int main(int argc, char *argv[])
             */
         }
         else if(dim==3 && bcType=="Artery"){
-           bcFactory->addBC(inflowChem, 6, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-			//bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-			//bcFactory->addBC(inflowChem, 10, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-			//bcFactory->addBC(inflowChem, 11, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-           bcFactoryChem->addBC(inflowChem, 6, 0, domainChem, "Dirichlet", 1);
-          // bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
-          // bcFactoryChem->addBC(inflowChem, 10, 0, domainChem, "Dirichlet", 1);
-          // bcFactoryChem->addBC(inflowChem, 11, 0, domainChem, "Dirichlet", 1);
+           bcFactory->addBC(inflowChem, 5, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 13, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 14, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 10, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+		   
+           bcFactoryChem->addBC(inflowChem, 5, 0, domainChem, "Dirichlet", 1);
+           bcFactoryChem->addBC(inflowChem, 13, 0, domainChem, "Dirichlet", 1);
+           bcFactoryChem->addBC(inflowChem, 14, 0, domainChem, "Dirichlet", 1);
+           bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);
+           bcFactoryChem->addBC(inflowChem, 10, 0, domainChem, "Dirichlet", 1);
         }
 
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems

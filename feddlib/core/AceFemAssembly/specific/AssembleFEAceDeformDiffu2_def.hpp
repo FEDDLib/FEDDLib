@@ -117,7 +117,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleJacobian() {
 template <class SC, class LO, class GO, class NO>
 void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::advanceInTime( double dt){
 
-	//cout << " advanced in time for this element " << endl;
+	//cout << " advanced in time for this element with dt " << dt << endl;
 	if(this->timeStep_ < 1.)
 		this->timeIncrement_ = 0.1;
 	if(this->timeStep_ >= 1. )
@@ -127,6 +127,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::advanceInTime( double dt){
 	if(this->timeStep_ >= 2001.)
 		this->timeIncrement_= 0.02;
 
+	//cout << " Changed to timeincrement " << this->timeIncrement_<< endl;
 	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 	
 	for(int i=0; i< 48; i++){
