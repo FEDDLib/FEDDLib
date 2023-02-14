@@ -155,6 +155,8 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     	Q = 0.;
     }
     
+    if(parameters[0] <= 1.)
+       force = force * parameters[0];
     
     if(parameters[2] == 5)
         res[1] = force+Q*0.005329;
@@ -199,6 +201,8 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     if(parameters[0]< TRamp){
     	Q = 0.;
     }
+    if(parameters[0] <= 1.)
+        force = force * parameters[0];
         
     if(parameters[2]==5){
         res[0] = x[0];
@@ -222,7 +226,9 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     double TRamp = 2001.0;
     double lambda=0.;
     
-    if(parameters[0] < TRamp)
+    if(parameters[0] < 1.)
+        lambda = 0.875 * parameters[0];
+    else if(parameters[0] <= TRamp)
     	lambda = 0.875;
     else if( parameters[0] <= 2001.5 )
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
@@ -253,7 +259,9 @@ void rhsCubePaper(double* x, double* res, double* parameters){
     double TRamp = 2001.0;
     double lambda=0.;
     
-    if(parameters[0] < TRamp)
+    if(parameters[0] < 1.)
+        lambda = 0.875 * parameters[0];
+    else if(parameters[0] <= TRamp)
     	lambda = 0.875;
     else if( parameters[0] <= 2001.5 )
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
