@@ -57,7 +57,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	lambdaBarCDotMax_= this->params_->sublist("Parameter Solid").get("LambdaBarCDotMax",0.3387e-1); // ??
 	lambdaBarCDotMin_= this->params_->sublist("Parameter Solid").get("LambdaBarCDotMin",-0.3387e-1); // ?? 
 	gamma2_ = this->params_->sublist("Parameter Solid").get("Gamma2",50.0e0); // ??
-	gamma1_ = this->params_->sublist("Parameter Solid").get("Gamma1",0.5024e0); 
+	gamma1_ = this->params_->sublist("Parameter Solid").get("Gamma1",0.50247e0); 
 	eta1_ = this->params_->sublist("Parameter Solid").get("Eta1",0.18745e0); // ??
 	ca50_ = this->params_->sublist("Parameter Solid").get("Ca50",0.4e0); // ??
 	k2_ = this->params_->sublist("Parameter Solid").get("K2",0.2e0); 
@@ -119,7 +119,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::advanceInTime( double dt){
 
 	//cout << " advanced in time for this element with dt " << dt << endl;
 	if(this->timeStep_ < 1.)
-		this->timeIncrement_ = 0.1;
+		this->timeIncrement_ = 0.05;
 	if(this->timeStep_ >= 1. )
 		this->timeIncrement_ = 20.0;
 	if(this->timeStep_ >= 1001.)

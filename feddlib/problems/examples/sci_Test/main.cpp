@@ -102,10 +102,10 @@ void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
     double force = parameters[1];
-    double TRamp = 0.0;
+    double TRamp = 1.0;
        
     if(parameters[0] <= TRamp+1e-06)
-        force = parameters[0] * force * 1./(TRamp);
+        force = 0.1 * force ;
     else
         force = parameters[1];
 
@@ -226,23 +226,27 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     double TRamp = 2001.0;
     double lambda=0.;
     
-    if(parameters[0] < 1.)
-        lambda = 0.875 * parameters[0];
-    else if(parameters[0] <= TRamp)
-    	lambda = 0.875;
-    else if( parameters[0] <= 2001.5 )
+    if(parameters[0] <= 1.05)
+        lambda = 0.875 * (0.05);
+    else if(parameters[0] < TRamp)
+    	lambda = 0.;//875;
+    else if( parameters[0] < 2001.5 )
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
     else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))<= 0.5)
     	lambda= 0.75;
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
     
+    if(parameters[0] < 0.1)
+    	lambda=0.;
+    	
     if(parameters[2]==5){
         res[0] = x[0];
         res[1] = x[1];
         double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
-        res[0] = res[0]*lambda*force;
-        res[1] = res[1]*lambda*force;
+        
+        res[0] = 1./r2*res[0]*lambda*force;
+        res[1] = 1./r2*res[1]*lambda*force;
        
     }
     else{
@@ -565,6 +569,7 @@ int main(int argc, char *argv[])
         }
     
         domainChem->setReferenceConfiguration();
+        domainStructure->setReferenceConfiguration();
 
         vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
         double D0 = parameterListAll->sublist("Parameter Diffusion").get("D0",1.);

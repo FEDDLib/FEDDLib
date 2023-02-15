@@ -817,7 +817,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     }
     else{
         // The if condition resets the rhs. If we skip it when we attemp loadstepping, the rhs will be updated continously and wrongly increase with each timestep
-        this->problemTimeStructure_->getRhs()->scale(0.0);
+        //this->problemTimeStructure_->getRhs()->scale(0.0);
     }
 
     //can we get rid of this?
@@ -941,6 +941,9 @@ void SCI<SC,LO,GO,NO>::moveMesh() const
     ( Teuchos::rcp_const_cast<Domain_Type>(this->getDomain(1)) )->moveMesh(displacementUnique, displacementRepeated);
     ( Teuchos::rcp_const_cast<Domain_Type>(this->problemChem_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
     ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeChem_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
+
+    
+    ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeStructure_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
     
 }
 
