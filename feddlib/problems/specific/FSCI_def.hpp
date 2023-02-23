@@ -758,8 +758,8 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
     if ( this->verbose_ )
         std::cout << "Warning: Wrong consideration of temporal discretization for multi-stage RK methods!" << std::endl;
     
-    this->problemFluid_->calculateNonLinResidualVecWithMeshVelo( "reverse", time, this->u_minus_w_rep_, P_ );
-    this->system_->addBlock( problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
+    this->problemFluid_->calculateNonLinResidualVecWithMeshVelo( "reverse", time, this->u_minus_w_rep_, this->P_ );
+    this->system_->addBlock( this->problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
     
     // we need to account for the coupling in the residuals
     this->problemSCI_->calculateNonLinResidualVec( "reverse", time );
@@ -1495,8 +1495,8 @@ void FSCI<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
         
         exporterTxtDrag_->exportData( drag[0] );
         exporterTxtLift_->exportData( lift[0] );
-    }
-}*/
+    }*/
+}
 
 template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::initializeGE(){
