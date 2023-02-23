@@ -218,6 +218,9 @@ public:
     LinSolverBuilderPtr_Type linearSolverBuilder_;
 
     bool verbose_;
+
+    std::vector<RhsFunc_Type>   rhsFuncVec_; // RHS functions of different blocks
+    vec_dbl_Type parasSourceFunc_; //
     
 protected:
 
@@ -232,8 +235,7 @@ protected:
     
     /*!  sourceTerm_: Is a source term or a surface integral. Fill parasSourceFunc_ for additional parameters */
     BlockMultiVectorPtr_Type    sourceTerm_; // BlockMV of all assembled RHS functions
-    std::vector<RhsFunc_Type>   rhsFuncVec_; // RHS functions of different blocks
-    vec_dbl_Type parasSourceFunc_; //
+    
 #ifdef FEDD_TIMER
     TimePtr_Type solveProblemTimer_;
     TimePtr_Type bcMatrixTimer_;

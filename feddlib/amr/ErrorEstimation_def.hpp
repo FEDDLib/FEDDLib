@@ -868,31 +868,31 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 
 				// We extract the nodes of the elements the surface is connected to
 
-				kn1= elements->getElement(elementsIDs[i]).getVectorNodeListNonConst();
-				
-				// Transformation Matrices
-				// We need this inverse Matrix to also transform the quadrature points of our surface back to the reference element
-				 index0 = kn1[0];
-				 for (int s=0; s<dim_; s++) {
-					index = kn1[s+1];
-					for (int t=0; t<dim_; t++) {
-						B1[t][s] = points->at(index).at(t) -points->at(index0).at(t);
+			kn1= elements->getElement(elementsIDs[i]).getVectorNodeListNonConst();
+			
+			// Transformation Matrices
+			// We need this inverse Matrix to also transform the quadrature points of our surface back to the reference element
+				index0 = kn1[0];
+				for (int s=0; s<dim_; s++) {
+				index = kn1[s+1];
+				for (int t=0; t<dim_; t++) {
+					B1[t][s] = points->at(index).at(t) -points->at(index0).at(t);
+				}
+			}
+
+			detB1 = B1.computeInverse(Binv1);
+			detB1 = std::fabs(detB1);
+
+			vec2D_dbl_Type quadPointsT1(quadPSize,vec_dbl_Type(dim_));
+			for(int l=0; l< quadPSize; l++){
+
+					for(int p=0; p< dim_ ; p++){
+					for(int q=0; q< dim_; q++){
+						quadPointsT1[l][p] += Binv1[p][q]* (quadPoints[l][q] - points->at(elements->getElement(elementsIDs[i]).getNode(0)).at(q))  ; 
 					}
 				}
-
-				detB1 = B1.computeInverse(Binv1);
-				detB1 = std::fabs(detB1);
-
-				vec2D_dbl_Type quadPointsT1(quadPSize,vec_dbl_Type(dim_));
-				for(int l=0; l< quadPSize; l++){
-
-					 for(int p=0; p< dim_ ; p++){
-						for(int q=0; q< dim_; q++){
-				 			quadPointsT1[l][p] += Binv1[p][q]* (quadPoints[l][q] - points->at(elements->getElement(elementsIDs[i]).getNode(0)).at(q))  ; 
-						}
-					}
-										
-				}
+									
+			}
 				// We make the distinction between a gradient jump calculation or a simple jump calculation 
 				for(int l=0; l< quadPSize; l++){
 					if(phiDerivative == "Gradient"){
@@ -1510,7 +1510,7 @@ vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::getQuadValues(int dim, string FETyp
 				QuadPts[0][1] =  y0;
 				QuadPts[1][0] =  (x0+x1)/2.;
 				QuadPts[1][1] =  (y0+y1)/2.;
-				QuadPts[2][0] = 	x1;
+				QuadPts[2][0] =   x1;
 				QuadPts[2][1] =  y1;
 
 				QuadW[0] = 1.;

@@ -477,6 +477,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
     double criterionValue = 1.;
     std::string criterion = problem.getParameterList()->sublist("Parameter").get("Criterion","Residual");
     std::string timestepping = problem.getParameterList()->sublist("Timestepping Parameter").get("Class","Singlestep");
+
+    problem.getSystem()->writeMM();
     while ( nlIts < maxNonLinIts ) {
         if (timestepping == "External")
             problem.calculateNonLinResidualVec("external", time);

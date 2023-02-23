@@ -86,7 +86,7 @@ public:
     void setP2SurfaceElements( MeshUnstrPtr_Type meshP1 );
     
 	/*! 
-		\brief Helper function for setP2SurfaceElements. Adds the correct nodes to the meshP1 subelements.
+		\brief Helper function for setP2SurfaceElements. Adds the correct nodes to the meshP1 subelements. Based on sorted Elements.
 		@param[in] feP2 P2 element 
 		@param[in] surfFeP1 P1 surface element that need new P2 nodes
 		@param[in] surfacePermutation Surface permutations of element
@@ -94,6 +94,15 @@ public:
 	*/
     void setSurfaceP2( FiniteElement &feP2, const FiniteElement &surfFeP1, const vec2D_int_Type &surfacePermutation, int dim );
     
+	/*! 
+		\brief Helper function for setP2SurfaceElements. Adds the correct nodes to the meshP1 subelements. Based on unsorted elements. Different approach than above. Based on edge Midpoints.
+
+		@param[in] feP2 P2 element 
+		@param[in] surfFeP1 P1 surface element that need new P2 nodes
+		@param[in] surfacePermutation Surface permutations of element
+		@param[in] dim Dimension
+	*/
+	void addSurfaceP2Nodes( FiniteElement &feP2, const FiniteElement &surfFeP1, const vec2D_int_Type &surfacePermutation, int dim );
 	/*! 
 		\brief Depending on the sorting of P1 surface nodes we have to adjust the new ordering of P2 edge midpoints for surfaces in 3D
 	*/	

@@ -100,24 +100,22 @@ void rhsZ(double* x, double* res, double* parameters){
 
 void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
-    res[0] = 0.;
+
     double force = parameters[1];
     double TRamp = 1.0;
-       
+  	res[0] =0.;
+    res[1] =0.;
+    res[2] =0.;
     if(parameters[0] <= TRamp+1e-06)
-        force = 0.1 * force ;
+        force = parameters[0] * force ;
     else
         force = parameters[1];
 
-    if(parameters[2] == 5)
+    if(parameters[2] == 4 || parameters[2] == 5){
+      	res[0] = force;
         res[1] = force;
-    else
-        res[1] =0.;
-        
-    if (parameters[2] == 4)
         res[2] = force;
-    else
-        res[2] = 0.;
+    }
     
     return;
 }
@@ -226,10 +224,10 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     double TRamp = 2001.0;
     double lambda=0.;
     
-    if(parameters[0] <= 1.05)
-        lambda = 0.875 * (0.05);
-    else if(parameters[0] < TRamp)
-    	lambda = 0.;//875;
+    if(parameters[0] <= 10.0)
+        lambda = 0.875*parameters[0]/10.;
+    else if(parameters[0] <= TRamp)
+    	lambda = 0.875;
     else if( parameters[0] < 2001.5 )
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
     else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))<= 0.5)
@@ -237,16 +235,16 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
     
-    if(parameters[0] < 0.1)
-    	lambda=0.;
-    	
     if(parameters[2]==5){
-        res[0] = x[0];
+        /*res[0] = x[0];
         res[1] = x[1];
         double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
-        
         res[0] = 1./r2*res[0]*lambda*force;
-        res[1] = 1./r2*res[1]*lambda*force;
+        res[1] = 1./r2*res[1]*lambda*force;*/
+        res[0] =lambda*force;
+        res[1] =lambda*force;
+        res[2] =lambda*force; 
+        
        
     }
     else{
@@ -263,16 +261,19 @@ void rhsCubePaper(double* x, double* res, double* parameters){
     double TRamp = 2001.0;
     double lambda=0.;
     
-    if(parameters[0] < 1.)
-        lambda = 0.875 * parameters[0];
+    if(parameters[0] <= 1.)
+        lambda = 0.875*(0.1) ;
     else if(parameters[0] <= TRamp)
-    	lambda = 0.875;
+    	lambda = 0.; //0.875;
     else if( parameters[0] <= 2001.5 )
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
     else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))<= 0.5)
     	lambda= 0.75;
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
+     
+    if(parameters[0] < 0.1)
+    	lambda=0.; 
      
     if(parameters[2] == 5)
         res[1] = force*lambda;
@@ -623,25 +624,23 @@ int main(int argc, char *argv[])
         else if(dim == 3 && bcType=="Cube")
         {
 
-            bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
-            bcFactory->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
-            bcFactory->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
-            bcFactory->addBC(zeroDirichlet, 4, 0, domainStructure, "Dirichlet_Z", dim);
+            bcFactory->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_X", dim);
+            bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Y", dim);
+            bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
             
             bcFactory->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet", dim);
-            bcFactory->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
-            bcFactory->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
-            bcFactory->addBC(zeroDirichlet2D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
+            bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
+            bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
+            bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
             
-            bcFactoryStructure->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
-            bcFactoryStructure->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
-            bcFactoryStructure->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
-           bcFactoryStructure->addBC(zeroDirichlet, 4, 0, domainStructure, "Dirichlet_Z", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_X", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Y", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
             
             bcFactoryStructure->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet", dim);
-            bcFactoryStructure->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
-            bcFactoryStructure->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
-            bcFactoryStructure->addBC(zeroDirichlet2D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
 
         }
         else if(dim==3 && bcType=="Artery"){

@@ -63,8 +63,9 @@ materialModel_( parameterListStructure->sublist("Parameter").get("Material model
     eModVec_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getElementMap() ) );
 
     couplingType_ =    parameterListSCI->sublist("Parameter").get("Coupling Type","explicit");
-    loadStepping_ =    parameterListSCI->sublist("Parameter").get("Load Stepping",false);
-
+    loadStepping_ =    parameterListSCI->sublist("Parameter").get("Load Stepping",true);
+    externalForce_ =   parameterListSCI->sublist("Parameter").get("External Force",true);
+    nonlinearExternalForce_ = parameterListSCI->sublist("Parameter").get("Nonlinear External Force",true);
     this->info();
 
 }
@@ -254,7 +255,8 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         
             this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
             
-
+            if(nonlinearExternalForce_)
+                computeSolidRHSInTime();
         }
         else 
             TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Coupling Type unknown. Please choose either implicit or explicit coupling.");
@@ -817,7 +819,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     }
     else{
         // The if condition resets the rhs. If we skip it when we attemp loadstepping, the rhs will be updated continously and wrongly increase with each timestep
-        //this->problemTimeStructure_->getRhs()->scale(0.0);
+        this->problemTimeStructure_->getRhs()->scale(0.0);
     }
 
     //can we get rid of this?
@@ -826,16 +828,51 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     // if(time == 0){nur dann konstanten SourceTerm berechnen}
     if (this->problemTimeStructure_->hasSourceTerm())
     {
+        if(externalForce_){
 
-        this->problemTimeStructure_->assembleSourceTerm( timeSteppingTool_->t_ );
+            MultiVectorPtr_Type FERhs = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
+            vec_dbl_Type funcParameter(3,0.);
+            funcParameter[0] = timeSteppingTool_->t_;            
+            // how can we use different parameters for different blocks here?
+            funcParameter[1] =this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Volume force",0.00211);;
+            
+            if(nonlinearExternalForce_){
+                MatrixPtr_Type A = this->system_->getBlock(0,0);
+                MatrixPtr_Type AKext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );          
+                MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );          
+
+                this->feFactory_->assemblyNonlinearSurfaceIntegralExternal(this->dim_, this->getDomain(0)->getFEType(),FERhs, d_rep_,Kext, funcParameter, this->problemTimeStructure_->getUnderlyingProblem()->rhsFuncVec_[0],this->parameterList_);
+                A->addMatrix(1.,AKext,0.);
+                Kext->addMatrix(1.,AKext,0.);
+
+                AKext->fillComplete(this->getDomain(0)->getMapVecFieldUnique(),this->getDomain(0)->getMapVecFieldUnique());
+
+                this->system_->addBlock(AKext,0,0);
+
+            }
+            else            
+                this->feFactory_->assemblySurfaceIntegralExternal(this->dim_, this->getDomain(0)->getFEType(),FERhs, d_rep_, funcParameter, this->problemTimeStructure_->getUnderlyingProblem()->rhsFuncVec_[0],this->parameterList_);
+
+
+            this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
+        }
+        else
+            this->problemTimeStructure_->assembleSourceTerm( timeSteppingTool_->t_ );
         //this->problemTimeStructure_->getSourceTerm()->scale(density);
-
         // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
         // Die Skalierung mit der Dichte erfolgt schon in der Assemblierungsfunktion!
         
         // addSourceTermToRHS() aus DAESolverInTime
         double coeffSourceTermStructure = 1.0;
-        BlockMultiVectorPtr_Type tmpPtr = this->problemTimeStructure_->getSourceTerm();
+        BlockMultiVectorPtr_Type tmpSourceterm = Teuchos::rcp(new BlockMultiVector_Type(1)) ;
+        tmpSourceterm->addBlock(this->sourceTerm_->getBlock(0),0);
+
+        BlockMultiVectorPtr_Type tmpPtr ; 
+        if(externalForce_)
+            tmpPtr =  tmpSourceterm;
+        else
+            tmpPtr = this->problemTimeStructure_->getSourceTerm();
+
         this->problemTimeStructure_->getRhs()->update(coeffSourceTermStructure, *tmpPtr, 1.);
         this->rhs_->addBlock( this->problemTimeStructure_->getRhs()->getBlockNonConst(0), 0 );
 
@@ -943,7 +980,7 @@ void SCI<SC,LO,GO,NO>::moveMesh() const
     ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeChem_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
 
     
-    ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeStructure_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
+    //( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeStructure_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
     
 }
 

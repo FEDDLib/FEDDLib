@@ -1,6 +1,11 @@
 #ifndef FE_DEF_hpp
 #define FE_DEF_hpp
 
+#ifdef FEDD_HAVE_ACEGENINTERFACE
+#include "aceinterface.h"
+#include "ace2.h"
+#endif
+
 #include "FE_decl.hpp"
 
 /*!
@@ -6107,6 +6112,189 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
     }
 
 }
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type d_rep,
+                                              std::vector<SC>& funcParameter,
+                                              RhsFunc_Type func,
+                                              ParameterListPtr_Type params) {
+    
+    // degree of function funcParameter[0]
+    UN FEloc = checkFE(dim,FEType);
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+    
+    int flagSurface = params->sublist("Parameter Solid").get("Flag Surface",5); 
+    
+    std::vector<double> valueFunc(dim);
+
+    SC* paramsFunc = &(funcParameter[0]);
+
+    // The second last entry is a placeholder for the surface element flag. It will be set below
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                
+                vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+
+
+		        vec_dbl_Type solution_d = getSolution(nodeList, d_rep,dim);
+                vec2D_dbl_Type nodes;
+		        nodes = getCoordinates(nodeList, pointsRep);
+                double positions[18];
+                int count =0;
+                for(int i=0;i<6;i++)
+                    for(int j=0;j<3;j++){
+                        positions[count] = nodes[i][j];
+                        count++;
+                    }
+
+                //for (int j=0; j<value.size(); j++)
+                //    value[j] *= elScaling;
+                paramsFunc[2] = feSub.getFlag();
+                vec_dbl_Type p1 = {0.,0.,0.}; // Dummy vector
+                func( &p1[0], &valueFunc[0], paramsFunc);
+  
+                double *residuumVector = (double*) calloc(18,sizeof(double));
+                #ifdef FEDD_HAVE_ACEGENINTERFACE
+                getResiduumVectorRext(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, residuumVector);
+                #endif
+                /*cout << " residuumVector " ;
+
+                for(int i=0; i< 18; i++)
+                    cout << residuumVector[i] << " " ;
+                cout << endl;*/
+                for(int i=0; i< nodeList.size() ; i++){
+                        for(int d=0; d<dim; d++)
+                            valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
+                }
+
+                free(residuumVector);
+                    
+            }
+        }
+    }
+}
+    
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type d_rep,
+                                              MatrixPtr_Type &Kext,
+                                              std::vector<SC>& funcParameter,
+                                              RhsFunc_Type func,
+                                              ParameterListPtr_Type params) {
+    
+    // degree of function funcParameter[0]
+    UN FEloc = checkFE(dim,FEType);
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+
+    MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+    
+    int flagSurface = params->sublist("Parameter Solid").get("Flag Surface",5); 
+    
+    std::vector<double> valueFunc(dim);
+
+    SC* paramsFunc = &(funcParameter[0]);
+
+    // The second last entry is a placeholder for the surface element flag. It will be set below
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                
+                vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();             
+              
+
+                // loop over basis functions
+		        vec_dbl_Type solution_d = getSolution(nodeList, d_rep,dim);
+                vec2D_dbl_Type nodes;
+		        nodes = getCoordinates(nodeList, pointsRep);
+                double positions[18];
+                int count =0;
+                for(int i=0;i<6;i++)
+                    for(int j=0;j<3;j++){
+                        positions[count] = nodes[i][j];
+                        count++;
+                    }
+
+                //for (int j=0; j<value.size(); j++)
+                //    value[j] *= elScaling;
+                vec_dbl_Type p1 = {0.,0.,0.}; // Dummy vector
+                paramsFunc[2] = feSub.getFlag();
+                func( &p1[0], &valueFunc[0], paramsFunc);
+  
+                double *residuumVector = (double*) calloc(18,sizeof(double));
+
+	            double *stiffnessMatrixFlat = (double *)calloc(18*18,sizeof(double));
+                double **stiffMat=(double**)calloc(18,sizeof(double*));
+                for(int i=0;i<18;i++)
+                {
+                    stiffMat[i] = &stiffnessMatrixFlat[18*i];
+                }                
+
+
+                #ifdef FEDD_HAVE_ACEGENINTERFACE
+                getResiduumVectorRext(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, residuumVector);
+                getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, stiffMat);
+                #endif
+             
+             
+                for(int i=0; i< nodeList.size() ; i++){
+                        for(int d=0; d<dim; d++)
+                            valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
+                }
+
+                Teuchos::Array<SC> values( 6, 0. );
+                Teuchos::Array<GO> indices( 6, 0 );
+                for(int k=0; k ++ ;k < 6){
+                    for (UN d=0; d<dim; d++) {
+                        for (UN j=0; j < indices.size(); j++){
+                            indices[j] = GO ( dim * map->getGlobalElement( nodeList[j] ) + d );
+                            values[j] = stiffMat[k*dim+d][dim*j+d ];
+                        }
+
+                        GO row = GO ( dim * map->getGlobalElement( nodeList[k] ) + d );
+                        Kext->insertGlobalValues( row, indices(), values() );
+                    }
+                }
+            
+
+                free(stiffMat);
+                free(stiffnessMatrixFlat);
+                free(residuumVector);
+                    
+            }
+        }
+    }
+    Kext->fillComplete(domainVec_.at(FEloc)->getMapVecFieldUnique(),domainVec_.at(FEloc)->getMapVecFieldUnique());
+}
     
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
@@ -6156,7 +6344,37 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
             if(subEl->getDimension() == dim-1){
                 // Setting flag to the placeholder (second last entry). The last entry at (funcParameter.size() - 1) should always be the degree of the surface function
                 params[ funcParameter.size() - 2 ] = feSub.getFlag();
+               
                 vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+
+		
+   				vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+   				double norm_v_E = 1.;
+   				if(dim==2){
+	   				v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+					v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+					norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+	   				
+   				}
+   				else if(dim==3){
+
+		            p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+					p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+					p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+					p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+					p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+					p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+					v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+					v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+					v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+		            
+					norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+				}
+
+
+
                 buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
                 elScaling = B.computeScaling( );
                 // loop over basis functions
@@ -6183,7 +6401,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
                             value[0] += weights->at(w) * valueFunc[0] * (*phi)[w][i];
                         else if ( fieldType == "Vector" ){
                             for (int j=0; j<value.size(); j++){
-                                value[j] += weights->at(w) * valueFunc[j] * (*phi)[w][i];
+                                value[j] += weights->at(w) * valueFunc[j]*v_E[j]/norm_v_E * (*phi)[w][i];
                             }
                         }
                     }

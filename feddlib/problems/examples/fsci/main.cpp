@@ -580,7 +580,7 @@ int main(int argc, char *argv[])
         domainFluidPressure->info();
         domainStructure->info();
         domainGeometry->info();
-        domainInterface->info();
+
         fsci.info();
                     
         std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",1.));

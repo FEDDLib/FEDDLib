@@ -23,14 +23,14 @@ class NavierStokes;
 template <class SC , class LO , class GO , class NO >
 class LinElas;
 template <class SC , class LO , class GO , class NO >
-class NonLinElasticity;
+class NonLinElasticityAssFE;
 template <class SC , class LO , class GO , class NO >
 class SCI;
 template <class SC , class LO , class GO , class NO >
 class FSI;
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class FSCI : public NonLinearProblem<SC,LO,GO,NO>  {
+class FSCI : public FSI<SC,LO,GO,NO>  {
 
 public:
     typedef Problem<SC,LO,GO,NO> Problem_Type;
@@ -125,7 +125,7 @@ public:
 
     virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
     
-    virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions);
+    //virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions);
 
     virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const; //standard or reverse    
     
@@ -205,20 +205,13 @@ public:
         dofID = (GO) ( dim * nodeID + localDofNumber);
     }
     
-    void findDisplacementTurek2DBenchmark();
-    
-    void findDisplacementRichter3DBenchmark();
-
-    void getValuesOfInterest2DBenchmark( vec_dbl_Type& values );
-
-    void getValuesOfInterest3DBenchmark( vec_dbl_Type& values );
     
     virtual void computeValuesOfInterestAndExport();
     /*####################*/
 
     // Alternativ wie in reAssembleExtrapolation() in NS?
 
-    MultiVectorPtr_Type meshDisplacementOld_rep_;
+   /* MultiVectorPtr_Type meshDisplacementOld_rep_;
     MultiVectorPtr_Type meshDisplacementNew_rep_;
     MultiVectorPtr_Type u_rep_;
     MultiVectorPtr_Type w_rep_;
@@ -231,19 +224,19 @@ public:
     mutable int counterP;
     // stationaere Systeme
     FluidProblemPtr_Type problemFluid_;
-    StructureProblemPtr_Type problemStructure_;
+    StructureProblemPtr_Type problemStructure_;*/
     SCIProblemPtr_Type problemSCI_;
-    StructureNonLinProblemPtr_Type problemStructureNonLin_; // CH: we want to combine both structure models to one general model later
-    GeometryProblemPtr_Type problemGeometry_;
+   // StructureNonLinProblemPtr_Type problemStructureNonLin_; // CH: we want to combine both structure models to one general model later
+   // GeometryProblemPtr_Type problemGeometry_;
 
     // zeitabhaengige Systeme
-    mutable TimeProblemPtr_Type problemTimeFluid_;
-    mutable TimeProblemPtr_Type problemTimeStructure_;
+   /* mutable TimeProblemPtr_Type problemTimeFluid_;
+    mutable TimeProblemPtr_Type problemTimeStructure_;*/
     mutable TimeProblemPtr_Type problemTimeSCI_;
 
 
-    Teuchos::RCP<SmallMatrix<int>> defTS_;
-    mutable Teuchos::RCP<TimeSteppingTools>	timeSteppingTool_;
+    /*Teuchos::RCP<SmallMatrix<int>> defTS_;
+    mutable Teuchos::RCP<TimeSteppingTools>	timeSteppingTool_;*/
 
 private:
     std::string materialModel_;

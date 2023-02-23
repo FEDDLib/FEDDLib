@@ -19,7 +19,7 @@ class DiffusionReaction;
 template <class SC , class LO , class GO , class NO >
 class LinElas;
 template <class SC , class LO , class GO , class NO >
-class NonLinElasticity;
+class NonLinElasAssFE;
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class SCI : public NonLinearProblem<SC,LO,GO,NO>  {
 
@@ -201,6 +201,9 @@ private:
     mutable MultiVectorPtr_Type eModVec_;
     bool loadStepping_;
     string couplingType_;
+    bool externalForce_;
+    bool nonlinearExternalForce_;
+
     /*####################*/
 
 public:

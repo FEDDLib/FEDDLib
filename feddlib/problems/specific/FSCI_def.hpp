@@ -56,14 +56,21 @@ FSCI<SC,LO,GO,NO>::FSCI(const DomainConstPtr_Type &domainVelocity, std::string F
                     ParameterListPtr_Type parameterListChem,
                     ParameterListPtr_Type parameterListFSCI, ParameterListPtr_Type parameterListGeometry,
                     Teuchos::RCP<SmallMatrix<int> > &defTS):
-NonLinearProblem<SC,LO,GO,NO>( parameterListFSCI, domainVelocity->getComm() ),
+FSI<SC,LO,GO,NO>(domainVelocity,  FETypeVelocity,
+                domainPressure,FETypePressure,
+                domainStructure, FETypeStructure,
+                domainInterface, FETypeInterface,
+                domainGeometry, FETypeGeometry,
+                parameterListFluid, parameterListStructure,
+                parameterListFSCI, parameterListGeometry,defTS),
+//NonLinearProblem<SC,LO,GO,NO>( parameterListFSCI, domainVelocity->getComm() ),
 // hasSourceTerm = drittes Arguement. assembleSourceTerm() fuer NS nicht programmiert.
 // Deswegen hier erstmal false (default Parameter).
 // Fuer Struktur hingegen ist default Parameter true, da programmiert.
-P_(),
-problemFluid_(),
-problemSCI_(),
-problemGeometry_(),
+//P_(),
+//problemFluid_(),
+problemSCI_()
+/*problemGeometry_(),
 meshDisplacementOld_rep_(),
 meshDisplacementNew_rep_(),
 u_rep_(),
@@ -75,9 +82,9 @@ timeSteppingTool_(),
 materialModel_( parameterListStructure->sublist("Parameter").get("Material model","linear") ),
 valuesForExport_(0),
 exporterTxtDrag_(),
-exporterGeo_()
+exporterGeo_()*/
 {
-    this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
+    /*this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
     geometryExplicit_ = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
 
     this->initNOXParameters();
@@ -89,22 +96,22 @@ exporterGeo_()
     
     this->addVariable( domainVelocity, FETypeVelocity, "u_f", domainVelocity->getDimension() ); // Fluid-Geschw.
     this->addVariable( domainPressure, FETypePressure, "p", 1); // Fluid-Druck
-    this->addVariable( domainStructure, FETypeStructure, "d_s", domainStructure->getDimension() ); // Struktur
+    this->addVariable( domainStructure, FETypeStructure, "d_s", domainStructure->getDimension() ); */// Struktur
     this->addVariable( domainChem, FETypeChem, "c", 1 ); // Chem
-    this->addVariable( domainInterface, FETypeInterface, "lambda", domainInterface->getDimension() ); // Interface
+    /*this->addVariable( domainInterface, FETypeInterface, "lambda", domainInterface->getDimension() ); // Interface
     this->addVariable( domainGeometry, FETypeGeometry, "d_f", domainGeometry->getDimension() ); // Geometrie
 
     this->dim_ = this->getDomain(0)->getDimension();
     
     problemFluid_ = Teuchos::rcp( new FluidProblem_Type( domainVelocity, FETypeVelocity, domainPressure, FETypePressure, parameterListFluid ) );
-    problemFluid_->initializeProblem();
+    problemFluid_->initializeProblem();*/
     
     Teuchos::RCP<SmallMatrix<int>> defTSSCI; // Seperate Timestepping Matrix for SCI
     defTSSCI.reset( new SmallMatrix<int> (2) );
     (*defTSSCI)[0][0] = (*defTS)[2][2];
     (*defTSSCI)[1][1] = (*defTS)[3][3];
-    problemSCI_ = Teuchos::rcp( new SCIProblem_Type( domainStructure, FETypeStructure, domainChem, FETypeChem, diffusionTensor,reactionFunc, parameterListStructure, parameterListChem, parameterListFSCI, defTSSCI ) );
-    problemSCI_->initializeProblem();
+    this->problemSCI_ = Teuchos::rcp( new SCIProblem_Type( domainStructure, FETypeStructure, domainChem, FETypeChem, diffusionTensor,reactionFunc, parameterListStructure, parameterListChem, parameterListFSCI, defTSSCI ) );
+    this->problemSCI_->initializeProblem();
 
     /*if (materialModel_=="linear"){
         problemStructure_ = Teuchos::rcp( new StructureProblem_Type( domainStructure, FETypeStructure, parameterListStructure ) );
@@ -115,7 +122,7 @@ exporterGeo_()
         problemStructureNonLin_->initializeProblem();
     }*/
     
-    problemGeometry_ = Teuchos::rcp( new GeometryProblem_Type( domainGeometry, FETypeGeometry, parameterListGeometry ) );
+    /*problemGeometry_ = Teuchos::rcp( new GeometryProblem_Type( domainGeometry, FETypeGeometry, parameterListGeometry ) );
     problemGeometry_->initializeProblem();
     //We initialize the subproblems. In the main routine, we need to call initializeFSCI(). There, we first initialize the vectors of the FSCI problem and then we set the pointers of the subproblems to the vectors of the full monolithic FSCI system. This way all values are only saved once in the subproblems and can be used by the monolithic FSCI system.
     
@@ -138,31 +145,16 @@ exporterGeo_()
         exporterTxtLift_ = Teuchos::rcp(new ExporterTxt () );
         exporterTxtLift_->setup( "lift_force", this->comm_ );
     }
-    p_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
+    p_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );*/
     
 }
 
-template<class SC,class LO,class GO,class NO>
-void FSCI<SC,LO,GO,NO>::findDisplacementTurek2DBenchmark(){
-    valuesForExport_.resize(1);
-    vec_dbl_Type x = {0.6,0.2};
-    //we save the local index as a double
-    valuesForExport_[0] = this->getDomain(2)->findInPointsUnique( x );
-}
-    
-template<class SC,class LO,class GO,class NO>
-void FSCI<SC,LO,GO,NO>::findDisplacementRichter3DBenchmark(){
-    valuesForExport_.resize(1);
-    vec_dbl_Type x = {0.45,0.15,0.15};
-    //we save the local index as a double
-    valuesForExport_[0] = this->getDomain(2)->findInPointsUnique( x );
-}
     
 template<class SC,class LO,class GO,class NO>
 FSCI<SC,LO,GO,NO>::~FSCI()
 {
-    if (!exporterGeo_.is_null()) {
-       exporterGeo_->closeExporter();
+    if (!this->exporterGeo_.is_null()) {
+       this->exporterGeo_->closeExporter();
     }
 }
 
@@ -197,7 +189,7 @@ void FSCI<SC,LO,GO,NO>::assemble( std::string type ) const
         this->problemSCI_->assemble();
         
         this->problemGeometry_->assemble();
-        if ( geometryExplicit_ && this->parameterList_->sublist("Exporter").get("Export GE geometry solution",false)){
+        if ( this->geometryExplicit_ && this->parameterList_->sublist("Exporter").get("Export GE geometry solution",false)){
             exporterGeo_ = Teuchos::rcp(new Exporter_Type());
             
             DomainConstPtr_Type dom = this->getDomain(5);
@@ -207,15 +199,15 @@ void FSCI<SC,LO,GO,NO>::assemble( std::string type ) const
             std::string varName = "d_f" + suffix;
             
             MeshPtr_Type meshNonConst = Teuchos::rcp_const_cast<Mesh_Type>( dom->getMesh() );
-            exporterGeo_->setup(varName, meshNonConst, dom->getFEType(), exportEveryXTimesteps, this->parameterList_);
+            this->exporterGeo_->setup(varName, meshNonConst, dom->getFEType(), exportEveryXTimesteps, this->parameterList_);
             
             MultiVectorConstPtr_Type exportVector = this->problemGeometry_->getSolution()->getBlock(0);
             
-            exporterGeo_->addVariable( exportVector, varName, "Vector", this->dim_, dom->getMapUnique() );
+            this->exporterGeo_->addVariable( exportVector, varName, "Vector", this->dim_, dom->getMapUnique() );
         }
         
         
-        if (!geometryExplicit_) {
+        if (!this->geometryExplicit_) {
             // RW fuer die Geometrie-Matrix H setzen, weil wenn wir das spaeter im FSCI-System
             // machen, dann wird aufgrund der RW auf dem Interface auch der Kopplungsblock
             // zur Struktur C4 ausgenullt, was wir nicht wollen.
@@ -288,7 +280,7 @@ void FSCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
         // C2 in Membervariable C2_ speichern, fuer rechte Seite im Interface-Block:
         // C2*d_s^n
-        C2_ = C2;
+        this->C2_ = C2;
 
         if(!geometryExplicit_)
         {
@@ -481,11 +473,11 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
     // Berechne die Gittergeschwindigkeit w und FSCI-Konvektion-Anteil (u-w)
     // ###############
     MultiVectorConstPtr_Type fluidSolution = this->solution_->getBlock(0);
-    u_rep_->importFromVector(fluidSolution, true);
-    u_minus_w_rep_->importFromVector(fluidSolution, true); //    u_minus_w_rep_ = *u_rep_;
+    this->u_rep_->importFromVector(fluidSolution, true);
+    this->u_minus_w_rep_->importFromVector(fluidSolution, true); //    u_minus_w_rep_ = *u_rep_;
 
     MultiVectorConstPtr_Type geometrySolution;
-    if(geometryExplicit_)
+    if(this->geometryExplicit_)
     {
         geometrySolution = this->problemGeometry_->getSolution()->getBlock(0);
     }
@@ -493,17 +485,17 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
     {
         geometrySolution = this->solution_->getBlock(5);
     }
-    meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
+    this->meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
 
-    *w_rep_ = *meshDisplacementNew_rep_;
-    w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
-    w_rep_->scale( 1.0/dt );
+    *this->w_rep_ = *meshDisplacementNew_rep_;
+    this->w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
+    this->w_rep_->scale( 1.0/dt );
 
-    u_minus_w_rep_->update( -1.0, *w_rep_, 1.0 );
+    this->u_minus_w_rep_->update( -1.0, *w_rep_, 1.0 );
 
     // Selbiges fuer den Druck
     MultiVectorConstPtr_Type pressureSolution = this->solution_->getBlock(1);
-    p_rep_->importFromVector(pressureSolution, true);
+    this->p_rep_->importFromVector(pressureSolution, true);
 
 
     // ###############
@@ -517,7 +509,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             std::cout << "-- Reassembly (ForTime)" << '\n';
 
         // Do we need ForTime at this point? see DAESolverInTime, is it only needed for extrapolation?
-        if(geometryExplicit_)
+        if(this->geometryExplicit_)
         {
             // ACHTUNG: Fluid-Loesung wird hier auf Null gesetzt, wegen initializeVectors().
             // Somit dann auch die problemTimeFluid_ wodurch eine falsche BDF2-RHS entsteht.
@@ -527,7 +519,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             this->problemFluid_->assembleConstantMatrices(); // Die Steifikeitsmatrix wird weiter unten erst genutzt
             
             // Es ist P = P_
-            P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+            this->P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
 //            counterP++;
 //            std::string outNameMeshVelo = "meshVelo" + to_string(counterP) + ".mm";
 //            w_rep_->writeMM(outNameMeshVelo);
@@ -536,11 +528,11 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
 //                values[2*i] = i;
 //            }
             this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
-            P_->resumeFill();
-            P_->scale(density);
-            P_->scale(-1.0);
+            this->P_->resumeFill();
+            this->P_->scale(density);
+            this->P_->scale(-1.0);
 //            P_->scale(.0);
-            P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
+            this->P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
 //            std::string outNameP = "P" + to_string(counterP) + ".mm";
 //            std::cout << "write P:"<<std::endl;
 //            P_->writeMM( "P.mm" );
@@ -630,7 +622,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
 
 }
 
-template<class SC,class LO,class GO,class NO>
+/*template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions)
 {
     double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
@@ -649,13 +641,13 @@ void FSCI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type pr
     {
         geometrySolution = this->solution_->getBlock(4);
     }
-    meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
+    this->meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
 
 
-    *w_rep_ = *meshDisplacementNew_rep_;
+    *this->w_rep_ = *meshDisplacementNew_rep_;
     // update(): this = alpha*A + beta*this
-    w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
-    w_rep_->scale(1.0/dt);
+    this->w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
+    this->w_rep_->scale(1.0/dt);
 
 
     // ###############
@@ -670,17 +662,17 @@ void FSCI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type pr
         // update(): this = alpha*A + beta*this
         extrapolatedVector->update( -1., *previousSolutions[1]->getBlock(0), 2. );
 
-        u_rep_->importFromVector(extrapolatedVector, true);
+        this->u_rep_->importFromVector(extrapolatedVector, true);
     }
     else if(previousSolutions.size() == 1)
     {
         MultiVectorConstPtr_Type u = previousSolutions[0]->getBlock(0);
-        u_rep_->importFromVector(u, true);
+       this->u_rep_->importFromVector(u, true);
     }
     else if (previousSolutions.size() == 0)
     {
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);
+       this->u_rep_->importFromVector(u, true);
     }
 
     // (u-w)
@@ -696,15 +688,15 @@ void FSCI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type pr
     MatrixPtr_Type APN = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
 
     MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-    this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, u_minus_w_rep_, true );
+    this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, this->u_minus_w_rep_, true );
 
-    P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    this->P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     
-    this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
-    P_->resumeFill();
-    P_->scale(density);
-    P_->scale(-1.0);
-    P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
+    this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), this->P_, this->w_rep_, true );
+    this->P_->resumeFill();
+    this->P_->scale(density);
+    this->P_->scale(-1.0);
+    this->P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
 
 
     N->resumeFill();
@@ -712,13 +704,13 @@ void FSCI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type pr
     N->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
 
     this->problemFluid_->A_->addMatrix(1.0, APN, 0.0);
-    P_->addMatrix(1.0, APN, 1.0);
+    this->P_->addMatrix(1.0, APN, 1.0);
     N->addMatrix(1.0, APN, 1.0);
 
     APN->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
 
     this->system_->addBlock( APN, 0, 0 );
-}
+}*/
 
 template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const
@@ -726,38 +718,38 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
     
     MultiVectorConstPtr_Type geometrySolution;
     
-    if(geometryExplicit_)
+    if(this->geometryExplicit_)
         geometrySolution = this->problemGeometry_->getSolution()->getBlock(0);
     else {
         moveMesh();
         geometrySolution = this->solution_->getBlock(4);
     }
     
-    meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
+    this->meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
     
     MultiVectorConstPtr_Type fluidSolution = this->solution_->getBlock(0);
-    u_rep_->importFromVector(fluidSolution, true);
-    u_minus_w_rep_->importFromVector(fluidSolution, true); //    u_minus_w_rep_ = *u_rep_;
+    this->u_rep_->importFromVector(fluidSolution, true);
+    this->u_minus_w_rep_->importFromVector(fluidSolution, true); //    u_minus_w_rep_ = *u_rep_;
     
-    *w_rep_ = *meshDisplacementNew_rep_;
-    w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
+    *this->w_rep_ = *this->meshDisplacementNew_rep_;
+    this->w_rep_->update(-1.0, *this->meshDisplacementOld_rep_, 1.0);
     double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
-    w_rep_->scale(1.0/dt);
+    this->w_rep_->scale(1.0/dt);
     
-    u_minus_w_rep_->update(-1.0, *w_rep_, 1.0);
+    this->u_minus_w_rep_->update(-1.0, *w_rep_, 1.0);
     
-    if (!geometryExplicit_) {
+    if (!this->geometryExplicit_) {
         
         P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
         double density = this->problemTimeFluid_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
         
-        this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
-        P_->resumeFill();
-        P_->scale(density);
-        P_->scale(-1.0);
-        P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
+        this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), this->P_, this->w_rep_, true );
+        this->P_->resumeFill();
+        this->P_->scale(density);
+        this->P_->scale(-1.0);
+        this->P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
         
-        problemFluid_->assembleConstantMatrices();
+        this->problemFluid_->assembleConstantMatrices();
         
         this->system_->addBlock( this->problemFluid_->system_->getBlock(0,1), 0, 1 );
         this->system_->addBlock( this->problemFluid_->system_->getBlock(1,0), 1, 0 );
@@ -871,7 +863,7 @@ void FSCI<SC,LO,GO,NO>::setFromPartialVectorsInit() const
     this->previousSolution_->addBlock( this->problemSCI_->getPreviousSolution()->getBlockNonConst(1), 3 );
     this->sourceTerm_->addBlock( this->problemSCI_->getSourceTerm()->getBlockNonConst(1), 3 );
 
-    if(!geometryExplicit_){
+    if(!this->geometryExplicit_){
         this->solution_->addBlock( this->problemGeometry_->getSolution()->getBlockNonConst(0), 5 );
         // we dont have a previous solution for linear problems
         this->rhs_->addBlock( this->problemGeometry_->getRhs()->getBlockNonConst(0), 5 );
@@ -1157,12 +1149,12 @@ void FSCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
         coeffPrevSteps.at(i) = timeSteppingTool_->getInformationBDF(i+2) / dt;
     }
 
-    if (timeSteppingTool_->currentTime()==0.) {
+    if (this->timeSteppingTool_->currentTime()==0.) {
         SmallMatrix<double> tmpmassCoeff(sizeFluid);
         SmallMatrix<double> tmpproblemCoeff(sizeFluid);
         for (int i=0; i<sizeFluid; i++) {
             for (int j=0; j<sizeFluid; j++) {
-                if ((*defTS_)[i][j]==1 && i==j) {
+                if ((*this->defTS_)[i][j]==1 && i==j) {
                     tmpmassCoeff[i][j] = 1. / dt;
                 }
                 else{
@@ -1182,7 +1174,7 @@ void FSCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
         }
         this->problemTimeFluid_->setTimeParameters(tmpmassCoeff, tmpproblemCoeff);
     }
-    if (timeSteppingTool_->currentTime()==0.) {
+    if (this->timeSteppingTool_->currentTime()==0.) {
         vec_dbl_Type tmpcoeffPrevSteps(1, 1. / dt);
         this->problemTimeFluid_->updateMultistepRhsFSI(tmpcoeffPrevSteps,1);/*apply (mass matrix_t / dt) to u_t*/
     }
@@ -1197,7 +1189,7 @@ void FSCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
 
     // Wieder zu den eigentlichen Parametern zuruecksetzen, nachdem die temporaeren
     // genommen wurden.
-    if (timeSteppingTool_->currentTime()==0.) {
+    if (this->timeSteppingTool_->currentTime()==0.) {
         SmallMatrix<double> massCoeffFluid(sizeFluid);
         SmallMatrix<double> problemCoeffFluid(sizeFluid);
 
@@ -1213,7 +1205,7 @@ void FSCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
         }
         for (int i=0; i<sizeFluid; i++) {
             for (int j=0; j<sizeFluid; j++){
-                if ((*defTS_)[i][j]==1){
+                if ((*this->defTS_)[i][j]==1){
                     problemCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(1);
                 }
                 else{
@@ -1358,7 +1350,7 @@ void FSCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
 template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::updateTime() const
 {
-    timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
+    this->timeSteppingTool_->t_ = this->timeSteppingTool_->t_ + this->timeSteppingTool_->dt_prev_;
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -1366,7 +1358,7 @@ void FSCI<SC,LO,GO,NO>::moveMesh() const
 {
 
     MultiVectorConstPtr_Type displacementUniqueConst;
-    if(geometryExplicit_)
+    if(this->geometryExplicit_)
     {
         displacementUniqueConst = this->problemGeometry_->getSolution()->getBlock(0);
     }
@@ -1398,7 +1390,7 @@ void FSCI<SC,LO,GO,NO>::addInterfaceBlockRHS() const
 {
     MultiVectorPtr_Type vectorToAdd = Teuchos::rcp( new MultiVector_Type( this->rhs_->getBlock(4) ) );
 
-    C2_->apply(*(this->solution_->getBlock(2)), *vectorToAdd);
+    this->C2_->apply(*(this->solution_->getBlock(2)), *vectorToAdd);
     this->rhs_->addBlock(vectorToAdd, 4);
 }
 
@@ -1428,27 +1420,6 @@ void FSCI<SC,LO,GO,NO>::getValuesOfInterest( vec_dbl_Type& values ){
     
 }
     
-template<class SC,class LO,class GO,class NO>
-void FSCI<SC,LO,GO,NO>::getValuesOfInterest2DBenchmark( vec_dbl_Type& values ){
-
-    
-    if ( valuesForExport_[0] >= 0.  ) { // we set the displacement of the 2D Turek Benchmark in x and y direction
-        LO loc = valuesForExport_[0] + 10*Teuchos::ScalarTraits<SC>::eps();
-        values[0] = this->getSolution()->getBlock(2)->getData(0)[2*loc];
-        values[1] = this->getSolution()->getBlock(2)->getData(0)[2*loc+1];
-    }
-}
-    
-template<class SC,class LO,class GO,class NO>
-void FSCI<SC,LO,GO,NO>::getValuesOfInterest3DBenchmark( vec_dbl_Type& values ){
-    
-    if ( valuesForExport_[0] >= 0.   ) { // we set the displacement of the 3D Richter Benchmark in x, y, and z direction
-        LO loc = valuesForExport_[0] + 10*Teuchos::ScalarTraits<SC>::eps();
-        values[0] = this->getSolution()->getBlock(2)->getData(0)[3*loc];
-        values[1] = this->getSolution()->getBlock(2)->getData(0)[3*loc+1];
-        values[2] = this->getSolution()->getBlock(2)->getData(0)[3*loc+2];
-    }
-}
     
 template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
@@ -1531,7 +1502,7 @@ void FSCI<SC,LO,GO,NO>::initializeGE(){
 /*All vectors (solution, rhs, previousSolution,...) should be initialized at this point (initializeProblem() was called)
  Therefore, all these BlockMVectors should have a length of 5 since the geometry problem is included in the general setup. We need to resize these BlockMVs here if the Geometry Explicit (GE) system is used.
 */
-    if (geometryExplicit_) {
+    if (this->geometryExplicit_) {
         this->solution_->resize( 5 );
         this->rhs_->resize( 5 );
         this->sourceTerm_->resize( 5 );

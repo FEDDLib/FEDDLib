@@ -109,6 +109,23 @@ class FE {
                                  std::string fieldType,
                                  RhsFunc_Type func,
                                  std::vector<SC>& funcParameter);
+                    
+    void assemblySurfaceIntegralExternal(int dim,
+                                    std::string FEType,
+                                    MultiVectorPtr_Type f,
+                                    MultiVectorPtr_Type d_rep,
+                                    std::vector<SC>& funcParameter,
+                                    RhsFunc_Type func,
+                                    ParameterListPtr_Type params);
+
+    void assemblyNonlinearSurfaceIntegralExternal(int dim,
+                                    std::string FEType,
+                                    MultiVectorPtr_Type f,
+                                    MultiVectorPtr_Type d_rep,
+                                    MatrixPtr_Type &Kext,
+                                    std::vector<SC>& funcParameter,
+                                    RhsFunc_Type func,
+                                    ParameterListPtr_Type params);
     
     void assemblySurfaceIntegralFlag(int dim,
                                     std::string FEType,

@@ -601,6 +601,96 @@ int Helper::getPhi(vec2D_dbl_ptr_Type &Phi,
     return intFE;
 }
 
+/*!
+
+\brief Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information. !! Input can be improved with just delivering the coordinates of the surface nodes to determine the quad points
+
+@param[in] dim Dimension for which the quadrature points are needed.
+@param[in] FEType Finite element type for which the quadrature points are needed.
+@param[in] QuadW Vector to be filled with the quadrature weights accordingly
+@param[in] vec_LO_Type surfaceIDs for which you need the quadrature points.
+@param[in] points The repeated(!) points of current problem to identify the surface node ids. 
+
+@param[out] QuadPts Quadrature points
+@param[out] QuadW Quadrature weights
+
+\brief Keep in mind that elementwise quadPoints are defined on reference element whereas surface quadPoints at hand are defined on the input surface, which is typically not the reference Element. 
+
+*/
+
+vec2D_dbl_Type Helper::getQuadratureValuesOnSurface(int dim, std::string FEType, vec_dbl_Type &QuadW, vec_LO_Type surfaceIDs, vec2D_dbl_ptr_Type points){
+
+	vec2D_dbl_Type QuadPts(QuadW.size(), vec_dbl_Type(dim));
+	
+	if(dim==2){
+		double x0 = points->at(surfaceIDs.at(0)).at(0);
+		double y0 = points->at(surfaceIDs.at(0)).at(1);
+		double x1 = points->at(surfaceIDs.at(1)).at(0);
+		double y1 = points->at(surfaceIDs.at(1)).at(1);
+		
+
+		if(FEType == "P1"){
+			
+			QuadPts[0][0] =  (x0+x1)/2.;
+			QuadPts[0][1] =  (y0+y1)/2.;
+
+			QuadW[0] = 1.;
+		}
+		else if(FEType == "P2"){
+
+			QuadPts[0][0] =  x0;
+			QuadPts[0][1] =  y0;
+			QuadPts[1][0] =  (x0+x1)/2.;
+			QuadPts[1][1] =  (y0+y1)/2.;
+			QuadPts[2][0] =  x1;
+			QuadPts[2][1] =  y1;
+
+			QuadW[0] = 1.;
+			QuadW[1] = 4.;
+			QuadW[2] = 1.;
+		}
+		
+	}	
+	else if(dim==3){
+		// Here we choose as quadpoints the midpoints of the triangle sides
+		double x0 = points->at(surfaceIDs.at(0)).at(0);
+		double y0 = points->at(surfaceIDs.at(0)).at(1);
+		double z0 = points->at(surfaceIDs.at(0)).at(2);
+		double x1 = points->at(surfaceIDs.at(1)).at(0);
+		double y1 = points->at(surfaceIDs.at(1)).at(1);
+		double z1 = points->at(surfaceIDs.at(1)).at(2);
+		double x2 = points->at(surfaceIDs.at(2)).at(0);
+		double y2 = points->at(surfaceIDs.at(2)).at(1);
+		double z2 = points->at(surfaceIDs.at(2)).at(2);
+
+		if(FEType == "P1"){
+			// In my case: As nabla phi is a constant function, quad points don't really matter in that case ...
+			QuadPts[0][0] =   1/3.;
+			QuadPts[0][1] =   1/3.;
+			QuadPts[0][2] =   1/3.;
+
+			QuadW[0] = 1.;
+		}
+		else if(FEType == "P2"){
+			QuadPts[0][0] =  (x0+x1)/2.;
+			QuadPts[0][1] =  (y0+y1)/2.;
+			QuadPts[0][2] =  (z0+z1)/2.;
+			QuadPts[1][0] =  (x0+x2)/2.;
+			QuadPts[1][1] =  (y0+y2)/2.;
+			QuadPts[1][2] =  (z0+z2)/2.;
+			QuadPts[2][0] =  (x1+x2)/2.;
+			QuadPts[2][1] =  (y1+y2)/2.;
+			QuadPts[2][2] =  (z1+z2)/2.;
+
+			QuadW[0] = 1/3.;
+			QuadW[1] = 1/3.;
+			QuadW[2] = 1/3.;
+		}
+	}
+
+	return QuadPts;	
+
+}
 
 void Helper::getQuadratureValues(int dim,
                                   int Degree,
