@@ -20,8 +20,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyLinElasAssFE
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyLinElasAssFE
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-	SOURCE_FILES cube_0_1.mesh
+	SOURCE_FILES cube_h_1.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES cube_0_1.mesh
+	DEST_FILES cube_h_1.mesh
 	EXEDEPS steadyLinElasAssFE
 )

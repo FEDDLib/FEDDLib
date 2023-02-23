@@ -30,7 +30,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="cube_0_1.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="cube_h_1.mesh"/>
     </ParameterList>
     
     <ParameterList name="General">
