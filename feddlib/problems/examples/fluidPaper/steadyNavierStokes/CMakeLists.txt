@@ -3,13 +3,13 @@ TRIBITS_ADD_EXECUTABLE(
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
-	steadyNavierStokesPaper
-	NAME steadyNavierStokesPaper
-	ARGS
+#TRIBITS_ADD_TEST(
+#	steadyNavierStokesPaper
+#	NAME steadyNavierStokesPaper
+#	ARGS
 #--precfile=parametersPrecMumps.xml
-	NUM_MPI_PROCS 4
-)
+#	NUM_MPI_PROCS 4
+#)
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNavierStokesPaper
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}

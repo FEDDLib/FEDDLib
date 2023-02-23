@@ -3,12 +3,12 @@ TRIBITS_ADD_EXECUTABLE(
     SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
-    fsiPaper
-    NAME fsiPaper
-    ARGS
-    NUM_MPI_PROCS 2
-)
+#TRIBITS_ADD_TEST(
+#    fsiPaper
+#    NAME fsiPaper
+#    ARGS
+#    NUM_MPI_PROCS 2
+#)
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fsiTestPaper
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}

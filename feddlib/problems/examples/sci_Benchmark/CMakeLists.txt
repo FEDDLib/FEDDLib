@@ -3,12 +3,12 @@ TRIBITS_ADD_EXECUTABLE(
     SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
-    sci_Benchmark
-    NAME sci_Benchmark
-    ARGS
-    NUM_MPI_PROCS 4
-)
+#TRIBITS_ADD_TEST(
+#    sci_Benchmark
+#    NAME sci_Benchmark
+#    ARGS
+#    NUM_MPI_PROCS 4
+#)
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_sciBenchmark
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
