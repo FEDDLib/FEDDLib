@@ -122,9 +122,11 @@ void rhsYZ(double* x, double* res, double* parameters){
 
 void rhsHeartBeatCube(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
+    res[0] =0.;
+    res[1] =0.;
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 1001.0;
+    double TRamp = 2001.0;
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -156,22 +158,21 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     if(parameters[0] <= 1.)
        force = force * parameters[0];
     
-    if(parameters[2] == 5)
+    if(parameters[2] == 5 || parameters[2] == 4){
+     	res[0] = force+Q*0.005329;
         res[1] = force+Q*0.005329;
-    else
-        res[1] =0.;
-        
-    if (parameters[2] == 4)
-        res[2] = force+Q*0.005329;
-    else
-        res[2] = 0.;
+       	res[2] = force+Q*0.005329;
+    }
+      
 }
 
 void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
+    res[0] =0.;
+    res[1] =0.;
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 1001.0;
+    double TRamp = 2001.0;
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -203,29 +204,25 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
         force = force * parameters[0];
         
     if(parameters[2]==5){
-        res[0] = x[0];
-        res[1] = x[1];
-        double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
-        res[0] = res[0]*(force+Q*0.005329);
-        res[1] = res[1]*(force+Q*0.005329);
-       
+        res[0] = force+Q*0.005329;
+        res[1] = force+Q*0.005329;
+       	res[2] = force+Q*0.005329;
     }
-    else{
-        res[0] =0.;
-        res[1] =0.;
-    }
+    
   
 }
 
 void rhsArteryPaper(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
+    res[0] =0.;
+    res[1] =0.;
     res[2] = 0.;
     double force = parameters[1];
     double TRamp = 2001.0;
     double lambda=0.;
     
-    if(parameters[0] <= 10.0)
-        lambda = 0.875*parameters[0]/10.;
+    if(parameters[0] <= 1.0)
+        lambda = 0.875*parameters[0];
     else if(parameters[0] <= TRamp)
     	lambda = 0.875;
     else if( parameters[0] < 2001.5 )
@@ -236,22 +233,13 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
     
     if(parameters[2]==5){
-        /*res[0] = x[0];
-        res[1] = x[1];
-        double r2= sqrt(res[0]*res[0]+res[1]*res[1]);
-        res[0] = 1./r2*res[0]*lambda*force;
-        res[1] = 1./r2*res[1]*lambda*force;*/
         res[0] =lambda*force;
         res[1] =lambda*force;
         res[2] =lambda*force; 
         
        
     }
-    else{
-        res[0] =0.;
-        res[1] =0.;
-    }
-            
+      
 }
 
 void rhsCubePaper(double* x, double* res, double* parameters){
@@ -275,15 +263,11 @@ void rhsCubePaper(double* x, double* res, double* parameters){
     if(parameters[0] < 0.1)
     	lambda=0.; 
      
-    if(parameters[2] == 5)
-        res[1] = force*lambda;
-    else
-        res[1] =0.;
-        
-    if (parameters[2] == 4)
-        res[2] = force*lambda;
-    else
-        res[2] = 0.;
+    if(parameters[2] == 5 || parameters[2] == 4){
+        res[0] =lambda*force;
+        res[1] =lambda*force;
+        res[2] =lambda*force; 
+    }
             
 }
 

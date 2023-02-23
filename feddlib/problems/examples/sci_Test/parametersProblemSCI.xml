@@ -2,8 +2,8 @@
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
-        <Parameter name="BC Type" type="string" value="Cube"/><!--partialArtery-->
-        <Parameter name="RHS Type" type="string" value="Constant"/><!--partialArtery-->
+        <Parameter name="BC Type" type="string" value="Cube"/><!--Artery, Cube-->
+        <Parameter name="RHS Type" type="string" value="Constant"/><!--Constant, Paper, Heart Beat-->
         
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
         
@@ -18,7 +18,7 @@
         <Parameter name="External Force" type="bool" value="false"/>
         <Parameter name="Nonlinear External Force" type="bool" value="true"/>
         <Parameter name="Coupling Type" type="string" value="implicit"/>
-        <Parameter name="Structure Model" type="string" value="SCI_simple"/> <!-- SCI_simple for simplified model -->
+        <Parameter name="Structure Model" type="string" value="SCI_simple"/> <!-- SCI_simple for simplified model or SCI_sophisticated -->
 
         <Parameter name="Refinement Level" type="int" value="0"/>
        
@@ -52,7 +52,7 @@
         <Parameter name="Viscosity" type="double" value="1.0"/>
         <Parameter name="Density" type="double" value="1000.0"/>
         <Parameter name="m" type="double" value="0."/>
-        <Parameter name="D0" type="double" value="6.e-03"/>
+        <Parameter name="D0" type="double" value="6.e-02"/>
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
     </ParameterList>
     

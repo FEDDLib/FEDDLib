@@ -68,7 +68,7 @@ public:
 
     virtual void getValuesOfInterest( vec_dbl_Type& values ) = 0;
     
-    int solveAndUpdate( const std::string& criterion = "Residual", double& criterionValue = 0. );
+    int solveAndUpdate( const std::string& criterion , double& criterionValue );
 
     int solveUpdate( );
 
