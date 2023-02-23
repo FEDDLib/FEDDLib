@@ -347,7 +347,7 @@ void FSCI<SC,LO,GO,NO>::assemble( std::string type ) const
         this->setFromPartialVectorsInit();
         
         // Fuer die Zeitprobleme
-        timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
+        this->timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
         ParameterListPtr_Type plStructure;
         /*if (materialModel_=="linear")
             plStructure = this->problemStructure_->getParameterList();
@@ -487,11 +487,11 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
     }
     this->meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
 
-    *this->w_rep_ = *meshDisplacementNew_rep_;
-    this->w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
+    *this->w_rep_ = *this->meshDisplacementNew_rep_;
+    this->w_rep_->update(-1.0, *this->meshDisplacementOld_rep_, 1.0);
     this->w_rep_->scale( 1.0/dt );
 
-    this->u_minus_w_rep_->update( -1.0, *w_rep_, 1.0 );
+    this->u_minus_w_rep_->update( -1.0, *this->w_rep_, 1.0 );
 
     // Selbiges fuer den Druck
     MultiVectorConstPtr_Type pressureSolution = this->solution_->getBlock(1);
@@ -527,7 +527,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
 //            for (int i=0; i<values.size()/2; i++) {
 //                values[2*i] = i;
 //            }
-            this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
+            this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), this->P_, this->w_rep_, true );
             this->P_->resumeFill();
             this->P_->scale(density);
             this->P_->scale(-1.0);
@@ -567,7 +567,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
                 std::cout << "-- Reassembly GE (Newton) ... full reassembly" << '\n';
             }
             
-            problemFluid_->reAssemble( "Newton" );
+            this->problemFluid_->reAssemble( "Newton" );
             cout << "Assemble Newton for Fluid done" <<endl;
             //if (materialModel_ != "linear")
             this->problemSCI_->reAssemble("Newton");
@@ -587,7 +587,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
                 std::cout << "-- Reassembly GI (Newton) ... only W" << '\n';
             }
 
-            problemFluid_->reAssemble( "Newton" );
+            this->problemFluid_->reAssemble( "Newton" );
             
             // TODO: Shape
             // domain(0) = domain(4)
@@ -595,9 +595,9 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             MatrixPtr_Type shapeDiv = Teuchos::rcp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) ); // shape fuer div-Nebenbedingung
 
             this->feFactory_->assemblyShapeDerivativeVelocity(this->dim_, this->domain_FEType_vec_.at(5), this->domain_FEType_vec_.at(1),
-                            shapeVelocity, 5, u_rep_, w_rep_, p_rep_, dt, density, viscosity, true);
+                            shapeVelocity, 5, this->u_rep_, this->w_rep_, this->p_rep_, dt, density, viscosity, true);
             this->feFactory_->assemblyShapeDerivativeDivergence(this->dim_, this->domain_FEType_vec_.at(5), this->domain_FEType_vec_.at(1),
-                            shapeDiv, 1, 5, this->getDomain(1)->getMapUnique(), this->getDomain(5)->getMapVecFieldUnique(), u_rep_, true);
+                            shapeDiv, 1, 5, this->getDomain(1)->getMapUnique(), this->getDomain(5)->getMapVecFieldUnique(), this->u_rep_, true);
             shapeDiv->resumeFill();
             shapeDiv->scale(-1.0);
             shapeDiv->fillComplete(this->getDomain(4)->getMapVecFieldUnique(), this->getDomain(1)->getMapUnique());
@@ -612,7 +612,7 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
         }
     }
 
-    this->system_->addBlock( problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
+    this->system_->addBlock( this->problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
     
     //if (materialModel_ != "linear")
     this->system_->addBlock(  this->problemSCI_->getSystem()->getBlock(0,0), 2, 2 );
@@ -736,11 +736,11 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
     double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
     this->w_rep_->scale(1.0/dt);
     
-    this->u_minus_w_rep_->update(-1.0, *w_rep_, 1.0);
+    this->u_minus_w_rep_->update(-1.0, *this->w_rep_, 1.0);
     
     if (!this->geometryExplicit_) {
         
-        P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+        this->P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
         double density = this->problemTimeFluid_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
         
         this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), this->P_, this->w_rep_, true );
@@ -758,7 +758,7 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
     if ( this->verbose_ )
         std::cout << "Warning: Wrong consideration of temporal discretization for multi-stage RK methods!" << std::endl;
     
-    this->problemFluid_->calculateNonLinResidualVecWithMeshVelo( "reverse", time, u_minus_w_rep_, P_ );
+    this->problemFluid_->calculateNonLinResidualVecWithMeshVelo( "reverse", time, this->u_minus_w_rep_, P_ );
     this->system_->addBlock( problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
     
     // we need to account for the coupling in the residuals
@@ -875,7 +875,7 @@ template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::updateMeshDisplacement() const
 {
 
-     *meshDisplacementOld_rep_ = *meshDisplacementNew_rep_;
+     *this->meshDisplacementOld_rep_ = *this->meshDisplacementNew_rep_;
 
 }
 
@@ -996,8 +996,8 @@ void FSCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterList
     if(this->verbose_)
         std::cout << "-- Setup FSCI Sub-TimeProblems \n" << std::flush;
 
-    double dt = timeSteppingTool_->get_dt();
-    double beta = timeSteppingTool_->get_beta();
+    double dt = this->timeSteppingTool_->get_dt();
+    double beta = this->timeSteppingTool_->get_beta();
 
     int sizeFluid = this->problemFluid_->getSystem()->size();
     /*int sizeStructure;
@@ -1025,9 +1025,9 @@ void FSCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterList
     if ( this->getParameterList()->sublist("Timestepping Parameter").get("Class","Multistep") == "Multistep" ) {
         for (int i=0; i<sizeFluid; i++) {
             for (int j=0; j<sizeFluid; j++) {
-                if ((*defTS_)[i][j]==1 && i==j) {
+                if ((*this->defTS_)[i][j]==1 && i==j) {
                     defFluid[i][j] = 1;
-                    massCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
+                    massCoeffFluid[i][j] = this->timeSteppingTool_->getInformationBDF(0) / dt;
                 }
                 else{
                     massCoeffFluid[i][j] = 0.0;
@@ -1036,9 +1036,9 @@ void FSCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterList
         }
         for (int i=0; i<sizeFluid; i++) {
             for (int j=0; j<sizeFluid; j++){
-                if ((*defTS_)[i][j]==1){
-                    problemCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(1);
-                    coeffSourceTermFluid = timeSteppingTool_->getInformationBDF(1);
+                if ((*this->defTS_)[i][j]==1){
+                    problemCoeffFluid[i][j] = this->timeSteppingTool_->getInformationBDF(1);
+                    coeffSourceTermFluid = this->timeSteppingTool_->getInformationBDF(1);
                 }
                 else{
                     problemCoeffFluid[i][j] = 1.;
@@ -1140,13 +1140,13 @@ void FSCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
     // RHS nach BDF2
     //######################
     int sizeFluid = this->problemFluid_->getSystem()->size();
-    double dt = timeSteppingTool_->get_dt();
-    int nmbBDF = timeSteppingTool_->getBDFNumber();
+    double dt = this->timeSteppingTool_->get_dt();
+    int nmbBDF = this->timeSteppingTool_->getBDFNumber();
 
     vec_dbl_Type coeffPrevSteps(nmbBDF);
     for(int i = 0; i < coeffPrevSteps.size(); i++)
     {
-        coeffPrevSteps.at(i) = timeSteppingTool_->getInformationBDF(i+2) / dt;
+        coeffPrevSteps.at(i) = this->timeSteppingTool_->getInformationBDF(i+2) / dt;
     }
 
     if (this->timeSteppingTool_->currentTime()==0.) {
@@ -1164,7 +1164,7 @@ void FSCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
         }
         for (int i=0; i<sizeFluid; i++) {
             for (int j=0; j<sizeFluid; j++){
-                if ((*defTS_)[i][j]==1){
+                if ((*this->defTS_)[i][j]==1){
                     tmpproblemCoeff[i][j] =  1.; // ist das richtig? Vermutlich schon, da BDF so geschrieben ist, dass zu berechnende Lsg den Koeffizienten 1 hat
                 }
                 else{
@@ -1195,8 +1195,8 @@ void FSCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
 
         for (int i=0; i<sizeFluid; i++) {
             for (int j=0; j<sizeFluid; j++) {
-                if ((*defTS_)[i][j]==1 && i==j) {
-                    massCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
+                if ((*this->defTS_)[i][j]==1 && i==j) {
+                    massCoeffFluid[i][j] = this->timeSteppingTool_->getInformationBDF(0) / dt;
                 }
                 else{
                     massCoeffFluid[i][j] = 0.0;
@@ -1206,7 +1206,7 @@ void FSCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
         for (int i=0; i<sizeFluid; i++) {
             for (int j=0; j<sizeFluid; j++){
                 if ((*this->defTS_)[i][j]==1){
-                    problemCoeffFluid[i][j] = timeSteppingTool_->getInformationBDF(1);
+                    problemCoeffFluid[i][j] = this->timeSteppingTool_->getInformationBDF(1);
                 }
                 else{
                     problemCoeffFluid[i][j] = 1.;
@@ -1225,10 +1225,10 @@ void FSCI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
 template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::updateFluidInTime() const
 {
-    int nmbBDF = timeSteppingTool_->getBDFNumber();
+    int nmbBDF = this->timeSteppingTool_->getBDFNumber();
 
     if(nmbBDF<2 && !this->parameterList_->sublist("General").get("Linearization","FixedPoint").compare("Extrapolation")) {
-        if (timeSteppingTool_->currentTime()!=0.){
+        if (this->timeSteppingTool_->currentTime()!=0.){
             this->problemTimeFluid_->updateSolutionMultiPreviousStep(2);
             this->problemTimeFluid_->updateSystemMassMultiPreviousStep(2);
         }
@@ -1248,9 +1248,9 @@ void FSCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     //######################
     // RHS nach Newmark
     //######################
-    double dt = timeSteppingTool_->get_dt();
-    double beta = timeSteppingTool_->get_beta();
-    double gamma = timeSteppingTool_->get_gamma();
+    double dt = this->timeSteppingTool_->get_dt();
+    double beta = this->timeSteppingTool_->get_beta();
+    double gamma = this->timeSteppingTool_->get_gamma();
     
     // Temporaerer Koeffizienten fuer die Skalierung der Massematrix in der rechten Seite des Systems in UpdateNewmarkRhs()
     vec_dbl_Type coeffTemp(1);
@@ -1266,7 +1266,7 @@ void FSCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     this->problemSCI_->problemTimeStructure_->updateNewmarkRhs(dt, beta, gamma, coeffTemp);
     
     //can we get rid of this?
-    double time = timeSteppingTool_->currentTime() + dt;
+    double time = this->timeSteppingTool_->currentTime() + dt;
     
     // TODO: SourceTerm wird in jedem Zeitschritt neu berechnet; auch wenn konstant!!!
     // if(time == 0){nur dann konstanten SourceTerm berechnen}
@@ -1413,10 +1413,11 @@ void FSCI<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::InArgs<SC
 
 template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::getValuesOfInterest( vec_dbl_Type& values ){
+	/*
     if (this->dim_==2)
         getValuesOfInterest2DBenchmark( values );
     else if(this->dim_==3)
-        getValuesOfInterest3DBenchmark( values);
+        getValuesOfInterest3DBenchmark( values);*/
     
 }
     
@@ -1494,8 +1495,8 @@ void FSCI<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
         
         exporterTxtDrag_->exportData( drag[0] );
         exporterTxtLift_->exportData( lift[0] );
-    }*/
-}
+    }
+}*/
 
 template<class SC,class LO,class GO,class NO>
 void FSCI<SC,LO,GO,NO>::initializeGE(){
