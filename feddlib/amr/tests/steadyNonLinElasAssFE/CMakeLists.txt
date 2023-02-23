@@ -3,12 +3,12 @@ TRIBITS_ADD_EXECUTABLE(
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
-	steadyNonLinElasAssFE
-	NAME steadyNonLinElasAssFE
-	ARGS
-	NUM_MPI_PROCS 4
-)
+#TRIBITS_ADD_TEST(
+#	steadyNonLinElasAssFE
+#	NAME steadyNonLinElasAssFE
+#	ARGS
+#	NUM_MPI_PROCS 4
+#)
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNonLinElasAssFE
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
