@@ -255,8 +255,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         
             this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
             
-            if(nonlinearExternalForce_)
-                computeSolidRHSInTime();
+            
         }
         else 
             TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Coupling Type unknown. Please choose either implicit or explicit coupling.");
@@ -397,6 +396,8 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
 
 	        this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2,1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
             
+            if(nonlinearExternalForce_)
+                computeSolidRHSInTime();
 
         }                    
 
@@ -840,8 +841,17 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
                 MatrixPtr_Type A = this->system_->getBlock(0,0);
                 MatrixPtr_Type AKext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );          
                 MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );          
-
+                MultiVectorPtr_Type Kext_vec;
                 this->feFactory_->assemblyNonlinearSurfaceIntegralExternal(this->dim_, this->getDomain(0)->getFEType(),FERhs, d_rep_,Kext, funcParameter, this->problemTimeStructure_->getUnderlyingProblem()->rhsFuncVec_[0],this->parameterList_);
+               
+               Teuchos::Array<SC> norm_Kext(1); 
+               Kext->toMV(Kext_vec);
+               Kext_vec->norm2(norm_Kext);
+               if(this->verbose_)
+                cout << " In nonlinear external force. 2-Norm of residual derivative K_ext = " << norm_Kext[0] << endl;
+
+
+
                 A->addMatrix(1.,AKext,0.);
                 Kext->addMatrix(1.,AKext,0.);
 

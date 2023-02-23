@@ -3,7 +3,6 @@
 
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 #include "aceinterface.h"
-#include "ace2.h"
 #endif
 
 #include "FE_decl.hpp"
