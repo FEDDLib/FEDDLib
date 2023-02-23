@@ -53,9 +53,9 @@ SET(problems_specific_HEADERS
     specific/SCI_decl.hpp
     specific/SCI_def.hpp
     specific/SCI.hpp
-    specific/FSCI_decl.hpp
-    specific/FSCI_def.hpp
-    specific/FSCI.hpp
+#    specific/FSCI_decl.hpp
+#    specific/FSCI_def.hpp
+#    specific/FSCI.hpp
 CACHE INTERNAL "")
 
 SET(problems_specific_SOURCES
@@ -77,7 +77,7 @@ SET(problems_specific_SOURCES
     specific/TPM.cpp
     specific/FSI.cpp
     specific/SCI.cpp
-    specific/FSCI.cpp
+#    specific/FSCI.cpp
 CACHE INTERNAL "")
 
 
