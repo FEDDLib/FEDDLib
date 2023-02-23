@@ -865,7 +865,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
         // addSourceTermToRHS() aus DAESolverInTime
         double coeffSourceTermStructure = 1.0;
         BlockMultiVectorPtr_Type tmpSourceterm = Teuchos::rcp(new BlockMultiVector_Type(1)) ;
-        tmpSourceterm->addBlock(this->sourceTerm_->getBlock(0),0);
+        tmpSourceterm->addBlock(this->sourceTerm_->getBlockNonConst(0),0);
 
         BlockMultiVectorPtr_Type tmpPtr ; 
         if(externalForce_)
