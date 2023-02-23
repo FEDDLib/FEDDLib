@@ -1006,7 +1006,7 @@ void FSCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterList
     else
         sizeStructure = this->problemStructureNonLin_->getSystem()->size();
     */
-    problemTimeFluid_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemFluid_, this->comm_));
+    this->problemTimeFluid_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemFluid_, this->comm_));
    
    /* if (materialModel_=="linear")
         problemTimeStructure_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemStructure_, this->comm_));
