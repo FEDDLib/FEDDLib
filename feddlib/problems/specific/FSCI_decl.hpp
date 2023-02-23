@@ -175,7 +175,7 @@ public:
     // Macht setupTimeStepping() auf problemTimeFluid_ und problemTimeStructure_
     void setupSubTimeProblems(ParameterListPtr_Type parameterListFluid, ParameterListPtr_Type parameterListStructure,ParameterListPtr_Type parameterListChem ) const;
 
-    FluidProblemPtr_Type getFluidProblem(){
+    /*FluidProblemPtr_Type getFluidProblem(){
         return problemFluid_;
     }
     
@@ -189,7 +189,7 @@ public:
     
     GeometryProblemPtr_Type getGeometryProblem(){
         return problemGeometry_;
-    }
+    }*/
     
     // Berechnet von einer dofID, d.h. dim*nodeID+(0,1,2), die entsprechende nodeID.
     // IN localDofNumber steht dann, ob es die x- (=0), y- (=1) oder z-Komponente (=2) ist.
