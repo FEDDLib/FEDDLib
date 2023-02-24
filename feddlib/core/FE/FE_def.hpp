@@ -6281,7 +6281,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                         for(int d=0; d<dofs1; d++){
                             for (UN j=0; j < columnIndices1.size(); j++){
                                 columnIndices1[j] = GO ( dofs1 * map->getGlobalElement( nodeList[j] ) + d );
-                                value1[j] = stiffMat[dofs1*i+di][dofs1*j+d];	
+                                value1[j] = -stiffMat[dofs1*i+di][dofs1*j+d];	
                             }
                             Kext->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
                         }          
