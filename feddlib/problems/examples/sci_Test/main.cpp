@@ -67,7 +67,7 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 
 void inflowChem(double* x, double* res, double t, const double* parameters)
 {
-    res[0] = 1.;
+    res[0] = 0.;
     
     return;
 }
@@ -263,8 +263,6 @@ void rhsCubePaper(double* x, double* res, double* parameters){
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
      
-    if(parameters[0] < 0.1)
-    	lambda=0.; 
      
     if(parameters[2] == 5 || parameters[2] == 4){
         res[0] =lambda*force;

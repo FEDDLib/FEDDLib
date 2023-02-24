@@ -844,7 +844,6 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
                 MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow()*2 ) );          
                 MultiVectorPtr_Type Kext_vec;
                 this->feFactory_->assemblyNonlinearSurfaceIntegralExternal(this->dim_, this->getDomain(0)->getFEType(),FERhs, d_rep_,Kext, funcParameter, this->problemTimeStructure_->getUnderlyingProblem()->rhsFuncVec_[0],this->parameterList_);
-               
                 /*Teuchos::Array<SC> norm_Kext(1); 
                 Kext->toMV(Kext_vec);
                 Kext_vec->norm2(norm_Kext);

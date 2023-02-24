@@ -6207,7 +6207,6 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
 
     MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
-
     SC elScaling;
     SmallMatrix<SC> B(dim);
     vec_dbl_Type b(dim);
@@ -6257,30 +6256,52 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                 {
                     stiffMat[i] = &stiffnessMatrixFlat[18*i];
                 }       
-                        
 
                 #ifdef FEDD_HAVE_ACEGENINTERFACE
                 getResiduumVectorRext(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, residuumVector);
                 getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, stiffMat);
-                #endif
 
+
+
+
+                int dofs1 = dim;
+
+                int numNodes1 =nodeList.size();
+
+                int dofsBlock1 = dofs1*numNodes1;
+
+                Teuchos::Array<SC> value1( numNodes1, 0. );
+                Teuchos::Array<GO> columnIndices1( numNodes1, 0 );
+
+    
+
+                for (UN i=0; i < numNodes1 ; i++) {
+                    for(int di=0; di<dofs1; di++){
+                        GO row =GO (dofs1* map->getGlobalElement( nodeList[i] )+di);
+                        for(int d=0; d<dofs1; d++){
+                            for (UN j=0; j < columnIndices1.size(); j++){
+                                columnIndices1[j] = GO ( dofs1 * map->getGlobalElement( nodeList[j] ) + d );
+                                value1[j] = stiffMat[dofs1*i+di][dofs1*j+d];	
+                            }
+                            Kext->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
+                        }          
+                    }
+                }
+                        
+
+                /*for (int i = 0; i < 18; i++)
+                {
+                    for (int j = 0; j < 18; j++)
+                    {
+                        if(stiffMat[i][j] != 0.)
+                            cout << " stiffMat["<<i<<"]["<<j<<"] = " << stiffMat[i][j] << " " <<endl;
+                    }
+                }*/
                 for(int i=0; i< nodeList.size() ; i++){
                         for(int d=0; d<dim; d++)
                             valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
                 }
-
-                Teuchos::Array<SC> values( 6, 0. );
-                Teuchos::Array<GO> indices( 6, 0 );
-                for(int k=0; k < 6; k ++ ){
-                    for (UN d=0; d<dim; d++) {
-                        for (UN j=0; j < indices.size(); j++){
-                            indices[j] = GO ( dim * map->getGlobalElement( nodeList[j] ) + d );
-                            values[j] = stiffMat[k*dim+d][dim*j+d ];
-                        }
-                        GO row = GO ( dim * map->getGlobalElement( nodeList[k] ) + d );
-                        Kext->insertGlobalValues( row, indices(), values() );
-                    }
-                }
+                #endif
 
                 free(stiffMat);
                 free(stiffnessMatrixFlat);

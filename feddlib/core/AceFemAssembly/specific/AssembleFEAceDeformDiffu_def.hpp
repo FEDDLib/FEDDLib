@@ -52,7 +52,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::advanceInTime( double dt){
 
 	//cout << " advanced in time for this element " << endl;
 	if(this->timeStep_ < 1.)
-		this->timeIncrement_ = 0.1;
+		this->timeIncrement_ = 0.05;
 	if(this->timeStep_ >= 1. )
 		this->timeIncrement_ = 10.0;
 	if(this->timeStep_ >= 1001.)

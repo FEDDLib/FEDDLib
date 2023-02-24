@@ -2,7 +2,7 @@
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
-        <Parameter name="BC Type" type="string" value="Artery"/><!--Artery, Cube-->
+        <Parameter name="BC Type" type="string" value="Cube"/><!--Artery, Cube-->
         <Parameter name="RHS Type" type="string" value="Paper"/><!--Constant, Paper, Heart Beat-->
         
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
@@ -59,7 +59,7 @@
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="partialArtery.mesh"/> <!-- partialArtery -->
+        <Parameter name="Mesh 1 Name" type="string" value="cube_h_0_1.mesh"/> <!-- partialArtery -->
         <Parameter name="Mesh 2 Name" type="string" value="cube_h_1.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
