@@ -107,10 +107,13 @@ void rhsYZ(double* x, double* res, double* parameters){
     res[1] =0.;
     res[2] =0.;
     if(parameters[0] <= TRamp+1e-06)
-        force = parameters[0] * force ;
+        force = (parameters[0]+0.05) * force ;
     else
         force = parameters[1];
 
+	if(parameters[0] == 0.)
+		force = 0.;
+		
     if(parameters[2] == 4 || parameters[2] == 5){
       	res[0] = force;
         res[1] = force;

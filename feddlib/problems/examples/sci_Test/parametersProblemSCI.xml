@@ -52,7 +52,7 @@
         <Parameter name="Viscosity" type="double" value="1.0"/>
         <Parameter name="Density" type="double" value="1000.0"/>
         <Parameter name="m" type="double" value="0."/>
-        <Parameter name="D0" type="double" value="6.e-02"/>
+        <Parameter name="D0" type="double" value="6.e-05"/>
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
     </ParameterList>
     

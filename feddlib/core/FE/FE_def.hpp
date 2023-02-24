@@ -6251,20 +6251,19 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
   
                 double *residuumVector = (double*) calloc(18,sizeof(double));
 
-	            double *stiffnessMatrixFlat = (double *)calloc(18*18,sizeof(double));
+                double *stiffnessMatrixFlat = (double *)calloc(18*18,sizeof(double));
                 double **stiffMat=(double**)calloc(18,sizeof(double*));
                 for(int i=0;i<18;i++)
                 {
                     stiffMat[i] = &stiffnessMatrixFlat[18*i];
-                }                
-
+                }       
+                        
 
                 #ifdef FEDD_HAVE_ACEGENINTERFACE
                 getResiduumVectorRext(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, residuumVector);
                 getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, stiffMat);
                 #endif
-             
-             
+
                 for(int i=0; i< nodeList.size() ; i++){
                         for(int d=0; d<dim; d++)
                             valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
@@ -6272,22 +6271,21 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
 
                 Teuchos::Array<SC> values( 6, 0. );
                 Teuchos::Array<GO> indices( 6, 0 );
-                for(int k=0; k ++ ;k < 6){
+                for(int k=0; k < 6; k ++ ){
                     for (UN d=0; d<dim; d++) {
                         for (UN j=0; j < indices.size(); j++){
                             indices[j] = GO ( dim * map->getGlobalElement( nodeList[j] ) + d );
                             values[j] = stiffMat[k*dim+d][dim*j+d ];
                         }
-
                         GO row = GO ( dim * map->getGlobalElement( nodeList[k] ) + d );
                         Kext->insertGlobalValues( row, indices(), values() );
                     }
                 }
-            
 
                 free(stiffMat);
                 free(stiffnessMatrixFlat);
                 free(residuumVector);
+                
                     
             }
         }
