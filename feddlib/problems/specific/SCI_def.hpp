@@ -364,6 +364,10 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
     }
     else if(type == "Newton")
     {
+
+         if(this->verbose_)
+            std::cout << "-- reassemble Newton " << '\n';
+
         if(couplingType_ == "explicit"){
             if (materialModel_ != "linear"){
                 this->problemStructureNonLin_->reAssemble("Newton");
@@ -400,7 +404,8 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
                 computeSolidRHSInTime();
 
         }                    
-
+        if(this->verbose_)
+            std::cout << " done -- " << '\n';                       
         
     }
 }
@@ -443,7 +448,6 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         d_rep_->importFromVector(d, true); 
        
         this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Rhs", true/*call fillComplete*/);
-        this->residualVec_->getBlockNonConst(0)->scale(-1.0);
 
         //this->residualVec_->print();
         //this->residualVec_->getBlockNonConst(1)->scale(0.0);
@@ -457,17 +461,23 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
 
         if (!type.compare("standard")){
+
+            if(this->verbose_)
+                cout << " Residual Type : " << type  << endl;
             this->residualVec_->getBlockNonConst(0)->update(-1.,*this->rhs_->getBlockNonConst(0),1.);
             //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
             //   this->residualVec_->getBlockNonConst(0)->update(-1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);    
-            this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
        
         }
         else if(!type.compare("reverse")){
+            this->residualVec_->getBlockNonConst(0)->scale(-1.0); // Here the system is diffrent then usual. Might need to fix that to more consistency
+
+            if(this->verbose_)
+                cout << " Residual Type : " << type  << endl;
+
             this->residualVec_->getBlockNonConst(0)->update(1.,*this->rhs_->getBlockNonConst(0),-1.);
             //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
             //     this->residualVec_->getBlockNonConst(0)->update(1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);
-            this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
            
         }
 
@@ -938,6 +948,7 @@ template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateTime() const
 {
     timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
+    this->solution_->getBlock(0)->scale(0.);
     if(couplingType_ == "implicit"){
         MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
         c_rep_->importFromVector(c, true);
@@ -987,8 +998,8 @@ void SCI<SC,LO,GO,NO>::moveMesh() const
     ( Teuchos::rcp_const_cast<Domain_Type>(this->problemChem_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
     ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeChem_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
 
-    
-    //( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeStructure_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
+   // ( Teuchos::rcp_const_cast<Domain_Type>(this->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
+   // ( Teuchos::rcp_const_cast<Domain_Type>(this->problemTimeStructure_->getDomain(0)) )->moveMesh(displacementUnique, displacementRepeated);
     
 }
 

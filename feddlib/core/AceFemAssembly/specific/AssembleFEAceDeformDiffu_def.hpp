@@ -52,8 +52,10 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::advanceInTime( double dt){
 
 	//cout << " advanced in time for this element " << endl;
 	if(this->timeStep_ < 1.)
-		this->timeIncrement_ = 0.05;
+		this->timeIncrement_ = 0.2;
 	if(this->timeStep_ >= 1. )
+		this->timeIncrement_ = 1.0;
+	if(this->timeStep_ >= 10. )
 		this->timeIncrement_ = 10.0;
 	if(this->timeStep_ >= 1001.)
 		this->timeIncrement_= 0.01;
@@ -67,7 +69,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::advanceInTime( double dt){
 			solution_n_[i]=(*this->solution_)[i];
 		else
 			solution_n_[30 + 3*(i-30)] = (*this->solution_)[i];
-	} // this is not the LAST solution of newton iterations. Keep in mind for later.
+	} 
 
 
 

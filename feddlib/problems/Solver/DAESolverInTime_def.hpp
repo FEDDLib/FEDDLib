@@ -929,7 +929,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
     while(timeSteppingTool_->continueTimeStepping())
     {
-        if(structureModel=="SCI_sophisticated" || structureModel=="SCI_simple" ){
+        if(structureModel=="SCI_sophisticated"  ){
             if(timeSteppingTool_->currentTime() < 1.)
                 dt = 0.05;
             if(timeSteppingTool_->currentTime() >= 1. )
@@ -949,8 +949,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
         if( structureModel=="SCI_simple" ){
             if(timeSteppingTool_->currentTime() < 1.)
-                dt = 0.05;
+                dt = 0.2;
             if(timeSteppingTool_->currentTime() >= 1. )
+                dt = 1.0;
+            if(timeSteppingTool_->currentTime() >= 10. )
                 dt = 10.0;
             if(timeSteppingTool_->currentTime()>= 1001.)
                 dt= 0.01;
@@ -1090,7 +1092,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         //this->problemTime_->computeValuesOfInterestAndExport();
 
         timeSteppingTool_->advanceTime(true);//output info);
-        this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
 
         // Should be some place else
         if(timeSteppingTool_->t_ >= inflowRamp && couplingType == "explicit")
@@ -1112,6 +1113,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         {
             exportTimestep();
         }
+                this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
+
 
     }
 

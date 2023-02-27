@@ -6288,15 +6288,6 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                     }
                 }
                         
-
-                /*for (int i = 0; i < 18; i++)
-                {
-                    for (int j = 0; j < 18; j++)
-                    {
-                        if(stiffMat[i][j] != 0.)
-                            cout << " stiffMat["<<i<<"]["<<j<<"] = " << stiffMat[i][j] << " " <<endl;
-                    }
-                }*/
                 for(int i=0; i< nodeList.size() ; i++){
                         for(int d=0; d<dim; d++)
                             valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
