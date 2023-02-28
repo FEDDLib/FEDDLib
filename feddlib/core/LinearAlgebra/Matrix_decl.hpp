@@ -23,7 +23,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class Matrix {
@@ -95,17 +94,17 @@ public:
 	/*!
 		\brief Returns map of type " ". i.e. row or column map
 	*/
-    MapConstPtr_Type getMap(string map_string="");
+    MapConstPtr_Type getMap(std::string map_string="");
 
 	/*!
 		\brief Returns map of type " ". i.e. row or column map
 	*/
-    MapConstPtr_Type getMap(string map_string="") const;
+    MapConstPtr_Type getMap(std::string map_string="") const;
 
 	/*!
 		\brief Return map in Xpetra Format of type " ".
 	*/
-    XpetraMapConstPtr_Type getMapXpetra(string map_string="");
+    XpetraMapConstPtr_Type getMapXpetra(std::string map_string="");
 
 	/*!
 		\brief i.e. for NOX

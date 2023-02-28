@@ -190,12 +190,12 @@ public:
 		\brief Reading the .mesh files entities
 		@param[in] entityType i.e. nodes, edges, elements...
 	*/
-    void readMeshEntity(string entityType);
+    void readMeshEntity(std::string entityType);
     
 	/*! 
 		\brief Set the .mesh file name
 	*/
-    void setMeshFileName(string meshFileName, string delimiter);
+    void setMeshFileName(std::string meshFileName, std::string delimiter);
     
 	/*! 
 		\brief Get SurfaceElement order
@@ -237,8 +237,8 @@ public:
     ElementsPtr_Type surfaceEdgeElements_;
 	SurfaceElementsPtr_Type surfaceTriangleElements_;
 
- 	string meshFileName_;
-    string delimiter_;
+ 	std::string meshFileName_;
+    std::string delimiter_;
 
     int elementOrder_;
     int surfaceElementOrder_;

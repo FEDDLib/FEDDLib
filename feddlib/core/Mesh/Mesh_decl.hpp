@@ -7,7 +7,6 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/core/FE/Elements.hpp"
-#include "feddlib/core/FE/Elements.hpp"
 #include "feddlib/core/Mesh/AABBTree.hpp"
 
 /*!

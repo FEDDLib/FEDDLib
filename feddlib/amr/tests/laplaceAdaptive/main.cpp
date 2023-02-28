@@ -207,6 +207,8 @@ using Teuchos::REDUCE_SUM;
 using Teuchos::REDUCE_MAX;
 using Teuchos::outArg;
 
+using namespace std;
+
 using namespace FEDD;
 
 int main(int argc, char *argv[]) {

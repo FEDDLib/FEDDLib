@@ -104,7 +104,7 @@ template <class SC, class LO, class GO, class NO>
 void BlockMatrix<SC,LO,GO,NO>::addBlock(const MatrixPtr_Type& matrix, int i, int j){
     UN size = blockMatrix_.size();
     if (i>size-1 || j>size-1)
-        blockMatrix_.resize( max(i,j)+1 );
+        blockMatrix_.resize( std::max(i,j)+1 );
 
     if ( blockExists(i,j) )
         blockMatrix_[i][j].reset();
@@ -420,7 +420,7 @@ void BlockMatrix<SC,LO,GO,NO>::writeMM(std::string fN) const{
     for (int i=0; i<blockMatrix_.size(); i++) {
         for (int j=0; j<blockMatrix_.size(); j++){
             if (!blockMatrix_[i][j].is_null() ){
-                std::string fileName = fN + to_string(i) + to_string(j) + ".mm" ;
+                std::string fileName = fN + std::to_string(i) + std::to_string(j) + ".mm" ;
                 blockMatrix_[i][j]->writeMM(fileName);
             }
         }

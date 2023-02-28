@@ -28,9 +28,9 @@ class Domain {
     \tparam LO The local ordinal type. The is the index type for local indices
     \tparam GO The global ordinal type. The is the index type for global indices
     @todo This should actually be removed since the class should operate only on element level)
-    \tparam NO The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.
+    \tparam NO The Kokkos Node type. This would allow for performance portability when using Kokkos. Currently, this is not used.
     
-    Example: If you construct a Stokes finite element problem you get a velocity and pressure 'P2-P1' discretisation and ,thus , a domain for the P2 elements and one for the P2 elements with the respective node list etc.
+    Example: If you construct a Stokes finite element problem, you get a velocity and pressure 'P2-P1' discretization and, thus, one domain for the P2 elements and one for the P1 elements, with the respective node list etc.
      
 	*/
 
@@ -284,7 +284,7 @@ public:
          @param[in] volumeID element flag 
 
     */
-    void readMesh(string filename, string delimiter, int dim, string FEType, int volumeID=10);
+    void readMesh(std::string filename, std::string delimiter, int dim, std::string FEType, int volumeID=10);
 
     /*!
          \brief Reading mesh size
@@ -292,7 +292,7 @@ public:
          @param[in] delimiter
 
     */
-    void readMeshSize(string filename, string delimiter);
+    void readMeshSize(std::string filename, std::string delimiter);
     
     /*!
          \brief Partition mesh according to number of processors. Partition with parmetis.
@@ -476,7 +476,7 @@ public:
          @param[in] FEType
          @param[in] volumeID       
     */
-    void initializeUnstructuredMesh(int dimension, string feType, int volumeID=10);
+    void initializeUnstructuredMesh(int dimension, std::string feType, int volumeID=10);
 
     /*!
 		 \brief Hilfsfunktion fuer buildLocalInterfaceIDInGlobal().

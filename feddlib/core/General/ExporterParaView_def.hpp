@@ -12,7 +12,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
 template<class SC,class LO,class GO,class NO>
 ExporterParaView<SC,LO,GO,NO>::ExporterParaView():

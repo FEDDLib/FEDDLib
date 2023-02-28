@@ -63,7 +63,7 @@ u_rep_()
         int back = -1;
         if (domainPressure->getDimension() == 2) {
             it = find_if(vectmpPointsPressure->begin(), vectmpPointsPressure->end(),
-                    [&] (const vector<double>& a){
+                    [&] (const std::vector<double>& a){
                         if (a.at(0) >= 0.15-1.e-12 && a.at(0) <= 0.15+1.e-12
                             && a.at(1) >= 0.2-1.e-12 && a.at(1) <= 0.2+1.e-12) {
                             return true;
@@ -77,7 +77,7 @@ u_rep_()
                 front = distance(vectmpPointsPressure->begin(),it);
             }
             it = find_if(vectmpPointsPressure->begin(), vectmpPointsPressure->end(),
-                    [&] (const vector<double>& a){
+                    [&] (const std::vector<double>& a){
                         if (a.at(0) >= 0.25-1.e-12 && a.at(0) <= 0.25+1.e-12
                             && a.at(1) >= 0.2-1.e-12 && a.at(1) <= 0.2+1.e-12) {
                             return true;
@@ -173,7 +173,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         }
     }
 #endif
-    string precType = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
+    std::string precType = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     if ( precType == "Diagonal" || precType == "Triangular" ) {
         MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         
