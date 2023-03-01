@@ -846,7 +846,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
             funcParameter[0] = timeSteppingTool_->t_;            
             // how can we use different parameters for different blocks here?
             funcParameter[1] =this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Volume force",0.00211);;
-            
+            funcParameter[2] = 0.;
             if(nonlinearExternalForce_){
                 MatrixPtr_Type A( new Matrix_Type (this->system_->getBlock(0,0)));
                 //A->print();
@@ -948,7 +948,6 @@ template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateTime() const
 {
     timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
-    this->solution_->getBlock(0)->scale(0.);
     if(couplingType_ == "implicit"){
         MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
         c_rep_->importFromVector(c, true);

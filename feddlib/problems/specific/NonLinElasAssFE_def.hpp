@@ -25,6 +25,13 @@ u_rep_()
     C_ = this->parameterList_->sublist("Parameter").get("C",1.);
     
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
+
+    loadStepping_ =    !(parameterList->sublist("Timestepping Parameter").get("Class","Singlestep")).compare("Loadstepping");
+    externalForce_ =   parameterList->sublist("Parameter").get("External Force",true);
+    nonlinearExternalForce_ = parameterList->sublist("Parameter").get("Nonlinear External Force",true);
+
+    timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
+
     eModVec_.reset(new MultiVector_Type(domain->getElementMap(),1));
 }
 
@@ -56,27 +63,49 @@ void NonLinElasAssFE<SC,LO,GO,NO>::assemble(std::string type) const{
         double density = this->parameterList_->sublist("Parameter").get("Density",1000.);
         string sourceType = 	this->parameterList_->sublist("Parameter").get("Source Type","volume");
 
-        this->assembleSourceTerm( 0. );
+
+        this->solution_->putScalar(0.);
+        
+        u_rep_ = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
+        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+        u_rep_->importFromVector(u, true);              
+       // this->assembleSourceTerm( 0. );
+        if(loadStepping_==true)
+            assembleSourceTermLoadstepping(0.);
+        else
+            assembleSourceTerm(0.);
+
         if(sourceType == "volume")
             this->sourceTerm_->scale(density);
+
         this->addToRhs( this->sourceTerm_ );
         
         this->setBoundariesRHS();
                 
         
-        this->solution_->putScalar(0.);
-        
-        u_rep_ = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
-        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);
         
         if (this->verbose_)
             std::cout << "done -- " << std::endl;
         
         this->reAssemble("Newton-Residual");
     }
+    else if(type == "UpdateTime")
+    {
+        if(this->verbose_)
+            std::cout << "-- Reassembly (UpdateTime)" << '\n';
+
+        updateTime();
+        return;
+    }
     else
         this->reAssemble(type);
+}
+
+// Damit die richtige timeSteppingTool_->currentTime() genommen wird.
+template<class SC,class LO,class GO,class NO>
+void NonLinElasAssFE<SC,LO,GO,NO>::updateTime() const
+{
+    timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -88,16 +117,15 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
     
     if (type=="Newton-Residual") {
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-
         u_rep_->importFromVector(u, true);
         
-        MultiVectorPtr_Type f = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) );
-        f->putScalar(0.);
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
         this->system_->addBlock( W, 0, 0 );  
+
         MultiVectorPtr_Type fRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) ); 
         fRep->putScalar(0.);   
         this->residualVec_->addBlock( fRep, 0 ); 
+
         if(this->parameterList_->sublist("Parameter").get("SCI",false) == true || this->parameterList_->sublist("Parameter").get("FSCI",false) == true )
        		 this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,this->getDomain(0), this->eModVec_,true);
        	else 
@@ -110,12 +138,9 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
         this->residualVec_->addBlock( fUnique, 0 );
 
- //        MultiVectorPtr_Type f = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) );
-//        this->feFactory_->assemblyElasticityStressesAceFEM(this->dim_, this->getDomain(0)->getFEType(), f, u_rep_, material_model, E_, nu_, C_);
-//        MultiVectorPtr_Type fUnique = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
-//        fUnique->putScalar(0.);
-//        fUnique->importFromVector( f, true, "Add" );
-//        this->residualVec_->addBlock( fUnique, 0 );
+        assembleSourceTermLoadstepping();
+
+
     }
     else if(type=="Newton"){ //we already assemble the new tangent when we calculate the stresses above
         
@@ -231,6 +256,72 @@ void NonLinElasAssFE<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase
             }
             
         }
+    }
+}
+
+template<class SC,class LO,class GO,class NO>
+void NonLinElasAssFE<SC,LO,GO,NO>::assembleSourceTermLoadstepping(double time) const
+{
+    double dt = timeSteppingTool_->get_dt();
+    double beta = timeSteppingTool_->get_beta();
+    double gamma = timeSteppingTool_->get_gamma();
+    
+    
+    if(  loadStepping_ == true){
+        // The if condition resets the rhs. If we skip it when we attemp loadstepping, the rhs will be updated continously and wrongly increase with each timestep
+        this->getRhs()->scale(0.0);
+    }
+
+   
+    if (this->hasSourceTerm())
+    {
+        if(externalForce_){
+
+            MultiVectorPtr_Type FERhs = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
+            vec_dbl_Type funcParameter(4,0.);
+            funcParameter[0] = timeSteppingTool_->t_;            
+            // how can we use different parameters for different blocks here?
+            funcParameter[1] =this->parameterList_->sublist("Parameter").get("Volume force",0.00211);
+
+            funcParameter[3] =this->parameterList_->sublist("Parameter").get("Final time force",1.0);
+            funcParameter[4] =this->parameterList_->sublist("Parameter").get("dt",0.1);
+
+
+            if(nonlinearExternalForce_){
+                MatrixPtr_Type A( new Matrix_Type (this->system_->getBlock(0,0)));
+                //A->print();
+                MatrixPtr_Type AKext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );          
+                MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow()*2 ) );          
+                MultiVectorPtr_Type Kext_vec;
+                this->feFactory_->assemblyNonlinearSurfaceIntegralExternal(this->dim_, this->getDomain(0)->getFEType(),FERhs, u_rep_,Kext, funcParameter, this->rhsFuncVec_[0],this->parameterList_);
+               
+                A->addMatrix(1.,AKext,0.);
+                Kext->addMatrix(1.,AKext,1.);
+
+                AKext->fillComplete(this->getDomain(0)->getMapVecFieldUnique(),this->getDomain(0)->getMapVecFieldUnique());
+
+                this->system_->addBlock(AKext,0,0);
+
+            }
+            else            
+                this->feFactory_->assemblySurfaceIntegralExternal(this->dim_, this->getDomain(0)->getFEType(),FERhs, u_rep_, funcParameter, this->rhsFuncVec_[0],this->parameterList_);
+
+
+            this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
+        }
+        else
+            this->assembleSourceTerm( timeSteppingTool_->t_ );
+        //this->problemTimeStructure_->getSourceTerm()->scale(density);
+        // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
+        // Die Skalierung mit der Dichte erfolgt schon in der Assemblierungsfunktion!
+        
+        // addSourceTermToRHS() aus DAESolverInTime
+        double coeffSourceTermStructure = 1.0;
+        BlockMultiVectorPtr_Type tmpPtr= this->sourceTerm_;
+
+        this->getRhs()->update(coeffSourceTermStructure, *tmpPtr, 1.);
+        this->rhs_->addBlock( this->getRhs()->getBlockNonConst(0), 0 );
+
     }
 }
 

@@ -95,6 +95,8 @@ public:
 
     void advanceInTime();
 
+    void advanceWithLoadStepping();
+
     void advanceInTimeLinear();
 
     void advanceInTimeNonLinear();

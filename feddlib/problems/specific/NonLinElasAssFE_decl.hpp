@@ -75,7 +75,11 @@ public:
     virtual void getValuesOfInterest( vec_dbl_Type& values ){};
     
     virtual void computeValuesOfInterestAndExport() {};
-    
+
+    void assembleSourceTermLoadstepping(double time=0.) const;
+
+    void updateTime() const;
+
     void updateEMod (MultiVectorConstPtr_Type eModVecNew) {eModVec_.reset(new MultiVector_Type (eModVecNew));};
 //    virtual void assembleExternal( std::string type ){};
     
@@ -83,6 +87,8 @@ public:
     
     Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
     
+    mutable Teuchos::RCP<TimeSteppingTools>	timeSteppingTool_;
+
 private:
     
     virtual void evalModelImpl(
@@ -97,6 +103,10 @@ private:
     double C_;
     double poissonRatio_;
     double lambda_;
+    bool loadStepping_;
+    bool externalForce_;
+    bool nonlinearExternalForce_;
+
     /*####################*/
 
 };

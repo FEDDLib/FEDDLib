@@ -7,7 +7,7 @@
         <Parameter name="Volume force" type="double" value="0.016"/>
         <Parameter name="Source Type" type="string"   value="surface"/>
         <Parameter name="H/h" type="int" value="4"/>
-   <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
+  		<Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
         <Parameter name="absNonLinTol" type="double" value="1.0e-2"/>
         <Parameter name="updateTol" type="double" value="1.0e-4"/>
         <Parameter name="Combo" type="string" value="OR"/>
@@ -19,11 +19,17 @@
         <Parameter name="Criterion" type="string" value="Update"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
     
         <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
+        <Parameter name="Neo-Hooke Modell" type="int" value="2"/><!--different energy functions -->
         <Parameter name="Density" type="double"   value="1."/>
         <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
         <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
         <!-- Parameter for Neo-Hooke and Mooney-Rivlin, additioanlly poisson ratio is used -->
         <Parameter name="E" type="double"   value="0.38"/>
+        
+        <Parameter name="Load Stepping" type="bool" value="true"/>
+        <Parameter name="External Force" type="bool" value="true"/>
+        <Parameter name="Nonlinear External Force" type="bool" value="true"/>
+        
     </ParameterList>
     
     
@@ -58,12 +64,12 @@
     </ParameterList>
     
     <ParameterList name="Timestepping Parameter">
-        <Parameter name="Class"                                 type="string"		value="Newmark"/> <!--Multistep, Singlestep, Newmark-->
+        <Parameter name="Class"                                 type="string"		value="Loadstepping"/> <!--Multistep, Singlestep, Newmark-->
         <Parameter name="BDF"		                    		type="int"		   	value="1"/>
         <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
-        <Parameter name="Final time force"	                    type="double"   	value="10."/>
+        <Parameter name="Final time load"	                    type="double"   	value="1."/>
         <Parameter name="Final time"	                    	type="double"   	value="10."/>
-        <Parameter name="dt"			                    	type="double"   	value="1.0"/>
+        <Parameter name="dt"			                    	type="double"   	value=".1"/>
         <Parameter name="beta"			                    	type="double"   	value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma"			                    	type="double"   	value="0.5"/> <!-- newmark method parameter-->
     </ParameterList>

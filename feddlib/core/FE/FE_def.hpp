@@ -6164,7 +6164,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
 
                 //for (int j=0; j<value.size(); j++)
                 //    value[j] *= elScaling;
-                paramsFunc[2] = feSub.getFlag();
+                paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();
                 vec_dbl_Type p1 = {0.,0.,0.}; // Dummy vector
                 func( &p1[0], &valueFunc[0], paramsFunc);
   
@@ -6245,7 +6245,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                 //for (int j=0; j<value.size(); j++)
                 //    value[j] *= elScaling;
                 vec_dbl_Type p1 = {0.,0.,0.}; // Dummy vector
-                paramsFunc[2] = feSub.getFlag();
+                paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();          
                 func( &p1[0], &valueFunc[0], paramsFunc);
   
                 double *residuumVector = (double*) calloc(18,sizeof(double));
