@@ -1,20 +1,15 @@
-n_elem = 32;
-n_elem_solid = 30;
+h=0.1;
 
-nb_layers = 45;
-
-L=1.5;
-
-Point(0) = {0, 0, 1.5, 1.0};
-Point(1) = {1.25, 0, 0, 1.0};
-Point(2) = {1.25, 0, 1.5, 1.0};
-Point(3) = {0, 1.25, 1.5, 1.0};
-Point(4) = {0, 1.25, 0, 1.0};
-Point(5) = {0, 1, 0, 1.0};
-Point(6) = {0, 1, 1.5, 1.0};
-Point(7) = {1, 0, 1.5, 1.0};
-Point(8) = {1, 0, 0, 1.0};
-Point(9) = {0,0,0,1.0};
+Point(0) = {0, 0, 1.5, h};
+Point(1) = {1.25, 0, 0, h};
+Point(2) = {1.25, 0, 1.5, h};
+Point(3) = {0, 1.25, 1.5, h};
+Point(4) = {0, 1.25, 0, h};
+Point(5) = {0, 1, 0, h};
+Point(6) = {0, 1, 1.5, h};
+Point(7) = {1, 0, 1.5, h};
+Point(8) = {1, 0, 0, h};
+Point(9) = {0,0,0,h};
 
 Circle(1) = {2,0,3};
 Circle(2) = {4,9,1};
@@ -48,10 +43,10 @@ Surface Loop(1) = {1, 2, 5, 6, 4, 3};
 Volume(1) = {1};
 
 // ############ TRANSFINITE LINES ############
-Transfinite Line{1,2}=n_elem+1; //Number of points on a 1/4 of inner circle length: 1.5708
-Transfinite Line{3,4}=n_elem*1.25; //Number of points on a 1/4 of outer circle: 1.9634
-Transfinite Line{6,8,9,11}=n_elem_solid/6+1; //Number of points on a 1/4 of circle
-Transfinite Line{5,7,10,12}=n_elem_solid+1;      //Number of structure layers+1 
+//Transfinite Line{1,2}=1.9634 / h +8; //Number of points on a 1/4 of outer circle: 1.9634
+//Transfinite Line{3,4}=1.5708 / h +4; //Number of points on a 1/4 of inner circle length: 1.5708
+//Transfinite Line{6,8,9,11}= 0.25 / h +1; // short side - depth
+//Transfinite Line{5,7,10,12}=1.5 /h +3;      // long side - heigth
 
 Physical Surface("1", 13) = {3};
 Physical Surface("2", 14) = {5};

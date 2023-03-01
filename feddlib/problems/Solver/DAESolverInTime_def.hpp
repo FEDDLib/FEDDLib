@@ -1058,7 +1058,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
                 dt = 1.0;
             if(timeSteppingTool_->currentTime() >= 10. )
                 dt = 10.0;
-            if(timeSteppingTool_->currentTime()>= 1001.)
+            if(timeSteppingTool_->currentTime()>= 1000.)
                 dt= 0.01;
                 
             timeSteppingTool_->dt_prev_= dt;        

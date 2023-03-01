@@ -67,7 +67,7 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 
 void inflowChem(double* x, double* res, double t, const double* parameters)
 {
-    res[0] = 0.;
+    res[0] = 1.;
     
     return;
 }
@@ -228,10 +228,10 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     	lambda = 0.875;
     else if( parameters[0] < 2001.5 )
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
-    else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))<= 0.5)
+    else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))< 0.5)
     	lambda= 0.75;
     else
-        lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
+        lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
     
     if(parameters[2]==5){
         res[0] =lambda*force;
@@ -247,19 +247,19 @@ void rhsCubePaper(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 2001.0;
+    double TRamp = 1000.0;
     double lambda=0.;
     
     if(parameters[0] < 1.)
-        lambda = 0.875*(parameters[0]+0.05);
-    else if(parameters[0] <= TRamp)
+        lambda = 0.875*(parameters[0]+0.2);
+    else if(parameters[0] < TRamp)
     	lambda = 0.875;
-    else if( parameters[0] <= 2001.5 )
+    else if( parameters[0] < 1000.5 )
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
-    else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))<= 0.5)
+    else if( parameters[0] >= 1000.5 && (parameters[0] - std::floor(parameters[0]))< 0.5)
     	lambda= 0.75;
     else
-        lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]+0.02));
+        lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
      
      
     if(parameters[2] == 5 || parameters[2] == 4){
@@ -267,6 +267,9 @@ void rhsCubePaper(double* x, double* res, double* parameters){
         res[1] =lambda*force;
         res[2] =lambda*force; 
     }
+    
+    
+
             
 }
 
@@ -487,9 +490,9 @@ int main(int argc, char *argv[])
 
 	
 		Teuchos::ArrayRCP< SC > entriesPulse  = exportSolutionBeat->getDataNonConst(0);
-		double dt = 0.02;
+		double dt = 0.01;
 		double lambda =0.;
-		for(int i= 1; i<1500; i++){	         
+		for(int i= 1; i<2500; i++){	         
 			double Q = 0.5*a0;
 		
 
@@ -515,7 +518,7 @@ int main(int argc, char *argv[])
 			else if ( dt*i >= 20.5 && (dt*i - std::floor(dt*i))<= 0.5)
 				lambda= 0.75;
 			else
-				lambda = 0.875 - 0.125 * cos(4*M_PI*(dt*i+0.02));
+				lambda = 0.875 - 0.125 * cos(4*M_PI*(dt*i+0.01));
 
 			entriesPulse[0] = 0.02133*lambda;
 			
@@ -632,6 +635,7 @@ int main(int argc, char *argv[])
 			bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_X", dim);
 			bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
 			bcFactory->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim);
+			
 			bcFactory->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_Z", dim);
 			bcFactory->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Z", dim);
 
@@ -649,6 +653,7 @@ int main(int argc, char *argv[])
 			bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_X", dim);
 			bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
 			bcFactoryStructure->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim);
+			
 			bcFactoryStructure->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_Z", dim);
 			bcFactoryStructure->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Z", dim);
 
