@@ -73,7 +73,7 @@ void NonLinElasAssFE<SC,LO,GO,NO>::assemble(std::string type) const{
         if(loadStepping_==true)
             assembleSourceTermLoadstepping(0.);
         else
-            assembleSourceTerm(0.);
+            this->assembleSourceTerm(0.);
 
         if(sourceType == "volume")
             this->sourceTerm_->scale(density);
