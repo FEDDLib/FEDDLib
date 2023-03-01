@@ -252,12 +252,12 @@ MACRO(TRIBITS_DEFINE_GLOBAL_OPTIONS_AND_DEFINE_EXTRA_REPOS)
     "Enable the C++ compiler and related code"
     ${${PROJECT_NAME}_ENABLE_CXX_DEFAULT} )
 
-  IF ("${${PROJECT_NAME}_ENABLE_CXX11_DEFAULT}" STREQUAL "")
-    SET(${PROJECT_NAME}_ENABLE_CXX11_DEFAULT OFF)
+  IF ("${${PROJECT_NAME}_ENABLE_CXX17_DEFAULT}" STREQUAL "")
+    SET(${PROJECT_NAME}_ENABLE_CXX17_DEFAULT OFF)
   ENDIF()
-  ADVANCED_OPTION(${PROJECT_NAME}_ENABLE_CXX11
-    "Enable the C++11 compiler options and related code (see ${PROJECT_NAME}_CXX11_FLAGS)"
-    ${${PROJECT_NAME}_ENABLE_CXX11_DEFAULT} )
+  ADVANCED_OPTION(${PROJECT_NAME}_ENABLE_CXX17
+    "Enable the C++17 compiler options and related code (see ${PROJECT_NAME}_CXX17_FLAGS)"
+    ${${PROJECT_NAME}_ENABLE_CXX17_DEFAULT} )
 
   IF ("${${PROJECT_NAME}_ENABLE_Fortran_DEFAULT}" STREQUAL "")
     SET(${PROJECT_NAME}_ENABLE_Fortran_DEFAULT ON)
@@ -1967,30 +1967,30 @@ MACRO(TRIBITS_SETUP_ENV)
 
   # Determine C++-0x supported features
 
-  IF (${PROJECT_NAME}_ENABLE_CXX AND ${PROJECT_NAME}_ENABLE_CXX11)
-    INCLUDE(TribitsCXX11Support)
-    TRIBITS_FIND_CXX11_FLAGS() # Aborts if can't find C++11 flags!
-    TRIBITS_CHECK_CXX11_SUPPORT(CXX11_WORKS)  # Double check that C++11 flags!
-    IF (CXX11_WORKS)
-      MESSAGE("-- ${PROJECT_NAME}_ENABLE_CXX11=${${PROJECT_NAME}_ENABLE_CXX11}")
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${${PROJECT_NAME}_CXX11_FLAGS}")
-        IF (TRIBITS_SETUP_ENV_DEBUG OR TRIBITS_ENABLE_CXX11_DEBUG_DUMP)
+  IF (${PROJECT_NAME}_ENABLE_CXX AND ${PROJECT_NAME}_ENABLE_CXX17)
+    INCLUDE(TribitsCXX17Support)
+    TRIBITS_FIND_CXX17_FLAGS() # Aborts if can't find C++11 flags!
+    TRIBITS_CHECK_CXX17_SUPPORT(CXX17_WORKS)  # Double check that C++11 flags!
+    IF (CXX17_WORKS)
+      MESSAGE("-- ${PROJECT_NAME}_ENABLE_CXX17=${${PROJECT_NAME}_ENABLE_CXX17}")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${${PROJECT_NAME}_CXX17_FLAGS}")
+        IF (TRIBITS_SETUP_ENV_DEBUG OR TRIBITS_ENABLE_CXX17_DEBUG_DUMP)
           PRINT_VAR(CMAKE_CXX_FLAGS)
         ENDIF()
     ELSE()
       MESSAGE(FATAL_ERROR
         "Error, C++11 support does not appear to be supported"
         " with this C++ compiler and/or with the C++11 flags"
-        " ${PROJECT_NAME}_CXX11_FLAGS='${${PROJECT_NAME}_CXX11_FLAGS}'!"
-        " If the flags ${PROJECT_NAME}_CXX11_FLAGS='${${PROJECT_NAME}_CXX11_FLAGS}'"
+        " ${PROJECT_NAME}_CXX17_FLAGS='${${PROJECT_NAME}_CXX17_FLAGS}'!"
+        " If the flags ${PROJECT_NAME}_CXX17_FLAGS='${${PROJECT_NAME}_CXX17_FLAGS}'"
         " where set manually, then try clearing the CMake cache and configure"
         " without setting "
-        " ${PROJECT_NAME}_CXX11_FLAGS and let the configure process try to"
+        " ${PROJECT_NAME}_CXX17_FLAGS and let the configure process try to"
         " find flags that work automatically.  However, if these compile-time"
         " tests still fail, consider selecting a different C++ compiler"
         " (and compatible compilers for other languages) that supports C++11."
         " Or, if C++11 support in this project is not needed or desired, then set"
-        " -D${PROJECT_NAME}_ENABLE_CXX11=OFF.")
+        " -D${PROJECT_NAME}_ENABLE_CXX17=OFF.")
     ENDIF()
   ENDIF()
 

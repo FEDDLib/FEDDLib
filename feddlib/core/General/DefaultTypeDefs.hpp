@@ -1,7 +1,7 @@
 #ifndef DEFAULTTYPEDEFS_hpp
 #define DEFAULTTYPEDEFS_hpp
 #include <TpetraCore_config.h>
-#include <Kokkos_DefaultNode.hpp>
+#include <KokkosCompat_DefaultNode.hpp>
 
 typedef double default_sc;
 typedef int default_lo;
