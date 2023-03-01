@@ -116,7 +116,8 @@ class FE {
                                     MultiVectorPtr_Type d_rep,
                                     std::vector<SC>& funcParameter,
                                     RhsFunc_Type func,
-                                    ParameterListPtr_Type params);
+                                    ParameterListPtr_Type params,
+                                    int FEloc=0);
 
     void assemblyNonlinearSurfaceIntegralExternal(int dim,
                                     std::string FEType,
@@ -125,7 +126,8 @@ class FE {
                                     MatrixPtr_Type &Kext,
                                     std::vector<SC>& funcParameter,
                                     RhsFunc_Type func,
-                                    ParameterListPtr_Type params);
+                                    ParameterListPtr_Type params,
+                                    int FEloc = 0);
     
     void assemblySurfaceIntegralFlag(int dim,
                                     std::string FEType,

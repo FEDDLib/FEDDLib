@@ -6119,11 +6119,9 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
                                               MultiVectorPtr_Type d_rep,
                                               std::vector<SC>& funcParameter,
                                               RhsFunc_Type func,
-                                              ParameterListPtr_Type params) {
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
     
-    // degree of function funcParameter[0]
-    UN FEloc = checkFE(dim,FEType);
-
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
@@ -6197,10 +6195,10 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                                               MatrixPtr_Type &Kext,
                                               std::vector<SC>& funcParameter,
                                               RhsFunc_Type func,
-                                              ParameterListPtr_Type params) {
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
     
     // degree of function funcParameter[0]
-    UN FEloc = checkFE(dim,FEType);
 
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
