@@ -882,7 +882,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         exporterCornerValue->setup( "cornerValue" + suffix, this->comm_ );
 
         MapConstPtr_Type map = problemTime_->getDomain(0)->getMapUnique();
+        vec2D_dbl_ptr_Type points = problemTime_->getDomain(0)->getPointsUnique();
+
         valueCorner = map->getLocalElement(idExport);
+        if(valueCorner != -1)
+            cout <<" Value corner local ID " << valueCorner  << " with node values " << points->at(valueCorner).at(0) << " " << points->at(valueCorner).at(1) << " " << points->at(valueCorner).at(2)  << endl;
 
 
     }
@@ -1225,7 +1229,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
             if(valueCorner != -1){
                 for(int i=0; i< problemTime_->dimension_ ; i++)
-                    d_s.push_back(problemTime_->getSolution()->getBlock(0)->getDataNonConst(0)[valueCorner+i]);
+                    d_s.push_back(problemTime_->getSolution()->getBlock(0)->getDataNonConst(0)[problemTime_->dimension_*valueCorner+i]);
                 
                 for(int i=0; i< problemTime_->dimension_ ; i++)
                     norm_d_s += pow(d_s[i],2);
