@@ -86,6 +86,7 @@
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
         <Parameter name="ParaViewExport" type="bool" value="true"/>
         <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="ExportID" type="int" value="7"/>
         <Parameter name="ParaView export subdomains" type="bool" value="true"/>
         
         <Parameter name="Export Suffix" type="string" value=""/>

@@ -858,6 +858,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     ExporterTxtPtr_Type exporterDisplYTxt;
     ExporterTxtPtr_Type exporterIterations;
     ExporterTxtPtr_Type exporterNewtonIterations;
+    ExporterTxtPtr_Type exporterCornerValue;
+
+    GO idExport = parameterList_->sublist("General").get("ExportID",0);
+    LO valueCorner =-1;
+
     
     if (printData) {
         exporterTimeTxt = Teuchos::rcp(new ExporterTxt());
@@ -872,6 +877,14 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         
         exporterIterations = Teuchos::rcp(new ExporterTxt());
         exporterIterations->setup( "linearIterations" + suffix, this->comm_ );
+
+        exporterCornerValue = Teuchos::rcp(new ExporterTxt());
+        exporterCornerValue->setup( "cornerValue" + suffix, this->comm_ );
+
+        MapConstPtr_Type map = problemTime_->getDomain(0)->getMapUnique();
+        valueCorner = map->getLocalElement(idExport);
+
+
     }
     if (printExtraData) {
 
@@ -1174,7 +1187,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
         //massCoeffSCI.print();
         //problemCoeffSCI.print();
-        //problemTime_->getSystem()->getBlock(1,1)->print();
+        problemTime_->getSystem()->writeMM();
         if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
             nlSolver.solve(*this->problemTime_, time, its);
         else{
@@ -1206,6 +1219,24 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
             exporterIterations->exportData( (*its)[0] );
             exporterNewtonIterations->exportData( (*its)[1] );
+
+            vec_dbl_Type d_s(0);
+            double norm_d_s=0.;
+
+            if(valueCorner != -1){
+                for(int i=0; i< problemTime_->dimension_ ; i++)
+                    d_s.push_back(problemTime_->getSolution()->getBlock(0)->getDataNonConst(0)[valueCorner+i]);
+                
+                for(int i=0; i< problemTime_->dimension_ ; i++)
+                    norm_d_s += pow(d_s[i],2);
+                norm_d_s = sqrt(norm_d_s);
+            }
+
+			Teuchos::reduceAll<int, double> ( *this->comm_, Teuchos::REDUCE_MAX, norm_d_s , Teuchos::outArg (norm_d_s));
+
+            exporterCornerValue->exportData(norm_d_s);
+
+
         }
         if (printExtraData) {
             vec_dbl_Type v(3,-9999.);
