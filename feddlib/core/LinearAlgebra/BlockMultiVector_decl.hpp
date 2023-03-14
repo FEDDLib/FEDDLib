@@ -114,6 +114,8 @@ public:
     
     void norm2(const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms) const;
 
+    void normInf(const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms) const;
+
     void dot(BlockMultiVectorConstPtr_Type a, const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &dots) ;
 
     void update( const SC& alpha, const BlockMultiVector_Type& A, const SC& beta );

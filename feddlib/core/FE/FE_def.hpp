@@ -6166,27 +6166,35 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
                 vec_dbl_Type p1 = {0.,0.,0.}; // Dummy vector
                 func( &p1[0], &valueFunc[0], paramsFunc);
   
-                double *residuumVector = (double*) calloc(18,sizeof(double));
-                #ifdef FEDD_HAVE_ACEGENINTERFACE
-                getResiduumVectorRext(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, residuumVector);
-                #endif
-                /*cout << " residuumVector " ;
+                if(valueFunc[0] != 0.){
 
-                for(int i=0; i< 18; i++)
-                    cout << residuumVector[i] << " " ;
-                cout << endl;*/
-                for(int i=0; i< nodeList.size() ; i++){
-                        for(int d=0; d<dim; d++)
-                            valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
+                    double *residuumVector = (double*) calloc(18,sizeof(double));
+                    #ifdef FEDD_HAVE_ACEGENINTERFACE
+                    getResiduumVectorRext(&positions[0], &solution_d[0], 1., valueFunc[0], 35, residuumVector);
+                    #endif
+                    /*cout << " residuumVector " ;
+
+                    for(int i=0; i< 18; i++)
+                        cout << residuumVector[i] << " " ;
+                    cout << endl;*/
+                    for(int i=0; i< nodeList.size() ; i++){
+                            for(int d=0; d<dim; d++)
+                                valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
+                    }
+
+                    free(residuumVector);
                 }
-
-                free(residuumVector);
                     
             }
         }
     }
+    //f->scale(-1.);
+
 }
     
+/// @brief  assemblyNonlinearSurfaceIntegralExternal -
+/// @brief This force is assembled in AceGEN as deformation-dependent load. This force is applied as Pressure boundary in opposite direction of surface normal.
+
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                                               std::string FEType,
@@ -6210,9 +6218,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
     vec_dbl_Type b(dim);
     f->putScalar(0.);
     Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
-    
-    int flagSurface = params->sublist("Parameter Solid").get("Flag Surface",5); 
-    
+        
     std::vector<double> valueFunc(dim);
 
     SC* paramsFunc = &(funcParameter[0]);
@@ -6224,83 +6230,80 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
         for (int surface=0; surface<fe.numSubElements(); surface++) {
             FiniteElement feSub = subEl->getElement( surface  );
             if(subEl->getDimension() == dim-1 ){
-                
                 vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();             
-              
-
-                // loop over basis functions
-		        vec_dbl_Type solution_d = getSolution(nodeList, d_rep,dim);
+                 
+                vec_dbl_Type solution_d = getSolution(nodeList, d_rep,dim);
                 vec2D_dbl_Type nodes;
 		        nodes = getCoordinates(nodeList, pointsRep);
                 double positions[18];
                 int count =0;
-                for(int i=0;i<6;i++)
+                for(int i=0;i<6;i++){
                     for(int j=0;j<3;j++){
                         positions[count] = nodes[i][j];
                         count++;
                     }
+                }
 
-                //for (int j=0; j<value.size(); j++)
-                //    value[j] *= elScaling;
                 vec_dbl_Type p1 = {0.,0.,0.}; // Dummy vector
                 paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();          
                 func( &p1[0], &valueFunc[0], paramsFunc);
   
-                double *residuumVector = (double*) calloc(18,sizeof(double));
+                if(valueFunc[0] != 0.){
+                    
+                    double *residuumVector = (double*) calloc(18,sizeof(double));
+                
+                    double *stiffnessMatrixFlat = (double *)calloc(18*18,sizeof(double));
+                    double **stiffMat=(double**)calloc(18,sizeof(double*));
+                    for(int i=0;i<18;i++)
+                    {
+                        stiffMat[i] = &stiffnessMatrixFlat[18*i];
+                    }       
 
-                double *stiffnessMatrixFlat = (double *)calloc(18*18,sizeof(double));
-                double **stiffMat=(double**)calloc(18,sizeof(double*));
-                for(int i=0;i<18;i++)
-                {
-                    stiffMat[i] = &stiffnessMatrixFlat[18*i];
-                }       
+                    #ifdef FEDD_HAVE_ACEGENINTERFACE
+                    getResiduumVectorRext(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, residuumVector);
+                    getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1.0, valueFunc[0], 16, stiffMat); // 16, 35 
 
-                #ifdef FEDD_HAVE_ACEGENINTERFACE
-                getResiduumVectorRext(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, residuumVector);
-                getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1., -valueFunc[0], 35, stiffMat);
+                    int dofs1 = dim;
+                    int numNodes1 =nodeList.size();
 
-
-
-
-                int dofs1 = dim;
-
-                int numNodes1 =nodeList.size();
-
-                int dofsBlock1 = dofs1*numNodes1;
-
-                Teuchos::Array<SC> value1( numNodes1, 0. );
-                Teuchos::Array<GO> columnIndices1( numNodes1, 0 );
-
-    
-
-                for (UN i=0; i < numNodes1 ; i++) {
-                    for(int di=0; di<dofs1; di++){
-                        GO row =GO (dofs1* map->getGlobalElement( nodeList[i] )+di);
-                        for(int d=0; d<dofs1; d++){
-                            for (UN j=0; j < columnIndices1.size(); j++){
-                                columnIndices1[j] = GO ( dofs1 * map->getGlobalElement( nodeList[j] ) + d );
-                                value1[j] = -stiffMat[dofs1*i+di][dofs1*j+d];	
-                            }
+                  // buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                  // elScaling = B.computeScaling( );
+                    for (UN i=0; i < numNodes1 ; i++) {
+                        for(int di=0; di<dim; di++){
+                            Teuchos::Array<SC> value1( numNodes1*dim, 0. );
+                            Teuchos::Array<GO> columnIndices1( numNodes1*dim, 0 );
+                            GO row =GO (dim* map->getGlobalElement( nodeList[i] )+di);
+                            LO rowLO = dim*i+di;
+                            // Zeilenweise werden die Einträge global assembliert
+                            for (UN j=0; j <numNodes1; j++){
+                                for(int d=0; d<dim; d++){
+                                    columnIndices1[dim*j+d] = GO ( dim * map->getGlobalElement( nodeList[j] ) + d );
+                                    value1[dim*j+d] = stiffMat[rowLO][dim*j+d];	
+                                }
+                            }  
                             Kext->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
-                        }          
+                        }
                     }
-                }
-                        
-                for(int i=0; i< nodeList.size() ; i++){
+                    
+                                        
+                    for(int i=0; i< nodeList.size() ; i++){
                         for(int d=0; d<dim; d++)
                             valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
-                }
-                #endif
+                    }
+                    #endif
 
-                free(stiffMat);
-                free(stiffnessMatrixFlat);
-                free(residuumVector);
+                    free(stiffMat);
+                    free(stiffnessMatrixFlat);
+                    free(residuumVector);
+                }
                 
                     
             }
         }
     }
+    //f->scale(-1.);
     Kext->fillComplete(domainVec_.at(FEloc)->getMapVecFieldUnique(),domainVec_.at(FEloc)->getMapVecFieldUnique());
+    Kext->writeMM("K_ext");
 }
     
 template <class SC, class LO, class GO, class NO>

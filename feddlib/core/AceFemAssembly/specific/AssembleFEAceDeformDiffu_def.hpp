@@ -52,7 +52,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::advanceInTime( double dt){
 
 	//cout << " advanced in time for this element " << endl;
 	if(this->timeStep_ < 1.)
-		this->timeIncrement_ = 0.2;
+		this->timeIncrement_ = 0.05;
 	if(this->timeStep_ >= 1. )
 		this->timeIncrement_ = 1.0;
 	if(this->timeStep_ >= 10. )
@@ -236,7 +236,7 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 		for (UN i=0; i < this->dofsElement_; i++) {
 			for (UN j=0; j < this->dofsElement_; j++) {
 				if(fabs(s_temp[40*j+i]) > 1e-14)
-					(*elementMatrix)[i][j] = -s_temp[40*j+i]; // Rolling into a matrix using column major (m*j+i)
+					(*elementMatrix)[i][j] = s_temp[40*j+i]; // Rolling into a matrix using column major (m*j+i)
 			}
 		}
 
@@ -253,12 +253,12 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 					if((j+1)%4==0)
 					{
 						int m = 29 + (j+1)/4;
-						(*elementMatrix)[i][j] = -s[40*m+l];
+						(*elementMatrix)[i][j] = s[40*m+l];
 					}
 					else
 					{
 						int m = j - ((j+1)-(j+1)%4)/4;
-						(*elementMatrix)[i][j] = -s[40*m+l];
+						(*elementMatrix)[i][j] = s[40*m+l];
 					}
 				}
 			}
@@ -270,12 +270,12 @@ void AssembleFEAceDeformDiffu<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(
 					if((j+1)%4==0)
 					{
 						int m = 29 + (j+1)/4;
-						(*elementMatrix)[i][j] = -s[40*m+l];
+						(*elementMatrix)[i][j] = s[40*m+l];
 					}
 					else
 					{
 						int m = j - ((j+1)-(j+1)%4)/4;
-						(*elementMatrix)[i][j] = -s[40*m+l];
+						(*elementMatrix)[i][j] = s[40*m+l];
 					}
 				}
 			}

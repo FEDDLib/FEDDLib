@@ -107,12 +107,12 @@ void rhsYZ(double* x, double* res, double* parameters){
     res[1] =0.;
     res[2] =0.;
     if(parameters[0] < TRamp)
-        force = (parameters[0]+0.2) * force ;
+        force = (parameters[0]+0.05) * force ;
     else
         force = parameters[1];
 
 
-    if(parameters[2] == 4 || parameters[2] == 5){
+    if(parameters[2] == 4  || parameters[2] == 5){
       	res[0] = force;
         res[1] = force;
         res[2] = force;
@@ -232,7 +232,7 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     	lambda= 0.75;
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
-    
+ 
     if(parameters[2]==5){
         res[0] =lambda*force;
         res[1] =lambda*force;
@@ -251,7 +251,7 @@ void rhsCubePaper(double* x, double* res, double* parameters){
     double lambda=0.;
     
     if(parameters[0] < 1.)
-        lambda = 0.875*(parameters[0]+0.2);
+        lambda = 0.875*(parameters[0]+0.05);
     else if(parameters[0] < TRamp)
     	lambda = 0.875;
     else if( parameters[0] < 1000.5 )

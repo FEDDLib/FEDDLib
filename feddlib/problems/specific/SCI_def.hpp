@@ -461,16 +461,16 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
 
         if (!type.compare("standard")){
-
+            //this->rhs_->getBlockNonConst(0)->scale(-1.0);
             if(this->verbose_)
                 cout << " Residual Type : " << type  << endl;
-            this->residualVec_->getBlockNonConst(0)->update(-1.,*this->rhs_->getBlockNonConst(0),1.);
+            this->residualVec_->getBlockNonConst(0)->update(1.,*this->rhs_->getBlockNonConst(0),-1.);
             //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
             //   this->residualVec_->getBlockNonConst(0)->update(-1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);    
        
         }
         else if(!type.compare("reverse")){
-            this->residualVec_->getBlockNonConst(0)->scale(-1.0); // Here the system is diffrent then usual. Might need to fix that to more consistency
+            //this->residualVec_->getBlockNonConst(0)->scale(-1.0); // Here the system is diffrent then usual. Might need to fix that to more consistency
 
             if(this->verbose_)
                 cout << " Residual Type : " << type  << endl;
@@ -837,6 +837,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
    
     // TODO: SourceTerm wird in jedem Zeitschritt neu berechnet; auch wenn konstant!!!
     // if(time == 0){nur dann konstanten SourceTerm berechnen}
+
     if (this->problemTimeStructure_->hasSourceTerm())
     {
         if(externalForce_){
@@ -854,14 +855,10 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
                 MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow()*2 ) );          
                 MultiVectorPtr_Type Kext_vec;
                 this->feFactory_->assemblyNonlinearSurfaceIntegralExternal(this->dim_, this->getDomain(0)->getFEType(),FERhs, d_rep_,Kext, funcParameter, this->problemTimeStructure_->getUnderlyingProblem()->rhsFuncVec_[0],this->parameterList_);
-                /*Teuchos::Array<SC> norm_Kext(1); 
-                Kext->toMV(Kext_vec);
-                Kext_vec->norm2(norm_Kext);
-                if(this->verbose_)
-                        cout << " In nonlinear external force. 2-Norm of residual derivative K_ext = " << norm_Kext[0] << endl;*/
-
+                
                 A->addMatrix(1.,AKext,0.);
-                Kext->addMatrix(1.,AKext,1.);
+                // AKext = -1. * Kext + 1. *AKext;
+                Kext->addMatrix(-1.,AKext,1.);
 
                 AKext->fillComplete(this->getDomain(0)->getMapVecFieldUnique(),this->getDomain(0)->getMapVecFieldUnique());
 
@@ -873,6 +870,9 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
 
 
             this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
+
+           
+
         }
         else
             this->problemTimeStructure_->assembleSourceTerm( timeSteppingTool_->t_ );
@@ -965,7 +965,7 @@ void SCI<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::InArgs<SC>
                                      const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
                                     ) const
 {
-    TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "implement NOX for steady FSI.");
+    TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "implement NOX for steady SCI.");
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
 //    if ( !type.compare("Monolithic"))
 //        evalModelImplMonolithic( inArgs, outArgs );

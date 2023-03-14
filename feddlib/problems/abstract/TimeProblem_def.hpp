@@ -424,7 +424,6 @@ double TimeProblem<SC,LO,GO,NO>::calculateResidualNorm(){
 
     NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
     TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
-    
     Teuchos::Array<SC> res(1);
     nonLinProb->getResidualVector()->norm2(res);
 
@@ -523,13 +522,18 @@ int TimeProblem<SC,LO,GO,NO>::solveAndUpdate( const std::string& criterion, doub
     NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
     TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
     
+
     int its = solveUpdate(  );
 
     if (criterion=="Update") {
         Teuchos::Array<SC> updateNorm(1);
         nonLinProb->getSolution()->norm2(updateNorm());
         criterionValue = updateNorm[0];
+
+       // nonLinProb->getSolution()->getBlock(0)->print();
     }
+
+
     if (criterion=="ResidualAceGen") {
         nonLinProb->getSolution()->update( 1., *nonLinProb->previousSolution_, -1. );
         nonLinProb->assemble( "SetSolutionNewton" );
@@ -538,8 +542,6 @@ int TimeProblem<SC,LO,GO,NO>::solveAndUpdate( const std::string& criterion, doub
     else
         nonLinProb->getSolution()->update( 1., *nonLinProb->previousSolution_, 1. );
 
-    //nonLinProb->getSolution()->print();
-    
     return its;
 }
 

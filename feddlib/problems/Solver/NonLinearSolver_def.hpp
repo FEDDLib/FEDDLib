@@ -187,7 +187,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
 
     Thyra::assign(initialGuess.ptr(), *solMV->col(0));
     
-//    Thyra::V_S(initialGuess.ptr(),Teuchos::ScalarTraits<SC>::zero());
+    //Thyra::V_S(initialGuess.ptr(),Teuchos::ScalarTraits<SC>::zero());
     Teuchos::RCP<NOX::Thyra::Group> nox_group(new NOX::Thyra::Group(initialGuess,
                                                                     problemPtr.getConst(),
                                                                     problemPtr->create_W_op(),
@@ -503,8 +503,13 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
 
         problem.setBoundariesSystem();
 
+        problem.getSystem()->writeMM("Assembled_with_rhs");
+
+
         if (timestepping == "External"){//AceGen
             gmresIts += problem.solveAndUpdate( "ResidualAceGen", criterionValue );
+        //    exporterTxt->exportData( criterionValue );
+
             //problem.assembleExternal( "OnlyUpdate" );// update AceGEN internal variables
         }
         else
@@ -532,6 +537,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
             (*valuesForExport)[0] = gmresIts;
             (*valuesForExport)[1] = nlIts;
         }
+       
+
     }
     
 }

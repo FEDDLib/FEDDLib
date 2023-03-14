@@ -120,7 +120,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::advanceInTime( double dt){
 	if(this->timeStep_ < 1.)
 		this->timeIncrement_ = 0.05;
 	if(this->timeStep_ >= 1. )
-		this->timeIncrement_ = 20.0;
+		this->timeIncrement_ = 1.0;
 	if(this->timeStep_ >= 1001.)
 		this->timeIncrement_= 1.0;
 	if(this->timeStep_ >= 2001.)
@@ -346,7 +346,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 			//if(fabs(stiffnessMatrixKuu[i][j]) > 1e7)
 			//	cout << " !!! Sus entry Kuu [" << i << "][" << j << "] " << stiffnessMatrixKuu[i][j] << endl; 
 			
-			(*elementMatrix)[i][j]=-stiffnessMatrixKuu[i][j];
+			(*elementMatrix)[i][j]=stiffnessMatrixKuu[i][j];
 		}
 	}
 	for(int i=0; i< 30; i++){
@@ -354,7 +354,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 			//if(fabs(stiffnessMatrixKuc[i][j]) > 1e7)
 			//	cout << " !!! Sus entry Kuc [" << i << "][" << j << "] " << stiffnessMatrixKuc[i][j] << endl; 
 			
-			(*elementMatrix)[i][j+30]=-stiffnessMatrixKuc[i][j];
+			(*elementMatrix)[i][j+30]=stiffnessMatrixKuc[i][j];
 		}
 	}
 	for(int i=0; i< 10; i++){
@@ -362,7 +362,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 			//if(fabs(stiffnessMatrixKcu[i][j]) > 1e7)
 			//	cout << " !!! Sus entry Kcu [" << i << "][" << j << "] " << stiffnessMatrixKcu[i][j] << endl; 
 			
-			(*elementMatrix)[i+30][j]=-stiffnessMatrixKcu[i][j];
+			(*elementMatrix)[i+30][j]=stiffnessMatrixKcu[i][j];
 		}
 	}
 	for(int i=0; i< 10; i++){
@@ -370,7 +370,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 			//if(fabs(massMatrixMc[i][j]) > 1e5 || fabs(stiffnessMatrixKcc[i][j]) > 1e5 )
 			//	cout << " !!! Sus entry Mass [" << i << "][" << j << "] " << massMatrixMc[i][j] << " or stiff Kcc " << stiffnessMatrixKcc[i][j] << endl; 
 			 
-			(*elementMatrix)[i+30][j+30] =-stiffnessMatrixKcc[i][j] -(1./deltaT)*massMatrixMc[i][j]; //
+			(*elementMatrix)[i+30][j+30] =stiffnessMatrixKcc[i][j] +(1./deltaT)*massMatrixMc[i][j]; //
 		}
 	}
 

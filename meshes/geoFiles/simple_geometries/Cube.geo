@@ -31,12 +31,12 @@ Curve Loop(4) = {13, 14, 15, 16};
 Curve Loop(5) = {11, 20, -15, -19};
 Curve Loop(6) = {14, -19, -10, 18};
 
-Plane Surface(1) = {1};
-Plane Surface(2) = {2};
-Plane Surface(3) = {3};
+Plane Surface(1) = {-1};
+Plane Surface(2) = {-2};
+Plane Surface(3) = {-3};
 Plane Surface(4) = {4};
 Plane Surface(5) = {5};
-Plane Surface(6) = {6};
+Plane Surface(6) = {-6};
 
 Physical Surface("1") = {1};
 Physical Surface("2") = {2};
