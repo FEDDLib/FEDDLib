@@ -67,7 +67,7 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 
 void inflowChem(double* x, double* res, double t, const double* parameters)
 {
-    res[0] = 0.;
+    res[0] = 1.;
     
     return;
 }
@@ -127,7 +127,7 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     res[1] =0.;
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 2001.0;
+    double TRamp = 10.0;
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -141,8 +141,8 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     
 
     double t_min = parameters[0] - fmod(parameters[0],1.0); //FlowConditions::t_start_unsteady;
-    double t_max = t_min + 1.0; // One heartbeat lasts 1.5 second    
-    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -1.0  );
+    double t_max = t_min + 1.0; // One heartbeat lasts 1.0 second    
+    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -0.95  );
     
     for(int i=0; i< 20; i++)
         Q += (a[i]*std::cos((i+1.)*y) + b[i]*std::sin((i+1.)*y) ) ;
@@ -156,8 +156,8 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     	Q = 0.;
     }
     
-    if(parameters[0] <= 1.)
-       force = force * parameters[0];
+    if(parameters[0] < 1.0)
+       force = force * (parameters[0]);
     
     if(parameters[2] == 5 || parameters[2] == 4){
      	res[0] = force+Q*0.005329;
@@ -173,7 +173,7 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     res[1] =0.;
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 2001.0;
+    double TRamp = 10.;
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -187,8 +187,8 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     
 
     double t_min = parameters[0] - fmod(parameters[0],1.0); //FlowConditions::t_start_unsteady;
-    double t_max = t_min + 1.0; // One heartbeat lasts 1.5 second    
-    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -1.0  );
+    double t_max = t_min + 1.0; // One heartbeat lasts 1.0 second    
+    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -0.95 );
     
     for(int i=0; i< 20; i++)
         Q += (a[i]*std::cos((i+1.)*y) + b[i]*std::sin((i+1.)*y) ) ;
@@ -201,8 +201,8 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     if(parameters[0]< TRamp){
     	Q = 0.;
     }
-    if(parameters[0] <= 1.)
-        force = force * parameters[0];
+    if(parameters[0] < 1.0)
+        force = force * (parameters[0]);
         
     if(parameters[2]==5){
         res[0] = force+Q*0.005329;
