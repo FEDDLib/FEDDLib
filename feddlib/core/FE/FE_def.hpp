@@ -6261,7 +6261,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
 
                     #ifdef FEDD_HAVE_ACEGENINTERFACE
                     getResiduumVectorRext(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, residuumVector);
-                    getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1.0, valueFunc[0], 16, stiffMat); // 16, 35 
+                    getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, stiffMat); // 16, 35 
 
                     int dofs1 = dim;
                     int numNodes1 =nodeList.size();
