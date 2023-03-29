@@ -670,6 +670,7 @@ void BCBuilder<SC,LO,GO,NO>::setLocalRowOne(const MatrixPtr_Type &matrix, LO loc
             (vecBCType_.at(loc) == "Dirichlet_X_Z" && dof!=1 )||
             (vecBCType_.at(loc) == "Dirichlet_Y_Z" && dof!=0 )
             ) {
+           // cout << " Setting Dirichlet Row 1 for node " << localDof << " of type " << vecBCType_.at(loc)  <<endl;
             GO globalDof = matrix->getMap()->getGlobalElement( localDof );
             matrix->getLocalRowView(localDof, indices, valuesOld);
             Teuchos::Array<SC> values( valuesOld.size(), Teuchos::ScalarTraits<SC>::zero() );

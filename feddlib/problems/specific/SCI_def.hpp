@@ -446,6 +446,7 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
         MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
         d_rep_->importFromVector(d, true); 
+        d_rep_->writeMM("Solution_d_rep");
        
         this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Rhs", true/*call fillComplete*/);
 
@@ -459,6 +460,8 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         if(this->verbose_)
             cout << "###### Residual 2-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
 
+        if(nonlinearExternalForce_)
+            computeSolidRHSInTime();
 
         if (!type.compare("standard")){
             //this->rhs_->getBlockNonConst(0)->scale(-1.0);
@@ -481,6 +484,9 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
            
         }
 
+         this->residualVec_->getBlockNonConst(0)->writeMM("residualVec");
+
+
         /*this->problemChem_->assemble();
 
         MultiVectorPtr_Type residualChemSCI =  Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(1) );
@@ -500,9 +506,12 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
    if (type == "standard")
         this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
     else if (type == "reverse"){
-       // this->residualVec_->scale(-1.);
+        //this->residualVec_->scale(-1.);
         this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
     }
+    
+    this->residualVec_->getBlockNonConst(0)->writeMM("residualVec_BC");
+
 
 }
 
@@ -848,14 +857,19 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
             // how can we use different parameters for different blocks here?
             funcParameter[1] =this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Volume force",0.00211);;
             funcParameter[2] = 0.;
+            int modeK_ext = this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("K_ext Modell",1);
             if(nonlinearExternalForce_){
+
+                MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
+                d_rep_->importFromVector(d, true); 
                 MatrixPtr_Type A( new Matrix_Type (this->system_->getBlock(0,0)));
                 //A->print();
                 MatrixPtr_Type AKext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );          
                 MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow()*2 ) );          
                 MultiVectorPtr_Type Kext_vec;
-                this->feFactory_->assemblyNonlinearSurfaceIntegralExternal(this->dim_, this->getDomain(0)->getFEType(),FERhs, d_rep_,Kext, funcParameter, this->problemTimeStructure_->getUnderlyingProblem()->rhsFuncVec_[0],this->parameterList_);
                 
+                this->feFactory_->assemblyNonlinearSurfaceIntegralExternal(this->dim_, this->getDomain(0)->getFEType(),FERhs, d_rep_,Kext, funcParameter, this->problemTimeStructure_->getUnderlyingProblem()->rhsFuncVec_[0],this->parameterList_);
+                    
                 A->addMatrix(1.,AKext,0.);
                 // AKext = -1. * Kext + 1. *AKext;
                 Kext->addMatrix(-1.,AKext,1.);
@@ -869,6 +883,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
 
 
             this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
+            this->sourceTerm_->getBlockNonConst(0)->writeMM("RHS_ext");
 
            
 

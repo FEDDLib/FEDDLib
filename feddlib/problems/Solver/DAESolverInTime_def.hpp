@@ -1070,7 +1070,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
         if( structureModel=="SCI_simple" ){
             if(timeSteppingTool_->currentTime() < 1.)
-                dt = 0.1;
+                dt = 0.05;
             if(timeSteppingTool_->currentTime() >= 1. )
                 dt = 0.1;
             if(timeSteppingTool_->currentTime() >= 5.-1e-10 )

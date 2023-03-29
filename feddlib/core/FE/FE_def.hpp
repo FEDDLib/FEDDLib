@@ -6240,6 +6240,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                 for(int i=0;i<6;i++){
                     for(int j=0;j<3;j++){
                         positions[count] = nodes[i][j];
+
                         count++;
                     }
                 }
@@ -6261,7 +6262,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
 
                     #ifdef FEDD_HAVE_ACEGENINTERFACE
                     getResiduumVectorRext(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, residuumVector);
-                    getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1.0, valueFunc[0], 16, stiffMat); // 16, 35 
+                    getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, stiffMat); // 16, 35 
 
                     int dofs1 = dim;
                     int numNodes1 =nodeList.size();
@@ -6269,7 +6270,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                     SmallMatrix_Type elementMatrixPrint(18,0.);
                     for(int i=0; i< 18 ; i++){
                         for(int j=0; j< 18; j++){
-                            if(fabs(stiffMat[i][j]) >1e-13)
+                           if(fabs(stiffMat[i][j]) >1e-13)
                                 elementMatrixPrint[i][j] = stiffMat[i][j];
 
                         }
@@ -6320,8 +6321,9 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
 
                                         
                     for(int i=0; i< nodeList.size() ; i++){
-                        for(int d=0; d<dim; d++)
+                        for(int d=0; d<dim; d++){
                             valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
+                        }
                     }
                     #endif
 
@@ -6336,8 +6338,9 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
     }
     //f->scale(-1.);
     Kext->fillComplete(domainVec_.at(FEloc)->getMapVecFieldUnique(),domainVec_.at(FEloc)->getMapVecFieldUnique());
-    Kext->writeMM("K_ext");
+    Kext->writeMM("K_ext1");
 }
+
     
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
@@ -6464,7 +6467,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
             }
         }
     }
-    f->scale(-1.);
+    f->scale(-1.); // Generally the pressure is definied in opposite direction of the normal
 }
     
 template <class SC, class LO, class GO, class NO>

@@ -136,9 +136,10 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
 template<class SC,class LO,class GO,class NO>
 int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, BlockMultiVectorPtr_Type rhs){
 
+
     bool verbose(timeProblem->getVerbose());
     int its=0;
-
+    timeProblem->getSystem()->getBlock(0,0)->writeMM("System");
     ProblemPtr_Type problem = timeProblem->getUnderlyingProblem();
 
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
@@ -160,6 +161,8 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
     problem->getLinearSolverBuilder()->setParameterList(pListThyraSolver);
     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
 
+
+
     problem->setupPreconditioner( "Monolithic" );
 
     if (!pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive").compare("Multiplicative")) {
@@ -178,7 +181,12 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
     Teuchos::RCP<Thyra::LinearOpWithSolveBase<SC> > solver = lowsFactory->createOp();
     //    solver = linearOpWithSolve(*lowsFactory, problem->getSystem()->getThyraLinOp());
 
+    //timeProblem->combineSystems();
+    timeProblem->getSystemCombined()->getBlock(0,0)->writeMM("SystemCombined");
+
     ThyraLinOpConstPtr_Type thyraMatrix = timeProblem->getSystemCombined()->getThyraLinOp();
+    //timeProblem->getSystem()->getBlock(0,0)->print();
+    //timeProblem->getSystemCombined()->getBlock(0,0)->print();
     if ( !pListThyraSolver->get("Linear Solver Type","Belos").compare("Belos") ) {
         ThyraPrecPtr_Type thyraPrec = problem->getPreconditioner()->getThyraPrec();
         Thyra::initializePreconditionedOp<SC>(*lowsFactory, thyraMatrix, thyraPrec.getConst(), solver.ptr());
