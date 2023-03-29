@@ -6266,8 +6266,26 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                     int dofs1 = dim;
                     int numNodes1 =nodeList.size();
 
-                  // buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
-                  // elScaling = B.computeScaling( );
+                    SmallMatrix_Type elementMatrixPrint(18,0.);
+                    for(int i=0; i< 18 ; i++){
+                        for(int j=0; j< 18; j++){
+                            if(fabs(stiffMat[i][j]) >1e-13)
+                                elementMatrixPrint[i][j] = stiffMat[i][j];
+
+                        }
+                    }
+                    /*cout << " --------------" << endl;
+                    cout << " STIFMAT before " << endl;
+                    elementMatrixPrint.print();
+                    cout << " --------------" << endl;*/
+
+
+                    SmallMatrix_Type elementMatrixWrite(18,0.);
+
+                    SmallMatrix_Type elementMatrixIDsRow(18,0.);
+                    SmallMatrix_Type elementMatrixIDsCol(18,0.);
+
+
                     for (UN i=0; i < numNodes1 ; i++) {
                         for(int di=0; di<dim; di++){
                             Teuchos::Array<SC> value1( numNodes1*dim, 0. );
@@ -6279,12 +6297,27 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                                 for(int d=0; d<dim; d++){
                                     columnIndices1[dim*j+d] = GO ( dim * map->getGlobalElement( nodeList[j] ) + d );
                                     value1[dim*j+d] = stiffMat[rowLO][dim*j+d];	
+                                    if(fabs(stiffMat[rowLO][dim*j+d]) >1.e-13)
+                                        elementMatrixWrite[rowLO][dim*j+d] = stiffMat[rowLO][dim*j+d];
+                                    else
+                                        elementMatrixWrite[rowLO][dim*j+d] = 0.;
+                                    elementMatrixIDsCol[rowLO][dim*j+d] = columnIndices1[dim*j+d];
+                                    elementMatrixIDsRow[rowLO][dim*j+d] = row;
+
+
                                 }
                             }  
                             Kext->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
                         }
                     }
-                    
+                    /*cout << " --------------" << endl;
+                    cout << " STIFMAT ROW IDs " << endl;
+                    elementMatrixIDsRow.print();
+                    cout << " STIFMAT COL IDs " << endl;
+                    elementMatrixIDsCol.print();
+                    cout << " --------------" << endl;*/
+
+
                                         
                     for(int i=0; i< nodeList.size() ; i++){
                         for(int d=0; d<dim; d++)
@@ -6431,6 +6464,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
             }
         }
     }
+    f->scale(-1.);
 }
     
 template <class SC, class LO, class GO, class NO>

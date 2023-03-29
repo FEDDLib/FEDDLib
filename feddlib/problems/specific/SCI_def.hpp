@@ -464,13 +464,13 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
             //this->rhs_->getBlockNonConst(0)->scale(-1.0);
             if(this->verbose_)
                 cout << " Residual Type : " << type  << endl;
-            this->residualVec_->getBlockNonConst(0)->update(1.,*this->rhs_->getBlockNonConst(0),-1.);
+            this->residualVec_->getBlockNonConst(0)->update(-1.,*this->rhs_->getBlockNonConst(0),1.);
             //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
             //   this->residualVec_->getBlockNonConst(0)->update(-1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);    
        
         }
         else if(!type.compare("reverse")){
-            //this->residualVec_->getBlockNonConst(0)->scale(-1.0); // Here the system is diffrent then usual. Might need to fix that to more consistency
+            this->residualVec_->getBlockNonConst(1)->scale(-1.0); 
 
             if(this->verbose_)
                 cout << " Residual Type : " << type  << endl;
@@ -497,10 +497,10 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     }
 
    // might also be called in the sub calculateNonLinResidualVec() methods which where used above
-   if (type == "reverse")
+   if (type == "standard")
         this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-    else if (type == "standard"){
-        this->residualVec_->scale(-1.);
+    else if (type == "reverse"){
+       // this->residualVec_->scale(-1.);
         this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
     }
 
@@ -861,7 +861,6 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
                 Kext->addMatrix(-1.,AKext,1.);
 
                 AKext->fillComplete(this->getDomain(0)->getMapVecFieldUnique(),this->getDomain(0)->getMapVecFieldUnique());
-
                 this->system_->addBlock(AKext,0,0);
 
             }

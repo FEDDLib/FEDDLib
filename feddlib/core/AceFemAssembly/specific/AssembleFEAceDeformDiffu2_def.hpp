@@ -403,8 +403,6 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 	
 }
 
-// Need to modify the above based on dof ordering flag selected
-
 
 } // namespace FEDD
 #endif // AssembleFEAceDeformDiffu2_DEF_hpp
