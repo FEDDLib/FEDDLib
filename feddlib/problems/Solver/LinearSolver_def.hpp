@@ -179,6 +179,12 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
     //    solver = linearOpWithSolve(*lowsFactory, problem->getSystem()->getThyraLinOp());
 
     ThyraLinOpConstPtr_Type thyraMatrix = timeProblem->getSystemCombined()->getThyraLinOp();
+
+    // Printing the stiffness matrix for the first newton iteration
+    timeProblem->getSystemCombined()->writeMM("stiffnessMatrixWihtDirichlet");
+    timeProblem->getSystem()->writeMM("stiffnessMatrixFull");
+    rhs->writeMM("rhs");
+
     if ( !pListThyraSolver->get("Linear Solver Type","Belos").compare("Belos") ) {
         ThyraPrecPtr_Type thyraPrec = problem->getPreconditioner()->getThyraPrec();
         Thyra::initializePreconditionedOp<SC>(*lowsFactory, thyraMatrix, thyraPrec.getConst(), solver.ptr());
@@ -190,8 +196,8 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
         Thyra::SolveStatus<SC> status = Thyra::solve<SC>(*solver, Thyra::NOTRANS, *thyraB, thyraX.ptr());
         if (verbose)
             std::cout << status << std::endl;
-        
         problem->getSolution()->fromThyraMultiVector(thyraX);
+        problem->getSolution()->writeMM("solution");
         if ( !pListThyraSolver->get("Linear Solver Type","Belos").compare("Belos") ){
             its = status.extraParameters->get("Belos/Iteration Count",0);
             double achievedTol = status.extraParameters->get("Belos/Achieved Tolerance",-1.);
