@@ -100,9 +100,7 @@ void TimeProblem<SC,LO,GO,NO>::reAssembleAndFill( BlockMatrixPtr_Type bMat, std:
 
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
-
-    cout << " ---- COMBINING SYSTEMS ----- " << endl;
-
+    //std::cout << "combineSystems is called" << std::endl;
     BlockMatrixPtr_Type tmpSystem = problem_->getSystem();
     int size = tmpSystem->size();
     systemCombined_.reset( new BlockMatrix_Type ( size ) );
