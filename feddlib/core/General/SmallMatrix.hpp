@@ -13,6 +13,11 @@
  */
 
 namespace FEDD {
+     /*!
+    \class SmallMatrix
+    \brief This class represents a templated small Matrix of type T. Primarily created for 2x2 and 3x3 matrices. Consequently, most features are limited to a certain matrix size.
+
+    */
 template <class T>
 class SmallMatrix{
     
