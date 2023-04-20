@@ -220,7 +220,7 @@ void BCBuilder<SC,LO,GO,NO>::setDirichletBoundaryFromExternal(Teuchos::ArrayRCP<
             for (int dd=0; dd < dofs; dd++)
                 values[ dofs * index + dd ] = (*resultPtr_)[dd] - valuesSubstract[ dofs * index + dd ];
         }
-        elFe if (type == "VecMinusBC"){
+        else if (type == "VecMinusBC"){
             for (int dd=0; dd < dofs; dd++)
                 values[ dofs * index + dd ] = valuesSubstract[ dofs * index + dd ] - (*resultPtr_)[dd];
         }
