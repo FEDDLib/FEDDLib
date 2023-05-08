@@ -1,7 +1,7 @@
 #ifndef DEFAULTTYPEDEFS_hpp
 #define DEFAULTTYPEDEFS_hpp
 #include <TpetraCore_config.h>
-#include <KokkosCompat_DefaultNode.hpp>
+#include <Tpetra_KokkosCompat_DefaultNode.hpp>
 
 typedef double default_sc;
 typedef int default_lo;
@@ -12,6 +12,6 @@ typedef int default_go;
 #else
 typedef long default_go;
 #endif
-typedef KokkosClassic::DefaultNode::DefaultNodeType default_no;
+typedef Tpetra::KokkosClassic::DefaultNode::DefaultNodeType default_no;
 
 #endif
