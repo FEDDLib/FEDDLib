@@ -62,7 +62,7 @@ typedef unsigned UN;
 typedef double SC;
 typedef int LO;
 typedef default_go GO;
-typedef KokkosClassic::DefaultNode::DefaultNodeType NO;
+typedef Tpetra::KokkosClassic::DefaultNode::DefaultNodeType NO;
 using namespace FEDD;
 int main(int argc, char *argv[]) {
 

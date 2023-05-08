@@ -28,7 +28,7 @@ typedef unsigned UN;
 typedef double SC;
 typedef int LO;
 typedef default_go GO;
-typedef KokkosClassic::DefaultNode::DefaultNodeType NO;
+typedef Tpetra::KokkosClassic::DefaultNode::DefaultNodeType NO;
 typedef Elements Elements_Type;
 typedef RCP<Elements_Type> ElementsPtr_Type;
 
