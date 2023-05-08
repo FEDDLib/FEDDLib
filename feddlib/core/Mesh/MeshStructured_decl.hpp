@@ -12,6 +12,11 @@
  @copyright CH
 */
 
+/*! 
+	Extension of mesh class. In MeshStructured meshes are build inside the FEDDLib from scratch and distributed among the processors. Please note that the P1-P2 node structure 
+    differs from the 'buildP2Mesh' process in unstructured meshes. (P2 nodes are generally build on top of P1 nodes and added to the P1 element list.)
+    
+*/
 namespace FEDD {
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class MeshStructured : public Mesh<SC,LO,GO,NO> {

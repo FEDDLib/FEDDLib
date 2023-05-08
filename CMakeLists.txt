@@ -5,7 +5,7 @@
 # To be safe, define your minimum CMake version.  This may be newer than the
 # min required by TriBITS.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.10.0 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.17.0 FATAL_ERROR)
 
 INCLUDE(${CMAKE_SOURCE_DIR}/ProjectName.cmake)
 PROJECT(${PROJECT_NAME})
@@ -16,15 +16,15 @@ SET(FEDDLIB_VERSION_MINOR 0)
 
 SET(${PROJECT_NAME}_ENABLE_Fortran OFF CACHE BOOL "Disable Fortran compiler")
 
-# Set default C++ standard to C++11
-SET(FEDDlib_ENABLE_CXX11_DEFAULT ON)
+# Set default C++ standard to C++17
+SET(FEDDlib_ENABLE_CXX17_DEFAULT ON)
 
 
 # set up a Profiling build type
 SET(CMAKE_CXX_FLAGS_PROFILING "-O3 -pg -g" CACHE STRING "CXX profiling flags")
 SET(CMAKE_C_FLAGS_PROFILING   "-O3 -pg -g" CACHE STRING "C profiling flags")
 
-SET(GCC_COVERAGE_LINK_FLAGS    "-lm")
+#SET(GCC_COVERAGE_LINK_FLAGS    "-lm")
 SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 
 

@@ -3,23 +3,23 @@
 # XLibCreateClientTemplateHeaders.cmake
 SET(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} "${XLib_SOURCE_DIR}/cmake")
 
-MACRO(XLIB_DISABLE_PACKAGE_REQUIRING_CXX11  CXX11_PACKAGE_NAME_IN)
-  IF ("${${PROJECT_NAME}_ENABLE_${CXX11_PACKAGE_NAME_IN}}" STREQUAL "")
+MACRO(XLIB_DISABLE_PACKAGE_REQUIRING_CXX17  CXX17_PACKAGE_NAME_IN)
+  IF ("${${PROJECT_NAME}_ENABLE_${CXX17_PACKAGE_NAME_IN}}" STREQUAL "")
     MESSAGE(
       "\n***"
-      "\n*** NOTE: Setting ${PROJECT_NAME}_ENABLE_${CXX11_PACKAGE_NAME_IN}=OFF"
-      " because ${PROJECT_NAME}_ENABLE_CXX11='${${PROJECT_NAME}_ENABLE_CXX11}'!"
+      "\n*** NOTE: Setting ${PROJECT_NAME}_ENABLE_${CXX17_PACKAGE_NAME_IN}=OFF"
+      " because ${PROJECT_NAME}_ENABLE_CXX17='${${PROJECT_NAME}_ENABLE_CXX17}'!"
       "\n***\n"
       )
-    SET(${PROJECT_NAME}_ENABLE_${CXX11_PACKAGE_NAME_IN} OFF)
-  ELSEIF (${PROJECT_NAME}_ENABLE_${CXX11_PACKAGE_NAME_IN})
+    SET(${PROJECT_NAME}_ENABLE_${CXX17_PACKAGE_NAME_IN} OFF)
+  ELSEIF (${PROJECT_NAME}_ENABLE_${CXX17_PACKAGE_NAME_IN})
     MESSAGE( FATAL_ERROR
       "ERROR: Setting"
-      " ${PROJECT_NAME}_ENABLE_${CXX11_PACKAGE_NAME_IN}='${${PROJECT_NAME}_ENABLE_${CXX11_PACKAGE_NAME_IN}}'"
+      " ${PROJECT_NAME}_ENABLE_${CXX17_PACKAGE_NAME_IN}='${${PROJECT_NAME}_ENABLE_${CXX17_PACKAGE_NAME_IN}}'"
       " is not consistent with "
-      " ${PROJECT_NAME}_ENABLE_CXX11='${${PROJECT_NAME}_ENABLE_CXX11}'!"
-      " ${CXX11_PACKAGE_NAME_IN} requires C++11 support!  Either don't"
-      " enable the package ${CXX11_PACKAGE_NAME_IN} or enable support for C++11!")
+      " ${PROJECT_NAME}_ENABLE_CXX17='${${PROJECT_NAME}_ENABLE_CXX17}'!"
+      " ${CXX17_PACKAGE_NAME_IN} requires C++17 support!  Either don't"
+      " enable the package ${CXX17_PACKAGE_NAME_IN} or enable support for C++17!")
   ELSE()
     # This package is already disabled which is just fine.
   ENDIF()
@@ -58,12 +58,12 @@ MACRO(TRIBITS_REPOSITORY_SETUP_EXTRA_OPTIONS)
   OPTION(XLib_ENABLE_THREAD_SAFE
     "Enable thread safe code including RCP classes." OFF )
 
-  ASSERT_DEFINED(${PROJECT_NAME}_ENABLE_CXX11)
-  IF (XLib_ENABLE_THREAD_SAFE AND NOT ${PROJECT_NAME}_ENABLE_CXX11)
+  ASSERT_DEFINED(${PROJECT_NAME}_ENABLE_CXX17)
+  IF (XLib_ENABLE_THREAD_SAFE AND NOT ${PROJECT_NAME}_ENABLE_CXX17)
     MESSAGE(FATAL_ERROR
       "You set XLib_ENABLE_THREAD_SAFE=ON, but ${PROJECT_NAME}' support"
-      " for CXX11 is not enabled (${PROJECT_NAME}_ENABLE_CXX11=OFF)."
-      "  This is not allowed.  Please enable ${PROJECT_NAME}_ENABLE_CXX11 in"
+      " for CXX17 is not enabled (${PROJECT_NAME}_ENABLE_CXX17=OFF)."
+      "  This is not allowed.  Please enable ${PROJECT_NAME}_ENABLE_CXX17 in"
       " ${PROJECT_NAME} before attempting to enable XLib_ENABLE_THREAD_SAFE"
       " or leave XLib_ENABLE_THREAD_SAFE off.")
   ENDIF ()
@@ -80,9 +80,9 @@ MACRO(TRIBITS_REPOSITORY_SETUP_EXTRA_OPTIONS)
   # Put in disables based on various criteria
   #
     
-  IF (NOT ${PROJECT_NAME}_ENABLE_CXX11)
-    XLIB_DISABLE_PACKAGE_REQUIRING_CXX11("Kokkos")
-    XLIB_DISABLE_PACKAGE_REQUIRING_CXX11("Tpetra")
+  IF (NOT ${PROJECT_NAME}_ENABLE_CXX17)
+    XLIB_DISABLE_PACKAGE_REQUIRING_CXX17("Kokkos")
+    XLIB_DISABLE_PACKAGE_REQUIRING_CXX17("Tpetra")
   ENDIF()
 
   # Used by some XLib packages?
