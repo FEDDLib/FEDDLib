@@ -448,6 +448,7 @@ typedef default_go GO;
 typedef default_no NO;
 
 using namespace FEDD;
+using namespace std;
 
 int main(int argc, char *argv[]) {
     

@@ -10,7 +10,6 @@
 
  */
 
-using namespace std;
 using Teuchos::reduceAll;
 using Teuchos::REDUCE_SUM;
 using Teuchos::REDUCE_MAX;
@@ -68,7 +67,7 @@ MeshUnstructuredRefinement<SC,LO,GO,NO>::~MeshUnstructuredRefinement(){
 
 // Residualbased A-posteriori ErrorEstimation as proposed in Verfuerths' "A Posteriori Error Estimation Techniques for Finite Element Methods"
 template <class SC, class LO, class GO, class NO>
-vec_dbl_Type MeshUnstructuredRefinement<SC,LO,GO,NO>::errorEstimation(MultiVectorPtrConst_Type valuesSolution, double theta, string strategy){
+vec_dbl_Type MeshUnstructuredRefinement<SC,LO,GO,NO>::errorEstimation(MultiVectorPtrConst_Type valuesSolution, double theta, std::string strategy){
    		
 	auto startError = std::chrono::high_resolution_clock::now();
 
@@ -78,7 +77,7 @@ vec_dbl_Type MeshUnstructuredRefinement<SC,LO,GO,NO>::errorEstimation(MultiVecto
 
     EdgeElementsPtr_Type edgeElements = this->getEdgeElements();
 
-	string FEType = this->FEType_;
+	std::string FEType = this->FEType_;
 	MapConstPtr_Type elementMap = this->getElementMap();
 
 	vec2D_dbl_ptr_Type points = this->getPointsRepeated();
@@ -289,7 +288,7 @@ vec_dbl_Type MeshUnstructuredRefinement<SC,LO,GO,NO>::errorEstimation(MultiVecto
 		}
 
 		errorElement[k] = sqrt(1./2*(errorEdgesInterior[0]+errorEdgesInterior[1]+errorEdgesInterior[2])); 
-		//cout << " Error global ELement k " << elementMap ->getGlobalElement(k) << " Fehler " << errorElement[k] << endl;
+		//std::cout << " Error global ELement k " << elementMap ->getGlobalElement(k) << " Fehler " << errorElement[k] << std::endl;
 		errorEdgesInterior[0]=0.;
 		errorEdgesInterior[1]=0.;
 		errorEdgesInterior[2]=0.;
@@ -367,21 +366,21 @@ vec_dbl_Type MeshUnstructuredRefinement<SC,LO,GO,NO>::errorEstimation(MultiVecto
 	std::chrono::duration<double> elapsed_Error = finishError - startError;
 
 	if(this->comm_->getRank() == 0){
-		cout << "__________________________________________________________________________________________________________ " << endl;
-		cout << " " << endl;
-		cout << " The A-posteriori Error Estimation tagged " << flagCount << " Elements for adaptive Refinement with " << strategy << "-Strategy " << endl;
-		cout << " The maximal Error of the Elements is " << maxErrorEl << endl;
-		cout << " Elapsed Time of Error Estimation is " << elapsed_Error.count()  << " s" << endl;
-		cout << "__________________________________________________________________________________________________________ " << endl;
+		std::cout << "__________________________________________________________________________________________________________ " << std::endl;
+		std::cout << " " << std::endl;
+		std::cout << " The A-posteriori Error Estimation tagged " << flagCount << " Elements for adaptive Refinement with " << strategy << "-Strategy " << std::endl;
+		std::cout << " The maximal Error of the Elements is " << maxErrorEl << std::endl;
+		std::cout << " Elapsed Time of Error Estimation is " << elapsed_Error.count()  << " s" << std::endl;
+		std::cout << "__________________________________________________________________________________________________________ " << std::endl;
 		}
   	}
 	else if(this->dim_ == 3){ 
 		if(strategy != "Uniform" ){
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-	   		cout << " You selected a Refinement Strategy that is not yet implemented in the 3D Case." << endl;
-			cout << " A uniform Refinement will be performed instead. " << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " " << std::endl;
+	   		std::cout << " You selected a Refinement Strategy that is not yet implemented in the 3D Case." << std::endl;
+			std::cout << " A uniform Refinement will be performed instead. " << std::endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
 			}
 		
 		for(int k=0; k< elements->numberElements() ; k++){
@@ -398,7 +397,7 @@ vec_dbl_Type MeshUnstructuredRefinement<SC,LO,GO,NO>::errorEstimation(MultiVecto
 
 // Mesh Refinement 
 template <class SC, class LO, class GO, class NO>
-void MeshUnstructuredRefinement<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshesP1, int iteration, bool checkRestrictions, string restriction){
+void MeshUnstructuredRefinement<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_Type meshesP1, int iteration, bool checkRestrictions, std::string restriction){
 
 	MeshUnstrRefPtr_Type meshP1 = meshesP1[iteration];
 		
@@ -444,13 +443,13 @@ void MeshUnstructuredRefinement<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_T
 
 
 		if(this->comm_->getRank() == 0){
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Start Iteration " << iteration+1 << " of "<< this->dim_ << "D Mesh Refinement " << endl;
-			cout << " Number of Elements:	" << this->elementMap_->getGlobalNumElements() << endl;
-			cout << " Number of Nodes:	" << this->mapUnique_->getGlobalNumElements() << endl; 
-			cout << " Number of Edges:	" << this->edgeMap_->getGlobalNumElements() << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " " << std::endl;
+			std::cout << " Start Iteration " << iteration+1 << " of "<< this->dim_ << "D Mesh Refinement " << std::endl;
+			std::cout << " Number of Elements:	" << this->elementMap_->getGlobalNumElements() << std::endl;
+			std::cout << " Number of Nodes:	" << this->mapUnique_->getGlobalNumElements() << std::endl; 
+			std::cout << " Number of Edges:	" << this->edgeMap_->getGlobalNumElements() << std::endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
 		}
 
 
@@ -679,13 +678,13 @@ void MeshUnstructuredRefinement<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_T
 
 
 		/*for (int i=0; i< edgesInterfaceUntagged.size(); i++)
-			cout << " Untagged " << i << " " << edgesInterfaceUntagged[i] << endl;*/
+			std::cout << " Untagged " << i << " " << edgesInterfaceUntagged[i] << std::endl;*/
 
 		/*for (int i=0; i< edgesInterfaceTagged.size(); i++)
-			cout << " Tagged " << i << " " << edgesInterfaceTagged[i] << endl;*/
+			std::cout << " Tagged " << i << " " << edgesInterfaceTagged[i] << std::endl;*/
 
 		/*for (int i=0; i< edgesInterface.size(); i++)
-			cout << " Interface " << i << " " << edgesInterface[i] << endl;*/
+			std::cout << " Interface " << i << " " << edgesInterface[i] << std::endl;*/
 		
 
 		auto finishPart4 = std::chrono::high_resolution_clock::now();		
@@ -848,7 +847,7 @@ void MeshUnstructuredRefinement<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_T
 		for(int j=0;j<this->elementsC_->numberElements();j++){
 			this->elementsC_->getElement(j).untagForRefinement();
 			if(this->elementsC_->getElement(j).isTaggedForRefinement() == true)
-				cout<< "tagged element survived " << endl;
+				std::cout<< "tagged element survived " << std::endl;
 		}
 
 		auto finishPart6 = std::chrono::high_resolution_clock::now();
@@ -1119,35 +1118,35 @@ void MeshUnstructuredRefinement<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_T
 		std::chrono::duration<double> elapsed_Mesh = finishPart10 - startPart1;
 
 		if(this->comm_->getRank() == 0){
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Elapsed Time of different Refinement steps " << endl;
-			cout <<" Part 1 - Regular Refinement:							" << elapsed_Part1.count() << " s" << endl;
-			cout <<" Part 2 - Communicating tagged interface Edges:					" << elapsed_Part2.count() << " s "<< endl;
-			cout <<" Part 3 - Checking Restrictions:						" << elapsed_Part3.count() << " s "<< endl;
-			cout <<" Part 4 - Creating and distributing information of interface Edges:		" << elapsed_Part4.count() <<  " s" << endl;
-			cout <<" Part 5 - Communicating added Points:						" << elapsed_Part5.count() << " s " << endl;
-			cout <<" Part 6 - Irregular Refinement:							" << elapsed_Part6.count() << " s "<< endl;
-			cout <<" Part 7 - Updating Element Map:							" << elapsed_Part7.count() << " s" << endl;
-			cout <<" Part 8 - Making the Edges unique and set global IDs:				" << elapsed_Part8.count() << " s " << endl;
-			cout <<" Part 9 - Updating edgeMap:							" << elapsed_Part9.count() <<  " s" << endl;
-			cout <<" ....Part 9a - setting unique IDs 						" << elapsed_Part9a.count() <<  " s" << endl;
-			cout <<" ....Part 9b - setting repeated IDs 						" << elapsed_Part9b.count() <<  " s" << endl;
-			cout <<" ....Part 9c - setting new repeated ID						" << elapsed_Part9c.count() <<  " s" << endl;
-			cout <<" Part 10 -Updating elementsOfEdgesGlobal/Local:					" << elapsed_Part10.count() <<  " s" << endl;
-			cout <<" Total elapsed Time of Refinement						" << elapsed_Mesh.count() <<  " s" << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " " << std::endl;
+			std::cout << " Elapsed Time of different Refinement steps " << std::endl;
+			std::cout <<" Part 1 - Regular Refinement:							" << elapsed_Part1.count() << " s" << std::endl;
+			std::cout <<" Part 2 - Communicating tagged interface Edges:					" << elapsed_Part2.count() << " s "<< std::endl;
+			std::cout <<" Part 3 - Checking Restrictions:						" << elapsed_Part3.count() << " s "<< std::endl;
+			std::cout <<" Part 4 - Creating and distributing information of interface Edges:		" << elapsed_Part4.count() <<  " s" << std::endl;
+			std::cout <<" Part 5 - Communicating added Points:						" << elapsed_Part5.count() << " s " << std::endl;
+			std::cout <<" Part 6 - Irregular Refinement:							" << elapsed_Part6.count() << " s "<< std::endl;
+			std::cout <<" Part 7 - Updating Element Map:							" << elapsed_Part7.count() << " s" << std::endl;
+			std::cout <<" Part 8 - Making the Edges unique and set global IDs:				" << elapsed_Part8.count() << " s " << std::endl;
+			std::cout <<" Part 9 - Updating edgeMap:							" << elapsed_Part9.count() <<  " s" << std::endl;
+			std::cout <<" ....Part 9a - setting unique IDs 						" << elapsed_Part9a.count() <<  " s" << std::endl;
+			std::cout <<" ....Part 9b - setting repeated IDs 						" << elapsed_Part9b.count() <<  " s" << std::endl;
+			std::cout <<" ....Part 9c - setting new repeated ID						" << elapsed_Part9c.count() <<  " s" << std::endl;
+			std::cout <<" Part 10 -Updating elementsOfEdgesGlobal/Local:					" << elapsed_Part10.count() <<  " s" << std::endl;
+			std::cout <<" Total elapsed Time of Refinement						" << elapsed_Mesh.count() <<  " s" << std::endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
 		}
 
 		if(this->comm_->getRank() == 0){
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " ... finished Iteration " << iteration+1 << " of 2D Mesh Refinement " << endl;
-			cout << " Number of new Elements:	 " << this->elementMap_->getGlobalNumElements() - meshP1->elementMap_-> getGlobalNumElements() << endl;
-			cout << " Number of new Nodes:		 " << this->mapUnique_->getGlobalNumElements()- meshP1->mapUnique_-> getGlobalNumElements() << endl; 
-			cout << " Number of new Edges:	 	 " << this->edgeMap_->getGlobalNumElements()- meshP1->edgeMap_-> getGlobalNumElements() << endl;
-			cout << " Elapsed Time of Refinement:	 " << elapsed_Mesh.count()  << " s" << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " " << std::endl;
+			std::cout << " ... finished Iteration " << iteration+1 << " of 2D Mesh Refinement " << std::endl;
+			std::cout << " Number of new Elements:	 " << this->elementMap_->getGlobalNumElements() - meshP1->elementMap_-> getGlobalNumElements() << std::endl;
+			std::cout << " Number of new Nodes:		 " << this->mapUnique_->getGlobalNumElements()- meshP1->mapUnique_-> getGlobalNumElements() << std::endl; 
+			std::cout << " Number of new Edges:	 	 " << this->edgeMap_->getGlobalNumElements()- meshP1->edgeMap_-> getGlobalNumElements() << std::endl;
+			std::cout << " Elapsed Time of Refinement:	 " << elapsed_Mesh.count()  << " s" << std::endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
 		}
 
 		
@@ -1163,7 +1162,7 @@ void MeshUnstructuredRefinement<SC,LO,GO,NO>::refineMesh( MeshUnstrRefPtrArray_T
 // 2D Refinement Restrictions
 // ------------------------------------------------------------------------------------------------------
 template <class SC, class LO, class GO, class NO>
-void MeshUnstructuredRefinement<SC,LO,GO,NO>::checkGreenTags(MeshUnstrRefPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, string restriction){
+void MeshUnstructuredRefinement<SC,LO,GO,NO>::checkGreenTags(MeshUnstrRefPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements, int iteration, int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges, std::string restriction){
 
 	// We determine whether a element that is tagged for green refinement has been refined green in the previous refinement
 	// If thats is the case, we choose to refine element blue instead by adding a node to the longest edge
@@ -1191,7 +1190,7 @@ void MeshUnstructuredRefinement<SC,LO,GO,NO>::checkGreenTags(MeshUnstrRefPtr_Typ
 	}
 
 	if(restriction != "keepRegularity" && restriction != "checkGreenTags"){
-		cout << " !!! The restriction Type you requested is not available, 'keepRegularity' will be performed instead !!! " << endl; 
+		std::cout << " !!! The restriction Type you requested is not available, 'keepRegularity' will be performed instead !!! " << std::endl; 
 		restriction = "keepRegularity";
 	}
 
@@ -1227,7 +1226,7 @@ void MeshUnstructuredRefinement<SC,LO,GO,NO>::checkGreenTags(MeshUnstrRefPtr_Typ
 					if(tagCounter[i]==2){
 						entry = this->determineLongestEdge(edgeElements,edgeElements->getEdgesOfElement(i),points); // we determine the edge, we would choose for blue Refinement
 						if(!edgeElements->getElement(entry).isTaggedForRefinement()){ // If the longestest edge is already the tagged one, we leave the Element alone
-							//cout <<" Change to red in k= " << k << endl;
+							//std::cout <<" Change to red in k= " << k << std::endl;
 							edgeElements->getElement(entry).tagForRefinement(); // we tag the Element for refinement
 							this->addMidpoint(meshP1,edgeElements,entry);	// we add the necessary midpoint
 							newPoints ++; // add new Points 
@@ -1289,10 +1288,10 @@ void MeshUnstructuredRefinement<SC,LO,GO,NO>::checkGreenTags(MeshUnstrRefPtr_Typ
 
 		reduceAll<int, int> (*this->comm_, REDUCE_SUM, layer, outArg (layer));
 		if(this->comm_->getRank() ==0){
-			cout << "__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " Refinement Tag switched in " << layer << " Elements " << endl;
-			cout << "__________________________________________________________________________________________________________ " << endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " " << std::endl;
+			std::cout << " Refinement Tag switched in " << layer << " Elements " << std::endl;
+			std::cout << "__________________________________________________________________________________________________________ " << std::endl;
 		}
 
 		// Constructing a map of the global IDs of the tagged Edges	

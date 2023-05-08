@@ -110,7 +110,7 @@ public:
                             int numProcsCoarseSolve=0,                            
                             std::string underlyingLib="Tpetra" );
 
-    void buildSurfaceLinesSquareMiniTPM( string feType );
+    void buildSurfaceLinesSquareMiniTPM( std::string feType );
     
     void setRankRange( int numProcsCoarseSolve );
     
@@ -121,7 +121,7 @@ public:
     GO globalID_Q2_20Cube(int r, int s , int t, int &rr, int off_x, int off_y, int off_z, int M, int N,
                           GO nmbPoints_oneDirFull, GO nmbPoints_oneDirMid);
     
-    void setStructuredMeshFlags(int flagsOption,string FEType="P1");
+    void setStructuredMeshFlags(int flagsOption,std::string FEType="P1");
     
     void buildElementMap();
     /* ###################################################################### */

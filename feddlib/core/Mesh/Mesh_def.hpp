@@ -12,7 +12,6 @@ Definition of Mesh
 @copyright CH
 */
 
-using namespace std;
 namespace FEDD {
 template <class SC, class LO, class GO, class NO>
 Mesh<SC,LO,GO,NO>::Mesh():
@@ -369,16 +368,16 @@ vec_int_ptr_Type Mesh<SC,LO,GO,NO>::findElemsForPoints(
     }
 
     // Query the AABBTree
-    map<int, list<int> > treeToItem;
-    map<int, list<int> > itemToTree;
+    std::map<int, std::list<int> > treeToItem;
+    std::map<int, std::list<int> > itemToTree;
     tie(treeToItem, itemToTree) = AABBTree_->scanTree(queryPoints, false);
 
     // FIXME: put this in a function of AABBTree?
     // unnest the returned answer for each query_point
     int point = -1;
     bool found = false;
-    list<int> rectangles;
-    list<int> elements;
+    std::list<int> rectangles;
+    std::list<int> elements;
     for (auto keyValue: itemToTree){
         // FIXME: put this in a function of AABBTree?
         // rectangles is a list<int> of all rectangles point is in

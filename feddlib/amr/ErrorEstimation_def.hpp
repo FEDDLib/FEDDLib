@@ -20,12 +20,14 @@
 
 */
 
-using namespace std;
 using Teuchos::reduceAll;
 using Teuchos::REDUCE_SUM;
 using Teuchos::REDUCE_MAX;
 using Teuchos::REDUCE_MIN;
 using Teuchos::outArg;
+using std::cout;
+using std::endl;
+using std::setprecision;
 
 namespace FEDD {
 
@@ -38,7 +40,7 @@ namespace FEDD {
 
 */
 template <class SC, class LO, class GO, class NO>
-ErrorEstimation<SC,LO,GO,NO>:: ErrorEstimation(int dim, string problemType, bool writeMeshQuality)
+ErrorEstimation<SC,LO,GO,NO>:: ErrorEstimation(int dim, std::string problemType, bool writeMeshQuality)
 {
 	this->dim_ = dim;
 	this->problemType_ = problemType;	
@@ -152,7 +154,7 @@ void ErrorEstimation<SC,LO,GO,NO>::makeRepeatedSolution(BlockMultiVectorConstPtr
 @param[in] FETypeV Finite element type as the maximum FEType for the Velocity, pressure is assumed to be P1 always.
 */ 
 template <class SC, class LO, class GO, class NO>
-typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, string FETypeV){
+typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, std::string FETypeV){
 	
 	// Setting the InputMeshes
 	inputMesh_ = inputMeshP12;
@@ -732,7 +734,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
  
 */
 template <class SC, class LO, class GO, class NO>
-vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int dofsSol, string FEType){
+vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(std::string phiDerivative, int dofsSol, std::string FEType){
 
 	int surfaceNumbers = dim_+1 ; // Number of (dim-1) - dimensional surfaces of Element (triangle has 3 edges)		
 
@@ -1086,7 +1088,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 */
 
 template <class SC, class LO, class GO, class NO>
-void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElementMv, double theta, string strategy,  MeshUnstrPtr_Type meshP1){
+void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElementMv, double theta, std::string strategy,  MeshUnstrPtr_Type meshP1){
 
 
 	Teuchos::ArrayRCP<SC> errorEstimation = errorElementMv->getDataNonConst(0);
@@ -1097,8 +1099,8 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
 
 	theta_ = theta;
 	// As we decide which element to tag based on the maximum error in the elements globally, we need to communicated this maxErrorEl
-	auto it = max_element(errorEstimation.begin(), errorEstimation.end()); // c++11
-	double maxErrorEl= errorEstimation[distance(errorEstimation.begin(), it)];
+	auto it = std::max_element(errorEstimation.begin(), errorEstimation.end()); // c++11
+	double maxErrorEl= errorEstimation[std::distance(errorEstimation.begin(), it)];
 
 	// Maximum-strategy for marking the elements as proposed by Verfürth in "A posterio error estimation"
     reduceAll<int, double> (*meshP1->getComm(), REDUCE_MAX, maxErrorEl, outArg (maxErrorEl));
@@ -1434,7 +1436,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 
 */
 template <class SC, class LO, class GO, class NO>
-vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::getQuadValues(int dim, string FEType, string Type, vec_dbl_Type &QuadW, FiniteElement surface){
+vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::getQuadValues(int dim, std::string FEType, std::string Type, vec_dbl_Type &QuadW, FiniteElement surface){
 
 	vec2D_dbl_Type QuadPts(QuadW.size(), vec_dbl_Type(dim));
 	vec2D_dbl_ptr_Type points = inputMesh_->pointsRep_;
@@ -1856,7 +1858,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>:: calcDiamTriangles(ElementsPtr_Type e
 
 */
 template <class SC, class LO, class GO, class NO>
-typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta){
+typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  std::string distribution, std::string markingStrategy, double theta){
 
 	theta_ =theta;
 	markingStrategy_ = markingStrategy;
@@ -2200,7 +2202,7 @@ void ErrorEstimation<SC,LO,GO,NO>::buildTriangleMap(){
 		 }
 
 
-		Teuchos::RCP<std::vector<GO>> surfacesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsSurfaces ) );
+		Teuchos::RCP<std::vector<GO>> surfacesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsSurfaces ) );
 		Teuchos::ArrayView<GO> surfacesGlobMappingArray = Teuchos::arrayViewFromVector( *surfacesGlobMapping);
 
 		this->surfaceTriangleMap_.reset(new Map<LO,GO,NO>(inputMesh_->getElementMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingArray, 0, inputMesh_->getComm()) );

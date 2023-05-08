@@ -268,7 +268,7 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::initializeUnstructuredMesh(int dimension, string feType, int volumeID){
+void Domain<SC,LO,GO,NO>::initializeUnstructuredMesh(int dimension, std::string feType, int volumeID){
     
     MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp(new MeshUnstr_Type(comm_, volumeID));
     mesh_ = meshUnstructured;
@@ -282,7 +282,7 @@ void Domain<SC,LO,GO,NO>::initializeUnstructuredMesh(int dimension, string feTyp
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::readMeshSize(string filename, string delimiter){
+void Domain<SC,LO,GO,NO>::readMeshSize(std::string filename, std::string delimiter){
     
     MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( mesh_ );
     TEUCHOS_TEST_FOR_EXCEPTION( meshUnstructured.is_null(), std::runtime_error, "Unstructured Mesh is null." );
@@ -910,7 +910,7 @@ int Domain<SC,LO,GO,NO>::findInPointsUnique(const vec_dbl_Type& x) const{
     
     if (this->getDimension()==2) {
         auto iterator = std::find_if( points->begin(), points->end(),
-                                     [&] (const vector<double>& a){
+                                     [&] (const std::vector<double>& a){
                                          if (a[0] >= x[0]-eps && a[0] <= x[0]+eps
                                              && a[1] >= x[1]-eps && a[1] <= x[1]+eps)
                                              return true;
@@ -925,7 +925,7 @@ int Domain<SC,LO,GO,NO>::findInPointsUnique(const vec_dbl_Type& x) const{
     }
     else if(this->getDimension()==3) {
         auto iterator = std::find_if(points->begin(),points->end(),
-                                     [&] (const vector<double>& a){
+                                     [&] (const std::vector<double>& a){
                                          if (a[0] >= x[0]-eps && a[0] <= x[0]+eps
                                              && a[1] >= x[1]-eps && a[1] <= x[1]+eps
                                              && a[2] >= x[2]-eps && a[2] <= x[2]+eps)

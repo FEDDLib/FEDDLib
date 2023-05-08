@@ -20,12 +20,13 @@
 
  */
 
-using namespace std;
 using Teuchos::reduceAll;
 using Teuchos::REDUCE_SUM;
 using Teuchos::REDUCE_MAX;
 using Teuchos::REDUCE_MIN;
 using Teuchos::outArg;
+using std::cout;
+using std::endl;
 
 namespace FEDD {
 template <class SC, class LO, class GO, class NO>
@@ -98,7 +99,7 @@ domainsP1_(0)
 @param[in] parameterListAll Parameterlist as used as input parametersProblem.xml.
 */
 template <class SC, class LO, class GO, class NO>
-AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll ):
+AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(std::string problemType, ParameterListPtr_Type parameterListAll ):
 inputMeshP1_(),
 inputMeshP12_(),
 outputMesh_(),
@@ -142,7 +143,7 @@ domainsP1_(0)
 @param[in] exactSolFun Exact solution function.
 */
 template <class SC, class LO, class GO, class NO>
-AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFunc ):
+AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(std::string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFunc ):
 inputMeshP1_(),
 inputMeshP12_(),
 outputMesh_(),
@@ -188,7 +189,7 @@ domainsP1_(0)
 @param[in] exactSolFunP Exact solution for velocity p.
 */
 template <class SC, class LO, class GO, class NO>
-AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFuncU ,Func_Type exactSolFuncP ):
+AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(std::string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFuncU ,Func_Type exactSolFuncP ):
 inputMeshP1_(),
 inputMeshP12_(),
 outputMesh_(),
@@ -855,7 +856,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::initExporter( ParameterListPtr_Type pa
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv,MultiVectorConstPtr_Type exportSolutionPMv,MultiVectorConstPtr_Type exactSolutionPMv){
 
-	string exporterType = "Scalar";
+	std::string exporterType = "Scalar";
 	if(dofs_ >1 )
 		exporterType = "Vector";
 
@@ -1006,9 +1007,9 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 					cout << endl;
 				cout << "__________________________________________________________________________________________________________ " << endl;
 				for (int i=1; i<=currentIter_ ; i++){
-					cout <<" "<< i << ":	"<<  setprecision(5) << fixed << errorH1[i]<< "		||	" << errorL2[i] ;
+					cout <<" "<< i << ":	"<<  std::setprecision(5) << std::fixed << errorH1[i]<< "		||	" << errorL2[i] ;
 					if( calculatePressure_== true  && exactSolPInput_ == true  ){
-						cout << " 	 	||	" << setprecision(5) << fixed <<  errorL2P[i] << endl;
+						cout << " 	 	||	" << std::setprecision(5) << std::fixed <<  errorL2P[i] << endl;
 					}
 					else
 						cout << endl;
@@ -1025,7 +1026,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 			cout << " " << endl;
 			cout << "Distribution of elements on .. " << endl;
 			//for(int l=0; l< maxRank_ +1 ; l++)
-			cout <<" Max Number of Elements on Processors " << setprecision(0) << fixed <<   maxNumElementsOnProcs << endl; 
+			cout <<" Max Number of Elements on Processors " << std::setprecision(0) << std::fixed <<   maxNumElementsOnProcs << endl; 
 			cout <<" Min Number of Elements on Processors " <<  minNumElementsOnProcs << endl; 
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
