@@ -484,7 +484,7 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
            
         }
 
-         this->residualVec_->getBlockNonConst(0)->writeMM("residualVec");
+        //  this->residualVec_->getBlockNonConst(0)->writeMM("residualVec");
 
 
         /*this->problemChem_->assemble();
@@ -510,7 +510,7 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
     }
     
-    this->residualVec_->getBlockNonConst(0)->writeMM("residualVec_BC");
+    // this->residualVec_->getBlockNonConst(0)->writeMM("residualVec_BC");
 
 
 }
@@ -883,7 +883,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
 
 
             this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
-            this->sourceTerm_->getBlockNonConst(0)->writeMM("RHS_ext");
+            // this->sourceTerm_->getBlockNonConst(0)->writeMM("RHS_ext");
 
            
 

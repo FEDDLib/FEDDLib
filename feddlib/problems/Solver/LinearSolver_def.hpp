@@ -182,14 +182,14 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
     //    solver = linearOpWithSolve(*lowsFactory, problem->getSystem()->getThyraLinOp());
 
     //timeProblem->combineSystems();
-    timeProblem->getSystemCombined()->getBlock(0,0)->writeMM("SystemCombined");
+    // timeProblem->getSystemCombined()->getBlock(0,0)->writeMM("SystemCombined");
 
     ThyraLinOpConstPtr_Type thyraMatrix = timeProblem->getSystemCombined()->getThyraLinOp();
 
     // Printing the stiffness matrix for the first newton iteration
-    timeProblem->getSystemCombined()->writeMM("stiffnessMatrixWihtDirichlet");
-    timeProblem->getSystem()->writeMM("stiffnessMatrixFull");
-    rhs->writeMM("rhs");
+    // timeProblem->getSystemCombined()->writeMM("stiffnessMatrixWihtDirichlet");
+    // timeProblem->getSystem()->writeMM("stiffnessMatrixFull");
+    // rhs->writeMM("rhs");
 
     if ( !pListThyraSolver->get("Linear Solver Type","Belos").compare("Belos") ) {
         ThyraPrecPtr_Type thyraPrec = problem->getPreconditioner()->getThyraPrec();

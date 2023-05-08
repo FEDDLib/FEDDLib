@@ -6341,7 +6341,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
     }
     //f->scale(-1.);
     Kext->fillComplete(domainVec_.at(FEloc)->getMapVecFieldUnique(),domainVec_.at(FEloc)->getMapVecFieldUnique());
-    Kext->writeMM("K_ext1");
+    // Kext->writeMM("K_ext1");
 }
 
     
