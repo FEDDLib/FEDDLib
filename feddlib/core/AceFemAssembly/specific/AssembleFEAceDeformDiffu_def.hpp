@@ -275,7 +275,7 @@ namespace FEDD
 		for (int i = 0; i < 40; i++)
 			stiffnessMatrix[i] = &stiffnessMatrixFlat[i * 40];
 
-		std::cout << "From stiffness matrix call: " << std::endl;
+		/*std::cout << "From stiffness matrix call: " << std::endl;
 
 		std::cout << "Nodes ref config: " << std::endl;
 		for (int i = 0; i < 30; i++)
@@ -304,15 +304,15 @@ namespace FEDD
 
 		std::cout << "timeIncrement: " << timeIncrement << std::endl;
 
-		std::cout << "integrationCode: " << integrationCode << std::endl;
+		std::cout << "integrationCode: " << integrationCode << std::endl;*/
 
 		getResiduumAndStiffnessMatrixNeoHooke(&positions[0], &displacements[0], &concentrations[0], &concentrationsLastConverged[0], &domainData[0], timeIncrement, integrationCode, &residuum[0], stiffnessMatrix);
 
-		std::cout << "residuum: " << std::endl;
+		/*std::cout << "residuum: " << std::endl;
 
 		for (int i = 0; i < 40; i++)
 			std::cout << residuum[i] << ",";
-		std::cout << std::endl;
+		std::cout << std::endl;*/
 		
 
 		for (UN i = 0; i < this->dofsElement_; i++)
