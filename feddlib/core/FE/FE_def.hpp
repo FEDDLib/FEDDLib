@@ -2,7 +2,7 @@
 #define FE_DEF_hpp
 
 #ifdef FEDD_HAVE_ACEGENINTERFACE
-#include "aceinterface.h"
+#include "aceinterface.hpp"
 #endif
 
 #include "FE_decl.hpp"
@@ -6168,9 +6168,12 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
   
                 if(valueFunc[0] != 0.){
 
-                    double *residuumVector = (double*) calloc(18,sizeof(double));
+                    double *residuumVector;
                     #ifdef FEDD_HAVE_ACEGENINTERFACE
-                    getResiduumVectorRext(&positions[0], &solution_d[0], 1., valueFunc[0], 35, residuumVector);
+                    AceGenInterface::PressureTriangle3D6 pt(valueFunc[0], 1., 35, &positions[0], &solution_d[0]);
+                    pt.computeTangentResidual();
+                    residuumVector = pt.getResiduum();
+                    // getResiduumVectorRext(&positions[0], &solution_d[0], 1., valueFunc[0], 35, residuumVector);
                     #endif
                     /*cout << " residuumVector " ;
 
@@ -6182,7 +6185,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
                                 valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
                     }
 
-                    free(residuumVector);
+                    // free(residuumVector);
                 }
                     
             }
@@ -6251,18 +6254,18 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
   
                 if(valueFunc[0] != 0.){
                     
-                    double *residuumVector = (double*) calloc(18,sizeof(double));
-                
-                    double *stiffnessMatrixFlat = (double *)calloc(18*18,sizeof(double));
-                    double **stiffMat=(double**)calloc(18,sizeof(double*));
-                    for(int i=0;i<18;i++)
-                    {
-                        stiffMat[i] = &stiffnessMatrixFlat[18*i];
-                    }       
+                    double *residuumVector;
+                    double **stiffMat;
 
                     #ifdef FEDD_HAVE_ACEGENINTERFACE
-                    getResiduumVectorRext(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, residuumVector);
-                    getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, stiffMat); // 16, 35 
+                    AceGenInterface::PressureTriangle3D6 pt(valueFunc[0], 1.0, 35, &positions[0], &solution_d[0]);
+                    pt.computeTangentResidual();
+
+                    residuumVector = pt.getResiduum();
+                    stiffMat = pt.getStiffnessMatrix();
+
+                    // getResiduumVectorRext(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, residuumVector);
+                    // getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, stiffMat); // 16, 35 
 
                     int dofs1 = dim;
                     int numNodes1 =nodeList.size();
@@ -6327,9 +6330,9 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                     }
                     #endif
 
-                    free(stiffMat);
-                    free(stiffnessMatrixFlat);
-                    free(residuumVector);
+                    // free(stiffMat);
+                    // free(stiffnessMatrixFlat);
+                    // free(residuumVector);
                 }
                 
                     
@@ -6338,7 +6341,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
     }
     //f->scale(-1.);
     Kext->fillComplete(domainVec_.at(FEloc)->getMapVecFieldUnique(),domainVec_.at(FEloc)->getMapVecFieldUnique());
-    Kext->writeMM("K_ext1");
+    // Kext->writeMM("K_ext1");
 }
 
     
