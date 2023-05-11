@@ -19,10 +19,11 @@ Vertices
 1 0.5 0.5 6
 
 Edges
-3
+4
 1 2 8
 4 1 9
 1 5 7
+1 9 1
 
 Triangles
 24
