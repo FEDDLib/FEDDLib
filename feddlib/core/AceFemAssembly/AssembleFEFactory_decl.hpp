@@ -11,8 +11,9 @@
 #include "feddlib/core/AceFemAssembly/specific/AssembleFEAceNonLinElas2.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokes.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian.hpp"
-#include "feddlib/core/AceFemAssembly/specific/AssembleFEAceDeformDiffu_decl.hpp"
-#include "feddlib/core/AceFemAssembly/specific/AssembleFEAceDeformDiffu2_decl.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_NH_decl.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_MLCK_decl.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation_decl.hpp"
 
 namespace FEDD {
 

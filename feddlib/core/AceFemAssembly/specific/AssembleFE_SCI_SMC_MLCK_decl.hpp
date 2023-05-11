@@ -1,5 +1,5 @@
-#ifndef AssembleFEAceDeformDiffu22_DECL_hpp
-#define AssembleFEAceDeformDiffu22_DECL_hpp
+#ifndef AssembleFE_SCI_SMC_MLCK_DECL_hpp
+#define AssembleFE_SCI_SMC_MLCK_DECL_hpp
 
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
 #include "feddlib/core/AceFemAssembly/AssembleFEBlock.hpp"
@@ -19,7 +19,7 @@
 namespace FEDD {
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class AssembleFEAceDeformDiffu2 : public AssembleFE<SC,LO,GO,NO> {
+class AssembleFE_SCI_SMC_MLCK : public AssembleFE<SC,LO,GO,NO> {
     public:
 
         typedef Matrix<SC,LO,GO,NO> Matrix_Type;
@@ -53,11 +53,11 @@ class AssembleFEAceDeformDiffu2 : public AssembleFE<SC,LO,GO,NO> {
 
 
     protected:
-        AssembleFEAceDeformDiffu2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);
+        AssembleFE_SCI_SMC_MLCK(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);
 
     private:
 
-        void assembleDeformationDiffusionNeoHook(SmallMatrixPtr_Type &elementMatrix);
+        void assemble_SCI_SMC_MLCK(SmallMatrixPtr_Type &elementMatrix);
 
         friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 	    
@@ -145,9 +145,10 @@ class AssembleFEAceDeformDiffu2 : public AssembleFE<SC,LO,GO,NO> {
 		vec_dbl_Type solutionC_n_;
 		vec_dbl_Type solutionC_n1_; 
  
-
+		vec2D_dbl_Type timeParametersVec_;
+    	double numSegments_ ;
 
 };
 
 }
-#endif //AssembleFEAceDeformDiffu2_DECL_hpp
+#endif //AssembleFE_SCI_SMC_MLCK_DECL_hpp

@@ -15,10 +15,12 @@
         
         <Parameter name="SCI" type="bool" value="true"/>
         <Parameter name="Load Stepping" type="bool" value="true"/>
+        <Parameter name="Load Step Size" type="double" value="0.05"/><!-- Length/size of Loadsteps -->
+        <Parameter name="Load Ramp End" type="double" value="1.0"/><!-- End of Load Stepping -->
         <Parameter name="External Force" type="bool" value="true"/>
         <Parameter name="Nonlinear External Force" type="bool" value="true"/>
         <Parameter name="Coupling Type" type="string" value="implicit"/>
-        <Parameter name="Structure Model" type="string" value="SCI_simple"/> <!-- SCI_simple for simplified model or SCI_sophisticated -->
+        <Parameter name="Structure Model" type="string" value="SCI_NH"/> <!-- SCI_NH , SCI_SMC_MLCK , SCI_SMC_Active_Growth_Reorientation -->
 
         <Parameter name="Refinement Level" type="int" value="0"/>
        
@@ -31,23 +33,9 @@
         
         <Parameter name="MaxNonLinIts" type="int" value="10"/>
 
-        <Parameter name="Criterion" type="string" value="Residual"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
+        <Parameter name="Criterion" type="string" value="Update"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
     </ParameterList>
-    <ParameterList name="Parameter Solid">        
-        <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
-        <Parameter name="Neo-Hooke Modell" type="int" value="2"/><!--differen energy functions -->
-        <Parameter name="Density" type="double"   value="1000."/>
-        <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
-        <Parameter name="Poisson Ratio" type="double" value="0.49"/>
-        <Parameter name="Mu" type="double" value="2.0e+6"/>
-        <!-- Parameter for Neo-Hooke and Mooney-Rivlin, additioanlly poisson ratio is used -->
-        <Parameter name="E" type="double" value="0.38"/>
-        <Parameter name="E1" type="double" value="0.30"/>
-        <Parameter name="c1" type="double" value="0.25"/>
-        <!-- Parameter for Mooney-Rivlin-->
-        <Parameter name="C" type="double" value="1."/><!-- Mooney-Rivlin parameter -->
-    </ParameterList>
-    
+
     <ParameterList name="Parameter Diffusion">
         <Parameter name="Viscosity" type="double" value="1.0"/>
         <Parameter name="Density" type="double" value="1000.0"/>
@@ -113,6 +101,25 @@
         <Parameter name="dt" type="double" value=".05"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
+        <ParameterList name="Timestepping Intervalls">
+            <Parameter name="Number of Segments" type="int" value="4"/>
+            <ParameterList name="1">
+                <Parameter name="Start Time" type="double" value="0."/>
+                <Parameter name="dt" type="double" value="0.05"/>
+            </ParameterList>
+             <ParameterList name="2">
+                <Parameter name="Start Time" type="double" value="1."/>
+                <Parameter name="dt" type="double" value="1."/>
+            </ParameterList>
+             <ParameterList name="3">
+                <Parameter name="Start Time" type="double" value="1001."/>
+                <Parameter name="dt" type="double" value="1."/>
+            </ParameterList>
+             <ParameterList name="4">
+                <Parameter name="Start Time" type="double" value="2001."/>
+                <Parameter name="dt" type="double" value="0.02"/>
+            </ParameterList>
+         </ParameterList> 
     </ParameterList>
 </ParameterList>
 

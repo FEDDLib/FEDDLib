@@ -17,12 +17,15 @@ SET(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/AssembleFEAceNonLinElas2_decl.hpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas2_def.hpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas2.hpp
-	AceFemAssembly/specific/AssembleFEAceDeformDiffu_decl.hpp
-	AceFemAssembly/specific/AssembleFEAceDeformDiffu_def.hpp
-	AceFemAssembly/specific/AssembleFEAceDeformDiffu.hpp
-	AceFemAssembly/specific/AssembleFEAceDeformDiffu2_decl.hpp
-	AceFemAssembly/specific/AssembleFEAceDeformDiffu2_def.hpp
-	AceFemAssembly/specific/AssembleFEAceDeformDiffu2.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_NH_decl.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_NH_def.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_NH.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_MLCK_decl.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_MLCK_def.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_MLCK.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation_def.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation_decl.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.hpp
 CACHE INTERNAL "")
 
 SET(AceFemAssemblySpecific_SOURCES
@@ -32,8 +35,9 @@ SET(AceFemAssemblySpecific_SOURCES
 	AceFemAssembly/specific/AssembleFEAceLinElas.cpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas.cpp
 	AceFemAssembly/specific/AssembleFEAceNonLinElas2.cpp
-	AceFemAssembly/specific/AssembleFEAceDeformDiffu.cpp
-	AceFemAssembly/specific/AssembleFEAceDeformDiffu2.cpp
+	AceFemAssembly/specific/AssembleFE_SCI_NH.cpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_MLCK.cpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.cpp
 CACHE INTERNAL "")
 
 

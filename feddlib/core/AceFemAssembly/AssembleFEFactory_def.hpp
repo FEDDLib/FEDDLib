@@ -44,13 +44,17 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 		Teuchos::RCP<AssembleFEAceNonLinElas2<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceNonLinElas2<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
-	else if(problemType == "SCI_simple"){
-		Teuchos::RCP<AssembleFEAceDeformDiffu<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceDeformDiffu<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+	else if(problemType == "SCI_NH"){
+		Teuchos::RCP<AssembleFE_SCI_NH<SC,LO,GO,NO>> assembleFESpecific(new AssembleFE_SCI_NH<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
 	// Structure interaction model established by Klemens Uhlmann
-	else if(problemType == "SCI_sophisticated"){
-		Teuchos::RCP<AssembleFEAceDeformDiffu2<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceDeformDiffu2<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+	else if(problemType == "SCI_SMC_MLCK"){
+		Teuchos::RCP<AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>> assembleFESpecific(new AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		assembleFE = assembleFESpecific;
+	}
+	else if(problemType == "SCI_SMC_Active_Growth_Reorientation"){
+		Teuchos::RCP<AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>> assembleFESpecific(new AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
 	else

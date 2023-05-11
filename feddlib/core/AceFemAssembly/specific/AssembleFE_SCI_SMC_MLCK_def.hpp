@@ -1,7 +1,7 @@
-#ifndef AssembleFEAceDeformDiffu2_DEF_hpp
-#define AssembleFEAceDeformDiffu2_DEF_hpp
+#ifndef AssembleFE_SCI_SMC_MLCK_DEF_hpp
+#define AssembleFE_SCI_SMC_MLCK_DEF_hpp
 
-#include "AssembleFEAceDeformDiffu2_decl.hpp"
+#include "AssembleFE_SCI_SMC_MLCK_decl.hpp"
 
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 #include "aceinterface.hpp"
@@ -13,7 +13,7 @@
 namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>
-AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::AssembleFEAceDeformDiffu2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
+AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::AssembleFE_SCI_SMC_MLCK(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
 AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 {
 		/*
@@ -78,11 +78,11 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	c50_ = this->params_->sublist("Parameter Solid").get("C50",0.5e0);
 	d0_ = this->params_->sublist("Parameter Diffusion").get("D0",6.e-05);
 	m_ = this->params_->sublist("Parameter Solid").get("m",0.e0);
-	startTime_ = this->params_->sublist("Parameter Solid").get("StartTime",1001.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime
+	startTime_ = this->params_->sublist("Parameter Solid").get("ActiveStartTime",1001.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime
 	rho_ = this->params_->sublist("Parameter Solid").get("Rho",1.e0);
 
 	// iCode_ = this->params_->sublist("Parameter Solid").get("Intergration Code",18);
-	iCode_=18; //Only works for 18 currently
+	iCode_=18; //Only works for 18 currently!!
 
     FEType_ = std::get<1>(this->diskTuple_->at(0)); // FEType of Disk
 	dofsSolid_ = std::get<2>(this->diskTuple_->at(0)); // Degrees of freedom per node
@@ -93,8 +93,10 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 
 	dofsElement_ = dofsSolid_*numNodesSolid_ + dofsChem_*numNodesChem_; // "Dimension of return matrix"
 
+	// Einlesen durch Parameterdatei irgendwann cool
 	history_ ={1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
 	//.resize(48);
+	
 	historyUpdated_.resize(48,0.);
 
 	solutionC_n_.resize(10,0.);
@@ -102,30 +104,42 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 
 	this->solution_.reset( new vec_dbl_Type ( dofsElement_,0.) );
 
+	
+	timeParametersVec_.resize(0, vec_dbl_Type(2));
+    numSegments_ = this->params_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);
+
+ 	for(int i=1; i <= numSegments_; i++){
+
+        double startTime = this->params_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("Start Time",0.);
+        double dtTmp = this->params_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("dt",0.1);
+        
+        vec_dbl_Type segment = {startTime,dtTmp};
+        timeParametersVec_.push_back(segment);
+    }
+
 }
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleJacobian() {
+void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::assembleJacobian() {
 
     SmallMatrixPtr_Type elementMatrix = Teuchos::rcp( new SmallMatrix_Type(dofsElement_,0.));
 
-    assembleDeformationDiffusionNeoHook(elementMatrix);
+    assemble_SCI_SMC_MLCK(elementMatrix);
 
     this->jacobian_ = elementMatrix;
 	
 }
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::advanceInTime( double dt){
+void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::advanceInTime( double dt){
 
 	//cout << " advanced in time for this element with dt " << dt << endl;
-	if(this->timeStep_ < 1.)
-		this->timeIncrement_ = 0.05;
-	if(this->timeStep_ >= 1. )
-		this->timeIncrement_ = 1.0;
-	if(this->timeStep_ >= 1001.)
-		this->timeIncrement_= 1.0;
-	if(this->timeStep_ >= 2001.)
-		this->timeIncrement_= 0.02;
+	this->timeIncrement_ = dt;
+
+	// If we have a time segment setting we switch to the demanded time increment
+	for(int i=0; i<numSegments_ ; i++){
+		if(this->timeStep_ >= timeParametersVec_[i][0])
+			this->timeIncrement_=timeParametersVec_[i][1];
+	}
 
 	//cout << " Changed to timeincrement " << this->timeIncrement_<< endl;
 	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
@@ -143,7 +157,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::advanceInTime( double dt){
 }
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
+void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::assembleRHS(){
 
 	this->rhsVec_.reset( new vec_dbl_Type ( dofsElement_,0.) );
 
@@ -252,7 +266,7 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleRHS(){
 
 
 template <class SC,class LO, class GO, class NO>
-void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook(SmallMatrixPtr_Type &elementMatrix){
+void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::assemble_SCI_SMC_MLCK(SmallMatrixPtr_Type &elementMatrix){
 	// double deltat=this->getTimeIncrement();
 	// std::vector<double> deltat(1);
 	// deltat[0]=this->getTimeIncrement();
@@ -260,31 +274,6 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 
 	double deltaT=this->getTimeIncrement();
-
-	/*double *stiffnessMatrixKuuFlat = (double *) calloc(30*30,sizeof(double));
-	double **stiffnessMatrixKuu = (double**) calloc(30,sizeof(double*));
-	for(int i=0;i<30;i++)
-		stiffnessMatrixKuu[i] = &stiffnessMatrixKuuFlat[30*i];
-
-	double *stiffnessMatrixKucFlat = (double *) calloc(30*10,sizeof(double));
-	double **stiffnessMatrixKuc = (double**) calloc(30,sizeof(double*));
-	for(int i=0;i<30;i++)
-		stiffnessMatrixKuc[i] = &stiffnessMatrixKucFlat[10*i];
-
-	double *stiffnessMatrixKcuFlat = (double *) calloc(10*30,sizeof(double));
-	double **stiffnessMatrixKcu = (double **) calloc(10,sizeof(double*));
-	for(int i=0;i<10;i++)
-		stiffnessMatrixKcu[i] = &stiffnessMatrixKcuFlat[30*i];
-
-	double *stiffnessMatrixKccFlat = (double *) calloc(10*10,sizeof(double));
-	double **stiffnessMatrixKcc = (double **) calloc(10,sizeof(double*));
-	for(int i=0;i<10;i++)
-		stiffnessMatrixKcc[i] = &stiffnessMatrixKccFlat[10*i];
-
-	double *massMatrixMcFlat = (double *) calloc(10*10,sizeof(double));
-	double **massMatrixMc = (double **) calloc(10,sizeof(double*));
-	for(int i=0;i<10;i++)
-		massMatrixMc[i] = &massMatrixMcFlat[10*i];*/
  	
 	double positions[30];
 	int count = 0;
@@ -324,8 +313,6 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 		rates[i] =(solutionC_n1_[i]-solutionC_n_[i]) / deltaT;//
 	}
 	// ##########################
-
-    // history  [in] Vector of history variables [Order: LambdaBarC1, LambdaBarC2, nA1, nA2, nB1, nB2, nC1, nC2, nD1, nD2, LambdaA1, LambdaA2] (The length must be equal to number of history variables per gauss point * number of gauss points)
     
     double time = this->getTimeStep();
     double subIterationTolerance = 1.e-7;
@@ -344,18 +331,11 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 	double** stiffnessMatrixKcc = elem.getStiffnessMatrixKcc();
 	double** massMatrixMc = elem.getMassMatrixMc();
 
-    // getStiffnessMatrixKuu(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, &historyUpdated[0], stiffnessMatrixKuu);
+    
 	for(int i=0; i< 48; i++){
 		historyUpdated_[i] = historyUpdated[i];
 	}
 	
-	// getStiffnessMatrixKuc(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_,  stiffnessMatrixKuc);
-	// getStiffnessMatrixKcu(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_,  stiffnessMatrixKcu);
-	// getStiffnessMatrixKcc(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_, stiffnessMatrixKcc);
-
-    // getMassMatrixMc(&positions[0], &displacements[0], &concentrations[0], &accelerations[0], &rates[0], &domainData[0], &history[0], subIterationTolerance, deltaT, time, iCode_,  &historyUpdated[0], massMatrixMc);
-
-
 	for(int i=0; i< 30; i++){
 		for(int j=0; j<30; j++){
 			//if(fabs(stiffnessMatrixKuu[i][j]) > 1e7)
@@ -389,26 +369,6 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 		}
 	}
 
-	// Safe history updated in each timestep, as it could always be the last.
-
-	/*cout<< "History Updated ";
-	for(int i=0; i<12; i++){
-		cout<< historyUpdated[i] <<" " ;;
-		
-	}
-	cout << endl; */
-
-	// free(massMatrixMc);
-	// free(massMatrixMcFlat);
-	// free(stiffnessMatrixKcc);
-	// free(stiffnessMatrixKccFlat);
-	// free(stiffnessMatrixKcu);
-	// free(stiffnessMatrixKcuFlat);
-	// free(stiffnessMatrixKuc);
-	// free(stiffnessMatrixKucFlat);
-    // free(stiffnessMatrixKuu);
-    // free(stiffnessMatrixKuuFlat);
-	
     
     
 
@@ -420,4 +380,4 @@ void AssembleFEAceDeformDiffu2<SC,LO,GO,NO>::assembleDeformationDiffusionNeoHook
 
 
 } // namespace FEDD
-#endif // AssembleFEAceDeformDiffu2_DEF_hpp
+#endif // AssembleFE_SCI_SMC_MLCK_DEF_hpp

@@ -1047,10 +1047,41 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     std::string structureModel = parameterList_->sublist("Parameter").get("Structure Model","SCI_simple");
     std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
 
+    vec2D_dbl_Type timeParametersVec(0,vec_dbl_Type(2));
+    
+    int numSegments = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);
 
+ 	for(int i=1; i <= numSegments; i++){
+
+        double startTime = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("Start Time",0.);
+        double dtTmp = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("dt",0.1);
+        
+        vec_dbl_Type segment = {startTime,dtTmp};
+        timeParametersVec.push_back(segment);
+    }
+    double loadStepSize = parameterList_->sublist("Parameter").get("Load Step Size",1.);
+
+    if(numSegments > 0 ){
+        TEUCHOS_TEST_FOR_EXCEPTION( loadStepSize != timeParametersVec[0][1], std::runtime_error, "Load Step Size and First Time Interval Size appear different" );
+    }
+    else{
+        TEUCHOS_TEST_FOR_EXCEPTION( loadStepSize != timeSteppingTool_->dt_, std::runtime_error, "Load Step Size and dt appear different" );
+    }
     while(timeSteppingTool_->continueTimeStepping())
     {
-        if(structureModel=="SCI_sophisticated"  ){
+        for(int i=0; i<numSegments ; i++){
+            if(timeSteppingTool_->currentTime() >= timeParametersVec[i][0])
+                dt=timeParametersVec[i][1];
+
+            timeSteppingTool_->dt_prev_= dt;        
+            timeSteppingTool_->dt_= dt;
+
+            sci->timeSteppingTool_->dt_prev_= dt;        
+            sci->timeSteppingTool_->dt_= dt;
+       
+        }
+        
+        /*if(structureModel=="SCI_sophisticated"  ){
             if(timeSteppingTool_->currentTime() < 1.)
                 dt = 0.05;
             if(timeSteppingTool_->currentTime() >= 1. )
@@ -1083,7 +1114,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
             sci->timeSteppingTool_->dt_prev_= dt;        
             sci->timeSteppingTool_->dt_= dt;
-        }
+        }*/
         
      
 

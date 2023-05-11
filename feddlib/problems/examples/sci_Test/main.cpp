@@ -98,21 +98,29 @@ void rhsZ(double* x, double* res, double* parameters){
     return;
 }
 
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStep (lambda)
+// 3 : LoadStep end time
+// 4 : Flag 
+
 void rhsYZ(double* x, double* res, double* parameters){
-    // parameters[0] is the time, not needed here
 
     double force = parameters[1];
-    double TRamp = 1.0;
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
+
   	res[0] =0.;
     res[1] =0.;
     res[2] =0.;
-    if(parameters[0] < TRamp)
-        force = (parameters[0]+0.05) * force ;
+    if(parameters[0]+1e-12 < TRamp)
+        force = (parameters[0]+loadStepSize) * force ;
     else
         force = parameters[1];
 
 
-    if(parameters[2] == 4  || parameters[2] == 5){
+    if(parameters[4] == 4  || parameters[4] == 5){
       	res[0] = force;
         res[1] = force;
         res[2] = force;
@@ -121,13 +129,22 @@ void rhsYZ(double* x, double* res, double* parameters){
     return;
 }
 
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStepSize
+// 3 : LoadStep end time
+// 4 : Flag 
+
 void rhsHeartBeatCube(double* x, double* res, double* parameters){
-    // parameters[0] is the time, not needed here
+
     res[0] =0.;
     res[1] =0.;
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 5.0;
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
+
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -152,28 +169,34 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     Q -= 0.026039341343493;
     Q = (Q - 2.85489)/(7.96908-2.85489);
     
-    if(parameters[0]< TRamp){
+    if(parameters[0]< 5.0){
     	Q = 0.;
     }
     
-    if(parameters[0] < 1.0)
-       force = force * (parameters[0]);
+    if(parameters[0]+1e-12 < TRamp)
+        force = force * (parameters[0]+loadStepSize);
     
-    if(parameters[2] == 5 || parameters[2] == 4){
+    if(parameters[4] == 5 || parameters[4] == 4){
      	res[0] = force+Q*0.005329;
         res[1] = force+Q*0.005329;
        	res[2] = force+Q*0.005329;
     }
       
 }
-
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStepSize
+// 3 : LoadStep end time
+// 4 : Flag 
 void rhsHeartBeatArtery(double* x, double* res, double* parameters){
-    // parameters[0] is the time, not needed here
+
     res[0] =0.;
     res[1] =0.;
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 5.;
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -198,13 +221,13 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     Q -= 0.026039341343493;
     Q = (Q - 2.85489)/(7.96908-2.85489);
     
-    if(parameters[0]< TRamp){
+    if(parameters[0]< 5.0){
     	Q = 0.;
     }
-    if(parameters[0] < 1.0)
-        force = force * (parameters[0]);
+    if(parameters[0] < TRamp)
+        force = force * (parameters[0]+loadStepSize);
         
-    if(parameters[2]==5){
+    if(parameters[4]==5){
         res[0] = force+Q*0.005329;
         res[1] = force+Q*0.005329;
        	res[2] = force+Q*0.005329;
@@ -213,18 +236,25 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
   
 }
 
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStepSize
+// 3 : LoadStep end time
+// 4 : Flag 
 void rhsArteryPaper(double* x, double* res, double* parameters){
-    // parameters[0] is the time, not needed here
+
     res[0] =0.;
     res[1] =0.;
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 2001.0;
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
     double lambda=0.;
     
-    if(parameters[0] < 1.0)
-        lambda = 0.875*(parameters[0]+0.05);
-    else if(parameters[0] <= TRamp)
+    if(parameters[0]+1e-12 < TRamp)
+        lambda = 0.875*(parameters[0]+loadStepSize);
+    else if(parameters[0] <= TRamp+1.e-12)
     	lambda = 0.875;
     else if( parameters[0] < 2001.5 )
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
@@ -233,7 +263,7 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
  
-    if(parameters[2]==5){
+    if(parameters[4]==5){
         res[0] =lambda*force;
         res[1] =lambda*force;
         res[2] =lambda*force; 
@@ -247,14 +277,15 @@ void rhsCubePaper(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[2] = 0.;
     double force = parameters[1];
-    double TRamp = 1000.0;
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
     double lambda=0.;
     
-    if(parameters[0] < 1.)
-        lambda = 0.875*(parameters[0]+0.05);
-    else if(parameters[0] < TRamp)
+    if(parameters[0]+1.e-12 < TRamp)
+        lambda = 0.875*(parameters[0]+loadStepSize);
+    else if(parameters[0] <= TRamp+1.e-12)
     	lambda = 0.875;
-    else if( parameters[0] < 1000.5 )
+    else if( parameters[0] < 1000.5)
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
     else if( parameters[0] >= 1000.5 && (parameters[0] - std::floor(parameters[0]))< 0.5)
     	lambda= 0.75;
@@ -262,7 +293,7 @@ void rhsCubePaper(double* x, double* res, double* parameters){
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
      
      
-    if(parameters[2] == 5 || parameters[2] == 4){
+    if(parameters[4] == 5 || parameters[4] == 4){
         res[0] =lambda*force;
         res[1] =lambda*force;
         res[2] =lambda*force; 
@@ -321,7 +352,10 @@ int main(int argc, char *argv[])
     string ulib_str = "Tpetra";
     myCLP.setOption("ulib",&ulib_str,"Underlying lib");
     string xmlProblemFile = "parametersProblemSCI.xml";
-    myCLP.setOption("problemfile",&xmlProblemFile,".xml file with Inputparameters.");       
+    myCLP.setOption("problemfile",&xmlProblemFile,".xml file with Inputparameters.");    
+    
+    string xmlProblemStructureFile = "parametersProblemStructure.xml";  
+     
     string xmlSolverFileSCI = "parametersSolverSCI.xml"; 
     myCLP.setOption("solverfileSCI",&xmlSolverFileSCI,".xml file with Inputparameters.");
     
@@ -348,6 +382,8 @@ int main(int argc, char *argv[])
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
        
+        ParameterListPtr_Type parameterListProblemStructure = Teuchos::getParametersFromXmlFile(xmlProblemStructureFile);
+        
         ParameterListPtr_Type parameterListSolverSCI = Teuchos::getParametersFromXmlFile(xmlSolverFileSCI);
 
         ParameterListPtr_Type parameterListPrecStructure = Teuchos::getParametersFromXmlFile(xmlPrecFileStructure);
@@ -360,7 +396,7 @@ int main(int argc, char *argv[])
         
         parameterListAll->setParameters(*parameterListSolverSCI);
         parameterListAll->setParameters(*parameterListPrec);
-
+		parameterListAll->setParameters(*parameterListProblemStructure);
         
         ParameterListPtr_Type parameterListChemAll(new Teuchos::ParameterList(*parameterListPrecChem)) ;
         sublist(parameterListChemAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Chem") );
@@ -372,6 +408,7 @@ int main(int argc, char *argv[])
         sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Solid") );
         parameterListStructureAll->setParameters(*parameterListPrecStructure);
         parameterListStructureAll->setParameters(*parameterListProblem);
+        parameterListStructureAll->setParameters(*parameterListProblemStructure);
 
                  
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
@@ -711,6 +748,10 @@ int main(int argc, char *argv[])
                 sci.problemStructure_->addParemeterRhs( force );
                 double degree = 0.;
                 sci.problemStructure_->addParemeterRhs( degree );
+                double loadStep = parameterListAll->sublist("Parameter").get("Load Step Size",1.);
+                double loadRampEnd= parameterListAll->sublist("Parameter").get("Load Ramp End",1.);
+                sci.problemStructure_->addParemeterRhs( loadStep );
+                sci.problemStructure_->addParemeterRhs( loadRampEnd );
 
             }
             else{             
@@ -733,6 +774,10 @@ int main(int argc, char *argv[])
                 sci.problemStructureNonLin_->addParemeterRhs( force );
                 double degree = 0.;
                 sci.problemStructureNonLin_->addParemeterRhs( degree );
+                double loadStep = parameterListAll->sublist("Parameter").get("Load Step",1.);
+                double loadRampEnd= parameterListAll->sublist("Parameter").get("Load Ramp End",1.);
+                sci.problemStructureNonLin_->addParemeterRhs( loadStep );
+                sci.problemStructureNonLin_->addParemeterRhs( loadRampEnd );
 
             }
             

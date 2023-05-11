@@ -24,7 +24,7 @@ c_rep_(),
 defTS_(defTS),
 timeSteppingTool_(),
 exporterEMod_(),
-materialModel_( parameterListStructure->sublist("Parameter").get("Material model","linear") )
+materialModel_( parameterListStructure->sublist("Parameter Solid").get("Material model","linear") )
 {
     //this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
 
@@ -852,12 +852,13 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
         if(externalForce_){
 
             MultiVectorPtr_Type FERhs = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
-            vec_dbl_Type funcParameter(3,0.);
+            vec_dbl_Type funcParameter(5,0.);
             funcParameter[0] = timeSteppingTool_->t_;            
             // how can we use different parameters for different blocks here?
             funcParameter[1] =this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Volume force",0.00211);;
-            funcParameter[2] = 0.;
-            int modeK_ext = this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("K_ext Modell",1);
+            funcParameter[4] = 0.;
+            funcParameter[2]= this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Load Step Size",1.);
+            funcParameter[3] = this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Load Ramp End",1.);
             if(nonlinearExternalForce_){
 
                 MultiVectorConstPtr_Type d = this->solution_->getBlock(0);

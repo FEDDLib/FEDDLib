@@ -6354,7 +6354,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
                                               std::vector<SC>& funcParameter) {
     
     // degree of function funcParameter[0]
-    TEUCHOS_TEST_FOR_EXCEPTION( funcParameter[funcParameter.size()-1] > 0., std::logic_error, "We only support constant functions for now.");
+    //TEUCHOS_TEST_FOR_EXCEPTION( funcParameter[funcParameter.size()-1] > 0., std::logic_error, "We only support constant functions for now.");
     UN FEloc = checkFE(dim,FEType);
 
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
@@ -6392,7 +6392,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
             FiniteElement feSub = subEl->getElement( surface  );
             if(subEl->getDimension() == dim-1){
                 // Setting flag to the placeholder (second last entry). The last entry at (funcParameter.size() - 1) should always be the degree of the surface function
-                params[ funcParameter.size() - 2 ] = feSub.getFlag();
+                params[ funcParameter.size() - 1 ] = feSub.getFlag();
                
                 vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
 

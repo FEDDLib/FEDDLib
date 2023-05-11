@@ -12,9 +12,9 @@ TRIBITS_ADD_TEST(
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_sciTest
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-	SOURCE_FILES parametersPrecChem.xml parametersPrec.xml parametersProblemSCI.xml parametersSolverSCI.xml parametersPrecStructure.xml
+	SOURCE_FILES parametersPrecChem.xml parametersPrec.xml parametersProblemSCI.xml parametersProblemStructure.xml parametersSolverSCI.xml parametersPrecStructure.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES parametersPrecChem.xml parametersPrec.xml parametersProblemSCI.xml parametersSolverSCI.xml parametersPrecStructure.xml
+	DEST_FILES parametersPrecChem.xml parametersPrec.xml parametersProblemSCI.xml parametersProblemStructure.xml parametersSolverSCI.xml parametersPrecStructure.xml
 	EXEDEPS sci_Test
 )
 
