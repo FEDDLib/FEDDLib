@@ -78,6 +78,8 @@ class AssembleFE_SCI_SMC_Active_Growth_Reorientation : public AssembleFE<SC,LO,G
 		
 		
 		int iCode_; // Integration Code
+		int historyLength_; // Length of history vector
+		
 		vec_dbl_Type historyUpdated_;
 		vec_dbl_Type history_;
 

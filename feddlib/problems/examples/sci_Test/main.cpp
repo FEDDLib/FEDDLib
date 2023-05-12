@@ -67,7 +67,7 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 
 void inflowChem(double* x, double* res, double t, const double* parameters)
 {
-    res[0] = 1.;
+    res[0] = 0.;
     
     return;
 }
