@@ -121,17 +121,17 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	activeStartTime_ = this->params_->sublist("Parameter Solid").get("ActiveStartTime",1000.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime	
 	kEtaPlus_ = this->params_->sublist("Parameter Solid").get("KEtaPlus",0.6e0);
 	mEtaPlus_ = this->params_->sublist("Parameter Solid").get("MEtaPlus",5.0e0);
-	growthStartTime_ = this->params_->sublist("Parameter Solid").get("GrowthStartTime",1.e0);
+	growthStartTime_ = this->params_->sublist("Parameter Solid").get("GrowthStartTime",0.e0);
 	reorientationStartTime_ = this->params_->sublist("Parameter Solid").get("ReorientationStartTime",1.e0);
-	growthEndTime_ = this->params_->sublist("Parameter Solid").get("GrowthEndTime",100.e0);
-	reorientationEndTime_ = this->params_->sublist("Parameter Solid").get("ReorientationEndTime",100.e0);
+	growthEndTime_ = this->params_->sublist("Parameter Solid").get("GrowthEndTime",0.e0);
+	reorientationEndTime_ = this->params_->sublist("Parameter Solid").get("ReorientationEndTime",1000.e0);
 	kThetaPlus_ = this->params_->sublist("Parameter Solid").get("KThetaPlus",1.e0);
 	kThetaMinus_ = this->params_->sublist("Parameter Solid").get("KThetaMinus",1.e0);
 	mThetaPlus_ = this->params_->sublist("Parameter Solid").get("MThetaPlus",3.e0);
 	mThetaMinus_ = this->params_->sublist("Parameter Solid").get("MThetaMinus",3.e0);
-	thetaPlus1_ = this->params_->sublist("Parameter Solid").get("ThetaPlus1",0.1000882e1);
-	thetaPlus2_ = this->params_->sublist("Parameter Solid").get("ThetaPlus2",0.1234826e1);
-	thetaPlus3_ = this->params_->sublist("Parameter Solid").get("ThetaPlus3",0.11414189999999999e1);
+	thetaPlus1_ = this->params_->sublist("Parameter Solid").get("ThetaPlus1",1.005063);
+	thetaPlus2_ = this->params_->sublist("Parameter Solid").get("ThetaPlus2",1.020595);
+	thetaPlus3_ = this->params_->sublist("Parameter Solid").get("ThetaPlus3",1.119918);
 	thetaMinus1_ = this->params_->sublist("Parameter Solid").get("ThetaMinus1",0.98e0);
 	thetaMinus2_ = this->params_->sublist("Parameter Solid").get("ThetaMinus2",0.98e0);
 	thetaMinus3_ = this->params_->sublist("Parameter Solid").get("ThetaMinus3",0.98e0);
@@ -155,8 +155,17 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
                      1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
                      1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
 	
-	// 34 * 4 
-	this->historyUpdated_.resize(136,0.);
+	{
+	  AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 tempElem(iCode_);
+	  this->historyLength_ = tempElem.getHistoryLength();
+	}
+
+
+	if(this->historyLength_ != this->history_.size())
+		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "History input length does not match history size of model! \n Hisory input length: " << this->history_.size() << "\n History size of model: " << this->historyLength_ << "\n");
+
+	this->historyUpdated_.resize(this->historyLength_,0.);
+
 
 	solutionC_n_.resize(10,0.);
 	solutionC_n1_.resize(10,0.);
@@ -174,8 +183,6 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
         vec_dbl_Type segment = {startTime,dtTmp};
         timeParametersVec_.push_back(segment);
     }
-
-
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -203,10 +210,9 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::advanceInTime(
 	//cout << " Changed to timeincrement " << this->timeIncrement_<< endl;
 	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 	
-	for(int i=0; i< 136; i++){
-		if(this->timeStep_  > this->activeStartTime_ +dt )
+	for(int i=0; i< this->historyLength_; i++){
+		//if(this->timeStep_  > this->activeStartTime_ +dt )
 			this->history_[i] = this->historyUpdated_[i];
-		
 	}
 
 	for(int i=0; i< 10 ; i++)
@@ -236,6 +242,13 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 		}
 	}
 	//cout << endl;
+	// std::ofstream myfile;
+	// myfile.open ("outputs.txt",ios::app);
+	// myfile << "Positions " << endl;
+	// for(int i=0;i<30;i++)
+	// 	myfile << positions[i] << endl;
+	// myfile << endl;
+
 
 	double displacements[30];
 	for(int i = 0; i < 30; i++)
@@ -243,9 +256,10 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 		displacements[i]=(*this->solution_)[i];		
 	}
 
-	double history[136];// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
-    for(int i = 0; i < this->history_.size(); i++)
-		history[i] = this->history_[i];
+
+	std::vector<double> history(this->historyLength_, 0.0); 
+  for(int i = 0; i < this->historyLength_; i++)
+	    history[i] = this->history_[i];
    
    
     double concentrations[10];
@@ -282,19 +296,26 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
                     		   1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
                      		   1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
 	
-	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 elem(positions, displacements, concentrations, accelerations, rates, domainData, history, subIterationTolerance, deltaT, time, this->iCode_);
+	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 elem(positions, displacements, concentrations, accelerations, rates, domainData, &history[0], subIterationTolerance, deltaT, time, this->iCode_);
 	elem.compute();
 
 	double *residuumRint = elem.getResiduumVectorRint();
 
+	// Write residuumRint to a file named residuumRint.txt
+	// myfile.open ("outputs.txt",ios::app);
+	// myfile << "residuumRint: ";
+	// for(int i=0; i< 30 ; i++){
+		// myfile << residuumRint[i] << " ";
+	// }
+	// myfile << "\n";
+	// myfile.close();
+	
 	double *residuumRDyn = elem.getResiduumVectorRdyn();
 
 	for(int i=0; i< 30 ; i++){
 		(*this->rhsVec_)[i] = residuumRint[i]; //+residuumRDyn[i];
 	}
 	double *residuumRc = elem.getResiduumVectorRc();
-
-
 
 	for(int i=0; i< 10 ; i++){		
 		(*this->rhsVec_)[i+30] = residuumRc[i];
@@ -348,9 +369,9 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 		displacements[i]= (*this->solution_)[i];	
 		
 	}
-    double history[136];// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
-    for(int i = 0; i < this->history_.size(); i++)
-		history[i] = this->history_[i];   //if (integrationCode==19)
+  std::vector<double> history(this->historyLength_,0.0);// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
+  for(int i = 0; i < this->historyLength_; i++)
+      history[i] = this->history_[i];   //if (integrationCode==19)
 
 
     double concentrations[10];
@@ -386,7 +407,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
     // immer speicher und wenn es konvergiert, dann zur history machen
     // double historyUpdated[] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
 	
-	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 elem(positions, displacements, concentrations, accelerations, rates, domainData, history, subIterationTolerance, deltaT, time, this->iCode_);
+	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 elem(positions, displacements, concentrations, accelerations, rates, domainData, &history[0], subIterationTolerance, deltaT, time, this->iCode_);
 	elem.compute();
 
 	double *historyUpdated = elem.getHistoryUpdated();
@@ -397,7 +418,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 	double** stiffnessMatrixKcc = elem.getStiffnessMatrixKcc();
 	double** massMatrixMc = elem.getMassMatrixMc();
 
-	for(int i=0; i< 136; i++){
+	for(int i=0; i< this->historyLength_; i++){
 		this->historyUpdated_[i] = historyUpdated[i];
 	}
 
