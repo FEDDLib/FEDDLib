@@ -93,16 +93,15 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	k3_ = this->params_->sublist("Parameter Solid").get("K3",0.134e0); // ??
 	k4_ = this->params_->sublist("Parameter Solid").get("K4",0.166e-2); // ??
 	k7_= this->params_->sublist("Parameter Solid").get("K7",0.66e-4); // ?? 
-	kappaC_ = this->params_->sublist("Parameter Solid").get("KappaC",146.36600000000002e-3);
+	kappaC_ = this->params_->sublist("Parameter Solid").get("KappaC",146.36600000000002e-0); 
 	beta1_ = this->params_->sublist("Parameter Solid").get("Beta1",0.10097e-2); // ??
-	muA_ = this->params_->sublist("Parameter Solid").get("MuA",9.291e-3);
-	alpha_ = this->params_->sublist("Parameter Solid").get("Alpha",26.68e-3);
-	epsilon1_ = this->params_->sublist("Parameter Solid").get("Epsilon1",151.73775e-3);
+	muA_ = this->params_->sublist("Parameter Solid").get("MuA",0.9291e1); 
+	alpha_ = this->params_->sublist("Parameter Solid").get("Alpha",0.2668e2); 
+	epsilon1_ = this->params_->sublist("Parameter Solid").get("Epsilon1",151.73775e0); 
 	epsilon2_ = this->params_->sublist("Parameter Solid").get("Epsilon2",0.27566199999999996e1); // ??
-	c1_ = this->params_->sublist("Parameter Solid").get("C1",11.52507e-3);
-	alpha1_ = this->params_->sublist("Parameter Solid").get("Alpha1",1.27631e-3);
+	c1_ = this->params_->sublist("Parameter Solid").get("C1",11.52507e0);
+	alpha1_ = this->params_->sublist("Parameter Solid").get("Alpha1",1.27631e0);
 	alpha2_ = this->params_->sublist("Parameter Solid").get("Alpha2",0.308798e1); // ?? 
-	activeStartTime_ = this->params_->sublist("Parameter Solid").get("ActiveStartTime",1001.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime
 	gamma6_ = this->params_->sublist("Parameter Solid").get("Gamma6",0.15e1);
 	lambdaP50_ = this->params_->sublist("Parameter Solid").get("LambdaP50",1.0e0);
 	kDotMin_ = this->params_->sublist("Parameter Solid").get("KDotMin",-0.118863e-2);
@@ -114,11 +113,12 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	gamma5_ = this->params_->sublist("Parameter Solid").get("Gamma5", 50.e0 );
 	zeta2_ = this->params_->sublist("Parameter Solid").get("Zeta2", 1000.e0 );
 	DeltaLambdaBarPMin_ =this->params_->sublist("Parameter Solid").get("DeltaLambdaBarPMin", -0.1e-4);
-	p1_ = this->params_->sublist("Parameter Solid").get("P1",0.6e0);
-	p3_ = this->params_->sublist("Parameter Solid").get("P3",0.6e0);
+	p1_ = this->params_->sublist("Parameter Solid").get("P1",0.3e0);
+	p3_ = this->params_->sublist("Parameter Solid").get("P3",0.2e0);
 	c50_ = this->params_->sublist("Parameter Solid").get("C50",0.5e0);
 	d0_ = this->params_->sublist("Parameter Diffusion").get("D0",6.e-05);
 	m_ = this->params_->sublist("Parameter Solid").get("m",0.e0);
+	activeStartTime_ = this->params_->sublist("Parameter Solid").get("ActiveStartTime",1000.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime	
 	kEtaPlus_ = this->params_->sublist("Parameter Solid").get("KEtaPlus",0.6e0);
 	mEtaPlus_ = this->params_->sublist("Parameter Solid").get("MEtaPlus",5.0e0);
 	growthStartTime_ = this->params_->sublist("Parameter Solid").get("GrowthStartTime",0.e0);
@@ -155,20 +155,17 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
                      1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
                      1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
 	
-	//cout << "Works here!" << endl;
 	{
-	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 tempElem(iCode_);
-	this->historyLength_ = tempElem.getHistoryLength();
+	  AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 tempElem(iCode_);
+	  this->historyLength_ = tempElem.getHistoryLength();
 	}
 
-	//cout << "Works here 2" << endl;
-
-	//this->historyLength_ = 136;
 
 	if(this->historyLength_ != this->history_.size())
 		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "History input length does not match history size of model! \n Hisory input length: " << this->history_.size() << "\n History size of model: " << this->historyLength_ << "\n");
 
 	this->historyUpdated_.resize(this->historyLength_,0.);
+
 
 	solutionC_n_.resize(10,0.);
 	solutionC_n1_.resize(10,0.);
@@ -259,9 +256,10 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 		displacements[i]=(*this->solution_)[i];		
 	}
 
-	std::vector<double> history(this->historyLength_, 0.0); // = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
-    for(int i = 0; i < this->historyLength_; i++)
-		history[i] = this->history_[i];
+
+	std::vector<double> history(this->historyLength_, 0.0); 
+  for(int i = 0; i < this->historyLength_; i++)
+	    history[i] = this->history_[i];
    
    
     double concentrations[10];
@@ -273,13 +271,14 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 	
     double accelerations[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
    	
+
     double domainData[] = {this->fA_, this->lambdaC50_, this->gamma3_, this->lambdaBarCDotMax_, this->lambdaBarCDotMin_, 
 							this->gamma2_ , this->gamma1_, this->eta1_, this->ca50_, this->k2_, this->k5_, this->k3_, this->k4_, this->k7_ , this->kappaC_ , 
 							this->beta1_ , this->muA_ , this->alpha_, this->epsilon1_,this->epsilon2_,this->c1_,this->alpha1_,this->alpha2_,
 							gamma6_ ,lambdaP50_ , kDotMin_ , zeta1_ , kDotMax_ ,gamma4_ ,lambdaBarDotPMin_ ,lambdaBarDotPMax_ , gamma5_, zeta2_, DeltaLambdaBarPMin_ ,
+							this->p1_,this->p3_,this->c50_,this->d0_,this->m_,this->activeStartTime_,
 		 					kEtaPlus_ , mEtaPlus_ , growthStartTime_ ,reorientationStartTime_ , growthEndTime_ , reorientationEndTime_ ,kThetaPlus_ ,
-							kThetaMinus_ , mThetaPlus_ , mThetaMinus_ , thetaPlus1_ , thetaPlus2_ ,thetaPlus3_ , thetaMinus1_ ,thetaMinus2_ ,thetaMinus3_ ,						
-							this->p1_,this->p3_,this->c50_,this->d0_,this->m_,this->activeStartTime_,this->rho_};
+							kThetaMinus_ , mThetaPlus_ , mThetaMinus_ , thetaPlus1_ , thetaPlus2_ ,thetaPlus3_ , thetaMinus1_ ,thetaMinus2_ ,thetaMinus3_ ,	this->rho_,0.};
 
     double rates[10];
 
@@ -370,9 +369,9 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 		displacements[i]= (*this->solution_)[i];	
 		
 	}
-    std::vector<double> history(this->historyLength_,0.0);// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
-    for(int i = 0; i < this->historyLength_; i++)
-		history[i] = this->history_[i];   //if (integrationCode==19)
+  std::vector<double> history(this->historyLength_,0.0);// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
+  for(int i = 0; i < this->historyLength_; i++)
+      history[i] = this->history_[i];   //if (integrationCode==19)
 
 
     double concentrations[10];
@@ -389,9 +388,9 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 							this->gamma2_ , this->gamma1_, this->eta1_, this->ca50_, this->k2_, this->k5_, this->k3_, this->k4_, this->k7_ , this->kappaC_ , 
 							this->beta1_ , this->muA_ , this->alpha_, this->epsilon1_,this->epsilon2_,this->c1_,this->alpha1_,this->alpha2_,
 							gamma6_ ,lambdaP50_ , kDotMin_ , zeta1_ , kDotMax_ ,gamma4_ ,lambdaBarDotPMin_ ,lambdaBarDotPMax_ , gamma5_, zeta2_, DeltaLambdaBarPMin_ ,
+							this->p1_,this->p3_,this->c50_,this->d0_,this->m_,this->activeStartTime_,
 		 					kEtaPlus_ , mEtaPlus_ , growthStartTime_ ,reorientationStartTime_ , growthEndTime_ , reorientationEndTime_ ,kThetaPlus_ ,
-							kThetaMinus_ , mThetaPlus_ , mThetaMinus_ , thetaPlus1_ , thetaPlus2_ ,thetaPlus3_ , thetaMinus1_ ,thetaMinus2_ ,thetaMinus3_ ,						
-							this->p1_,this->p3_,this->c50_,this->d0_,this->m_,this->activeStartTime_,this->rho_};
+							kThetaMinus_ , mThetaPlus_ , mThetaMinus_ , thetaPlus1_ , thetaPlus2_ ,thetaPlus3_ , thetaMinus1_ ,thetaMinus2_ ,thetaMinus3_ ,	this->rho_,0.};
 
 
 	double rates[10];
@@ -456,8 +455,6 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 			(*elementMatrix)[i+30][j+30] =stiffnessMatrixKcc[i][j] +(1./deltaT)*massMatrixMc[i][j]; //
 		}
 	}
-
-
     
     
 

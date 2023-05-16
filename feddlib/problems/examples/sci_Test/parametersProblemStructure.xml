@@ -24,11 +24,11 @@
 		<Parameter name="K3" type="double" value="0.134e0"/>
 		<Parameter name="K4" type="double" value="0.166e-2"/>
 		<Parameter name="K7" type="double" value="0.66e-4"/>
-		<Parameter name="KappaC" type="double" value="146.36600000000002e-3"/>
+		<Parameter name="KappaC" type="double" value="146.36600000000002e-0"/>
 		<Parameter name="Beta1" type="double" value="0.10097e-2"/>
-		<Parameter name="MuA" type="double" value="9.291e-3"/>
-		<Parameter name="Alpha" type="double" value="26.68e-3"/>
-		<Parameter name="Epsilon1" type="double" value="151.73775e-3"/>
+		<Parameter name="MuA" type="double" value="9.291e0"/>
+		<Parameter name="Alpha" type="double" value="26.68e0"/>
+		<Parameter name="Epsilon1" type="double" value="151.73775e0"/>
 		<Parameter name="Epsilon2" type="double" value="0.27566199999999996e1"/>
 		
 		<Parameter name="C1" type="double" value="11.52507e-3"/>
@@ -47,8 +47,8 @@
 		<Parameter name="Gamma5" type="double" value="50.0e0"/>
 		<Parameter name="Zeta2" type="double" value="1000.e0"/>
 		<Parameter name="DeltaLambdaBarPMin" type="double" value="-0.1e-4"/>
-		<Parameter name="P1" type="double" value="0.6e0"/>
-		<Parameter name="P3" type="double" value="0.6e0"/>
+		<Parameter name="P1" type="double" value="0.3e0"/>
+		<Parameter name="P3" type="double" value="0.2e0"/>
 		<Parameter name="C50" type="double" value="0.5e0"/>
 		<Parameter name="D0" type="double" value="6.e-05"/>
 		<Parameter name="m" type="double" value="0.e0"/>

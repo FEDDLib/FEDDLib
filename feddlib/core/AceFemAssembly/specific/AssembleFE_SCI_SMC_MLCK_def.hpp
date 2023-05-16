@@ -64,17 +64,17 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	k3_ = this->params_->sublist("Parameter Solid").get("K3",0.134e0); // ??
 	k4_ = this->params_->sublist("Parameter Solid").get("K4",0.166e-2); // ??
 	k7_= this->params_->sublist("Parameter Solid").get("K7",0.66e-4); // ?? 
-	kappaC_ = this->params_->sublist("Parameter Solid").get("KappaC",146.36600000000002e-3);
+	kappaC_ = this->params_->sublist("Parameter Solid").get("KappaC",146.36600000000002e0);
 	beta1_ = this->params_->sublist("Parameter Solid").get("Beta1",0.10097e-2); // ??
-	muA_ = this->params_->sublist("Parameter Solid").get("MuA",9.291e-3);
-	alpha_ = this->params_->sublist("Parameter Solid").get("Alpha",26.68e-3);
-	epsilon1_ = this->params_->sublist("Parameter Solid").get("Epsilon1",151.73775e-3);
+	muA_ = this->params_->sublist("Parameter Solid").get("MuA",0.9291e1); 
+	alpha_ = this->params_->sublist("Parameter Solid").get("Alpha",0.2668e2); 
+	epsilon1_ = this->params_->sublist("Parameter Solid").get("Epsilon1", 0.15173775e3);
 	epsilon2_ = this->params_->sublist("Parameter Solid").get("Epsilon2",0.27566199999999996e1); // ??
-	c1_ = this->params_->sublist("Parameter Solid").get("C1",11.52507e-3);
-	alpha1_ = this->params_->sublist("Parameter Solid").get("Alpha1",1.27631e-3);
+	c1_ = this->params_->sublist("Parameter Solid").get("C1",11.52507e0);
+	alpha1_ = this->params_->sublist("Parameter Solid").get("Alpha1",1.27631e0);
 	alpha2_ = this->params_->sublist("Parameter Solid").get("Alpha2",0.308798e1); // ?? 
-	p1_ = this->params_->sublist("Parameter Solid").get("P1",0.6e0);
-	p3_ = this->params_->sublist("Parameter Solid").get("P3",0.6e0);
+	p1_ = this->params_->sublist("Parameter Solid").get("P1",0.3e0);
+	p3_ = this->params_->sublist("Parameter Solid").get("P3",0.2e0);
 	c50_ = this->params_->sublist("Parameter Solid").get("C50",0.5e0);
 	d0_ = this->params_->sublist("Parameter Diffusion").get("D0",6.e-05);
 	m_ = this->params_->sublist("Parameter Solid").get("m",0.e0);
@@ -369,7 +369,6 @@ void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::assemble_SCI_SMC_MLCK(SmallMatrixPtr_
 		}
 	}
 
-    
     
 
 
