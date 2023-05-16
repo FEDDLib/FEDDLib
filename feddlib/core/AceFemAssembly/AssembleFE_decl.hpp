@@ -70,6 +70,11 @@ namespace FEDD {
         typedef AssembleFE<SC,LO,GO,NO> AssembleFE_Type;
 
         /*!
+         \brief Compute everything.
+        */
+        //virtual void compute() = 0;
+
+        /*!
          \brief Assemble the element Jacobian matrix.
         */
         virtual void assembleJacobian() = 0;

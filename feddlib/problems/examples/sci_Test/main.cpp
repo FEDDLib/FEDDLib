@@ -67,8 +67,10 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 
 void inflowChem(double* x, double* res, double t, const double* parameters)
 {
-    res[0] = 1.;
-    
+	if(t>=parameters[0])
+    	res[0] = 1.;
+    else	
+    	res[0] = 0.;
     return;
 }
 
@@ -114,7 +116,8 @@ void rhsYZ(double* x, double* res, double* parameters){
   	res[0] =0.;
     res[1] =0.;
     res[2] =0.;
-    if(parameters[0]+1e-12 < TRamp)
+    
+    if(parameters[0]+1.e-12 < TRamp)
         force = (parameters[0]+loadStepSize) * force ;
     else
         force = parameters[1];
@@ -738,6 +741,8 @@ int main(int argc, char *argv[])
 					
 				}
 				else if(bcType=="Artery"){
+					if(rhsType=="Constant")
+		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
 					if(rhsType=="Paper")
             		 	sci.problemStructure_->addRhsFunction( rhsArteryPaper,0 );
             		if(rhsType=="Heart Beat")
@@ -765,6 +770,8 @@ int main(int argc, char *argv[])
 					
 				}
 				else if(bcType=="Artery"){
+					if(rhsType=="Constant")
+		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
 					if(rhsType=="Paper")
             		 	sci.problemStructureNonLin_->addRhsFunction( rhsArteryPaper,0 );
             		if(rhsType=="Heart Beat")
@@ -791,11 +798,12 @@ int main(int argc, char *argv[])
         else if(dim==3 && bcType=="Cube")
         {
 
-            bcFactory->addBC(inflowChem, 0, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactory->addBC(inflowChem, 1, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1);            		
+            std::vector<double> parameter_vec(1, parameterListAll->sublist("Parameter").get("Inflow Start Time",0.));
+            bcFactory->addBC(inflowChem, 0, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+            bcFactory->addBC(inflowChem, 1, 1, domainChem, "Dirichlet", 1, parameter_vec); // inflow of Chem
+            bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1,parameter_vec);            		
             //bcFactory->addBC(zeroDirichlet, 8, 1, domainChem, "Dirichlet", 1);
-            bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1);
+            bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1,parameter_vec);
             /*bcFactory->addBC(zeroDirichlet, 2, 1, domainChem, "Dirichlet", 1);
             bcFactory->addBC(zeroDirichlet, 3, 1, domainChem, "Dirichlet", 1);            
             bcFactory->addBC(zeroDirichlet, 4, 1, domainChem, "Dirichlet", 1);            
@@ -803,10 +811,10 @@ int main(int argc, char *argv[])
            // bcFactory->addBC(zeroDirichlet, 6, 1, domainChem, "Dirichlet", 1);            
             */
             
-            bcFactoryChem->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactoryChem->addBC(inflowChem, 1, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);            		
-            bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
+            bcFactoryChem->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+            bcFactoryChem->addBC(inflowChem, 1, 0, domainChem, "Dirichlet", 1, parameter_vec); // inflow of Chem
+            bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1,parameter_vec);            		
+            bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1,parameter_vec);
            /* bcFactoryChem->addBC(zeroDirichlet, 2, 0, domainChem, "Dirichlet", 1);
             bcFactoryChem->addBC(zeroDirichlet, 3, 0, domainChem, "Dirichlet", 1);            
             bcFactoryChem->addBC(zeroDirichlet, 4, 0, domainChem, "Dirichlet", 1);            

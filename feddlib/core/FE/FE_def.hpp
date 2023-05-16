@@ -510,6 +510,9 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 			addFeBlockMv(resVecRep, rhsVec, elementsSolid->getElement(T),elementsChem->getElement(T), dofsSolid,dofsChem);
 
 		}
+        //if(assembleMode=="compute")
+        //    assemblyFEElements_[T]->compute();
+
         
 
 			
