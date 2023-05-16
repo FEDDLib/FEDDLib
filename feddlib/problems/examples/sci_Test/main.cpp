@@ -825,17 +825,17 @@ int main(int argc, char *argv[])
             */
         }
         else if(dim==3 && bcType=="Artery"){
-           bcFactory->addBC(inflowChem, 5, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-		   bcFactory->addBC(inflowChem, 13, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-		   bcFactory->addBC(inflowChem, 14, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-		   bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-		   bcFactory->addBC(inflowChem, 10, 1, domainChem, "Dirichlet", 1); // inflow of Chem
+           bcFactory->addBC(inflowChem, 5, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 13, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 14, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 10, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
 		   
-           bcFactoryChem->addBC(inflowChem, 5, 0, domainChem, "Dirichlet", 1);
-           bcFactoryChem->addBC(inflowChem, 13, 0, domainChem, "Dirichlet", 1);
-           bcFactoryChem->addBC(inflowChem, 14, 0, domainChem, "Dirichlet", 1);
-           bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);
-           bcFactoryChem->addBC(inflowChem, 10, 0, domainChem, "Dirichlet", 1);
+           bcFactoryChem->addBC(inflowChem, 5, 0, domainChem, "Dirichlet", 1,parameter_vec);
+           bcFactoryChem->addBC(inflowChem, 13, 0, domainChem, "Dirichlet", 1,parameter_vec);
+           bcFactoryChem->addBC(inflowChem, 14, 0, domainChem, "Dirichlet", 1,parameter_vec);
+           bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1,parameter_vec);
+           bcFactoryChem->addBC(inflowChem, 10, 0, domainChem, "Dirichlet", 1,parameter_vec);
         }
 
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
