@@ -16,7 +16,7 @@
 		<Parameter name="LambdaBarCDotMin" type="double" value="-0.3387e-1"/>
 		<Parameter name="Gamma2" type="double" value="50.0e0"/>
 		<Parameter name="Gamma1" type="double" value="0.50247e0"/>
-		<Parameter name="Eta1" type="double" value="0.18745e0"/>
+		<Parameter name="Eta1" type="double" value="18745e0"/>
 		<Parameter name="Ca50" type="double" value="0.4e0"/>
 		<Parameter name="K2" type="double" value="0.2e0"/>
 		
@@ -24,7 +24,7 @@
 		<Parameter name="K3" type="double" value="0.134e0"/>
 		<Parameter name="K4" type="double" value="0.166e-2"/>
 		<Parameter name="K7" type="double" value="0.66e-4"/>
-		<Parameter name="KappaC" type="double" value="0.146366e0"/>
+		<Parameter name="KappaC" type="double" value="146.36600000000002e-3"/>
 		<Parameter name="Beta1" type="double" value="0.10097e-2"/>
 		<Parameter name="MuA" type="double" value="9.291e-3"/>
 		<Parameter name="Alpha" type="double" value="26.68e-3"/>
@@ -34,7 +34,7 @@
 		<Parameter name="C1" type="double" value="11.52507e-3"/>
 		<Parameter name="Alpha1" type="double" value="1.27631e-3"/>
 		<Parameter name="Alpha2" type="double" value="0.308798e1"/>
-		<Parameter name="ActiveStartTime" type="double" value="1.0e0"/>
+		<Parameter name="ActiveStartTime" type="double" value="1001.e0"/>
 		<Parameter name="Gamma6" type="double" value="0.15e1"/>
 		<Parameter name="LambdaP50" type="double" value="1.0e0"/>
 		<Parameter name="KDotMin" type="double" value="-0.118863e-2"/>
@@ -50,15 +50,16 @@
 		<Parameter name="P1" type="double" value="0.6e0"/>
 		<Parameter name="P3" type="double" value="0.6e0"/>
 		<Parameter name="C50" type="double" value="0.5e0"/>
+		<Parameter name="D0" type="double" value="6.e-05"/>
 		<Parameter name="m" type="double" value="0.e0"/>
 	
 		<Parameter name="KEtaPlus" type="double" value="0.6e0"/>
 		<Parameter name="MEtaPlus" type="double" value="5.0e0"/>
 		
-		<Parameter name="GrowthStartTime" type="double" value="0e0"/>
-		<Parameter name="ReorientationStartTime" type="double" value="0e0"/>
-		<Parameter name="GrowthEndTime" type="double" value="0.e0"/>
-		<Parameter name="ReorientationEndTime" type="double" value="0.e0"/>
+		<Parameter name="GrowthStartTime" type="double" value="1.0e0"/>
+		<Parameter name="ReorientationStartTime" type="double" value="1.e0"/>
+		<Parameter name="GrowthEndTime" type="double" value="100.e0"/>
+		<Parameter name="ReorientationEndTime" type="double" value="100.e0"/>
 		<Parameter name="KThetaPlus" type="double" value="1.0e0"/>
 		<Parameter name="KThetaMinus" type="double" value="1.0e0"/>
 		

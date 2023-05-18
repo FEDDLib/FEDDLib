@@ -112,7 +112,10 @@ public:
     void buildElementsClass( vec2D_int_ptr_Type elements, vec_int_ptr_Type elementFlag = Teuchos::null );
     
     void buildSurfaceLinesSquare();
+
+    void buildSurfaces(int flagsOption, string FEType);
     
+    void flipSurface(vec_int_Type &surfaceElements_vec);
     GO globalID_Q2_20Cube(int r, int s , int t, int &rr, int off_x, int off_y, int off_z, int M, int N,
                           GO nmbPoints_oneDirFull, GO nmbPoints_oneDirMid);
     

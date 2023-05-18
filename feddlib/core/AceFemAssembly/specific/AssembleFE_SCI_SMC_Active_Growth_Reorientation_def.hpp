@@ -155,14 +155,11 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
                      1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
                      1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
 	
-	{
-	  AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 tempElem(iCode_);
-	  this->historyLength_ = tempElem.getHistoryLength();
-	}
-
-
-	if(this->historyLength_ != this->history_.size())
-		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "History input length does not match history size of model! \n Hisory input length: " << this->history_.size() << "\n History size of model: " << this->historyLength_ << "\n");
+				   
+	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 tempElem(iCode_);
+	this->historyLength_ = tempElem.getHistoryLength();
+	
+	TEUCHOS_TEST_FOR_EXCEPTION(this->historyLength_ != this->history_.size(), std::logic_error, "History input length does not match history size of model! \n Hisory input length: " << this->history_.size() << "\n History size of model: " << this->historyLength_ << "\n");
 
 	this->historyUpdated_.resize(this->historyLength_,0.);
 
@@ -258,7 +255,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 
 
 	std::vector<double> history(this->historyLength_, 0.0); 
-  for(int i = 0; i < this->historyLength_; i++)
+    for(int i = 0; i < this->historyLength_; i++)
 	    history[i] = this->history_[i];
    
    

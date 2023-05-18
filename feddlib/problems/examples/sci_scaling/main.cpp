@@ -162,7 +162,7 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
 
     double t_min = parameters[0] - fmod(parameters[0],1.0); //FlowConditions::t_start_unsteady;
     double t_max = t_min + 1.0; // One heartbeat lasts 1.0 second    
-    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -1.0  );
+    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -0.96  );
     
     for(int i=0; i< 20; i++)
         Q += (a[i]*std::cos((i+1.)*y) + b[i]*std::sin((i+1.)*y) ) ;
@@ -172,7 +172,7 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     Q -= 0.026039341343493;
     Q = (Q - 2.85489)/(7.96908-2.85489);
     
-    if(parameters[0]< 5.0){
+    if(parameters[0]< 70.0){
     	Q = 0.;
     }
     
@@ -238,6 +238,7 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     
   
 }
+
 
 // Parameter Structure
 // 0 : time
@@ -510,89 +511,33 @@ int main(int argc, char *argv[])
 			}
         }
 
-       // ########################
-        // Flags check
-        // ########################
-
-		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaF(new ExporterParaView<SC,LO,GO,NO>());
-
-		Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapUnique()));
-		vec_int_ptr_Type BCFlags = domainStructure->getBCFlagUnique();
-
-		Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
-		for(int i=0; i< entries.size(); i++){
-			entries[i] = BCFlags->at(i);
-		}
-
-		Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
-
-		exParaF->setup("Flags", domainStructure->getMesh(), discType);
-
-		exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
-
-		exParaF->save(0.0);
-		
-		/*double a0    = 11.693284502463376;
-		double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
-		  0.032666881040235,-0.019948718147876,0.006998975442773,-0.033021060067630,-0.015708267688123,-0.029038419813160,-0.003001255512608,-0.009549531539299, 
-		  0.007112349455861,0.001970095816773,0.015306208420903,0.006772571935245,0.009480436178357};
-		double b [20] = {-1.325494054863285,0.192277311734674,0.115316087615845,-0.067714675760648,0.207297536049255,-0.044080204999886,0.050362628821152,-0.063456242820606,
-		  -0.002046987314705,-0.042350454615554,-0.013150127522194,-0.010408847105535,0.011590255438424,0.013281630639807,0.014991955865968,0.016514327477078, 
-		  0.013717154383988,0.012016806933609,-0.003415634499995,0.003188511626163};
-		
-		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaHeartBeat(new ExporterParaView<SC,LO,GO,NO>());
-
-		
-		Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolutionBeat(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapUnique()));
-
-		Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConstBeat = exportSolutionBeat;
-
-		exParaHeartBeat->setup("HeartBeat", domainStructure->getMesh(), discType);
-
-		exParaHeartBeat->addVariable(exportSolutionConstBeat, "Beat", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
-		
-
-	
-		Teuchos::ArrayRCP< SC > entriesPulse  = exportSolutionBeat->getDataNonConst(0);
-		double dt = 0.01;
-		double lambda =0.;
-		for(int i= 1; i<2500; i++){	         
-			double Q = 0.5*a0;
-		
-
-			double t_min = dt * i - fmod(dt*i,1.0); //FlowConditions::t_start_unsteady;
-			double t_max = t_min + 1.0; // One heartbeat lasts 1.5 second    
-			double y = M_PI * ( 2.0*( dt * i-t_min ) / ( t_max - t_min ) -1.0  );
-		
-		
-		
-			for(int j=0; j< 20; j++)
-				Q += (a[j]*std::cos((j+1.)*y) + b[j]*std::sin((j+1.)*y) ) ;
-			
-			
-			// Remove initial offset due to FFT
-			Q -= 0.026039341343493;
-			//Q = (Q - 4.3637)/3.5427;
-			entriesPulse[0] = Q ;
-			
-			if(dt*i < 20.)
-				lambda = 0.875;
-			else if( dt*i <= 20.5 )
-				lambda = 0.8125+0.0625*cos(2*M_PI*dt*i);
-			else if ( dt*i >= 20.5 && (dt*i - std::floor(dt*i))<= 0.5)
-				lambda= 0.75;
-			else
-				lambda = 0.875 - 0.125 * cos(4*M_PI*(dt*i+0.01));
-
-			entriesPulse[0] = 0.02133*lambda;
-			
-			
-			exParaHeartBeat->save(double (dt*i));
-		}*/
-
 
 
         if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
+		   // ########################
+		    // Flags check
+		    // ########################
+
+			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaF(new ExporterParaView<SC,LO,GO,NO>());
+
+			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapUnique()));
+			vec_int_ptr_Type BCFlags = domainStructure->getBCFlagUnique();
+
+			Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
+			for(int i=0; i< entries.size(); i++){
+				entries[i] = BCFlags->at(i);
+			}
+
+			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+			exParaF->setup("Flags", domainStructure->getMesh(), discType);
+
+			exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
+
+			exParaF->save(0.0);
+		
+	
+
             
             if (verbose)
                 std::cout << "\t### Exporting subdomains ###\n";

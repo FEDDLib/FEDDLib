@@ -101,9 +101,9 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DMiniTPM(std::string FEType,
     }
 
     this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
-    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
     this->pointsUni_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
-    this->bcFlagUni_.reset(new std::vector<int> (nmbPoints,0));
+    this->bcFlagUni_.reset(new std::vector<int> (nmbPoints,10));
 
     Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
     for (int i=0; i<nmbPoints; i++) {
@@ -223,6 +223,9 @@ void MeshStructured<SC,LO,GO,NO>::buildElementsClass( vec2D_int_ptr_Type element
             FiniteElement fe( tmpElement );
             this->elementsC_->addElement( fe );
         }
+        vec_int_Type nodeList = this->elementsC_->getElement(i).getVectorNodeList();
+        //cout << "NodeList Element for Element " << i << "|| "  << nodeList[0] << " " << nodeList[1] << " " << nodeList[2] << " " << nodeList[3] << " " << nodeList[4] << " " << nodeList[5] << endl;
+
     }
 }
 
@@ -403,7 +406,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(2,0.0)));
-        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
         LO index;
         for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
 
@@ -531,7 +534,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(2,0.0)));
-        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 
         LO index;
         for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
@@ -629,16 +632,18 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
     using Teuchos::rcp;
     using Teuchos::ScalarTraits;
 
+
+    
     TEUCHOS_TEST_FOR_EXCEPTION(!(M>=1),std::logic_error,"H/h is to small.");
     TEUCHOS_TEST_FOR_EXCEPTION(this->comm_.is_null(),std::runtime_error,"comm_ is null.");
 
     bool verbose (this->comm_->getRank() == 0);
 
-    setRankRange( numProcsCoarseSolve );
-
     if (verbose) {
-        cout << endl;
+        cout << "-- Building structured 3D Mesh  --" << endl;
     }
+
+    setRankRange( numProcsCoarseSolve );
 
     SC eps = ScalarTraits<SC>::eps();
 
@@ -647,6 +652,12 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
 
     SC      h = length/(M*N);//add variable length/width/heigth
     SC      H = length/N;
+
+    if (verbose) {
+            cout << "-- H:"<<H << " h:" <<h << " --" << endl;
+            cout << "-- N:"<<N << " M:" <<M << " --" << endl;
+
+        }
 
     LO 	nmbPoints_oneDir;
 
@@ -683,6 +694,10 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
     else
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Wrong FE-Type, only P1,P1-disc, P1-disc-global, P2, P2-CR, Q1, Q2, Q2-20.");
 
+
+    if (verbose) {
+            cout << "-- Number of Points in one direction: " << nmbPoints_oneDir << " ||  Number of Points " << nmbPoints << " --" << endl;
+    }
     this->FEType_ = FEType;
 
     GO nmbPGlob_oneDir = N * (M+1) - (N-1);
@@ -703,7 +718,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
     if (FEType == "P1") {
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
-        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
         elementsVec = Teuchos::rcp(new vec2D_int_Type( nmbElements, vec_int_Type(4, -1) ));
         elementFlag = Teuchos::rcp(new vec_int_Type( elementsVec->size(),0 ) );
         Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
@@ -749,11 +764,10 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
         }
 
         this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
-
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
-        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
         LO index;
         for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
 
@@ -825,6 +839,10 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
         if ((rank % (N*N*N))>=N*N ) {
             offset_z = (int) (rank % (N*N*N))/(N*(N));
         }
+       
+        if (verbose) {
+            cout << "-- Building P2 Points Repeated ... " << endl;
+        }
         bool p1point;
         int p1_s = 0;
         int p1_r = 0;
@@ -866,8 +884,14 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
-        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 
+        if (verbose) {
+            cout << "-- Building P2 Points Unique ... " << endl;
+        }
+        if (verbose) {
+            cout << "-- Number of repeated points per proc: "  << this->mapRepeated_->getNodeNumElements() << " ... " << endl;
+        }
         for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
             (*this->pointsUni_)[i][0] = (this->mapUnique_->getGlobalElement(i) % nmbPoints_oneDir) * h/2;
             if ((*this->pointsUni_)[i][0]<eps && (*this->pointsUni_)[i][0]>-eps) (*this->pointsUni_)[i][0]=0.0;
@@ -898,6 +922,10 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
 
         int    P2M = 2*(M+1)-1;
 
+        if (verbose) {
+            cout << "-- ElementsList ... " << endl;
+            cout << "-- P2M =" << P2M << endl;
+        }
         counter = 0;
         for (int t=0; t < M; t++) {
             for (int s=0; s < M; s++) {
@@ -917,45 +945,45 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
 
                     counter++;
 
-                    (*elementsVec)[counter][0] = 2*(r) 	+ 2*P2M * (s)	+ 2*P2M*P2M * (t+1) ;
+                    (*elementsVec)[counter][3] = 2*(r) 	+ 2*P2M * (s)	+ 2*P2M*P2M * (t+1) ;
                     (*elementsVec)[counter][1] = 2*(r) 	+ 2*P2M * (s)	+ 2*P2M*P2M * (t) ;
                     (*elementsVec)[counter][2] = 2*(r+1)	+ 2*P2M * (s)	+ 2*P2M*P2M * (t+1) ;
-                    (*elementsVec)[counter][3] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1) ;
+                    (*elementsVec)[counter][0] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1) ;
 
-                    (*elementsVec)[counter][4] = 2*(r) 		+ 2*P2M * (s) 		+ 2*P2M*P2M * (t) +P2M*P2M ;
-                    (*elementsVec)[counter][6] = 2*(r) +1	+ 2*P2M * (s) 		+ 2*P2M*P2M * (t+1) ;
+                    (*elementsVec)[counter][8] = 2*(r) 		+ 2*P2M * (s) 		+ 2*P2M*P2M * (t) +P2M*P2M ;
+                    (*elementsVec)[counter][9] = 2*(r) +1	+ 2*P2M * (s) 		+ 2*P2M*P2M * (t+1) ;
                     (*elementsVec)[counter][7] = 2*(r) +1	+ 2*P2M * (s)+P2M	+ 2*P2M*P2M * (t+1) ;
                     (*elementsVec)[counter][5] = 2*(r) +1	+ 2*P2M * (s) 		+ 2*P2M*P2M * (t) +P2M*P2M ;
-                    (*elementsVec)[counter][8] = 2*(r) +1	+ 2*P2M * (s)+P2M 	+ 2*P2M*P2M * (t) +P2M*P2M ;
-                    (*elementsVec)[counter][9] = 2*(r+1)		+ 2*P2M * (s)+P2M 	+ 2*P2M*P2M * (t+1);
+                    (*elementsVec)[counter][4] = 2*(r) +1	+ 2*P2M * (s)+P2M 	+ 2*P2M*P2M * (t) +P2M*P2M ;
+                    (*elementsVec)[counter][6] = 2*(r+1)		+ 2*P2M * (s)+P2M 	+ 2*P2M*P2M * (t+1);
 
                     counter++;
 
-                    (*elementsVec)[counter][0] = 2*(r+1)	+ 2*P2M * (s)	+ 2*P2M*P2M * (t) ;
+                    (*elementsVec)[counter][3] = 2*(r+1)	+ 2*P2M * (s)	+ 2*P2M*P2M * (t) ;
                     (*elementsVec)[counter][1] = 2*(r)	+ 2*P2M * (s)	+ 2*P2M*P2M * (t) ;
                     (*elementsVec)[counter][2] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t) ;
-                    (*elementsVec)[counter][3] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1) ;
+                    (*elementsVec)[counter][0] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1) ;
 
-                    (*elementsVec)[counter][4] = 2*(r) +1	+ 2*P2M * (s)		+ 2*P2M*P2M * (t) ;
-                    (*elementsVec)[counter][6] = 2*(r+1)		+ 2*P2M * (s)+P2M	+ 2*P2M*P2M * (t) ;
+                    (*elementsVec)[counter][8] = 2*(r) +1	+ 2*P2M * (s)		+ 2*P2M*P2M * (t) ;
+                    (*elementsVec)[counter][9] = 2*(r+1)		+ 2*P2M * (s)+P2M	+ 2*P2M*P2M * (t) ;
                     (*elementsVec)[counter][7] = 2*(r+1)		+ 2*P2M * (s)+P2M	+ 2*P2M*P2M * (t) +P2M*P2M ;
                     (*elementsVec)[counter][5] = 2*(r) +1	+ 2*P2M * (s)+P2M	+ 2*P2M*P2M * (t) ;
-                    (*elementsVec)[counter][8] = 2*(r) +1	+ 2*P2M * (s)+P2M	+ 2*P2M*P2M * (t) +P2M*P2M ;
-                    (*elementsVec)[counter][9] = 2*(r+1)		+ 2*P2M * (s+1)		+ 2*P2M*P2M * (t) +P2M*P2M ;
+                    (*elementsVec)[counter][4] = 2*(r) +1	+ 2*P2M * (s)+P2M	+ 2*P2M*P2M * (t) +P2M*P2M ;
+                    (*elementsVec)[counter][6] = 2*(r+1)		+ 2*P2M * (s+1)		+ 2*P2M*P2M * (t) +P2M*P2M ;
 
                     counter++;
 
-                    (*elementsVec)[counter][0] = 2*(r)	+ 2*P2M * (s)	+ 2*P2M*P2M * (t) ;
+                    (*elementsVec)[counter][3] = 2*(r)	+ 2*P2M * (s)	+ 2*P2M*P2M * (t) ;
                     (*elementsVec)[counter][1] = 2*(r)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t) ;
                     (*elementsVec)[counter][2] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t) ;
-                    (*elementsVec)[counter][3] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1) ;
+                    (*elementsVec)[counter][0] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1) ;
 
-                    (*elementsVec)[counter][4] = 2*(r) 		+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t) ;
-                    (*elementsVec)[counter][6] = 2*(r) +1	+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t) ;
+                    (*elementsVec)[counter][8] = 2*(r) 		+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t) ;
+                    (*elementsVec)[counter][9] = 2*(r) +1	+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t) ;
                     (*elementsVec)[counter][7] = 2*(r) +1	+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t) +P2M*P2M ;
                     (*elementsVec)[counter][5] = 2*(r) +1	+ 2*P2M * (s+1)		+ 2*P2M*P2M * (t);
-                    (*elementsVec)[counter][8] = 2*(r) +1	+ 2*P2M * (s+1)		+ 2*P2M*P2M * (t) +P2M*P2M ;
-                    (*elementsVec)[counter][9] = 2*(r+1)		+ 2*P2M * (s+1)		+ 2*P2M*P2M * (t) +P2M*P2M ;
+                    (*elementsVec)[counter][4] = 2*(r) +1	+ 2*P2M * (s+1)		+ 2*P2M*P2M * (t) +P2M*P2M ;
+                    (*elementsVec)[counter][6] = 2*(r+1)		+ 2*P2M * (s+1)		+ 2*P2M*P2M * (t) +P2M*P2M ;
 
                     counter++;
 
@@ -973,22 +1001,26 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
 
                     counter++;
 
-                    (*elementsVec)[counter][0] = 2*(r)	+ 2*P2M * (s)	+ 2*P2M*P2M * (t) ;
+                    (*elementsVec)[counter][3] = 2*(r)	+ 2*P2M * (s)	+ 2*P2M*P2M * (t) ;
                     (*elementsVec)[counter][1] = 2*(r)	+ 2*P2M * (s)	+ 2*P2M*P2M * (t+1) ;
                     (*elementsVec)[counter][2] = 2*(r)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1) ;
-                    (*elementsVec)[counter][3] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1) ;
+                    (*elementsVec)[counter][0] = 2*(r+1)	+ 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1) ;
 
-                    (*elementsVec)[counter][4] = 2*(r)		+ 2*P2M * (s)		+ 2*P2M*P2M * (t) +P2M*P2M ;
-                    (*elementsVec)[counter][6] = 2*(r)		+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t) +P2M*P2M ;
+                    (*elementsVec)[counter][8] = 2*(r)		+ 2*P2M * (s)		+ 2*P2M*P2M * (t) +P2M*P2M ;
+                    (*elementsVec)[counter][9] = 2*(r)		+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t) +P2M*P2M ;
                     (*elementsVec)[counter][7] = 2*(r) +1	+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t) +P2M*P2M ;
                     (*elementsVec)[counter][5] = 2*(r) 		+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t+1) ;
-                    (*elementsVec)[counter][8] = 2*(r) +1 	+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t+1) ;
-                    (*elementsVec)[counter][9] = 2*(r) +1	+ 2*P2M*(s+1)		+ 2*P2M*P2M * (t+1) ;
+                    (*elementsVec)[counter][4] = 2*(r) +1 	+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t+1) ;
+                    (*elementsVec)[counter][6] = 2*(r) +1	+ 2*P2M*(s+1)		+ 2*P2M*P2M * (t+1) ;
 
                     counter++;
 
                 }
             }
+            
+        }
+        if (verbose) {
+            cout << "... done !" << endl;
         }
         buildElementsClass(elementsVec, elementFlag);
     }
@@ -1070,8 +1102,8 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DCube(int N,
 
     this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
     this->pointsUni_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
-    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
-    this->bcFlagUni_.reset(new std::vector<int> (nmbPoints,0));
+    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
+    this->bcFlagUni_.reset(new std::vector<int> (nmbPoints,10));
     Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
 
 
@@ -1234,7 +1266,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ1Cube(int N,
     }
 
     this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
-    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
     vec2D_int_ptr_Type elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements, std::vector<int>(8, -1)));
     Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
 
@@ -1275,7 +1307,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ1Cube(int N,
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
     this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
-    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 
     for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
 
@@ -1358,7 +1390,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2Cube(int N,
     }
 
     this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
-    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
     vec2D_int_ptr_Type elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements,std::vector<int>(27,-1)));
     Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
 
@@ -1415,7 +1447,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2Cube(int N,
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
     this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
-    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 
     for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
         (*this->pointsUni_)[i][0] = (this->mapUnique_->getGlobalElement(i) % nmbPoints_oneDir) * h/2;
@@ -1623,7 +1655,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2_20Cube(int N,
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
     this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
-    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 
     for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
 
@@ -1721,7 +1753,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2BFS(int N,
     }
 
     this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
-    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
     vec2D_int_ptr_Type elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements, std::vector<int>(27,-1)));
     Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
 
@@ -1806,7 +1838,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2BFS(int N,
         cout << "-- Building Q2 Unique Points ... " << flush;
 
     this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
-    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 
     LO index;
     for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
@@ -1952,7 +1984,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
             cout << "-- Building P0 Points Repeated ... " << endl;
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
-        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
         elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements, std::vector<int>(3,-1)));
 
         Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
@@ -2017,7 +2049,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(), std::vector<double>(2,0.0)));
-        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
         LO index;
         for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
 
@@ -2066,7 +2098,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
-        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
         elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements,std::vector<int>(3,-1)));
 
         Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
@@ -2133,7 +2165,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(), std::vector<double>(2,0.0)));
-        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
         LO index;
         for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
 
@@ -2182,7 +2214,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
-        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
         elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements,std::vector<int>(6,-1)));
         Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
 
@@ -2262,7 +2294,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(2,0.0)));
-        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 
         LO index;
         for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
@@ -2414,7 +2446,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
     if (FEType == "P1") {
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
-        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
         vec2D_int_ptr_Type elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements,std::vector<int>(4,-1)));
 
         Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
@@ -2498,7 +2530,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(), std::vector<double>(3,0.0)));
-        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
         LO index;
 
         for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
@@ -2564,7 +2596,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
     else if(FEType == "P2"){
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
-        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+        this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
         vec2D_int_ptr_Type elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements,std::vector<int>(10,-1)));
         Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
 
@@ -2660,7 +2692,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
-        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
+        this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 
         LO index;
         for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
@@ -2854,8 +2886,8 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DBFS(int N,
 
     this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
     this->pointsUni_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
-    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
-    this->bcFlagUni_.reset(new std::vector<int> (nmbPoints,0));
+    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
+    this->bcFlagUni_.reset(new std::vector<int> (nmbPoints,10));
     Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
 
     if (verbose)
@@ -3169,7 +3201,7 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,string 
                             this->bcFlagUni_->at(i) = 3;
                         }
                     }
-                    for (int i=0; i<this->pointsUni_->size(); i++) {
+                    for (int i=0; i<this->pointsRep_->size(); i++) {
                         if (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol) ) {
                             this->bcFlagRep_->at(i) = 2;
                         }
@@ -3249,6 +3281,120 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,string 
                         }
                     }
                     break;
+                case 3: //SMC Cube Test
+                for (int i=0; i<this->pointsUni_->size(); i++) {
+                                        // z=1 Face
+                    if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                        this->pointsUni_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                        this->bcFlagUni_->at(i) = 4;
+                    }
+                    // y=1 Face
+                    if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                        this->pointsUni_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                        this->bcFlagUni_->at(i) = 5;
+                    }
+                    // x=1 Face
+                    if (this->pointsUni_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                        this->pointsUni_->at(i).at(1) > (coorRec[1] + tol) &&
+                        this->pointsUni_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                        this->pointsUni_->at(i).at(2) > (coorRec[2] + tol) &&
+                        this->pointsUni_->at(i).at(2) < (coorRec[2] + height - tol)) {
+                        this->bcFlagUni_->at(i) = 6;
+                    }
+                    // x=0 Face  
+                    if (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol) ) {
+                        this->bcFlagUni_->at(i) = 1;
+                    }
+                    // y=0 Face
+                    if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                        this->pointsUni_->at(i).at(1) < (coorRec[1] + tol) ) {
+                        this->bcFlagUni_->at(i) = 2;
+                    }
+                    // z=0 Face
+                    if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                        this->pointsUni_->at(i).at(2) < (coorRec[2] + tol) ) {
+                        this->bcFlagUni_->at(i) = 3;
+                    }
+
+                         // (0,0,z) Edge
+                    if  (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol) &&
+                        this->pointsUni_->at(i).at(1) < (coorRec[1] + tol)  )
+                        this->bcFlagUni_->at(i) = 7;
+
+                         // (0,y,0) Edge
+                    if  (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol)  &&
+                        this->pointsUni_->at(i).at(2) < (coorRec[2] + tol)  )
+                        this->bcFlagUni_->at(i) = 9;
+
+                         // (x,0,0) Edge
+                    if  (this->pointsUni_->at(i).at(1) < (coorRec[1] + tol)  &&
+                        this->pointsUni_->at(i).at(2) < (coorRec[2] + tol)  )
+                        this->bcFlagUni_->at(i) = 8;
+
+                        // (0,0,0) Point
+                    if  (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol) &&
+                        this->pointsUni_->at(i).at(1) < (coorRec[1] + tol)  &&
+                        this->pointsUni_->at(i).at(2) < (coorRec[2] + tol)  )
+                        this->bcFlagUni_->at(i) = 0;
+
+                }
+                for (int i=0; i<this->pointsRep_->size(); i++) {
+
+                    // z=1 Face
+                    if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                        this->pointsRep_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                        this->bcFlagRep_->at(i) = 4;
+                    }
+                 
+                    // y=1 face
+                    if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                        this->pointsRep_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                        this->bcFlagRep_->at(i) = 5;
+                    }
+                    //x=1
+                    if (this->pointsRep_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                        this->pointsRep_->at(i).at(1) > (coorRec[1] + tol) &&
+                        this->pointsRep_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                        this->pointsRep_->at(i).at(2) > (coorRec[2] + tol) &&
+                        this->pointsRep_->at(i).at(2) < (coorRec[2] + height - tol)) {
+                        this->bcFlagRep_->at(i) = 6;
+                    }
+                    // x=0 Face
+                    if (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol) ) {
+                        this->bcFlagRep_->at(i) = 1;
+                    }
+                    // z=0 Face
+                    if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                        this->pointsRep_->at(i).at(2) < (coorRec[2] + tol) ) {
+                        this->bcFlagRep_->at(i) = 3;
+                    }
+                    // y=0 Face
+                    if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                        this->pointsRep_->at(i).at(1) < (coorRec[1] + tol) ) {
+                        this->bcFlagRep_->at(i) = 2;
+                    }
+                         // (0,0,z) Edge
+                    if  (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol) &&
+                        this->pointsRep_->at(i).at(1) < (coorRec[1] + tol)  )
+                        this->bcFlagRep_->at(i) = 7;
+
+                         // (0,y,0) Edge
+                    if  (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol)  &&
+                        this->pointsRep_->at(i).at(2) < (coorRec[2] + tol)  )
+                        this->bcFlagRep_->at(i) = 9;
+
+                         // (x,0,0) Edge
+                    if  (this->pointsRep_->at(i).at(1) < (coorRec[1] + tol)  &&
+                        this->pointsRep_->at(i).at(2) < (coorRec[2] + tol)  )
+                        this->bcFlagRep_->at(i) = 8;
+                         // (0,0,0) Point
+                    if  (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol) &&
+                        this->pointsRep_->at(i).at(1) < (coorRec[1] + tol)  &&
+                        this->pointsRep_->at(i).at(2) < (coorRec[2] + tol)  )
+                        this->bcFlagRep_->at(i) = 0;
+
+                }
+                break;
                 default:
                     break;
             }
@@ -3270,6 +3416,157 @@ void MeshStructured<SC,LO,GO,NO>::buildElementMap(){
     std::string underlyingLib = this->mapRepeated_->getUnderlyingLib();
     this->elementMap_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, elementsGlobalMapping(), 0, this->comm_) );
 
+}
+
+template <class SC, class LO, class GO, class NO>
+void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, string FEType){
+
+    double tol=1.e-12;
+
+
+    switch (this->dim_) {
+        case 2:
+            break;
+        
+        case 3:
+            switch (flagsOption) {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    for( int T =0; T< this->elementsC_->numberElements(); T++){
+
+                        vec_int_Type nodeList = this->elementsC_->getElement(T).getVectorNodeList();
+
+                        //cout << "NodeList Element for Element " << T << " "  << nodeList[0] << " " << nodeList[1] << " " << nodeList[2] << " " << nodeList[3] << " " << nodeList[4] << " " << nodeList[5] <<" " << nodeList[6] << " " << nodeList[7] << " " << nodeList[8] << " " << nodeList[9] << endl;
+
+                        vec2D_LO_Type surfaceElements_vec(4,vec_LO_Type(3)); // four surfaces per element
+
+
+        //                Face 1          Face2               Face 3            Face 4
+        //                    2      2 * * 9 * * 3        3 * * 9 * * 2          	3
+        //                  * *      *          *          *          * 		  * *
+        //                *   *      *        *             *        *          *   *
+        //              5	  6      6      7                8      5         8	    7
+        //            *       *      *    *                   *    *        *       *
+        //          *         *      *  *                      *  *       *         *
+        //        1 * * 4 * * 0       0                         1       1 * * 4 * * 0
+
+
+                        surfaceElements_vec[0] = {nodeList[1],nodeList[0],nodeList[2],nodeList[4],nodeList[6],nodeList[5]};
+                        surfaceElements_vec[1] = {nodeList[0],nodeList[3],nodeList[2],nodeList[7],nodeList[9],nodeList[6]};
+                        surfaceElements_vec[2] = {nodeList[1],nodeList[2],nodeList[3],nodeList[5],nodeList[9],nodeList[8]};
+                        surfaceElements_vec[3] = {nodeList[1],nodeList[0],nodeList[3],nodeList[4],nodeList[7],nodeList[8]};
+
+
+                        for (int i=0; i<4; i++) {
+
+                            vec_dbl_Type p1(3),p2(3),v_E(3);
+                            p1[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(0);
+                            p1[1] =this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(1);
+                            p1[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(2);
+
+                            p2[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(0);
+                            p2[1] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(1);
+                            p2[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(2);
+
+                            v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                            v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                            v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+
+
+                            vec_dbl_Type midpoint(3);
+
+                            // Midpoint of triangle surface
+                            midpoint[0] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(0) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(0) )/3.;
+                            midpoint[1] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(1) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(1) )/3.;
+                            midpoint[2] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(2) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(2) )/3.;
+
+                            int flag =10.;
+                            // x=0 Face  
+                            if (midpoint.at(0) < (coorRec[0] + tol) ) {
+                                flag = 1;
+                                if(v_E[0] > 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                            }
+                            // z=0 Face
+                            if (midpoint.at(0) > (coorRec[0] + tol) &&
+                                midpoint.at(2) < (coorRec[2] + tol) ) {
+                                flag = 3;
+                                if(v_E[2] > 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                            }
+                            // z=1 Face
+                            if (midpoint.at(0) > (coorRec[0] + tol) &&
+                                midpoint.at(2) > (coorRec[2] + height - tol) ) {
+                                if(v_E[2] < 0 )
+                                   flipSurface(surfaceElements_vec[i]);
+                                flag = 4;
+                            }
+                            // y=0 Face
+                            if (midpoint.at(0) > (coorRec[0] + tol) &&
+                                midpoint.at(1) < (coorRec[1] + tol) ) {
+                                if(v_E[1]> 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                                flag = 2;
+                            }
+                            // y=1 Face
+                            if (midpoint.at(0) > (coorRec[0] + tol) &&
+                                midpoint.at(1) > (coorRec[1] + width - tol) ) {
+                                if(v_E[1]< 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                                flag = 5;
+                            }
+                            // x=1 Face
+                            if (midpoint.at(0) > (coorRec[0] + length - tol) &&
+                                midpoint.at(1) > (coorRec[1] + tol) &&
+                                midpoint.at(1) < (coorRec[1] + width - tol)&&
+                                midpoint.at(2) > (coorRec[2] + tol) &&
+                                midpoint.at(2) < (coorRec[2] + height - tol)) {
+                                if(v_E[0]< 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                                flag = 6;
+                            }
+
+                            if(flag != 10){
+                                FiniteElement feSurface( surfaceElements_vec[i], flag);
+                                if ( !this->elementsC_->getElement(T).subElementsInitialized() )
+                                    this->elementsC_->getElement(T).initializeSubElements( "P2", 2 ); // only P1 for now
+                                
+                                this->elementsC_->getElement(T).addSubElement( feSurface );
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+    }
+
+}
+
+// We allways want a outward normal direction
+template <class SC, class LO, class GO, class NO>
+void MeshStructured<SC,LO,GO,NO>::flipSurface(vec_int_Type &surfaceElements_vec){
+
+    LO id1,id2,id3,id4,id5,id6;
+    id1= surfaceElements_vec[0];
+    id2= surfaceElements_vec[1];
+    id3= surfaceElements_vec[2];
+    id4= surfaceElements_vec[3];
+    id5= surfaceElements_vec[4];
+    id6= surfaceElements_vec[5];
+
+    surfaceElements_vec[0] = id1;
+    surfaceElements_vec[1] = id3;
+    surfaceElements_vec[2] = id2;
+    surfaceElements_vec[3] = id6;
+    surfaceElements_vec[4] = id5;
+    surfaceElements_vec[5] = id4;
 }
 
 }

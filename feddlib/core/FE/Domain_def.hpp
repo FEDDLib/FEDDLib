@@ -264,6 +264,10 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
     }
     meshStructured->buildElementMap();
     meshStructured->setStructuredMeshFlags(flagsOption,FEType);
+    
+    // Building the surfaces for elements as well (necessary with surface loads!)
+    meshStructured->buildSurfaces(flagsOption,FEType);
+
     mesh_ = meshStructured;
 }
 
