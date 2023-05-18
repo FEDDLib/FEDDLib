@@ -12,14 +12,13 @@
 		<Parameter name="FA" type="double" value="30.e0"/>
 		<Parameter name="LambdaC50" type="double" value="0.12e1"/>
 		<Parameter name="Gamma3" type="double" value="0.9e0"/>
-		<Parameter name="LambdaBarCDotMax" type="double" value="0.3387e-1"/>
-		<Parameter name="LambdaBarCDotMin" type="double" value="-0.3387e-1"/>
+		<Parameter name="LambdaBarCDotMax" type="double" value="0.0443"/>
+		<Parameter name="LambdaBarCDotMin" type="double" value="-0.0443"/>
 		<Parameter name="Gamma2" type="double" value="50.0e0"/>
 		<Parameter name="Gamma1" type="double" value="0.50247e0"/>
 		<Parameter name="Eta1" type="double" value="0.18745e0"/>
 		<Parameter name="Ca50" type="double" value="0.4e0"/>
 		<Parameter name="K2" type="double" value="0.2e0"/>
-		
 		<Parameter name="K5" type="double" value="0.2e0"/>
 		<Parameter name="K3" type="double" value="0.134e0"/>
 		<Parameter name="K4" type="double" value="0.166e-2"/>
@@ -37,13 +36,12 @@
 		<Parameter name="ActiveStartTime" type="double" value="1.0e0"/>
 		<Parameter name="Gamma6" type="double" value="0.15e1"/>
 		<Parameter name="LambdaP50" type="double" value="1.0e0"/>
-		<Parameter name="KDotMin" type="double" value="-0.118863e-2"/>
+		<Parameter name="KDotMin" type="double" value="-0.0010694"/>
 		<Parameter name="Zeta1" type="double" value="100.e0"/>
-		<Parameter name="KDotMax" type="double" value="0.51028e-3"/>
+		<Parameter name="KDotMax" type="double" value="0.0009735"/>
 		<Parameter name="Gamma4" type="double" value="200.e0"/>
-		
-		<Parameter name="LambdaBarDotMin" type="double" value="-0.17689e-3"/>
-		<Parameter name="LambdaBarDotMax" type="double" value="0.13957e-3"/>
+		<Parameter name="LambdaBarDotMin" type="double" value="-0.0002323"/>
+		<Parameter name="LambdaBarDotMax" type="double" value="0.0000699"/>
 		<Parameter name="Gamma5" type="double" value="50.0e0"/>
 		<Parameter name="Zeta2" type="double" value="1000.e0"/>
 		<Parameter name="DeltaLambdaBarPMin" type="double" value="-0.1e-4"/>
@@ -64,15 +62,15 @@
 		
 		<Parameter name="MThetaPlus" type="double" value="3.0e0"/>
 		<Parameter name="MThetaMinus" type="double" value="3.0e0"/>
-		
-		<Parameter name="ThetaPlus1" type="double" value="0.1000882e1"/>
-		<Parameter name="ThetaPlus2" type="double" value="0.1234826e1"/>
-		<Parameter name="ThetaPlus3" type="double" value="0.11414189999999999e1"/>
+		<Parameter name="ThetaPlus1" type="double" value="1.00506"/>
+		<Parameter name="ThetaPlus2" type="double" value="1.0206"/>
+		<Parameter name="ThetaPlus3" type="double" value="1.11992"/>
 		<Parameter name="ThetaMinus1" type="double" value="0.98e0"/>
 		<Parameter name="ThetaMinus2" type="double" value="0.98e0"/>
 		<Parameter name="ThetaMinus3" type="double" value="0.98e0"/>
+		<Parameter name="KMin" type="double" value="0.15"/>
 		<Parameter name="Rho" type="double" value="1.e0"/>
-	
-    </ParameterList>    
+	</ParameterList>    
 </ParameterList>
+
 
