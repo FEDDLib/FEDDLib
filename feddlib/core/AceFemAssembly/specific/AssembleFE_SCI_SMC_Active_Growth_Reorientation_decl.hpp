@@ -155,22 +155,22 @@ class AssembleFE_SCI_SMC_Active_Growth_Reorientation : public AssembleFE<SC,LO,G
 		double lambdaBarCDotMin_;
 		double gamma2_;
 		double gamma1_;
-		double eta1_;
+		double eta_;
 		double ca50_;
 		double k2_;
 		double k5_;
 		double k3_;
 		double k4_;
 		double k7_;
-		double kappaC_;
+		double kappa_;
 		double beta1_;
 		double muA_;
-		double alpha_;
-		double epsilon1_;
-		double epsilon2_;
-		double c1_;
-		double alpha1_;
+		double beta2_;
 		double alpha2_;
+		double alpha3_;
+		double alpha1_;
+		double alpha4_;
+		double alpha5_;
 		double gamma6_ ;
 		double lambdaP50_;
 		double kDotMin_ ;
@@ -204,11 +204,8 @@ class AssembleFE_SCI_SMC_Active_Growth_Reorientation : public AssembleFE<SC,LO,G
 		double thetaMinus1_ ;
 		double thetaMinus2_ ;
 		double thetaMinus3_ ;
+		double kMin_;
 		double rho_;
-
-
-
-
 };
 
 }

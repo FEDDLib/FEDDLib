@@ -2,5 +2,5 @@
 *.o
 *.so
 *.dylib
-build/
-.vscode/
+/build
+/.vscode
