@@ -5,8 +5,8 @@
         <Parameter name="BC Type" type="string" value="Cube"/><!--Artery, Cube-->
         <Parameter name="RHS Type" type="string" value="Heart Beat"/><!--Constant, Paper, Heart Beat-->
         
-		<Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
-        <Parameter name="H/h" type="int" value="5"/> <!-- only relevant for structured meshes -->
+		<Parameter name="Mesh Type" type="string" value="structured"/> <!--  unstructured -->
+        <Parameter name="H/h" type="int" value="4"/> <!-- only relevant for structured meshes -->
     
         
         <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
@@ -43,7 +43,7 @@
         <Parameter name="Viscosity" type="double" value="1.0"/>
         <Parameter name="Density" type="double" value="1000.0"/>
         <Parameter name="m" type="double" value="0."/>
-        <Parameter name="D0" type="double" value="6.e-03"/>
+        <Parameter name="D0" type="double" value="6.e-02"/>
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
     </ParameterList>
     
@@ -112,7 +112,7 @@
             </ParameterList>
              <ParameterList name="2">
                 <Parameter name="Start Time" type="double" value="1."/>
-                <Parameter name="dt" type="double" value="0.75"/>
+                <Parameter name="dt" type="double" value="0.5"/>
             </ParameterList>
              <ParameterList name="3">
                 <Parameter name="Start Time" type="double" value="70."/>

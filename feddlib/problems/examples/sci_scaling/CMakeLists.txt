@@ -20,8 +20,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_sciscaling
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_sciscaling
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES cube_h_0_05.mesh cube_h_0_1.mesh cube_h_1.mesh partialArtery.mesh artery_h_0_1.mesh
+    SOURCE_FILES cube_h_0_05.mesh cube_h_0_1.mesh cube_h_1.mesh artery_h_025.mesh artery_h_0_1.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES cube_h_0_05.mesh cube_h_0_1.mesh cube_h_1.mesh partialArtery.mesh artery_h_0_1.mesh
+	DEST_FILES cube_h_0_05.mesh cube_h_0_1.mesh cube_h_1.mesh artery_h_025.mesh artery_h_0_1.mesh
 	EXEDEPS sci_scaling
 )

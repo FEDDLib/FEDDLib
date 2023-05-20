@@ -51,10 +51,10 @@
 		<Parameter name="ActiveStartTime" type="double" value="1.0"/>
 		<Parameter name="KEtaPlus" type="double" value="0.0001"/>
 		<Parameter name="MEtaPlus" type="double" value="5.0"/>		
-		<Parameter name="GrowthStartTime" type="double" value="0.0"/>
-		<Parameter name="ReorientationStartTime" type="double" value="0.0"/>
-		<Parameter name="GrowthEndTime" type="double" value="0.0"/>
-		<Parameter name="ReorientationEndTime" type="double" value="0.0"/>
+		<Parameter name="GrowthStartTime" type="double" value="1.0"/>
+		<Parameter name="ReorientationStartTime" type="double" value="20.0"/>
+		<Parameter name="GrowthEndTime" type="double" value="20.0"/>
+		<Parameter name="ReorientationEndTime" type="double" value="80.0"/>
 		<Parameter name="KThetaPlus" type="double" value="0.0001"/>
 		<Parameter name="KThetaMinus" type="double" value="0.0001"/>
 		<Parameter name="MThetaPlus" type="double" value="3.0e0"/>
