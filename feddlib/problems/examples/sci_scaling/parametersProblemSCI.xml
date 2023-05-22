@@ -5,7 +5,7 @@
         <Parameter name="BC Type" type="string" value="Cube"/><!--Artery, Cube-->
         <Parameter name="RHS Type" type="string" value="Heart Beat"/><!--Constant, Paper, Heart Beat-->
         
-		<Parameter name="Mesh Type" type="string" value="structured"/> <!--  unstructured -->
+		<Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
         <Parameter name="H/h" type="int" value="4"/> <!-- only relevant for structured meshes -->
     
         
@@ -18,12 +18,12 @@
         <Parameter name="SCI" type="bool" value="true"/>
         <Parameter name="Load Stepping" type="bool" value="true"/>
         <Parameter name="Inflow Start Time" type="double" value="0.0"/><!-- Start of diffusion process -->
-        <Parameter name="Load Step Size" type="double" value="0.05"/><!-- Length/size of Loadsteps -->
+        <Parameter name="Load Step Size" type="double" value="0.0125"/><!-- Length/size of Loadsteps -->
         <Parameter name="Load Ramp End" type="double" value="1.0"/><!-- End of Load Stepping -->
         <Parameter name="External Force" type="bool" value="true"/>
         <Parameter name="Nonlinear External Force" type="bool" value="true"/>
         <Parameter name="Coupling Type" type="string" value="implicit"/>
-        <Parameter name="Structure Model" type="string" value="SCI_SMC_Active_Growth_Reorientation"/> <!-- SCI_NH , SCI_SMC_MLCK , SCI_SMC_Active_Growth_Reorientation -->
+ 		<Parameter name="Structure Model" type="string" value="SCI_SMC_Active_Growth_Reorientation"/> <!-- SCI_Linear, SCI_NH , SCI_SMC_MLCK , SCI_SMC_Active_Growth_Reorientation -->
 
         <Parameter name="Refinement Level" type="int" value="0"/>
        
@@ -43,7 +43,7 @@
         <Parameter name="Viscosity" type="double" value="1.0"/>
         <Parameter name="Density" type="double" value="1000.0"/>
         <Parameter name="m" type="double" value="0."/>
-        <Parameter name="D0" type="double" value="6.e-02"/>
+        <Parameter name="D0" type="double" value="6.e-03"/>
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
     </ParameterList>
     
@@ -85,7 +85,7 @@
         <Parameter name="Export Extra Data" type="bool" value="false"/>
         <Parameter name="Export drag and lift" type="bool" value="true"/>
         
-        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/> <!-- Monolithic, FaCSI, FaCSI-Teko -->
+        <Parameter name="Preconditioner Method" type="string" value="Teko"/> <!-- Monolithic, FaCSI, FaCSI-Teko -->
        
         <Parameter name="Only Diagonal" type="bool" value="false"/>
 
@@ -108,7 +108,7 @@
             <Parameter name="Number of Segments" type="int" value="4"/>
             <ParameterList name="1">
                 <Parameter name="Start Time" type="double" value="0."/>
-                <Parameter name="dt" type="double" value="0.05"/>
+                <Parameter name="dt" type="double" value="0.0125"/>
             </ParameterList>
              <ParameterList name="2">
                 <Parameter name="Start Time" type="double" value="1."/>

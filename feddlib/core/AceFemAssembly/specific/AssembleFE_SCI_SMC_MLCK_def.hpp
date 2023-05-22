@@ -103,9 +103,8 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	solutionC_n1_.resize(10,0.);
 
 	this->solution_.reset( new vec_dbl_Type ( dofsElement_,0.) );
-
 	
-	timeParametersVec_.resize(0, vec_dbl_Type(2));
+	/*timeParametersVec_.resize(0, vec_dbl_Type(2));
     numSegments_ = this->params_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);
 
  	for(int i=1; i <= numSegments_; i++){
@@ -115,7 +114,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
         
         vec_dbl_Type segment = {startTime,dtTmp};
         timeParametersVec_.push_back(segment);
-    }
+    }*/
 
 }
 
@@ -132,16 +131,13 @@ void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::assembleJacobian() {
 template <class SC, class LO, class GO, class NO>
 void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::advanceInTime( double dt){
 
-	//cout << " advanced in time for this element with dt " << dt << endl;
 	this->timeIncrement_ = dt;
 
 	// If we have a time segment setting we switch to the demanded time increment
-	for(int i=0; i<numSegments_ ; i++){
-		if(this->timeStep_ >= timeParametersVec_[i][0])
+	/*for(int i=0; i<numSegments_ ; i++){
+		if(this->timeStep_ +1.0e-12 > timeParametersVec_[i][0])
 			this->timeIncrement_=timeParametersVec_[i][1];
-	}
-
-	//cout << " Changed to timeincrement " << this->timeIncrement_<< endl;
+	}*/
 	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 	
 	for(int i=0; i< 48; i++){
@@ -210,7 +206,7 @@ void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::assembleRHS(){
 	}
 
     
-    double time = this->getTimeStep();
+    double time = this->getTimeStep()+deltaT;
     double subIterationTolerance = 1.e-7;
  
     // immer speicher und wenn es konvergiert, dann zur history machen
@@ -314,7 +310,7 @@ void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::assemble_SCI_SMC_MLCK(SmallMatrixPtr_
 	}
 	// ##########################
     
-    double time = this->getTimeStep();
+    double time = this->getTimeStep()+deltaT;
     double subIterationTolerance = 1.e-7;
     	
     // immer speicher und wenn es konvergiert, dann zur history machen

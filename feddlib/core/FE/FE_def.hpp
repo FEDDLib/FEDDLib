@@ -541,6 +541,156 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
 
 }
+
+// Check the order of chemistry and solid in system matrix
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyAceDeformDiffuBlock(int dim,
+                        string FETypeChem,
+                        string FETypeSolid,
+                        int degree,
+                        int dofsChem,
+                        int dofsSolid,
+                        MultiVectorPtr_Type c_rep,
+                        MultiVectorPtr_Type d_rep,
+                        BlockMatrixPtr_Type &A,
+                        int blockRow,
+                        int blockCol,
+                        BlockMultiVectorPtr_Type &resVec,
+                        int block,
+                        ParameterListPtr_Type params,
+                        string assembleMode,
+                        bool callFillComplete,
+                        int FELocExternal){
+
+    if((FETypeChem != "P2") || (FETypeSolid != "P2") || dim != 3)
+    	TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "No AceGen Implementation available for Discretization and Dimension." );
+    if((blockRow != blockCol) && blockRow != 0)
+        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Block assemblyDeformDiffu AceGEN Version only implemented for 0,0 block right now" );
+
+    //UN FElocChem = 1; //checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype
+    UN FElocSolid = 0; //checkFE(dim,FETypeSolid); // Checks for different domains which belongs to a certain fetype
+
+	ElementsPtr_Type elementsChem= domainVec_.at(FElocSolid)->getElementsC();
+
+	ElementsPtr_Type elementsSolid = domainVec_.at(FElocSolid)->getElementsC();
+
+    //this->domainVec_.at(FElocChem)->info();
+    //this->domainVec_.at(FElocSolid)->info();
+	//int dofsElement = elements->getElement(0).getVectorNodeList().size();
+
+	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FElocSolid)->getPointsRepeated();
+
+	//MapConstPtr_Type mapChem = domainVec_.at(FElocChem)->getMapRepeated();
+
+	MapConstPtr_Type mapSolid = domainVec_.at(FElocSolid)->getMapRepeated();
+
+	vec_dbl_Type solution_c;
+	vec_dbl_Type solution_d;
+
+	vec_dbl_ptr_Type rhsVec;
+
+	/// Tupel construction follows follwing pattern:
+	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	int numChem=3;
+    if(FETypeChem == "P2"){
+        numChem=6;
+    }    
+	if(dim==3){
+		numChem=4;
+        if(FETypeChem == "P2")
+            numChem=10;
+	}
+    int numSolid=3;
+    if(FETypeSolid == "P2")
+        numSolid=6;
+        
+	if(dim==3){
+		numSolid=4;
+        if(FETypeSolid == "P2")
+            numSolid=10;
+	}
+	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
+	tuple_ssii_Type chem ("Chemistry",FETypeChem,dofsChem,numChem);
+	tuple_ssii_Type solid ("Solid",FETypeSolid,dofsSolid,numSolid);
+	problemDisk->push_back(solid);
+	problemDisk->push_back(chem);
+	
+	string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
+
+	if(assemblyFEElements_.size()== 0){
+       	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep);
+    }
+	else if(assemblyFEElements_.size() != elementsChem->numberElements())
+	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
+
+	//SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
+
+	//MultiVectorPtr_Type resVec_c = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocChem)->getMapRepeated(), 1 ) );
+    MultiVectorPtr_Type resVec_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocSolid)->getMapVecFieldRepeated(), 1 ) );
+	
+	BlockMultiVectorPtr_Type resVecRep = Teuchos::rcp( new BlockMultiVector_Type( 1) );
+    resVecRep->addBlock(resVec_d,0);
+    //resVecRep->addBlock(resVec_c,1);
+
+    for (UN T=0; T<assemblyFEElements_.size(); T++) {
+		vec_dbl_Type solution(0);
+
+		solution_c = getSolution(elementsChem->getElement(T).getVectorNodeList(), c_rep,dofsChem);
+		solution_d = getSolution(elementsSolid->getElement(T).getVectorNodeList(), d_rep,dofsSolid);
+
+        // First Solid, then Chemistry
+		solution.insert( solution.end(), solution_d.begin(), solution_d.end() );
+		solution.insert( solution.end(), solution_c.begin(), solution_c.end() );
+        
+  		assemblyFEElements_[T]->updateSolution(solution);
+
+ 		SmallMatrixPtr_Type elementMatrix;
+
+		if(assembleMode == "Jacobian"){
+			assemblyFEElements_[T]->assembleJacobian();
+
+            elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+           // elementMatrix->print();
+			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
+			addFeBlock(A, elementMatrix, elementsSolid->getElement(T), mapSolid, 0, 0, problemDisk);
+			//addFeBlockMatrix(A, elementMatrix, elementsSolid->getElement(T),  mapSolid, mapChem, problemDisk);
+		}
+		if(assembleMode == "Rhs"){
+		    assemblyFEElements_[T]->assembleRHS();
+		    rhsVec = assemblyFEElements_[T]->getRHS(); 
+			addFeBlockMv(resVecRep, rhsVec, elementsSolid->getElement(T), dofsSolid);
+		}
+        //if(assembleMode=="compute")
+        //    assemblyFEElements_[T]->compute();
+
+        
+
+			
+	}
+	if ( assembleMode != "Rhs"){
+		A->getBlock(0,0)->fillComplete();
+	    //A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
+	    //A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
+	    //A->getBlock(1,1)->fillComplete();
+	}
+
+    if(assembleMode == "Rhs"){
+
+		MultiVectorPtr_Type resVecUnique_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocSolid)->getMapVecFieldUnique(), 1 ) );
+		//MultiVectorPtr_Type resVecUnique_c = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocChem)->getMapUnique(), 1 ) );
+
+		resVecUnique_d->putScalar(0.);
+		//resVecUnique_c->putScalar(0.);
+
+		resVecUnique_d->exportFromVector( resVec_d, true, "Add" );
+		//resVecUnique_c->exportFromVector( resVec_c, true, "Add" );
+
+		resVec->addBlock(resVecUnique_d,0);
+		//resVec->addBlock(resVecUnique_c,1);
+	}
+
+
+}
 /*!
 
  \brief Inserting element stiffness matrices into global stiffness matrix

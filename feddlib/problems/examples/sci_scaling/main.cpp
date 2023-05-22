@@ -228,7 +228,7 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     if(parameters[0]< 70.0){
     	Q = 0.;
     }
-    if(parameters[0] < TRamp)
+    if(parameters[0]+1e-12 < TRamp)
         force = force * (parameters[0]+loadStepSize);
         
     if(parameters[4]==5){
@@ -368,11 +368,19 @@ int main(int argc, char *argv[])
     myCLP.setOption("precfileStructure",&xmlPrecFileStructure,".xml file with Inputparameters.");
     string xmlPrecFileChem = "parametersPrecChem.xml";
     myCLP.setOption("precfileChem",&xmlPrecFileChem,".xml file with Inputparameters.");
-
+    
+ 	string xmlBlockPrecFile = "parametersPrecBlock.xml";
+    myCLP.setOption("blockprecfile",&xmlBlockPrecFile,".xml file with Inputparameters.");
+   
     string xmlPrecFile = "parametersPrec.xml";
     myCLP.setOption("precfile",&xmlPrecFile,".xml file with Inputparameters.");
 
+    string xmlTekoPrecFile = "parametersPrecTeko.xml";
+    myCLP.setOption("tekoprecfile",&xmlTekoPrecFile,".xml file with Inputparameters.");
 
+    ParameterListPtr_Type parameterListPrecTeko = Teuchos::getParametersFromXmlFile(xmlTekoPrecFile);
+    ParameterListPtr_Type parameterListPrecBlock = Teuchos::getParametersFromXmlFile(xmlBlockPrecFile);
+    
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
     Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = myCLP.parse(argc,argv);
@@ -396,11 +404,22 @@ int main(int argc, char *argv[])
   
         ParameterListPtr_Type parameterListPrec = Teuchos::getParametersFromXmlFile(xmlPrecFile);
 
-
+ 		int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
+        string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
+        int 		m				= parameterListProblem->sublist("Parameter").get("H/h",5);
+        string      discType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");
+        string precMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
+        int         n;
+       
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;     
         
         parameterListAll->setParameters(*parameterListSolverSCI);
-        parameterListAll->setParameters(*parameterListPrec);
+        if (!precMethod.compare("Monolithic"))
+            parameterListAll->setParameters(*parameterListPrec);
+        else if(!precMethod.compare("Teko"))
+            parameterListAll->setParameters(*parameterListPrecTeko);
+        else if(precMethod == "Diagonal" || precMethod == "Triangular")
+            parameterListAll->setParameters(*parameterListPrecBlock);
 		parameterListAll->setParameters(*parameterListProblemStructure);
         
         ParameterListPtr_Type parameterListChemAll(new Teuchos::ParameterList(*parameterListPrecChem)) ;
@@ -416,12 +435,6 @@ int main(int argc, char *argv[])
         parameterListStructureAll->setParameters(*parameterListProblemStructure);
 
                  
-        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
-        string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
-        int 		m				= parameterListProblem->sublist("Parameter").get("H/h",5);
-        string      discType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");
-        string preconditionerMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
-        int         n;
        
 
         TimePtr_Type totalTime(TimeMonitor_Type::getNewCounter("FEDD - main - Total Time"));

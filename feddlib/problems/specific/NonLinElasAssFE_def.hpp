@@ -32,7 +32,6 @@ u_rep_()
 
     timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
 
-    eModVec_.reset(new MultiVector_Type(domain->getElementMap(),1));
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -70,9 +69,9 @@ void NonLinElasAssFE<SC,LO,GO,NO>::assemble(std::string type) const{
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
         u_rep_->importFromVector(u, true);              
        // this->assembleSourceTerm( 0. );
-        if(loadStepping_==true)
+        /*if(loadStepping_==true)
             assembleSourceTermLoadstepping(0.);
-        else
+        else*/
             this->assembleSourceTerm(0.);
 
         if(sourceType == "volume")
@@ -110,10 +109,11 @@ void NonLinElasAssFE<SC,LO,GO,NO>::updateTime() const
 
 template<class SC,class LO,class GO,class NO>
 void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
-    std::string material_model = this->parameterList_->sublist("Parameter").get("Material model","Neo-Hooke");
+
+    std::string material_model = this->parameterList_->sublist("Parameter").get("Structure Model","Neo-Hooke");
 
     if (this->verbose_)
-        std::cout << "-- Reassembly nonlinear elasticity with material model " << material_model <<" ("<<type <<") ... " << std::flush;
+        std::cout << "-- Reassembly nonlinear elasticity with structure material model " << material_model <<" ("<<type <<") ... " << std::flush;
     
     if (type=="Newton-Residual") {
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
@@ -127,10 +127,10 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         this->residualVec_->addBlock( fRep, 0 ); 
 
         if(this->parameterList_->sublist("Parameter").get("SCI",false) == true || this->parameterList_->sublist("Parameter").get("FSCI",false) == true )
-       		 this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,this->getDomain(0), this->eModVec_,true);
+            this->feFactory_->assemblyAceDeformDiffuBlock(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,concentration_,u_rep_,this->system_,0,0,this->residualVec_,0, this->parameterList_, "Jacobian", true/*call fillComplete*/);
        	else 
  			this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,true);
-        fRep->scale(-1.);
+        //fRep->scale(-1.);
         
         MultiVectorPtr_Type fUnique = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
         fUnique->putScalar(0.);
@@ -138,7 +138,7 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
         this->residualVec_->addBlock( fUnique, 0 );
 
-        assembleSourceTermLoadstepping();
+        //assembleSourceTermLoadstepping();
 
 
     }
@@ -349,23 +349,31 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NonLinElasAssFE<SC,LO,GO,NO>::creat
 template<class SC,class LO,class GO,class NO>
 void NonLinElasAssFE<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
     
+    
     this->reAssemble("Newton-Residual");
-    if (!type.compare("standard")){
-        this->residualVec_->update(-1.,*this->rhs_,1.);
-        //if ( !this->sourceTerm_.is_null() )
-        //    this->residualVec_->update(-1.,*this->sourceTerm_,1.);
-    }
-    else if(!type.compare("reverse")){
-        this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
-        //if ( !this->sourceTerm_.is_null() )
-        //    this->residualVec_->update(1.,*this->sourceTerm_,1.);
+
+    if(this->parameterList_->sublist("Parameter").get("SCI",false) == true || this->parameterList_->sublist("Parameter").get("FSCI",false) == true ){
+     		//this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,this->getDomain(0), this->eModVec_,true);
+            this->feFactory_->assemblyAceDeformDiffuBlock(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,concentration_,u_rep_,this->system_,0,0,this->residualVec_,0, this->parameterList_, "Rhs", true/*call fillComplete*/);
     }
     else{
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Unknown type for residual computation.");
+        if (!type.compare("standard")){
+            this->residualVec_->update(-1.,*this->rhs_,1.);
+            //if ( !this->sourceTerm_.is_null() )
+            //    this->residualVec_->update(-1.,*this->sourceTerm_,1.);
+        }
+        else if(!type.compare("reverse")){
+            this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
+            //if ( !this->sourceTerm_.is_null() )
+            //    this->residualVec_->update(1.,*this->sourceTerm_,1.);
+        }
+        else{
+            TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Unknown type for residual computation.");
+        }
+        
+        // this might be set again by the TimeProblem after adding of M*u
+        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
     }
-    
-    // this might be set again by the TimeProblem after adding of M*u
-    this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
     
 }
 }

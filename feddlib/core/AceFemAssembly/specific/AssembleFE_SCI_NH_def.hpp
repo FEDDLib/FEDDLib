@@ -36,7 +36,7 @@ namespace FEDD
 		solution_n_.resize(60, 0.);
 		solution_n1_.resize(60, 0.);
 
-		timeParametersVec_.resize(0, vec_dbl_Type(2));
+		/*timeParametersVec_.resize(0, vec_dbl_Type(2));
 		numSegments_ = this->params_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);
 
 		for(int i=1; i <= numSegments_; i++){
@@ -46,7 +46,7 @@ namespace FEDD
 			
 			vec_dbl_Type segment = {startTime,dtTmp};
 			timeParametersVec_.push_back(segment);
-		}
+		}*/
 
 	}
 
@@ -65,20 +65,14 @@ namespace FEDD
 	void AssembleFE_SCI_NH<SC, LO, GO, NO>::advanceInTime(double dt)
 	{
 
-	//cout << " advanced in time for this element " << endl;
-
-		//cout << " advanced in time for this element with dt " << dt << endl;
-
 		this->timeIncrement_ = dt;
 
 		// If we have a time segment setting we switch to the demanded time increment
-		for(int i=0; i<numSegments_ ; i++){
-			if(this->timeStep_ >= timeParametersVec_[i][0])
+		/*for(int i=0; i<numSegments_ ; i++){
+			if(this->timeStep_ +1.0e-12 > timeParametersVec_[i][0])
 				this->timeIncrement_=timeParametersVec_[i][1];
-		}
+		}*/
        
-		//cout << " Changed to timeincrement " << this->timeIncrement_<< endl;
-
 		this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 
 		for (int i = 0; i < 40; i++)
@@ -86,7 +80,7 @@ namespace FEDD
 			if (i < 30)
 				solution_n_[i] = (*this->solution_)[i];
 			else
-				solution_n_[30 + 3 * (i - 30)] = (*this->solution_)[i];
+				solution_n_[i] = (*this->solution_)[i];
 		}
 	}
 

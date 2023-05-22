@@ -24,7 +24,7 @@ c_rep_(),
 defTS_(defTS),
 timeSteppingTool_(),
 exporterEMod_(),
-materialModel_( parameterListStructure->sublist("Parameter Solid").get("Material model","linear") )
+materialModel_( parameterListSCI->sublist("Parameter").get("Structure Model","SCI_Linear") )
 {
     //this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
 
@@ -39,7 +39,7 @@ materialModel_( parameterListStructure->sublist("Parameter Solid").get("Material
 
     this->dim_ = this->getDomain(0)->getDimension();
      
-    if (materialModel_=="linear"){
+    if (materialModel_=="SCI_Linear"){
         problemStructure_ = Teuchos::rcp( new StructureProblem_Type( domainStructure, FETypeStructure, parameterListStructure ) );
         problemStructure_->initializeProblem();
     }
@@ -122,7 +122,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             this->feFactory_->determineEMod(this->getDomain(0)->getFEType(),solChemRep,eModVec_,this->getDomain(0),this->parameterList_);
                     
             ParameterListPtr_Type plStructure;
-            if (materialModel_=="linear")
+            if (materialModel_=="SCI_Linear")
                 plStructure = this->problemStructure_->getParameterList();
             else
                 plStructure = this->problemStructureNonLin_->getParameterList();        
@@ -132,7 +132,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             // steady rhs wird hier assembliert.
             // rhsFunc auf 0 (=x) und 0 (=y) abaendern bei LinElas!
-            if (materialModel_=="linear"){
+            if (materialModel_=="SCI_Linear"){
                 this->feFactory_->assemblyLinElasXDimE(this->dim_, this->getDomain(0)->getFEType(), A, eModVec_, nu, true);
                 this->problemStructure_->system_->addBlock(A,0,0);// assemble(); //
 
@@ -146,8 +146,10 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
                 //this->problemStructure_->assemble();
             }
             else{  
-                MultiVectorConstPtr_Type eModVecConst = eModVec_;
-                this->problemStructureNonLin_->updateEMod(eModVecConst);        
+                MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
+                c_rep_->importFromVector(c, true);
+       
+                this->problemStructureNonLin_->updateConcentration(c_rep_);        
                 this->problemStructureNonLin_->assemble(); //system_->addBlock(A,0,0);// assemble(); //                               
             }
 
@@ -165,7 +167,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
             
             // Struktur
-            if (materialModel_=="linear"){
+            if (materialModel_=="SCI_Linear"){
                 this->system_->addBlock( this->problemStructure_->system_->getBlock(0,0), 0,0);
             }
             else{       
@@ -195,7 +197,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             this->setFromPartialVectorsInit();
             
             
-            if ( this->parameterList_->sublist("Exporter").get("Export EMod", true)){
+            /*if ( this->parameterList_->sublist("Exporter").get("Export EMod", true)){
                 if(exportedEMod_ == false){
                     exporterEMod_ = Teuchos::rcp(new Exporter_Type());
                     
@@ -213,7 +215,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
                 else {
                     exporterEMod_->save( timeSteppingTool_->t_);
                 }
-            }
+            }*/
         }
         else if(couplingType_ == "implicit" )
         {
@@ -260,7 +262,7 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
         else 
             TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Coupling Type unknown. Please choose either implicit or explicit coupling.");
        
-
+      
         if (this->verbose_)
         {
             std::cout << "done -- " << std::endl;
@@ -322,35 +324,37 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
         setBoundariesSubProblems();
         return;
     }
-    else if(type == "UpdateEMod")
+    else if(type == "UpdateCoupling")
     {
         if(this->verbose_)
-            std::cout << "-- Update EModule" << '\n';
+            std::cout << "-- Update Coupling" << '\n';
 
+       
         MultiVectorPtr_Type solChemRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
         solChemRep->importFromVector(this->problemTimeChem_->getSolution()->getBlock(0));
 
-        int dim = this->getDomain(0)->getDimension();
+        if (materialModel_=="SCI_Linear"){
+            int dim = this->getDomain(0)->getDimension();
+            this->feFactory_->determineEMod(this->getDomain(0)->getFEType(),solChemRep,eModVec_,this->getDomain(1),this->parameterList_);
+            double nu = this->parameterList_->sublist("Parameter").get("PoissonRatio",0.4);
+            MatrixPtr_Type A(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) ); // Structure-Matrix
 
-        this->feFactory_->determineEMod(this->getDomain(0)->getFEType(),solChemRep,eModVec_,this->getDomain(1),this->parameterList_);
-                
-        double nu = this->parameterList_->sublist("Parameter").get("PoissonRatio",0.4);
-
-        MatrixPtr_Type A(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) ); // Structure-Matrix
-
-        if (materialModel_=="linear"){
             this->feFactory_->assemblyLinElasXDimE(this->dim_, this->getDomain(0)->getFEType(), A, eModVec_, nu, true);
             this->problemStructure_->system_->addBlock(A,0,0);// assemble(); //
             this->system_->addBlock( this->problemStructure_->system_->getBlock(0,0), 0, 0);
             //this->problemStructure_->assemble();
         }
         else{
-            MultiVectorConstPtr_Type eModVecConst = eModVec_;
-            this->problemStructureNonLin_->updateEMod(eModVecConst);                
-            this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 0, 0 );                                
+            //MultiVectorConstPtr_Type eModVecConst = eModVec_;
+            this->problemStructureNonLin_->updateConcentration(solChemRep);          
+
+            this->moveMesh();
+
+            this->problemChem_->assemble();      
+            //this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 0, 0 );                                
         }
       
-        exporterEMod_->save( timeSteppingTool_->t_);
+        //exporterEMod_->save( timeSteppingTool_->t_);
 
 
         return;
@@ -369,11 +373,13 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             std::cout << "-- reassemble Newton " << '\n';
 
         if(couplingType_ == "explicit"){
-            if (materialModel_ != "linear"){
+            if (materialModel_ != "SCI_Linear"){
                 this->problemStructureNonLin_->reAssemble("Newton");
-            }
-            if (materialModel_ != "linear")
                 this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 0, 0 );
+
+            }
+            if(nonlinearExternalForce_)
+                computeSolidRHSInTime();   
         }
         else if( couplingType_ == "implicit" || couplingType_ == "explicitAceGEN"){
 
@@ -408,6 +414,19 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             std::cout << " done -- " << '\n';                       
         
     }
+      // ########################
+        // Prec def -- experimental -- if explicit system we use 'diffusion matrix' as pressure matrix
+        string precType = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
+        if ( precType == "Diagonal" || precType == "Triangular" ) {
+            //MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+            
+            //this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true );
+            //Mpressure->resumeFill();
+            //Mpressure->scale(-1./viscosity);
+            //Mpressure->fillComplete( pressureMap, pressureMap );
+            this->problemChem_->assemble();
+            this->getPreconditionerConst()->setPressureMassMatrix( this->problemChem_->system_->getBlock(0,0) );
+        }
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -422,23 +441,49 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
     if(couplingType_ == "explicit"){
 
-        if (materialModel_!="linear"){
+        if (materialModel_!="SCI_Linear"){
             this->problemStructureNonLin_->calculateNonLinResidualVec( "reverse", time );
             this->residualVec_->addBlock( this->problemStructureNonLin_->getResidualVector()->getBlockNonConst(0) , 0);
             // we need to add a possible source term
+
+            if(nonlinearExternalForce_)
+                computeSolidRHSInTime();
+
+            if (!type.compare("standard")){
+               // this->problemChem_->getRhs()->getBlockNonConst(0)->scale(-1.0);
+                if(this->verbose_)
+                    cout << " Residual Type : " << type  << endl;
+                this->residualVec_->getBlockNonConst(0)->update(-1.,*this->rhs_->getBlockNonConst(0),1.);
+                //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
+                //   this->residualVec_->getBlockNonConst(0)->update(-1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);    
+            }
+            else if(!type.compare("reverse")){
+                //this->residualVec_->getBlockNonConst(1)->scale(-1.0); 
+
+                if(this->verbose_)
+                    cout << " Residual Type : " << type  << endl;
+
+                this->residualVec_->getBlockNonConst(0)->update(1.,*this->rhs_->getBlockNonConst(0),-1.);
+                //if ( !this->problemTimeStructure_->getSourceTerm()->getBlock(0).is_null() )
+                //     this->residualVec_->getBlockNonConst(0)->update(1.,*this->problemTimeStructure_->getSourceTerm()->getBlockNonConst(0),1.);
+            }
+
         }
         else{
             MultiVectorPtr_Type residualSolidSCI =  Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(0) );
             this->problemStructure_->getSystem()->getBlock(0,0)->apply( *this->problemStructure_->getSolution()->getBlock(0), *residualSolidSCI, Teuchos::NO_TRANS, -1. ); // y= -Ax + 0*y
             MultiVectorPtr_Type resSolidNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(0) );
             resSolidNonConst->update(1., *this->problemStructure_->getRhs()->getBlock(0), 1.);
-            // we need to add a possible source term
+            // we need to add a possible source term          
         }
         
         MultiVectorPtr_Type residualChemSCI =  Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(1) );
         this->problemChem_->getSystem()->getBlock(0,0)->apply( *this->problemChem_->getSolution()->getBlock(0), *residualChemSCI, Teuchos::NO_TRANS, -1. ); // y= -Ax + 0*y
-        MultiVectorPtr_Type resChemNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(1) );
-        resChemNonConst->update(1., *this->problemChem_->getRhs()->getBlock(0), 1.);
+       // MultiVectorPtr_Type resChemNonConst = Teuchos::rcp_const_cast<MultiVector_Type> ( this->residualVec_->getBlock(1) );
+        residualChemSCI->update(1., *this->problemChem_->getRhs()->getBlock(0), 1.);
+        if (!type.compare("standard")){
+            residualChemSCI->scale(-1.);
+        }
     }
     else if(couplingType_ == "implicit"){
         MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
@@ -446,7 +491,6 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
         MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
         d_rep_->importFromVector(d, true); 
-        d_rep_->writeMM("Solution_d_rep");
        
         this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Rhs", true/*call fillComplete*/);
 
@@ -541,7 +585,7 @@ void SCI<SC,LO,GO,NO>::setFromPartialVectorsInit() const
     this->rhs_->addBlock( this->problemChem_->getRhs()->getBlockNonConst(0), 1 );
     this->sourceTerm_->addBlock( this->problemChem_->getSourceTerm()->getBlockNonConst(0), 1 );
    
-    if (materialModel_=="linear"){
+    if (materialModel_=="SCI_Linear"){
         this->solution_->addBlock( this->problemStructure_->getSolution()->getBlockNonConst(0), 0);
         // we dont have a residual vector for linear problems
         this->rhs_->addBlock( this->problemStructure_->getRhs()->getBlockNonConst(0), 0 );
@@ -570,7 +614,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
 
     int sizeChem = this->problemChem_->getSystem()->size();
     int sizeStructure;
-    if (materialModel_=="linear")
+    if (materialModel_=="SCI_Linear")
         sizeStructure = this->problemStructure_->getSystem()->size();
     else
         sizeStructure = this->problemStructureNonLin_->getSystem()->size();
@@ -586,7 +630,7 @@ void SCI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListC
     if(this->verbose_)
         std::cout << "-- Setup SCI Sub-TimeProblem for Elasticity " << endl;
 
-    if (materialModel_=="linear")
+    if (materialModel_=="SCI_Linear")
         problemTimeStructure_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemStructure_, this->comm_));
     else
         problemTimeStructure_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problemStructureNonLin_, this->comm_));
@@ -726,18 +770,19 @@ void SCI<SC,LO,GO,NO>::computeChemRHSInTime( ) const
     //######################
     int sizeChem = this->problemChem_->getSystem()->size();
     int sizeStructure;
-    if (materialModel_=="linear")
+    if (materialModel_=="SCI_Linear")
         sizeStructure = this->problemStructure_->getSystem()->size();
     else
         sizeStructure = this->problemStructureNonLin_->getSystem()->size();
     
     double dt = timeSteppingTool_->get_dt();
+    double dt_prev = timeSteppingTool_->get_dt_prev();
     int nmbBDF = timeSteppingTool_->getBDFNumber();
 
     vec_dbl_Type coeffPrevSteps(nmbBDF);
     for(int i = 0; i < coeffPrevSteps.size(); i++)
     {
-        coeffPrevSteps.at(i) = timeSteppingTool_->getInformationBDF(i+2) / dt;
+        coeffPrevSteps.at(i) = timeSteppingTool_->getInformationBDF(i+2) / dt_prev;
     }
 
     if (timeSteppingTool_->currentTime()==0.) {
@@ -969,7 +1014,7 @@ void SCI<SC,LO,GO,NO>::updateTime() const
 
         MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
         d_rep_->importFromVector(d, true); 
-        this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_prev_, d_rep_, c_rep_ );
+        this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_, d_rep_, c_rep_ );
 
     }    
 }

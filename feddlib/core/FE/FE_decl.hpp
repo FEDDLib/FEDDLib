@@ -481,6 +481,24 @@ class FE {
 								bool callFillComplete = true,
 								int FELocExternal=-1);
 
+    void assemblyAceDeformDiffuBlock(int dim,
+                                string FETypeChem,
+                                string FETypeSolid,
+                                int degree,
+                                int dofsChem,
+                                int dofsSolid,
+                                MultiVectorPtr_Type c_rep,
+                                MultiVectorPtr_Type d_rep,
+                                BlockMatrixPtr_Type &A,
+                                int blockRow,
+                                int blockCol,
+                                BlockMultiVectorPtr_Type &resVec,
+                                int block,
+                                ParameterListPtr_Type params,
+                                string assembleMode,
+                                bool callFillComplete = true,
+                                int FELocExternal=-1);
+
     void advanceInTimeAssemblyFEElements(double dt ,MultiVectorPtr_Type d_rep , MultiVectorPtr_Type c_rep) 
     {
         UN FElocChem = 1; //checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype

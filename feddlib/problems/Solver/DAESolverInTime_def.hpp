@@ -908,6 +908,35 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         exporterDisplYTxt->setup( "displ_y" + suffix, this->comm_ , targetRank);
         
     }
+
+    vec2D_dbl_Type timeParametersVec(0,vec_dbl_Type(2));
+    
+    int numSegments = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);
+
+ 	for(int i=1; i <= numSegments; i++){
+
+        double startTime = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("Start Time",0.);
+        double dtTmp = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("dt",0.1);
+        
+        vec_dbl_Type segment = {startTime,dtTmp};
+        timeParametersVec.push_back(segment);
+    }
+    double loadStepSize = parameterList_->sublist("Parameter").get("Load Step Size",1.);
+
+    if(numSegments > 0 ){
+        TEUCHOS_TEST_FOR_EXCEPTION( loadStepSize != timeParametersVec[0][1], std::runtime_error, "Load Step Size and First Time Interval Size appear different" );
+    }
+    else{
+        TEUCHOS_TEST_FOR_EXCEPTION( loadStepSize != timeSteppingTool_->dt_, std::runtime_error, "Load Step Size and dt appear different" );
+    }
+    double dt;
+    for(int i=0; i<numSegments ; i++){
+        if(timeSteppingTool_->currentTime()+1.0e-12 > timeParametersVec[i][0]){
+            dt=timeParametersVec[i][1];
+            timeSteppingTool_->dt_ = dt;
+        }
+
+    }
     
     // Notwendige Parameter
     int sizeSCI = 2; //timeStepDef_.size();
@@ -916,7 +945,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     int sizeChem = 1; //  c
     int sizeStructure = 1; // d_s
 
-    double dt = timeSteppingTool_->get_dt();
+    dt = timeSteppingTool_->get_dt();
     double beta = timeSteppingTool_->get_beta();
     double gamma = timeSteppingTool_->get_gamma();
     int nmbBDF = timeSteppingTool_->getBDFNumber();
@@ -1047,76 +1076,46 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     std::string structureModel = parameterList_->sublist("Parameter").get("Structure Model","SCI_simple");
     std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
 
-    vec2D_dbl_Type timeParametersVec(0,vec_dbl_Type(2));
-    
-    int numSegments = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);
-
- 	for(int i=1; i <= numSegments; i++){
-
-        double startTime = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("Start Time",0.);
-        double dtTmp = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("dt",0.1);
-        
-        vec_dbl_Type segment = {startTime,dtTmp};
-        timeParametersVec.push_back(segment);
-    }
-    double loadStepSize = parameterList_->sublist("Parameter").get("Load Step Size",1.);
-
-    if(numSegments > 0 ){
-        TEUCHOS_TEST_FOR_EXCEPTION( loadStepSize != timeParametersVec[0][1], std::runtime_error, "Load Step Size and First Time Interval Size appear different" );
-    }
-    else{
-        TEUCHOS_TEST_FOR_EXCEPTION( loadStepSize != timeSteppingTool_->dt_, std::runtime_error, "Load Step Size and dt appear different" );
-    }
     while(timeSteppingTool_->continueTimeStepping())
     {
         for(int i=0; i<numSegments ; i++){
-            if(timeSteppingTool_->currentTime() >= timeParametersVec[i][0])
+            if(timeSteppingTool_->currentTime()+1.0e-12 > timeParametersVec[i][0])
                 dt=timeParametersVec[i][1];
-
+        }
+        timeSteppingTool_->dt_= dt;
+        sci->timeSteppingTool_->dt_ = dt;
+        if(timeSteppingTool_->currentTime() <= 0. + 1e-12){
             timeSteppingTool_->dt_prev_= dt;        
-            timeSteppingTool_->dt_= dt;
-
             sci->timeSteppingTool_->dt_prev_= dt;        
-            sci->timeSteppingTool_->dt_= dt;
+        }
+        else{
+            timeSteppingTool_->dt_prev_= timeSteppingTool_->dt_;
+            sci->timeSteppingTool_->dt_prev_ = timeSteppingTool_->dt_;
+
+            this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
+
+        }
+
+        
        
+
+
+        timeSteppingTool_->printInfo();
+
+        massCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(0) / dt; // 3/(2\Delta t)
+        problemCoeffChem[0][0] = timeSteppingTool_->getInformationBDF(1); // 1
+        coeffSourceTermChem = timeSteppingTool_->getInformationBDF(1); // 1
+
+        if(timeSteppingTool_->currentTime() > 0. + 1.e-12) 
+        {
+            for (int i = 0; i < sizeChem; i++)
+            {
+                for (int j = 0; j < sizeChem; j++){
+                    massCoeffSCI[i+sizeStructure][j+sizeStructure] = massCoeffChem[i][j];
+                }
+            }
+            this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
         }
-        
-        /*if(structureModel=="SCI_sophisticated"  ){
-            if(timeSteppingTool_->currentTime() < 1.)
-                dt = 0.05;
-            if(timeSteppingTool_->currentTime() >= 1. )
-                dt = 1.0;
-            if(timeSteppingTool_->currentTime()>= 1001.)
-                dt= 1.0;
-            if(timeSteppingTool_->currentTime() >= 2001.)
-                dt= 0.02;
-                
-            timeSteppingTool_->dt_prev_= dt;        
-            timeSteppingTool_->dt_= dt;
-
-            sci->timeSteppingTool_->dt_prev_= dt;        
-            sci->timeSteppingTool_->dt_= dt;
-
-        }
-
-        if( structureModel=="SCI_simple" ){
-            if(timeSteppingTool_->currentTime() < 1.)
-                dt = 0.05;
-            if(timeSteppingTool_->currentTime() >= 1. )
-                dt = 0.1;
-            if(timeSteppingTool_->currentTime() >= 5.-1e-10 )
-                dt = 0.01;
-            if(timeSteppingTool_->currentTime()>= 1000.)
-                dt= 0.01;
-                
-            timeSteppingTool_->dt_prev_= dt;        
-            timeSteppingTool_->dt_= dt;
-
-            sci->timeSteppingTool_->dt_prev_= dt;        
-            sci->timeSteppingTool_->dt_= dt;
-        }*/
-        
-     
 
         problemTime_->updateTime ( timeSteppingTool_->currentTime() );
 
@@ -1147,9 +1146,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // -- we can keep this as expicit update for the reaction-diffusion displacement
         this->problemTime_->assemble("UpdateMeshDisplacement");   
        
-        if(couplingType=="explicit" )
-            this->problemTime_->assemble("MoveMesh");
-          // ######################
+        
+        // ######################
         // Struktur Zeitsystem
         // ######################
         // In jedem Zeitschritt die RHS der Struktur holen.
@@ -1178,15 +1176,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // Fluid-Loesung aktualisieren fuer die naechste(n) BDF2-Zeitintegration(en)
         // in diesem Zeitschritt.
         {
-            //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
-        if(couplingType=="explicit")// || structureModel=="SCI_sophisticated")
-            this->problemTime_->assemble("UpdateChemInTime");
-        }
-        // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
-        // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
-        // In der ersten nichtlinearen Iteration wird bei GI also die Massematrix zweimal assembliert.
-        // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
-      
+                //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
+            if(couplingType=="explicit")// || structureModel=="SCI_sophisticated")
+                this->problemTime_->assemble("UpdateChemInTime");
+        }        
 
         MatrixPtr_Type massmatrix;
         sci->setChemMassmatrix( massmatrix );
@@ -1216,13 +1209,13 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
         }
         
-        double time = timeSteppingTool_->currentTime() +  timeSteppingTool_->dt_prev_;
+        double time = timeSteppingTool_->currentTime() +  timeSteppingTool_->dt_;
         problemTime_->updateTime ( time );
         
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
         //massCoeffSCI.print();
         //problemCoeffSCI.print();
-        if("linear" != parameterList_->sublist("Parameter Solid").get("Material model","linear"))
+        if("SCI_Linear" != parameterList_->sublist("Parameter").get("Structure Model","SCI_Linear"))
             nlSolver.solve(*this->problemTime_, time, its);
         else{
             problemTime_->combineSystems();
@@ -1243,11 +1236,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         
         //this->problemTime_->computeValuesOfInterestAndExport();
 
-        timeSteppingTool_->advanceTime(true);//output info);
+        timeSteppingTool_->advanceTime(false);//output info);
 
         // Should be some place else
-        if(timeSteppingTool_->t_ >= inflowRamp && couplingType == "explicit")
-            this->problemTime_->assemble("UpdateEMod");
+        this->problemTime_->assemble("UpdateCoupling");
 
         if (printData) {
             exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
@@ -1283,8 +1275,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         {
             exportTimestep();
         }
-        this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
-
 
     }
 
@@ -1735,7 +1725,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
 
         // Should be some place else
         if(couplingType == "explicit")
-            this->problemTime_->assemble("UpdateEMod");
+            this->problemTime_->assemble("UpdateCoupling");
 
         if (printData) {
             exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );

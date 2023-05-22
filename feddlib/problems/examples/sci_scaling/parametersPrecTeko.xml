@@ -20,17 +20,23 @@
                         <Parameter name="Assume Stable Discretization" type="bool" value="true"/>
                     </ParameterList>
                     
-                    <ParameterList name="LSC">
-                        <Parameter name="Type" type="string" value="NS LSC"/>
-                        <Parameter name="Inverse Type" type="string" value=""/>
-                        <Parameter name="Inverse Velocity Type" type="string" value="FROSch-Velocity"/>
-                        <Parameter name="Inverse Pressure Type" type="string" value="FROSch-Pressure"/>
-                        <Parameter name="Ignore Boundary Rows" type="bool" value="true"/>
-                        <Parameter name="Use LDU" type="bool" value="false"/>
-                        <Parameter name="Scaling Type" type="string" value="Diagonal"/>
-                        <Parameter name="Use Mass Scaling" type="bool" value="true"/>
-                        <Parameter name="Assume Stable Discretization" type="bool" value="true"/>
+                    <ParameterList name="Block LU2x2">
+                        <Parameter name="Type" type="string" value="Block LU2x2"/>
+                        <Parameter name="Strategy Name" type="string" value="Block LU2x2"/>
+                        <ParameterList name="Strategy Settings">
+                        	  <Parameter name="Inverse Type" type="string" value=""/>
+                          	  <Parameter name="Use LDU" type="bool" value="false"/>
+                        	  <Parameter name="Diagonal Type" type="string" value="Diagonal"/>
+              				  <Parameter name="Inverse A00 Type" type="string" value="FROSch-Velocity"/>
+                			  <Parameter name="Inverse Schur Type" type="string" value="FROSch-Pressure"/>
+                        </ParameterList>
+		                  <Parameter name="Inverse Type" type="string" value=""/>
+		              	  <Parameter name="Use LDU" type="bool" value="false"/>
+		            	  <Parameter name="Diagonal Type" type="string" value="Diagonal"/>
+		  				  <Parameter name="Inverse A00 Type" type="string" value="FROSch-Velocity"/>
+		    			  <Parameter name="Inverse Schur Type" type="string" value="FROSch-Pressure"/>
                     </ParameterList>
+                    
 
                     <ParameterList name="Ifpack2-list">
                         <Parameter name="Type" type="string" value="Ifpack2"/>
@@ -44,7 +50,7 @@
                         <Parameter name="Type" type="string" value="FROSch"/>
                         <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
                         <Parameter name="Recycling" type="bool" value="true"/>
-                        <Parameter name="Dimension" type="int" value="2"/>
+                        <Parameter name="Dimension" type="int" value="3"/>
                         <Parameter name="DofsPerNode" type="int" value="1"/>
                         <Parameter name="DofOrdering" type="string" value="NodeWise"/>
                         <Parameter name="Overlap" type="int" value="0"/>
@@ -118,8 +124,8 @@
                         <Parameter name="Type" type="string" value="FROSch"/>
                         <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
                         <Parameter name="Recycling" type="bool" value="true"/>
-                        <Parameter name="Dimension" type="int" value="2"/>
-                        <Parameter name="DofsPerNode" type="int" value="2"/>
+                        <Parameter name="Dimension" type="int" value="3"/>
+                        <Parameter name="DofsPerNode" type="int" value="3"/>
                         <Parameter name="DofOrdering" type="string" value="NodeWise"/>
                         <Parameter name="Overlap" type="int" value="0"/>
                         <Parameter name="TwoLevel" type="bool" value="false"/>

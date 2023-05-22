@@ -935,7 +935,7 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
         this->setBoundariesSystem();
         
-        if ( type == "Teko" || type == "FaCSI-Teko" ) { //we need to construct the whole preconditioner if Teko is used
+        if ( type == "Teko" || type == "FaCSI-Teko" || type =="Diagonal" ) { //we need to construct the whole preconditioner if Teko is used
             nonLinProb->setupPreconditioner( type );
             precInitOnly_ = false;
         }

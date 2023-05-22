@@ -80,7 +80,7 @@ public:
 
     void updateTime() const;
 
-    void updateEMod (MultiVectorConstPtr_Type eModVecNew) {eModVec_.reset(new MultiVector_Type (eModVecNew));};
+    void updateConcentration(MultiVectorConstPtr_Type concentration) {concentration_.reset(new MultiVector_Type (concentration));};
 //    virtual void assembleExternal( std::string type ){};
     
     Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
@@ -97,7 +97,7 @@ private:
                                ) const;
 
     mutable MultiVectorPtr_Type u_rep_;
-    MultiVectorPtr_Type eModVec_;
+    MultiVectorPtr_Type concentration_;
     double E_;
     double mue_;
     double C_;
