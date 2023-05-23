@@ -344,7 +344,6 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 	// double deltat=this->getTimeIncrement();
 	// std::vector<double> deltat(1);
 	// deltat[0]=this->getTimeIncrement();
-	cout << " assemble_SCI_SMC_Active_Growth_Reorientation " << endl;
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 
 	double deltaT=this->getTimeIncrement();
