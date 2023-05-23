@@ -271,7 +271,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     options[METIS_OPTION_SEED] = 666;
     options[METIS_OPTION_CONTIG] = pList_->get("Contiguous",false); //0: Does not force contiguous partitions; 1: Forces contiguous partitions.
     options[METIS_OPTION_MINCONN] = 0; // 1: Explicitly minimize the maximum connectivity.
-    options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_VOL;// or METIS_OBJTYPE_CUT
+    options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_CUT;// or METIS_OBJTYPE_VOL
     //    options[METIS_OPTION_RTYPE] = METIS_RTYPE_GREEDY;
     options[METIS_OPTION_NITER] = 50; // default is 10
     options[METIS_OPTION_CCORDER] = 1;
