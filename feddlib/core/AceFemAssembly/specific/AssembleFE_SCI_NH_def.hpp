@@ -102,9 +102,9 @@ namespace FEDD
 		}
 
 		std::vector<double> displacements(30);
-		for (int i = 0; i < 30; i++)
+		for (int i = 0; i < 30; i++){
 			displacements[i] = (*this->solution_)[i];
-
+		}
 		std::vector<double> concentrations(10);
 		for (int i = 0; i < 10; i++)
 			concentrations[i] = (*this->solution_)[i + 30];
@@ -129,10 +129,6 @@ namespace FEDD
 		neoHookeElement.computeTangentResidual();
 		
 		double *residuum = neoHookeElement.getResiduum();
-		
-		for (int i = 0; i < 40; i++)
-			(*this->rhsVec_)[i] = residuum[i];
-
 		
 	}
 

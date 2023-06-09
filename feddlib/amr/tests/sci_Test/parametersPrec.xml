@@ -25,7 +25,7 @@
 
                     <ParameterList name="Solver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="umfpack"/>
+                        <Parameter name="Solver" type="string" value="klu2"/>
                     </ParameterList>
                 </ParameterList>
 
@@ -62,7 +62,7 @@
                     <ParameterList name="ExtensionSolver">
                        <Parameter name="Reuse Symbolic Factorization" type="bool" value="false"/>
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="umfpack"/>
+                        <Parameter name="Solver" type="string" value="klu2"/>
 
                     </ParameterList>
                     
@@ -85,7 +85,7 @@
                     <ParameterList name="CoarseSolver">
                         <Parameter name="Reuse Symbolic Factorization" type="bool" value="false"/>
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="umfpack"/>
+                        <Parameter name="Solver" type="string" value="klu2"/>
                     </ParameterList>
                     
                 </ParameterList>

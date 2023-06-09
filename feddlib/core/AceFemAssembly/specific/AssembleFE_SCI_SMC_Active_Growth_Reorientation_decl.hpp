@@ -51,6 +51,7 @@ class AssembleFE_SCI_SMC_Active_Growth_Reorientation : public AssembleFE<SC,LO,G
 
 		virtual void advanceInTime(double dt);
 
+        void getMassMatrix(SmallMatrixPtr_Type &massMatrix ){massMatrix=massMatrix_;};
 
     protected:
         AssembleFE_SCI_SMC_Active_Growth_Reorientation(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);
@@ -59,9 +60,12 @@ class AssembleFE_SCI_SMC_Active_Growth_Reorientation : public AssembleFE<SC,LO,G
 
         void assemble_SCI_SMC_Active_Growth_Reorientation(SmallMatrixPtr_Type &elementMatrix);
 
+
         friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 	    
-			    string FEType_ ; // FEType of Disk
+		string FEType_ ; // FEType of Disk
+
+		SmallMatrixPtr_Type massMatrix_;
 
 	    int dofsSolid_ ; // Degrees of freedom per node
 		int dofsChem_;

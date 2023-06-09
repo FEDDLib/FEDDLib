@@ -2,61 +2,56 @@
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
-        <Parameter name="BC Type" type="string" value="partialCFD"/><!--partialCFD,Richter3DFull-->
+        <Parameter name="BC Type" type="string" value="Cube"/><!--Artery, Cube-->
+        <Parameter name="RHS Type" type="string" value="Heart Beat"/><!--Constant, Paper, Heart Beat-->
         
-        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
+		<Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
+        <Parameter name="H/h" type="int" value="4"/> <!-- only relevant for structured meshes -->
+    
         
         <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
-        <Parameter name="Inflow Ramp" type="double" value="3.0"/><!--2d:2.0, Richter 3d: 1.0-->
+        <Parameter name="Inflow Ramp" type="double" value="0.0"/><!--2d:2.0, Richter 3d: 1.0-->
         <Parameter name="Volume force" type="double" value="0.016"/>
         <Parameter name="Source Type" type="string"   value="surface"/>
         <Parameter name="Model Geometry" type="string" value="Laplace"/>
         
         <Parameter name="SCI" type="bool" value="true"/>
         <Parameter name="Load Stepping" type="bool" value="true"/>
+        <Parameter name="Inflow Start Time" type="double" value="0.0"/><!-- Start of diffusion process -->
+        <Parameter name="Load Step Size" type="double" value="0.0125"/><!-- Length/size of Loadsteps -->
+        <Parameter name="Load Ramp End" type="double" value="1.0"/><!-- End of Load Stepping -->
+        <Parameter name="External Force" type="bool" value="true"/>
+        <Parameter name="Nonlinear External Force" type="bool" value="true"/>
         <Parameter name="Coupling Type" type="string" value="implicit"/>
+ 		<Parameter name="Structure Model" type="string" value="SCI_SMC_Active_Growth_Reorientation"/> <!-- SCI_Linear, SCI_NH , SCI_SMC_MLCK , SCI_SMC_Active_Growth_Reorientation -->
 
         <Parameter name="Refinement Level" type="int" value="0"/>
-        <Parameter name="Refinement Type" type="string" value="uniform"/>
        
-        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
-        <Parameter name="absNonLinTol" type="double" value="1.0e-2"/>
-        <Parameter name="updateTol" type="double" value="1.0e-4"/>
+        <Parameter name="relNonLinTol" type="double" value="1.0e-9"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-9"/>
+        <Parameter name="updateTol" type="double" value="1.0e-9"/>
         <Parameter name="Combo" type="string" value="OR"/>
-        <Parameter name="Use update tol" type="bool" value="false"/>
+        <Parameter name="Use update tol" type="bool" value="true"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
         
         <Parameter name="MaxNonLinIts" type="int" value="10"/>
 
         <Parameter name="Criterion" type="string" value="Update"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
     </ParameterList>
-    <ParameterList name="Parameter Solid">        
-        <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
-        <Parameter name="Density" type="double"   value="1000."/>
-        <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
-        <Parameter name="Poisson Ratio" type="double" value="0.49"/>
-        <Parameter name="Mu" type="double" value="2.0e+6"/>
-        <!-- Parameter for Neo-Hooke and Mooney-Rivlin, additioanlly poisson ratio is used -->
-        <Parameter name="E" type="double" value="0.38"/>
-        <Parameter name="E1" type="double" value="0.30"/>
-        <Parameter name="c1" type="double" value="0.25"/>
-        <!-- Parameter for Mooney-Rivlin-->
-        <Parameter name="C" type="double" value="1."/><!-- Mooney-Rivlin parameter -->
-    </ParameterList>
-    
+
     <ParameterList name="Parameter Diffusion">
         <Parameter name="Viscosity" type="double" value="1.0"/>
         <Parameter name="Density" type="double" value="1000.0"/>
         <Parameter name="m" type="double" value="0."/>
-        <Parameter name="D0" type="double" value="6.e-05"/>
+        <Parameter name="D0" type="double" value="6.e-03"/>
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
     </ParameterList>
     
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="cube_0_1.mesh"/>
-        <Parameter name="Mesh 2 Name" type="string" value="cube_0_1.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="cube_h_1.mesh"/> <!-- partialArtery -->
+        <Parameter name="Mesh 2 Name" type="string" value="cube_h_1.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
         
@@ -82,6 +77,7 @@
         <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
         <Parameter name="ParaViewExport" type="bool" value="true"/>
         <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="ExportID" type="int" value="7"/>
         <Parameter name="ParaView export subdomains" type="bool" value="true"/>
         
         <Parameter name="Export Suffix" type="string" value=""/>
@@ -89,14 +85,14 @@
         <Parameter name="Export Extra Data" type="bool" value="false"/>
         <Parameter name="Export drag and lift" type="bool" value="true"/>
         
-        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/> <!-- Monolithic, FaCSI, FaCSI-Teko -->
+        <Parameter name="Preconditioner Method" type="string" value="Teko"/> <!-- Monolithic, FaCSI, FaCSI-Teko -->
        
         <Parameter name="Only Diagonal" type="bool" value="false"/>
 
         <Parameter name="Scale mass matrix" type="bool" value="true"/>
         <Parameter name="Set Zeros" type="bool" value="true"/>
         
-        <Parameter name="Linearization" type="string" value="Newton"/> <!-- FixedPoint, Newton, Extrapolation-->
+        <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, Extrapolation-->
     </ParameterList>
     <ParameterList name="Timestepping Parameter">
         
@@ -104,10 +100,29 @@
         <Parameter name="Class" type="string" value="Multistep"/> <!-- External, Multistep-->
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value=".5"/>
-        <Parameter name="dt" type="double" value="0.1"/>
+        <Parameter name="Final time" type="double" value="72."/>
+        <Parameter name="dt" type="double" value=".05"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
+        <ParameterList name="Timestepping Intervalls">
+            <Parameter name="Number of Segments" type="int" value="4"/>
+            <ParameterList name="1">
+                <Parameter name="Start Time" type="double" value="0."/>
+                <Parameter name="dt" type="double" value="0.0125"/>
+            </ParameterList>
+             <ParameterList name="2">
+                <Parameter name="Start Time" type="double" value="1."/>
+                <Parameter name="dt" type="double" value="0.5"/>
+            </ParameterList>
+             <ParameterList name="3">
+                <Parameter name="Start Time" type="double" value="70."/>
+                <Parameter name="dt" type="double" value="0.02."/>
+            </ParameterList>
+             <ParameterList name="4">
+                <Parameter name="Start Time" type="double" value="500."/>
+                <Parameter name="dt" type="double" value="0.02"/>
+            </ParameterList>
+         </ParameterList> 
     </ParameterList>
 </ParameterList>
 

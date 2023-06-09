@@ -621,7 +621,6 @@ void MeshPartitioner<SC,LO,GO,NO>::setSurfacesToElements(int meshNumber){
     int size = this->comm_->getSize();
     
     LO numSurfaceEl = surfaceElements->numberElements();// / size;
-        
     /*LO rest = surfaceElements->numberElements() % size;
     
     vec_GO_Type offsetVec(size);
@@ -648,6 +647,7 @@ void MeshPartitioner<SC,LO,GO,NO>::setSurfacesToElements(int meshNumber){
         std::sort( surface.begin(), surface.end() ); // We need to maintain a consistent numbering in the surface elements, so we use a sorted and ansorted vector
         surfElements_vec_sorted.at(i) = surface;
         surfElementsFlag_vec.at(i) = surfaceElements->getElement(i).getFlag(); // surfaceElements->getElement(i + offset).getFlag();
+
     }
  
     // Delete the surface elements. They will be added to the elements in the following loop.
@@ -753,7 +753,7 @@ void MeshPartitioner<SC,LO,GO,NO>::findAndSetSurfacesPartitioned( vec2D_int_Type
                 surfFlag = surfElementsFlag_vec[loc];
                         
             if (surfaceRank>-1) {*/
-            if(loc > 1 ){
+            if(loc > -1 ){
                 //Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&loc);
                 //Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&surfFlag);
 

@@ -138,19 +138,15 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
 
                 double density = this->problemStructure_->getParameterList()->sublist("Parameter Solid").get("Density",1.e-0);
 
-                this->problemStructure_->assembleSourceTerm( 0. );
-                //this->problemStructure_->getSourceTerm()->scale(density); // Scaling with density is not an issue, as we only think in terms of surface force, not volume force
-                this->problemStructure_->addToRhs( this->problemStructure_->getSourceTerm() );       
-                this->problemStructure_->setBoundariesRHS();
-
-                //this->problemStructure_->assemble();
+               //this->problemStructure_->assemble();
             }
             else{  
                 MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
                 c_rep_->importFromVector(c, true);
        
                 this->problemStructureNonLin_->updateConcentration(c_rep_);        
-                this->problemStructureNonLin_->assemble(); //system_->addBlock(A,0,0);// assemble(); //                               
+                this->problemStructureNonLin_->assemble(); //system_->addBlock(A,0,0);// assemble(); //      
+        
             }
 
        
@@ -197,6 +193,10 @@ void SCI<SC,LO,GO,NO>::assemble( std::string type ) const
             this->setFromPartialVectorsInit();
             
             
+            this->problemTimeStructure_->assembleSourceTerm( 0. );
+            this->problemTimeStructure_->addToRhs( this->problemTimeStructure_->getSourceTerm() );       
+            this->problemTimeStructure_->setBoundariesRHS();
+
             /*if ( this->parameterList_->sublist("Exporter").get("Export EMod", true)){
                 if(exportedEMod_ == false){
                     exporterEMod_ = Teuchos::rcp(new Exporter_Type());
@@ -348,12 +348,11 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             //MultiVectorConstPtr_Type eModVecConst = eModVec_;
             this->problemStructureNonLin_->updateConcentration(solChemRep);          
 
-            this->moveMesh();
-
-            this->problemChem_->assemble();      
             //this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 0, 0 );                                
         }
-      
+        this->moveMesh();
+
+        this->problemChem_->assemble();     
         //exporterEMod_->save( timeSteppingTool_->t_);
 
 
@@ -375,8 +374,9 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
         if(couplingType_ == "explicit"){
             if (materialModel_ != "SCI_Linear"){
                 this->problemStructureNonLin_->reAssemble("Newton");
-                this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 0, 0 );
+             
 
+                this->system_->addBlock( this->problemStructureNonLin_->getSystem()->getBlock(0,0), 0, 0 );
             }
             if(nonlinearExternalForce_)
                 computeSolidRHSInTime();   
@@ -406,6 +406,7 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
 
 	        this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2,1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Jacobian", true/*call fillComplete*/);
             
+            
             if(nonlinearExternalForce_)
                 computeSolidRHSInTime();
 
@@ -427,6 +428,8 @@ void SCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             this->problemChem_->assemble();
             this->getPreconditionerConst()->setPressureMassMatrix( this->problemChem_->system_->getBlock(0,0) );
         }
+
+        //this->system_->getBlock(0,0)->print();
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -494,16 +497,6 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
        
         this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,c_rep_,d_rep_,this->system_,this->residualVec_, this->parameterList_, "Rhs", true/*call fillComplete*/);
 
-        //this->residualVec_->print();
-        //this->residualVec_->getBlockNonConst(1)->scale(0.0);
-        Teuchos::Array<SC> norm_d(1); 
-        Teuchos::Array<SC> norm_c(1); 
-
-        this->residualVec_->getBlock(0)->norm2(norm_d);
-        this->residualVec_->getBlock(1)->norm2(norm_c);
-        if(this->verbose_)
-            cout << "###### Residual 2-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
-
         if(nonlinearExternalForce_)
             computeSolidRHSInTime();
 
@@ -545,6 +538,17 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
       // this->residualVec_->print();
 
     }
+
+
+    //this->residualVec_->print();
+    //this->residualVec_->getBlockNonConst(1)->scale(0.0);
+    Teuchos::Array<SC> norm_d(1); 
+    Teuchos::Array<SC> norm_c(1); 
+
+    this->residualVec_->getBlock(0)->norm2(norm_d);
+    this->residualVec_->getBlock(1)->norm2(norm_c);
+    if(this->verbose_)
+        cout << "###### Residual 2-Norm displacement: " << norm_d[0] << " and concentration: " << norm_c[0] << " ######## " << endl;
 
    // might also be called in the sub calculateNonLinResidualVec() methods which where used above
    if (type == "standard")
@@ -749,14 +753,18 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
 
     this->problemTimeChem_->systemMass_.reset(new BlockMatrix_Type(size));
     {
+        BlockMatrixPtr_Type massSystem = Teuchos::rcp(new BlockMatrix_Type(1));
+
         massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         // 1 = Chem
         this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 1, true );
-        
+        massSystem->addBlock(massmatrix,0,0);
+       //this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2,1,this->dim_,c_rep_,d_rep_,massSystem,this->residualVec_, this->parameterList_, "MassMatrix", true/*call fillComplete*/);
+
        //massmatrix->resumeFill();
        //massmatrix->scale(-1.); 
        //massmatrix->fillComplete( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->problemTimeChem_->getDomain(0)->getMapUnique() );
-        this->problemTimeChem_->systemMass_->addBlock(massmatrix, 0, 0);
+        this->problemTimeChem_->systemMass_->addBlock(massSystem->getBlock(0,0), 0, 0);
     }
 }
 
@@ -950,7 +958,7 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
             tmpPtr =  tmpSourceterm;
         else
             tmpPtr = this->problemTimeStructure_->getSourceTerm();
-
+        
         this->problemTimeStructure_->getRhs()->update(coeffSourceTermStructure, *tmpPtr, 1.);
         this->rhs_->addBlock( this->problemTimeStructure_->getRhs()->getBlockNonConst(0), 0 );
 
@@ -1008,12 +1016,15 @@ template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateTime() const
 {
     timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
-    if(couplingType_ == "implicit"){
-        MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
-        c_rep_->importFromVector(c, true);
 
-        MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
-        d_rep_->importFromVector(d, true); 
+    MultiVectorConstPtr_Type c = this->solution_->getBlock(1);
+    c_rep_->importFromVector(c, true);
+
+    MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
+    d_rep_->importFromVector(d, true); 
+    
+    if(couplingType_ == "implicit"){
+       
         this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_, d_rep_, c_rep_ );
 
     }    

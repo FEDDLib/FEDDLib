@@ -11,7 +11,9 @@
 #include "Domain.hpp"
 #include "sms.hpp"
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation_decl.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokes_decl.hpp"
+
 #include "feddlib/core/AceFemAssembly/AssembleFEFactory.hpp"
 
 #include <Teuchos_Array.hpp>
@@ -82,6 +84,9 @@ class FE {
 
 	typedef AssembleFENavierStokes<SC,LO,GO,NO> AssembleFENavierStokes_Type;
     typedef Teuchos::RCP<AssembleFENavierStokes_Type> AssembleFENavierStokesPtr_Type;
+
+    typedef AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO> AssembleFE_SCI_SMC_Active_Growth_Reorientation_Type;
+    typedef Teuchos::RCP<AssembleFE_SCI_SMC_Active_Growth_Reorientation_Type> AssembleFE_SCI_SMC_Active_Growth_Reorientation_Ptr_Type;
 
     typedef std::vector<AssembleFEPtr_Type> AssembleFEPtr_vec_Type;	
 

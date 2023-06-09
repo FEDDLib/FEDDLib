@@ -147,7 +147,6 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     double force = parameters[1];
     double loadStepSize = parameters[2];
     double TRamp = parameters[3];
-
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -511,7 +510,8 @@ int main(int argc, char *argv[])
 		    	volumeID = 15;
 		    	
 		    partitionerP1.readAndPartition(volumeID);
-
+		    
+		    
             if (!discType.compare("P2")){
 				domainP2chem->buildP2ofP1Domain( domainP1struct );
 				domainP2struct->buildP2ofP1Domain( domainP1struct );
@@ -762,9 +762,7 @@ int main(int argc, char *argv[])
 				}
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( force );
-                double degree = 0.;
-                sci.problemStructureNonLin_->addParemeterRhs( degree );
-                double loadStep = parameterListAll->sublist("Parameter").get("Load Step",1.);
+                double loadStep = parameterListAll->sublist("Parameter").get("Load Step Size",1.);
                 double loadRampEnd= parameterListAll->sublist("Parameter").get("Load Ramp End",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( loadStep );
                 sci.problemStructureNonLin_->addParemeterRhs( loadRampEnd );

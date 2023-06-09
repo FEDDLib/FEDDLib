@@ -460,7 +460,10 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	tuple_ssii_Type solid ("Solid",FETypeSolid,dofsSolid,numSolid);
 	problemDisk->push_back(solid);
 	problemDisk->push_back(chem);
-	
+
+	tuple_disk_vec_ptr_Type problemDiskChem = Teuchos::rcp(new tuple_disk_vec_Type(0));
+    problemDiskChem->push_back(chem);
+
 	string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
 
 	if(assemblyFEElements_.size()== 0){
@@ -477,6 +480,12 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	BlockMultiVectorPtr_Type resVecRep = Teuchos::rcp( new BlockMultiVector_Type( 2) );
     resVecRep->addBlock(resVec_d,0);
     resVecRep->addBlock(resVec_c,1);
+   
+    SC detB;
+    SC absDetB;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+
 
     for (UN T=0; T<assemblyFEElements_.size(); T++) {
 		vec_dbl_Type solution(0);
@@ -491,6 +500,16 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
   		assemblyFEElements_[T]->updateSolution(solution);
 
  		SmallMatrixPtr_Type elementMatrix;
+
+        // ------------------------
+        //buildTransformation(elementsSolid->getElement(T).getVectorNodeList(), pointsRep, B, FETypeSolid);
+        //detB = B.computeInverse(Binv);
+        //absDetB = std::fabs(detB);
+        //cout << " Determinante " << detB << endl;
+        // ------------------------
+
+
+
 
 		if(assembleMode == "Jacobian"){
 			assemblyFEElements_[T]->assembleJacobian();
@@ -510,21 +529,28 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 			addFeBlockMv(resVecRep, rhsVec, elementsSolid->getElement(T),elementsChem->getElement(T), dofsSolid,dofsChem);
 
 		}
-        //if(assembleMode=="compute")
-        //    assemblyFEElements_[T]->compute();
+        if(assembleMode=="MassMatrix"){
+            assemblyFEElements_[T]->assembleJacobian();
+
+            AssembleFE_SCI_SMC_Active_Growth_Reorientation_Ptr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFE_SCI_SMC_Active_Growth_Reorientation_Type>(assemblyFEElements_[T] );
+            elTmp->getMassMatrix(elementMatrix);
+            elementMatrix->print();
+   			addFeBlock(A, elementMatrix, elementsChem->getElement(T), mapChem, 0, 0, problemDiskChem);
+
+
+        }
 
         
 
 			
 	}
-	if ( assembleMode != "Rhs"){
+	if ( assembleMode == "Jacobian"){
 		A->getBlock(0,0)->fillComplete();
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
 	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
 	    A->getBlock(1,1)->fillComplete();
 	}
-
-    if(assembleMode == "Rhs"){
+    else if(assembleMode == "Rhs"){
 
 		MultiVectorPtr_Type resVecUnique_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocSolid)->getMapVecFieldUnique(), 1 ) );
 		MultiVectorPtr_Type resVecUnique_c = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocChem)->getMapUnique(), 1 ) );
@@ -538,7 +564,9 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 		resVec->addBlock(resVecUnique_d,0);
 		resVec->addBlock(resVecUnique_c,1);
 	}
-
+    else if(assembleMode == "MassMatrix"){
+   		A->getBlock(0,0)->fillComplete();
+    }
 
 }
 
@@ -1416,7 +1444,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = determineDegree(dim,FEType,FEType,Grad,Grad);
+    UN deg = determineDegree(dim,FEType,FEType,Grad,Grad)+1;
     getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -6279,6 +6307,8 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
 
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
 
+    d_rep->print();
+    
     SC elScaling;
     SmallMatrix<SC> B(dim);
     vec_dbl_Type b(dim);
@@ -6574,7 +6604,8 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
 		            
 					norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
 				}
-
+                //if(feSub.getFlag() == 5) // || feSub.getFlag()==5)
+                //    cout << " Normal Vec " << v_E[0] << " " << v_E[1] << " " << v_E[2] << " of element " << T << " and Surface " << surface << endl;
 
 
                 buildTransformationSurface( nodeList, pointsRep, B, b, FEType);

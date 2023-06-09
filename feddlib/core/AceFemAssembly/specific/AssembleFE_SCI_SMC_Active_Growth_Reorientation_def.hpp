@@ -181,6 +181,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
         vec_dbl_Type segment = {startTime,dtTmp};
         timeParametersVec_.push_back(segment);
     }*/
+    massMatrix_ = Teuchos::rcp( new SmallMatrix_Type(10,0.));
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -303,7 +304,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 	// }
 	// myfile << "\n";
 	// myfile.close();
-	
+
 	double *residuumRDyn = elem.getResiduumVectorRdyn();
 
 	for(int i=0; i< 30 ; i++){
@@ -312,7 +313,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 	double *residuumRc = elem.getResiduumVectorRc();
 
 	for(int i=0; i< 10 ; i++){		
-		(*this->rhsVec_)[i+30] = residuumRc[i];
+		(*this->rhsVec_)[i+30] = residuumRc[i] ;
 	}
 
 
@@ -423,6 +424,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 			(*elementMatrix)[i][j]=stiffnessMatrixKuu[i][j];
 		}
 	}
+
 	for(int i=0; i< 30; i++){
 		for(int j=0; j<10; j++){
 			//if(fabs(stiffnessMatrixKuc[i][j]) > 1e7)
@@ -445,17 +447,15 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 			//	cout << " !!! Sus entry Mass [" << i << "][" << j << "] " << massMatrixMc[i][j] << " or stiff Kcc " << stiffnessMatrixKcc[i][j] << endl; 
 			 
 			(*elementMatrix)[i+30][j+30] =stiffnessMatrixKcc[i][j] +(1./deltaT)*massMatrixMc[i][j]; //
+
+			(*massMatrix_)[i][j] = massMatrixMc[i][j];
 		}
 	}
-    
-    
-
 
 #endif
 
 	
 }
-
 
 } // namespace FEDD
 #endif // AssembleFE_SCI_SMC_Active_Growth_Reorientation_DEF_hpp

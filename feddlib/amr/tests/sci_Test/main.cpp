@@ -68,8 +68,10 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 
 void inflowChem(double* x, double* res, double t, const double* parameters)
 {
-    res[0] = 1.;
-    
+	if(t>=parameters[0])
+    	res[0] = 1.;
+    else	
+    	res[0] = 0.;
     return;
 }
 
@@ -99,27 +101,212 @@ void rhsZ(double* x, double* res, double* parameters){
     return;
 }
 
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStep (lambda)
+// 3 : LoadStep end time
+// 4 : Flag 
+
 void rhsYZ(double* x, double* res, double* parameters){
-    // parameters[0] is the time, not needed here
-    res[0] = 0.;
+
     double force = parameters[1];
-    double TRamp = 2.0;
-    if(parameters[0] <= TRamp+1e-06)
-        force = parameters[0] * force * 1./(TRamp);
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
+
+  	res[0] =0.;
+    res[1] =0.;
+    res[2] =0.;
+    
+    if(parameters[0]+1.e-12 < TRamp)
+        force = (parameters[0]+loadStepSize) * force ;
     else
         force = parameters[1];
 
-    if(parameters[2] == 5)
+
+    if(parameters[4] == 4  || parameters[4] == 5){
+      	res[0] = force;
         res[1] = force;
-    else
-        res[1] =0.;
-        
-    if (parameters[2] == 4)
         res[2] = force;
-    else
-        res[2] = 0.;
+    }
     
     return;
+}
+
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStepSize
+// 3 : LoadStep end time
+// 4 : Flag 
+
+void rhsHeartBeatCube(double* x, double* res, double* parameters){
+
+    res[0] =0.;
+    res[1] =0.;
+    res[2] = 0.;
+    double force = parameters[1];
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
+    
+	double a0    = 11.693284502463376;
+	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
+		  0.032666881040235,-0.019948718147876,0.006998975442773,-0.033021060067630,-0.015708267688123,-0.029038419813160,-0.003001255512608,-0.009549531539299, 
+		  0.007112349455861,0.001970095816773,0.015306208420903,0.006772571935245,0.009480436178357};
+	double b [20] = {-1.325494054863285,0.192277311734674,0.115316087615845,-0.067714675760648,0.207297536049255,-0.044080204999886,0.050362628821152,-0.063456242820606,
+		  -0.002046987314705,-0.042350454615554,-0.013150127522194,-0.010408847105535,0.011590255438424,0.013281630639807,0.014991955865968,0.016514327477078, 
+		  0.013717154383988,0.012016806933609,-0.003415634499995,0.003188511626163};
+		         
+    double Q = 0.5*a0;
+    
+
+    double t_min = parameters[0] - fmod(parameters[0],1.0); //FlowConditions::t_start_unsteady;
+    double t_max = t_min + 1.0; // One heartbeat lasts 1.0 second    
+    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -0.96  );
+    
+    for(int i=0; i< 20; i++)
+        Q += (a[i]*std::cos((i+1.)*y) + b[i]*std::sin((i+1.)*y) ) ;
+    
+    
+    // Remove initial offset due to FFT
+    Q -= 0.026039341343493;
+    Q = (Q - 2.85489)/(7.96908-2.85489);
+    
+    if(parameters[0]< 70.0){
+    	Q = 0.;
+    }
+    
+    if(parameters[0]+1e-12 < TRamp)
+        force = force * (parameters[0]+loadStepSize);
+    
+    if(parameters[4] == 5 || parameters[4] == 4){
+     	res[0] = force+Q*0.005329;
+        res[1] = force+Q*0.005329;
+       	res[2] = force+Q*0.005329;
+       	
+    }
+      
+}
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStepSize
+// 3 : LoadStep end time
+// 4 : Flag 
+void rhsHeartBeatArtery(double* x, double* res, double* parameters){
+
+    res[0] =0.;
+    res[1] =0.;
+    res[2] = 0.;
+    double force = parameters[1];
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
+    
+	double a0    = 11.693284502463376;
+	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
+		  0.032666881040235,-0.019948718147876,0.006998975442773,-0.033021060067630,-0.015708267688123,-0.029038419813160,-0.003001255512608,-0.009549531539299, 
+		  0.007112349455861,0.001970095816773,0.015306208420903,0.006772571935245,0.009480436178357};
+	double b [20] = {-1.325494054863285,0.192277311734674,0.115316087615845,-0.067714675760648,0.207297536049255,-0.044080204999886,0.050362628821152,-0.063456242820606,
+		  -0.002046987314705,-0.042350454615554,-0.013150127522194,-0.010408847105535,0.011590255438424,0.013281630639807,0.014991955865968,0.016514327477078, 
+		  0.013717154383988,0.012016806933609,-0.003415634499995,0.003188511626163};
+		         
+    double Q = 0.5*a0;
+    
+
+    double t_min = parameters[0] - fmod(parameters[0],1.0); //FlowConditions::t_start_unsteady;
+    double t_max = t_min + 1.0; // One heartbeat lasts 1.0 second    
+    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -0.96 );
+    
+    for(int i=0; i< 20; i++)
+        Q += (a[i]*std::cos((i+1.)*y) + b[i]*std::sin((i+1.)*y) ) ;
+    
+    
+    // Remove initial offset due to FFT
+    Q -= 0.026039341343493;
+    Q = (Q - 2.85489)/(7.96908-2.85489);
+    
+    if(parameters[0]< 70.0){
+    	Q = 0.;
+    }
+    if(parameters[0]+1e-12 < TRamp)
+        force = force * (parameters[0]+loadStepSize);
+        
+    if(parameters[4]==5){
+        res[0] = force+Q*0.005329;
+        res[1] = force+Q*0.005329;
+       	res[2] = force+Q*0.005329;
+    }
+    
+  
+}
+
+
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStepSize
+// 3 : LoadStep end time
+// 4 : Flag 
+void rhsArteryPaper(double* x, double* res, double* parameters){
+
+    res[0] =0.;
+    res[1] =0.;
+    res[2] = 0.;
+    double force = parameters[1];
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
+    double lambda=0.;
+    
+    if(parameters[0]+1e-12 < TRamp)
+        lambda = 0.875*(parameters[0]+loadStepSize);
+    else if(parameters[0] <= TRamp+1.e-12)
+    	lambda = 0.875;
+    else if( parameters[0] < 2001.5 )
+		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
+    else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))< 0.5)
+    	lambda= 0.75;
+    else
+        lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
+ 
+    if(parameters[4]==5){
+        res[0] =lambda*force;
+        res[1] =lambda*force;
+        res[2] =lambda*force; 
+        
+       
+    }
+      
+}
+
+void rhsCubePaper(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+    res[2] = 0.;
+    double force = parameters[1];
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
+    double lambda=0.;
+    
+    if(parameters[0]+1.e-12 < TRamp)
+        lambda = 0.875*(parameters[0]+loadStepSize);
+    else if(parameters[0] <= TRamp+1.e-12)
+    	lambda = 0.875;
+    else if( parameters[0] < 1000.5)
+		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
+    else if( parameters[0] >= 1000.5 && (parameters[0] - std::floor(parameters[0]))< 0.5)
+    	lambda= 0.75;
+    else
+        lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
+     
+     
+    if(parameters[4] == 5 || parameters[4] == 4){
+        res[0] =lambda*force;
+        res[1] =lambda*force;
+        res[2] =lambda*force; 
+    }
+    
+    
+
+            
 }
 
 void dummyFunc(double* x, double* res, double t, const double* parameters)
@@ -170,7 +357,10 @@ int main(int argc, char *argv[])
     string ulib_str = "Tpetra";
     myCLP.setOption("ulib",&ulib_str,"Underlying lib");
     string xmlProblemFile = "parametersProblemSCI.xml";
-    myCLP.setOption("problemfile",&xmlProblemFile,".xml file with Inputparameters.");       
+    myCLP.setOption("problemfile",&xmlProblemFile,".xml file with Inputparameters.");    
+    
+    string xmlProblemStructureFile = "parametersProblemStructure.xml";  
+     
     string xmlSolverFileSCI = "parametersSolverSCI.xml"; 
     myCLP.setOption("solverfileSCI",&xmlSolverFileSCI,".xml file with Inputparameters.");
     
@@ -178,11 +368,19 @@ int main(int argc, char *argv[])
     myCLP.setOption("precfileStructure",&xmlPrecFileStructure,".xml file with Inputparameters.");
     string xmlPrecFileChem = "parametersPrecChem.xml";
     myCLP.setOption("precfileChem",&xmlPrecFileChem,".xml file with Inputparameters.");
-
+    
+ 	string xmlBlockPrecFile = "parametersPrecBlock.xml";
+    myCLP.setOption("blockprecfile",&xmlBlockPrecFile,".xml file with Inputparameters.");
+   
     string xmlPrecFile = "parametersPrec.xml";
     myCLP.setOption("precfile",&xmlPrecFile,".xml file with Inputparameters.");
 
+    string xmlTekoPrecFile = "parametersPrecTeko.xml";
+    myCLP.setOption("tekoprecfile",&xmlTekoPrecFile,".xml file with Inputparameters.");
 
+    ParameterListPtr_Type parameterListPrecTeko = Teuchos::getParametersFromXmlFile(xmlTekoPrecFile);
+    ParameterListPtr_Type parameterListPrecBlock = Teuchos::getParametersFromXmlFile(xmlBlockPrecFile);
+    
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
     Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = myCLP.parse(argc,argv);
@@ -197,6 +395,8 @@ int main(int argc, char *argv[])
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
        
+        ParameterListPtr_Type parameterListProblemStructure = Teuchos::getParametersFromXmlFile(xmlProblemStructureFile);
+        
         ParameterListPtr_Type parameterListSolverSCI = Teuchos::getParametersFromXmlFile(xmlSolverFileSCI);
 
         ParameterListPtr_Type parameterListPrecStructure = Teuchos::getParametersFromXmlFile(xmlPrecFileStructure);
@@ -204,12 +404,23 @@ int main(int argc, char *argv[])
   
         ParameterListPtr_Type parameterListPrec = Teuchos::getParametersFromXmlFile(xmlPrecFile);
 
-
+ 		int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
+        string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
+        int 		m				= parameterListProblem->sublist("Parameter").get("H/h",5);
+        string      discType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");
+        string precMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
+        int         n;
+       
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;     
         
         parameterListAll->setParameters(*parameterListSolverSCI);
-        parameterListAll->setParameters(*parameterListPrec);
-
+        if (!precMethod.compare("Monolithic"))
+            parameterListAll->setParameters(*parameterListPrec);
+        else if(!precMethod.compare("Teko"))
+            parameterListAll->setParameters(*parameterListPrecTeko);
+        else if(precMethod == "Diagonal" || precMethod == "Triangular")
+            parameterListAll->setParameters(*parameterListPrecBlock);
+		parameterListAll->setParameters(*parameterListProblemStructure);
         
         ParameterListPtr_Type parameterListChemAll(new Teuchos::ParameterList(*parameterListPrecChem)) ;
         sublist(parameterListChemAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Chem") );
@@ -221,18 +432,15 @@ int main(int argc, char *argv[])
         sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Solid") );
         parameterListStructureAll->setParameters(*parameterListPrecStructure);
         parameterListStructureAll->setParameters(*parameterListProblem);
+        parameterListStructureAll->setParameters(*parameterListProblemStructure);
 
                  
-        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
-        string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
-        
-        string      discType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");
-        string preconditionerMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
-        int         n;
+       
 
         TimePtr_Type totalTime(TimeMonitor_Type::getNewCounter("FEDD - main - Total Time"));
         TimePtr_Type buildMesh(TimeMonitor_Type::getNewCounter("FEDD - main - Build Mesh"));
-
+        TimePtr_Type solveTime(Teuchos::TimeMonitor::getNewCounter("main: Solve problem time"));
+ 
         int numProcsCoarseSolve = parameterListProblem->sublist("General").get("Mpi Ranks Coarse",0);
 
         int size = comm->getSize() - numProcsCoarseSolve;
@@ -257,93 +465,121 @@ int main(int argc, char *argv[])
         DomainPtr_Type domainChem;
         DomainPtr_Type domainStructure;
         
-        std::string bcType = parameterListAll->sublist("Parameter").get("BC Type","parabolic");
+        std::string bcType = parameterListAll->sublist("Parameter").get("BC Type","Cube");
         
+        std::string rhsType = parameterListAll->sublist("Parameter").get("RHS Type","Constant");
     
-        domainP1chem.reset( new Domain_Type( comm, dim ) );
-        domainP1struct.reset( new Domain_Type( comm, dim ) );
-        domainP2chem.reset( new Domain_Type( comm, dim ) );
-        domainP2struct.reset( new Domain_Type( comm, dim ) );
-                                
-        MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
-        domainP1Array[0] = domainP1struct;
-       // domainP1Array[1] = domainP1struct;
-    
-        ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );                    
-
-        pListPartitioner->set("Build Edge List",true);
-        pListPartitioner->set("Build Surface List",true);
-                        
-        MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
+        int minNumberSubdomains=1;
+       {              
+         Teuchos::TimeMonitor totalTimeMonitor(*totalTime);
+       
+       
+        if (!meshType.compare("structured")) {
+		    TEUCHOS_TEST_FOR_EXCEPTION( size%minNumberSubdomains != 0 , std::logic_error, "Wrong number of processors for structured mesh.");
+		    /*if (dim == 2) {
+		        n = (int) (std::pow( size/minNumberSubdomains ,1/2.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
+		        std::vector<double> x(2);
+		        x[0]=0.0;    x[1]=0.0;
+		        domainStructure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., comm ) );
+		        domainChem.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., comm ) );
+		    }
+		    else if (dim == 3){*/
+		        n = (int)(std::pow( size/minNumberSubdomains, 1/3.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
+		        std::vector<double> x(3);
+		        x[0]=0.0;    x[1]=0.0;	x[2]=0.0;
+		        domainStructure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
+		        domainChem.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
+		    //}
+		    domainStructure->buildMesh( 3,"Square", dim, discType, n, m, numProcsCoarseSolve);
+		    domainChem->buildMesh( 3,"Square", dim, discType, n, m, numProcsCoarseSolve);
+		}
+        else if (!meshType.compare("unstructured")) {
         
-        partitionerP1.readAndPartition();
-                    
-                    
-		// Refining mesh uniformly or area wise
-		// ----------
-		int level = parameterListProblem->sublist("Parameter").get("Refinement Level",2);
-		string type = parameterListProblem->sublist("Parameter").get("Refinement Type", "uniform");
-		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner(parameterListProblem); // exactSolLShape
-		Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
-		domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-		vec2D_dbl_Type area(dim,vec_dbl_Type(2));
-		area[0][0] = 0.;
-		area[0][1] = 0.001;
-		area[1][0] = 0.;
-		area[1][1] = 1.;
-		if(dim==3){
-			area[2][0] = 0.;
-			area[2][1] = 1.;
-		}
-		
-		if(level>0){
-			if(type == "area")
-				domainRefined = meshRefiner.refineArea(domainP1struct,area,level );
-			else if(type == "uniform")
-				domainRefined = meshRefiner.refineUniform(domainP1struct,level );
-				
-			domainP1struct = domainRefined;
-		}
-		
+            domainP1chem.reset( new Domain_Type( comm, dim ) );
+		    domainP1struct.reset( new Domain_Type( comm, dim ) );
+		    domainP2chem.reset( new Domain_Type( comm, dim ) );
+		    domainP2struct.reset( new Domain_Type( comm, dim ) );
+            
+            MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
+            domainP1Array[0] = domainP1struct;
+            
+            ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );                    
+            
+            pListPartitioner->set("Build Edge List",true);
+		    pListPartitioner->set("Build Surface List",true);
+		                    
+		    MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
+		    
+		    int volumeID=10;
+		    if(bcType=="Artery")
+		    	volumeID = 15;
+		    	
+		    partitionerP1.readAndPartition(volumeID);
+		    
+		    int level = parameterListProblem->sublist("Parameter").get("Refinement Level",2);
+			string type = parameterListProblem->sublist("Parameter").get("Refinement Type", "uniform");
+			AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner(parameterListProblem); // exactSolLShape
+			Teuchos::RCP<Domain<SC,LO,GO,NO> > domainRefined;
+			domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+			vec2D_dbl_Type area(dim,vec_dbl_Type(2));
+			area[0][0] = 0.;
+			area[0][1] = 0.001;
+			area[1][0] = 0.;
+			area[1][1] = 1.;
+			if(dim==3){
+				area[2][0] = 0.;
+				area[2][1] = 1.;
+			}
+			
+			if(level>0){
+				if(type == "area")
+					domainRefined = meshRefiner.refineArea(domainP1struct,area,level );
+				else if(type == "uniform")
+					domainRefined = meshRefiner.refineUniform(domainP1struct,level );
+					
+				domainP1struct = domainRefined;
+			}
 
+            if (!discType.compare("P2")){
+				domainP2chem->buildP2ofP1Domain( domainP1struct );
+				domainP2struct->buildP2ofP1Domain( domainP1struct );
 
+				domainChem = domainP2chem;
+				domainStructure = domainP2struct;   
+			}        
+			else{
+				domainStructure = domainP1struct;
+				domainChem = domainP1struct;
+			}
+        }
 
-		if (!discType.compare("P2")){
-			domainP2chem->buildP2ofP1Domain( domainP1struct );
-			domainP2struct->buildP2ofP1Domain( domainP1struct );
-
-			domainChem = domainP2chem;
-			domainStructure = domainP2struct;   
-		}        
-		else{
-			domainStructure = domainP1struct;
-			domainChem = domainP1struct;
-		}
-
-       // ########################
-        // Flags check
-        // ########################
-
-		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaF(new ExporterParaView<SC,LO,GO,NO>());
-
-		Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapUnique()));
-		vec_int_ptr_Type BCFlags = domainStructure->getBCFlagUnique();
-
-		Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
-		for(int i=0; i< entries.size(); i++){
-			entries[i] = BCFlags->at(i);
-		}
-
-		Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
-
-		exParaF->setup("Flags", domainStructure->getMesh(), discType);
-
-		exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
-
-		exParaF->save(0.0);
 
 
         if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
+		   // ########################
+		    // Flags check
+		    // ########################
+
+			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaF(new ExporterParaView<SC,LO,GO,NO>());
+
+			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapUnique()));
+			vec_int_ptr_Type BCFlags = domainStructure->getBCFlagUnique();
+
+			Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
+			for(int i=0; i< entries.size(); i++){
+				entries[i] = BCFlags->at(i);
+			}
+
+			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+			exParaF->setup("Flags", domainStructure->getMesh(), discType);
+
+			exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
+
+			exParaF->save(0.0);
+		
+	
+
             
             if (verbose)
                 std::cout << "\t### Exporting subdomains ###\n";
@@ -371,6 +607,11 @@ int main(int argc, char *argv[])
         }
     
         domainChem->setReferenceConfiguration();
+        domainStructure->setReferenceConfiguration();
+
+        MultiVectorPtr_Type nodes(domainStructure->getNodeListMV());
+
+        // nodes->writeMM("nodes.mm");
 
         vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
         double D0 = parameterListAll->sublist("Parameter Diffusion").get("D0",1.);
@@ -421,25 +662,66 @@ int main(int argc, char *argv[])
         {
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Only 3D Test available");                               
         }
-        else if(dim == 3)
+        else if(dim == 3 && bcType=="Cube")
         {
 
-            bcFactory->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
-            bcFactory->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
-            bcFactory->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
-            bcFactory->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet", dim);
-            bcFactory->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
-            bcFactory->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
-            bcFactory->addBC(zeroDirichlet2D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
+            bcFactory->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_X", dim);
+            bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Y", dim);
+            bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
             
-            bcFactoryStructure->addBC(zeroDirichlet, 1, 0, domainStructure, "Dirichlet_X", dim);
-            bcFactoryStructure->addBC(zeroDirichlet, 2, 0, domainStructure, "Dirichlet_Y", dim);
-            bcFactoryStructure->addBC(zeroDirichlet, 3, 0, domainStructure, "Dirichlet_Z", dim);
+            bcFactory->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet", dim);
+            bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
+            bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
+            bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
+            
+            bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_X", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Y", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
+            
             bcFactoryStructure->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet", dim);
-            bcFactoryStructure->addBC(zeroDirichlet2D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
-            bcFactoryStructure->addBC(zeroDirichlet2D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
-            bcFactoryStructure->addBC(zeroDirichlet2D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X_Y", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
 
+        }
+        else if(dim==3 && bcType=="Artery"){
+        
+			bcFactory->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_Y", dim);
+			bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_X", dim);
+			bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim);
+			
+			bcFactory->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Z", dim);
+
+			bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Y_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_X_Z", dim);
+
+			bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X", dim);
+			bcFactory->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
+
+			bcFactory->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Y_Z", dim);
+			bcFactory->addBC(zeroDirichlet3D, 12, 0, domainStructure, "Dirichlet_X_Z", dim);
+
+
+			bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_Y", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_X", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dim);
+			
+			bcFactoryStructure->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_Z", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Z", dim);
+
+
+			bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Y_Z", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_X_Z", dim);
+
+			bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X", dim);
+
+			bcFactoryStructure->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Y_Z", dim);
+			bcFactoryStructure->addBC(zeroDirichlet3D, 12, 0, domainStructure, "Dirichlet_X_Z", dim);
+        
         }
         
         // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
@@ -460,19 +742,58 @@ int main(int argc, char *argv[])
         else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
-                sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+                if(bcType=="Cube"){
+					if(rhsType=="Constant")
+		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+		    		if(rhsType=="Paper")
+		    		 	sci.problemStructure_->addRhsFunction( rhsCubePaper,0 );
+		    		if(rhsType=="Heart Beat")
+		        		 	sci.problemStructure_->addRhsFunction( rhsHeartBeatCube,0 );
+					
+				}
+				else if(bcType=="Artery"){
+					if(rhsType=="Constant")
+		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+					if(rhsType=="Paper")
+            		 	sci.problemStructure_->addRhsFunction( rhsArteryPaper,0 );
+            		if(rhsType=="Heart Beat")
+            		 	sci.problemStructure_->addRhsFunction( rhsHeartBeatArtery,0 );
+				}
+                     
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
                 double degree = 0.;
                 sci.problemStructure_->addParemeterRhs( degree );
+                double loadStep = parameterListAll->sublist("Parameter").get("Load Step Size",1.);
+                double loadRampEnd= parameterListAll->sublist("Parameter").get("Load Ramp End",1.);
+                sci.problemStructure_->addParemeterRhs( loadStep );
+                sci.problemStructure_->addParemeterRhs( loadRampEnd );
 
             }
             else{             
-                sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+				if(bcType=="Cube"){
+					if(rhsType=="Constant")
+		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+		    		if(rhsType=="Paper")
+		        		sci.problemStructureNonLin_->addRhsFunction( rhsCubePaper,0 );
+		    		if(rhsType=="Heart Beat")
+		        		sci.problemStructureNonLin_->addRhsFunction( rhsHeartBeatCube,0 );
+					
+				}
+				else if(bcType=="Artery"){
+					if(rhsType=="Constant")
+		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+					if(rhsType=="Paper")
+            		 	sci.problemStructureNonLin_->addRhsFunction( rhsArteryPaper,0 );
+            		if(rhsType=="Heart Beat")
+            		 	sci.problemStructureNonLin_->addRhsFunction( rhsHeartBeatArtery,0 );
+				}
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( force );
-                double degree = 0.;
-                sci.problemStructureNonLin_->addParemeterRhs( degree );
+                double loadStep = parameterListAll->sublist("Parameter").get("Load Step Size",1.);
+                double loadRampEnd= parameterListAll->sublist("Parameter").get("Load Ramp End",1.);
+                sci.problemStructureNonLin_->addParemeterRhs( loadStep );
+                sci.problemStructureNonLin_->addParemeterRhs( loadRampEnd );
 
             }
             
@@ -483,14 +804,15 @@ int main(int argc, char *argv[])
                 TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Only 3D Test available");                               
                             
         }
-        else if(dim==3)
+        else if(dim==3 && bcType=="Cube")
         {
 
-            bcFactory->addBC(inflowChem, 0, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactory->addBC(inflowChem, 1, 1, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1);            		
+            std::vector<double> parameter_vec(1, parameterListAll->sublist("Parameter").get("Inflow Start Time",0.));
+            bcFactory->addBC(inflowChem, 0, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+            bcFactory->addBC(inflowChem, 1, 1, domainChem, "Dirichlet", 1, parameter_vec); // inflow of Chem
+            bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1,parameter_vec);            		
             //bcFactory->addBC(zeroDirichlet, 8, 1, domainChem, "Dirichlet", 1);
-            bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1);
+            bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1,parameter_vec);
             /*bcFactory->addBC(zeroDirichlet, 2, 1, domainChem, "Dirichlet", 1);
             bcFactory->addBC(zeroDirichlet, 3, 1, domainChem, "Dirichlet", 1);            
             bcFactory->addBC(zeroDirichlet, 4, 1, domainChem, "Dirichlet", 1);            
@@ -498,10 +820,10 @@ int main(int argc, char *argv[])
            // bcFactory->addBC(zeroDirichlet, 6, 1, domainChem, "Dirichlet", 1);            
             */
             
-            bcFactoryChem->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactoryChem->addBC(inflowChem, 1, 0, domainChem, "Dirichlet", 1); // inflow of Chem
-            bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1);            		
-            bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1);
+            bcFactoryChem->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+            bcFactoryChem->addBC(inflowChem, 1, 0, domainChem, "Dirichlet", 1, parameter_vec); // inflow of Chem
+            bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1,parameter_vec);            		
+            bcFactoryChem->addBC(inflowChem, 9, 0, domainChem, "Dirichlet", 1,parameter_vec);
            /* bcFactoryChem->addBC(zeroDirichlet, 2, 0, domainChem, "Dirichlet", 1);
             bcFactoryChem->addBC(zeroDirichlet, 3, 0, domainChem, "Dirichlet", 1);            
             bcFactoryChem->addBC(zeroDirichlet, 4, 0, domainChem, "Dirichlet", 1);            
@@ -511,35 +833,57 @@ int main(int argc, char *argv[])
             
             */
         }
+        else if(dim==3 && bcType=="Artery"){
+           std::vector<double> parameter_vec(1, parameterListAll->sublist("Parameter").get("Inflow Start Time",0.));
+           bcFactory->addBC(inflowChem, 5, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 13, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 14, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+		   bcFactory->addBC(inflowChem, 10, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
+		   
+           bcFactoryChem->addBC(inflowChem, 5, 0, domainChem, "Dirichlet", 1,parameter_vec);
+           bcFactoryChem->addBC(inflowChem, 13, 0, domainChem, "Dirichlet", 1,parameter_vec);
+           bcFactoryChem->addBC(inflowChem, 14, 0, domainChem, "Dirichlet", 1,parameter_vec);
+           bcFactoryChem->addBC(inflowChem, 7, 0, domainChem, "Dirichlet", 1,parameter_vec);
+           bcFactoryChem->addBC(inflowChem, 10, 0, domainChem, "Dirichlet", 1,parameter_vec);
+        }
 
-        // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
-        // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
-        sci.problemChem_->addBoundaries(bcFactoryChem);
-        
-          
-        // #####################
-        // Zeitintegration
-        // #####################
-        sci.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
 
-        sci.initializeProblem();
-        // Matrizen assemblieren
-        sci.assemble();
-                    
-        DAESolverInTime<SC,LO,GO,NO> daeTimeSolver(parameterListAll, comm);
+		{
+		    TimeMonitor_Type solveTimeMonitor(*solveTime);
 
-        // Uebergebe auf welchen Bloecken die Zeitintegration durchgefuehrt werden soll
-        // und Uebergabe der parameterList, wo die Parameter fuer die Zeitintegration drin stehen
-        daeTimeSolver.defineTimeStepping(*defTS);
+		    // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
+		    // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
+		    sci.problemChem_->addBoundaries(bcFactoryChem);
+		    
+		      
+		    // #####################
+		    // Zeitintegration
+		    // #####################
+		    sci.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
 
-        // Uebergebe das (nicht) lineare Problem
-        daeTimeSolver.setProblem(sci);
+		    sci.initializeProblem();
+		    // Matrizen assemblieren
+		    sci.assemble();
+		                
 
-        // Setup fuer die Zeitintegration, wie z.B. Aufstellen der Massematrizen auf den Zeilen, welche in
-        // defTS definiert worden sind.
-        daeTimeSolver.setupTimeStepping();
+		                
+		    DAESolverInTime<SC,LO,GO,NO> daeTimeSolver(parameterListAll, comm);
 
-        daeTimeSolver.advanceInTime();
+		    // Uebergebe auf welchen Bloecken die Zeitintegration durchgefuehrt werden soll
+		    // und Uebergabe der parameterList, wo die Parameter fuer die Zeitintegration drin stehen
+		    daeTimeSolver.defineTimeStepping(*defTS);
+
+		    // Uebergebe das (nicht) lineare Problem
+		    daeTimeSolver.setProblem(sci);
+
+		    // Setup fuer die Zeitintegration, wie z.B. Aufstellen der Massmatrizen auf den Zeilen, welche in
+		    // defTS definiert worden sind.
+		    daeTimeSolver.setupTimeStepping();
+
+		    daeTimeSolver.advanceInTime();
+		}
+	  }
     }
     TimeMonitor_Type::report(std::cout);
 

@@ -1247,20 +1247,29 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             exporterNewtonIterations->exportData( (*its)[1] );
 
             vec_dbl_Type d_s(0);
-            double norm_d_s=0.;
+            double norm=0.;
 
+            string name = parameterList_->sublist("General").get("Physic","Structure");             
             if(valueCorner != -1){
-                for(int i=0; i< problemTime_->dimension_ ; i++)
-                    d_s.push_back(problemTime_->getSolution()->getBlock(0)->getDataNonConst(0)[problemTime_->dimension_*valueCorner+i]);
-                
-                for(int i=0; i< problemTime_->dimension_ ; i++)
-                    norm_d_s += pow(d_s[i],2);
-                norm_d_s = sqrt(norm_d_s);
+
+                if(name == "Structure"){
+                    for(int i=0; i< problemTime_->dimension_ ; i++)
+                        d_s.push_back(problemTime_->getSolution()->getBlock(0)->getDataNonConst(0)[problemTime_->dimension_*valueCorner+i]);
+                    
+                    for(int i=0; i< problemTime_->dimension_ ; i++)
+                        norm += pow(d_s[i],2);
+                    norm = sqrt(norm);
+                }
+                else{
+                    norm = problemTime_->getSolution()->getBlock(1)->getDataNonConst(0)[valueCorner];
+                }
+
+
             }
 
-			Teuchos::reduceAll<int, double> ( *this->comm_, Teuchos::REDUCE_MAX, norm_d_s , Teuchos::outArg (norm_d_s));
+			Teuchos::reduceAll<int, double> ( *this->comm_, Teuchos::REDUCE_MAX, norm , Teuchos::outArg (norm));
 
-            exporterCornerValue->exportData(norm_d_s);
+            exporterCornerValue->exportData(norm);
 
 
         }

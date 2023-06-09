@@ -503,7 +503,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
 
         problem.setBoundariesSystem();
 
-        // problem.getSystem()->writeMM("Assembled");
+        problem.getSystem()->writeMM("Assembled");
 
 
         if (timestepping == "External"){//AceGen
@@ -516,6 +516,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
             gmresIts += problem.solveAndUpdate( criterion, criterionValue );
         
         nlIts++;
+
+        //problem.getSolution()->getBlock(0)->print();
         if(criterion=="Update"){
             if (verbose)
                 cout << "### Newton iteration : " << nlIts << "  residual of update : " << criterionValue << endl;
