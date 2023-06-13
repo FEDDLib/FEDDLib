@@ -123,7 +123,7 @@ void rhsYZ(double* x, double* res, double* parameters){
         force = parameters[1];
 
 
-    if(parameters[4] == 4  || parameters[4] == 5){
+    if(parameters[5] == 4  || parameters[5] == 5){
       	res[0] = force;
         res[1] = force;
         res[2] = force;
@@ -147,6 +147,7 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     double force = parameters[1];
     double loadStepSize = parameters[2];
     double TRamp = parameters[3];
+    double heartBeatStart = parameters[4];
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -171,18 +172,18 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     Q -= 0.026039341343493;
     Q = (Q - 2.85489)/(7.96908-2.85489);
     
-    if(parameters[0]< 70.0){
+    if(parameters[0]< heartBeatStart){
     	Q = 0.;
     }
     
     if(parameters[0]+1e-12 < TRamp)
         force = force * (parameters[0]+loadStepSize);
     
-    if(parameters[4] == 5 || parameters[4] == 4){
+    if(parameters[5] == 5 || parameters[5] == 4){
      	res[0] = force+Q*0.005329;
         res[1] = force+Q*0.005329;
        	res[2] = force+Q*0.005329;
-       	
+       	      	
     }
       
 }
@@ -200,6 +201,7 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     double force = parameters[1];
     double loadStepSize = parameters[2];
     double TRamp = parameters[3];
+    double heartBeatStart = parameters[4];
     
 	double a0    = 11.693284502463376;
 	double a [20] = {1.420706949636449,-0.937457438404759,0.281479818173732,-0.224724363786734,0.080426469802665,0.032077024077824,0.039516941555861, 
@@ -224,13 +226,13 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     Q -= 0.026039341343493;
     Q = (Q - 2.85489)/(7.96908-2.85489);
     
-    if(parameters[0]< 70.0){
+    if(parameters[0]< heartBeatStart){
     	Q = 0.;
     }
     if(parameters[0]+1e-12 < TRamp)
         force = force * (parameters[0]+loadStepSize);
         
-    if(parameters[4]==5){
+    if(parameters[5]==5){
         res[0] = force+Q*0.005329;
         res[1] = force+Q*0.005329;
        	res[2] = force+Q*0.005329;
@@ -267,7 +269,7 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
  
-    if(parameters[4]==5){
+    if(parameters[5]==5){
         res[0] =lambda*force;
         res[1] =lambda*force;
         res[2] =lambda*force; 
@@ -285,7 +287,7 @@ void rhsCubePaper(double* x, double* res, double* parameters){
     double TRamp = parameters[3];
     double lambda=0.;
     
-    if(parameters[0]+1.e-12 < TRamp)
+    if(parameters[5]+1.e-12 < TRamp)
         lambda = 0.875*(parameters[0]+loadStepSize);
     else if(parameters[0] <= TRamp+1.e-12)
     	lambda = 0.875;
@@ -734,13 +736,12 @@ int main(int argc, char *argv[])
                      
                 double force = parameterListAll->sublist("Parameter").get("Volume force",1.);
                 sci.problemStructure_->addParemeterRhs( force );
-                double degree = 0.;
-                sci.problemStructure_->addParemeterRhs( degree );
                 double loadStep = parameterListAll->sublist("Parameter").get("Load Step Size",1.);
                 double loadRampEnd= parameterListAll->sublist("Parameter").get("Load Ramp End",1.);
                 sci.problemStructure_->addParemeterRhs( loadStep );
                 sci.problemStructure_->addParemeterRhs( loadRampEnd );
-
+                double heartBeatStart= parameterListAll->sublist("Parameter").get("Heart Beat Start",70.);
+                sci.problemStructure_->addParemeterRhs( heartBeatStart );
             }
             else{             
 				if(bcType=="Cube"){
@@ -766,6 +767,8 @@ int main(int argc, char *argv[])
                 double loadRampEnd= parameterListAll->sublist("Parameter").get("Load Ramp End",1.);
                 sci.problemStructureNonLin_->addParemeterRhs( loadStep );
                 sci.problemStructureNonLin_->addParemeterRhs( loadRampEnd );
+                double heartBeatStart= parameterListAll->sublist("Parameter").get("Heart Beat Start",70.);
+                sci.problemStructureNonLin_->addParemeterRhs( heartBeatStart );
 
             }
             

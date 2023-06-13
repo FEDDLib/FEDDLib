@@ -506,10 +506,10 @@ class FE {
 
     void advanceInTimeAssemblyFEElements(double dt ,MultiVectorPtr_Type d_rep , MultiVectorPtr_Type c_rep) 
     {
-        UN FElocChem = 1; //checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype
+        //UN FElocChem = 1; //checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype
         UN FElocSolid = 0; //checkFE(dim,FETypeSolid); // Checks for different domains which belongs to a certain fetype
 
-        ElementsPtr_Type elementsChem= domainVec_.at(FElocChem)->getElementsC();
+        //ElementsPtr_Type elementsChem= domainVec_.at(FElocChem)->getElementsC();
 
         ElementsPtr_Type elementsSolid = domainVec_.at(FElocSolid)->getElementsC();
         
@@ -518,7 +518,7 @@ class FE {
         for (UN T=0; T<assemblyFEElements_.size(); T++) {
 		    vec_dbl_Type solution(0);
 
-            solution_c = getSolution(elementsChem->getElement(T).getVectorNodeList(), c_rep,1);
+            solution_c = getSolution(elementsSolid->getElement(T).getVectorNodeList(), c_rep,1);
             solution_d = getSolution(elementsSolid->getElement(T).getVectorNodeList(), d_rep,3);
             // First Solid, then Chemistry
             solution.insert( solution.end(), solution_d.begin(), solution_d.end() );

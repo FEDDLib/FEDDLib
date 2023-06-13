@@ -905,11 +905,12 @@ void SCI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
         if(externalForce_){
 
             MultiVectorPtr_Type FERhs = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
-            vec_dbl_Type funcParameter(5,0.);
+            vec_dbl_Type funcParameter(6,0.);
             funcParameter[0] = timeSteppingTool_->t_;            
             // how can we use different parameters for different blocks here?
-            funcParameter[1] =this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Volume force",0.00211);;
-            funcParameter[4] = 0.;
+            funcParameter[1] =this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Volume force",0.00211);
+            funcParameter[4] =this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Heart Beat Start",70.);
+            funcParameter[5] = 0.;
             funcParameter[2]= this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Load Step Size",1.);
             funcParameter[3] = this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Load Ramp End",1.);
             if(nonlinearExternalForce_){
@@ -1022,8 +1023,10 @@ void SCI<SC,LO,GO,NO>::updateTime() const
 
     MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
     d_rep_->importFromVector(d, true); 
-          
     this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_, d_rep_, c_rep_ );    
+
+    if(couplingType_ == "explicit")
+        this->problemTimeStructure_->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_, d_rep_, c_rep_ );   
 }
 
 

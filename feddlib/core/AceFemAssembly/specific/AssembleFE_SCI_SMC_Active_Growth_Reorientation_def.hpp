@@ -208,7 +208,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::advanceInTime(
 	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 	
 	for(int i=0; i< this->historyLength_; i++){
-		if(this->timeStep_  > this->activeStartTime_ +dt )
+	//	if(this->timeStep_  > this->activeStartTime_ +dt )
 			this->history_[i] = this->historyUpdated_[i];
 	}
 

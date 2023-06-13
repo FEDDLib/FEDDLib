@@ -18,6 +18,7 @@
         <Parameter name="SCI" type="bool" value="true"/>
         <Parameter name="Load Stepping" type="bool" value="true"/>
         <Parameter name="Inflow Start Time" type="double" value="0.0"/><!-- Start of diffusion process -->
+        <Parameter name="Heart Beat Start" type="double" value="0.0"/><!-- Start of diffusion process -->
         <Parameter name="Load Step Size" type="double" value="0.0125"/><!-- Length/size of Loadsteps -->
         <Parameter name="Load Ramp End" type="double" value="1.0"/><!-- End of Load Stepping -->
         <Parameter name="External Force" type="bool" value="true"/>
