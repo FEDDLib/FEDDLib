@@ -141,7 +141,7 @@ void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::advanceInTime( double dt){
 	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 	
 	for(int i=0; i< 48; i++){
-		if(this->timeStep_  > startTime_ +dt )
+	//	if(this->timeStep_  > startTime_ +dt )
 			history_[i] = historyUpdated_[i];
 		
 	}

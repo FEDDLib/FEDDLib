@@ -68,7 +68,6 @@ RefinementFactory<SC,LO,GO,NO>::RefinementFactory(CommConstPtr_Type comm, int vo
 MeshUnstructured<SC,LO,GO,NO>(comm,volumeID)
 {
     this->volumeID_ = volumeID;
-	cout << " Voluem ID " << volumeID <<  endl;
 	this->dim_ = parameterListAll->sublist("Parameter").get("Dimension",2);
 	if(this->dim_ == 2){
 		refinementRestriction_ = parameterListAll->sublist("Mesh Refinement").get("Refinement Restriction","Bisection");

@@ -534,7 +534,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
             AssembleFE_SCI_SMC_Active_Growth_Reorientation_Ptr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFE_SCI_SMC_Active_Growth_Reorientation_Type>(assemblyFEElements_[T] );
             elTmp->getMassMatrix(elementMatrix);
-            elementMatrix->print();
+            //elementMatrix->print();
    			addFeBlock(A, elementMatrix, elementsChem->getElement(T), mapChem, 0, 0, problemDiskChem);
 
 
@@ -6306,8 +6306,6 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
-
-    d_rep->print();
     
     SC elScaling;
     SmallMatrix<SC> B(dim);

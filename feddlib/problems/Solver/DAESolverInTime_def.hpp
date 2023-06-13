@@ -1239,7 +1239,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         timeSteppingTool_->advanceTime(false);//output info);
 
         // Should be some place else
-        this->problemTime_->assemble("UpdateCoupling");
+        if(couplingType=="explicit" )
+            this->problemTime_->assemble("UpdateCoupling");
 
         if (printData) {
             exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );

@@ -294,8 +294,6 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 
 	inputMeshP1_->assignEdgeFlags();
 		
-		cout << " Volume FLAG " << inputMeshP1_->volumeID_ << endl;
-
 	MeshUnstrPtr_Type outputMesh(new MeshUnstr_Type(domainP1->getComm(),  inputMeshP1_->volumeID_));
 
 	domainRefined->initWithDomain(domainP1);

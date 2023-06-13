@@ -130,6 +130,10 @@ namespace FEDD
 		
 		double *residuum = neoHookeElement.getResiduum();
 		
+		for (int i = 0; i < 40; i++)
+			(*this->rhsVec_)[i] = residuum[i];
+
+		
 	}
 
 	template <class SC, class LO, class GO, class NO>

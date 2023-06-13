@@ -758,13 +758,13 @@ void SCI<SC,LO,GO,NO>::setChemMassmatrix( MatrixPtr_Type& massmatrix ) const
         massmatrix = Teuchos::rcp(new Matrix_Type( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         // 1 = Chem
         this->feFactory_->assemblyMass( this->dim_, this->problemTimeChem_->getFEType(0), "Scalar",  massmatrix, 1, true );
-        massSystem->addBlock(massmatrix,0,0);
+        //massSystem->addBlock(massmatrix,0,0);
        //this->feFactory_->assemblyAceDeformDiffu(this->dim_, this->getDomain(1)->getFEType(), this->getDomain(0)->getFEType(), 2,1,this->dim_,c_rep_,d_rep_,massSystem,this->residualVec_, this->parameterList_, "MassMatrix", true/*call fillComplete*/);
 
        //massmatrix->resumeFill();
        //massmatrix->scale(-1.); 
        //massmatrix->fillComplete( this->problemTimeChem_->getDomain(0)->getMapUnique(), this->problemTimeChem_->getDomain(0)->getMapUnique() );
-        this->problemTimeChem_->systemMass_->addBlock(massSystem->getBlock(0,0), 0, 0);
+        this->problemTimeChem_->systemMass_->addBlock(massmatrix, 0, 0);
     }
 }
 
@@ -1022,12 +1022,8 @@ void SCI<SC,LO,GO,NO>::updateTime() const
 
     MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
     d_rep_->importFromVector(d, true); 
-    
-    if(couplingType_ == "implicit"){
-       
-        this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_, d_rep_, c_rep_ );
-
-    }    
+          
+    this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_, d_rep_, c_rep_ );    
 }
 
 
