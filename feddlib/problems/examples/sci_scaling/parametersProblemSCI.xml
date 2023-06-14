@@ -2,7 +2,7 @@
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
-        <Parameter name="BC Type" type="string" value="Cube"/><!--Artery, Cube-->
+        <Parameter name="BC Type" type="string" value="Artery"/><!--Artery, Cube-->
         <Parameter name="RHS Type" type="string" value="Heart Beat"/><!--Constant, Paper, Heart Beat-->
         
 		<Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
@@ -17,9 +17,9 @@
         
         <Parameter name="SCI" type="bool" value="true"/>
         <Parameter name="Load Stepping" type="bool" value="true"/>
-        <Parameter name="Inflow Start Time" type="double" value="0.0"/><!-- Start of diffusion process -->
-        <Parameter name="Heart Beat Start" type="double" value="0.0"/><!-- Start of diffusion process -->
-        <Parameter name="Load Step Size" type="double" value="0.0125"/><!-- Length/size of Loadsteps -->
+        <Parameter name="Inflow Start Time" type="double" value="50.0"/><!-- Start of diffusion process -->
+        <Parameter name="Heart Beat Start" type="double" value="70.0"/><!-- Start of diffusion process -->
+        <Parameter name="Load Step Size" type="double" value="0.05"/><!-- Length/size of Loadsteps -->
         <Parameter name="Load Ramp End" type="double" value="1.0"/><!-- End of Load Stepping -->
         <Parameter name="External Force" type="bool" value="true"/>
         <Parameter name="Nonlinear External Force" type="bool" value="true"/>
@@ -28,9 +28,9 @@
 
         <Parameter name="Refinement Level" type="int" value="0"/>
        
-        <Parameter name="relNonLinTol" type="double" value="1.0e-9"/>
-        <Parameter name="absNonLinTol" type="double" value="1.0e-9"/>
-        <Parameter name="updateTol" type="double" value="1.0e-9"/>
+        <Parameter name="relNonLinTol" type="double" value="1.0e-8"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-8"/>
+        <Parameter name="updateTol" type="double" value="1.0e-8"/>
         <Parameter name="Combo" type="string" value="OR"/>
         <Parameter name="Use update tol" type="bool" value="true"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
@@ -44,14 +44,14 @@
         <Parameter name="Viscosity" type="double" value="1.0"/>
         <Parameter name="Density" type="double" value="1000.0"/>
         <Parameter name="m" type="double" value="0."/>
-        <Parameter name="D0" type="double" value="6.e-03"/>
+        <Parameter name="D0" type="double" value="6.e-02"/>
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
     </ParameterList>
     
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="cube_h_1.mesh"/> <!-- partialArtery -->
+        <Parameter name="Mesh 1 Name" type="string" value="artery_h_025.mesh"/> <!-- partialArtery -->
         <Parameter name="Mesh 2 Name" type="string" value="cube_h_1.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
@@ -81,12 +81,12 @@
         <Parameter name="ExportID" type="int" value="7"/>
         <Parameter name="ParaView export subdomains" type="bool" value="true"/>
         
-        <Parameter name="Export Suffix" type="string" value=""/>
+        <Parameter name="Export Suffix" type="string" value="_100_procs"/>
         <Parameter name="Export Data" type="bool" value="true"/>
         <Parameter name="Export Extra Data" type="bool" value="false"/>
         <Parameter name="Export drag and lift" type="bool" value="true"/>
         
-        <Parameter name="Preconditioner Method" type="string" value="Teko"/> <!-- Monolithic, FaCSI, FaCSI-Teko -->
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/> <!-- Monolithic, FaCSI, FaCSI-Teko -->
        
         <Parameter name="Only Diagonal" type="bool" value="false"/>
 
@@ -109,11 +109,11 @@
             <Parameter name="Number of Segments" type="int" value="4"/>
             <ParameterList name="1">
                 <Parameter name="Start Time" type="double" value="0."/>
-                <Parameter name="dt" type="double" value="0.0125"/>
+                <Parameter name="dt" type="double" value="0.05"/>
             </ParameterList>
              <ParameterList name="2">
                 <Parameter name="Start Time" type="double" value="1."/>
-                <Parameter name="dt" type="double" value="0.5"/>
+                <Parameter name="dt" type="double" value="0.25"/>
             </ParameterList>
              <ParameterList name="3">
                 <Parameter name="Start Time" type="double" value="70."/>

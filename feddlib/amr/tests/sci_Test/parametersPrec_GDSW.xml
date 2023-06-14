@@ -15,7 +15,7 @@
                 <Parameter name="TwoLevel" type="bool" value="true"/>
                 <Parameter name="Level Combination" type="string" value="Additive"/><!--Multiplicative,Additive-->
                 <Parameter name="OverlappingOperator Type" type="string" value="AlgebraicOverlappingOperator"/>
-                <Parameter name="CoarseOperator Type" type="string" value="RGDSWCoarseOperator"/><!--GDSWCoarseOperator,IPOUHarmonicCoarseOperator-->
+                <Parameter name="CoarseOperator Type" type="string" value="GDSWCoarseOperator"/><!--GDSWCoarseOperator,IPOUHarmonicCoarseOperator-->
                 <ParameterList name="AlgebraicOverlappingOperator">
                     
                     <Parameter name="Reuse: Symbolic Factorization" type="bool" value="true"/>
@@ -38,21 +38,21 @@
                     <Parameter name="Use Triple MatrixMultiply" type="bool" value="false"/>
                     <Parameter name="Test Unconnected Interface" type="bool" value="false"/>
                     
-                    <Parameter name="Reuse: Coarse Basis" type="bool" value="false"/>
+                    <Parameter name="Reuse: Coarse Basis" type="bool" value="true"/>
                     <Parameter name="Reuse: Coarse Matrix" type="bool" value="false"/>
                     
                     <Parameter name="Reuse: Extension Symbolic Factorization" type="bool" value="true"/>
-                    <Parameter name="Reuse: Coarse Matrix Symbolic Factorization" type="bool" value="true"/>
+                    <Parameter name="Reuse: Coarse Matrix Symbolic Factorization" type="bool" value="false"/>
 
                     <ParameterList name="Blocks">  
                         <ParameterList name="1">
-                            <Parameter name="Exclude" type="string" value="0"/>
+                            <Parameter name="Exclude" type="string" value="2"/>
                             <Parameter name="Use For Coarse Space" type="bool" value="true"/>
                             <Parameter name="Option" type="string" value="1"/>
                             <Parameter name="Rotations" type="bool" value="true"/>
                         </ParameterList>  
                          <ParameterList name="2">
-                            <Parameter name="Exclude" type="string" value="0"/>
+                            <Parameter name="Exclude" type="string" value="1"/>
                             <Parameter name="Use For Coarse Space" type="bool" value="true"/>
                             <Parameter name="Option" type="string" value="1"/>
                             <Parameter name="Rotations" type="bool" value="false"/>
@@ -68,8 +68,8 @@
                     
                     <ParameterList name="Distribution">
                         <Parameter name="Type" type="string" value="linear"/>
-                        <Parameter name="GatheringSteps"  type="int" value="3"/>
-                        <Parameter name="NumProcs" type="int" value="5"/>
+                        <Parameter name="GatheringSteps"  type="int" value="2"/>
+                        <Parameter name="NumProcs" type="int" value="4"/>
                         <Parameter name="Factor" type="double" value="1."/>
                          <ParameterList name="Zoltan2 Parameter">
                             <Parameter name="algorithm" type="string"   value="parmetis"/>
@@ -89,6 +89,68 @@
                     </ParameterList>
                     
                 </ParameterList>
+
+				<ParameterList name="GDSWCoarseOperator">
+			<Parameter name="Store Phi" type="bool" value="true"/>
+                
+                    <Parameter name="Write phi and problem" type="bool" value="false"/>
+                    <Parameter name="Write coarse matrix" type="bool" value="false"/>
+                    
+                    <Parameter name="Use Triple MatrixMultiply" type="bool" value="false"/>
+                    <Parameter name="Test Unconnected Interface" type="bool" value="false"/>
+                    
+                    <Parameter name="Reuse: Coarse Basis" type="bool" value="true"/>
+                    <Parameter name="Reuse: Coarse Matrix" type="bool" value="false"/>
+                    
+                    <Parameter name="Reuse: Extension Symbolic Factorization" type="bool" value="true"/>
+                    <Parameter name="Reuse: Coarse Matrix Symbolic Factorization" type="bool" value="false"/>
+
+                    <ParameterList name="Blocks">  
+                        <ParameterList name="1">
+                            <Parameter name="Exclude" type="string" value="2"/>
+                            <Parameter name="Use For Coarse Space" type="bool" value="true"/>
+                            <Parameter name="Option" type="string" value="1"/>
+                            <Parameter name="Rotations" type="bool" value="true"/>
+                        </ParameterList>  
+                         <ParameterList name="2">
+                            <Parameter name="Exclude" type="string" value="1"/>
+                            <Parameter name="Use For Coarse Space" type="bool" value="true"/>
+                            <Parameter name="Option" type="string" value="1"/>
+                            <Parameter name="Rotations" type="bool" value="false"/>
+                        </ParameterList>                     
+                    </ParameterList>
+                    
+                    <ParameterList name="ExtensionSolver">
+                       <Parameter name="Reuse Symbolic Factorization" type="bool" value="false"/>
+                        <Parameter name="SolverType" type="string" value="Amesos2"/>
+                        <Parameter name="Solver" type="string" value="pardisomkl"/>
+
+                    </ParameterList>
+                    
+                    <ParameterList name="Distribution">
+                        <Parameter name="Type" type="string" value="linear"/>
+                        <Parameter name="GatheringSteps"  type="int" value="2"/>
+                        <Parameter name="NumProcs" type="int" value="4"/>
+                        <Parameter name="Factor" type="double" value="1."/>
+                         <ParameterList name="Zoltan2 Parameter">
+                            <Parameter name="algorithm" type="string"   value="parmetis"/>
+                            <Parameter name="debug_level" type="string"   value="basic_status"/>
+                            <Parameter name="debug_procs" type="string"   value="0"/>
+                            <Parameter name="error_check_level" type="string"   value="basic_assertions"/>
+                            <Parameter name="imbalance_tolerance" type="double"   value="1.1"/>
+                            <Parameter name="timer_type" type="string"   value="macro_timers"/>
+                            <!-- sets num_global_parts = NumProc()/num_global_parts_fraction -->
+                        </ParameterList>
+                    </ParameterList>
+                    
+                    <ParameterList name="CoarseSolver">
+                        <Parameter name="Reuse Symbolic Factorization" type="bool" value="false"/>
+                        <Parameter name="SolverType" type="string" value="Amesos2"/>
+                        <Parameter name="Solver" type="string" value="superludist"/>
+                    </ParameterList>
+                    
+                </ParameterList>
+
                 
             </ParameterList>
             
