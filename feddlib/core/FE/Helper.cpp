@@ -767,6 +767,41 @@ int Helper::getPhi(vec2D_dbl_ptr_Type &Phi,
     return intFE;
 }
 
+int Helper::getFuncAtQuadNodes(vec_dbl_ptr_Type &funcVals,
+                               RhsFunc_Type &rhsFunc, int dim,
+                               std::string FEType, int Degree,
+                               std::string FETypeQuadPoints) {
+
+    int nmbLocElPts;
+    int intFE;
+    double value;
+    vec2D_dbl_ptr_Type QuadPts;
+    vec_dbl_ptr_Type weightsPhi = Teuchos::rcp(new vec_dbl_Type(0));
+    // dummy var for passing to rhs func
+    std::vector<double> paras(1);
+    if (dim == 1 || dim == 2) {
+        getQuadratureValues(dim, Degree, QuadPts, weightsPhi, FEType);
+
+        funcVals.reset(new vec_dbl_Type(weightsPhi->size(), 0.0));
+        for (int k = 0; k < funcVals->size(); k++) {
+            rhsFunc(QuadPts->at(k).data(), &funcVals->at(k), paras.data());
+        }
+    } else if (dim == 3) {
+        if (FETypeQuadPoints != "") {
+            getQuadratureValues(dim, Degree, QuadPts, weightsPhi,
+                                FETypeQuadPoints);
+        } else {
+            getQuadratureValues(dim, Degree, QuadPts, weightsPhi, FEType);
+        }
+        funcVals.reset(new vec_dbl_Type(weightsPhi->size(), 0.0));
+
+        for (int k = 0; k < funcVals->size(); k++) {
+            rhsFunc(QuadPts->at(k).data(), &funcVals->at(k), paras.data());
+        }
+    }
+    return intFE;
+}
+
 /*!
 
 \brief Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information. !! Input can be improved with just delivering the coordinates of the surface nodes to determine the quad points

@@ -154,17 +154,16 @@ public:
                             int Degree,
                			    std::string FETypeQuadPoints="");
 
-	/// @brief Get phi i
-	/// @param dim 
-	/// @param intFE 
-	/// @param i 
-	/// @param p 
-	/// @param value 
-	static void phi(int dim,
-			  int intFE,
-			  int i,
-			  vec_dbl_Type &p,
-			  double* value);
+    static int getFuncAtQuadNodes(vec_dbl_ptr_Type &funcVals, RhsFunc_Type &rhsFunc, int dim, std::string FEType,
+                                  int Degree, std::string FETypeQuadPoints = "");
+
+    /// @brief Get phi i
+    /// @param dim
+    /// @param intFE
+    /// @param i
+    /// @param p
+    /// @param value
+    static void phi(int dim, int intFE, int i, vec_dbl_Type &p, double *value);
 
     static int getPhiGlobal(vec2D_dbl_ptr_Type &Phi,
                             vec_dbl_ptr_Type &weightsPhi,

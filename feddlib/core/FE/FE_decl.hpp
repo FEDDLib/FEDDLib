@@ -208,6 +208,12 @@ class FE {
                                  MatrixPtr_Type &A,
                                  bool callFillComplete = true);
 
+    void assemblyNonlinearLaplace(
+        int dim, std::string FEType, int degree, MultiVectorPtr_Type u_rep,
+        BlockMatrixPtr_Type &A, BlockMultiVectorPtr_Type &resVec,
+        ParameterListPtr_Type params, string assembleMode,
+        bool callFillComplete = true, int FELocExternal = -1);
+
     // Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
 	void assemblyLinearReactionTerm(int dim,
     							std::string FEType,

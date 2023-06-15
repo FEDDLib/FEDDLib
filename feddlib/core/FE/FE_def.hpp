@@ -2526,6 +2526,135 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceVecFieldV2(int dim,
         A->fillComplete();
 }
 
+/*!
+ \brief Assembly of Jacobian for nonlinear Laplace example
+@param[in] dim Dimension
+@param[in] FEType FE Discretization
+@param[in] degree Degree of basis function
+@param[in] u_rep The current solution
+@param[in] A Resulting matrix
+@param[in] resVec Resulting residual
+@param[in] params Params needed by the problem. Placeholder for now.
+@param[in] assembleMode What should be assembled i.e. Rhs (residual) or the
+Jacobian
+@param[in] callFillComplete If Matrix A should be redistributed across MPI procs
+at end of function
+@param[in] FELocExternal ?
+*/
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC, LO, GO, NO>::assemblyNonlinearLaplace(
+    int dim, std::string FEType, int degree, MultiVectorPtr_Type u_rep,
+    BlockMatrixPtr_Type &A, BlockMultiVectorPtr_Type &resVec,
+    ParameterListPtr_Type params, string assembleMode, bool callFillComplete,
+    int FELocExternal) {
+
+    ElementsPtr_Type elements = this->domainVec_.at(0)->getElementsC();
+
+    // Only scalar laplace
+    int dofs = 1;
+
+    vec2D_dbl_ptr_Type pointsRep = this->domainVec_.at(0)->getPointsRepeated();
+    MapConstPtr_Type map = this->domainVec_.at(0)->getMapRepeated();
+
+    vec_dbl_Type solution_u;
+    vec_dbl_ptr_Type rhsVec;
+
+    int numNodes = 3;
+    if (FEType == "P2") {
+        numNodes = 6;
+    }
+    if (dim == 3) {
+        numNodes = 4;
+        if (FEType == "P2") {
+            numNodes = 10;
+        }
+    }
+
+    // Tupel construction follows follwing pattern:
+    // string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e.
+    // "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per
+    // element)
+    tuple_disk_vec_ptr_Type problemDisk =
+        Teuchos::rcp(new tuple_disk_vec_Type(0));
+    tuple_ssii_Type temp("Solution", FEType, dofs, numNodes);
+    problemDisk->push_back(temp);
+
+    // Construct an assembler for each element if not already done
+    if (assemblyFEElements_.size() == 0) {
+        initAssembleFEElements("NonLinearLaplace", problemDisk, elements, params, pointsRep, domainVec_.at(0)->getElementMap());
+    } else if (assemblyFEElements_.size() != elements->numberElements()) {
+        TEUCHOS_TEST_FOR_EXCEPTION(
+            true, std::logic_error,
+            "Number Elements not the same as number assembleFE elements.");
+    }
+
+    MultiVectorPtr_Type resVec_u;
+    BlockMultiVectorPtr_Type resVecRep;
+
+    if (assembleMode != "Rhs") {
+        // add new or overwrite existing block (0,0) of system matrix
+        // This is done in specific problem class for most other problems
+        // Placing it here instead as more fitting
+        auto A_block_zero_zero = Teuchos::rcp(
+            new Matrix_Type(this->domainVec_.at(0)->getMapUnique(), this->domainVec_.at(0)->getApproxEntriesPerRow()));
+
+        A->addBlock(A_block_zero_zero, 0, 0);
+    } else {
+        // Or same for the residual vector
+        resVec_u = Teuchos::rcp(new MultiVector_Type(map, 1));
+        resVecRep = Teuchos::rcp(new BlockMultiVector_Type(1));
+        resVecRep->addBlock(resVec_u, 0);
+    }
+    // Call assembly routines on each element
+    for (UN T = 0; T < assemblyFEElements_.size(); T++) {
+        vec_dbl_Type solution(0);
+
+        // Update solution on the element
+        solution_u = getSolution(elements->getElement(T).getVectorNodeList(),
+                                 u_rep, dofs);
+        solution.insert(solution.end(), solution_u.begin(), solution_u.end());
+        assemblyFEElements_[T]->updateSolution(solution);
+
+        if (assembleMode == "Jacobian") {
+            SmallMatrixPtr_Type elementMatrix;
+            assemblyFEElements_[T]->assembleJacobian();
+            elementMatrix = assemblyFEElements_[T]->getJacobian();
+            // Insert (additive) the local element Jacobian into the global
+            // matrix
+            assemblyFEElements_[T]
+                ->advanceNewtonStep(); // n genereal non linear solver step
+            addFeBlock(A, elementMatrix, elements->getElement(T), map, 0, 0,
+                       problemDisk);
+        }
+
+        if (assembleMode == "Rhs") {
+            assemblyFEElements_[T]->assembleRHS();
+            rhsVec = assemblyFEElements_[T]->getRHS();
+            // Name RHS comes from solving linear systems
+            // For nonlinear systems RHS synonymous to residual
+            // Insert (additive) the updated residual into the global residual
+            // vector
+            addFeBlockMv(resVecRep, rhsVec, elements->getElement(T), dofs);
+        }
+    }
+    if (callFillComplete && assembleMode != "Rhs") {
+        // Signal that editing A has finished. This causes the entries of A to
+        // be redistributed across the MPI ranks
+        A->getBlock(0, 0)->fillComplete(domainVec_.at(0)->getMapUnique(),
+                                        domainVec_.at(0)->getMapUnique());
+    }
+    if (assembleMode == "Rhs") {
+        // Export from overlapping residual to unique residual
+        MultiVectorPtr_Type resVecUnique = Teuchos::rcp(
+            new MultiVector_Type(domainVec_.at(0)->getMapUnique(), 1));
+        resVecUnique->putScalar(0.);
+        resVecUnique->exportFromVector(resVec_u, true, "Add");
+        resVec->addBlock(resVecUnique, 0);
+    }
+}
+
+
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAndStressAceFEM(int dim,
                                                                 std::string FEType,
