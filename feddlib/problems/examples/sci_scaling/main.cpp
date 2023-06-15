@@ -527,7 +527,7 @@ int main(int argc, char *argv[])
 			}
         }
 
-
+        domainStructure->getElementMap()->print();
 
         if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
 		   // ########################

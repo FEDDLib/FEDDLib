@@ -186,7 +186,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
         solMV = problemPtr->getSolution()->getThyraMultiVector();
 
     Thyra::assign(initialGuess.ptr(), *solMV->col(0));
-    
+
     //Thyra::V_S(initialGuess.ptr(),Teuchos::ScalarTraits<SC>::zero());
     Teuchos::RCP<NOX::Thyra::Group> nox_group(new NOX::Thyra::Group(initialGuess,
                                                                     problemPtr.getConst(),

@@ -285,6 +285,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
     if (!useNodeLists)
         nodeListVec = Teuchos::null;
 
+   // timeProblem_->getSystemCombined()->print();
     //Set Precondtioner lists
     if (!precondtionerIsBuilt_) {
         if ( !precType.compare("FROSch") ){

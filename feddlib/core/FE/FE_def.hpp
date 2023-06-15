@@ -6353,6 +6353,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
 
                     double *residuumVector;
                     #ifdef FEDD_HAVE_ACEGENINTERFACE
+                    
                     AceGenInterface::PressureTriangle3D6 pt(valueFunc[0], 1., 35, &positions[0], &solution_d[0]);
                     pt.computeTangentResidual();
                     residuumVector = pt.getResiduum();
@@ -6446,6 +6447,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
 
                     residuumVector = pt.getResiduum();
                     stiffMat = pt.getStiffnessMatrix();
+                    #endif
 
                     // getResiduumVectorRext(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, residuumVector);
                     // getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, stiffMat); // 16, 35 
@@ -6511,7 +6513,6 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                             valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
                         }
                     }
-                    #endif
 
                     // free(stiffMat);
                     // free(stiffnessMatrixFlat);
