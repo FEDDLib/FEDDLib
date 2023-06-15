@@ -203,6 +203,11 @@ namespace FEDD {
         */
         double getTimeIncrement(){return timeIncrement_;};
 
+        void setGlobalElementID(GO goID){globalElementID_ = goID;};
+
+        GO getGlobalElementID(){return globalElementID_;};
+
+
     protected:
 
         /*!
@@ -241,6 +246,7 @@ namespace FEDD {
         ParameterListPtr_Type params_;
         vec_dbl_ptr_Type solution_ ;
         double timeIncrement_;
+        GO globalElementID_;
 
         friend class AssembleFEFactory<SC,LO,GO,NO>;
     };

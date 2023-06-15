@@ -17,6 +17,8 @@ solution_(0)
 
 	timeStep_ =0. ;
 	newtonStep_ =0 ;
+	globalElementID_=-1; // First not set
+
 
 	params_=params;
 

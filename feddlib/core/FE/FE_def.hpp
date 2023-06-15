@@ -149,7 +149,7 @@ void FE<SC,LO,GO,NO>::assemblyLinearElasticity(int dim,
 	problemDisk->push_back(displacement);
 
 	if(assemblyFEElements_.size()== 0)
-	 	initAssembleFEElements("LinearElasticity",problemDisk,elements, params,pointsRep);
+	 	initAssembleFEElements("LinearElasticity",problemDisk,elements, params,pointsRep,domainVec_.at(0)->getElementMap());
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
 
@@ -243,7 +243,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 
 
 	if(assemblyFEElements_.size()== 0)
-	 	initAssembleFEElements(nonLinElasModell,problemDisk,elements, params,pointsRep);
+	 	initAssembleFEElements(nonLinElasModell,problemDisk,elements, params,pointsRep,domainVec_.at(0)->getElementMap());
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
 	
@@ -333,7 +333,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
     //cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  endl;
 
 	if(assemblyFEElements_.size()== 0)
-	 	initAssembleFEElements(nonLinElasModell,problemDisk,elements, params,pointsRep);
+	 	initAssembleFEElements(nonLinElasModell,problemDisk,elements, params,pointsRep,domain->getElementMap());
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
 	
@@ -467,7 +467,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
 
 	if(assemblyFEElements_.size()== 0){
-       	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep);
+       	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep,domainVec_.at(FElocSolid)->getElementMap());
     }
 	else if(assemblyFEElements_.size() != elementsChem->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
@@ -646,7 +646,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffuBlock(int dim,
 	string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
 
 	if(assemblyFEElements_.size()== 0){
-       	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep);
+       	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep,domainVec_.at(FElocSolid)->getElementMap());
     }
 	else if(assemblyFEElements_.size() != elementsChem->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
@@ -888,9 +888,9 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 	if(assemblyFEElements_.size()== 0){
         if(params->sublist("Parameter").get("Newtonian",true) == false)
-	 	    initAssembleFEElements("NavierStokesNonNewtonian",problemDisk,elements, params,pointsRep); // In cas of non Newtonian Fluid
+	 	    initAssembleFEElements("NavierStokesNonNewtonian",problemDisk,elements, params,pointsRep,domainVec_.at(FElocVel)->getElementMap()); // In cas of non Newtonian Fluid
         else
-        	initAssembleFEElements("NavierStokes",problemDisk,elements, params,pointsRep);
+        	initAssembleFEElements("NavierStokes",problemDisk,elements, params,pointsRep,domainVec_.at(FElocVel)->getElementMap());
     }
 	else if(assemblyFEElements_.size() != elements->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
@@ -1069,7 +1069,7 @@ void FE<SC,LO,GO,NO>::addFeBlock(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type ele
 
 */
 template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep){
+void FE<SC,LO,GO,NO>::initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep, MapConstPtr_Type elementMap){
     
 	vec2D_dbl_Type nodes;
 	for (UN T=0; T<elements->numberElements(); T++) {
@@ -1079,6 +1079,8 @@ void FE<SC,LO,GO,NO>::initAssembleFEElements(string elementType,tuple_disk_vec_p
 		AssembleFEFactory<SC,LO,GO,NO> assembleFEFactory;
 
 		AssembleFEPtr_Type assemblyFE = assembleFEFactory.build(elementType,elements->getElement(T).getFlag(),nodes, params,problemDisk);
+
+        assemblyFE->setGlobalElementID(elementMap->getGlobalElement(T));
 
 		assemblyFEElements_.push_back(assemblyFE);
 
