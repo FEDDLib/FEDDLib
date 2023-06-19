@@ -794,7 +794,7 @@ int main(int argc, char *argv[])
             if (!sci.problemStructure_.is_null()){
                 if(bcType=="Cube"){
 					if(rhsType=="Constant")
-		    		 	sci.problemStructure_->addRhsFunction( rhsArtery,0 );
+		    		 	sci.problemStructure_->addRhsFunction( rhsXY,0 );
 		    		if(rhsType=="Paper")
 		    		 	sci.problemStructure_->addRhsFunction( rhsCubePaper,0 );
 		    		if(rhsType=="Heart Beat")
@@ -822,7 +822,7 @@ int main(int argc, char *argv[])
             else{             
 				if(bcType=="Cube"){
 					if(rhsType=="Constant")
-		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsArtery,0 );
+		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsXY,0 );
 		    		if(rhsType=="Paper")
 		        		sci.problemStructureNonLin_->addRhsFunction( rhsCubePaper,0 );
 		    		if(rhsType=="Heart Beat")
