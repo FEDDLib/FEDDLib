@@ -11,7 +11,7 @@
         
         <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
         <Parameter name="Inflow Ramp" type="double" value="0.0"/><!--2d:2.0, Richter 3d: 1.0-->
-        <Parameter name="Volume force" type="double" value="0.016"/>
+        <Parameter name="Volume force" type="double" value="-0.016"/>
         <Parameter name="Source Type" type="string"   value="surface"/>
         <Parameter name="Model Geometry" type="string" value="Laplace"/>
         

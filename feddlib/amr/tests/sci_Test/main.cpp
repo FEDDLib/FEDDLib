@@ -133,6 +133,39 @@ void rhsYZ(double* x, double* res, double* parameters){
     return;
 }
 
+
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStep (lambda)
+// 3 : LoadStep end time
+// 4 : Flag 
+
+void rhsArtery(double* x, double* res, double* parameters){
+
+    double force = parameters[1];
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
+
+  	res[0] =0.;
+    res[1] =0.;
+    res[2] =0.;
+    
+    if(parameters[0]+1.e-12 < TRamp)
+        force = (parameters[0]+loadStepSize) * force ;
+    else
+        force = parameters[1];
+
+
+    if(parameters[5] == 5){
+      	res[0] = force;
+        res[1] = force;
+        res[2] = force;
+    }
+    
+    return;
+}
+
 // Parameter Structure
 // 0 : time
 // 1 : force
@@ -311,10 +344,12 @@ void rhsCubePaper(double* x, double* res, double* parameters){
             
 }
 
+
 void dummyFunc(double* x, double* res, double t, const double* parameters)
 {
     return;
 }
+
 
 typedef unsigned UN;
 typedef double SC;
@@ -740,7 +775,7 @@ int main(int argc, char *argv[])
                 sci.problemStructureNonLin_->addRhsFunction( rhsX,0 );
             
         }
-               else if (dim==3) {
+        else if (dim==3) {
             
             if (!sci.problemStructure_.is_null()){
                 if(bcType=="Cube"){
@@ -754,7 +789,7 @@ int main(int argc, char *argv[])
 				}
 				else if(bcType=="Artery"){
 					if(rhsType=="Constant")
-		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+		    		 	sci.problemStructure_->addRhsFunction( rhsArtery,0 );
 					if(rhsType=="Paper")
             		 	sci.problemStructure_->addRhsFunction( rhsArteryPaper,0 );
             		if(rhsType=="Heart Beat")
@@ -782,7 +817,7 @@ int main(int argc, char *argv[])
 				}
 				else if(bcType=="Artery"){
 					if(rhsType=="Constant")
-		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsArtery,0 );
 					if(rhsType=="Paper")
             		 	sci.problemStructureNonLin_->addRhsFunction( rhsArteryPaper,0 );
             		if(rhsType=="Heart Beat")

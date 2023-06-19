@@ -941,7 +941,6 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
-        this->mapUnique_->print();
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
         this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 

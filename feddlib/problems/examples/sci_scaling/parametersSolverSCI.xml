@@ -31,6 +31,9 @@
 
     <ParameterList name="NOXSolver">
         <Parameter name="Nonlinear Solver" type="string" value="Line Search Based"/>
+        <ParameterList name="Line Search">
+            <Parameter name="Method" type="string" value="Full Step"/>
+        </ParameterList>
         <ParameterList name="Direction">
             <ParameterList name="Newton">
                 <Parameter name="Forcing Term Method" type="string" value="Constant"/> <!-- Constant, Type 1, Type 2-->
