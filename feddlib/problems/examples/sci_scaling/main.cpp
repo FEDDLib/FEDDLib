@@ -132,6 +132,39 @@ void rhsYZ(double* x, double* res, double* parameters){
     return;
 }
 
+
+// Parameter Structure
+// 0 : time
+// 1 : force
+// 2 : loadStep (lambda)
+// 3 : LoadStep end time
+// 4 : Flag 
+
+void rhsArtery(double* x, double* res, double* parameters){
+
+    double force = parameters[1];
+    double loadStepSize = parameters[2];
+    double TRamp = parameters[3];
+
+  	res[0] =0.;
+    res[1] =0.;
+    res[2] =0.;
+    
+    if(parameters[0]+1.e-12 < TRamp)
+        force = (parameters[0]+loadStepSize) * force ;
+    else
+        force = parameters[1];
+
+
+    if(parameters[5] == 5){
+      	res[0] = force;
+        res[1] = force;
+        res[2] = force;
+    }
+    
+    return;
+}
+
 // Parameter Structure
 // 0 : time
 // 1 : force
@@ -526,9 +559,19 @@ int main(int argc, char *argv[])
 				domainChem = domainP1struct;
 			}
         }
-
+        /*vec2D_dbl_ptr_Type pointsUni_ = domainStructure->getPointsUnique();
+    
+        for(int i=0; i<domainStructure->getMapUnique()->getNodeNumElements(); i++) {
+            cout << " Node = " << domainStructure->getMapUnique()->getGlobalElement(i) << " " << (*pointsUni_)[i][0] << " " << (*pointsUni_)[i][1] << " " << (*pointsUni_)[i][2] << endl; 
+        }
+        for (int i=0; i<domainStructure->getElementsC()->numberElements(); i++){
+            cout << " Element T = " << i << " ";
+            for(int j=0; j< domainStructure->getElementsC()->getElement(i).getVectorNodeList().size(); j++)
+                cout << domainStructure->getElementsC()->getElement(i).getVectorNodeList().at(j)  << " ";
+            cout << endl;
+        }
         domainStructure->getElementMap()->print();
-
+        cout << " Num Elements " << domainStructure->getMesh()->getNumElementsGlobal() << endl;*/
         if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
 		   // ########################
 		    // Flags check
@@ -657,6 +700,9 @@ int main(int argc, char *argv[])
             bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Y_Z", dim);
             bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_X_Z", dim);
 
+             bcFactoryStructure->addBC(zeroDirichlet3D, 99, 0, domainStructure, "Dirichlet", dim);
+
+
         }
         else if(dim==3 && bcType=="Artery"){
         
@@ -718,7 +764,7 @@ int main(int argc, char *argv[])
             if (!sci.problemStructure_.is_null()){
                 if(bcType=="Cube"){
 					if(rhsType=="Constant")
-		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+		    		 	sci.problemStructure_->addRhsFunction( rhsArtery,0 );
 		    		if(rhsType=="Paper")
 		    		 	sci.problemStructure_->addRhsFunction( rhsCubePaper,0 );
 		    		if(rhsType=="Heart Beat")
@@ -727,7 +773,7 @@ int main(int argc, char *argv[])
 				}
 				else if(bcType=="Artery"){
 					if(rhsType=="Constant")
-		    		 	sci.problemStructure_->addRhsFunction( rhsYZ,0 );
+		    		 	sci.problemStructure_->addRhsFunction( rhsArtery,0 );
 					if(rhsType=="Paper")
             		 	sci.problemStructure_->addRhsFunction( rhsArteryPaper,0 );
             		if(rhsType=="Heart Beat")
@@ -746,7 +792,7 @@ int main(int argc, char *argv[])
             else{             
 				if(bcType=="Cube"){
 					if(rhsType=="Constant")
-		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsArtery,0 );
 		    		if(rhsType=="Paper")
 		        		sci.problemStructureNonLin_->addRhsFunction( rhsCubePaper,0 );
 		    		if(rhsType=="Heart Beat")
@@ -755,7 +801,7 @@ int main(int argc, char *argv[])
 				}
 				else if(bcType=="Artery"){
 					if(rhsType=="Constant")
-		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsYZ,0 );
+		    		 	sci.problemStructureNonLin_->addRhsFunction( rhsArtery,0 );
 					if(rhsType=="Paper")
             		 	sci.problemStructureNonLin_->addRhsFunction( rhsArteryPaper,0 );
             		if(rhsType=="Heart Beat")

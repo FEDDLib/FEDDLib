@@ -65,8 +65,6 @@ namespace FEDD
 	void AssembleFE_SCI_NH<SC, LO, GO, NO>::advanceInTime(double dt)
 	{
 
-		this->timeIncrement_ = dt;
-
 		// If we have a time segment setting we switch to the demanded time increment
 		/*for(int i=0; i<numSegments_ ; i++){
 			if(this->timeStep_ +1.0e-12 > timeParametersVec_[i][0])
@@ -74,6 +72,8 @@ namespace FEDD
 		}*/
        
 		this->timeStep_ = this->timeStep_ + this->timeIncrement_;
+
+		this->timeIncrement_ = dt;
 
 		for (int i = 0; i < 40; i++)
 		{
@@ -89,6 +89,7 @@ namespace FEDD
 	{
 
 		this->rhsVec_.reset(new vec_dbl_Type(dofsElement_, 0.));
+#ifdef FEDD_HAVE_ACEGENINTERFACE
 
 		std::vector<double> positions(30);
 		int count = 0;
@@ -129,18 +130,23 @@ namespace FEDD
 		neoHookeElement.computeTangentResidual();
 		
 		double *residuum = neoHookeElement.getResiduum();
-		
+
 		for (int i = 0; i < 40; i++)
 			(*this->rhsVec_)[i] = residuum[i];
 
-		
+
+#endif
+	
 	}
+
 
 	template <class SC, class LO, class GO, class NO>
 	void AssembleFE_SCI_NH<SC, LO, GO, NO>::assembleDeformationDiffusionNeoHook(SmallMatrixPtr_Type &elementMatrix)
 	{
 
 		std::vector<double> positions(30);
+#ifdef FEDD_HAVE_ACEGENINTERFACE
+
 		int count = 0;
 		for (int i = 0; i < 10; i++)
 		{
@@ -190,6 +196,8 @@ namespace FEDD
 		}
 
 	}
+#endif
+
 
 } // namespace FEDD
 #endif // ASSEMBLEFE_SCI_NH_DEF_hpp

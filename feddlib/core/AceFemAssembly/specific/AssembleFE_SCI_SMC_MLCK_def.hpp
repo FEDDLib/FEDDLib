@@ -131,8 +131,6 @@ void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::assembleJacobian() {
 template <class SC, class LO, class GO, class NO>
 void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::advanceInTime( double dt){
 
-	this->timeIncrement_ = dt;
-
 	// If we have a time segment setting we switch to the demanded time increment
 	/*for(int i=0; i<numSegments_ ; i++){
 		if(this->timeStep_ +1.0e-12 > timeParametersVec_[i][0])
@@ -140,6 +138,8 @@ void AssembleFE_SCI_SMC_MLCK<SC,LO,GO,NO>::advanceInTime( double dt){
 	}*/
 	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 	
+	this->timeIncrement_ = dt;
+
 	for(int i=0; i< 48; i++){
 	//	if(this->timeStep_  > startTime_ +dt )
 			history_[i] = historyUpdated_[i];

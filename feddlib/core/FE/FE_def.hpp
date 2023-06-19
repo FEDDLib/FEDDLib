@@ -502,10 +502,10 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
  		SmallMatrixPtr_Type elementMatrix;
 
         // ------------------------
-        //buildTransformation(elementsSolid->getElement(T).getVectorNodeList(), pointsRep, B, FETypeSolid);
-        //detB = B.computeInverse(Binv);
-        //absDetB = std::fabs(detB);
-        //cout << " Determinante " << detB << endl;
+        /*buildTransformation(elementsSolid->getElement(T).getVectorNodeList(), pointsRep, B, FETypeSolid);
+        detB = B.computeInverse(Binv);
+        absDetB = std::fabs(detB);
+        cout << " Determinante " << detB << endl;*/
         // ------------------------
 
 
@@ -6328,21 +6328,24 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
         for (int surface=0; surface<fe.numSubElements(); surface++) {
             FiniteElement feSub = subEl->getElement( surface  );
             if(subEl->getDimension() == dim-1 ){
-                
+               
                 vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
 
-
+            
 		        vec_dbl_Type solution_d = getSolution(nodeList, d_rep,dim);
                 vec2D_dbl_Type nodes;
 		        nodes = getCoordinates(nodeList, pointsRep);
+
+
                 double positions[18];
                 int count =0;
                 for(int i=0;i<6;i++)
                     for(int j=0;j<3;j++){
                         positions[count] = nodes[i][j];
                         count++;
-                    }
 
+                    }
+               		
                 //for (int j=0; j<value.size(); j++)
                 //    value[j] *= elScaling;
                 paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();
@@ -6417,18 +6420,20 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
         for (int surface=0; surface<fe.numSubElements(); surface++) {
             FiniteElement feSub = subEl->getElement( surface  );
             if(subEl->getDimension() == dim-1 ){
-                vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();             
-                 
-                vec_dbl_Type solution_d = getSolution(nodeList, d_rep,dim);
+                vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+
+		        vec_dbl_Type solution_d = getSolution(nodeList, d_rep,dim);
                 vec2D_dbl_Type nodes;
 		        nodes = getCoordinates(nodeList, pointsRep);
+
+
                 double positions[18];
                 int count =0;
                 for(int i=0;i<6;i++){
                     for(int j=0;j<3;j++){
                         positions[count] = nodes[i][j];
-
                         count++;
+
                     }
                 }
 

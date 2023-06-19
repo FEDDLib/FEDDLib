@@ -151,16 +151,22 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	dofsElement_ = dofsSolid_*numNodesSolid_ + dofsChem_*numNodesChem_; // "Dimension of return matrix"
 
 	// Einlesen durch Parameterdatei irgendwann cool
-	this->history_ ={1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+	this->history_ ={1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.82758, 1.82758, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.82758, 1.82758, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.82758, 1.82758, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.82758, 1.82758, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
+					 /*{1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
                      1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
                      1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
-	
-				   
+                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};*/
+
+	this->historyLength_ = 0;	
+#ifdef FEDD_HAVE_ACEGENINTERFACE	   
 	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 tempElem(iCode_);
 	this->historyLength_ = tempElem.getHistoryLength();
 	
 	TEUCHOS_TEST_FOR_EXCEPTION(this->historyLength_ != this->history_.size(), std::logic_error, "History input length does not match history size of model! \n Hisory input length: " << this->history_.size() << "\n History size of model: " << this->historyLength_ << "\n");
+#endif
 
 	this->historyUpdated_.resize(this->historyLength_,0.);
 
@@ -197,8 +203,6 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleJacobi
 template <class SC, class LO, class GO, class NO>
 void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::advanceInTime( double dt){
 
-	this->timeIncrement_ = dt;
-
 	// If we have a time segment setting we switch to the demanded time increment
 	/*for(int i=0; i<numSegments_ ; i++){
 		if(this->timeStep_+1.0e-12 > timeParametersVec_[i][0])
@@ -207,8 +211,10 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::advanceInTime(
 
 	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 	
+	this->timeIncrement_ = dt;
+
 	for(int i=0; i< this->historyLength_; i++){
-	//	if(this->timeStep_  > this->activeStartTime_ +dt )
+		//if(this->timeStep_  > activeStartTime_ +dt )
 			this->history_[i] = this->historyUpdated_[i];
 	}
 
@@ -235,10 +241,12 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 		for(int j=0;j<3;j++){
 			positions[count] = this->getNodesRefConfig()[i][j];
 			count++;
-	//		cout << " i " << count-1 << " " <<  positions[count-1] << endl;
+	//		cout << " | " <<  positions[count-1] ;
 		}
+	//	cout << endl;
+
 	}
-	//cout << endl;
+	//cout << " --- " << endl;
 	// std::ofstream myfile;
 	// myfile.open ("outputs.txt",ios::app);
 	// myfile << "Positions " << endl;
@@ -250,14 +258,14 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 	double displacements[30];
 	for(int i = 0; i < 30; i++)
 	{
-		displacements[i]=(*this->solution_)[i];		
+		displacements[i]=(*this->solution_)[i];	
 	}
 
 
-	std::vector<double> history(this->historyLength_, 0.0); 
-    for(int i = 0; i < this->historyLength_; i++)
+	std::vector<double> history(this->historyLength_, 0.0);
+    for(int i = 0; i < this->historyLength_; i++){
 	    history[i] = this->history_[i];
-   
+	}
    
     double concentrations[10];
     for(int i = 0; i < 10; i++)
@@ -283,6 +291,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 
     
     double time = this->getTimeStep()+deltaT;
+
     double subIterationTolerance = 1.e-7;
  
     // immer speicher und wenn es konvergiert, dann zur history machen
@@ -309,14 +318,16 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
 	// myfile.close();
 
 	double *residuumRDyn = elem.getResiduumVectorRdyn();
-
+	
 	for(int i=0; i< 30 ; i++){
 		(*this->rhsVec_)[i] = residuumRint[i]; //+residuumRDyn[i];
 	}
+
 	double *residuumRc = elem.getResiduumVectorRc();
 
 	for(int i=0; i< 10 ; i++){		
-		(*this->rhsVec_)[i+30] = residuumRc[i] ;
+		(*this->rhsVec_)[i+30] = residuumRc[i];
+
 	}
 
 
@@ -367,8 +378,12 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 		
 	}
   	std::vector<double> history(this->historyLength_,0.0);// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
-  	for(int i = 0; i < this->historyLength_; i++)
-      history[i] = this->history_[i];   //if (integrationCode==19)
+  	//cout << "History_ " ; 
+    for(int i = 0; i < this->historyLength_; i++){
+	    history[i] = this->history_[i];
+		//cout << history[i] << ", ";
+	}
+	//cout << endl;
 
 
     double concentrations[10];
@@ -419,14 +434,14 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 		this->historyUpdated_[i] = historyUpdated[i];
 	}
 
-
 	for(int i=0; i< 30; i++){
 		for(int j=0; j<30; j++){
 			//if(fabs(stiffnessMatrixKuu[i][j]) > 1e7)
 			//	cout << " !!! Sus entry Kuu [" << i << "][" << j << "] " << stiffnessMatrixKuu[i][j] << endl; 
 			
-			(*elementMatrix)[i][j]=stiffnessMatrixKuu[i][j];
+			(*elementMatrix)[i][j]=stiffnessMatrixKuu[i][j];		
 		}
+		
 	}
 
 	for(int i=0; i< 30; i++){

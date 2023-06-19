@@ -85,7 +85,7 @@
                     <ParameterList name="CoarseSolver">
                         <Parameter name="Reuse Symbolic Factorization" type="bool" value="false"/>
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="superludist"/>
+                        <Parameter name="Solver" type="string" value="pardisomkl"/>
                     </ParameterList>
                     
                 </ParameterList>

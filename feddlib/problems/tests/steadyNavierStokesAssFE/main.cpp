@@ -234,48 +234,92 @@ int main(int argc, char *argv[]) {
             DomainPtr_Type domainPressure;
             DomainPtr_Type domainVelocity;
                               
-            domainPressure.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-            domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-            
-            MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
-            domainP1Array[0] = domainPressure;
-            
-            ParameterListPtr_Type pListPartitioner = sublist( parameterListProblem, "Mesh Partitioner" );
-            MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
-            
-            partitionerP1.readAndPartition();
+           if (!meshType.compare("structured_bfs")) {
+                TEUCHOS_TEST_FOR_EXCEPTION( size%minNumberSubdomains != 0 , std::logic_error, "Wrong number of processors for structured BFS mesh.");
+                if (dim == 2) {
+                    n = (int) (std::pow( size/minNumberSubdomains ,1/2.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
+                    std::vector<double> x(2);
+                    x[0]=-1.0;    x[1]=-1.0;
+                    domainPressure.reset(new Domain<SC,LO,GO,NO>( x, length+1., 2., comm ) );
+                    domainVelocity.reset(new Domain<SC,LO,GO,NO>( x, length+1., 2., comm ) );
+                }
+                else if (dim == 3){
+                    n = (int) (std::pow( size/minNumberSubdomains ,1/3.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
+                    std::vector<double> x(3);
+                    x[0]=-1.0;    x[1]=0.0;    x[2]=-1.0;
+                    domainPressure.reset(new Domain<SC,LO,GO,NO>( x, length+1., 1., 2., comm));
+                    domainVelocity.reset(new Domain<SC,LO,GO,NO>( x, length+1., 1., 2., comm));
+                }
+                domainPressure->buildMesh( 2,"BFS", dim, discPressure, n, m, numProcsCoarseSolve);
+                domainVelocity->buildMesh( 2,"BFS", dim, discVelocity, n, m, numProcsCoarseSolve);
+            }
+	        else if (!meshType.compare("unstructured")) {
+	        
+	            domainPressure.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+	            domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+	            
+	            MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
+	            domainP1Array[0] = domainPressure;
+	            
+	            ParameterListPtr_Type pListPartitioner = sublist( parameterListProblem, "Mesh Partitioner" );
+	            MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
+	            
+	            partitionerP1.readAndPartition();
 
-            if (discVelocity=="P2")
-                domainVelocity->buildP2ofP1Domain( domainPressure );
-            else
-                domainVelocity = domainPressure;
+	            if (discVelocity=="P2")
+	                domainVelocity->buildP2ofP1Domain( domainPressure );
+	            else
+	                domainVelocity = domainPressure;
+	        }
+        
+
       
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
 
             // ####################
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+			if (!bcType.compare("parabolic"))
+                parameter_vec.push_back(1.);//height of inflow region
+            else if(!bcType.compare("parabolic_benchmark") || !bcType.compare("partialCFD"))
+                parameter_vec.push_back(.41);//height of inflow region
+            else if(!bcType.compare("Richter3D"))
+                parameter_vec.push_back(.4);
+            else
+                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Select a valid boundary condition.");
 
 
-          	 parameter_vec.push_back(0.41);//height of inflow region
-
-			if (dim==2){
-                bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
-                bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-//                       bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
+            if ( !bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark") ) {//flag of obstacle
+                if (dim==2){
+                    bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
+                    bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+//                        bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
 //                        bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
-                //bcFactory->addBC(zeroDirichlet2D, 3, 0, domainVelocity, "Dirichlet", dim);
+                    bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
+                }
+                else if (dim==3){
+                    bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
+                    bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+//                        bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
+//                        bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
+                    bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
+                    
+                }
+            }
+            else if (!bcType.compare("partialCFD")) {
+                bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim); // wall
+                bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec); // inflow
                 bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
                 bcFactory->addBC(zeroDirichlet2D, 5, 0, domainVelocity, "Dirichlet", dim);
             }
-            else if (dim==3){
-                bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
-                bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-//                        bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
-//                        bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
-                bcFactory->addBC(zeroDirichlet3D, 2, 0, domainVelocity, "Dirichlet", dim);
-                
+            
+            else if (!bcType.compare("Richter3D")) {
+                bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim); // wall
+                bcFactory->addBC(inflow3DRichter, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec); // inflow
+                bcFactory->addBC(zeroDirichlet3D, 3, 0, domainVelocity, "Dirichlet_Z", dim);
+                bcFactory->addBC(zeroDirichlet3D, 5, 0, domainVelocity, "Dirichlet", dim);
             }
-            // Flag Check
+         
+             // Flag Check
             Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
 			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainVelocity->getMapUnique()));

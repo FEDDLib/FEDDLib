@@ -51,7 +51,7 @@
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="artery_h_025.mesh"/> <!-- partialArtery -->
+        <Parameter name="Mesh 1 Name" type="string" value="artery_h_0_8_L_0_25.mesh"/> <!-- partialArtery -->
         <Parameter name="Mesh 2 Name" type="string" value="cube_h_1.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
@@ -81,7 +81,7 @@
         <Parameter name="ExportID" type="int" value="7"/>
         <Parameter name="ParaView export subdomains" type="bool" value="true"/>
         
-        <Parameter name="Export Suffix" type="string" value="_100_procs"/>
+        <Parameter name="Export Suffix" type="string" value="_test"/>
         <Parameter name="Export Data" type="bool" value="true"/>
         <Parameter name="Export Extra Data" type="bool" value="false"/>
         <Parameter name="Export drag and lift" type="bool" value="true"/>

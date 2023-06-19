@@ -529,8 +529,6 @@ int TimeProblem<SC,LO,GO,NO>::solveAndUpdate( const std::string& criterion, doub
         Teuchos::Array<SC> updateNorm(1);
         nonLinProb->getSolution()->norm2(updateNorm());
         criterionValue = updateNorm[0];
-
-       // nonLinProb->getSolution()->getBlock(0)->print();
     }
 
 
