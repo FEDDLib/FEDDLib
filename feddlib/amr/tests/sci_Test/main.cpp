@@ -291,14 +291,15 @@ void rhsArteryPaper(double* x, double* res, double* parameters){
     double loadStepSize = parameters[2];
     double TRamp = parameters[3];
     double lambda=0.;
+    double heartBeatStart = parameters[4];
     
     if(parameters[0]+1e-12 < TRamp)
         lambda = 0.875*(parameters[0]+loadStepSize);
     else if(parameters[0] <= TRamp+1.e-12)
     	lambda = 0.875;
-    else if( parameters[0] < 2001.5 )
+    else if( parameters[0] < heartBeatStart + 0.5)
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
-    else if( parameters[0] >= 2001.5 && (parameters[0] - std::floor(parameters[0]))< 0.5)
+    else if( parameters[0] >= heartBeatStart + 0.5 && (parameters[0] - std::floor(parameters[0]))< 0.5)
     	lambda= 0.75;
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
@@ -321,13 +322,15 @@ void rhsCubePaper(double* x, double* res, double* parameters){
     double TRamp = parameters[3];
     double lambda=0.;
     
-    if(parameters[5]+1.e-12 < TRamp)
+    double heartBeatStart = parameters[4];
+    
+    if(parameters[0]+1e-12 < TRamp)
         lambda = 0.875*(parameters[0]+loadStepSize);
     else if(parameters[0] <= TRamp+1.e-12)
     	lambda = 0.875;
-    else if( parameters[0] < 1000.5)
+    else if( parameters[0] < heartBeatStart + 0.5)
 		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
-    else if( parameters[0] >= 1000.5 && (parameters[0] - std::floor(parameters[0]))< 0.5)
+    else if( parameters[0] >= heartBeatStart + 0.5 && (parameters[0] - std::floor(parameters[0]))< 0.5)
     	lambda= 0.75;
     else
         lambda = 0.875 - 0.125 * cos(4*M_PI*(parameters[0]));
