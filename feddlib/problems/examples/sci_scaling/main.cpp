@@ -177,6 +177,7 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     res[0] =0.;
     res[1] =0.;
     res[2] = 0.;
+    double lambda=0.;
     double force = parameters[1];
     double loadStepSize = parameters[2];
     double TRamp = parameters[3];
@@ -194,8 +195,8 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     
 
     double t_min = parameters[0] - fmod(parameters[0],1.0); //FlowConditions::t_start_unsteady;
-    double t_max = t_min + 1.0; // One heartbeat lasts 1.0 second    
-    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -0.96  );
+    double t_max = t_min + 0.52; // One heartbeat lasts 1.0 second    
+    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -0.87  );
     
     for(int i=0; i< 20; i++)
         Q += (a[i]*std::cos((i+1.)*y) + b[i]*std::sin((i+1.)*y) ) ;
@@ -205,7 +206,35 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
     Q -= 0.026039341343493;
     Q = (Q - 2.85489)/(7.96908-2.85489);
     
-    if(parameters[0]< heartBeatStart){
+    bool Qtrue=false;
+    if(parameters[0]+1e-12 < TRamp)
+        lambda = 0.875*(parameters[0]+loadStepSize);
+    else if(parameters[0] <= TRamp+1.e-12)
+    	lambda = 0.875;
+    else if (parameters[0] < heartBeatStart)
+    	lambda = 0.875;
+    else if( parameters[0]+1.0e-10 < heartBeatStart + 0.5)
+		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
+    else if( parameters[0] >= heartBeatStart + 0.5 && (parameters[0] - std::floor(parameters[0]))+1.e-10< 0.5)
+    	lambda= 0.75;
+    else{
+        lambda = 0.75; // 0.775+0.125 * cos(4*M_PI*(parameters[0]));
+        Qtrue = true; 
+    } 
+    
+    if(Qtrue){
+    	Q = Q*0.005329;
+    }  
+    else
+    	Q = 0.;
+       
+    if(parameters[5]==5 || parameters[5] == 4){
+        res[0] =lambda*force+Q;
+        res[1] =lambda*force+Q;
+        res[2] =lambda*force+Q;        
+    } 
+    
+   /* if(parameters[0]< heartBeatStart){
     	Q = 0.;
     }
     
@@ -217,7 +246,7 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
         res[1] = force+Q*0.005329;
        	res[2] = force+Q*0.005329;
        	      	
-    }
+    }*/
       
 }
 // Parameter Structure
@@ -228,9 +257,10 @@ void rhsHeartBeatCube(double* x, double* res, double* parameters){
 // 4 : Flag 
 void rhsHeartBeatArtery(double* x, double* res, double* parameters){
 
-    res[0] =0.;
+ res[0] =0.;
     res[1] =0.;
     res[2] = 0.;
+    double lambda=0.;
     double force = parameters[1];
     double loadStepSize = parameters[2];
     double TRamp = parameters[3];
@@ -248,8 +278,8 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     
 
     double t_min = parameters[0] - fmod(parameters[0],1.0); //FlowConditions::t_start_unsteady;
-    double t_max = t_min + 1.0; // One heartbeat lasts 1.0 second    
-    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -0.96 );
+    double t_max = t_min + 0.52; // One heartbeat lasts 1.0 second    
+    double y = M_PI * ( 2.0*( parameters[0]-t_min ) / ( t_max - t_min ) -0.87  );
     
     for(int i=0; i< 20; i++)
         Q += (a[i]*std::cos((i+1.)*y) + b[i]*std::sin((i+1.)*y) ) ;
@@ -259,19 +289,48 @@ void rhsHeartBeatArtery(double* x, double* res, double* parameters){
     Q -= 0.026039341343493;
     Q = (Q - 2.85489)/(7.96908-2.85489);
     
-    if(parameters[0]< heartBeatStart){
+    bool Qtrue=false;
+    if(parameters[0]+1e-12 < TRamp)
+        lambda = 0.875*(parameters[0]+loadStepSize);
+    else if(parameters[0] <= TRamp+1.e-12)
+    	lambda = 0.875;
+    else if (parameters[0] < heartBeatStart)
+    	lambda = 0.875;
+    else if( parameters[0]+1.0e-10 < heartBeatStart + 0.5)
+		lambda = 0.8125+0.0625*cos(2*M_PI*parameters[0]);
+    else if( parameters[0] >= heartBeatStart + 0.5 && (parameters[0] - std::floor(parameters[0]))+1.e-10< 0.5)
+    	lambda= 0.75;
+    else{
+        lambda = 0.75; // 0.775+0.125 * cos(4*M_PI*(parameters[0]));
+        Qtrue = true; 
+    } 
+    
+    if(Qtrue){
+    	Q = Q*0.005329;
+    }  
+    else
+    	Q = 0.;
+       
+    if(parameters[5]==5){
+        res[0] =lambda*force+Q;
+        res[1] =lambda*force+Q;
+        res[2] =lambda*force+Q;        
+    } 
+    
+   /* if(parameters[0]< heartBeatStart){
     	Q = 0.;
     }
+    
     if(parameters[0]+1e-12 < TRamp)
         force = force * (parameters[0]+loadStepSize);
-        
-    if(parameters[5]==5){
-        res[0] = force+Q*0.005329;
+    
+    if(parameters[5] == 5 || parameters[5] == 4){
+     	res[0] = force+Q*0.005329;
         res[1] = force+Q*0.005329;
        	res[2] = force+Q*0.005329;
-    }
-    
-  
+       	      	
+    }*/
+      
 }
 
 
