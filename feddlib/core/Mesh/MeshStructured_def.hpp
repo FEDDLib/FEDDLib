@@ -3248,6 +3248,119 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,string 
                             this->bcFlagRep_->at(i) = 3;
                         }
                     }
+                case 3: //SMC Cube Test
+                    for (int i=0; i<this->pointsUni_->size(); i++) {
+                                            // z=1 Face
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                            this->bcFlagUni_->at(i) = 4;
+                        }
+                        // y=1 Face
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                            this->bcFlagUni_->at(i) = 5;
+                        }
+                        // x=1 Face
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                            this->pointsUni_->at(i).at(1) > (coorRec[1] + tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                            this->pointsUni_->at(i).at(2) > (coorRec[2] + tol) &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + height - tol)) {
+                            this->bcFlagUni_->at(i) = 6;
+                        }
+                        // x=0 Face  
+                        if (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol) ) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                        // y=0 Face
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + tol) ) {
+                            this->bcFlagUni_->at(i) = 2;
+                        }
+                        // z=0 Face
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + tol) ) {
+                            this->bcFlagUni_->at(i) = 3;
+                        }
+
+                            // (0,0,z) Edge
+                        if  (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + tol)  )
+                            this->bcFlagUni_->at(i) = 7;
+
+                            // (0,y,0) Edge
+                        if  (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol)  &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + tol)  )
+                            this->bcFlagUni_->at(i) = 9;
+
+                            // (x,0,0) Edge
+                        if  (this->pointsUni_->at(i).at(1) < (coorRec[1] + tol)  &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + tol)  )
+                            this->bcFlagUni_->at(i) = 8;
+
+                            // (0,0,0) Point
+                        if  (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + tol)  &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + tol)  )
+                            this->bcFlagUni_->at(i) = 0;
+
+                    }
+                    for (int i=0; i<this->pointsRep_->size(); i++) {
+
+                        // z=1 Face
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsRep_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                            this->bcFlagRep_->at(i) = 4;
+                        }
+                    
+                        // y=1 face
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsRep_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                            this->bcFlagRep_->at(i) = 5;
+                        }
+                        //x=1
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                            this->pointsRep_->at(i).at(1) > (coorRec[1] + tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                            this->pointsRep_->at(i).at(2) > (coorRec[2] + tol) &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + height - tol)) {
+                            this->bcFlagRep_->at(i) = 6;
+                        }
+                        // x=0 Face
+                        if (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol) ) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        // z=0 Face
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + tol) ) {
+                            this->bcFlagRep_->at(i) = 3;
+                        }
+                        // y=0 Face
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + tol) ) {
+                            this->bcFlagRep_->at(i) = 2;
+                        }
+                            // (0,0,z) Edge
+                        if  (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + tol)  )
+                            this->bcFlagRep_->at(i) = 7;
+
+                            // (0,y,0) Edge
+                        if  (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol)  &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + tol)  )
+                            this->bcFlagRep_->at(i) = 9;
+
+                            // (x,0,0) Edge
+                        if  (this->pointsRep_->at(i).at(1) < (coorRec[1] + tol)  &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + tol)  )
+                            this->bcFlagRep_->at(i) = 8;
+                            // (0,0,0) Point
+                        if  (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + tol)  &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + tol)  )
+                            this->bcFlagRep_->at(i) = 0;
+
+                    }
                     break;
                 default:
                     break;
@@ -3257,6 +3370,473 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,string 
         default:
             break;
     }
+}
+
+template <class SC, class LO, class GO, class NO>
+void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
+                                                 int N,
+                                                 int M,
+                                                 int numProcsCoarseSolve,
+                                                 std::string underlyingLib){
+
+    using Teuchos::RCP;
+    using Teuchos::rcp;
+    using Teuchos::ScalarTraits;
+   
+    TEUCHOS_TEST_FOR_EXCEPTION(!(M>=1),std::logic_error,"H/h is to small.");
+    TEUCHOS_TEST_FOR_EXCEPTION(this->comm_.is_null(),std::runtime_error,"comm_ is null.");
+
+    bool verbose (this->comm_->getRank() == 0);
+
+    if (verbose) {
+        cout << "-- Building structured 3D Mesh  --" << endl;
+    }
+
+    setRankRange( numProcsCoarseSolve );
+
+    SC eps = ScalarTraits<SC>::eps();
+
+    int         rank = this->comm_->getRank();
+    int         size = this->comm_->getSize() - numProcsCoarseSolve;
+
+    SC      h = length/(M*N);//add variable length/width/heigth
+    SC      H = length/N;
+
+    if (verbose) {
+        cout << "-- H:"<<H << " h:" <<h << " --" << endl;
+        cout << "-- N:"<<N << " M:" <<M << " --" << endl;
+    }
+
+    LO 	nmbPoints_oneDir;
+
+    LO nmbElements;
+    LO nmbPoints;
+    if (FEType == "P2"){
+        nmbPoints_oneDir 	=  N * (2*(M+1)-1) - (N-1);
+        nmbPoints 			= (2*(M+1)-1)*(2*(M+1)-1)*(2*(M+1)-1) - M*M*M;
+    }
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Wrong FE-Type, 5 element subcube devision only available with P2 discretization.");
+
+
+
+    if (verbose) {
+            cout << "-- Number of Points in one direction: " << nmbPoints_oneDir << " ||  Number of Points " << nmbPoints << " --" << endl;
+    }
+    this->FEType_ = FEType;
+
+    GO nmbPGlob_oneDir = N * (M+1) - (N-1);
+
+    this->numElementsGlob_ = 5*(nmbPGlob_oneDir-1)*(nmbPGlob_oneDir-1)*(nmbPGlob_oneDir-1);
+    int MM=M;
+    if (rank>=size) {
+        M = -1; // keine Schleife wird ausgefuehrt
+        nmbElements = 0;
+        nmbPoints = 0;
+    }
+    else{
+        nmbElements = 5*M*M*M; //6*M*M*M;
+    }
+    vec2D_int_ptr_Type elementsVec;
+    vec_int_ptr_Type elementFlag;
+
+
+    this->pointsRep_.reset(new vec2D_dbl_Type(nmbPoints, vec_dbl_Type(3, 0.0)));
+    this->bcFlagRep_.reset(new vec_int_Type (nmbPoints, 10));
+    elementsVec = Teuchos::rcp(new vec2D_int_Type(nmbElements, vec_int_Type(10, -1)));
+    elementFlag = Teuchos::rcp(new vec_int_Type( elementsVec->size(),0 ) );
+    Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
+
+    int counter = 0;
+    int offset_x = (rank % N); // -M*M*M;
+    int offset_y = 0;
+    int offset_z = 0;
+
+    if ((rank % (N*N))>=N) {
+        offset_y = (int) (rank % (N*N))/(N);
+    }
+
+    if ((rank % (N*N*N))>=N*N ) {
+        offset_z = (int) (rank % (N*N*N))/(N*(N));
+    }
+
+    if (verbose) {
+        cout << "-- Building P2 Points Repeated ... " << endl;
+    }
+    cout << " Offsets on Rank " << rank << " || x=" << offset_x << " y=" << offset_y << " z=" << offset_z << endl;
+    this->comm_->barrier();
+
+    bool p1point;
+    int p1_s = 0;
+    int p1_r = 0;
+    int p1_t = 0;
+    int nodeSkip = 0;
+    int offset=0;
+    for (int t=0; t < 2*(M+1)-1; t++) {
+        for (int s=0; s < 2*(M+1)-1; s++) {
+            for (int r=0; r < 2*(M+1)-1; r++) {
+
+                p1point = false;
+                if (s%2==0 && r%2==0 && t%2==0) {
+                    p1point = true;
+                    p1_s = s/2;
+                    p1_r = r/2;
+                    p1_t = t/2;
+                }
+
+                (*this->pointsRep_)[counter][0] = r*h/2.0 + offset_x * H;
+                if ((*this->pointsRep_)[counter][0]<eps && (*this->pointsRep_)[counter][0]>-eps) (*this->pointsRep_)[counter][0]=0.0;
+                (*this->pointsRep_)[counter][1] = s*h/2.0 + offset_y * H;
+                if ((*this->pointsRep_)[counter][1]<eps && (*this->pointsRep_)[counter][1]>-eps) (*this->pointsRep_)[counter][1]=0.0;
+                (*this->pointsRep_)[counter][2] = t*h/2.0 + offset_z * H;
+                if ((*this->pointsRep_)[counter][2]<eps && (*this->pointsRep_)[counter][2]>-eps) (*this->pointsRep_)[counter][2]=0.0;
+
+                if(N>1){
+                    offset=0;
+                    if(s%2 == 1 && t%2 == 1 && r%2==0)
+                        offset = M*offset_x +N*M*M*offset_y + N*M*(s-1)/2; // pre-skip
+
+                    if(s%2 == 0 && t%2==1 ){ // letzte wand der subwürfel nach skip 
+                        offset +=  M*M*N*offset_y + s/2*M*N;//M*offset_x 
+                        nodeSkip=0; 
+                    }
+                    if(t%2==0 && t>0 )
+                        offset += M*M*N*N * t/2; // z- ebenen zwischen subdomains
+                    if(t%2==1 && t>0 )
+                        offset += M*M*N*N * (t-1)/2;
+                }                   
+
+                pointsRepGlobMapping[counter] = r + s*nmbPoints_oneDir + t*nmbPoints_oneDir*nmbPoints_oneDir \
+                + offset_x*(2*(M+1)-2) + offset_y*(nmbPoints_oneDir)*(2*(M+1)-2) + offset_z*(nmbPoints_oneDir)*(nmbPoints_oneDir)*(2*(M+1)-2) \
+                -offset_z*(N*N*M*M*M)-nodeSkip-offset;
+
+                if ((*this->pointsRep_)[counter][0] > (coorRec[0]+length-eps) || (*this->pointsRep_)[counter][0] < (coorRec[0]+eps) ||
+                    (*this->pointsRep_)[counter][1] > (coorRec[1]+width-eps) 	|| (*this->pointsRep_)[counter][1] < (coorRec[1]+eps) ||
+                    (*this->pointsRep_)[counter][2] > (coorRec[2]+height-eps) || (*this->pointsRep_)[counter][2] < (coorRec[2]+eps) ) {
+                    (*this->bcFlagRep_)[counter] = 1;
+    
+                }
+                if (s%2==1 && r%2==1 && t%2==1) {
+                    nodeSkip ++;
+                    
+                }
+                else
+                    counter++;
+
+                
+            }
+        }
+    }
+
+    counter =0;
+    int    P2M = 2*(M+1)-1;
+
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+
+
+    this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
+
+    this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
+    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
+
+    if (verbose) {
+        cout << "-- Building P2 Points Unique ... " << endl;
+    }
+    if (verbose) {
+        cout << "-- Number of repeated points per proc: "  << this->mapRepeated_->getNodeNumElements() << " ... " << endl;
+    }
+
+    this->comm_->barrier();
+
+    // Points and Flags Unique
+    this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), vector<double>(this->dim_,-1. ) ) );
+    this->bcFlagUni_.reset( new std::vector<int> ( this->mapUnique_->getNodeNumElements(), 0 ) );
+    for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
+        GO gid = this->mapUnique_->getGlobalElement( i );
+        LO id = this->mapRepeated_->getLocalElement( this->mapUnique_->getGlobalElement( i ) );
+        this->pointsUni_->at(i) = this->pointsRep_->at(id);
+        this->bcFlagUni_->at(i) = this->bcFlagRep_->at(id);
+                
+    }     
+    this->comm_->barrier();
+
+
+    
+
+    //                Face 1          Face2               Face 3            Face 4
+    //                    2      2 * * 9 * * 3        3 * * 9 * * 2          	3
+    //                  * *      *          *          *          * 		  * *
+    //                *   *      *        *             *        *          *   *
+    //              5	  6      6      7                8      5         8	    7
+    //            *       *      *    *                   *    *        *       *
+    //          *         *      *  *                      *  *       *         *
+    //        1 * * 4 * * 0       0                         1       1 * * 4 * * 0
+
+
+    //int    P2M = 2*(M+1)-1;
+
+    if (verbose) {
+        cout << "-- ElementsList ... " << endl;
+        cout << "-- P2M =" << P2M << endl;
+    }
+    
+
+    counter = 0;
+    nodeSkip=0;
+    for (int t=0; t < M; t++) { // z
+        for (int s=0; s < M; s++) { // y
+            for (int r=0; r < M; r++) { // x 
+
+
+                // x-y = z = 0 
+                int n_0 =  2*(r) + 2*P2M * (s) 	    + 2*P2M*P2M * (t)                      -t*M*M;
+                int n_1 =  2*(r) +1	+ 2*P2M * (s)		+ 2*P2M*P2M * (t)                  -t*M*M; 
+                int n_2 =  2*(r+1)	+ 2*P2M * (s) 	    + 2*P2M*P2M * (t)                  -t*M*M ;
+
+                int n_3 =  2*(r) 		+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t)              -t*M*M; 
+                int n_4 =  2*(r) +1	+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t)                  -t*M*M; 
+                int n_5 =  2*(r+1)	+ 2*P2M * (s)+P2M	+ 2*P2M*P2M * (t)                  -t*M*M ;
+
+                int n_6 = 2*(r)	 + 2*P2M * (s+1)	+ 2*P2M*P2M * (t)                      -t*M*M; 
+                int n_7 = 2*(r) +1 + 2*P2M * (s+1)    + 2*P2M*P2M * (t)                    -t*M*M ;
+                int n_8 = 2*(r+1)  + 2*P2M * (s+1) + 2*P2M*P2M * (t)                       -t*M*M; 
+
+
+                int n_9 =  2*(r) 	    + 2*P2M * (s) 	     +2*P2M*P2M * (t) +P2M*P2M  -s*M     -t*M*M; 
+                int n_10 =  2*(r) +1	+ 2*P2M * (s)		 +2*P2M*P2M * (t) +P2M*P2M  -s*M     -t*M*M;  
+                int n_11 =  2*(r+1)	    + 2*P2M * (s) 	     +2*P2M*P2M * (t) +P2M*P2M  -s*M     -t*M*M; 
+
+                int n_12 =  2*(r) 		+ 2*P2M * (s) +P2M	+  2*P2M*P2M * (t) +P2M*P2M -s*M -r  -t*M*M; 
+
+                int n_14 =  2*(r+1)	+ 2*P2M * (s)+P2M	+  2*P2M*P2M * (t) +P2M*P2M     -s*M -(r+1) -t*M*M ;
+
+                int n_15 = 2*(r)	 + 2*P2M * (s+1)	+  2*P2M*P2M * (t) +P2M*P2M     -(s+1)*M    -t*M*M ; 
+                int n_16 = 2*(r) +1 + 2*P2M * (s+1)    + 2*P2M*P2M * (t) +P2M*P2M       -(s+1)*M    -t*M*M; 
+                int n_17 = 2*(r+1)  + 2*P2M * (s+1) +  2*P2M*P2M * (t) +P2M*P2M         -(s+1)*M   -t*M*M;  
+
+
+                int n_18 =  2*(r) 	    + 2*P2M * (s) 	    + 2*P2M*P2M * (t+1)                 -(t+1)*M*M; 
+                int n_19 =  2*(r) +1	+ 2*P2M * (s)		+ 2*P2M*P2M * (t+1)                 -(t+1)*M*M; 
+                int n_20 =  2*(r+1)	+ 2*P2M * (s) 	    + 2*P2M*P2M * (t+1)                     -(t+1)*M*M; 
+
+                int n_21 =  2*(r) 		+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t+1)                 -(t+1)*M*M;
+                int n_22 =  2*(r) +1	+ 2*P2M * (s) +P2M	+ 2*P2M*P2M * (t+1)                 -(t+1)*M*M;
+                int n_23 =  2*(r+1)	+ 2*P2M * (s)+P2M	+ 2*P2M*P2M * (t+1)                     -(t+1)*M*M;
+
+                int n_24 = 2*(r)	 + 2*P2M * (s+1)	+ 2*P2M*P2M * (t+1)                     -(t+1)*M*M;
+                int n_25 = 2*(r) +1 + 2*P2M * (s+1)    + 2*P2M*P2M * (t+1)                      -(t+1)*M*M;
+                int n_26 = 2*(r+1)  + 2*P2M * (s+1) + 2*P2M*P2M * (t+1)                         -(t+1)*M*M;
+
+
+                // Ensuring checkerboard ordering
+                if(((r+M*offset_x)+(s+M*offset_y)+(t+M*offset_z))%2==0){
+                    (*elementsVec)[counter] = {n_2, n_8, n_6, n_26, n_5, n_7, n_4, n_14, n_17, n_16};
+                    counter ++;
+                    (*elementsVec)[counter] = {n_2, n_6, n_0, n_18, n_4, n_3, n_1, n_10, n_12, n_9};
+                    counter ++;
+                    (*elementsVec)[counter] = {n_2, n_18, n_20, n_26, n_10, n_19, n_11, n_14, n_22, n_23};
+                    counter ++;
+                    (*elementsVec)[counter] = {n_6, n_24, n_18, n_26, n_15, n_21, n_12, n_16, n_25, n_22};
+                    counter ++;
+                    (*elementsVec)[counter] = {n_2, n_26, n_6, n_18, n_14, n_16, n_4, n_10, n_22, n_12};
+                    counter++;
+                }
+                else{
+                    (*elementsVec)[counter] = {n_0, n_24, n_18, n_20, n_12, n_21, n_9, n_10, n_22, n_19};
+                    counter ++;
+                    (*elementsVec)[counter] = {n_2, n_8, n_0, n_20, n_5, n_4, n_1, n_11, n_14, n_10};
+                    counter ++;
+                    (*elementsVec)[counter] = {n_8, n_6, n_0, n_24, n_7, n_3, n_4, n_16, n_15, n_12};
+                    counter ++;
+                    (*elementsVec)[counter] = {n_8, n_24, n_20, n_26, n_16, n_22, n_14, n_17, n_25, n_23};
+                    counter ++;
+                    (*elementsVec)[counter] = {n_8, n_20, n_24, n_0, n_14, n_22, n_16, n_4, n_10, n_12};
+                    counter++;
+                }
+
+                
+                //cout << " Subwürfel zu " << " r= " << r << " s=" << s << " t= "  << t << " || "<<n_0 << " " << n_1 << " " << n_2<< " " << n_3<< " " << n_4<< " " << n_5<< " " << n_6<< " " << n_7<< " " << n_8<< " " << n_9<< " " << n_10<< " " << n_11<< " " << n_12<< " " << n_14<< " " << n_15<< " " << n_16<< " " << n_17<< " " << n_18<< " " << n_19 << " " << n_20<< " " << n_21<< " " << n_22<< " " << n_23<< " " << n_24<< " " << n_25 << " " << n_26 << endl;
+            }
+        }
+        
+    }
+    if (verbose) {
+        cout << "... done !" << endl;
+    }
+    buildElementsClass(elementsVec, elementFlag);
+      
+}    
+template <class SC, class LO, class GO, class NO>
+void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, string FEType){
+
+    double tol=1.e-12;
+
+    switch (this->dim_) {
+        case 2:
+            break;
+        
+        case 3:
+            switch (flagsOption) {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    int numNodesTriangle;
+                    if(FEType == "P1")
+                        numNodesTriangle=3;
+                    else if(FEType=="P2")
+                        numNodesTriangle=6;
+                    else 
+                        TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"For flag option and discretization no surfaces are available");
+
+
+                    for( int T =0; T< this->elementsC_->numberElements(); T++){
+
+                        vec_int_Type nodeList = this->elementsC_->getElement(T).getVectorNodeList();
+
+                        vec2D_LO_Type surfaceElements_vec(4,vec_LO_Type(numNodesTriangle)); // four surfaces per element
+
+
+        //                Face 1          Face2               Face 3            Face 4
+        //                    2      2 * * 9 * * 3        3 * * 9 * * 2          	3
+        //                  * *      *          *          *          * 		  * *
+        //                *   *      *        *             *        *          *   *
+        //              5	  6      6      7                8      5         8	    7
+        //            *       *      *    *                   *    *        *       *
+        //          *         *      *  *                      *  *       *         *
+        //        1 * * 4 * * 0       0                         1       1 * * 4 * * 0
+                        if(FEType == "P1"){
+                            surfaceElements_vec[0] = {nodeList[1],nodeList[0],nodeList[2]};
+                            surfaceElements_vec[1] = {nodeList[0],nodeList[3],nodeList[2]};
+                            surfaceElements_vec[2] = {nodeList[1],nodeList[2],nodeList[3]};
+                            surfaceElements_vec[3] = {nodeList[1],nodeList[0],nodeList[3]};
+                        }
+                        else if(FEType=="P2"){
+                            surfaceElements_vec[0] = {nodeList[1],nodeList[0],nodeList[2],nodeList[4],nodeList[6],nodeList[5]};
+                            surfaceElements_vec[1] = {nodeList[0],nodeList[3],nodeList[2],nodeList[7],nodeList[9],nodeList[6]};
+                            surfaceElements_vec[2] = {nodeList[1],nodeList[2],nodeList[3],nodeList[5],nodeList[9],nodeList[8]};
+                            surfaceElements_vec[3] = {nodeList[1],nodeList[0],nodeList[3],nodeList[4],nodeList[7],nodeList[8]};
+                        }
+
+                        for (int i=0; i<4; i++) {
+
+                            vec_dbl_Type p1(3),p2(3),v_E(3);
+                            p1[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(0);
+                            p1[1] =this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(1);
+                            p1[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(2);
+
+                            p2[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(0);
+                            p2[1] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(1);
+                            p2[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(2);
+
+                            v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                            v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                            v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+
+
+                            vec_dbl_Type midpoint(3);
+
+                            // Midpoint of triangle surface
+                            midpoint[0] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(0) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(0) )/3.;
+                            midpoint[1] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(1) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(1) )/3.;
+                            midpoint[2] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(2) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(2) )/3.;
+
+                            int flag =10.;
+                            // x=0 Face  
+                            if (midpoint.at(0) < (coorRec[0] + tol) ) {
+                                flag = 1;
+                                if(v_E[0] > 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                            }
+                            // z=0 Face
+                            if (midpoint.at(0) > (coorRec[0] + tol) &&
+                                midpoint.at(2) < (coorRec[2] + tol) ) {
+                                flag = 3;
+                                if(v_E[2] > 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                            }
+                            // z=1 Face
+                            if (midpoint.at(0) > (coorRec[0] + tol) &&
+                                midpoint.at(2) > (coorRec[2] + height - tol) ) {
+                                if(v_E[2] < 0 )
+                                   flipSurface(surfaceElements_vec[i]);
+                                flag = 4;
+                            }
+                            // y=0 Face
+                            if (midpoint.at(0) > (coorRec[0] + tol) &&
+                                midpoint.at(1) < (coorRec[1] + tol) ) {
+                                if(v_E[1]> 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                                flag = 2;
+                            }
+                            // y=1 Face
+                            if (midpoint.at(0) > (coorRec[0] + tol) &&
+                                midpoint.at(1) > (coorRec[1] + width - tol) ) {
+                                if(v_E[1]< 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                                flag = 5;
+                            }
+                            // x=1 Face
+                            if (midpoint.at(0) > (coorRec[0] + length - tol) &&
+                                midpoint.at(1) > (coorRec[1] + tol) &&
+                                midpoint.at(1) < (coorRec[1] + width - tol)&&
+                                midpoint.at(2) > (coorRec[2] + tol) &&
+                                midpoint.at(2) < (coorRec[2] + height - tol)) {
+                                if(v_E[0]< 0 )
+                                    flipSurface(surfaceElements_vec[i]);
+                                flag = 6;
+                            }
+                            p1[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(0);
+                            p1[1] =this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(1);
+                            p1[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(2);
+
+                            p2[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(0);
+                            p2[1] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(1);
+                            p2[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(2);
+
+                            v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                            v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                            v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+
+                            if(flag != 10){
+                                FiniteElement feSurface( surfaceElements_vec[i], flag);
+                                if ( !this->elementsC_->getElement(T).subElementsInitialized() )
+                                    this->elementsC_->getElement(T).initializeSubElements( "P2", 2 ); // only P1 for now
+                                
+                                this->elementsC_->getElement(T).addSubElement( feSurface );
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+    }
+
+}
+
+// We allways want a outward normal direction
+template <class SC, class LO, class GO, class NO>
+void MeshStructured<SC,LO,GO,NO>::flipSurface(vec_int_Type &surfaceElements_vec){
+
+    LO id1,id2,id3,id4,id5,id6;
+    id1= surfaceElements_vec[0];
+    id2= surfaceElements_vec[1];
+    id3= surfaceElements_vec[2];
+    id4= surfaceElements_vec[3];
+    id5= surfaceElements_vec[4];
+    id6= surfaceElements_vec[5];
+
+    surfaceElements_vec[0] = id1;
+    surfaceElements_vec[1] = id3;
+    surfaceElements_vec[2] = id2;
+    surfaceElements_vec[3] = id6;
+    surfaceElements_vec[4] = id5;
+    surfaceElements_vec[5] = id4;
 }
 
 template <class SC, class LO, class GO, class NO>

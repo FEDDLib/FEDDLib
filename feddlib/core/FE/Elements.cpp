@@ -13,6 +13,7 @@ namespace FEDD {
 Elements::Elements():
 elements_(),
 globalIDs_(),
+elementsNodeList_(0),
 FEType_("no Information"),
 dim_(-1),
 feDataInitialized_(false)
@@ -24,6 +25,7 @@ feDataInitialized_(false)
 Elements::Elements( std::string feType ):
 elements_(),
 globalIDs_(),
+elementsNodeList_(0),
 FEType_(feType),
 dim_(-1),
 feDataInitialized_(false)
@@ -34,6 +36,7 @@ feDataInitialized_(false)
 
 Elements::Elements( std::string feType, int dim ):
 elements_(),
+elementsNodeList_(0),
 globalIDs_(),
 FEType_(feType),
 dim_(dim),
@@ -45,6 +48,7 @@ feDataInitialized_(false)
 
 Elements::Elements( Elements& Elements  ):
 elements_(),
+elementsNodeList_(0),
 FEType_(Elements.FEType_),
 dim_(Elements.dim_),
 feDataInitialized_(false)
@@ -205,6 +209,7 @@ void Elements::setToCorrectElement( FiniteElement& feSub ){
 }
 
 vec2D_int_Type Elements::getSubElementPermutation(){
+
     if (dim_ == 2) {
         vec2D_int_Type permutation( 3, vec_int_Type(2,0) );
         permutation[0][1] = 1;
@@ -237,6 +242,20 @@ vec2D_int_Type Elements::getSubElementPermutation(){
     }
     vec2D_int_Type dummy;
     return dummy;
+}
+
+void Elements::setElementsNodeList(){    
+    for(int i=0; i<numberElements(); i++)    
+        elementsNodeList_.push_back(getElement(i).getVectorNodeList());
+
+}
+
+vec2D_LO_Type Elements::getElementsNodeList()
+{
+    if(elementsNodeList_.size() < 1)
+        setElementsNodeList();
+
+    return elementsNodeList_;
 }
 
 vec2D_int_Type Elements::getElementEdgePermutation(){

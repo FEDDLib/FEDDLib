@@ -260,7 +260,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
         this->setSurfacesToElements( meshNumber );
     else
         meshUnstr->deleteSurfaceElements();
-
+    
 	// Serially distributed elements
     ElementsPtr_Type elementsMesh = meshUnstr->getElementsC();
     
@@ -271,7 +271,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     options[METIS_OPTION_SEED] = 666;
     options[METIS_OPTION_CONTIG] = pList_->get("Contiguous",false); //0: Does not force contiguous partitions; 1: Forces contiguous partitions.
     options[METIS_OPTION_MINCONN] = 0; // 1: Explicitly minimize the maximum connectivity.
-    options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_VOL;// or METIS_OBJTYPE_CUT
+    options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_CUT;// or METIS_OBJTYPE_VOL
     //    options[METIS_OPTION_RTYPE] = METIS_RTYPE_GREEDY;
     options[METIS_OPTION_NITER] = 50; // default is 10
     options[METIS_OPTION_CCORDER] = 1;
@@ -599,7 +599,7 @@ void MeshPartitioner<SC,LO,GO,NO>::setSurfacesToElements(int meshNumber){
     
     bool verbose ( comm_->getRank() == 0 );
     MeshUnstrPtr_Type meshUnstr = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domains_[meshNumber]->getMesh() );
-    ElementsPtr_Type elementsMesh = meshUnstr->getElementsC(); // Previously Elements read
+    ElementsPtr_Type elementsMesh = meshUnstr->getElementsC(); // Previously read Elements 
 
     if (verbose)
             cout << "-- Set surfaces of elements ... " << flush;
@@ -620,9 +620,8 @@ void MeshPartitioner<SC,LO,GO,NO>::setSurfacesToElements(int meshNumber){
     
     int size = this->comm_->getSize();
     
-    LO numSurfaceEl = surfaceElements->numberElements() / size;
-        
-    LO rest = surfaceElements->numberElements() % size;
+    LO numSurfaceEl = surfaceElements->numberElements();// / size;
+    /*LO rest = surfaceElements->numberElements() % size;
     
     vec_GO_Type offsetVec(size);
     for (int i=0; i<size; i++) {
@@ -633,17 +632,22 @@ void MeshPartitioner<SC,LO,GO,NO>::setSurfacesToElements(int meshNumber){
         }
         else
             offsetVec[i]+=rest;
-    }
+    }*/
 
     vec2D_int_Type surfElements_vec( numSurfaceEl );
+    vec2D_int_Type surfElements_vec_sorted( numSurfaceEl );
+
     vec_int_Type surfElementsFlag_vec( numSurfaceEl );
+    vec_GO_Type offsetVec(size);
     int offset = offsetVec[this->comm_->getRank()];
 
     for (int i=0; i<surfElements_vec.size(); i++){
-        vec_int_Type surface = surfaceElements->getElement(i + offset).getVectorNodeListNonConst();
-        std::sort( surface.begin(), surface.end() );
+        vec_int_Type surface = surfaceElements->getElement(i ).getVectorNodeListNonConst(); // surfaceElements->getElement(i + offset).getVectorNodeListNonConst();
         surfElements_vec.at(i)  = surface;
-        surfElementsFlag_vec.at(i) = surfaceElements->getElement(i + offset).getFlag();
+        std::sort( surface.begin(), surface.end() ); // We need to maintain a consistent numbering in the surface elements, so we use a sorted and unsorted vector
+        surfElements_vec_sorted.at(i) = surface;
+        surfElementsFlag_vec.at(i) = surfaceElements->getElement(i).getFlag(); // surfaceElements->getElement(i + offset).getFlag();
+
     }
  
     // Delete the surface elements. They will be added to the elements in the following loop.
@@ -662,13 +666,110 @@ void MeshPartitioner<SC,LO,GO,NO>::setSurfacesToElements(int meshNumber){
         if (elementSurfaceCounter >= surfaceElOrder){
             FEDD_TIMER_START(findSurfacesTimer," : MeshPartitioner : Find and Set Surfaces");
             //We want to find all surfaces of element i and set the surfaces to the element
-            this->findAndSetSurfacesPartitioned( surfElements_vec,  surfElementsFlag_vec, elementsMesh->getElement(i), localSurfaceIDPermutation, offsetVec, i );
+            this->findAndSetSurfacesPartitioned( surfElements_vec_sorted,  surfElements_vec, surfElementsFlag_vec, elementsMesh->getElement(i), localSurfaceIDPermutation, offsetVec, i );
         }
     }
     
     if (verbose)
         cout << "done!" << endl;
 }
+
+/// Function that sets edges (2D) or surfaces(3D) to the corresponding element. It determines for the specific element 'element' if it has a surface with a non
+/// volumeflag that can be set as subelement 
+template <class SC, class LO, class GO, class NO>
+void MeshPartitioner<SC,LO,GO,NO>::findAndSetSurfacesPartitioned( vec2D_int_Type& surfElements_vec, vec2D_int_Type& surfElements_vec_unsorted, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation , vec_GO_Type& linearSurfacePartitionOffset, int globalElID ){
+    
+    // In general we look through the different permutations the input element 'element' can have and if they correspond to a surface. 
+	// The mesh's surface elements 'surfElements_vec' are then used to determine the corresponding surface
+	// If found, the nodes are then used to build the subelement and the corresponding surfElementFlag is set.  
+	// The Ids are global at this point, as the values are not distributed yet.
+
+    int loc, id1Glob, id2Glob, id3Glob;
+    int size = this->comm_->getSize();
+    vec_int_Type locAll(size);
+    if (dim_ == 2) {
+        for (int j=0; j<permutation.size(); j++) {
+            id1Glob = element.getNode( permutation.at(j).at(0) ) ;
+            id2Glob = element.getNode( permutation.at(j).at(1) ) ;
+            
+            vec_int_Type tmpSurface(2);
+            if (id1Glob > id2Glob){
+                tmpSurface[0] = id2Glob;
+                tmpSurface[1] = id1Glob;
+            }
+            else{
+                tmpSurface[0] = id1Glob;
+                tmpSurface[1] = id2Glob;
+            }
+            
+            loc = searchInSurfaces( surfElements_vec, tmpSurface );
+            
+            Teuchos::gatherAll<int,int>( *this->comm_, 1, &loc, locAll.size(), &locAll[0] );
+
+            int surfaceRank = -1;
+            int counter = 0;
+            while (surfaceRank<0 && counter<size) {
+                if (locAll[counter] > -1)
+                    surfaceRank = counter;
+                counter++;
+            }
+            int surfFlag = -1;
+            if (loc>-1)
+                surfFlag = surfElementsFlag_vec[loc];
+            
+            if (surfaceRank>-1) {
+                Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&loc);
+                Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&surfFlag);
+                
+                FiniteElement feSurface( tmpSurface, surfFlag);
+                if ( !element.subElementsInitialized() )
+                    element.initializeSubElements( "P1", 1 ); // only P1 for now
+                
+                element.addSubElement( feSurface );
+            }
+        }
+    }
+    else if (dim_ == 3){
+        for (int j=0; j<permutation.size(); j++) {
+            
+            id1Glob = element.getNode( permutation.at(j).at(0) ) ;
+            id2Glob = element.getNode( permutation.at(j).at(1) ) ;
+            id3Glob = element.getNode( permutation.at(j).at(2) ) ;
+            
+            vec_int_Type tmpSurface = {id1Glob , id2Glob , id3Glob};
+            sort( tmpSurface.begin(), tmpSurface.end() );
+            loc = searchInSurfaces( surfElements_vec, tmpSurface );
+            /*Teuchos::gatherAll<int,int>( *this->comm_, 1, &loc, locAll.size(), &locAll[0] );
+            
+            int surfaceRank = -1;
+            int counter = 0;
+            while (surfaceRank<0 && counter<size) {
+                if (locAll[counter] > -1)
+                    surfaceRank = counter;
+                counter++;
+            }
+            int surfFlag = -1;
+            if (loc>-1)
+                surfFlag = surfElementsFlag_vec[loc];
+                        
+            if (surfaceRank>-1) {*/
+            if(loc > -1 ){
+                //Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&loc);
+                //Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&surfFlag);
+
+                int surfFlag = surfElementsFlag_vec[loc];
+                //cout << " Surfaces set to elements on Proc  " << this->comm_->getRank() << " "  << surfElements_vec_unsorted[loc][0] << " " << surfElements_vec_unsorted[loc][1] << " " << surfElements_vec_unsorted[loc][2] << endl; 
+                FiniteElement feSurface( surfElements_vec_unsorted[loc], surfFlag);
+                if ( !element.subElementsInitialized() )
+                    element.initializeSubElements( "P1", 2 ); // only P1 for now
+                
+                element.addSubElement( feSurface );
+            }
+        }
+    }
+    
+}
+
 
 template <class SC, class LO, class GO, class NO>
 void MeshPartitioner<SC,LO,GO,NO>::buildEdgeListParallel( MeshUnstrPtr_Type mesh, ElementsPtr_Type elementsGlobal ){
@@ -764,99 +865,6 @@ void MeshPartitioner<SC,LO,GO,NO>::makeContinuousElements(ElementsPtr_Type eleme
     
 }
  
-/// Function that sets edges (2D) or surfaces(3D) to the corresponding element. It determines for the specific element 'element' if it has a surface with a non
-/// volumeflag that can be set as subelement 
-template <class SC, class LO, class GO, class NO>
-void MeshPartitioner<SC,LO,GO,NO>::findAndSetSurfacesPartitioned( vec2D_int_Type& surfElements_vec, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation , vec_GO_Type& linearSurfacePartitionOffset, int globalElID ){
-    
-    // In general we look through the different permutations the input element 'element' can have and if they correspond to a surface. 
-	// The mesh's surface elements 'surfElements_vec' are then used to determine the corresponding surface
-	// If found, the nodes are then used to build the subelement and the corresponding surfElementFlag is set.  
-	// The Ids are global at this point, as the values are not distributed yet.
-
-    int loc, id1Glob, id2Glob, id3Glob;
-    int size = this->comm_->getSize();
-    vec_int_Type locAll(size);
-    if (dim_ == 2) {
-        for (int j=0; j<permutation.size(); j++) {
-            id1Glob = element.getNode( permutation.at(j).at(0) ) ;
-            id2Glob = element.getNode( permutation.at(j).at(1) ) ;
-            
-            vec_int_Type tmpSurface(2);
-            if (id1Glob > id2Glob){
-                tmpSurface[0] = id2Glob;
-                tmpSurface[1] = id1Glob;
-            }
-            else{
-                tmpSurface[0] = id1Glob;
-                tmpSurface[1] = id2Glob;
-            }
-            
-            loc = searchInSurfaces( surfElements_vec, tmpSurface );
-            
-            Teuchos::gatherAll<int,int>( *this->comm_, 1, &loc, locAll.size(), &locAll[0] );
-
-            int surfaceRank = -1;
-            int counter = 0;
-            while (surfaceRank<0 && counter<size) {
-                if (locAll[counter] > -1)
-                    surfaceRank = counter;
-                counter++;
-            }
-            int surfFlag = -1;
-            if (loc>-1)
-                surfFlag = surfElementsFlag_vec[loc];
-            
-            if (surfaceRank>-1) {
-                Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&loc);
-                Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&surfFlag);
-                
-                FiniteElement feSurface( tmpSurface, surfFlag);
-                if ( !element.subElementsInitialized() )
-                    element.initializeSubElements( "P1", 1 ); // only P1 for now
-                
-                element.addSubElement( feSurface );
-            }
-        }
-    }
-    else if (dim_ == 3){
-        for (int j=0; j<permutation.size(); j++) {
-            
-            id1Glob = element.getNode( permutation.at(j).at(0) ) ;
-            id2Glob = element.getNode( permutation.at(j).at(1) ) ;
-            id3Glob = element.getNode( permutation.at(j).at(2) ) ;
-            
-            vec_int_Type tmpSurface = {id1Glob , id2Glob , id3Glob};
-            sort( tmpSurface.begin(), tmpSurface.end() );
-            loc = searchInSurfaces( surfElements_vec, tmpSurface );
-            Teuchos::gatherAll<int,int>( *this->comm_, 1, &loc, locAll.size(), &locAll[0] );
-            
-            int surfaceRank = -1;
-            int counter = 0;
-            while (surfaceRank<0 && counter<size) {
-                if (locAll[counter] > -1)
-                    surfaceRank = counter;
-                counter++;
-            }
-            int surfFlag = -1;
-            if (loc>-1)
-                surfFlag = surfElementsFlag_vec[loc];
-                        
-            if (surfaceRank>-1) {
-                
-                Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&loc);
-                Teuchos::broadcast<int,int>(*this->comm_,surfaceRank,1,&surfFlag);
-                
-                FiniteElement feSurface( tmpSurface, surfFlag);
-                if ( !element.subElementsInitialized() )
-                    element.initializeSubElements( "P1", 2 ); // only P1 for now
-                
-                element.addSubElement( feSurface );
-            }
-        }
-    }
-    
-}
 
 template <class SC, class LO, class GO, class NO>
 void MeshPartitioner<SC,LO,GO,NO>::setLocalSurfaceEdgeIndices( vec2D_int_Type &localSurfaceEdgeIndices, int edgesElementOrder ){
