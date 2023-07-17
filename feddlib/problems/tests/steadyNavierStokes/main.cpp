@@ -7,7 +7,7 @@
 
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
-
+#include <Teuchos_StackedTimer.hpp>
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 
@@ -118,6 +118,7 @@ typedef default_go GO;
 typedef default_no NO;
 
 using namespace FEDD;
+//using namespace Teuchos;
 
 int main(int argc, char *argv[]) {
     
@@ -162,6 +163,10 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    Teuchos::RCP<Teuchos::StackedTimer> stackedTimer = rcp(new Teuchos::StackedTimer("Steady Navier-Stokes",true));
+    Teuchos::TimeMonitor::setStackedTimer(stackedTimer);
+
+       
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
 
@@ -208,8 +213,7 @@ int main(int argc, char *argv[]) {
         int numProcsCoarseSolve = parameterListProblem->sublist("General").get("Mpi Ranks Coarse",0);
         int size = comm->getSize() - numProcsCoarseSolve;
 
-
-        Teuchos::RCP<Teuchos::Time> totalTime(Teuchos::TimeMonitor::getNewCounter("main: Total Time"));
+    	Teuchos::RCP<Teuchos::Time> totalTime(Teuchos::TimeMonitor::getNewCounter("main: Total Time"));
         Teuchos::RCP<Teuchos::Time> buildMesh(Teuchos::TimeMonitor::getNewCounter("main: Build Mesh"));
         Teuchos::RCP<Teuchos::Time> solveTime(Teuchos::TimeMonitor::getNewCounter("main: Solve problem time"));
         {
@@ -386,6 +390,10 @@ int main(int argc, char *argv[]) {
     }
 
     Teuchos::TimeMonitor::report(cout);
+    stackedTimer->stop("Steady Navier-Stokes");
+	Teuchos::StackedTimer::OutputOptions options;
+	options.output_fraction =  options.output_minmax = true; //options.output_histogram =
+	stackedTimer->report((std::cout),comm,options);
 
     return(EXIT_SUCCESS);
 }
