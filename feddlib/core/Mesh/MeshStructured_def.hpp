@@ -3248,6 +3248,7 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,string 
                             this->bcFlagRep_->at(i) = 3;
                         }
                     }
+                    break;
                 case 3: //SMC Cube Test
                     for (int i=0; i<this->pointsUni_->size(); i++) {
                                             // z=1 Face
