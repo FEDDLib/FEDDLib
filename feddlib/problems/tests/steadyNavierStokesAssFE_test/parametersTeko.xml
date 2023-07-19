@@ -55,7 +55,7 @@
                         
                         <ParameterList name="AlgebraicOverlappingOperator">
                         
-                            <Parameter name="Reuse Symbolic Factorization" type="bool"     value="true"/>
+                            <Parameter name="Reuse: Symbolic Factorization" type="bool"     value="false"/>
                             <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Overlapping Operator Combination" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Level ID" type="int"      value="1"/>
@@ -132,7 +132,7 @@
                         <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
                         <Parameter name="Recycling" type="bool" value="true"/>
                         <!--<Parameter name="Recycling" type="bool" value="true"/>-->
-                        <Parameter name="DofsPerNode" type="int" value="3"/>
+                        <Parameter name="DofsPerNode" type="int" value="2"/>
                         <Parameter name="DofOrdering" type="string" value="NodeWise"/>
                         <Parameter name="Overlap" type="int" value="1"/>
                         <Parameter name="TwoLevel" type="bool" value="true"/>
@@ -141,7 +141,7 @@
                         <Parameter name="OverlappingOperator Type" type="string" value="AlgebraicOverlappingOperator"/>
                         <Parameter name="CoarseOperator Type" type="string"   value="RGDSWCoarseOperator"/>
                         <ParameterList name="AlgebraicOverlappingOperator">
-                            <Parameter name="Reuse Symbolic Factorization"                  type="bool"     value="true"/>
+                            <Parameter name="Reuse: Symbolic Factorization"                  type="bool"     value="false"/>
                             <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Overlapping Operator Combination" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Level ID"                                      type="int"      value="1"/>

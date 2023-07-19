@@ -55,7 +55,7 @@
                         
                         <ParameterList name="AlgebraicOverlappingOperator">
                         
-                            <Parameter name="Reuse Symbolic Factorization" type="bool"     value="true"/>
+                            <Parameter name="Reuse: Symbolic Factorization" type="bool"     value="false"/>
                             <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Overlapping Operator Combination" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Level ID" type="int"      value="1"/>
@@ -141,7 +141,7 @@
                         <Parameter name="OverlappingOperator Type" type="string" value="AlgebraicOverlappingOperator"/>
                         <Parameter name="CoarseOperator Type" type="string"   value="RGDSWCoarseOperator"/>
                         <ParameterList name="AlgebraicOverlappingOperator">
-                            <Parameter name="Reuse Symbolic Factorization"                  type="bool"     value="true"/>
+                            <Parameter name="Reuse: Symbolic Factorization"                  type="bool"     value="false"/>
                             <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Overlapping Operator Combination" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                             <Parameter name="Level ID"                                      type="int"      value="1"/>

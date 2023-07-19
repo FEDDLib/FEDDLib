@@ -201,10 +201,7 @@ public:
     
     /// @brief Building suface lines aka edges. Empty.
     void buildSurfaceLinesSquare();
-
-    void buildSurfaces(int flagsOption, string FEType);
     
-    void flipSurface(vec_int_Type &surfaceElements_vec);
     GO globalID_Q2_20Cube(int r, int s , int t, int &rr, int off_x, int off_y, int off_z, int M, int N,
                           GO nmbPoints_oneDirFull, GO nmbPoints_oneDirMid);
     

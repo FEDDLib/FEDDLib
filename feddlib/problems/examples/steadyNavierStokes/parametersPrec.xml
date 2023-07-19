@@ -28,7 +28,7 @@
                 <Parameter name="Null Space Type" type="string"   value="Stokes"/>
 
                 <ParameterList name="AlgebraicOverlappingOperator">
-                    <Parameter name="Reuse: Symbolic Factorization" type="bool" value="true"/>
+                    <Parameter name="Reuse: Symbolic Factorization" type="bool" value="false"/>
                     <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                     <Parameter name="Overlapping Operator Combination" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
                     <Parameter name="Adding Layers Strategy" type="string" value="CrsGraph"/>

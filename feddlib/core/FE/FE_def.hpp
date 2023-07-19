@@ -99,6 +99,202 @@ void FE<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,
         }
     }
 }
+
+/*!
+
+ \brief Assembly of Jacobian 
+@param[in] dim Dimension
+@param[in] FEType FE Discretization
+@param[in] degree Degree of basis function
+@param[in] A Resulting matrix
+@param[in] callFillComplete If Matrix A should be completely filled at end of function
+@param[in] FELocExternal 
+
+*/
+
+// Check the order of chemistry and solid in system matrix
+/*template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::globalAssembly(string ProblemType,
+                        int dim,                    
+                        int degree,                       
+                        MultiVectorPtr_Type sol_rep,
+                        BlockMatrixPtr_Type &A,
+                        BlockMultiVectorPtr_Type &resVec,
+                        ParameterListPtr_Type params,
+                        string assembleMode,
+                        bool callFillComplete,
+                        int FELocExternal){
+
+    int problemSize = domainVec_.size(); // Problem size, as in number of subproblems
+
+    // Depending on problem size we extract necessary information 
+
+	/// Tupel construction follows follwing pattern:
+	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	int numChem=3;
+    if(FETypeChem == "P2"){
+        numChem=6;
+    }    
+	if(dim==3){
+		numChem=4;
+        if(FETypeChem == "P2")
+            numChem=10;
+	}
+    int numSolid=3;
+    if(FETypeSolid == "P2")
+        numSolid=6;
+        
+	if(dim==3){
+		numSolid=4;
+        if(FETypeSolid == "P2")
+            numSolid=10;
+	}
+
+	BlockMultiVectorPtr_Type resVecRep = Teuchos::rcp( new BlockMultiVector_Type( 2) );
+
+	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
+    for(int i=0; i< problemSize; i++){
+        int numNodes=0.;
+        if(domainVec.at(i)->getFEType() == "P2"){
+            numNodes=6;
+        }    
+        if(dim==3){
+            numNodes=4;
+            if(domainVec.at(i)->getFEType() == "P2")
+                numNodes=10;
+        }
+        tuple_ssii_Type infoTuple (domainVec.at(i)->getPhysic(),domainVec.at(i)->getFEType(),domainVec.at(i)->getDofs(),numChem);
+        problemDisk->push_back(infoTuple);
+
+        MultiVectorPtr_Type resVec;
+        if(domainVec.at(i)->getDofs() == 1)
+            resVec = Teuchos::rcp( new MultiVector_Type( domainVec_.at(i)->getMapRepeated(), 1 ) );
+        else
+            resVec = Teuchos::rcp( new MultiVector_Type( domainVec_.at(i)->getMapVecFieldRepeated(), 1 ) );
+
+        resVecRep->addBlock(resVec,i);
+
+
+    }
+	
+
+	if(assemblyFEElements_.size()== 0){
+       	initAssembleFEElements(ProblemType,problemDisk,domainVec_.at(0)->getElementsC(), params,domainVec_.at(0)->getPointsRepeated(),domainVec_.at(0)->getElementMap());
+    }
+	else if(assemblyFEElements_.size() != domainVec_.at(0)->getElementsC()->numberElements())
+	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
+
+    vec_dbl_Type solution_tmp;
+    for (UN T=0; T<assemblyFEElements_.size(); T++) {
+		vec_dbl_Type solution(0);
+
+        for(int i=0; i< problemSize; i++){
+		    solution_tmp = getSolution(domainVec_.at(i)->getElementsC()->getElement(T).getVectorNodeList(), sol_rep->getBlock(i),domainVec.at(i)->getDofs());      
+            solution.insert( solution.end(), solution_tmp.begin(), solution_tmp.end() );
+  
+        }   
+        
+  		assemblyFEElements_[T]->updateSolution(solution);
+
+ 		SmallMatrixPtr_Type elementMatrix;
+	    vec_dbl_ptr_Type rhsVec;
+
+     	if(assembleMode == "Jacobian"){
+			assemblyFEElements_[T]->assembleJacobian();
+
+            elementMatrix = assemblyFEElements_[T]->getJacobian(); 
+           // elementMatrix->print();
+			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
+			
+			addFeBlockMatrix(A, elementMatrix, domainVec_.at(0)->getElementsC()->getElement(T), problemDisk);
+    
+		}
+		if(assembleMode == "Rhs"){
+		    assemblyFEElements_[T]->assembleRHS();
+		    rhsVec = assemblyFEElements_[T]->getRHS(); 
+			addFeBlockMv(resVecRep, rhsVec, elementsSolid->getElement(T),elementsChem->getElement(T), dofsSolid,dofsChem);
+
+		}
+      		
+	}
+	if ( assembleMode == "Jacobian"){
+		A->getBlock(0,0)->fillComplete();
+	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
+	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
+	    A->getBlock(1,1)->fillComplete();
+	}
+    else if(assembleMode == "Rhs"){
+
+		MultiVectorPtr_Type resVecUnique_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocSolid)->getMapVecFieldUnique(), 1 ) );
+		MultiVectorPtr_Type resVecUnique_c = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocChem)->getMapUnique(), 1 ) );
+
+		resVecUnique_d->putScalar(0.);
+		resVecUnique_c->putScalar(0.);
+
+		resVecUnique_d->exportFromVector( resVec_d, true, "Add" );
+		resVecUnique_c->exportFromVector( resVec_c, true, "Add" );
+
+		resVec->addBlock(resVecUnique_d,0);
+		resVec->addBlock(resVecUnique_c,1);
+	}
+    else if(assembleMode == "MassMatrix"){
+   		A->getBlock(0,0)->fillComplete();
+    }
+
+}*/
+
+/*!
+
+ \brief Inserting element stiffness matrices into global stiffness matrix
+
+
+@param[in] &A Global Block Matrix
+@param[in] elementMatrix Stiffness matrix of one element
+@param[in] element Corresponding finite element
+@param[in] map Map that corresponds to repeated nodes of first block
+@param[in] map Map that corresponds to repeated nodes of second block
+
+*/
+/*template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, tuple_disk_vec_ptr_Type problemDisk){
+		
+    int numDisk = problemDisk->size();
+
+    for(int probRow = 0; probRow < numDisk; probRow++){
+        for(int probCol = 0; probCol < numDisk; probCol++){
+            int dofs1 = std::get<2>(problemDisk->at(probRow));
+            int dofs2 = std::get<2>(problemDisk->at(probCol));
+
+            int numNodes1 = std::get<3>(problemDisk->at(probRow));
+            int numNodes2=std::get<3>(problemDisk->at(probCol));
+
+            int offsetRow= numNodes1*dofs1*probRow;
+            int offsetCol= numNodes1*dofs1*probCol;
+
+            mapRow = domainVec.at(probRow)->getMapRepeated();
+            mapCol = domainVec.at(probCol)->getMapRepeated();
+
+            Teuchos::Array<SC> value2( numNodes2, 0. );
+            Teuchos::Array<GO> columnIndices2( numNodes2, 0 );
+            for (UN i=0; i < numNodes1; i++){
+                for(int di=0; di<dofs1; di++){				
+                    GO row =GO (dofs1* mapRow->getGlobalElement( element.getNode(i) )+di);
+                    for(int d=0; d<dofs2; d++){				
+                        for (UN j=0; j < numNodes2 ; j++) {
+                            value2[j] = (*elementMatrix)[offsetRow+i*dofs1+di][offsetCol+j*dofs2+d];			    				    		
+                            columnIndices2[j] =GO (dofs2* mapCol->getGlobalElement( element.getNode(j) )+d);
+                        }
+                        A->getBlock(probRow,probCol)->insertGlobalValues( row, columnIndices2(), value2() ); // Automatically adds entries if a value already exists                            
+                    }
+                }      
+            }
+
+        }
+    }
+}
+
+*/
+
 /*!
 
  \brief Assembly of Jacobian for Linear Elasticity

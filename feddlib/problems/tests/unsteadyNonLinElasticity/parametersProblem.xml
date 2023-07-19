@@ -68,7 +68,7 @@
         <Parameter name="BDF"		                    		type="int"		   	value="1"/>
         <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
         <Parameter name="Final time load"	                    type="double"   	value="1."/>
-        <Parameter name="Final time"	                    	type="double"   	value="10."/>
+        <Parameter name="Final time"	                    	type="double"   	value=".2"/>
         <Parameter name="dt"			                    	type="double"   	value=".1"/>
         <Parameter name="beta"			                    	type="double"   	value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma"			                    	type="double"   	value="0.5"/> <!-- newmark method parameter-->

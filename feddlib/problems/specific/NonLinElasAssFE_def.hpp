@@ -27,8 +27,8 @@ u_rep_()
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
 
     loadStepping_ =    !(parameterList->sublist("Timestepping Parameter").get("Class","Singlestep")).compare("Loadstepping");
-    externalForce_ =   parameterList->sublist("Parameter").get("External Force",true);
-    nonlinearExternalForce_ = parameterList->sublist("Parameter").get("Nonlinear External Force",true);
+    externalForce_ =   parameterList->sublist("Parameter").get("External Force",false);
+    nonlinearExternalForce_ = parameterList->sublist("Parameter").get("Nonlinear External Force",false);
 
     timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
 
@@ -110,7 +110,7 @@ void NonLinElasAssFE<SC,LO,GO,NO>::updateTime() const
 template<class SC,class LO,class GO,class NO>
 void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
-    std::string material_model = this->parameterList_->sublist("Parameter").get("Structure Model","SCI_NH");
+    std::string material_model = this->parameterList_->sublist("Parameter").get("Structure Model","Neo-Hooke");
 
     if (this->verbose_)
         std::cout << "-- Reassembly nonlinear elasticity with structure material model " << material_model <<" ("<<type <<") ... " << std::flush;
@@ -121,9 +121,9 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
         this->system_->addBlock( W, 0, 0 );  
 
-        //MultiVectorPtr_Type fRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) ); 
-        //fRep->putScalar(0.);   
-        //this->residualVec_->addBlock( fRep, 0 ); 
+        MultiVectorPtr_Type fRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) ); 
+        fRep->putScalar(0.);   
+        this->residualVec_->addBlock( fRep, 0 ); 
 
         if(this->parameterList_->sublist("Parameter").get("SCI",false) == true || this->parameterList_->sublist("Parameter").get("FSCI",false) == true )
             this->feFactory_->assemblyAceDeformDiffuBlock(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,concentration_,u_rep_,this->system_,0,0,this->residualVec_,0, this->parameterList_, "Jacobian", true/*call fillComplete*/);
@@ -131,13 +131,13 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
  			this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,true);
         //fRep->scale(-1.);
         
-        //MultiVectorPtr_Type fUnique = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
-        //fUnique->putScalar(0.);
-        //fUnique->exportFromVector( fRep, true, "Add" );
+        MultiVectorPtr_Type fUnique = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
+        fUnique->putScalar(0.);
+        fUnique->exportFromVector( fRep, true, "Add" );
 
-        //this->residualVec_->addBlock( fUnique, 0 );
+        this->residualVec_->addBlock( fUnique, 0 );
             
-        //assembleSourceTermLoadstepping();
+        assembleSourceTermLoadstepping();
 
 
     }
