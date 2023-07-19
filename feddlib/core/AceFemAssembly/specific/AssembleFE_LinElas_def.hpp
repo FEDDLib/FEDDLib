@@ -1,7 +1,7 @@
-#ifndef ASSEMBLEFEACELINELAS_DEF_hpp
-#define ASSEMBLEFEACELINELAS_DEF_hpp
+#ifndef ASSEMBLEFE_LINELAS_DEF_hpp
+#define ASSEMBLEFE_LINELAS_DEF_hpp
 
-#include "AssembleFEAceLinElas_decl.hpp"
+#include "AssembleFE_LinElas_decl.hpp"
 #include "feddlib/core/AceFemAssembly/AceInterface/NeoHookQuadraticTets.hpp"
 #include <vector>
 #include <iostream>
@@ -11,7 +11,7 @@ namespace FEDD {
 
 /*!
 
- \brief Constructor for AssembleFEAceLaplace
+ \brief Constructor for AssembleFE_Laplace
 
 @param[in] flag Flag of element
 @param[in] nodesRefConfig Nodes of element in reference configuration
@@ -20,7 +20,7 @@ namespace FEDD {
 
 */
 template <class SC, class LO, class GO, class NO>
-AssembleFEAceLinElas<SC,LO,GO,NO>::AssembleFEAceLinElas(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
+AssembleFE_LinElas<SC,LO,GO,NO>::AssembleFE_LinElas(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
 AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 {
 	/// Extracting values from ParameterList params:
@@ -47,7 +47,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 */ 
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLinElas<SC,LO,GO,NO>::assembleJacobian() {
+void AssembleFE_LinElas<SC,LO,GO,NO>::assembleJacobian() {
 
 
 	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement_)); // Matrix we fill with entries.
@@ -65,7 +65,7 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assembleJacobian() {
 
 */
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLinElas<SC,LO,GO,NO>::assemblyLinElas(SmallMatrixPtr_Type &elementMatrix) {
+void AssembleFE_LinElas<SC,LO,GO,NO>::assemblyLinElas(SmallMatrixPtr_Type &elementMatrix) {
 
 	/// We can access the following values we initialized/extracted in the constructor:
 	// dofs_
@@ -129,7 +129,7 @@ void AssembleFEAceLinElas<SC,LO,GO,NO>::assemblyLinElas(SmallMatrixPtr_Type &ele
 
 */
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLinElas<SC,LO,GO,NO>::assembleRHS() {
+void AssembleFE_LinElas<SC,LO,GO,NO>::assembleRHS() {
 
 	// [Efficiency] Need to know which is called first: assembleRHS() or assembleJacobian(), so that multiple calls to skr() may be avoided.
 	// Note skr() computes both elementMatrix_ and rhsVec_

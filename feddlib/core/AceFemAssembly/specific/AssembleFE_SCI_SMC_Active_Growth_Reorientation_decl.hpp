@@ -16,6 +16,14 @@
 //#include "ace2.h"
 //#endif
 
+/*!
+\class AssembleFE_SCI_SMC_Active_Growth_Reorientation
+	Coupled deformation diffusion problem with smooth-muscle model with active response, growth and reorientation
+	Derived from AssembleFE base class
+	Active response with MLCK and MLCP
+*/
+
+
 namespace FEDD {
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>

@@ -580,7 +580,7 @@ private:
     void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Type rhsVec, FiniteElement elementBlock1,FiniteElement elementBlock2, int dofs1, int dofs2 );
 
     void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Type rhsVec, FiniteElement elementBlock, int dofs);
-			
+		
 	AssembleFEPtr_vec_Type assemblyFEElements_;
 
 	vec2D_dbl_Type getCoordinates(vec_LO_Type localIDs, vec2D_dbl_ptr_Type points);

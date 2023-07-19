@@ -1446,7 +1446,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = determineDegree(dim,FEType,FEType,Grad,Grad)+1;
+    UN deg = determineDegree(dim,FEType,FEType,Grad,Grad);//+1;
     getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -6554,7 +6554,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
-    UN deg = determineDegree( dim-1, FEType, Std) + 1.0;
+    UN deg = determineDegree( dim-1, FEType, Std);// + 1.0;
 
     getPhi(phi, weights, dim-1, FEType, deg);
 
@@ -6608,7 +6608,11 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
 					v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
 					v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
 		            
-					norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+				    norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                  
+                    if(feSub.getFlag() == 1)
+                    cout << " Normal: " << v_E[0] << " " << v_E[1] << " " << v_E[2] << endl;
+
 				}
                 //if(feSub.getFlag() == 5) // || feSub.getFlag()==5)
                 //    cout << " Normal Vec " << v_E[0] << " " << v_E[1] << " " << v_E[2] << " of element " << T << " and Surface " << surface << endl;
@@ -6684,7 +6688,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralFlag(int dim,
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     UN degFunc = funcParameter[0] + 1.e-14;
-    UN deg = determineDegree( dim-1, FEType, Std) + degFunc;
+    UN deg = determineDegree( dim-1, FEType, Std);// + degFunc;
 
     getPhi(phi, weights, dim-1, FEType, deg);
 
@@ -6782,7 +6786,7 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     // last parameter should alwayss be the degree
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
-    UN deg = determineDegree( dim, FEType, Std) + degFunc;
+    UN deg = determineDegree( dim, FEType, Std);// + degFunc;
 
     vec2D_dbl_ptr_Type quadPoints;
     getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values

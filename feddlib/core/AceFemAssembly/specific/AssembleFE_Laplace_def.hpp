@@ -1,14 +1,14 @@
-#ifndef ASSEMBLEFEACELAPLACE_DEF_hpp
-#define ASSEMBLEFEACELAPLACE_DEF_hpp
+#ifndef ASSEMBLEFE_LAPLACE_DEF_hpp
+#define ASSEMBLEFE_LAPLACE_DEF_hpp
 
-#include "AssembleFEAceLaplace_decl.hpp"
+#include "AssembleFE_Laplace_decl.hpp"
 
 namespace FEDD {
 
 
 /*!
 
- \brief Constructor for AssembleFEAceLaplace
+ \brief Constructor for AssembleFE_Laplace
 
 @param[in] flag Flag of element
 @param[in] nodesRefConfig Nodes of element in reference configuration
@@ -16,7 +16,7 @@ namespace FEDD {
 
 */
 template <class SC, class LO, class GO, class NO>
-AssembleFEAceLaplace<SC,LO,GO,NO>::AssembleFEAceLaplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
+AssembleFE_Laplace<SC,LO,GO,NO>::AssembleFE_Laplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
 AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 {
 
@@ -31,7 +31,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 */ 
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLaplace<SC,LO,GO,NO>::assembleJacobian() {
+void AssembleFE_Laplace<SC,LO,GO,NO>::assembleJacobian() {
 
 	int nodesElement = this->nodesRefConfig_.size();
 	int dofs = std::get<2>(this->diskTuple_->at(0));
@@ -51,7 +51,7 @@ void AssembleFEAceLaplace<SC,LO,GO,NO>::assembleJacobian() {
 
 */
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLaplace<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type &elementMatrix) {
+void AssembleFE_Laplace<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type &elementMatrix) {
 
 	int dim = this->getDim();
 	int numNodes= std::get<3>(this->diskTuple_->at(0));//this->getNodesRefConfig().size();
@@ -103,7 +103,7 @@ void AssembleFEAceLaplace<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type &e
 
 */
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLaplace<SC,LO,GO,NO>::assembleRHS() {
+void AssembleFE_Laplace<SC,LO,GO,NO>::assembleRHS() {
 
 
 	int dim = this->getDim();
@@ -160,7 +160,7 @@ void AssembleFEAceLaplace<SC,LO,GO,NO>::assembleRHS() {
 */
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLaplace<SC,LO,GO,NO>::buildTransformation(SmallMatrix<SC>& B){
+void AssembleFE_Laplace<SC,LO,GO,NO>::buildTransformation(SmallMatrix<SC>& B){
 
     TEUCHOS_TEST_FOR_EXCEPTION( (B.size()<2 || B.size()>3), std::logic_error, "Initialize SmallMatrix for transformation.");
     UN index;
@@ -183,7 +183,7 @@ void AssembleFEAceLaplace<SC,LO,GO,NO>::buildTransformation(SmallMatrix<SC>& B){
 */
 
 template <class SC, class LO, class GO, class NO>
-void AssembleFEAceLaplace<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,
+void AssembleFE_Laplace<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,
                                     vec3D_dbl_Type& dPhiOut,
                                     SmallMatrix<SC>& Binv){
     UN dim = Binv.size();

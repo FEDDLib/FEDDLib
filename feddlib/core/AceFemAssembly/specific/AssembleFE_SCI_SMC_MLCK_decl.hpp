@@ -11,10 +11,13 @@
 #include "stdlib.h"
 #include "string.h"
 
-//#ifdef FEDD_HAVE_ACEGENINTERFACE
-//#include "aceinterface.h"
-//#include "ace2.h"
-//#endif
+
+/*!
+\class AssembleFE_SCI_SMC_MLCK
+	Coupled deformation diffusion problem with smooth-muscle model with active response
+	Derived from AssembleFE base class
+	Active response with MLCK 
+*/
 
 namespace FEDD {
 

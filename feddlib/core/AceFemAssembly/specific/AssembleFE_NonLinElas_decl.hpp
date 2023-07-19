@@ -1,5 +1,5 @@
-#ifndef ASSEMBLEFEACELINELAS_DECL_hpp
-#define ASSEMBLEFEACELINELAS_DECL_hpp
+#ifndef ASSEMBLEFE_NONLINELAS_DECL_hpp
+#define ASSEMBLEFE_NONLINELAS_DECL_hpp
 
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
 #include "feddlib/core/AceFemAssembly/Helper.hpp"
@@ -10,7 +10,7 @@
 namespace FEDD {
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class AssembleFEAceLinElas : public AssembleFE<SC,LO,GO,NO> {
+class AssembleFE_NonLinElas : public AssembleFE<SC,LO,GO,NO> {
   public:
    
     typedef Matrix<SC,LO,GO,NO> Matrix_Type;
@@ -29,25 +29,30 @@ class AssembleFEAceLinElas : public AssembleFE<SC,LO,GO,NO> {
 	 \brief Assemble the element Jacobian matrix.
 	 \return the element Jacobian matrix
 	*/
-	virtual void assembleJacobian() override;
+	virtual void assembleJacobian();
 
 	/*!
 	 \brief Assemble the element right hand side vector.
 	 \return the element right hand side vector
 	*/
-	virtual void assembleRHS() override;	
+	virtual void assembleRHS();	
 
-		/*!
+	/*!
 		\brief Assemble the element Jacobian matrix.
 		@param[in] block ID i
 	*/
 	virtual void assembleJacobianBlock(LO i) {};
+	/*!
+		\brief Update the parameter read from the ParameterList.
+		@param[in] Parameter as read from the xml file
+	*/
+    virtual void updateParameter(string type, double value);
 
    protected:
-	AssembleFEAceLinElas(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); 
+	AssembleFE_NonLinElas(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); 
    private:
 
-	void assemblyLinElas(SmallMatrixPtr_Type &elementMatrix);
+	void assemblyNonLinElas(SmallMatrixPtr_Type &elementMatrix);
 
     friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 

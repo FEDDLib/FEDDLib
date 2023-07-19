@@ -1,22 +1,22 @@
 SET(AceFemAssemblySpecific_HEADERS
-	AceFemAssembly/specific/AssembleFEAceLaplace_decl.hpp
-	AceFemAssembly/specific/AssembleFEAceLaplace_def.hpp
-	AceFemAssembly/specific/AssembleFEAceLaplace.hpp
+	AceFemAssembly/specific/AssembleFE_Laplace_decl.hpp
+	AceFemAssembly/specific/AssembleFE_Laplace_def.hpp
+	AceFemAssembly/specific/AssembleFE_Laplace.hpp
 	AceFemAssembly/specific/AssembleFENavierStokes_decl.hpp
 	AceFemAssembly/specific/AssembleFENavierStokes_def.hpp
 	AceFemAssembly/specific/AssembleFENavierStokes.hpp
 	AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian_decl.hpp
 	AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian_def.hpp
 	AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian.hpp
-	AceFemAssembly/specific/AssembleFEAceLinElas_decl.hpp
-	AceFemAssembly/specific/AssembleFEAceLinElas_def.hpp
-	AceFemAssembly/specific/AssembleFEAceLinElas.hpp
-	AceFemAssembly/specific/AssembleFEAceNonLinElas_decl.hpp
-	AceFemAssembly/specific/AssembleFEAceNonLinElas_def.hpp
-	AceFemAssembly/specific/AssembleFEAceNonLinElas.hpp
-	AceFemAssembly/specific/AssembleFEAceNonLinElas2_decl.hpp
-	AceFemAssembly/specific/AssembleFEAceNonLinElas2_def.hpp
-	AceFemAssembly/specific/AssembleFEAceNonLinElas2.hpp
+	AceFemAssembly/specific/AssembleFE_LinElas_decl.hpp
+	AceFemAssembly/specific/AssembleFE_LinElas_def.hpp
+	AceFemAssembly/specific/AssembleFE_LinElas.hpp
+	AceFemAssembly/specific/AssembleFE_NonLinElas_decl.hpp
+	AceFemAssembly/specific/AssembleFE_NonLinElas_def.hpp
+	AceFemAssembly/specific/AssembleFE_NonLinElas.hpp
+	AceFemAssembly/specific/AssembleFE_NonLinElas2_decl.hpp
+	AceFemAssembly/specific/AssembleFE_NonLinElas2_def.hpp
+	AceFemAssembly/specific/AssembleFE_NonLinElas2.hpp
 	AceFemAssembly/specific/AssembleFE_SCI_NH_decl.hpp
 	AceFemAssembly/specific/AssembleFE_SCI_NH_def.hpp
 	AceFemAssembly/specific/AssembleFE_SCI_NH.hpp
@@ -29,12 +29,12 @@ SET(AceFemAssemblySpecific_HEADERS
 CACHE INTERNAL "")
 
 SET(AceFemAssemblySpecific_SOURCES
-	AceFemAssembly/specific/AssembleFEAceLaplace.cpp
+	AceFemAssembly/specific/AssembleFE_Laplace.cpp
 	AceFemAssembly/specific/AssembleFENavierStokes.cpp
 	AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian.cpp
-	AceFemAssembly/specific/AssembleFEAceLinElas.cpp
-	AceFemAssembly/specific/AssembleFEAceNonLinElas.cpp
-	AceFemAssembly/specific/AssembleFEAceNonLinElas2.cpp
+	AceFemAssembly/specific/AssembleFE_LinElas.cpp
+	AceFemAssembly/specific/AssembleFE_NonLinElas.cpp
+	AceFemAssembly/specific/AssembleFE_NonLinElas2.cpp
 	AceFemAssembly/specific/AssembleFE_SCI_NH.cpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_MLCK.cpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.cpp

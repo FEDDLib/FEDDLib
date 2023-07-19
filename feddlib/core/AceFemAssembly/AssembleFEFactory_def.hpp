@@ -20,8 +20,8 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 	AssembleFEPtr_Type assembleFESpecific;
 
 	if(problemType == "Laplace"){
-		//AssembleFEAceLaplace<SC,LO,GO,NO> assembleFESpecific  = new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params);
-		Teuchos::RCP<AssembleFEAceLaplace<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceLaplace<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		//AssembleFE_Laplace<SC,LO,GO,NO> assembleFESpecific  = new AssembleFE_Laplace<SC,LO,GO,NO>(flag,nodesRefConfig, params);
+		Teuchos::RCP<AssembleFE_Laplace<SC,LO,GO,NO>> assembleFESpecific(new AssembleFE_Laplace<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
 	else if(problemType == "NavierStokes"){
@@ -33,15 +33,15 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 		assembleFE = assembleFESpecific;
 	}
 	else if(problemType == "LinearElasticity"){
-		Teuchos::RCP<AssembleFEAceLinElas<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceLinElas<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		Teuchos::RCP<AssembleFE_LinElas<SC,LO,GO,NO>> assembleFESpecific(new AssembleFE_LinElas<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
 	else if(problemType == "NonLinearElasticity"){
-		Teuchos::RCP<AssembleFEAceNonLinElas<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceNonLinElas<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		Teuchos::RCP<AssembleFE_NonLinElas<SC,LO,GO,NO>> assembleFESpecific(new AssembleFE_NonLinElas<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
 	else if(problemType == "NonLinearElasticity2"){
-		Teuchos::RCP<AssembleFEAceNonLinElas2<SC,LO,GO,NO>> assembleFESpecific(new AssembleFEAceNonLinElas2<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
+		Teuchos::RCP<AssembleFE_NonLinElas2<SC,LO,GO,NO>> assembleFESpecific(new AssembleFE_NonLinElas2<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
 	else if(problemType == "SCI_NH"){

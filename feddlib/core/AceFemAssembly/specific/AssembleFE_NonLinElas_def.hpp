@@ -1,8 +1,8 @@
-#ifndef  AssembleFEAceNonLinElas2_DEF_hpp
-#define  AssembleFEAceNonLinElas2_DEF_hpp
+#ifndef ASSEMBLEFE_NONLINELAS_DEF_hpp
+#define ASSEMBLEFE_NONLINELAS_DEF_hpp
 
-#include "AssembleFEAceNonLinElas2_decl.hpp"
-#include "feddlib/core/AceFemAssembly/AceInterface/NeoHookQuadraticTets3.hpp"
+#include "AssembleFE_NonLinElas_decl.hpp"
+#include "feddlib/core/AceFemAssembly/AceInterface/NeoHookQuadraticTets2.hpp"
 #include <vector>
 #include <iostream>
 
@@ -11,7 +11,7 @@ namespace FEDD {
 
 /*!
 
- \brief Constructor for  AssembleFEAceNonLinElas2
+ \brief Constructor for AssembleFE_NonLinElas
 
 @param[in] flag Flag of element
 @param[in] nodesRefConfig Nodes of element in reference configuration
@@ -20,7 +20,7 @@ namespace FEDD {
 
 */
 template <class SC, class LO, class GO, class NO>
- AssembleFEAceNonLinElas2<SC,LO,GO,NO>:: AssembleFEAceNonLinElas2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
+AssembleFE_NonLinElas<SC,LO,GO,NO>::AssembleFE_NonLinElas(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
 AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 {
 	/// Extracting values from ParameterList params:
@@ -47,7 +47,7 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params,tuple)
 */ 
 
 template <class SC, class LO, class GO, class NO>
-void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assembleJacobian() {
+void AssembleFE_NonLinElas<SC,LO,GO,NO>::assembleJacobian() {
 
 
 	SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement_)); // Matrix we fill with entries.
@@ -65,7 +65,7 @@ void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assembleJacobian() {
 
 */
 template <class SC, class LO, class GO, class NO>
-void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assemblyNonLinElas(SmallMatrixPtr_Type &elementMatrix) {
+void AssembleFE_NonLinElas<SC,LO,GO,NO>::assemblyNonLinElas(SmallMatrixPtr_Type &elementMatrix) {
 
 	/// We can access the following values we initialized/extracted in the constructor:
 	// dofs_
@@ -77,10 +77,8 @@ void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assemblyNonLinElas(SmallMatrixPtr_T
 
 	/// Writing entries in the element matrix for nodes 1,2..n , n=numNodes_
 	/// 1_x 1_y 1_z 2_x 2_y 2_z .... n_x n_y n_z 
-	this->rhsVec_.reset( new vec_dbl_Type ( dofsElement_,0.) );
-
-
-	std::vector<double> v(1066); //Working vector, size defined by AceGen-FEAP
+	
+	std::vector<double> v(1060); //Working vector, size defined by AceGen-FEAP
 	std::vector<double> d(2); // Material parameters
 	std::vector<double> ul(30); // The solution vector(or displacement in this case)
 	std::vector<double> ul0(30); // Currently unused but must be passed to match FEAP template
@@ -108,7 +106,7 @@ void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assemblyNonLinElas(SmallMatrixPtr_T
 		p[i]=0.0;
 
 	// std::cout << "[DEBUG] SKR-Jacobian Calls after this line!" << std::endl;
-	skr3(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
+	skr2(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
 	// std::cout << "[DEBUG] SKR-Jacobian Call successful!" << std::endl;
 	// Note: FEAP/Fortran returns matrices unrolled in column major form. This must be converted for use here.
 
@@ -131,11 +129,13 @@ void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assemblyNonLinElas(SmallMatrixPtr_T
 
 */
 template <class SC, class LO, class GO, class NO>
-void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assembleRHS() {
+void AssembleFE_NonLinElas<SC,LO,GO,NO>::assembleRHS() {
 
 	// [Efficiency] Need to know which is called first: assembleRHS() or assembleJacobian(), so that multiple calls to skr() may be avoided.
+	this->rhsVec_.reset( new vec_dbl_Type ( dofsElement_,0.) );
+
 	// Note skr() computes both elementMatrix_ and rhsVec_
-	std::vector<double> v(1066); //Working vector, size defined by AceGen-FEAP
+	std::vector<double> v(1060); //Working vector, size defined by AceGen-FEAP
 	std::vector<double> d(2); // Material parameters
 	std::vector<double> ul(30); // The solution vector(or displacement in this case)
 	std::vector<double> ul0(30); // Currently unused but must be passed to match FEAP template
@@ -165,14 +165,14 @@ void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>::assembleRHS() {
 		p[i]=0.0;
 
 	// std::cout << "[DEBUG] SKR-Rhs Calls after this line!" << std::endl;
-	skr3(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
+	skr2(&v[0],&d[0],&ul[0],&ul0[0],&xl[0],&s[0],&p[0],&ht[0],&hp[0]); // Fortran subroutine call modifies s and p
 	// std::cout << "[DEBUG] SKR-Rhs Call successful!" << std::endl;
 
 	for(int i=0; i< p.size(); i++)
 		(*this->rhsVec_)[i] = p[i];
 }
 template <class SC, class LO, class GO, class NO>
-void  AssembleFEAceNonLinElas2<SC,LO,GO,NO>:: updateParameter(string type, double value){
+void AssembleFE_NonLinElas<SC,LO,GO,NO>:: updateParameter(string type, double value){
 	if(type == "E")
 		this->E_ = value;
 

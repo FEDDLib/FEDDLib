@@ -1,5 +1,5 @@
-#ifndef ASSEMBLEFEACELAPLACE_DECL_hpp
-#define ASSEMBLEFEACELAPLACE_DECL_hpp
+#ifndef  AssembleFE_NonLinElas2_DECL_hpp
+#define  AssembleFE_NonLinElas2_DECL_hpp
 
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
 #include "feddlib/core/AceFemAssembly/Helper.hpp"
@@ -10,7 +10,7 @@
 namespace FEDD {
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class AssembleFEAceLaplace : public AssembleFE<SC,LO,GO,NO> {
+class  AssembleFE_NonLinElas2 : public AssembleFE<SC,LO,GO,NO> {
   public:
    
     typedef Matrix<SC,LO,GO,NO> Matrix_Type;
@@ -42,22 +42,31 @@ class AssembleFEAceLaplace : public AssembleFE<SC,LO,GO,NO> {
 		@param[in] block ID i
 	*/
 	virtual void assembleJacobianBlock(LO i) {};
+	/*!
+		\brief Update the parameter read from the ParameterList.
+		@param[in] Parameter as read from the xml file
+	*/
+    virtual void updateParameter(string type, double value);
 
    protected:
-	AssembleFEAceLaplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); /// \todo Tupel for Disk Anzahl Knoten, Anzahl Freiheitsgrade
-
+	 AssembleFE_NonLinElas2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); 
    private:
-
-	void assemblyLaplacian(SmallMatrixPtr_Type &elementMatrix);
+	void assemblyNonLinElas(SmallMatrixPtr_Type &elementMatrix);
 
     friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 
-	void buildTransformation(SmallMatrix<SC>& B);
-
-	void applyBTinv(vec3D_dbl_ptr_Type& dPhiIn,
-		            vec3D_dbl_Type& dPhiOut,
-		            SmallMatrix<SC>& Binv);
 	
+	double E_ ; 
+   	double lambda_;
+	double poissonRatio_;
+	string FEType_ ; // FEType of Disk
+
+	int dofs_ ; // Degrees of freedom per node
+
+	int numNodes_ ; // Number of nodes of element
+
+	int dofsElement_; // "Dimension of return matrix"
+
  };
 
 }

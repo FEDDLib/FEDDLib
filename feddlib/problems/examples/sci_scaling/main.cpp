@@ -10,6 +10,7 @@
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
+#include <Teuchos_StackedTimer.hpp>
 
 void rhsDummy2D(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
@@ -419,7 +420,7 @@ typedef unsigned UN;
 typedef double SC;
 typedef int LO;
 typedef default_go GO;
-typedef KokkosClassic::DefaultNode::DefaultNodeType NO;
+typedef Tpetra::KokkosClassic::DefaultNode::DefaultNodeType NO;
 
 using namespace FEDD;
 using namespace Teuchos;
@@ -489,9 +490,9 @@ int main(int argc, char *argv[])
         mpiSession.~GlobalMPISession();
         return 0;
     }
-
+	Teuchos::RCP<StackedTimer> stackedTimer = rcp(new StackedTimer("Structure-chemical interaction",true));
     bool verbose (comm->getRank() == 0);
-
+    TimeMonitor::setStackedTimer(stackedTimer);
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
        
@@ -533,10 +534,7 @@ int main(int argc, char *argv[])
         parameterListStructureAll->setParameters(*parameterListPrecStructure);
         parameterListStructureAll->setParameters(*parameterListProblem);
         parameterListStructureAll->setParameters(*parameterListProblemStructure);
-
-                 
-       
-
+		
         TimePtr_Type totalTime(TimeMonitor_Type::getNewCounter("FEDD - main - Total Time"));
         TimePtr_Type buildMesh(TimeMonitor_Type::getNewCounter("FEDD - main - Build Mesh"));
 
@@ -967,6 +965,10 @@ int main(int argc, char *argv[])
         daeTimeSolver.advanceInTime();
     }
     TimeMonitor_Type::report(std::cout);
-
+        stackedTimer->stop("Structure-chemical interaction");
+	StackedTimer::OutputOptions options;
+	options.output_fraction = options.output_histogram = options.output_minmax = true;
+	stackedTimer->report((std::cout),comm,options);
+	
     return(EXIT_SUCCESS);
 }

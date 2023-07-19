@@ -298,6 +298,7 @@ int main(int argc, char *argv[])
         
         NonLinElasAssFE.addParemeterRhs( force );
         NonLinElasAssFE.addParemeterRhs( degree );
+        
         // ######################
         // Matrix assemblieren, RW setzen und System loesen
         // ######################

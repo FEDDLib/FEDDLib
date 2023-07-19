@@ -31,7 +31,8 @@
 
                 <ParameterList name="RGDSWCoarseOperator">
                     <Parameter name="Store Phi" type="bool" value="true"/>
-                
+                    
+                    <Parameter name="Phi: Dropping Threshold" type="double" value="-1.0"/>
                     <Parameter name="Write phi and problem" type="bool" value="false"/>
                     <Parameter name="Write coarse matrix" type="bool" value="false"/>
                     
