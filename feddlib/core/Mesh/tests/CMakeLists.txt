@@ -57,6 +57,19 @@ TRIBITS_ADD_TEST(
     NUM_MPI_PROCS 4
 )
 
+### mesh_structured_3D_5_element
+TRIBITS_ADD_EXECUTABLE(
+    mesh_structured_3D_5_element
+    SOURCES mesh_structured_5_element_subcube.cpp
+)
+
+TRIBITS_ADD_TEST(
+    mesh_structured_3D_5_element
+    NAME mesh_structured_3D_5_element
+    ARGS
+    NUM_MPI_PROCS 8
+)
+
 ### mesh_structured_3DCR
 #TRIBITS_ADD_EXECUTABLE(
 #    mesh_structured_3DCR
@@ -123,6 +136,27 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_nodeFlagsP2
     DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
     DEST_FILES meshNodeTestP23D_2.mesh
     EXEDEPS mesh_nodeFlagsP2
+)
+
+### testing mesh surfaces orientation
+TRIBITS_ADD_EXECUTABLE(
+    mesh_surfaceOrientation
+    SOURCES mesh_surfaceOrientation.cpp
+)
+
+TRIBITS_ADD_TEST(
+    mesh_surfaceOrientation
+    NAME mesh_surfaceOrientation
+    ARGS
+    NUM_MPI_PROCS 4
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_surfaceOrientation
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
+    SOURCE_FILES cube_tetr6_struct_h=0_2.mesh
+    DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    DEST_FILES cube_tetr6_struct_h=0_2.mesh
+    EXEDEPS mesh_surfaceOrientation
 )
 
 ### mesh_unstructured

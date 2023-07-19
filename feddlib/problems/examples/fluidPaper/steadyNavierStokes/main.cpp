@@ -7,7 +7,7 @@
 
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
-
+#include <Teuchos_StackedTimer.hpp>
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 
@@ -118,6 +118,7 @@ typedef default_go GO;
 typedef default_no NO;
 
 using namespace FEDD;
+//using namespace Teuchos;
 
 int main(int argc, char *argv[]) {
     
@@ -162,6 +163,10 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    Teuchos::RCP<Teuchos::StackedTimer> stackedTimer = rcp(new Teuchos::StackedTimer("Steady Navier-Stokes",true));
+    Teuchos::TimeMonitor::setStackedTimer(stackedTimer);
+
+       
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
 
@@ -208,8 +213,7 @@ int main(int argc, char *argv[]) {
         int numProcsCoarseSolve = parameterListProblem->sublist("General").get("Mpi Ranks Coarse",0);
         int size = comm->getSize() - numProcsCoarseSolve;
 
-
-        Teuchos::RCP<Teuchos::Time> totalTime(Teuchos::TimeMonitor::getNewCounter("main: Total Time"));
+    	Teuchos::RCP<Teuchos::Time> totalTime(Teuchos::TimeMonitor::getNewCounter("main: Total Time"));
         Teuchos::RCP<Teuchos::Time> buildMesh(Teuchos::TimeMonitor::getNewCounter("main: Build Mesh"));
         Teuchos::RCP<Teuchos::Time> solveTime(Teuchos::TimeMonitor::getNewCounter("main: Solve problem time"));
         {
@@ -280,6 +284,50 @@ int main(int argc, char *argv[]) {
                             domainVelocity = domainPressure;
                     }
                 }
+                if (parameterListAll->sublist("General").get("ParaView export subdomain",false) ){
+                    Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaF(new ExporterParaView<SC,LO,GO,NO>());
+
+                    Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainVelocity->getMapUnique()));
+                    vec_int_ptr_Type BCFlags = domainVelocity->getBCFlagUnique();
+
+                    Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
+                    for(int i=0; i< entries.size(); i++){
+                        entries[i] = BCFlags->at(i);
+                    }
+
+                    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+                    exParaF->setup("Flags", domainVelocity->getMesh(), discVelocity);
+
+                    exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainVelocity->getMapUnique(), domainVelocity->getMapUniqueP2());
+
+                    exParaF->save(0.0);
+		
+	
+                    if (verbose)
+                        std::cout << "\t### Exporting subdomains ###\n";
+
+                    typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
+                    typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
+                    typedef Teuchos::RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
+                    typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
+                    typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
+                    // Same subdomain for solid and chemistry, as they have same domain
+                    {
+                        MultiVectorPtr_Type vecDecomposition(new MultiVector_Type( domainVelocity->getElementMap() ) );
+                        MultiVectorConstPtr_Type vecDecompositionConst = vecDecomposition;
+                        vecDecomposition->putScalar(comm->getRank()+1.);
+                        
+                        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+                        
+                        exPara->setup( "subdomains_velocity", domainVelocity->getMesh(), "P0" );
+                        
+                        exPara->addVariable( vecDecompositionConst, "subdomains", "Scalar", 1, domainVelocity->getElementMap());
+                        exPara->save(0.0);
+                        exPara->closeExporter();
+                    }
+
+                }
 
                 std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
 
@@ -327,6 +375,7 @@ int main(int argc, char *argv[]) {
                     bcFactory->addBC(zeroDirichlet3D, 5, 0, domainVelocity, "Dirichlet", dim);
                 }
                 
+            
                 NavierStokes<SC,LO,GO,NO> navierStokes( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
 
                 domainVelocity->info();
@@ -386,6 +435,10 @@ int main(int argc, char *argv[]) {
     }
 
     Teuchos::TimeMonitor::report(cout);
+    stackedTimer->stop("Steady Navier-Stokes");
+	Teuchos::StackedTimer::OutputOptions options;
+	options.output_fraction =  options.output_minmax = true; //options.output_histogram =
+	stackedTimer->report((std::cout),comm,options);
 
     return(EXIT_SUCCESS);
 }

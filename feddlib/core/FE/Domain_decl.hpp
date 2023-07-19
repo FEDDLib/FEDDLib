@@ -93,7 +93,7 @@ public:
     Domain(CommConstPtr_Type comm, int dimension);
 
     /*!
-         \brief Constructor for structured meshes build in FEDDLib
+         \brief Constructor for 2D structured meshes build in FEDDLib
          @param[in] coor
          @param[in] l
          @param[in] h
@@ -102,7 +102,7 @@ public:
     Domain(vec_dbl_Type coor, double l, double h, CommConstPtr_Type comm);
 
  	/*!
-         \brief Constructor for strucutred meshes build in FEDDLib
+         \brief Constructor for 3D strucutred meshes build in FEDDLib
          @param[in] coor
          @param[in] l length
          @param[in] w width
@@ -524,22 +524,22 @@ public:
 
 private:
 
-    CommConstPtr_Type 		comm_;
-    MeshPtr_Type 			mesh_;
-    int                     dim_;
-    vec_dbl_Type            coorRec;
+    CommConstPtr_Type 		comm_; // underlying comm
+    MeshPtr_Type 			mesh_; // underlying mesh as base class mesh type. usually underlying mesh is either structured or unstructured
+    int                     dim_; // dimension
+    vec_dbl_Type            coorRec; 
     double 					length;
     double		 			height;
     double 					width;
     int 					n_;
     int 					m_;
-    std::string				FEType_;
+    std::string				FEType_; // Finite element discretization
     mutable MapPtr_Type mapVecFieldUnique_;
     mutable  MapPtr_Type mapVecFieldRepeated_;
     
-    string_vec_ptr_Type     geometries2DVec_;
-    string_vec_ptr_Type		geometries3DVec_;
-    vec_dbl_ptr_Type        distancesToInterface_;
+    string_vec_ptr_Type     geometries2DVec_; // list with available 2D structured geometries
+    string_vec_ptr_Type		geometries3DVec_; // list with available 3D structured geometries
+    vec_dbl_ptr_Type        distancesToInterface_; 
 
     // Unique Interface-Maps als nodes und als dofs in der Interface-Nummerierung
     MapPtr_Type             interfaceMapUnique_; // nodes

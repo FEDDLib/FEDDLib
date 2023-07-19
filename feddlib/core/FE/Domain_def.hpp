@@ -76,6 +76,7 @@ otherPartialGlobalInterfaceVecFieldMap_()
 
 }
 
+// Constructor for structured 2D Meshes.  
 template <class SC, class LO, class GO, class NO>
 Domain<SC,LO,GO,NO>::Domain(vec_dbl_Type coor, double l, double h, CommConstPtr_Type comm):
 comm_(comm),
@@ -98,6 +99,7 @@ partialGlobalInterfaceVecFieldMap_(),
     length 	= l;
 	height 	= h;
     width = -1;
+    // Available 2D geometries 
     geometries2DVec_.reset(new string_vec_Type(0));
     geometries2DVec_->push_back("Square");
     geometries2DVec_->push_back("BFS");
@@ -106,6 +108,7 @@ partialGlobalInterfaceVecFieldMap_(),
 //    geometries2DVec->push_back("REC");
 }
 
+// Constructor for 3D structured meshes
 template <class SC, class LO, class GO, class NO>
 Domain<SC,LO,GO,NO>::Domain(vec_dbl_Type coor, double l, double w, double h, CommConstPtr_Type comm):
 comm_(comm),
@@ -125,9 +128,12 @@ partialGlobalInterfaceVecFieldMap_()
     length 	= l;
     width 	= w;
     height	= h;
+    // Different geometries available as geometries. 
     geometries3DVec_.reset(new string_vec_Type(0));
-    geometries3DVec_->push_back("Square");
-    geometries3DVec_->push_back("BFS");
+    geometries3DVec_->push_back("Square"); // for 3D this is synonymous to Cube with 6-Element subcube structure
+    geometries3DVec_->push_back("BFS"); // Backward-facing step geometry
+    geometries3DVec_->push_back("Square5Element"); // this is a cube with different 5-Element per subcube structure
+
 
 }
 
@@ -253,6 +259,10 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
                     meshStructured->setGeometry3DBox(coorRec, length, width, height);
                     meshStructured->buildMesh3DBFS(	FEType, n_, m_, numProcsCoarseSolve);
                     break;
+                case 2:
+                    meshStructured->setGeometry3DBox(coorRec, length, width, height);
+                    meshStructured->buildMesh3D5Elements(	FEType, n_, m_, numProcsCoarseSolve);
+                break;
                 default:
                     TEUCHOS_TEST_FOR_EXCEPTION(true,std::runtime_error,"Select valid mesh. Structured types are 'structured' and 'structured_bfs' in 3D." );
                     break;
@@ -264,10 +274,8 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
     }
     meshStructured->buildElementMap();
     meshStructured->setStructuredMeshFlags(flagsOption,FEType);
-    
-    // Building the surfaces for elements as well (necessary with surface loads!)
     meshStructured->buildSurfaces(flagsOption,FEType);
-
+    
     mesh_ = meshStructured;
 }
 
