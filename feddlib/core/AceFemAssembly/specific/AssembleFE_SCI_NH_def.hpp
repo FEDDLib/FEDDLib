@@ -194,9 +194,9 @@ namespace FEDD
 				(*elementMatrix)[i][j] = stiffnessMatrix[i][j];
 			}
 		}
+#endif
 
 	}
-#endif
 
 
 } // namespace FEDD

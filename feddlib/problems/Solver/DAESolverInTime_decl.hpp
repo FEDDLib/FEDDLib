@@ -6,8 +6,6 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/General/ExporterTxt.hpp"
-#include "feddlib/problems/specific/SCI.hpp"
-#include "feddlib/problems/specific/FSCI.hpp"
 
 
 
@@ -60,14 +58,6 @@ public:
     typedef FSI<SC,LO,GO,NO> FSIProblem_Type;
     typedef Teuchos::RCP<FSIProblem_Type> FSIProblemPtr_Type;
 
-
-    typedef FSCI<SC,LO,GO,NO> FSCIProblem_Type;
-    typedef Teuchos::RCP<FSCIProblem_Type> FSCIProblemPtr_Type;
-
-    typedef SCI<SC,LO,GO,NO> SCIProblem_Type;
-    typedef Teuchos::RCP<SCIProblem_Type> SCIProblemPtr_Type;
-
-
     typedef Domain<SC,LO,GO,NO> Domain_Type;
     typedef Teuchos::RCP<Domain_Type > DomainPtr_Type;
     typedef typename Domain_Type::Mesh_Type Mesh_Type;
@@ -110,10 +100,6 @@ public:
     // Wendet die Zeitdiskretisierung separat auf Fluid und Struktur an und
     // schreibe dann vor dem nlSolve() alles in das FSI-System hinein
     void advanceInTimeFSI();
-
-    void advanceInTimeSCI();
-
-    void advanceInTimeFSCI();
 
     void advanceInTimeLinearMultistep();
 

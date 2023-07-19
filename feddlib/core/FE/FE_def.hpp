@@ -6346,8 +6346,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
 
                     }
                		
-                //for (int j=0; j<value.size(); j++)
-                //    value[j] *= elScaling;
+               
                 paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();
                 vec_dbl_Type p1 = {0.,0.,0.}; // Dummy vector
                 func( &p1[0], &valueFunc[0], paramsFunc);
@@ -6360,13 +6359,8 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
                     AceGenInterface::PressureTriangle3D6 pt(valueFunc[0], 1., 35, &positions[0], &solution_d[0]);
                     pt.computeTangentResidual();
                     residuumVector = pt.getResiduum();
-                    // getResiduumVectorRext(&positions[0], &solution_d[0], 1., valueFunc[0], 35, residuumVector);
                     #endif
-                    /*cout << " residuumVector " ;
-
-                    for(int i=0; i< 18; i++)
-                        cout << residuumVector[i] << " " ;
-                    cout << endl;*/
+                   
                     for(int i=0; i< nodeList.size() ; i++){
                             for(int d=0; d<dim; d++)
                                 valuesF[nodeList[i]*dim+d] += residuumVector[i*dim+d];
@@ -6454,8 +6448,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                     stiffMat = pt.getStiffnessMatrix();
                     #endif
 
-                    // getResiduumVectorRext(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, residuumVector);
-                    // getStiffnessMatrixKuuExt(&positions[0], &solution_d[0], 1.0, valueFunc[0], 35, stiffMat); // 16, 35 
+                 
 
                     int dofs1 = dim;
                     int numNodes1 =nodeList.size();
@@ -6468,11 +6461,6 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
 
                         }
                     }
-                    /*cout << " --------------" << endl;
-                    cout << " STIFMAT before " << endl;
-                    elementMatrixPrint.print();
-                    cout << " --------------" << endl;*/
-
 
                     SmallMatrix_Type elementMatrixWrite(18,0.);
 
@@ -6491,26 +6479,12 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                                 for(int d=0; d<dim; d++){
                                     columnIndices1[dim*j+d] = GO ( dim * map->getGlobalElement( nodeList[j] ) + d );
                                     value1[dim*j+d] = stiffMat[rowLO][dim*j+d];	
-                                    if(fabs(stiffMat[rowLO][dim*j+d]) >1.e-13)
-                                        elementMatrixWrite[rowLO][dim*j+d] = stiffMat[rowLO][dim*j+d];
-                                    else
-                                        elementMatrixWrite[rowLO][dim*j+d] = 0.;
-                                    elementMatrixIDsCol[rowLO][dim*j+d] = columnIndices1[dim*j+d];
-                                    elementMatrixIDsRow[rowLO][dim*j+d] = row;
-
-
                                 }
                             }  
                             Kext->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
                         }
                     }
-                    /*cout << " --------------" << endl;
-                    cout << " STIFMAT ROW IDs " << endl;
-                    elementMatrixIDsRow.print();
-                    cout << " STIFMAT COL IDs " << endl;
-                    elementMatrixIDsCol.print();
-                    cout << " --------------" << endl;*/
-
+            
 
                                         
                     for(int i=0; i< nodeList.size() ; i++){
@@ -6519,9 +6493,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                         }
                     }
 
-                    // free(stiffMat);
-                    // free(stiffnessMatrixFlat);
-                    // free(residuumVector);
+                
                 }
                 
                     

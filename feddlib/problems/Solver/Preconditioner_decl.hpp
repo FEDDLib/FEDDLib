@@ -11,7 +11,6 @@
 #include "feddlib/problems/Solver/PrecBlock2x2.hpp"
 #include "feddlib/problems/specific/LaplaceBlocks.hpp"
 #include "feddlib/problems/specific/FSI.hpp"
-#include "feddlib/problems/specific/FSCI.hpp"
 #include "Xpetra_ThyraUtils.hpp"
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_DefaultPreconditioner_decl.hpp>
