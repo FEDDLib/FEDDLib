@@ -118,7 +118,7 @@ public:
 	/*! 
 		\brief Finding the surfaces corresponding to a specfic element and then setting subelements
 	*/
-    void findAndSetSurfacesPartitioned( vec2D_int_Type& surfElements_vec, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation, vec_GO_Type& linearSurfacePartitionOffset, int globalElID);
+    void findAndSetSurfacesPartitioned( vec2D_int_Type& surfElements_vec,vec2D_int_Type& surfElements_vec_unsorted, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation, vec_GO_Type& linearSurfacePartitionOffset, int globalElID);
 
 	/*! 
 		\brief Setting local IDs to the edges in 3D case with respect to the local numbering of elements

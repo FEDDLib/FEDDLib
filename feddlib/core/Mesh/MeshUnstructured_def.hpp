@@ -161,10 +161,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
         
         LO p1ID = edgeElements->getElement(i).getNode( 0 );
         LO p2ID = edgeElements->getElement(i).getNode( 1 );
-
-        GO id1 = mapRepeatedP1->getGlobalElement( p1ID );
-        GO id2 = mapRepeatedP1->getGlobalElement( p2ID );
-        
+       
         for (int d=0; d<this->dim_; d++)
             newPoints[i][d] = ( (*pointsP1)[p1ID][d] + (*pointsP1)[p2ID][d] ) / 2.; // New point on middle of nodes
         
@@ -234,6 +231,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
 	// nodeIDs via the edges'globalID.
     for (int i=0; i<edgeElements->numberElements(); i++){
         vecGlobalIDs.push_back( edgeElements->getGlobalID( (LO) i ) + P1Offset );
+        edgeElements->setMidpoint( i, edgeElements->getGlobalID( (LO) i ) + P1Offset);
     }
     Teuchos::RCP<std::vector<GO> > pointsRepGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDs ) );
     Teuchos::ArrayView<GO> pointsRepGlobMappingArray = Teuchos::arrayViewFromVector( *pointsRepGlobMapping );
@@ -258,6 +256,11 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
         this->bcFlagUni_->at(i) = this->bcFlagRep_->at(id);
 
     }
+    // Setting local P2 Node as Midpoint.
+    for (int i=0; i<edgeElements->numberElements(); i++){
+        edgeElements->setMidpoint( i, this->mapRepeated_->getLocalElement(edgeElements->getGlobalID( (LO) i ) + P1Offset));
+    }
+
 	this->edgeElements_ = edgeElements;
 
     
@@ -302,7 +305,7 @@ void MeshUnstructured<SC,LO,GO,NO>::setP2SurfaceElements( MeshUnstrPtr_Type mesh
             FiniteElement feSurf = subEl->getElement(j);
             // In some instances a element has only an edge as subelement. In that case this step is not required
             if(feSurf.getVectorNodeList().size() == this->dim_)
-                this->setSurfaceP2(feP2, feSurf, surfacePermutation, this->dim_);
+                this->addSurfaceP2Nodes(feP2, feSurf, surfacePermutation, this->dim_);
             
             // set edges for 3D case and if there are any edges, for 2D the edges are handled above
             ElementsPtr_Type subElSurf = feSurf.getSubElements(); //might be null
@@ -319,6 +322,77 @@ void MeshUnstructured<SC,LO,GO,NO>::setP2SurfaceElements( MeshUnstrPtr_Type mesh
         }
         
     }
+}
+
+template <class SC, class LO, class GO, class NO>
+void MeshUnstructured<SC,LO,GO,NO>::addSurfaceP2Nodes( FiniteElement &feP2, const FiniteElement &surfFeP1, const vec2D_int_Type &surfacePermutation, int dim ){
+    
+    vec2D_LO_Type edgeElementList = this->edgeElements_->getElementsNodeList();
+    vec_int_Type surfaceNodeP2(0);
+
+    if (dim == 2) {
+        const vec_int_Type surfaceNodeP1 = surfFeP1.getVectorNodeList();
+        
+        vec_int_Type tmpSurface = surfFeP1.getVectorNodeList();
+        sort(tmpSurface.begin(),tmpSurface.end());
+        
+        auto it1 = find( edgeElementList.begin(),edgeElementList.end() , tmpSurface );
+        int edgeID = distance( edgeElementList.begin() , it1 );
+        
+        surfaceNodeP2.push_back( surfaceNodeP1[0] );
+        surfaceNodeP2.push_back( surfaceNodeP1[1] );
+        
+        surfaceNodeP2.push_back(this->edgeElements_->getMidpoint( edgeID ) );  
+            
+        int flag = surfFeP1.getFlag();
+        FiniteElement feP2Surf( surfaceNodeP2, flag );
+        
+        if ( !feP2.subElementsInitialized() )
+            feP2.initializeSubElements("P2",dim-1);
+        feP2.addSubElement(feP2Surf);
+            
+    }
+    else if (dim == 3){
+
+        const vec_int_Type surfaceNodeP1 = surfFeP1.getVectorNodeList();
+        vec2D_LO_Type edges(3,vec_LO_Type(2)); 
+        edges[0] = {surfaceNodeP1[0] , surfaceNodeP1[1]};
+        edges[1] = {surfaceNodeP1[1],surfaceNodeP1[2]};
+        edges[2] =  {surfaceNodeP1[0],surfaceNodeP1[2]};
+
+ 
+        surfaceNodeP2.push_back( surfaceNodeP1[0] );
+        surfaceNodeP2.push_back( surfaceNodeP1[1] );
+        surfaceNodeP2.push_back( surfaceNodeP1[2] );
+
+
+        bool criticalEdge = false;
+        for(int i=0; i<3 ; i++){
+
+            sort(edges[i].begin(),edges[i].end());
+        
+            auto it1 = find( edgeElementList.begin(),edgeElementList.end() , edges[i] );
+            int edgeID = distance( edgeElementList.begin() , it1 );
+            if(it1 == edgeElementList.end())
+               criticalEdge=true; // Some triangles can be -1 -1 -1 thus no edge can be found. Why does that happen??
+            else                 
+                surfaceNodeP2.push_back(this->edgeElements_->getMidpoint( edgeID ) );  
+
+        }
+
+        if(criticalEdge==false){
+
+            
+            int flag = surfFeP1.getFlag();
+            FiniteElement feP2Surf( surfaceNodeP2, flag );
+            
+            if ( !feP2.subElementsInitialized() )
+                feP2.initializeSubElements("P2",dim-1);
+            feP2.addSubElement(feP2Surf);
+        }    
+      
+    }
+    
 }
 
 
@@ -362,8 +436,9 @@ void MeshUnstructured<SC,LO,GO,NO>::setSurfaceP2( FiniteElement &feP2, const Fin
             tmpSurface[0] = feP2.getNode( surfacePermutation.at(j).at(0) );
             tmpSurface[1] = feP2.getNode( surfacePermutation.at(j).at(1) );
             tmpSurface[2] = feP2.getNode( surfacePermutation.at(j).at(2) );
-                        
             //sort( tmpSurface.begin(), tmpSurface.end() );
+
+
             vec_int_Type index(3, 0);
             for (int i = 0 ; i != index.size() ; i++)
                 index[i] = i;
@@ -377,14 +452,28 @@ void MeshUnstructured<SC,LO,GO,NO>::setSurfaceP2( FiniteElement &feP2, const Fin
             tmpSurface = sort_from_ref(tmpSurface, index);
             
             vec_int_Type surfaceNodeP2(0);
-            const vec_int_Type surfaceNodeP1 = surfFeP1.getVectorNodeList();
+            const vec_int_Type surfaceNodeP1Unsorted = surfFeP1.getVectorNodeList();
+            vec_int_Type surfaceNodeP1 = surfFeP1.getVectorNodeList();
+            //sort( surfaceNodeP1.begin(), surfaceNodeP1.end() );
+
+            vec_int_Type index2(3, 0);
+            for (int i = 0 ; i != index2.size() ; i++)
+                index2[i] = i;
             
+            sort(index2.begin(), index2.end(),
+                 [&](const int& a, const int& b) {
+                     return  surfaceNodeP1[a] < surfaceNodeP1[b];
+                    }
+                 );
+            
+            surfaceNodeP1 = sort_from_ref(surfaceNodeP1, index2);
+
             if ( tmpSurface[0] == surfaceNodeP1[0]  &&
                     tmpSurface[1] == surfaceNodeP1[1] &&
                     tmpSurface[2] == surfaceNodeP1[2]) {
-                surfaceNodeP2.push_back( surfaceNodeP1[0] );
-                surfaceNodeP2.push_back( surfaceNodeP1[1] );
-                surfaceNodeP2.push_back( surfaceNodeP1[2] );
+                surfaceNodeP2.push_back( surfaceNodeP1Unsorted[0] );
+                surfaceNodeP2.push_back( surfaceNodeP1Unsorted[1] );
+                surfaceNodeP2.push_back( surfaceNodeP1Unsorted[2] );
                 vec_int_Type additionalP2IDs(3);
                 if (j == 0){
                     additionalP2IDs[0] = feP2.getNode( 4 );
@@ -411,14 +500,15 @@ void MeshUnstructured<SC,LO,GO,NO>::setSurfaceP2( FiniteElement &feP2, const Fin
                 surfaceNodeP2.push_back( additionalP2IDs[0] );
                 surfaceNodeP2.push_back( additionalP2IDs[1] );
                 surfaceNodeP2.push_back( additionalP2IDs[2] );
+
+                // Resorting according to original IDs from GMSH
                 
                 int flag = surfFeP1.getFlag();
                 FiniteElement feP2Surf( surfaceNodeP2, flag );
                 if ( !feP2.subElementsInitialized() )
                     feP2.initializeSubElements("P2",dim-1);
                 feP2.addSubElement(feP2Surf);
-            }
-            
+            }            
         }
     }
     
@@ -1431,7 +1521,8 @@ void MeshUnstructured<SC,LO,GO,NO>::readSurfaces(){
         for (int j=0; j<surfaceElementOrder_; j++)
             tmp.at(j) = surfacesCont.at( i * surfaceElementOrder_ + j ) - 1;// -1 to have start index 0
         
-        sort( tmp.begin(), tmp.end() ); // we sort here in order to identify the corresponding element faster!
+        //cout << " Reading surfaces " << tmp[0] << " " << tmp[1] << " " << tmp[2] << endl;
+        //sort( tmp.begin(), tmp.end() ); // we sort here in order to identify the corresponding element faster! !!! We refrain from that so the numbering of surface element nodes remains the consisten with respct to normals.
         FiniteElement feSurface( tmp , surfaceFlags[i] );
         surfaceElementsMesh->addElement( feSurface );
     }

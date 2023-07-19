@@ -11,7 +11,7 @@
 #include <Xpetra_DefaultPlatform.hpp>
 
 /*!
- Mesh Element Flags test
+ Mesh Surface Orientation
 
  @brief  Mesh Element Flags test
  @version 1.0
@@ -49,13 +49,13 @@ int main(int argc, char *argv[]) {
     Teuchos::CommandLineProcessor myCLP;
     string ulib_str = "Tpetra"; //this does nothing atm
     myCLP.setOption("ulib",&ulib_str,"Underlying lib");
-    string filename = "meshNodeTestP23D_2.mesh";
+    string filename = "cube_tetr6_struct_h=0_2.mesh";
     myCLP.setOption("file",&filename,"Mesh filename");
     int dim = 3;
     myCLP.setOption("dim",&dim,"Dimension");
     string delimiter = " ";
     myCLP.setOption("delimiter",&delimiter,"Delimiter in mesh-file");
-	int volumeID = 99;
+	int volumeID = 10;
     myCLP.setOption("volumeID",&volumeID,"Volume ID");
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
@@ -89,22 +89,64 @@ int main(int argc, char *argv[]) {
 
     domain.reset( new Domain_Type( comm, dim ) );
     domain->buildP2ofP1Domain( domainP1 );
+
+    if (boolExportMesh) {
+
+        MultiVectorPtr_Type mvFlag = rcp(new MultiVector_Type( domainP1->getElementMap() ) );
+        ElementsPtr_Type elements = domainP1->getElementsC();
+        vec2D_dbl_ptr_Type pointsRep = domainP1->getPointsRepeated();
+
+        Teuchos::ArrayRCP< SC > value = mvFlag->getDataNonConst(0);
+        TEUCHOS_TEST_FOR_EXCEPTION( value.size()!= elements->numberElements(), std::runtime_error, "MultiVector and element list have different sizes.");
+       
+       
+        for (UN T=0; T<elements->numberElements(); T++) {
+            FiniteElement fe = elements->getElement( T );
+            ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+            for (int surface=0; surface<fe.numSubElements(); surface++) {
+                FiniteElement feSub = subEl->getElement( surface  );
+                if(subEl->getDimension() == dim-1){
+                    // Setting flag to the placeholder (second last entry). The last entry at (funcParameter.size() - 1) should always be the degree of the surface function
+                
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+
+            
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+                    double sum_v_E = 1.;
+                    double norm_v_E = 1.;
                     
-    MultiVectorPtr_Type mvFlag = rcp(new MultiVector_Type( domain->getMapUnique() ) );
-	vec_int_ptr_Type BCFlags = domain->getBCFlagUnique();
-    Teuchos::ArrayRCP< SC > values = mvFlag->getDataNonConst(0);
-    TEUCHOS_TEST_FOR_EXCEPTION( values.size()!= BCFlags->size(), std::runtime_error, "MultiVector and node list have different sizes.");
-    for (int i=0; i<values.size(); i++)
-        values[i] = BCFlags->at(i);
-    
-    Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-    
-    exPara->setup( "NodeFlagsP2", domain->getMesh(), "P2" );
-    MultiVectorConstPtr_Type mvFlagConst = mvFlag;
-    exPara->addVariable( mvFlagConst, "Flags", "Scalar", 1, domain->getMapUnique(), domain->getMapUnique());
-    
-    exPara->save(0.0);
-    exPara->closeExporter();
+                    p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+					p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+					p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+					p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+					p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+					p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+					v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+					v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+					v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+		            
+				    norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+
+                    norm_v_E = sqrt(pow(v_E[0],2) + pow(v_E[1],2) + pow(v_E[2],2));
+                    sum_v_E = v_E[0] + v_E[1] + v_E[2]; // as we are looking at a cube, all surface normals have on entry, either positive or negative
+                   
+                    value[T] = sum_v_E/norm_v_E; 
+                }
+            }
+        }
+        
+        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+        
+        exPara->setup( "surfaceNnormalDirectionOnSurface", domainP1->getMesh(), "P0" );
+        MultiVectorConstPtr_Type mvFlagConst = mvFlag;
+        exPara->addVariable( mvFlagConst, "flag", "Scalar", 1, domainP1->getElementMap());
+        
+        exPara->save(0.0);
+        exPara->closeExporter();
+
+    }
 
     return(EXIT_SUCCESS);
 }

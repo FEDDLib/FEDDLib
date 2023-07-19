@@ -15,7 +15,7 @@ Elements(),
 elementsOfEdgeGlobal_(0),
 elementsOfEdgeLocal_(0),
 edgesOfElements_(0),
-midPointsInd_(0)
+midPointsLocalID_(0)
 {
 
 };
@@ -25,7 +25,7 @@ Elements( *(Teuchos::rcp_dynamic_cast<Elements_Type> ( Teuchos::rcpFromRef( elem
 elementsOfEdgeGlobal_( elements.elementsOfEdgeGlobal_ ),
 elementsOfEdgeLocal_( elements.elementsOfEdgeLocal_ ),
 edgesOfElements_(0),
-midPointsInd_(0)
+midPointsLocalID_(0)
 {
 
 };
@@ -191,7 +191,7 @@ const vec_GO_Type& EdgeElements::getElementsOfEdgeGlobal( int i ){
 
 // returns the edges of Element i
 const vec_int_Type EdgeElements::getEdgesOfElement( int i ){
-	TEUCHOS_TEST_FOR_EXCEPTION( edgesOfElements_.size()-1 < i, std::logic_error, "No edges for this Element, something went wrong :(" );
+	TEUCHOS_TEST_FOR_EXCEPTION( edgesOfElements_.size()-1 < i, std::logic_error, "No edges for this Element. Either your requested index is out of bounds or the edges of Elements wasn't set up yet." );
 	return edgesOfElements_.at(i);
 };
 
@@ -216,22 +216,25 @@ void EdgeElements::matchEdgesToElements(MapConstPtr_Type elementMap){
 
 };
 
-// Sets local Midpoint index 'nodeIndex' for edge 'elementIndex'
-void EdgeElements::setMidpoint( int elementIndex, int nodeIndex ){
-	if(midPointsInd_.size()<1)
-		midPointsInd_.resize( numberElements(),-1 );
+// Sets local Midpoint index 'id' for edge 'edgeId'
+void EdgeElements::setMidpoint( LO edgeId, LO localID ){
+	if(midPointsLocalID_.size()<1)
+		midPointsLocalID_.resize( numberElements(),-1 );
 
-	midPointsInd_.at(elementIndex)=nodeIndex;   
+	midPointsLocalID_[edgeId]=localID;   
 };
 
 // Returns local index of edge Midpoint
-int EdgeElements::getMidpoint( int elementIndex){
-	
-	if(midPointsInd_.size()<1)
+int EdgeElements::getMidpoint( LO edgeId){
+	TEUCHOS_TEST_FOR_EXCEPTION( midPointsLocalID_.size()-1 < edgeId, std::logic_error, "No midpoint index was set for the requested edge. Either you are out of bounds or haven't initialized the mipoint yet." );
+	if(midPointsLocalID_.size()<1)
 		return -1;
 	else
-		return midPointsInd_.at(elementIndex); 
+		return midPointsLocalID_.at(edgeId); 
 };
+
+
+
 
 // Functions to set elementsOfEdgeLocal und elementsOfEdgeGlobal entries remotely 
 // (used by meshUnstructured Refinement to complete vector updates)
