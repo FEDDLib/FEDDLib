@@ -457,6 +457,16 @@ bool Mesh<SC,LO,GO,NO>:: isPointInElem(vec_dbl_Type point, int element){
     }
     return false;
 }
+
+template <class SC, class LO, class GO, class NO>
+vec2D_int_ptr_Type Mesh<SC,LO,GO,NO>::getElements(){
+    this->elementsVec_ = Teuchos::rcp( new vec2D_int_Type( this->elementsC_->numberElements() ) );
+    for (int i=0; i<this->elementsVec_->size(); i++)
+        this->elementsVec_->at(i) = this->elementsC_->getElement(i).getVectorNodeList();
+
+    return this->elementsVec_;
+}
+
 }
 
 #endif

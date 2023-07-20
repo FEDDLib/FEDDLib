@@ -58,9 +58,15 @@ void NonLinElasticity<SC,LO,GO,NO>::assemble(std::string type) const{
         this->system_.reset(new BlockMatrix_Type(1));
         this->system_->addBlock( A, 0, 0 );
                 
+        double density = this->parameterList_->sublist("Parameter").get("Density",1000.);
+        string sourceType = 	this->parameterList_->sublist("Parameter").get("Source Type","volume");
+
         this->assembleSourceTerm( 0. );
-        this->addToRhs( this->sourceTerm_ );
+        if(sourceType == "volume")
+            this->sourceTerm_->scale(density);
         
+        this->addToRhs( this->sourceTerm_ );
+
         this->setBoundariesRHS();
                 
         
@@ -253,13 +259,13 @@ void NonLinElasticity<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type,
     this->reAssemble("Newton-Residual");
     if (!type.compare("standard")){
         this->residualVec_->update(-1.,*this->rhs_,1.);
-        if ( !this->sourceTerm_.is_null() )
-            this->residualVec_->update(-1.,*this->sourceTerm_,1.);
+        //if ( !this->sourceTerm_.is_null() )
+        //    this->residualVec_->update(-1.,*this->sourceTerm_,1.);
     }
     else if(!type.compare("reverse")){
         this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
-        if ( !this->sourceTerm_.is_null() )
-            this->residualVec_->update(1.,*this->sourceTerm_,1.);
+        //if ( !this->sourceTerm_.is_null() )
+        //    this->residualVec_->update(1.,*this->sourceTerm_,1.);
     }
     else{
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Unknown type for residual computation.");

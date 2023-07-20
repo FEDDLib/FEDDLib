@@ -3,7 +3,7 @@
         <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P1"/><!--P1, P2; velocity, pressure always P1 -->
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured, structured_bfs -->
-        <Parameter name="Mesh Name" type="string" value="lShape3D.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh-->
+        <Parameter name="Mesh Name" type="string" value="cube_131.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh-->
         <Parameter name="Mesh Delimiter" type="string" value=" "/>
         <Parameter name="H/h" type="int" value="10"/>        
     </ParameterList>
@@ -11,11 +11,10 @@
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="lShape3D.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="cube_131.mesh"/>
     </ParameterList>
-
 <!-- Fehlerschätzer -->
-	 <ParameterList name="Mesh Refinement">
+ <ParameterList name="Mesh Refinement">
         <Parameter name="Toleranz" type="double" value="0.001"/>
         <Parameter name="Theta" type="double" value="0.5"/>
         <Parameter name="MaxIter" type="int" value="3"/>

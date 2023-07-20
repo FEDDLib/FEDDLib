@@ -6,7 +6,7 @@
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
-#include "feddlib/problems/specific/NonLinElasticity.hpp"
+#include "feddlib/problems/specific/NonLinElasAssFE.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 
@@ -17,7 +17,31 @@ void rhsY2D(double* x, double* res, double* parameters){
     if (parameters[0]<=parameters[2])
         res[1] = parameters[1];
     
-    std::cout << "res[1]:" << res[1] <<" parameters[0]:"<<parameters[0] << " parameters[2]:" << parameters[2]<< std::endl;
+    return;
+}
+
+void rhsYZ(double* x, double* res, double* parameters){
+    // parameters[0] is the time, not needed here
+
+    double force = parameters[1];
+    double TRamp = parameters[2];
+    double dt = parameters[3];
+    //cout << " Parameters " << parameters[0] << " " << parameters[1] << " " << parameters[2] << " " << parameters[3] << " " << parameters[4]  << endl;
+  	res[0] =0.;
+    res[1] =0.;
+    res[2] =0.;
+    
+    if(parameters[0]+1.e-8 < TRamp)
+        force = (parameters[0]/TRamp+dt ) * force ;
+    else
+        force = parameters[1];
+
+    if(parameters[4] == 4 || parameters[4] == 5){
+      	res[0] = force;
+        res[1] = force;
+        res[2] = force;
+    }
+    
     return;
 }
 
@@ -170,96 +194,66 @@ int main(int argc, char *argv[])
         
         int minNumberSubdomains = 1;
                 
+       
         Teuchos::RCP<Domain<SC,LO,GO,NO> > domain;
-        if (!meshType.compare("structured")) {
-            if (dim == 2) {
-                n = (int) (std::pow(size,1/2.) + 100.*Teuchos::ScalarTraits<double>::eps()); // 1/H
-                std::vector<double> x(2);
-                x[0]=0.0;    x[1]=0.0;
-                domain = Teuchos::rcp( new Domain<SC,LO,GO,NO>(x, 1., 1., comm) ) ;
-                domain->buildMesh(1, "Square", dim, FEType, n, m, numProcsCoarseSolve);
-            }
-            else if (dim == 3) {
-                n = (int) (std::pow(size,1/3.) + 100.*Teuchos::ScalarTraits<double>::eps()); // 1/H
-                std::vector<double> x(3);
-                x[0]=0.0;    x[1]=0.0; x[2]=0.0;
-                domain = Teuchos::rcp( new Domain<SC,LO,GO,NO>(x, 1., 1., 1., comm) ) ;
-                domain->buildMesh(1, "Square", dim, FEType, n, m, numProcsCoarseSolve);
-            }
+        Teuchos::RCP<Domain<SC,LO,GO,NO> > domainP1;
+        Teuchos::RCP<Domain<SC,LO,GO,NO> > domainP2;
+        domainP1.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
+        
+        MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
+        domainP1Array[0] = domainP1;
+        
+        ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );
+        MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
+        
+        partitionerP1.readAndPartition();
+        
+        if (FEType=="P2") {
+            domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
+            domainP2->buildP2ofP1Domain( domainP1 );
+            domain = domainP2;
         }
-        else if (!meshType.compare("unstructured")) {
-            Teuchos::RCP<Domain<SC,LO,GO,NO> > domainP1;
-            Teuchos::RCP<Domain<SC,LO,GO,NO> > domainP2;
-            domainP1.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
-            
-            MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(1);
-            domainP1Array[0] = domainP1;
-            
-            ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );
-            MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
-            
-            partitionerP1.readAndPartition();
-            
-            if (FEType=="P2") {
-                domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
-                domainP2->buildP2ofP1Domain( domainP1 );
-                domain = domainP2;
-            }
-            else
-                domain = domainP1;
-        }
+        else
+            domain = domainP1;
+        
         
         
         // ####################
         Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
-        if (meshType == "structured") {
-            if (dim == 2)
-                bcFactory->addBC(zeroDirichlet2D, 2, 0, domain, "Dirichlet", dim);
-            else if (dim == 3)
-                bcFactory->addBC(zeroDirichlet3D, 2, 0, domain, "Dirichlet", dim);
+        if(dim==3){
+			bcFactory->addBC(zeroDirichlet3D, 1, 0, domain, "Dirichlet_X", dim);
+		    bcFactory->addBC(zeroDirichlet3D, 2, 0, domain, "Dirichlet_Y", dim);
+		    bcFactory->addBC(zeroDirichlet3D, 3, 0, domain, "Dirichlet_Z", dim);
+		    bcFactory->addBC(zeroDirichlet3D, 0, 0, domain, "Dirichlet", dim);
+		    bcFactory->addBC(zeroDirichlet3D, 7, 0, domain, "Dirichlet_X_Y", dim);
+		    bcFactory->addBC(zeroDirichlet3D, 8, 0, domain, "Dirichlet_Y_Z", dim);
+		    bcFactory->addBC(zeroDirichlet3D, 9, 0, domain, "Dirichlet_X_Z", dim);
         }
-        else if (meshType == "unstructured") {
-            if(bcPlace == "standard"){
-                if (dim == 2)
-                    bcFactory->addBC(zeroDirichlet2D, 1, 0, domain, "Dirichlet", dim);
-                else if (dim == 3)
-                    bcFactory->addBC(zeroDirichlet3D, 1, 0, domain, "Dirichlet", dim);
-            }
-            else if(bcPlace == "foamFine"){
-                if (dim == 2){
-                    TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Foam should only be available in 3D." );
-                }
-                else if (dim == 3)
-                    bcFactory->addBC(zeroDirichlet3D, 2, 0, domain, "Dirichlet", dim);
-            }
+        else{
+        
         }
         
+    
         {
 
-            NonLinElasticity<SC,LO,GO,NO> nonLinElas(domain,FEType,parameterListAll);
+            NonLinElasAssFE<SC,LO,GO,NO> nonLinElas(domain,FEType,parameterListAll);
 
             domain->info();
             nonLinElas.info();
-            if (bcType=="volumeY"){
-                if (dim == 2)
-                    nonLinElas.addRhsFunction( rhsY2D );
-                else if (dim==3)
-                    nonLinElas.addRhsFunction( rhsY );
-            }
-            else if(bcType=="volumeX"){
-                if (dim == 2)
-                    nonLinElas.addRhsFunction( rhsX2D );
-                else if (dim==3)
-                    nonLinElas.addRhsFunction( rhsX );
-            }
-                
+           
+            nonLinElas.addRhsFunction( rhsYZ );
+            
             double force = parameterListAll->sublist("Parameter").get("Volume force",0.);
-            double finalTimeRamp = parameterListAll->sublist("Timestepping Parameter").get("Final time force",0.1);
+            double finalTimeRamp = parameterListAll->sublist("Timestepping Parameter").get("Final time load",1.);
+            double dt = parameterListAll->sublist("Timestepping Parameter").get("dt",0.1);
             double degree = 0;
             
             nonLinElas.addParemeterRhs( force );
             nonLinElas.addParemeterRhs( finalTimeRamp );
+            nonLinElas.addParemeterRhs( dt );
             nonLinElas.addParemeterRhs( degree );
+
+
             
             nonLinElas.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
 

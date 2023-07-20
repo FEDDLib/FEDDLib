@@ -141,6 +141,15 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTime(){
         advanceInTimeFSI();
     }
     else{
+        if (!parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep").compare("Loadstepping")) {
+            NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
+            if (nonLinProb.is_null()){ 
+                TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Loadstepping only available to nonlinear Problems. (It is a tool to increase Nonlinear Solver convergence.)");
+            }
+            else{
+                advanceWithLoadStepping();
+            }
+        }
         if (!parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep").compare("Singlestep")) {
             NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
             if (nonLinProb.is_null()) {
@@ -429,7 +438,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinear(){
         BlockMultiVectorPtrArray_Type       solutionPrevStages;
         
         BlockMatrixPtr_Type blockMatrix = Teuchos::rcp( new BlockMatrix_Type( problemTime_->getSystem()->size() ) );
-        problemTime_->reAssembleAndFill( blockMatrix );
+        problemTime_->reAssembleAndFill( blockMatrix ); // Reassemble FixedPoint
         
         matrixPrevStages.push_back( blockMatrix );
         
@@ -514,6 +523,100 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinear(){
     }
 
 }
+
+// TODO: Irgendwann einmal fuer St. Venant-Kirchoff oder so programmieren.
+// Erstmal nicht wichtig
+template<class SC,class LO,class GO,class NO>
+void DAESolverInTime<SC,LO,GO,NO>::advanceWithLoadStepping()
+{
+    
+    bool print = parameterList_->sublist("General").get("ParaViewExport",false);
+    bool printExtraData = parameterList_->sublist("General").get("Export Extra Data",false);
+    bool printData = parameterList_->sublist("General").get("Export Data",false);
+    if (print)
+    {
+        exportTimestep();
+    }
+    
+    vec_dbl_ptr_Type its = Teuchos::rcp(new vec_dbl_Type ( 2, 0. ) ); //0:linear iterations, 1: nonlinear iterations
+    ExporterTxtPtr_Type exporterTimeTxt;
+    ExporterTxtPtr_Type exporterIterations;
+    ExporterTxtPtr_Type exporterNewtonIterations;
+    if (printData) {
+        std::string suffix = parameterList_->sublist("General").get("Export Suffix","");
+        
+        exporterTimeTxt = Teuchos::rcp(new ExporterTxt());
+        exporterTimeTxt->setup( "time" + suffix, this->comm_ );
+        
+        exporterNewtonIterations = Teuchos::rcp(new ExporterTxt());
+        exporterNewtonIterations->setup( "newtonIterations" + suffix, this->comm_ );
+        
+        exporterIterations = Teuchos::rcp(new ExporterTxt());
+        exporterIterations->setup( "linearIterations" + suffix, this->comm_ );
+    }
+    // Groesse des Problems, Zeitschrittweite und Newmark-Parameter
+    int size = timeStepDef_.size();
+    TEUCHOS_TEST_FOR_EXCEPTION( size>1, std::runtime_error, "Loadstepping only implemented or sensible for 1x1 Systems.");
+    double dt = timeSteppingTool_->get_dt();
+   
+
+    // Koeffizienten vor der Massematrix und vor der Systemmatrix des steady-Problems
+    SmallMatrix<double> massCoeff(size);
+    SmallMatrix<double> problemCoeff(size);
+    double coeffSourceTerm = 0.0; // Koeffizient fuer den Source-Term (= rechte Seite der DGL); mit Null initialisieren
+
+    // Koeffizient vor der Massematrix
+    massCoeff[0][0] = 0.;
+    problemCoeff[0][0] =  1.0;
+    // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
+    coeffSourceTerm = 1.0; // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
+
+    // Temporaerer Koeffizienten fuer die Skalierung der Massematrix in der rechten Seite des Systems in UpdateNewmarkRhs()
+    vec_dbl_Type coeffTemp(1);
+    coeffTemp.at(0) = 1.0;
+
+    // Uebergebe die Parameter fuer Masse- und steady-Problemmatrix an TimeProblem
+    // Wegen moeglicher Zeitschrittweitensteuerung, rufe CombineSystems()
+    // in jedem Zeitschritt auf, um LHS neu aufzustellen.
+    // Bei AdvanceInTimeNonLinear... wird das in ReAssemble() gemacht!!!
+    problemTime_->setTimeParameters(massCoeff, problemCoeff);
+    // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
+   
+    // ######################
+    // "Time" loop
+    // ######################
+    while(timeSteppingTool_->continueTimeStepping())
+    {
+        // Stelle (massCoeff*M + problemCoeff*A) auf
+        //problemTime_->combineSystems();
+        
+       
+        double time = timeSteppingTool_->currentTime() + dt;
+        problemTime_->updateTime ( time );
+          
+        NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","Newton"));
+        nlSolver.solve( *problemTime_, time, its );
+        
+        timeSteppingTool_->advanceTime(true/*output info*/);
+        if (printData) {
+            exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
+            exporterIterations->exportData( (*its)[0] );
+            exporterNewtonIterations->exportData( (*its)[1] );
+        }
+        if (print) {
+            exportTimestep();
+        }
+        this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
+
+    }
+    
+    comm_->barrier();
+    if (print)
+    {
+        closeExporter();
+    }
+}
+
 
 template<class SC,class LO,class GO,class NO>
 void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeLinearNewmark()
@@ -720,7 +823,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearNewmark()
         closeExporter();
     }
 }
-
 
 template<class SC,class LO,class GO,class NO>
 void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
@@ -1130,78 +1232,76 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
 template<class SC,class LO,class GO,class NO>
 void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeLinearMultistep(){
 
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "advanceInTimeLinearMultistep rework.");
-//    bool print = parameterList_->sublist("General").get("ParaViewExport",false);
-//    if (print) {
-//        exportTimestep();
-//    }
-//    int size = timeStepDef_.size();
-//    double dt = timeSteppingTool_->Get_dt();
-//    int nmbBDF = timeSteppingTool_->GetBDFNumber();
-//    vec_dbl_Type coeffPrevSteps(nmbBDF);
-//    for (int i=0; i<coeffPrevSteps.size(); i++) {
-//        coeffPrevSteps.at(i) = timeSteppingTool_->GetInformationBDF(i+2) / dt;
-//    }
-//
-//    SmallMatrix<double> massCoeff(size);
-//    SmallMatrix<double> problemCoeff(size);
-//    double coeffSourceTerm = 0.;
-//
-//    for (int i=0; i<size; i++) {
-//        for (int j=0; j<size; j++) {
-//            if (timeStepDef_[i][j]==1 && i==j) {
-//                massCoeff[i][j] = timeSteppingTool_->GetInformationBDF(0) / dt;
-//            }
-//            else{
-//                massCoeff[i][j] = 0.;
-//            }
-//        }
-//    }
-//    for (int i=0; i<size; i++) {
-//        for (int j=0; j<size; j++){
-//            if (timeStepDef_[i][j]==1){
-//                problemCoeff[i][j] =  timeSteppingTool_->GetInformationBDF(1);
-//                coeffSourceTerm = timeSteppingTool_->GetInformationBDF(1); // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
-//            }
-//            else{
-//                problemCoeff[i][j] = 1.;
-//            }
-//        }
-//    }
-//    problemTime_->SetTimeParameters(massCoeff, problemCoeff);
-//
-//    //#########
-//    //time loop
-//    //#########
-//    while (timeSteppingTool_->ContinueTimeStepping()) {
-//
-//        problemTime_->UpdateSolutionMultiPreviousStep(nmbBDF);
-//
-//        double time = timeSteppingTool_->CurrentTime() + dt;
-//        problemTime_->UpdateMultistepRhs(coeffPrevSteps,nmbBDF);/*apply mass matrix to u_t*/
-//        if (problemTime_->HasSourceTerm()) {
-//            problemTime_->AssembleSourceTerm(time);
-//            AddSourceTermToRHS(coeffSourceTerm);
-//        }
-//
-//        problemTime_->CombineSystems();
-//        // Uebergabeparameter fuer BC noch hinzunehmen!
-//        problemTime_->SetBoundaries(time);
-//        problemTime_->Solve();
-//
-//        timeSteppingTool_->AdvanceTime(true/*output info*/);
-//
-//        if (print) {
-//            exportTimestep();
-//        }
-//
-//    }
-//    comm_->Barrier();
-//    if (print) {
-//        CloseExporter();
-//    }
-//
+    //TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "advanceInTimeLinearMultistep rework.");
+    bool print = parameterList_->sublist("General").get("ParaViewExport",false);
+    if (print) {
+        exportTimestep();
+    }
+    int size = timeStepDef_.size();
+    double dt = timeSteppingTool_->get_dt();
+    int nmbBDF = timeSteppingTool_->getBDFNumber();
+    vec_dbl_Type coeffPrevSteps(nmbBDF);
+    for (int i=0; i<coeffPrevSteps.size(); i++) {
+       coeffPrevSteps.at(i) = timeSteppingTool_->getInformationBDF(i+2) / dt;
+    }
 
+    SmallMatrix<double> massCoeff(size);
+    SmallMatrix<double> problemCoeff(size);
+    double coeffSourceTerm = 0.;
+
+    for (int i=0; i<size; i++) {
+        for (int j=0; j<size; j++) {
+            if (timeStepDef_[i][j]==1 && i==j) {
+                massCoeff[i][j] = timeSteppingTool_->getInformationBDF(0) / dt;
+            }
+            else{
+                massCoeff[i][j] = 0.;
+            }
+        }
+    }
+    for (int i=0; i<size; i++) {
+        for (int j=0; j<size; j++){
+            if (timeStepDef_[i][j]==1){
+                problemCoeff[i][j] =  timeSteppingTool_->getInformationBDF(1);
+                coeffSourceTerm = timeSteppingTool_->getInformationBDF(1); // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
+            }
+            else{
+                problemCoeff[i][j] = 1.;
+            }
+        }
+    }
+    problemTime_->setTimeParameters(massCoeff, problemCoeff);
+
+	//#########
+    //time loop
+    //#########
+    while (timeSteppingTool_->continueTimeStepping()) {
+
+        problemTime_->updateSolutionMultiPreviousStep(nmbBDF);
+
+        double time = timeSteppingTool_->currentTime() + dt;
+        problemTime_->updateMultistepRhs(coeffPrevSteps,nmbBDF);/*apply mass matrix to u_t*/
+        if (problemTime_->hasSourceTerm()) {
+            problemTime_->assembleSourceTerm(time);
+            addSourceTermToRHS(coeffSourceTerm);
+        }
+
+        problemTime_->combineSystems();
+        // Uebergabeparameter fuer BC noch hinzunehmen!
+        problemTime_->setBoundaries(time);
+        problemTime_->solve();
+
+        timeSteppingTool_->advanceTime(true/*output info*/);
+
+        if (print) {
+            exportTimestep();
+        }
+
+    }
+    comm_->barrier();
+    if (print) {
+        closeExporter();
+    }
 
 }
 
@@ -1505,7 +1605,11 @@ void DAESolverInTime<SC,LO,GO,NO>::setupExporter(){
     for (int i=0; i<timeStepDef_.size(); i++) {
         // \lambda in FSI, koennen wir nicht exportieren, weil keine Elementliste dafuer vorhanden
         bool exportThisBlock  = true;
-        exportThisBlock = !(this->parameterList_->sublist("Parameter").get("FSI",false) && i == 3);
+        if(this->parameterList_->sublist("Parameter").get("FSI",false) == true  )
+            exportThisBlock = (i != 3);
+       else if(this->parameterList_->sublist("Parameter").get("FSCI",false) == true)
+            exportThisBlock = (i != 4);
+
         if(exportThisBlock)
         {
             ExporterPtr_Type exporterPtr(new Exporter_Type());
@@ -1592,7 +1696,7 @@ void DAESolverInTime<SC,LO,GO,NO>::setupTimeStepping(){
     problemTime_.reset(new TimeProblem<SC,LO,GO,NO>(*this->problem_,comm_));
     
     // Fuer FSI
-    if(this->parameterList_->sublist("Parameter").get("FSI",false))
+    if(this->parameterList_->sublist("Parameter").get("FSI",false) || this->parameterList_->sublist("Parameter").get("SCI",false) || this->parameterList_->sublist("Parameter").get("FSCI",false))
     {
         // Beachte: Massematrix ist schon vektorwertig!
         // Reset auf Massesystem von problemTime_ (=FSI), da auf problemTime_ kein assemble() bzw. assembleMassSystem() aufgerufen wird.

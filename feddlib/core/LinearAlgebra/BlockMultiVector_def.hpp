@@ -349,6 +349,22 @@ void BlockMultiVector<SC,LO,GO,NO>::norm2(const Teuchos::ArrayView<typename Teuc
 }
 
 template <class SC, class LO, class GO, class NO>
+void BlockMultiVector<SC,LO,GO,NO>::normInf(const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms) const {
+    typedef Teuchos::ScalarTraits<SC> ST;
+    for (int j=0; j<norms.size(); j++)
+        norms[j] = ST::zero();
+
+    for (int i=0; i<size(); i++) {
+        Teuchos::Array<SC> partialNorm(norms.size());
+        blockMultiVector_[i]->normInf(partialNorm());
+        for (int j=0; j<partialNorm.size(); j++)
+            if(partialNorm[j]>norms[j])
+                norms[j] = partialNorm[j];
+    }
+   
+}
+
+template <class SC, class LO, class GO, class NO>
 void BlockMultiVector<SC,LO,GO,NO>::dot(BlockMultiVectorConstPtr_Type a, const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &dots)  {
 
     for (int j=0; j<dots.size(); j++)

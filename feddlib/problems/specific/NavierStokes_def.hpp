@@ -232,6 +232,11 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
         
         this->system_->addBlock( C, 1, 1 );
     }
+    //else 
+    //    C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+    //    this->feFactory_->assemblyEmptyMatrix(C);
+               
+        //this->system_->addBlock( C, 1, 1 );
 
 };
 
@@ -488,6 +493,13 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::I
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Unkown preconditioner/solver type.");
 }
 
+/*!
+	\brief Monolithic Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution.
+		   ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver.
+
+
+
+*/
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
                                                         const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
@@ -523,17 +535,18 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
     const bool fill_W = nonnull(W_out);
     const bool fill_W_prec = nonnull(W_prec_out);
 
+
     if ( fill_f || fill_W || fill_W_prec ) {
 
         // ****************
         // Get the underlying xpetra objects
         // ****************
-        bool system_updated = false;
         if (fill_f) {
 
-            this->calculateNonLinResidualVec("standard");
+            this->calculateNonLinResidualVec("standard"); // Calculating residual Vector
 
-            system_updated = true;
+			// Changing the residualVector into a ThyraMultivector
+
             Teuchos::RCP<Thyra::MultiVectorBase<SC> > f_thyra = this->getResidualVector()->getThyraMultiVector();
             f_out->assign(*f_thyra);
         }
@@ -541,14 +554,15 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
         XpetraMatrixPtr_Type W;
         if (fill_W) {
 
-            this->reAssemble("Newton");
+            this->reAssemble("Newton"); // ReAssembling matrices with updated u  in this class
 
-            this->setBoundariesSystem();
+            this->setBoundariesSystem(); // setting boundaries to the system
 
+			// Changing the system Matrix into a tpetra Matrix (block matrices have 'getXpetraMatrix' feature)
             Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
             Teuchos::RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
 
-            XpetraMatrixConstPtr_Type W_systemXpetra = this->getSystem()->getMergedMatrix()->getXpetraMatrix();
+            XpetraMatrixConstPtr_Type W_systemXpetra = this->getSystem()->getMergedMatrix()->getXpetraMatrix(); // The current system matrix of this class
 
             XpetraMatrixPtr_Type W_systemXpetraNonConst = rcp_const_cast<XpetraMatrix_Type>(W_systemXpetra);
             Xpetra::CrsMatrixWrap<SC,LO,GO,NO>& crsOp = dynamic_cast<Xpetra::CrsMatrixWrap<SC,LO,GO,NO>&>(*W_systemXpetraNonConst);
@@ -568,6 +582,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
         }
 
         if (fill_W_prec) {
+        
             this->setupPreconditioner( "Monolithic" );
 
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
@@ -591,7 +606,13 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
         }
     }
 }
+/*!
+	\brief Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution.
+		   ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver.
 
+
+
+*/
 #ifdef FEDD_HAVE_TEKO
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
@@ -688,8 +709,9 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
         }
 
         if (fill_W_prec) {
-            if (stokesTekoPrecUsed_)
+            if (stokesTekoPrecUsed_){
                 this->setupPreconditioner( "Teko" );
+            }
             else
                 stokesTekoPrecUsed_ = true;
 
@@ -721,7 +743,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
 
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
-    
     this->reAssemble("FixedPoint");
 
     // We need to account for different parameters of time discretizations here
@@ -731,7 +752,6 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
     else
         this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
     
-
     if (!type.compare("standard")){
         this->residualVec_->update(-1.,*this->rhs_,1.);
 //        if ( !this->sourceTerm_.is_null() )
@@ -745,9 +765,9 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
 //        if ( !this->sourceTerm_.is_null() )
 //            this->residualVec_->update(1.,*this->sourceTerm_,1.);
         // this might be set again by the TimeProblem after addition of M*u
-        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-        
+        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );    
     }
+
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -848,6 +868,7 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
     else{
         this->setupPreconditioner( type ); // initializePreconditioner( type );
     }
+    
 
     Teuchos::RCP<const Thyra::PreconditionerBase<SC> > thyraPrec =  this->getPreconditionerConst()->getThyraPrecConst();
     Teuchos::RCP<Thyra::PreconditionerBase<SC> > thyraPrecNonConst = Teuchos::rcp_const_cast<Thyra::PreconditionerBase<SC> >(thyraPrec);

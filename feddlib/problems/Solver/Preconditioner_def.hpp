@@ -131,6 +131,7 @@ void Preconditioner<SC,LO,GO,NO>::initializePreconditioner( std::string type )
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::initPreconditionerMonolithic( )
 {
+
     LinSolverBuilderPtr_Type solverBuilder;
     Teuchos::RCP<const Thyra::VectorSpaceBase<SC> > thyraRangeSpace;
     Teuchos::RCP<const Thyra::VectorSpaceBase<SC> > thyraDomainSpace;
@@ -284,6 +285,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
     if (!useNodeLists)
         nodeListVec = Teuchos::null;
 
+   // timeProblem_->getSystemCombined()->print();
     //Set Precondtioner lists
     if (!precondtionerIsBuilt_) {
         if ( !precType.compare("FROSch") ){
@@ -434,7 +436,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
             if (!problem_.is_null())
                 solverBuilder = problem_->getLinearSolverBuilder();
             else if(!timeProblem_.is_null())
-                solverBuilder = timeProblem_->getUnderlyingProblem()->getLinearSolverBuilder();
+                solverBuilder = timeProblem_->getLinearSolverBuilder();
 
             // We save the pointer to the coarse matrix in this parameter list inside FROSch
             pListPhiExport_ = pListThyraSolver;
@@ -442,11 +444,11 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
             solverBuilder->setParameterList(pListThyraSolver);
             precFactory_ = solverBuilder->createPreconditioningStrategy("");
 
-            if ( thyraPrec_.is_null() )
+            if ( thyraPrec_.is_null() ){
                 thyraPrec_ = precFactory_->createPrec();
-
-
-            Thyra::initializePrec<SC>(*precFactory_, thyraMatrix, thyraPrec_.ptr());
+           	}     
+           
+            Thyra::initializePrec<SC>(*precFactory_, thyraMatrix, thyraPrec_.ptr()); // (precfactory, fwdOp, prec) Problem: PreconditionerBase<SC>* thyraPrec_
             precondtionerIsBuilt_ = true;
             
         }
@@ -766,15 +768,18 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
 
         }
 
-        if ( thyraPrec_.is_null() )
+        if ( thyraPrec_.is_null() ){
             thyraPrec_ = precFactory_->createPrec();
+        }   
 
         Teuchos::RCP< const Thyra::DefaultLinearOpSource< SC > > thyraMatrixSourceOp =  defaultLinearOpSource (tekoLinOp_);
         //    Thyra::initializePrec<SC>(*precFactory, thyraMatrixSourceOp, thyraPrec_.ptr());
 
         precFactory_->initializePrec(thyraMatrixSourceOp, thyraPrec_.get());
         precondtionerIsBuilt_ = true;
+        
     }
+    
     else{
 
         Teuchos::RCP< const Thyra::DefaultLinearOpSource< SC > > thyraMatrixSourceOp =  defaultLinearOpSource (tekoLinOp_);
@@ -978,6 +983,7 @@ void Preconditioner<SC,LO,GO,NO>::setPressureMassMatrix(MatrixPtr_Type massMatri
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
 {
+   
     typedef Domain<SC,LO,GO,NO> Domain_Type;
     typedef Teuchos::RCP<const Domain_Type> DomainConstPtr_Type;
     typedef std::vector<DomainConstPtr_Type> DomainConstPtr_vec_Type;
@@ -999,6 +1005,13 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         system = problem_->getSystem();
         comm = problem_->getComm();
         steadyProblem = problem_;
+    }
+    bool verbose( comm->getRank() == 0 );
+
+    if(verbose){
+        cout << " ############## " << endl;
+        cout << " Build Preconditioner " << endl;
+        cout << " ############## " << endl;
     }
     ParameterListPtr_Type plVelocity( new Teuchos::ParameterList( parameterList->sublist("Velocity preconditioner") ) );
     ParameterListPtr_Type plSchur( new Teuchos::ParameterList( parameterList->sublist("Schur complement preconditioner") ) );
@@ -1030,13 +1043,26 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     
     precVelocity_ = probVelocity_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
     
-    if (probSchur_.is_null()){
-        probSchur_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
-        DomainConstPtr_vec_Type domain2(0);
-        domain2.push_back( problem_->getDomain(1) );
-        probSchur_->initializeDomains( domain2 );
-        probSchur_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+    if (probSchur_.is_null()) {
+        if(!timeProblem_.is_null()){
+            probSchur_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
+            DomainConstPtr_vec_Type domain2(0);
+            domain2.push_back( timeProblem_->getDomain(1) );
+            probSchur_->initializeDomains( domain2 );
+            probSchur_->initializeLinSolverBuilder( timeProblem_->getLinearSolverBuilder() );
+        }
+        else
+        {
+            probSchur_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
+            DomainConstPtr_vec_Type domain2(0);
+            domain2.push_back( problem_->getDomain(1) );
+            probSchur_->initializeDomains( domain2 );
+            probSchur_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+            
+        }
     }
+   
+
     
     BlockMatrixPtr_Type system2 = Teuchos::rcp( new BlockMatrix_Type(1) );
         
@@ -1061,9 +1087,12 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
                                     BT);
     }
     
-    
-    LinSolverBuilderPtr_Type solverBuilder = problem_->getLinearSolverBuilder();
-    
+    LinSolverBuilderPtr_Type solverBuilder;
+    if (!timeProblem_.is_null())
+        solverBuilder = timeProblem_->getLinearSolverBuilder();
+    else
+        solverBuilder = problem_->getLinearSolverBuilder();
+
     if ( precFactory_.is_null() )
         precFactory_ = solverBuilder->createPreconditioningStrategy("");
     

@@ -63,17 +63,17 @@ template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
     // If timestepping class is external, it is assumed that the full timedependent problem matrix and rhs are assembled during the assemble call(s)
     std::string timestepping = parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep");
+
     if (type == "MassSystem"){
         // is not used in FSI
         // systemMass_ wird gebaut (Massematrix), welche schon mit der Dichte \rho skaliert wurde
         assembleMassSystem();
-
         initializeCombinedSystems();
         NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
         if (!nonLinProb.is_null()){// we combine the nonlinear system with the mass matrix in the NonLinearSolver after the reassembly of each linear system
         }
         else{
-            if (timestepping=="External")
+            if (timestepping=="External" )
                 this->systemCombined_ = problem_->getSystem();
             else
                 this->combineSystems();
@@ -82,270 +82,13 @@ void TimeProblem<SC,LO,GO,NO>::assemble( std::string type ) const{
     else{
         //we need to tell the problem about the last solution if we use extrapolation!
         problem_->assemble(type);
-        if (timestepping=="External")
+
+        if (timestepping=="External") 
             this->systemCombined_ = problem_->getSystem();
         else
             this->combineSystems();
     }
-
-    
-    
-//     // Fuer FSI
-//        if(this->parameterList_->sublist("Parameter").get("FSI",false))
-//        {
-//            bool geometryExplicit = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
-//
-//            NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
-//            TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "FSI problem is null.");
-//
-//            if (!type.compare("UpdateMeshDisplacement"))
-//            {
-//                nonLinProb->reAssemble(type);
-//                return;
-//            }
-//            else if (!type.compare("ForTime"))
-//            {
-//                nonLinProb->reAssemble(type);
-//                return;
-//            }
-//            else if (!type.compare("SolveGeometryProblem"))
-//            {
-//                nonLinProb->reAssemble(type);
-//                return;
-//            }
-//            else if (!type.compare("UpdateTime"))
-//            {
-//                nonLinProb->reAssemble(type);
-//                return;
-//            }
-//            else if (!type.compare("UpdateFluidInTime"))
-//            {
-//                nonLinProb->reAssemble(type);
-//                return;
-//            }
-//            else if (!type.compare("MoveMesh"))
-//            {
-//                nonLinProb->reAssemble(type);
-//                return;
-//            }
-//            else if (!type.compare("AddInterfaceBlockRHS"))
-//            {
-//                nonLinProb->reAssemble(type);
-//                return;
-//            }
-//            else if(!type.compare("ComputeFluidRHSInTime")){
-//                nonLinProb->reAssemble(type);
-//                return;
-//            }
-//            else if(!type.compare("ComputeSolidRHSInTime")){
-//                nonLinProb->reAssemble(type);
-//                return;
-//            }
-//
-//
-//            else if(!geometryExplicit && ( !type.compare("FixedPoint") || !type.compare("Newton") || !type.compare("NOX")) )
-//            {
-//                // TODO: Brauchen wir irgendwann einmal, wenn wir Fluid:: oder
-//                // Struktur::reAssemble() aufrufen:
-//                // this->reAssemble("SetPartialSolutions");
-//
-//                // rhs ist fix innerhalb eines Zeitschritts, da nur alter
-//                // Zeitschritt genutzt wird. Nur Massematrix neu assemblieren.
-//
-//                // ACHTUNG: Bei SetFluidMassematrix wird auch immer
-//                // systemMass_ von timeProblemFluid_ ueberschrieben!
-//                // Da wir aber GetFluidRHSInTime im DAESolver aufrufen (nach erneuter
-//                // Assemblierung der aktuellen Massematrix) ist das kein Problem.
-//
-//                // we move the code below to calculateNonLinResidual
-//                this->reAssemble("MoveMesh");
-//
-//                MatrixPtr_Type massmatrix;
-//                this->reAssemble(massmatrix, "GetFluidMassmatrix");
-//
-//                this->systemMass_->addBlock( massmatrix, 0, 0 );
-//            }
-//
-//            if(!type.compare("Extrapolation")) // if("Extrapolation"). Ist ehrlich gesagt nur sinnvoll, wenn auch if(geometryExplicit)
-//            {
-//                nonLinProb->reAssembleExtrapolation( solutionPreviousTimesteps_ );
-//            }
-//            else if( geometryExplicit && (!type.compare("FixedPoint") || !type.compare("Newton") || !type.compare("NOX") ) )
-//            {
-//                TEUCHOS_TEST_FOR_EXCEPTION(!type.compare("FixedPoint"), std::runtime_error, "we dont want to assemble fixed point system here. They should always already be assemble by calculatedNonLinResidual().")
-//                nonLinProb->reAssemble(type);
-//                this->combineSystems();
-//                // ACHTUNG: Bei Newton und Fixpunkt wird im geometrisch impliziten Fall
-//                // problemFluid->assemble() aufgerufen, was aufgrund von initializeVectors()
-//                // den Loesungsvektor auf Null setzt. Dies wollen wir hiermit beheben.
-//    //            if(!geometryExplicit)
-//    //            {
-//    //                nonLinearProblem_->reAssemble("SetPartialSolutions");
-//    //            }
-//            }
-//        }// not FSI
-//        else{
-//            NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
-//            TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
-//            if(!type.compare("Extrapolation") || !type.compare("FixedPoint") || !type.compare("Newton") || !type.compare("NOX")) {
-//                if (!type.compare("Extrapolation"))
-//                    nonLinProb->reAssembleExtrapolation( solutionPreviousTimesteps_ );
-//                else
-//                    nonLinProb->reAssemble(type);
-//
-//                std::string timestepping = parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep");
-//                if (timestepping=="External")
-//                    this->systemCombined_ = problem_->getSystem();
-//                else
-//                    this->combineSystems();
-//            }
-//            else {
-//                TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Unknown reassembly type.");
-//            }
-//        }
-    
-    
 }
-
-//template<class SC,class LO,class GO,class NO>
-//void TimeProblem<SC,LO,GO,NO>::reAssemble(std::string type) const {
-//
-//    // Fuer FSI
-//    if(this->parameterList_->sublist("Parameter").get("FSI",false))
-//    {
-//        bool geometryExplicit = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
-//
-//        NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
-//        TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "FSI problem is null.");
-//
-//        if (!type.compare("UpdateMeshDisplacement"))
-//        {
-//            nonLinProb->reAssemble(type);
-//            return;
-//        }
-//        else if (!type.compare("ForTime"))
-//        {
-//            nonLinProb->reAssemble(type);
-//            return;
-//        }
-//        else if (!type.compare("SolveGeometryProblem"))
-//        {
-//            nonLinProb->reAssemble(type);
-//            return;
-//        }
-//        else if (!type.compare("UpdateTime"))
-//        {
-//            nonLinProb->reAssemble(type);
-//            return;
-//        }
-//        else if (!type.compare("UpdateFluidInTime"))
-//        {
-//            nonLinProb->reAssemble(type);
-//            return;
-//        }
-//        else if (!type.compare("MoveMesh"))
-//        {
-//            nonLinProb->reAssemble(type);
-//            return;
-//        }
-//        else if (!type.compare("AddInterfaceBlockRHS"))
-//        {
-//            nonLinProb->reAssemble(type);
-//            return;
-//        }
-//        else if(!type.compare("ComputeFluidRHSInTime")){
-//            nonLinProb->reAssemble(type);
-//            return;
-//        }
-//        else if(!type.compare("ComputeSolidRHSInTime")){
-//            nonLinProb->reAssemble(type);
-//            return;
-//        }
-//
-//
-//        else if(!geometryExplicit && ( !type.compare("FixedPoint") || !type.compare("Newton") || !type.compare("NOX")) )
-//        {
-//            // TODO: Brauchen wir irgendwann einmal, wenn wir Fluid:: oder
-//            // Struktur::reAssemble() aufrufen:
-//            // this->reAssemble("SetPartialSolutions");
-//
-//            // rhs ist fix innerhalb eines Zeitschritts, da nur alter
-//            // Zeitschritt genutzt wird. Nur Massematrix neu assemblieren.
-//
-//            // ACHTUNG: Bei SetFluidMassematrix wird auch immer
-//            // systemMass_ von timeProblemFluid_ ueberschrieben!
-//            // Da wir aber GetFluidRHSInTime im DAESolver aufrufen (nach erneuter
-//            // Assemblierung der aktuellen Massematrix) ist das kein Problem.
-//
-//            // we move the code below to calculateNonLinResidual
-//            this->reAssemble("MoveMesh");
-//
-//            MatrixPtr_Type massmatrix;
-//            this->reAssemble(massmatrix, "GetFluidMassmatrix");
-//
-//            this->systemMass_->addBlock( massmatrix, 0, 0 );
-//        }
-//
-//        if(!type.compare("Extrapolation")) // if("Extrapolation"). Ist ehrlich gesagt nur sinnvoll, wenn auch if(geometryExplicit)
-//        {
-//            nonLinProb->reAssembleExtrapolation( solutionPreviousTimesteps_ );
-//        }
-//        else if( geometryExplicit && (!type.compare("FixedPoint") || !type.compare("Newton") || !type.compare("NOX") ) )
-//        {
-//            TEUCHOS_TEST_FOR_EXCEPTION(!type.compare("FixedPoint"), std::runtime_error, "we dont want to assemble fixed point system here. They should always already be assemble by calculatedNonLinResidual().")
-//            nonLinProb->reAssemble(type);
-//            this->combineSystems();
-//            // ACHTUNG: Bei Newton und Fixpunkt wird im geometrisch impliziten Fall
-//            // problemFluid->assemble() aufgerufen, was aufgrund von initializeVectors()
-//            // den Loesungsvektor auf Null setzt. Dies wollen wir hiermit beheben.
-////            if(!geometryExplicit)
-////            {
-////                nonLinearProblem_->reAssemble("SetPartialSolutions");
-////            }
-//        }
-//    }
-//    else{
-//        NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
-//        TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
-//        if(!type.compare("Extrapolation") || !type.compare("FixedPoint") || !type.compare("Newton") || !type.compare("NOX")) {
-//            if (!type.compare("Extrapolation"))
-//                nonLinProb->reAssembleExtrapolation( solutionPreviousTimesteps_ );
-//            else
-//                nonLinProb->reAssemble(type);
-//
-//            std::string timestepping = parameterList_->sublist("Timestepping Parameter").get("Class","Singlestep");
-//            if (timestepping=="External")
-//                this->systemCombined_ = problem_->getSystem();
-//            else
-//                this->combineSystems();
-//        }
-//        else {
-//            TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Unknown reassembly type.");
-//        }
-//    }
-//}
-
-//template<class SC,class LO,class GO,class NO>
-//void TimeProblem<SC,LO,GO,NO>::assembleExternal( std::string type ) const{
-//    // We use this function to set the previous solution to the (non-)linear problem. This is needed for systems which are completly assembled in class FE
-//    NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
-//
-//    if ( !nonLinProb.is_null() )
-//        nonLinProb->assemble( type );
-//    else
-//        problem_->assemble( type );
-//
-//    if (  type == "Assemble" || type == "AssembleAndUpdate")
-//        this->systemCombined_ = problem_->getSystem();
-//};
-
-//template<class SC,class LO,class GO,class NO>
-//void TimeProblem<SC,LO,GO,NO>::reAssemble( MatrixPtr_Type& massmatrix, std::string type ) const
-//{
-//    NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
-//    // Should only be used by FSI
-//    nonLinProb->reAssemble( massmatrix, type );
-//}
 
 
 template<class SC,class LO,class GO,class NO>
@@ -357,10 +100,9 @@ void TimeProblem<SC,LO,GO,NO>::reAssembleAndFill( BlockMatrixPtr_Type bMat, std:
 
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
-
+    //std::cout << "combineSystems is called" << std::endl;
     BlockMatrixPtr_Type tmpSystem = problem_->getSystem();
     int size = tmpSystem->size();
-
     systemCombined_.reset( new BlockMatrix_Type ( size ) );
 
     for (int i=0; i<size; i++) {
@@ -371,15 +113,15 @@ void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
                 MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( tmpSystem->getBlock(i,j)->getMap(), maxNumEntriesPerRow ) );
                 
                 systemCombined_->addBlock( matrix, i, j );
+
             }
             else if (systemMass_->blockExists(i,j)) {
                 LO maxNumEntriesPerRow = systemMass_->getBlock(i,j)->getGlobalMaxNumRowEntries();
-                MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( systemMass_->getBlock(i,j)->getMap(), maxNumEntriesPerRow ) );
+                MatrixPtr_Type matrix = Teuchos::rcp( new Matrix_Type( systemMass_->getBlock(i,j)->getMap(), maxNumEntriesPerRow) );
                 systemCombined_->addBlock( matrix, i, j );
             }
         }
     }
-
     SmallMatrix<SC> ones( size , Teuchos::ScalarTraits<SC>::one());
     SmallMatrix<SC> zeros( size , Teuchos::ScalarTraits<SC>::zero());
     systemMass_->addMatrix( massParameters_, systemCombined_, zeros );
@@ -598,6 +340,7 @@ void TimeProblem<SC,LO,GO,NO>::initializeCombinedSystems() const{
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::assembleMassSystem( ) const {
 
+
     ProblemPtr_Type tmpProblem;
     SC eps100 = 100.*Teuchos::ScalarTraits<SC>::eps();
 
@@ -608,12 +351,11 @@ void TimeProblem<SC,LO,GO,NO>::assembleMassSystem( ) const {
     systemMass_->resize( size );
     int dofsPerNode;
     for (int i=0; i<size; i++ ) {
-
         dofsPerNode = problem_->getDofsPerNode(i);
         MatrixPtr_Type M;
         if ( timeStepDef_[i][i]>0 ) {
             if (dofsPerNode>1) {
-                M = Teuchos::rcp(new Matrix_Type( this->getDomain(i)->getMapVecFieldUnique(), this->getDomain(i)->getApproxEntriesPerRow() ) );
+                M = Teuchos::rcp(new Matrix_Type( this->getDomain(i)->getMapVecFieldUnique(), dimension_*this->getDomain(i)->getApproxEntriesPerRow() ) );
                 feFactory_->assemblyMass(dimension_, problem_->getFEType(i), "Vector", M, true);
 
                 M->resumeFill();
@@ -682,7 +424,6 @@ double TimeProblem<SC,LO,GO,NO>::calculateResidualNorm(){
 
     NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
     TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
-    
     Teuchos::Array<SC> res(1);
     nonLinProb->getResidualVector()->norm2(res);
 
@@ -770,7 +511,6 @@ int TimeProblem<SC,LO,GO,NO>::solveUpdate(  ){
     TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
     
     *nonLinProb->previousSolution_ = *nonLinProb->getSolution();
-
     int its = this->solve( nonLinProb->residualVec_ );
 
     return its;
@@ -782,6 +522,7 @@ int TimeProblem<SC,LO,GO,NO>::solveAndUpdate( const std::string& criterion, doub
     NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
     TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
     
+
     int its = solveUpdate(  );
 
     if (criterion=="Update") {
@@ -789,6 +530,8 @@ int TimeProblem<SC,LO,GO,NO>::solveAndUpdate( const std::string& criterion, doub
         nonLinProb->getSolution()->norm2(updateNorm());
         criterionValue = updateNorm[0];
     }
+
+
     if (criterion=="ResidualAceGen") {
         nonLinProb->getSolution()->update( 1., *nonLinProb->previousSolution_, -1. );
         nonLinProb->assemble( "SetSolutionNewton" );
@@ -797,8 +540,6 @@ int TimeProblem<SC,LO,GO,NO>::solveAndUpdate( const std::string& criterion, doub
     else
         nonLinProb->getSolution()->update( 1., *nonLinProb->previousSolution_, 1. );
 
-    //nonLinProb->getSolution()->print();
-    
     return its;
 }
 
@@ -983,6 +724,7 @@ template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::assembleSourceTerm( double time ){
     
     problem_->assembleSourceTerm(time); 
+
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -1144,6 +886,7 @@ Thyra::ModelEvaluatorBase::OutArgs<SC> TimeProblem<SC,LO,GO,NO>::createOutArgsIm
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::LinearOpBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_op()
 {
+
     this->calculateNonLinResidualVec( "standard", time_ );
     this->assemble("Newton");
     
@@ -1190,12 +933,12 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
         this->setBoundariesSystem();
         
-        if ( type == "Teko" || type == "FaCSI-Teko" ) { //we need to construct the whole preconditioner if Teko is used
+        if ( type == "Teko" || type == "FaCSI-Teko" || type =="Diagonal" ) { //we need to construct the whole preconditioner if Teko is used
             nonLinProb->setupPreconditioner( type );
             precInitOnly_ = false;
         }
         else{
-            nonLinProb->initializePreconditioner( type );
+            nonLinProb->setupPreconditioner( type ); //nonLinProb->initializePreconditioner( type );
         }
     }
     
@@ -1381,7 +1124,7 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBa
         if (fill_W) {
             
             typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
-            
+
             this->assemble("Newton");
             
             this->setBoundariesSystem();

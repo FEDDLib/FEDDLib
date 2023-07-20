@@ -70,7 +70,6 @@ int main(int argc, char *argv[]) {
     int numProcsCoarseSolve = 0;
     bool boolExportMesh = true;
 
-
     DomainPtr_Type domainP1;
     DomainPtr_Type domain;
 

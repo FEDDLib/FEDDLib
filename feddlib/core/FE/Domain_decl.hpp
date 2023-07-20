@@ -126,7 +126,7 @@ public:
     /*!
          \brief Information about the domain
     */
-    void info();
+    void info() const;
 
  	/*!
          \brief Build structured mesh in FEDDLib 
@@ -416,7 +416,7 @@ public:
     LO getNumPoints(std::string type="Unique") const;/*local*/
 
 	/*!
-         \brief Check geometriy
+         \brief Checks geometriy
          @param[in] MeshType
          @param[in] dim
          \return 

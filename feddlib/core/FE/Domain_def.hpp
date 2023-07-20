@@ -138,7 +138,7 @@ partialGlobalInterfaceVecFieldMap_()
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::info(){
+void Domain<SC,LO,GO,NO>::info() const{
 
     LO minNumberNodes;
     LO maxNumberNodes;
@@ -183,23 +183,23 @@ template <class SC, class LO, class GO, class NO>
 LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
     if (this->dim_ == 2) {
         if ( this->FEType_ == "P1" ) {
-            return 24;
+            return 44;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 48;
+            return 60;
         }
         else {
-            return 400;
+            return 60;
         }
     } else {
         if ( this->FEType_ == "P1" ) {
-            return 100;
+            return 400;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 160;
-            }
+            return 460;
+        }
         else {
-            return 100;
+            return 400;
         }
     }
 }
@@ -274,8 +274,6 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
     }
     meshStructured->buildElementMap();
     meshStructured->setStructuredMeshFlags(flagsOption,FEType);
-
-    // Building the surfaces for elements as well (necessary with surface loads!)
     meshStructured->buildSurfaces(flagsOption,FEType);
     
     mesh_ = meshStructured;
@@ -383,6 +381,15 @@ void Domain<SC,LO,GO,NO>::initWithDomain(DomainPtr_Type domainP1){
     mesh_ = domainP1->mesh_;
 }
 
+/*template <class SC, class LO, class GO, class NO>
+void Domain<SC,LO,GO,NO>::initMeshRef( DomainPtr_Type domainP1 ){ 
+	// Initialize MeshRefinementType as through other function like meshPartitioner and buildP2OfP1 Mesh meshUnstr Type is required
+
+	MeshUnstrPtr_Type meshUnstr = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domainP1->mesh_ , true);
+	MeshUnstrRefPtr_Type meshUnstrRefTmp = Teuchos::rcp( new MeshUnstrRef_Type( comm_, meshUnstr->volumeID_, meshUnstr ) );
+	mesh_ = meshUnstrRefTmp;
+
+}*/
 
 template <class SC, class LO, class GO, class NO>
 void Domain<SC,LO,GO,NO>::setMesh(MeshUnstrPtr_Type meshUnstr){ 
@@ -469,7 +476,7 @@ vec_int_ptr_Type Domain<SC,LO,GO,NO>::getBCFlagUnique() const{
 
 template <class SC, class LO, class GO, class NO>
 vec2D_int_ptr_Type Domain<SC,LO,GO,NO>::getElements() const{
-
+    TEUCHOS_TEST_FOR_EXCEPTION(mesh_->getElementsC().is_null(), std::runtime_error, "Elements is null for this mesh.");
     return mesh_->getElements();
 }
 
@@ -771,10 +778,10 @@ void Domain<SC,LO,GO,NO>::buildInterfaceMaps()
     
     MapConstPtr_Type mapUni = this->getMapUnique();
     vec_int_ptr_Type flagPointsUni = this->getBCFlagUnique();
-    vec_GO_Type vecGlobalInterfaceID;
-    vec_GO_Type vecOtherGlobalInterfaceID;
-    vec_GO_Type vecInterfaceID;
-    vec_int_Type vecInterfaceFlag;
+    vec_GO_Type vecGlobalInterfaceID(0);
+    vec_GO_Type vecOtherGlobalInterfaceID(0);
+    vec_GO_Type vecInterfaceID(0);
+    vec_int_Type vecInterfaceFlag(0);
     LO localID = 0;
 
     for(int i = 0; i < indicesMatchedGlobalSerial->size(); i++) // Schleife ueber jede flag

@@ -68,6 +68,10 @@ public:
     
     /// @brief Merging the map of different blocks together. Relevant for monolithic solving/precondtioning
     void merge();
+
+    void print();
+
+    void info();
     
     std::string getUnderlyingLib( ) const;
         

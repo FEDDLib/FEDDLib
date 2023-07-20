@@ -1,0 +1,46 @@
+<ParameterList name="Diffusion">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization" type="string" value="P2"/><!--P1, P2; velocity, pressure always P1 -->
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured, structured_bfs -->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+        <Parameter name="H/h" type="int" value="10"/>       
+
+        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>
+        <Parameter name="updateTol" type="double" value="1.0e-4"/>
+         <Parameter name="D0" type="double" value="6.e-06"/>
+	<Parameter name="E1" type="double" value="0.5"/>
+        <Parameter name="E0" type="double" value="1."/>
+        <Parameter name="Refinement Level" type="int" value="2"/>
+    </ParameterList>
+    
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        
+        <Parameter name="Mesh 1 Name" type="string" value="cube_0_5.mesh"/>
+    </ParameterList>
+    
+    <ParameterList name="Exporter">       
+        <Parameter name="Export coarse functions" type="bool" value="false"/>        
+        <Parameter name="Name coarse functions block1" type="string" value="phiUP1"/>
+        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>        
+    </ParameterList>
+    
+    <ParameterList name="General">
+        <Parameter name="Linearization" 						type="string" value="Newton"/> <!-- FixedPoint, NOX-->
+        <Parameter name="Mpi Ranks Coarse"		                type="int"      value="0"/>
+        <Parameter name="ParaViewExport"			            type="bool"     value="true"/>
+        <Parameter name="ParaViewCoarse"                        type="bool"     value="false"/>
+        <Parameter name="Preconditioner Method"                 type="string"   value="Monolithic"/><!-- Monolithic -->
+        <Parameter name="Scale mass matrix"                     type="bool"     value="false"/>
+        <Parameter name="Set Zeros"		                        type="bool"     value="true"/>
+    </ParameterList>
+    <ParameterList name="Timestepping Parameter">
+        <Parameter name="Class"                                 type="string"		value="Singlestep"/> <!-- Newmark -->
+        <Parameter name="BDF"		                    		type="int"		   	value="1"/>
+        <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
+        <Parameter name="Final time"	                    	type="double"   	value="1.0"/>
+        <Parameter name="dt"			                    	type="double"   	value="0.1"/>
+    </ParameterList>
+</ParameterList>

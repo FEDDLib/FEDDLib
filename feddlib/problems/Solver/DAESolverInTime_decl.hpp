@@ -7,6 +7,8 @@
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/General/ExporterTxt.hpp"
 
+
+
 #include "NonLinearSolver.hpp"
 #include "TimeSteppingTools.hpp"
 
@@ -82,6 +84,8 @@ public:
     void setupTimeStepping();
 
     void advanceInTime();
+
+    void advanceWithLoadStepping();
 
     void advanceInTimeLinear();
 

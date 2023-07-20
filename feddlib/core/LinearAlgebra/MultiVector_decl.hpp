@@ -145,6 +145,8 @@ public:
     
     void writeMM(std::string fileName="mv.mm") const;
     
+    void readMM(std::string fileName) const;
+    
     MultiVectorConstPtr_Type getVector( int i ) const;
     
     MultiVectorPtr_Type sumColumns() const;

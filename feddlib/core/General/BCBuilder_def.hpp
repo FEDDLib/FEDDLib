@@ -630,7 +630,9 @@ void BCBuilder<SC,LO,GO,NO>::setDirichletBC(const MatrixPtr_Type &matrix, int lo
         int flag = bcFlags->at(i);
         isDirichlet = false;
         int locThisFlag;
+
         if( findFlag(flag, blockRow, locThisFlag) ){
+
             if( !vecBCType_.at(locThisFlag).compare("Dirichlet") ||
                 !vecBCType_.at(locThisFlag).compare("Dirichlet_X") ||
                 !vecBCType_.at(locThisFlag).compare("Dirichlet_Y") ||
@@ -640,6 +642,7 @@ void BCBuilder<SC,LO,GO,NO>::setDirichletBC(const MatrixPtr_Type &matrix, int lo
                 !vecBCType_.at(locThisFlag).compare("Dirichlet_Y_Z") )
                 isDirichlet = true;
             if (isDirichlet) {
+
                 if (isDiagonalBlock)
                     setLocalRowOne(matrix, i, dofsPerNode, locThisFlag );
                 else
@@ -667,6 +670,7 @@ void BCBuilder<SC,LO,GO,NO>::setLocalRowOne(const MatrixPtr_Type &matrix, LO loc
             (vecBCType_.at(loc) == "Dirichlet_X_Z" && dof!=1 )||
             (vecBCType_.at(loc) == "Dirichlet_Y_Z" && dof!=0 )
             ) {
+           // cout << " Setting Dirichlet Row 1 for node " << localDof << " of type " << vecBCType_.at(loc)  <<endl;
             GO globalDof = matrix->getMap()->getGlobalElement( localDof );
             matrix->getLocalRowView(localDof, indices, valuesOld);
             Teuchos::Array<SC> values( valuesOld.size(), Teuchos::ScalarTraits<SC>::zero() );
