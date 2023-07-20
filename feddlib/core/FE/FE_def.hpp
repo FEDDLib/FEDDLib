@@ -192,6 +192,7 @@ void FE<SC,LO,GO,NO>::globalAssembly(string ProblemType,
 		    solution_tmp = getSolution(domainVec_.at(i)->getElementsC()->getElement(T).getVectorNodeList(), sol_rep->getBlock(i),domainVec.at(i)->getDofs());      
             solution.insert( solution.end(), solution_tmp.begin(), solution_tmp.end() );
 
+
         }   
         
   		assemblyFEElements_[T]->updateSolution(solution);
