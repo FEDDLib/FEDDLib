@@ -187,11 +187,11 @@ void FE<SC,LO,GO,NO>::globalAssembly(string ProblemType,
     vec_dbl_Type solution_tmp;
     for (UN T=0; T<assemblyFEElements_.size(); T++) {
 		vec_dbl_Type solution(0);
-
+        vec_FE_Type elements;
         for(int i=0; i< problemSize; i++){
 		    solution_tmp = getSolution(domainVec_.at(i)->getElementsC()->getElement(T).getVectorNodeList(), sol_rep->getBlock(i),domainVec.at(i)->getDofs());      
             solution.insert( solution.end(), solution_tmp.begin(), solution_tmp.end() );
-  
+
         }   
         
   		assemblyFEElements_[T]->updateSolution(solution);
@@ -203,7 +203,7 @@ void FE<SC,LO,GO,NO>::globalAssembly(string ProblemType,
 			assemblyFEElements_[T]->assembleJacobian();
 
             elementMatrix = assemblyFEElements_[T]->getJacobian(); 
-           // elementMatrix->print();
+            //elementMatrix->print();
 			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
 			
 			addFeBlockMatrix(A, elementMatrix, domainVec_.at(0)->getElementsC()->getElement(T), problemDisk);
@@ -218,28 +218,43 @@ void FE<SC,LO,GO,NO>::globalAssembly(string ProblemType,
       		
 	}
 	if ( assembleMode == "Jacobian"){
-		A->getBlock(0,0)->fillComplete();
-	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocSolid)->getMapVecFieldUnique(),domainVec_.at(FElocChem)->getMapUnique());
-	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocChem)->getMapUnique(),domainVec_.at(FElocSolid)->getMapVecFieldUnique());
-	    A->getBlock(1,1)->fillComplete();
+        for(int probRow = 0; probRow <  problemSize; probRow++){
+            for(int probCol = 0; probCol <  problemSize; probCol++){
+                MapConstPtr_Type rowMap;
+                MapConstPtr_Type domainMap;
+
+                if(domainVec.at(probRow)->getDofs() == 1)
+                    rowMap = domainVec_.at(FElocRow)->getMapUnique();
+                else
+                    rowMap = domainVec_.at(probRow)->getMapVecFieldUnique();
+
+                if(domainVec.at(probCol)->getDofs() == 1)
+                    domainMap = domainVec_.at(probCol)->getMapUnique()
+                else
+                    domainMap = domainVec_.at(probCol)->getMapVecFieldUnique()
+
+                A->getBlock(probRow,probCol)->fillComplete(domainMap,rowMap);
+            }
+        }
 	}
     else if(assembleMode == "Rhs"){
 
-		MultiVectorPtr_Type resVecUnique_d = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocSolid)->getMapVecFieldUnique(), 1 ) );
-		MultiVectorPtr_Type resVecUnique_c = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocChem)->getMapUnique(), 1 ) );
+        for(int probRow = 0; probRow <  problemSize; probRow++){
+            MapConstPtr_Type rowMap;
+             if(domainVec.at(probRow)->getDofs() == 1)
+                rowMap = domainVec_.at(FElocRow)->getMapUnique();
+            else
+                rowMap = domainVec_.at(probRow)->getMapVecFieldUnique();
 
-		resVecUnique_d->putScalar(0.);
-		resVecUnique_c->putScalar(0.);
+		    MultiVectorPtr_Type resVecUnique = Teuchos::rcp( new MultiVector_Type( rowMap, 1 ) );
 
-		resVecUnique_d->exportFromVector( resVec_d, true, "Add" );
-		resVecUnique_c->exportFromVector( resVec_c, true, "Add" );
+            resVecUnique->putScalar(0.);
 
-		resVec->addBlock(resVecUnique_d,0);
-		resVec->addBlock(resVecUnique_c,1);
+            resVecUnique->exportFromVector( resVecRep, true, "Add" );
+
+            resVec->addBlock(resVecUnique,probRow);
+        }
 	}
-    else if(assembleMode == "MassMatrix"){
-   		A->getBlock(0,0)->fillComplete();
-    }
 
 }*/
 
@@ -256,7 +271,7 @@ void FE<SC,LO,GO,NO>::globalAssembly(string ProblemType,
 
 */
 /*template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, tuple_disk_vec_ptr_Type problemDisk){
+void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement_vec element, tuple_disk_vec_ptr_Type problemDisk){
 		
     int numDisk = problemDisk->size();
 
@@ -278,7 +293,7 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
             Teuchos::Array<GO> columnIndices2( numNodes2, 0 );
             for (UN i=0; i < numNodes1; i++){
                 for(int di=0; di<dofs1; di++){				
-                    GO row =GO (dofs1* mapRow->getGlobalElement( element.getNode(i) )+di);
+                    GO row =GO (dofs1* mapRow->getGlobalElement( element[probRow].getNode(i) )+di);
                     for(int d=0; d<dofs2; d++){				
                         for (UN j=0; j < numNodes2 ; j++) {
                             value2[j] = (*elementMatrix)[offsetRow+i*dofs1+di][offsetCol+j*dofs2+d];			    				    		
@@ -293,6 +308,37 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
     }
 }
 
+*/
+
+/*!
+
+ \brief Inserting local rhsVec into global residual Mv;
+
+
+@param[in] res BlockMultiVector of residual vec; Repeated distribution; 2 blocks
+@param[in] rhsVec sorted the same way as residual vec
+@param[in] element of block1
+
+*/
+/*
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Type rhsVec,tuple_disk_vec_ptr_Type problemDisk, FiniteElement_vec element)
+    int numDisk = problemDisk->size();
+
+    for(int probRow = 0; probRow < numDisk; probRow++){
+        Teuchos::ArrayRCP<SC>  resArray_block = res->getBlockNonConst(probRow)->getDataNonConst(0);
+      	vec_LO_Type nodeList_block = element[probRow].getVectorNodeList();
+        int dofs = std::get<2>(problemDisk->at(probRow));
+        int numNodes = std::get<3>(problemDisk->at(probRow));
+
+        int offset = numNodes*dofs; 
+        for(int i=0; i< nodeList_block.size() ; i++){
+            for(int d=0; d<dofs; d++){
+                resArray_block[nodeList_block[i]*dofs+d] += (*rhsVec)[i*dofs+d+offset];
+            }
+        }
+    }
+}
 */
 
 /*!
