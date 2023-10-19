@@ -761,7 +761,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
            // elementMatrix->print();
 			assemblyFEElements_[T]->advanceNewtonStep(); // n genereal non linear solver step
 			
-			addFeBlockMatrix(A, elementMatrix, elementsSolid->getElement(T),  mapSolid, mapChem, problemDisk);
+			addFeBlockMatrix(A, elementMatrix, elementsSolid->getElement(T), elementsSolid->getElement(T), mapSolid, mapChem, problemDisk);
 
           
 
@@ -975,7 +975,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffuBlock(int dim,
 
 */
 template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstRow,MapConstPtr_Type mapSecondRow, tuple_disk_vec_ptr_Type problemDisk){
+void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element1, FiniteElement element2, MapConstPtr_Type mapFirstRow,MapConstPtr_Type mapSecondRow, tuple_disk_vec_ptr_Type problemDisk){
 		
 		int numDisk = problemDisk->size();
 
@@ -996,10 +996,10 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
 
 		for (UN i=0; i < numNodes1 ; i++) {
 			for(int di=0; di<dofs1; di++){
-				GO row =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+di);
+				GO row =GO (dofs1* mapFirstRow->getGlobalElement( element1.getNode(i) )+di);
 				for(int d=0; d<dofs1; d++){
 					for (UN j=0; j < columnIndices1.size(); j++){
-		                columnIndices1[j] = GO ( dofs1 * mapFirstRow->getGlobalElement( element.getNode(j) ) + d );
+		                columnIndices1[j] = GO ( dofs1 * mapFirstRow->getGlobalElement( element1.getNode(j) ) + d );
 						value1[j] = (*elementMatrix)[dofs1*i+di][dofs1*j+d];	
 					}
 			  		A->getBlock(0,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists 
@@ -1008,16 +1008,17 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
 		}
 		int offset= numNodes1*dofs1;
 
+
         Teuchos::Array<SC> value( 1, 0. );
         Teuchos::Array<GO> columnIndex( 1, 0 );
         for (UN i=0; i < numNodes2 ; i++) {
             for(int di=0; di<dofs2; di++){
-                GO row =GO (dofs2* mapSecondRow->getGlobalElement( element.getNode(i) )+di);
+                GO row =GO (dofs2* mapSecondRow->getGlobalElement( element2.getNode(i) )+di);
                 for(int d=0; d<dofs2; d++){
                     for (UN j=0; j < columnIndices2.size(); j++){
                         double tmpValue =  (*elementMatrix)[offset+dofs2*i+di][offset+dofs2*j+d];
                         if(std::fabs(tmpValue) > 1.e-13){
-                            columnIndex[0] = GO ( dofs2 * mapSecondRow->getGlobalElement( element.getNode(j) ) + d );
+                            columnIndex[0] = GO ( dofs2 * mapSecondRow->getGlobalElement( element2.getNode(j) ) + d );
                             value[0] = tmpValue;
                             A->getBlock(1,1)->insertGlobalValues( row, columnIndex(), value() ); // Automatically adds entries if a value already exists 
 
@@ -1027,15 +1028,13 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
             }
         }
         
-
-
 		for (UN i=0; i < numNodes1; i++){
 			for(int di=0; di<dofs1; di++){				
-                GO row =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+di);
+                GO row =GO (dofs1* mapFirstRow->getGlobalElement( element1.getNode(i) )+di);
                 for(int d=0; d<dofs2; d++){				
                     for (UN j=0; j < numNodes2 ; j++) {
                         value2[j] = (*elementMatrix)[i*dofs1+di][offset+j*dofs2+d];			    				    		
-                        columnIndices2[j] =GO (dofs2* mapSecondRow->getGlobalElement( element.getNode(j) )+d);
+                        columnIndices2[j] =GO (dofs2* mapSecondRow->getGlobalElement( element2.getNode(j) )+d);
                     }
                     A->getBlock(0,1)->insertGlobalValues( row, columnIndices2(), value2() ); // Automatically adds entries if a value already exists                            
                 }
@@ -1044,17 +1043,16 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
 
         for (UN j=0; j < numNodes2; j++){
             for(int di=0; di<dofs2; di++){	
-                GO row = GO (dofs2* mapSecondRow->getGlobalElement( element.getNode(j) ) +di );
+                GO row = GO (dofs2* mapSecondRow->getGlobalElement( element2.getNode(j) ) +di );
                 for(int d=0; d<dofs1; d++){				
                     for (UN i=0; i < numNodes1 ; i++) {
                         value1[i] = (*elementMatrix)[offset+j*dofs2+di][dofs1*i+d];			    				    		
-                        columnIndices1[i] =GO (dofs1* mapFirstRow->getGlobalElement( element.getNode(i) )+d);
+                        columnIndices1[i] =GO (dofs1* mapFirstRow->getGlobalElement( element1.getNode(i) )+d);
                     }
                     A->getBlock(1,0)->insertGlobalValues( row, columnIndices1(), value1() ); // Automatically adds entries if a value already exists                       
                 }    
             }  
 		}
-
 
 
 }
@@ -1171,7 +1169,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 			if(reAssemble)
 				addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
 			else
-				addFeBlockMatrix(A, elementMatrix, elements->getElement(T), mapVel, mapPres, problemDisk);
+				addFeBlockMatrix(A, elementMatrix, elements->getElement(T), elementsPres->getElement(T), mapVel, mapPres, problemDisk);
 		}
    		if(assembleMode == "FixedPoint"){
 
@@ -1186,7 +1184,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 			if(reAssemble)
 				addFeBlock(A, elementMatrix, elements->getElement(T), mapVel, 0, 0, problemDisk);
 			else
-				addFeBlockMatrix(A, elementMatrix, elements->getElement(T), mapVel, mapPres, problemDisk);
+				addFeBlockMatrix(A, elementMatrix, elements->getElement(T), elementsPres->getElement(T),mapVel, mapPres, problemDisk);
 
         }
 		if(assembleMode == "Rhs"){
