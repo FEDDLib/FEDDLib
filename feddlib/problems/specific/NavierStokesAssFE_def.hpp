@@ -233,17 +233,13 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
     MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
     u_rep_->importFromVector(u, true);
+
     MultiVectorConstPtr_Type p = this->solution_->getBlock(1);
     p_rep_->importFromVector(p, true); 
    
 
    if (type=="Rhs") {
 
-        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);
-        MultiVectorConstPtr_Type p = this->solution_->getBlock(1);
-        p_rep_->importFromVector(p, true);  
-       
    		this->system_->addBlock(ANW,0,0);
 
         this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_, this->residualVec_,this->coeff_,this->parameterList_, true, "FixedPoint",  true);        
@@ -277,6 +273,17 @@ void NavierStokesAssFE<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type
 	//this->reAssemble("FixedPoint");
     this->reAssemble("Rhs");
 
+    // We need to additionally add the residual component for the stabilization block, as it is not part of the AssembleFE routines and calculated externally here.
+    if(this->getDomain(0)->getFEType() == "P1"){
+
+        MultiVectorPtr_Type residualPressureTmp = Teuchos::rcp(new MultiVector_Type( this->getDomain(1)->getMapUnique() ));
+
+         this->system_->getBlock(1,1)->apply( *(this->solution_->getBlock(1)), *residualPressureTmp);
+           
+        this->residualVec_->getBlockNonConst(1)->update(1.,*residualPressureTmp,1.);
+
+
+    }
     // We need to account for different parameters of time discretizations here
     // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
 
@@ -651,7 +658,7 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokesAssFE<SC,LO,GO,NO>::cre
         stokesTekoPrecUsed_ = false;
     }
     else{
-        this->initializePreconditioner( type );
+        this->setupPreconditioner( type );
     }
 
     Teuchos::RCP<const Thyra::PreconditionerBase<SC> > thyraPrec =  this->getPreconditionerConst()->getThyraPrecConst();
