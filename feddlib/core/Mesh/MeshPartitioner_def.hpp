@@ -358,50 +358,12 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
                 pointsRepIndices.push_back( eind[j] ); // Ids of element nodes, globalIDs
         }
     }
-    eind_vec.erase(eind_vec.begin(),eind_vec.end());
-    eptr_vec.erase(eptr_vec.begin(),eptr_vec.end());
-	
-	// Sorting ids with global and corresponding local values to creat repeated map
-    {
-        //Sollte in eigene Funktion
-        {
-            vector<int> index(pointsRepIndices.size(), 0);
-            for (int i = 0 ; i != index.size() ; i++) {
-                index.at(i) = i;
-            }
-            
-            sort(index.begin(), index.end(),
-                 [&](const int& a, const int& b) {
-                     return  pointsRepIndices[a] < pointsRepIndices[b];
-                 }
-                 );
-            
-            pointsRepIndices      = sort_from_ref(pointsRepIndices, index);
-        }
-        
-        //Sollte in eigene Funktion
-        {
-            vector<int> index(pointsRepIndices.size(), 0);
-            for (int i = 0 ; i != index.size() ; i++) {
-                index.at(i) = i;
-            }
-            
-            vector<int> ::iterator it;
-            
-            it = unique (index.begin(), index.end(),
-                         [&](const int& a, const int& b){
-                             if (pointsRepIndices.at(a) == pointsRepIndices.at(b)) {
-                                 return true;
-                             }
-                             else{
-                                 return false;
-                             }});
-            
-            pointsRepIndices = sort_from_ref(pointsRepIndices, index);
-            
-            pointsRepIndices.resize( distance( index.begin(), it ) );
-        }
-    }
+    // TODO KHo why erase the vectors here? eind points to the underlying array and is used later.
+    eind_vec.erase(eind_vec.begin(), eind_vec.end());
+    eptr_vec.erase(eptr_vec.begin(), eptr_vec.end());
+
+    // Sorting ids with global and corresponding local values to create repeated map
+    make_unique(pointsRepIndices);
     if (verbose)
         cout << "done!" << endl;
     

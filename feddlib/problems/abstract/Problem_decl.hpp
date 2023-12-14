@@ -94,7 +94,7 @@ public:
 
     Problem(ParameterListPtr_Type &parameterList, CommConstPtr_Type comm);
 
-    ~Problem();
+    virtual ~Problem() = default;
 
     virtual void info() = 0;
 

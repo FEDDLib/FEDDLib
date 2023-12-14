@@ -343,7 +343,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyDivAndDivT(SmallMatrixPtr_Type
     }
 	//elementMatrix->print();
     // We compute value twice, maybe we should change this
-    /*for (UN i=0; i < dPhiTrans[0].size(); i++) {
+    for (UN i=0; i < dPhiTrans[0].size(); i++) {
 
         Teuchos::Array<Teuchos::Array<SC> >valueVec( dim, Teuchos::Array<SC>( phi->at(0).size(), 0. ) );
         Teuchos::Array<GO> indices( phi->at(0).size(), 0 );

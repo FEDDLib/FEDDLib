@@ -1,4 +1,4 @@
-#ifndef LINEALS_def_hpp
+#ifndef LINELAS_def_hpp
 #define LINELAS_def_hpp
 #include "LinElas_decl.hpp"
 namespace FEDD {
