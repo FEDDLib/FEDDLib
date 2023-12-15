@@ -76,11 +76,6 @@ namespace FEDD
     }
 
     template <class SC, class LO, class GO, class NO>
-    Problem<SC, LO, GO, NO>::~Problem()
-    {
-    }
-
-    template <class SC, class LO, class GO, class NO>
     void Problem<SC, LO, GO, NO>::infoProblem()
     {
         bool verbose(comm_->getRank() == 0);

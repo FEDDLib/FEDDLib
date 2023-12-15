@@ -29,24 +29,24 @@ class  AssembleFE_NonLinElas2 : public AssembleFE<SC,LO,GO,NO> {
 	 \brief Assemble the element Jacobian matrix.
 	 \return the element Jacobian matrix
 	*/
-	virtual void assembleJacobian();
+	void assembleJacobian() override;
 
 	/*!
 	 \brief Assemble the element right hand side vector.
 	 \return the element right hand side vector
 	*/
-	virtual void assembleRHS();	
+	void assembleRHS() override;	
 
 	/*!
 		\brief Assemble the element Jacobian matrix.
 		@param[in] block ID i
 	*/
-	virtual void assembleJacobianBlock(LO i) {};
+	void assembleJacobianBlock(LO i) override {};
 	/*!
 		\brief Update the parameter read from the ParameterList.
 		@param[in] Parameter as read from the xml file
 	*/
-    virtual void updateParameter(string type, double value);
+    void updateParameter(string type, double value) override;
 
    protected:
 	 AssembleFE_NonLinElas2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); 

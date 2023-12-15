@@ -39,20 +39,20 @@ class AssembleFE_SCI_SMC_MLCK : public AssembleFE<SC,LO,GO,NO> {
         /*!
 	    \brief Assemble the element Jacobian matrix.
 	    */
-	    virtual void assembleJacobian();
+	    void assembleJacobian() override;
 
         /*!
 	    \brief Assemble the element right hand side vector.
 	    */
-	    virtual void assembleRHS();
+	    void assembleRHS() override;
 
  		/*!
 	    \brief Assemble block parts of the element Jacobian matrix.
 	    \return the element Jacobian matrix of block i 
 	    */
-		virtual void assembleJacobianBlock(LO i){};
+		void assembleJacobianBlock(LO i) override{};
 
-		virtual void advanceInTime(double dt);
+		void advanceInTime(double dt) override;
 
 
     protected:
