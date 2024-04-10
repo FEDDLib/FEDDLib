@@ -103,6 +103,15 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
         C->fillComplete( pressureMap, pressureMap );
         this->system_->addBlock( C, 1, 1 );
     }
+    else 
+    { 
+        C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+        this->feFactory_->assemblyIdentity(C);
+        C->resumeFill();
+        C->scale(0. );
+        C->fillComplete( pressureMap, pressureMap );    
+        this->system_->addBlock( C, 1, 1 );
+    }
 #ifdef FEDD_HAVE_TEKO
     if ( !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Teko") ) {
         if (!this->parameterList_->sublist("General").get("Assemble Velocity Mass",false)) {

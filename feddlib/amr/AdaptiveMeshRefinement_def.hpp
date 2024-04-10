@@ -551,22 +551,16 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	}
 
 	else if( currentIter_ < maxIter_ ){			
-			cout << " Hier 1" << endl;
-
 		// Estimating the error with the Discretizations Mesh.
 		errorElementsMv_ = errorEstimator.estimateError(inputMeshP12_, inputMeshP1_, solution, rhsFunc_, domainP12->getFEType());
-	cout << " Hier 2" << endl;
 
 		errorEstimationMv_.push_back(errorElementsMv_);
-	cout << " Hier 3" << endl;
 
 		errorEstimator.markElements(errorElementsMv_,theta_,markingStrategy_, inputMeshP1_);
-	cout << " Hier 4" << endl;
 
    		refinementFactory.refineMesh(inputMeshP1_,currentIter_, outputMesh, refinementMode_);
 	}
 
-	cout << " Hier 5" << endl;
 
 	// Export distribution of elements among processors
 	MultiVectorPtr_Type procNumTmp = Teuchos::rcp( new MultiVector_Type(domainP12->getElementMap() , 1 ) );

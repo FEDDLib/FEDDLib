@@ -44,6 +44,23 @@ void three(double* x, double* res, double t, const double* parameters){
     return;
 }
 
+void ldcFunc2D(double* x, double* res, double t, const double* parameters){
+    
+    res[0] = 1.;
+    res[1] = 0.;
+    
+    return;
+}
+
+void ldcFunc3D(double* x, double* res, double t, const double* parameters){
+    
+    res[0] = 1.;
+    res[1] = 0.;
+    res[2] = 0.;
+
+    return;
+}
+
 void zeroDirichlet(double* x, double* res, double t, const double* parameters){
     
     res[0] = 0.;
@@ -179,7 +196,7 @@ int main(int argc, char *argv[]) {
         parameterListAll->setParameters(*parameterListSolver);
         
         int minNumberSubdomains;
-        if (!meshType.compare("structured") || !meshType.compare("unstructured_struct")) {
+        if (!meshType.compare("structured") || !meshType.compare("structured_ldc") || !meshType.compare("unstructured_struct")) {
             minNumberSubdomains = 1;
         }
         else if(!meshType.compare("structured_bfs") || !meshType.compare("unstructured_bfs")){
@@ -223,6 +240,25 @@ int main(int argc, char *argv[]) {
                     domainPressure->buildMesh( 1,"Square", dim, discPressure, n, m, numProcsCoarseSolve);
                     domainVelocity->buildMesh( 1,"Square", dim, discVelocity, n, m, numProcsCoarseSolve);
                 }
+                if (!meshType.compare("structured_ldc")) {
+                    TEUCHOS_TEST_FOR_EXCEPTION( size%minNumberSubdomains != 0 , std::logic_error, "Wrong number of processors for structured mesh.");
+                    if (dim == 2) {
+                        n = (int) (std::pow( size/minNumberSubdomains ,1/2.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
+                        std::vector<double> x(2);
+                        x[0]=0.0;    x[1]=0.0;
+                        domainPressure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., comm ) );
+                        domainVelocity.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., comm ) );
+                    }
+                    else if (dim == 3){
+                        n = (int) (std::pow( size/minNumberSubdomains, 1/3.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
+                        std::vector<double> x(3);
+                        x[0]=0.0;    x[1]=0.0;	x[2]=0.0;
+                        domainPressure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
+                        domainVelocity.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
+                    }
+                    domainPressure->buildMesh( 5,"Square", dim, discPressure, n, m, numProcsCoarseSolve);
+                    domainVelocity->buildMesh( 5,"Square", dim, discVelocity, n, m, numProcsCoarseSolve);
+                }
                 if (!meshType.compare("structured_bfs")) {
                     TEUCHOS_TEST_FOR_EXCEPTION( size%minNumberSubdomains != 0 , std::logic_error, "Wrong number of processors for structured BFS mesh.");
                     if (dim == 2) {
@@ -263,7 +299,7 @@ int main(int argc, char *argv[]) {
 
                 }
             }
-            
+            domainVelocity->exportNodeFlags();
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
             
             // ####################
@@ -273,16 +309,18 @@ int main(int argc, char *argv[]) {
                 parameter_vec.push_back(1.);//height of inflow region
             else if(!bcType.compare("parabolic_benchmark"))
                 parameter_vec.push_back(.41);//height of inflow region
+            else if(!bcType.compare("LDC"))
+                parameter_vec.push_back(0.);//Dummy
             else
                 TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Select a valid boundary condition.");
             
-            if (dim==2) {
+            if (dim==2 && bcType.compare("LDC")) {
                 bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
                 bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 //                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
 //                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
             }
-            else if(dim==3){
+            else if(dim==3 && bcType.compare("LDC")){
                 bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
                 bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 //                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
@@ -293,6 +331,18 @@ int main(int argc, char *argv[]) {
                     bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
                 else if (dim==3)
                     bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
+            }
+            if (!bcType.compare("LDC")) {//flag of obstacle
+                if (dim==2){
+                    bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
+                    bcFactory->addBC(ldcFunc2D, 2, 0, domainVelocity, "Dirichlet", dim);
+                    bcFactory->addBC(zeroDirichlet, 2, 1, domainPressure, "Dirichlet", 1);
+                }
+                else if (dim==3){
+                    bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
+                    bcFactory->addBC(ldcFunc3D, 2, 0, domainVelocity, "Dirichlet", dim);
+
+                }
             }
             
             Stokes<SC,LO,GO,NO> stokes( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );

@@ -666,6 +666,7 @@ int main(int argc, char *argv[]) {
 		
 
 		int j=0;
+		vec_int_Type iterations(0);
 		MAIN_TIMER_START(Total," Step 4:	 Total RefinementAlgorithm");
 		while(j<maxIter+1 ){
 
@@ -704,7 +705,8 @@ int main(int argc, char *argv[]) {
 				stokes->assemble();
 				stokes->setBoundaries();          
 				stokes->setBoundariesRHS();                
-				stokes->solve();
+				int iter = stokes->solve();
+				iterations.push_back(iter);
 
 			}
 			MAIN_TIMER_STOP(Solver);	
@@ -726,6 +728,8 @@ int main(int argc, char *argv[]) {
 			domainPressure = domainRefined;
 			domainVelocity = domainPressure;
 			
+			//domainRefined->exportNodeFlags("Pressure");
+
 			j++;
 			MAIN_TIMER_STOP(Refinement);	
         
@@ -733,6 +737,9 @@ int main(int argc, char *argv[]) {
        
             
         }
+		if(verbose)
+			for(int i=0; i< iterations.size(); i++)
+				cout << " Iteration in step " << i << ": " << iterations[i] << endl;
 
 		MAIN_TIMER_STOP(Total);	
 		Teuchos::TimeMonitor::report(cout,"Main");
