@@ -120,6 +120,7 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
     }
 
     {
+        cout << " --- Entering Solve Process --- " << endl;
         Thyra::SolveStatus<SC> status = Thyra::solve<SC>(*solver, Thyra::NOTRANS, *thyraB, thyraX.ptr());
         if (verbose)
             std::cout << status << std::endl;

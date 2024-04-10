@@ -299,7 +299,7 @@ int main(int argc, char *argv[]) {
 
                 }
             }
-            domainVelocity->exportNodeFlags();
+            //domainVelocity->exportNodeFlags();
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
             
             // ####################
