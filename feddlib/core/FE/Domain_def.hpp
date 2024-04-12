@@ -1096,7 +1096,7 @@ void Domain<SC, LO, GO, NO>::exportSurfaceNormals(string name)
 
         exPara->setup("Mesh_Surface_Directions_"+name,this->getMesh(), this->FEType_);
 
-        exPara->addVariable(exportSolutionConst, "SurfaceNormals", "Vector", this->dim_,this->getMapVecFieldUnique()); 
+        exPara->addVariable(exportSolutionConst, "SurfaceNormals", "Vector", this->dim_,this->getMapUnique()); 
         exPara->save(0.0);
 
         exPara->closeExporter();
