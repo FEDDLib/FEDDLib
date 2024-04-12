@@ -521,7 +521,7 @@ void Mesh<SC,LO,GO,NO>::correctNormalDirections(){
                     inwardNormals++;
                 }
                 if(sum>0)
-                    flipSurface(feSub);
+                    flipSurface(subEl,surface);
                     
 
             }
@@ -564,13 +564,32 @@ void Mesh<SC,LO,GO,NO>::correctElementOrientation(){
 }
 
 // We allways want a outward normal direction
+// Assumptions: We are flipping a surface which is a subelement. Subelement are generally element that are on the boundary layers of the domain. Thus, they are unique. (There are no two identical triangles in two elements as subelements)
+// Question: Easiest way to flip the surface without redoing whole dim-element (surface being dim-1-element)
 template <class SC, class LO, class GO, class NO>
-void Mesh<SC,LO,GO,NO>::flipSurface(FiniteElement_Type feSub){
+void Mesh<SC,LO,GO,NO>::flipSurface(ElementsPtr_Type subEl, int surfaceNumber){
 
-    vec_LO_Type surfaceElements_vec = feSub.getVectorNodeList();
+    vec_LO_Type surfaceElements_vec = subEl->getElement(surfaceNumber).getVectorNodeList();
 
     if(dim_ == 2){
+        if(FEType_ == "P1"){
+            LO id1,id2;
+            id1= surfaceElements_vec[0];
+            id2= surfaceElements_vec[1];
+           
+            surfaceElements_vec[0] = id2;
+            surfaceElements_vec[1] = id1;
+        }
+        else if(FEType_ == "P2"){
+            LO id1,id2,id3;
+            id1= surfaceElements_vec[0];
+            id2= surfaceElements_vec[1];
+            id3= surfaceElements_vec[2];
 
+            surfaceElements_vec[0] = id2;
+            surfaceElements_vec[1] = id1;
+            surfaceElements_vec[2] = id3;
+        }
     }
     else if(dim_ == 3){
 
@@ -602,8 +621,11 @@ void Mesh<SC,LO,GO,NO>::flipSurface(FiniteElement_Type feSub){
         }
         else    
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "We can only flip normals for P1 or P2 elements. Invalid " << FEType_ << " " );
-
-    }   
+      
+    }  
+    FiniteElement feFlipped(surfaceElements_vec,subEl->getElement(surfaceNumber).getFlag());
+    subEl->switchElement(surfaceNumber,feFlipped); // We can switch the current element with the newly defined element which has just a different node ordering. 
+ 
 
 }
 

@@ -433,6 +433,12 @@ class FE {
                                            bool callFillComplete = true);
 
 
+    /// @brief Assembling Pressure Integral to determine pressure mean value
+    /// @param dim Dimension
+    /// @param FEType FEType
+    /// @param a Resultin matrix with one column
+    void assemblyPressureMeanValue(int dim, std::string FEType, MatrixPtr_Type a, MatrixPtr_Type aT);
+
     void assemblyRHS(int dim,
                      std::string FEType,
                      MultiVectorPtr_Type  a,

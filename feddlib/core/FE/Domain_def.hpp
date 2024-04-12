@@ -397,6 +397,38 @@ void Domain<SC,LO,GO,NO>::setMesh(MeshUnstrPtr_Type meshUnstr){
     mesh_ = meshUnstr;
 }
 
+
+template <class SC, class LO, class GO, class NO>
+void Domain<SC, LO, GO, NO>::initDummyMesh(MapPtr_Type map)
+{
+    MeshUnstrPtr_Type outputMesh = Teuchos::rcp( new MeshUnstr_Type( comm_) );
+
+    outputMesh->dim_ = this->dim_ ;
+	outputMesh->FEType_ = this->FEType_ ;
+	//outputMesh->rankRange_ =  this->rankRange_;
+
+    //outputMesh->elementMap_ = this->elementMap_ ;
+	outputMesh->mapUnique_ = map;
+	outputMesh->mapRepeated_ = map;
+	//outputMesh->edgeMap_  = this->edgeMap_  ;
+
+	//outputMesh->elementsC_ = this->elementsC_;
+	//outputMesh->edgeElements_ = this->edgeElements_;
+	//outputMesh->surfaceTriangleElements_ = this->surfaceTriangleElements_;
+
+   	/*outputMesh->pointsRep_ =  this->pointsRep_  ; 
+    outputMesh->pointsUni_ = this->pointsUni_; 
+
+    outputMesh->bcFlagUni_ = this->bcFlagUni_ ; 
+	outputMesh->bcFlagRep_ = this->bcFlagRep_ ;
+
+
+	outputMesh->edgesElementOrder_ = this->edgesElementOrder_;
+	outputMesh->numElementsGlob_ = this->numElementsGlob_  ; */
+    mesh_ = outputMesh;
+
+}
+
 template <class SC, class LO, class GO, class NO>
 void Domain<SC,LO,GO,NO>::exportMesh(bool exportEdges, bool exportSurfaces, string exportMesh){ 
 
@@ -1020,7 +1052,56 @@ void Domain<SC, LO, GO, NO>::exportNodeFlags(string name)
         exPara->save(0.0);
 
         exPara->closeExporter();
-}   
+} 
+
+template <class SC, class LO, class GO, class NO>
+void Domain<SC, LO, GO, NO>::exportSurfaceNormals(string name)
+{
+        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+
+        Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(this->getMapVecFieldUnique()));
+        exportSolution->putScalar(0.);
+        ElementsPtr_Type elementsC = this->getElementsC(); // Unique flags at points
+
+        Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
+
+        // We iterate over all elements and compute the surface normals to export them
+        for (UN T=0; T<elementsC->numberElements(); T++) {
+            FiniteElement fe = elementsC->getElement( T );
+            ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+            for (int surface=0; surface<fe.numSubElements(); surface++) {
+                FiniteElement feSub = subEl->getElement( surface  );
+                vec_int_Type nodeListElement = fe.getVectorNodeList();
+                if(subEl->getDimension() == dim_-1 ){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst();
+                    
+                    vec_dbl_Type v_E(dim_,1.);
+                    double norm_v_E=1.;
+
+                    Helper::computeSurfaceNormal(this->dim_,this->getPointsRepeated(),nodeList,v_E,norm_v_E);
+
+                    for(int j=0; j< nodeList.size(); j++){
+                        for(int i=0; i< this->dim_; i++){
+                            if(this->getMapUnique()->getLocalElement(this->getMapRepeated()->getGlobalElement(nodeList[j])) != -1 ){  // We only write when we have the node in unique distribution, because we are lazy. Otherwise we would do an import etc. But this will not give us further information.
+                                LO id = this->getMapUnique()->getLocalElement(this->getMapRepeated()->getGlobalElement(nodeList[j]));
+                                entries[id*this->dim_+i] = 1./norm_v_E * v_E[i];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+        exPara->setup("Mesh_Surface_Directions_"+name,this->getMesh(), this->FEType_);
+
+        exPara->addVariable(exportSolutionConst, "SurfaceNormals", "Vector", this->dim_,this->getMapVecFieldUnique()); 
+        exPara->save(0.0);
+
+        exPara->closeExporter();
+}  
+
 
 template <class SC, class LO, class GO, class NO>
 void Domain<SC, LO, GO, NO>::exportElementFlags(string name)

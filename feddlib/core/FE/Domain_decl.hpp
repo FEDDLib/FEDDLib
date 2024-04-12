@@ -332,6 +332,13 @@ public:
 
     */
     void setMesh(MeshUnstrPtr_Type meshUnstr); 
+
+     /*!
+         \brief Initialize dummy mesh for i.e. lagrange multiplier 
+         @param[in] meshUnstr mesh of MeshUnstr_Type which is generally the type of meshes from .mesh files
+
+    */
+    void initDummyMesh(MapPtr_Type map); 
     
     /*!
          \brief  Build unique node and dof interfaceMap in interface numbering
@@ -542,6 +549,10 @@ public:
    /// @param name export suffix to identify flags
    void exportNodeFlags(string name = "default");
 
+   /// @brief Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not able to plot only the surfaces, the normals are displayed in each node. This means, that at corners, the visualization is incorrect (i.e. node belongs to surfaces which are in different directions)
+   /// @param name export suffix to identify flags
+   void exportSurfaceNormals(string name = "default");
+
    /* ----------------------------------------------------------------------------------------*/
 
    private:
@@ -585,6 +596,7 @@ public:
    int flagsOption_;
 
     };
+   
 }
 
 #endif

@@ -180,7 +180,7 @@ public:
     /* ###################################################################### */
 private:
 
-    void flipSurface(FiniteElement_Type feSub);
+    void flipSurface(ElementsPtr_Type subEl, int surfaceNumber);
 };
 }
 

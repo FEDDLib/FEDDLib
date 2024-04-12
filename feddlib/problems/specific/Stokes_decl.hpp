@@ -12,7 +12,9 @@ public:
     typedef typename Problem_Type::Matrix_Type Matrix_Type;
     typedef typename Problem_Type::MatrixPtr_Type MatrixPtr_Type;
     typedef typename Problem_Type::MapConstPtr_Type MapConstPtr_Type;
-    
+    typedef typename Problem_Type::MapPtr_Type MapPtr_Type;
+    typedef typename Problem_Type::Map_Type Map_Type;
+
     typedef typename Problem_Type::BlockMatrix_Type BlockMatrix_Type;
     
     typedef typename Problem_Type::MultiVector_Type MultiVector_Type;

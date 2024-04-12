@@ -167,9 +167,30 @@ SOURCES mesh_unstructured_meshOrientation.cpp
 
 TRIBITS_ADD_TEST(
 mesh_unstructured_meshOrientation
-NAME mesh_unstructured_meshOrientation
-ARGS
+NAME mesh_unstructured_meshOrientation_3D_cube_h_1
+ARGS "--FEType=P2 --dim=3 --file=cube_h_1.mesh"
 NUM_MPI_PROCS 4
+)
+
+TRIBITS_ADD_TEST(
+mesh_unstructured_meshOrientation
+NAME mesh_unstructured_meshOrientation_3D_fluid_mesh
+ARGS "--FEType=P2 --dim=3 --file=fluidBenchmark2.mesh --ExportName=3D_fluid_mesh"
+NUM_MPI_PROCS 4
+)
+
+TRIBITS_ADD_TEST(
+mesh_unstructured_meshOrientation
+NAME mesh_unstructured_meshOrientation_2D_rectangle
+ARGS "--FEType=P2 --dim=2 --file=rectangle.mesh --ExportName=2D_rectangle_mesh"
+NUM_MPI_PROCS 4
+)
+
+TRIBITS_ADD_TEST(
+	mesh_unstructured_writeMesh
+    NAME mesh_unstructured_writeMesh_3D_P2
+    ARGS "--FEType=P2 --dim=3 --file=cube_h_1.mesh ---ExportName=2D_cube_mesh"
+    NUM_MPI_PROCS 3
 )
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_unstructured_meshOrientation

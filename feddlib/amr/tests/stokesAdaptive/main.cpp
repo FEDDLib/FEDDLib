@@ -687,7 +687,8 @@ int main(int argc, char *argv[]) {
 			bcFactory->addBC(flag2Func, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 			//bcFactory->addBC(flag3Func, 3, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 			bcFactory->addBC(flag4Func, 4, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-			bcFactory->addBC(flag5Func, 5, 0, domainPressure, "Dirichlet", dim, parameter_vec);
+			bcFactory->addBC(flag5Func, 5, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+			bcFactory->addBC(zeroDirichlet2D, 7, 1, domainPressure, "Dirichlet", dim, parameter_vec);
 
       
 			MAIN_TIMER_STOP(Bounds);	
