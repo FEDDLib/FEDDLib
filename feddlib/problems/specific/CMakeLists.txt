@@ -35,6 +35,9 @@ SET(problems_specific_HEADERS
     specific/NonLinElasticity_decl.hpp
     specific/NonLinElasticity_def.hpp
     specific/NonLinElasticity.hpp
+    specific/NonLinLaplace_decl.hpp
+    specific/NonLinLaplace_def.hpp
+    specific/NonLinLaplace.hpp
     specific/NonLinElasAssFE_decl.hpp
     specific/NonLinElasAssFE_def.hpp
     specific/NonLinElasAssFE.hpp
@@ -66,6 +69,7 @@ SET(problems_specific_SOURCES
 	specific/NavierStokesAssFE.cpp
     specific/NonLinElasticity.cpp
     specific/NonLinElasAssFE.cpp
+    specific/NonLinLaplace.cpp
     specific/NonLinTPM.cpp
     specific/Stokes.cpp
     specific/TPM.cpp

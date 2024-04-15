@@ -24,6 +24,11 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 		Teuchos::RCP<AssembleFE_Laplace<SC,LO,GO,NO>> assembleFESpecific(new AssembleFE_Laplace<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;
 	}
+  else if (problemType == "NonLinearLaplace") {
+    	Teuchos::RCP<AssembleFENonLinLaplace<SC, LO, GO, NO>> assembleFESpecific(new AssembleFENonLinLaplace<SC, LO, GO, NO>(flag, nodesRefConfig,
+                                                    params, tuple));
+    	assembleFE = assembleFESpecific;
+  }
 	else if(problemType == "NavierStokes"){
 		Teuchos::RCP<AssembleFENavierStokes<SC,LO,GO,NO>> assembleFESpecific(new AssembleFENavierStokes<SC,LO,GO,NO>(flag,nodesRefConfig, params,tuple) );
 		assembleFE = assembleFESpecific;

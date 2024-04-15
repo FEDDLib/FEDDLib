@@ -6,6 +6,7 @@
 #include "feddlib/core/AceFemAssembly/AssembleFEBlock.hpp"
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFE_Laplace.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFENonLinLaplace.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFE_LinElas.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFE_NonLinElas.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFE_NonLinElas2.hpp"
