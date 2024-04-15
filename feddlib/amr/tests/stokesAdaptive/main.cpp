@@ -363,7 +363,7 @@ void three(double* x, double* res, double t, const double* parameters){
 }
 void four(double* x, double* res, double t, const double* parameters){
     
-    res[0] =parameters[0]*1.-1.;
+    res[0] =parameters[0]*1.;
     res[1] = 0.;
     res[2] = 0.;
     
@@ -678,9 +678,9 @@ int main(int argc, char *argv[]) {
 		    else
 		        domainVelocity = domainPressure;
 			
-
-			domainPressure->preProcessMesh(true,true);
-			domainVelocity->preProcessMesh(true,true);
+			domainVelocity->exportNodeFlags();
+			//domainPressure->preProcessMesh(true,true);
+			//domainVelocity->preProcessMesh(true,true);
 
    			domainVelocity->exportSurfaceNormals("domain");
     		domainVelocity->exportElementOrientation("domain");
