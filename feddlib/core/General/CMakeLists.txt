@@ -8,12 +8,20 @@ SET(General_HEADERS
 	General/ExporterParaView_def.hpp
 	General/ExporterTxt.hpp
 	General/SmallMatrix.hpp
+	General/InputToOutputMappingClass.hpp
+	General/InputToOutputMappingClass_decl.hpp
+	General/InputToOutputMappingClass_def.hpp
+	General/DifferentiableFuncClass.hpp
+	General/DifferentiableFuncClass_decl.hpp
+	General/DifferentiableFuncClass_def.hpp	
 CACHE INTERNAL "")
 
 SET(General_SOURCES
 	General/BCBuilder.cpp
     General/ExporterParaView.cpp
     General/ExporterTxt.cpp
+	General/InputToOutputMappingClass.cpp
+	General/DifferentiableFuncClass.cpp
 CACHE INTERNAL "")
 
 
