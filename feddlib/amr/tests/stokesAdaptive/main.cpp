@@ -678,6 +678,13 @@ int main(int argc, char *argv[]) {
 		    else
 		        domainVelocity = domainPressure;
 			
+
+			domainPressure->preProcessMesh(true,true);
+			domainVelocity->preProcessMesh(true,true);
+
+   			domainVelocity->exportSurfaceNormals("domain");
+    		domainVelocity->exportElementOrientation("domain");
+
 			MAIN_TIMER_STOP(buildP2);		
 
 			MAIN_TIMER_START(Bounds," Step 1:	 bcFactory");
@@ -728,6 +735,7 @@ int main(int argc, char *argv[]) {
 
 			domainPressure = domainRefined;
 			domainVelocity = domainPressure;
+			
 			
 			//domainRefined->exportNodeFlags("Pressure");
 

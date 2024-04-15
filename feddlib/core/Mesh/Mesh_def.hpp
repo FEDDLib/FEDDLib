@@ -563,6 +563,7 @@ void Mesh<SC,LO,GO,NO>::correctElementOrientation(){
             flipElement(elementsC_,T); 
 
     }
+    cout << " Finished " << endl;
     reduceAll<int, int> (*this->getComm(), REDUCE_SUM, negDet, outArg (negDet));
     reduceAll<int, int> (*this->getComm(), REDUCE_SUM, posDet, outArg (posDet));
 
@@ -649,7 +650,6 @@ template <class SC, class LO, class GO, class NO>
 void Mesh<SC,LO,GO,NO>::flipElement(ElementsPtr_Type elements, int elementNumber){
 
     vec_LO_Type surfaceElements_vec = elements->getElement(elementNumber).getVectorNodeList();
-
     if(dim_ == 2){
         if(FEType_ == "P1"){
             LO id1,id2,id3;
@@ -657,36 +657,13 @@ void Mesh<SC,LO,GO,NO>::flipElement(ElementsPtr_Type elements, int elementNumber
             id2= surfaceElements_vec[1];
             id3= surfaceElements_vec[2];
 
-            surfaceElements_vec[0] = id2;
-            surfaceElements_vec[1] = id1;
-            surfaceElements_vec[2] = id3;
-
-        }
-        else if(FEType_ == "P2"){
-           /* LO id1,id2,id3;
-            id1= surfaceElements_vec[0];
-            id2= surfaceElements_vec[1];
-            id3= surfaceElements_vec[2];
-
-            surfaceElements_vec[0] = id2;
-            surfaceElements_vec[1] = id1;
-            surfaceElements_vec[2] = id3;*/
-        }
-    }
-    else if(dim_ == 3){
-
-        if(FEType_ == "P1"){
-            LO id1,id2,id3,id4,id5,id6;
-            id1= surfaceElements_vec[0];
-            id2= surfaceElements_vec[1];
-            id3= surfaceElements_vec[2];
-           
             surfaceElements_vec[0] = id1;
             surfaceElements_vec[1] = id3;
-            surfaceElements_vec[2] = id2;           
+            surfaceElements_vec[2] = id2;
+
         }
         else if(FEType_ == "P2"){
-            /*LO id1,id2,id3,id4,id5,id6;
+            LO id1,id2,id3,id4,id5,id6;
             id1= surfaceElements_vec[0];
             id2= surfaceElements_vec[1];
             id3= surfaceElements_vec[2];
@@ -699,15 +676,61 @@ void Mesh<SC,LO,GO,NO>::flipElement(ElementsPtr_Type elements, int elementNumber
             surfaceElements_vec[2] = id2;
             surfaceElements_vec[3] = id6;
             surfaceElements_vec[4] = id5;
-            surfaceElements_vec[5] = id4;*/
+            surfaceElements_vec[5] = id4;
+        }
+    }
+    else if(dim_ == 3){
+
+        if(FEType_ == "P1"){
+            LO id1,id2,id3,id4;
+            id1= surfaceElements_vec[0];
+            id2= surfaceElements_vec[1];
+            id3= surfaceElements_vec[2];
+            id4= surfaceElements_vec[3];
+
+            surfaceElements_vec[0] = id1;
+            surfaceElements_vec[1] = id3;
+            surfaceElements_vec[2] = id2;      
+            surfaceElements_vec[3] = id4;           
+     
+        }
+        else if(FEType_ == "P2"){
+            LO id1,id2,id3,id4,id5,id6, id7,id8,id9,id0;
+            id0= surfaceElements_vec[0];
+            id1= surfaceElements_vec[1];
+            id2= surfaceElements_vec[2];
+            id3= surfaceElements_vec[3];
+            id4= surfaceElements_vec[4];
+            id5= surfaceElements_vec[5];
+            id6= surfaceElements_vec[6];
+            id7= surfaceElements_vec[7];
+            id8= surfaceElements_vec[8];
+            id9= surfaceElements_vec[9];
+
+            surfaceElements_vec[0] = id0;
+            surfaceElements_vec[1] = id2;
+            surfaceElements_vec[2] = id1;
+            surfaceElements_vec[3] = id3;
+
+            surfaceElements_vec[4] = id6;
+            surfaceElements_vec[5] = id5;
+            surfaceElements_vec[6] = id4;
+            surfaceElements_vec[7] = id7;
+            surfaceElements_vec[8] = id9;
+            surfaceElements_vec[9] = id8;
         }
         else    
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "We can only flip normals for P1 or P2 elements. Invalid " << FEType_ << " " );
       
     }  
-    FiniteElement feFlipped(surfaceElements_vec,elements->getElement(elementNumber).getFlag()); // SUBELEMENTS MISSING
+    FiniteElement feFlipped(surfaceElements_vec,elements->getElement(elementNumber).getFlag()); 
+    ElementsPtr_Type subElements = elements->getElement(elementNumber).getSubElements();
+    for(int T = 0; T<elements->getElement(elementNumber).numSubElements(); T++){
+        if(!feFlipped.subElementsInitialized())
+            feFlipped.initializeSubElements( this->FEType_, this->dim_ -1) ;
+        feFlipped.addSubElement(subElements->getElement(T));
+    }   
     elements->switchElement(elementNumber,feFlipped); // We can switch the current element with the newly defined element which has just a different node ordering. 
- 
 
 }
 
