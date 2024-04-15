@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 	domain->preProcessMesh(true,true);
 
     domain->exportSurfaceNormals("domain"+exportfilename);
-    //domainP1->exportSurfaceNormals("domainP1");
+    domainP1->exportElementOrientation("domain");
 
 
     return(EXIT_SUCCESS);

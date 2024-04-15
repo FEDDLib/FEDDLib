@@ -181,6 +181,7 @@ public:
 private:
 
     void flipSurface(ElementsPtr_Type subEl, int surfaceNumber);
+    void flipElement(ElementsPtr_Type elements, int elementNumber);
 };
 }
 

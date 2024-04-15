@@ -1100,7 +1100,38 @@ void Domain<SC, LO, GO, NO>::exportSurfaceNormals(string name)
         exPara->save(0.0);
 
         exPara->closeExporter();
-}  
+} 
+
+template <class SC, class LO, class GO, class NO>
+void Domain<SC, LO, GO, NO>::exportElementOrientation(string name)
+{
+        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+
+        Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(this->getElementMap()));
+        exportSolution->putScalar(0.);
+        ElementsPtr_Type elementsC = this->getElementsC(); // Unique flags at points
+
+        Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
+
+        SC detB;
+        SmallMatrix<SC> B(this->dim_);
+        SmallMatrix<SC> Binv(this->dim_);
+        // We iterate over all elements and compute the surface normals to export them
+        for (UN T=0; T<elementsC->numberElements(); T++) {
+           Helper::buildTransformation(elementsC->getElement(T).getVectorNodeList(), this->getPointsRepeated(), B);
+           detB = B.computeInverse(Binv);
+           entries[T] = detB;
+        }
+
+        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+        exPara->setup("Mesh_Element_Orientation_"+name,this->getMesh(), "P0");
+
+        exPara->addVariable(exportSolutionConst, "VolElement", "Scalar", 1,this->getElementMap()); 
+        exPara->save(0.0);
+
+        exPara->closeExporter();
+} 
 
 
 template <class SC, class LO, class GO, class NO>

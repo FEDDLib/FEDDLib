@@ -553,6 +553,10 @@ public:
    /// @param name export suffix to identify flags
    void exportSurfaceNormals(string name = "default");
 
+   /// @brief Exporting Paraview file displaying element volume of underlying mesh. 
+   /// @param name export suffix to identify flags
+   void exportElementOrientation(string name = "default");
+
    /* ----------------------------------------------------------------------------------------*/
 
    private:

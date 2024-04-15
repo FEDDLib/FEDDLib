@@ -542,23 +542,36 @@ void Mesh<SC,LO,GO,NO>::correctNormalDirections(){
 template <class SC, class LO, class GO, class NO>
 void Mesh<SC,LO,GO,NO>::correctElementOrientation(){
 
+    int posDet=0;
+    int negDet=0;
+
+    SC detB;
+    SmallMatrix<SC> B(dim_);
+    SmallMatrix<SC> Binv(dim_);
+
     for (UN T=0; T<elementsC_->numberElements(); T++) {
-        FiniteElement fe = elementsC_->getElement( T );
-        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
-        for (int surface=0; surface<fe.numSubElements(); surface++) {
-            FiniteElement feSub = subEl->getElement( surface  );
-            if(subEl->getDimension() == dim_-1 ){
-                vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
-                int numNodes_T = nodeList.size();
-                
-                vec_dbl_Type v_E(dim_,1.);
-                double norm_v_E=1.;
+        Helper::buildTransformation(elementsC_->getElement(T).getVectorNodeList(), pointsRep_, B);
+        detB = B.computeInverse(Binv);
 
-                Helper::computeSurfaceNormal(dim_, pointsRep_,nodeList,v_E,norm_v_E);
-
-
-            }
+        if(detB<0){
+            negDet++;
         }
+        if(detB>0){
+            posDet++;
+        }
+        if(detB<0)
+            flipElement(elementsC_,T); 
+
+    }
+    reduceAll<int, int> (*this->getComm(), REDUCE_SUM, negDet, outArg (negDet));
+    reduceAll<int, int> (*this->getComm(), REDUCE_SUM, posDet, outArg (posDet));
+
+    if(this->getComm()->getRank() == 0){
+        cout << " ############################################ " << endl;
+        cout << " Mesh Orientation Statistic " << endl;
+        cout << " Number of positive dets " << posDet << endl;
+        cout << " Number of negative dets " << negDet << endl;
+        cout << " ############################################ " << endl;
     }
 
 }
@@ -625,6 +638,75 @@ void Mesh<SC,LO,GO,NO>::flipSurface(ElementsPtr_Type subEl, int surfaceNumber){
     }  
     FiniteElement feFlipped(surfaceElements_vec,subEl->getElement(surfaceNumber).getFlag());
     subEl->switchElement(surfaceNumber,feFlipped); // We can switch the current element with the newly defined element which has just a different node ordering. 
+ 
+
+}
+
+// We allways want a outward normal direction
+// Assumptions: We are flipping a surface which is a subelement. Subelement are generally element that are on the boundary layers of the domain. Thus, they are unique. (There are no two identical triangles in two elements as subelements)
+// Question: Easiest way to flip the surface without redoing whole dim-element (surface being dim-1-element)
+template <class SC, class LO, class GO, class NO>
+void Mesh<SC,LO,GO,NO>::flipElement(ElementsPtr_Type elements, int elementNumber){
+
+    vec_LO_Type surfaceElements_vec = elements->getElement(elementNumber).getVectorNodeList();
+
+    if(dim_ == 2){
+        if(FEType_ == "P1"){
+            LO id1,id2,id3;
+            id1= surfaceElements_vec[0];
+            id2= surfaceElements_vec[1];
+            id3= surfaceElements_vec[2];
+
+            surfaceElements_vec[0] = id2;
+            surfaceElements_vec[1] = id1;
+            surfaceElements_vec[2] = id3;
+
+        }
+        else if(FEType_ == "P2"){
+           /* LO id1,id2,id3;
+            id1= surfaceElements_vec[0];
+            id2= surfaceElements_vec[1];
+            id3= surfaceElements_vec[2];
+
+            surfaceElements_vec[0] = id2;
+            surfaceElements_vec[1] = id1;
+            surfaceElements_vec[2] = id3;*/
+        }
+    }
+    else if(dim_ == 3){
+
+        if(FEType_ == "P1"){
+            LO id1,id2,id3,id4,id5,id6;
+            id1= surfaceElements_vec[0];
+            id2= surfaceElements_vec[1];
+            id3= surfaceElements_vec[2];
+           
+            surfaceElements_vec[0] = id1;
+            surfaceElements_vec[1] = id3;
+            surfaceElements_vec[2] = id2;           
+        }
+        else if(FEType_ == "P2"){
+            /*LO id1,id2,id3,id4,id5,id6;
+            id1= surfaceElements_vec[0];
+            id2= surfaceElements_vec[1];
+            id3= surfaceElements_vec[2];
+            id4= surfaceElements_vec[3];
+            id5= surfaceElements_vec[4];
+            id6= surfaceElements_vec[5];
+
+            surfaceElements_vec[0] = id1;
+            surfaceElements_vec[1] = id3;
+            surfaceElements_vec[2] = id2;
+            surfaceElements_vec[3] = id6;
+            surfaceElements_vec[4] = id5;
+            surfaceElements_vec[5] = id4;*/
+        }
+        else    
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "We can only flip normals for P1 or P2 elements. Invalid " << FEType_ << " " );
+      
+    }  
+    FiniteElement feFlipped(surfaceElements_vec,elements->getElement(elementNumber).getFlag()); // SUBELEMENTS MISSING
+    elements->switchElement(elementNumber,feFlipped); // We can switch the current element with the newly defined element which has just a different node ordering. 
  
 
 }
