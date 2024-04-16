@@ -102,11 +102,13 @@ int main(int argc, char *argv[]) {
     else
         domain = domainP1;
 
+    // Via the domain and the underlying mesh we can do a preprocessing step to ensure consistent normal directions and element orientation
     domain->preProcessMesh(true,true);
 	domain->preProcessMesh(true,true);
 
+    // Export functions for surface normals and element orientation. 
     domain->exportSurfaceNormals("domain"+exportfilename);
-    domainP1->exportElementOrientation("domain");
+    domain->exportElementOrientation("domain");
 
 
     return(EXIT_SUCCESS);

@@ -679,8 +679,8 @@ int main(int argc, char *argv[]) {
 		        domainVelocity = domainPressure;
 			
 			domainVelocity->exportNodeFlags();
-			//domainPressure->preProcessMesh(true,true);
-			//domainVelocity->preProcessMesh(true,true);
+			domainPressure->preProcessMesh(true,true);
+			domainVelocity->preProcessMesh(true,true);
 
    			domainVelocity->exportSurfaceNormals("domain");
     		domainVelocity->exportElementOrientation("domain");

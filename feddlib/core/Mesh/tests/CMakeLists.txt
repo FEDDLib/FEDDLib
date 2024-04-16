@@ -159,29 +159,29 @@ DEST_FILES cube_tetr6_struct_h=0_2.mesh
 EXEDEPS mesh_surfaceOrientation
 )
 
-## mesh_unstructured_meshOrientation
+## mesh_unstructured_preProcessing
 TRIBITS_ADD_EXECUTABLE(
-mesh_unstructured_meshOrientation
-SOURCES mesh_unstructured_meshOrientation.cpp
+mesh_unstructured_preProcessing
+SOURCES mesh_unstructured_preProcessing.cpp
 )
 
 TRIBITS_ADD_TEST(
-mesh_unstructured_meshOrientation
-NAME mesh_unstructured_meshOrientation_3D_cube_h_1
+mesh_unstructured_preProcessing
+NAME mesh_unstructured_preProcessing_3D_cube_h_1
 ARGS "--FEType=P2 --dim=3 --file=cube_h_1.mesh"
 NUM_MPI_PROCS 4
 )
 
 TRIBITS_ADD_TEST(
-mesh_unstructured_meshOrientation
-NAME mesh_unstructured_meshOrientation_3D_fluid_mesh
+mesh_unstructured_preProcessing
+NAME mesh_unstructured_preProcessing_3D_fluid_mesh
 ARGS "--FEType=P2 --dim=3 --file=fluidBenchmark2.mesh --ExportName=3D_fluid_mesh"
 NUM_MPI_PROCS 4
 )
 
 TRIBITS_ADD_TEST(
-mesh_unstructured_meshOrientation
-NAME mesh_unstructured_meshOrientation_2D_rectangle
+mesh_unstructured_preProcessing
+NAME mesh_unstructured_preProcessing_2D_rectangle
 ARGS "--FEType=P2 --dim=2 --file=rectangle.mesh --ExportName=2D_rectangle_mesh"
 NUM_MPI_PROCS 4
 )
@@ -193,12 +193,12 @@ TRIBITS_ADD_TEST(
     NUM_MPI_PROCS 3
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_unstructured_meshOrientation
+TRIBITS_COPY_FILES_TO_BINARY_DIR(data_mesh_unstructured_preProcessing
 SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
 SOURCE_FILES fluidBenchmark2.mesh
 DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
 DEST_FILES fluidBenchmark2.mesh
-EXEDEPS mesh_unstructured_meshOrientation
+EXEDEPS mesh_unstructured_preProcessing
 )
 
 ### mesh_unstructured
