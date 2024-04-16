@@ -1132,8 +1132,8 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 	problemDisk->push_back(pres);
 
 	if(assemblyFEElements_.size()== 0){
-        if(params->sublist("Parameter").get("Newtonian",true) == false)
-	 	    initAssembleFEElements("NavierStokesNonNewtonian",problemDisk,elements, params,pointsRep,domainVec_.at(FElocVel)->getElementMap()); // In cas of non Newtonian Fluid
+        if(params->sublist("Material").get("Newtonian",true) == false)
+	 	    initAssembleFEElements("GeneralizedNewtonian",problemDisk,elements, params,pointsRep,domainVec_.at(FElocVel)->getElementMap()); // In cas of non Newtonian Fluid
         else
         	initAssembleFEElements("NavierStokes",problemDisk,elements, params,pointsRep,domainVec_.at(FElocVel)->getElementMap());
     }
@@ -1227,6 +1227,71 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 
 }
+
+
+/*!
+ \brief Postprocessing: Using a converged velocity solution -> compute averaged viscosity inside an element at center of mass
+@param[in] dim Dimension
+@param[in] FEType FE Discretization
+@param[in] degree Degree of basis function
+@param[in] repeated solution fields for u and p
+@param[in] parameter lists
+*/
+
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::computeSteadyViscosityFE_CM(int dim,
+	                                    string FETypeVelocity,
+	                                    string FETypePressure,
+										int dofsVelocity,
+										int dofsPressure,
+										MultiVectorPtr_Type u_rep,
+										MultiVectorPtr_Type p_rep,
+ 										ParameterListPtr_Type params){
+	
+
+    UN FElocVel = checkFE(dim,FETypeVelocity); // Checks for different domains which belongs to a certain fetype
+    UN FElocPres = checkFE(dim,FETypePressure); // Checks for different domains which belongs to a certain fetype
+
+	ElementsPtr_Type elements = domainVec_.at(FElocVel)->getElementsC();
+	ElementsPtr_Type elementsPres = domainVec_.at(FElocPres)->getElementsC();
+
+	vec_dbl_Type solution(0);
+	vec_dbl_Type solution_u;
+	vec_dbl_Type solution_p;
+    vec_dbl_Type solution_viscosity;
+
+    // We have to compute viscosity solution in each element 
+	MultiVectorPtr_Type Sol_viscosity = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FElocVel)->getElementMap(), 1 ) ); //
+    BlockMultiVectorPtr_Type visco_output = Teuchos::rcp( new BlockMultiVector_Type(1) );
+    visco_output->addBlock(Sol_viscosity,0);
+   
+
+	for (UN T=0; T<assemblyFEElements_.size(); T++) {
+       
+		vec_dbl_Type solution(0);
+		solution_u = getSolution(elements->getElement(T).getVectorNodeList(), u_rep,dofsVelocity); // get the solution inside an element on the nodes
+		solution_p = getSolution(elementsPres->getElement(T).getVectorNodeList(), p_rep,dofsPressure);
+
+		solution.insert( solution.end(), solution_u.begin(), solution_u.end() ); // here we insert the solution
+		solution.insert( solution.end(), solution_p.begin(), solution_p.end() );
+
+		assemblyFEElements_[T]->updateSolution(solution); // here we update the value of the solutions inside an element
+ 
+        assemblyFEElements_[T]->computeLocalconstOutputField(); //  we compute the viscosity inside an element
+        solution_viscosity = assemblyFEElements_[T]->getLocalconstOutputField();
+
+        Teuchos::ArrayRCP<SC>  resArray_block = visco_output->getBlockNonConst(0)->getDataNonConst(0); // First 
+        resArray_block[T] = solution_viscosity[0]; // although it is a vector it only has one entry because we compute the value in the center of the element
+          
+	} // end loop over all elements
+    // We could also instead of just overwrite it add an aditional block such that we could also compute other output fields and save it in there
+    this->const_output_fields= visco_output;
+
+
+}
+
+
 
 /*!
 

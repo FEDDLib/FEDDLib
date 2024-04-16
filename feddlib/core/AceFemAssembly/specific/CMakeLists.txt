@@ -8,9 +8,9 @@ SET(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/AssembleFENavierStokes_decl.hpp
 	AceFemAssembly/specific/AssembleFENavierStokes_def.hpp
 	AceFemAssembly/specific/AssembleFENavierStokes.hpp
-	AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian_decl.hpp
-	AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian_def.hpp
-	AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian.hpp
+	AceFemAssembly/specific/AssembleFEGeneralizedNewtonian_decl.hpp
+	AceFemAssembly/specific/AssembleFEGeneralizedNewtonian_def.hpp
+	AceFemAssembly/specific/AssembleFEGeneralizedNewtonian.hpp
 	AceFemAssembly/specific/AssembleFE_LinElas_decl.hpp
 	AceFemAssembly/specific/AssembleFE_LinElas_def.hpp
 	AceFemAssembly/specific/AssembleFE_LinElas.hpp
@@ -29,19 +29,31 @@ SET(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation_def.hpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation_decl.hpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.hpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/CarreauYasuda_decl.hpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/CarreauYasuda_def.hpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/CarreauYasuda.hpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/PowerLaw_decl.hpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/PowerLaw_def.hpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/PowerLaw.hpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/Dimless_Carreau_decl.hpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/Dimless_Carreau_def.hpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/Dimless_Carreau.hpp
 CACHE INTERNAL "")
 
 SET(AceFemAssemblySpecific_SOURCES
 	AceFemAssembly/specific/AssembleFE_Laplace.cpp
   AceFemAssembly/specific/AssembleFENonLinLaplace.cpp
 	AceFemAssembly/specific/AssembleFENavierStokes.cpp
-	AceFemAssembly/specific/AssembleFENavierStokesNonNewtonian.cpp
+	AceFemAssembly/specific/AssembleFEGeneralizedNewtonian.cpp
 	AceFemAssembly/specific/AssembleFE_LinElas.cpp
 	AceFemAssembly/specific/AssembleFE_NonLinElas.cpp
 	AceFemAssembly/specific/AssembleFE_NonLinElas2.cpp
 	AceFemAssembly/specific/AssembleFE_SCI_NH.cpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_MLCK.cpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.cpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/CarreauYasuda.cpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/PowerLaw.cpp
+	AceFemAssembly/specific/GeneralizedNewtonianModels/Dimless_Carreau.cpp
 CACHE INTERNAL "")
 
 

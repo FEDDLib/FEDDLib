@@ -1474,6 +1474,91 @@ void Helper::getQuadratureValues(int dim,
     }
     
 }
+
+
+int Helper::getDPhiAtCM(vec3D_dbl_ptr_Type &DPhi,
+                     int dim,
+		             std::string FEType)
+    {
+    int 			nmbLocElPts;
+    int 			intFE;
+    vec_dbl_Type CM(dim, 0.0);
+    vec_dbl_ptr_Type 	value(new vec_dbl_Type(dim,0.0));
+    TEUCHOS_TEST_FOR_EXCEPTION(dim == 1,std::logic_error, "getDPhiAtCMNot implemented for dim=1");
+
+    if (dim==2) 
+    {
+        
+        // As we are in the reference element the center of mass is just:
+        CM[0] = 1.0 / 3.0;
+        CM[1] = 1.0 / 3.0;
+        
+        if (FEType == "P0") {
+            nmbLocElPts = 1;
+            intFE = 0;
+        }
+        else if (FEType == "P1") {
+            nmbLocElPts = 3;
+            intFE = 1;
+        }
+        else if (FEType == "P2") {
+            nmbLocElPts = 6;
+            intFE = 2;
+        }
+
+        DPhi.reset(new vec3D_dbl_Type(1,vec2D_dbl_Type(nmbLocElPts,vec_dbl_Type(2,0.0))));
+
+        for (int k=0; k<DPhi->size(); k++ )
+        {
+            for (int i=0; i<DPhi->at(0).size(); i++) 
+            {
+                gradPhi(dim,intFE,i,CM,value);
+                for (int j=0; j<2; j++) 
+                {
+                    DPhi->at(k).at(i).at(j) = value->at(j);
+                }
+            }
+        }
+    }
+    else if(dim==3)
+    {
+        // As we are in the reference element the center of mass is just:
+        CM[0] = 1.0 / 4.0;
+        CM[1] = 1.0 / 4.0;
+        CM[2] = 1.0 / 4.0;
+
+        if (FEType == "P0") {
+            nmbLocElPts = 1;
+            intFE = 0;
+        }
+        else if (FEType == "P1") {
+            nmbLocElPts = 4;
+            intFE = 1;
+        }
+        else if (FEType == "P2") {
+            nmbLocElPts = 10;
+            intFE = 2;
+        }
+        DPhi.reset(new vec3D_dbl_Type(1,vec2D_dbl_Type(nmbLocElPts,vec_dbl_Type(3,0.0))));
+        for (int k=0; k<DPhi->size(); k++ )
+        {
+            for (int i=0; i<DPhi->at(0).size(); i++)
+            {
+                gradPhi(dim,intFE,i,CM,value);
+                for (int j=0; j<3; j++) 
+                {
+                    DPhi->at(k).at(i).at(j) = value->at(j);
+                }
+            }
+        }
+
+
+    }
+
+    }
+
+
+
 }
 
 

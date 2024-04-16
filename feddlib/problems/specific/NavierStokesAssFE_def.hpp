@@ -45,7 +45,8 @@ NonLinearProblem<SC,LO,GO,NO>( parameterList, domainVelocity->getComm() ),
 A_(),
 pressureIDsLoc(new vec_int_Type(2)),
 u_rep_(),
-p_rep_()
+p_rep_(),
+viscosity_element_() // Added here also viscosity field 
 {
 
     this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
@@ -749,6 +750,41 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtr
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
 }
+
+
+
+
+
+
+// Use converged solution to compute viscosity field
+template<class SC,class LO,class GO,class NO>
+void NavierStokesAssFE<SC,LO,GO,NO>::computeSteadyPostprocessingViscosity_Solution() {
+    
+
+    MultiVectorConstPtr_Type u = this->solution_->getBlock(0); // solution_ is initialized in problem_def.hpp so the most general class
+    u_rep_->importFromVector(u, true); // this is the current velocity solution at the nodes - distributed at the processors with repeated values
+   
+    MultiVectorConstPtr_Type p = this->solution_->getBlock(1);
+    p_rep_->importFromVector(p, true);  // this is the current pressure solution at the nodes - distributed at the processors with repeated values
+    
+    // Reset here the viscosity so at this moment this makes only sense to call at the end of a simulation
+    // to visualize viscosity field
+    // @ToDo Add possibility for transient problem to save viscosity solution in each time step
+    viscosity_element_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getElementMap() ) );
+    this->feFactory_->computeSteadyViscosityFE_CM(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), this->dim_,1,u_rep_,p_rep_,this->parameterList_);        
+  
+    Teuchos::RCP<const MultiVector<SC,LO,GO,NO>> exportSolutionViscosityAssFE = this->feFactory_->const_output_fields->getBlock(0); // For now we assume that viscosity is always saved in first block
+    viscosity_element_->importFromVector(exportSolutionViscosityAssFE, true);  
+  
+  
+
+}
+
+
+
+
+
+
 
 }
 
