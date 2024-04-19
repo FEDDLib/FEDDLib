@@ -504,7 +504,7 @@ void Mesh<SC,LO,GO,NO>::correctNormalDirections(){
                     nodeListElement.begin(), nodeListElement.end(),
                     std::back_inserter(v_symDifference));
 
-                LO id1 = v_symDifference[0];
+                LO id1 = v_symDifference[0]; // This is a node that is not part of the surface, i.e. 4th element node in 3D
 
                 vec_dbl_Type p0(dim_,0.);
                 for(int i=0; i< dim_; i++)
@@ -520,7 +520,7 @@ void Mesh<SC,LO,GO,NO>::correctNormalDirections(){
                 if(sum>0){
                     inwardNormals++;
                 }
-                if(sum>0)
+                if(sum>0) // if the sum is greater than 0, the normal is in inward direction and thus is flipped.
                     flipSurface(subEl,surface);
                     
 
@@ -559,7 +559,7 @@ void Mesh<SC,LO,GO,NO>::correctElementOrientation(){
         if(detB>0){
             posDet++;
         }
-        if(detB<0)
+        if(detB<0) // If the determinant is smaller than zero we flip the element
             flipElement(elementsC_,T); 
 
     }
