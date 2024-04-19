@@ -643,9 +643,7 @@ void Mesh<SC,LO,GO,NO>::flipSurface(ElementsPtr_Type subEl, int surfaceNumber){
 
 }
 
-// We allways want a outward normal direction
-// Assumptions: We are flipping a surface which is a subelement. Subelement are generally element that are on the boundary layers of the domain. Thus, they are unique. (There are no two identical triangles in two elements as subelements)
-// Question: Easiest way to flip the surface without redoing whole dim-element (surface being dim-1-element)
+// We allways want a positive determinant
 template <class SC, class LO, class GO, class NO>
 void Mesh<SC,LO,GO,NO>::flipElement(ElementsPtr_Type elements, int elementNumber){
 

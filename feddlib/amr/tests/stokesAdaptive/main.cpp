@@ -679,11 +679,11 @@ int main(int argc, char *argv[]) {
 		        domainVelocity = domainPressure;
 			
 			domainVelocity->exportNodeFlags();
-			domainPressure->preProcessMesh(true,true);
-			domainVelocity->preProcessMesh(true,true);
+			domainPressure->preProcessMesh(true,true); // Preprocessing pressure mesh
+			domainVelocity->preProcessMesh(true,true); // Preprocessing velocity mesh
 
-   			domainVelocity->exportSurfaceNormals("domain");
-    		domainVelocity->exportElementOrientation("domain");
+   			domainVelocity->exportSurfaceNormals("domain"); // exporting to check if correct
+    		domainVelocity->exportElementOrientation("domain"); // exporting to check if correct
 
 			MAIN_TIMER_STOP(buildP2);		
 

@@ -334,8 +334,9 @@ public:
     void setMesh(MeshUnstrPtr_Type meshUnstr); 
 
      /*!
-         \brief Initialize dummy mesh for i.e. lagrange multiplier 
-         @param[in] meshUnstr mesh of MeshUnstr_Type which is generally the type of meshes from .mesh files
+         \brief Initialize dummy mesh for i.e. lagrange multiplier that only represents on 'point' in that sense. i.e. for setting pressure mean value in P2-P1 stokes problem. This is necassary if a variable does not live on a mesh. 
+         \brief This function might not be necassary in the long run.
+         @param[in] map for this dummy mesh. Maybe the mesh only represents one point (i.e. for lagrange mp). 
 
     */
     void initDummyMesh(MapPtr_Type map); 

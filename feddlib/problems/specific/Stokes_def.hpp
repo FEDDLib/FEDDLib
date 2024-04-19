@@ -30,6 +30,8 @@ Problem<SC,LO,GO,NO>(parameterList, domainVelocity->getComm())
 
     this->addVariable( domainVelocity , FETypeVelocity , "u" , domainVelocity->getDimension());
     this->addVariable( domainPressure , FETypePressure , "p" , 1);
+    /*
+    This will probably not be necessary but we keep it for now
     if(this->parameterList_->sublist("Parameter").get("Use Pressure Correction",true) && !this->getFEType(0).compare("P2") && !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Monolithic")){ // We only correct pressure in P2 Case
         
         Teuchos::RCP<Domain<SC,LO,GO,NO> > domainLambda( new Domain<SC,LO,GO,NO>( this->getDomain(0)->getComm(), this->dim_ ) );
@@ -45,7 +47,7 @@ Problem<SC,LO,GO,NO>(parameterList, domainVelocity->getComm())
 
         this->addVariable( domainLambda , FETypePressure , "lambda" , 1);
 
-    }
+    }*/
     this->dim_ = this->getDomain(0)->getDimension();
 }
 
@@ -105,6 +107,8 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
     BT->fillComplete( pressureMap, this->getDomain(0)->getMapVecFieldUnique() );
     
     this->system_.reset(new BlockMatrix_Type(2));
+    /*
+    This will probably not be necessary but we keep it for now
     if(this->parameterList_->sublist("Parameter").get("Use Pressure Correction",false) && !this->getFEType(0).compare("P2") && !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Monolithic")){ // We only correct pressure in P2 Case
         //this->system_.reset(new BlockMatrix_Type(3));
         
@@ -128,7 +132,7 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
 
         //this->system_->addBlock( a, 1, 2 );    
         //this->system_->addBlock( aT, 2, 1 );    
-    }
+    }*/
     this->system_->addBlock( A, 0, 0 );
     this->system_->addBlock( BT, 0, 1 );
     this->system_->addBlock( B, 1, 0 );
@@ -141,15 +145,6 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
         C->resumeFill();
         C->scale( -1./viscosity );
         C->fillComplete( pressureMap, pressureMap );
-        this->system_->addBlock( C, 1, 1 );
-    }
-    else 
-    { 
-        C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-        this->feFactory_->assemblyIdentity(C);
-        C->resumeFill();
-        C->scale(0. );
-        C->fillComplete( pressureMap, pressureMap );    
         this->system_->addBlock( C, 1, 1 );
     }
 #ifdef FEDD_HAVE_TEKO

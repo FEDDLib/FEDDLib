@@ -44,6 +44,7 @@ void three(double* x, double* res, double t, const double* parameters){
     return;
 }
 
+// For Lid Driven Cavity Test
 void ldcFunc2D(double* x, double* res, double t, const double* parameters){
     
     res[0] = 1.;
@@ -52,6 +53,7 @@ void ldcFunc2D(double* x, double* res, double t, const double* parameters){
     return;
 }
 
+// For Lid Driven Cavity Test
 void ldcFunc3D(double* x, double* res, double t, const double* parameters){
     
     res[0] = 1.;
@@ -241,6 +243,7 @@ int main(int argc, char *argv[]) {
                     domainVelocity->buildMesh( 1,"Square", dim, discVelocity, n, m, numProcsCoarseSolve);
                 }
                 if (!meshType.compare("structured_ldc")) {
+                    // Structured Mesh for Lid-Driven Cavity Test
                     TEUCHOS_TEST_FOR_EXCEPTION( size%minNumberSubdomains != 0 , std::logic_error, "Wrong number of processors for structured mesh.");
                     if (dim == 2) {
                         n = (int) (std::pow( size/minNumberSubdomains ,1/2.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
@@ -309,34 +312,30 @@ int main(int argc, char *argv[]) {
                 parameter_vec.push_back(1.);//height of inflow region
             else if(!bcType.compare("parabolic_benchmark"))
                 parameter_vec.push_back(.41);//height of inflow region
-            else if(!bcType.compare("LDC"))
+            else if(!bcType.compare("LDC")) // Lid Driven Cavity Test
                 parameter_vec.push_back(0.);//Dummy
             else
                 TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Select a valid boundary condition.");
             
-            if (dim==2 && bcType.compare("LDC")) {
+            if (dim==2 && bcType.compare("LDC")) { // When it is not LDC ..
                 bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
                 bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-//                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
-//                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
             }
             else if(dim==3 && bcType.compare("LDC")){
                 bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
                 bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-//                bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
-//                bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
             }
+
             if (!bcType.compare("parabolic_benchmark")) {//flag of obstacle
                 if (dim==2)
                     bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
                 else if (dim==3)
                     bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
             }
-            if (!bcType.compare("LDC")) {//flag of obstacle
+            if (!bcType.compare("LDC")) {
                 if (dim==2){
                     bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
                     bcFactory->addBC(ldcFunc2D, 2, 0, domainVelocity, "Dirichlet", dim);
-                    bcFactory->addBC(zeroDirichlet, 2, 1, domainPressure, "Dirichlet", 1);
                 }
                 else if (dim==3){
                     bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);

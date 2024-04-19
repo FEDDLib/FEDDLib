@@ -104,7 +104,8 @@ int main(int argc, char *argv[]) {
 
     // Via the domain and the underlying mesh we can do a preprocessing step to ensure consistent normal directions and element orientation
     domain->preProcessMesh(true,true);
-	domain->preProcessMesh(true,true);
+	// We do a second step to see if there we read only outward normals and positive dets.
+    domain->preProcessMesh(true,true);
 
     // Export functions for surface normals and element orientation. 
     if(dim==2){

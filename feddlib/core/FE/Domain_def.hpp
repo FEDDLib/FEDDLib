@@ -405,28 +405,11 @@ void Domain<SC, LO, GO, NO>::initDummyMesh(MapPtr_Type map)
 
     outputMesh->dim_ = this->dim_ ;
 	outputMesh->FEType_ = this->FEType_ ;
-	//outputMesh->rankRange_ =  this->rankRange_;
 
-    //outputMesh->elementMap_ = this->elementMap_ ;
 	outputMesh->mapUnique_ = map;
 	outputMesh->mapRepeated_ = map;
-	//outputMesh->edgeMap_  = this->edgeMap_  ;
-
-	//outputMesh->elementsC_ = this->elementsC_;
-	//outputMesh->edgeElements_ = this->edgeElements_;
-	//outputMesh->surfaceTriangleElements_ = this->surfaceTriangleElements_;
-
-   	/*outputMesh->pointsRep_ =  this->pointsRep_  ; 
-    outputMesh->pointsUni_ = this->pointsUni_; 
-
-    outputMesh->bcFlagUni_ = this->bcFlagUni_ ; 
-	outputMesh->bcFlagRep_ = this->bcFlagRep_ ;
-
-
-	outputMesh->edgesElementOrder_ = this->edgesElementOrder_;
-	outputMesh->numElementsGlob_ = this->numElementsGlob_  ; */
+	
     mesh_ = outputMesh;
-
 }
 
 template <class SC, class LO, class GO, class NO>

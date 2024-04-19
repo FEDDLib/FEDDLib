@@ -75,9 +75,7 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
         problem->getSolution()->putScalar(0.);
     }
-    cout <<  " test 1 " << endl;
     Teuchos::RCP<Thyra::MultiVectorBase<SC> >thyraX = problem->getSolution()->getThyraMultiVector();
-    cout <<  " test 2 " << endl;
 
     Teuchos::RCP<const Thyra::MultiVectorBase<SC> > thyraB;
     if (rhs.is_null())
@@ -88,7 +86,6 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
     ParameterListPtr_Type pListThyraSolver = sublist( problem->getParameterList(), "ThyraSolver" );
 
     pListThyraSolver->setParameters( problem->getParameterList()->sublist("ThyraPreconditioner") );
-    cout <<   " test 3 " << endl;
 
     problem->getLinearSolverBuilder()->setParameterList(pListThyraSolver);
     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
@@ -104,7 +101,6 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
         Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *thyraB, thyraX.ptr() );
         pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
     }
-    cout <<   " test 4 " << endl;
 
     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
 
