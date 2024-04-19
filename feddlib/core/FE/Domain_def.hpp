@@ -438,12 +438,12 @@ void Domain<SC,LO,GO,NO>::exportMesh(bool exportEdges, bool exportSurfaces, stri
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::preProcessMesh(bool correctSurfaceNormals, bool correctElementDirection){ 
+void Domain<SC,LO,GO,NO>::preProcessMesh(bool correctSurfaceNormals, bool correctElementOrientation){ 
 
     if(correctSurfaceNormals)
         mesh_->correctNormalDirections();
 
-    if(correctElementDirection)
+    if(correctElementOrientation)
         mesh_->correctElementOrientation();
 
 

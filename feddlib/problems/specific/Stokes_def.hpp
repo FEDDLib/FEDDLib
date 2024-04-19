@@ -105,8 +105,8 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
     BT->fillComplete( pressureMap, this->getDomain(0)->getMapVecFieldUnique() );
     
     this->system_.reset(new BlockMatrix_Type(2));
-    if(this->parameterList_->sublist("Parameter").get("Use Pressure Correction",true) && !this->getFEType(0).compare("P2") && !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Monolithic")){ // We only correct pressure in P2 Case
-        this->system_.reset(new BlockMatrix_Type(3));
+    if(this->parameterList_->sublist("Parameter").get("Use Pressure Correction",false) && !this->getFEType(0).compare("P2") && !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Monolithic")){ // We only correct pressure in P2 Case
+        //this->system_.reset(new BlockMatrix_Type(3));
         
         MatrixPtr_Type a(new Matrix_Type( this->getDomain(1)->getMapUnique(), 1 ) );
 
@@ -126,8 +126,8 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
         aT->fillComplete(mapNode,this->getDomain(2)->getMapUnique());
         //aT->print();
 
-        this->system_->addBlock( a, 1, 2 );    
-        this->system_->addBlock( aT, 2, 1 );    
+        //this->system_->addBlock( a, 1, 2 );    
+        //this->system_->addBlock( aT, 2, 1 );    
     }
     this->system_->addBlock( A, 0, 0 );
     this->system_->addBlock( BT, 0, 1 );

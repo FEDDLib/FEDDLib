@@ -107,9 +107,10 @@ int main(int argc, char *argv[]) {
 	domain->preProcessMesh(true,true);
 
     // Export functions for surface normals and element orientation. 
-    domain->exportSurfaceNormals("domain"+exportfilename);
-    domain->exportElementOrientation("domain");
-
+    if(dim==2){
+        domain->exportSurfaceNormals("domain");
+        domain->exportElementOrientation("domain");
+    }
 
     return(EXIT_SUCCESS);
 }

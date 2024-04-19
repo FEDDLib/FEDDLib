@@ -535,7 +535,7 @@ public:
    void exportMesh(bool exportEdges = false, bool exportSurfaces=false, string exportMesh="export.mesh");
 
      /*!
-         \brief Option of preprocessing mesh by making consistent outward normal and/or consisten element orientation
+         \brief Option of preprocessing mesh by making consistent outward normal and/or consistent element orientation, where we always have positive det of transformation to reference element
          @param correctSurfaceNormals bool for normal direction
          @param correctElementDirection bool for surface direction
     */ 
