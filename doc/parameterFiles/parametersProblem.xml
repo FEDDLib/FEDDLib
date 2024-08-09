@@ -1,40 +1,43 @@
 <!-- This File should give an overview and short explanation to all possible set parameters in the FEDDLib -->
-<!-- In each specific test folder there should be also a self-explanatory parametersProblem file but maybe not all parameters are visible because e.g. for simple Navier-Stokes equation we do not need Material specific parameters (used for Generalized-Newtonian fluids)-->
+<!-- In each specific test folder there should be also a self-explanatory parametersProblem file but maybe not all parameters are visible there because e.g. for simple Navier-Stokes equation we do not need Material specific parameters (used for Generalized-Newtonian fluids)-->
 
 <!-- Problem specific parameters like e.g. dimension, FE type -->
 <ParameterList name="Problem">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension" type="int" value="2"/> 			<!-- {2, 3}   					-  2 for two-dimensional grids, 3 for three-dimensional grids, (1D in almost all cases not defined) --> 										 <!-- Read in main of specific problem e.g. feddlib/problem/tests/steadyNavierStokesAssFE/main.cpp -->
-        <Parameter name="Discretization Velocity" type="string" value="P2"/> <!-- {P1, P2} 					- P1, P2; velocity (Type of Finite Element)-->																	 <!-- Read in main of specific problem e.g. feddlib/problem/tests/steadyNavierStokesAssFE/main.cpp -->
-        <Parameter name="Discretization Pressure" type="string" value="P1"/> <!-- {P1, P2} 					- pressure (Type of Finite Element)-->    <!-- CAUTION: P1-P1 stabilization for Generalized-Newtonian Fluids not implemented -->							 <!-- Read in main of specific problem e.g. feddlib/problem/tests/steadyNavierStokesAssFE/main.cpp -->
-        <Parameter name="Mesh Type" type="string" value="unstructured"/>     <!-- {structured, unstructured} 		- depending on grid discretization -->																		 <!-- Read in main of specific problem e.g. feddlib/problem/tests/steadyNavierStokesAssFE/main.cpp -->
-        <Parameter name="BC Type" type="string"   value="partialCFD"/> 	<!-- {parabolic, parabolic_benchmark, ....}   - parabolic, parabolic_benchmark, partialCFD, parabolic_benchmark_sin--> <!-- Look in specific .main file of problem to see implementation of these boundary condition types-->   <!-- Read in main of specific problem e.g. feddlib/problem/tests/steadyNavierStokesAssFE/main.cpp -->
-        <Parameter name="Mesh Delimiter" type="string" value=" "/>           <!-- ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????-->								 <!-- Read in main of specific problem e.g. feddlib/problem/tests/steadyNavierStokesAssFE/main.cpp -->
-        <Parameter name="Viscosity" type="double" value="0.0000035"/>	<!-- {double value} 				- kinematic viscosity (=dynamic viscosity/density)-->
-        <Parameter name="Density" type="double" value="1000.0"/>		<!-- {double value} 				- density			 -->
+        <Parameter name="Dimension" type="int" value="2"/> 			<!-- {2, 3}   					-  2 for two-dimensional grids, 3 for three-dimensional grids, (1D in almost all cases not defined) --> 				 <!-- Read in main of specific problem e.g. feddlib/problem/tests/steadyNavierStokesAssFE/main.cpp-->
+        <Parameter name="Discretization Velocity" type="string" value="P2"/> <!-- {P1, P2} 					- P1, P2; velocity (Type of Finite Element)-->																	 <!-- Read in main of specific problem-->
+        <Parameter name="Discretization Pressure" type="string" value="P1"/> <!-- {P1, P2} 					- P1, P2; pressure (Type of Finite Element)-->    <!-- CAUTION: P1-P1 stabilization for Generalized-Newtonian Fluids not implemented -->							 <!-- Read in main of specific problem-->
+        <Parameter name="Mesh Type" type="string" value="unstructured"/>     <!-- {structured, unstructured} 		- depending on grid discretization -->																		 <!-- Read in main of specific problem-->
+        <Parameter name="BC Type" type="string"   value="partialCFD"/> 	<!-- {parabolic, parabolic_benchmark, ....}--> <!-- Look in specific .main file of problem to see implementation of these boundary condition types-->   <!-- Read in main of specific problem -->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>           <!-- ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????-->								 <!-- Read in main of specific problem -->
+        <Parameter name="Viscosity" type="double" value="0.0000035"/>	<!-- {double value} 				- kinematic viscosity (=dynamic viscosity/density)--> <!-- Read in main of specific problem or specific Assembly Routines specific/AssembleFENavierStokes_def.hpp:s  -->
+        <Parameter name="Density" type="double" value="1000.0"/>		<!-- {double value} 				- density			 -->  <!-- Read in main of specific problem or specific Assembly Routines specific/AssembleFENavierStokes_def.hpp:s  -->
         
-        <Parameter name="H/h" type="int" value="3"/>				     <!-- {int value} 				- Used for scalability tests on structered grid (Backwardfacing-Step) where each structured subdomain block of size H is discretized with the factor h  -> larger values of H/h equal to finer discretization -->
+        <Parameter name="H/h" type="int" value="3"/>				     <!-- {int value} 				- Used for scalability tests on structered grids (e.g. Backwardfacing-Step) where each structured subdomain block of size H is discretized with the factor h  -> larger values of H/h equal to finer discretization -->  <!-- Read in main of specific problem -->
         <Parameter name="MaxVelocity" type="double" value="0.01"/>		     <!-- {double value} 			- Used in Boundary Condition set up --> <!-- Look in specific main file of problem to see implementation-->
         <Parameter name="MeanVelocity"  type="double" value="1.0"/>		     <!-- {double value} 			- Used in Boundary Condition set up --> <!-- Look in specific main file of problem to see implementation-->	
         <Parameter name="Height Inflow"  type="double" value="0.1"/>		     <!-- {double value} 			- Used in Boundary Condition set up corresponds to e.g. Height or Diameter of Inflow --> <!-- Look in specific main file of problem to see implementation-->
         <Parameter name="Constant Pressure Gradient" type="double" value="10.0"/> <!-- {double value} 			- Used in Boundary Condition set up --> <!-- Look in specific main file of problem to see implementation-->
         
-        <!-- Algorithm Stopping Criteria -->
-        <Parameter name="Criterion" type="string" value="Update"/>		<!-- {Residium (Default), Update} --> <!-- If we want to use update tol we also have to set here to Update--> <!-- -->
-        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/> 	<!-- If we choose relative Residium for Newton-Update set here to be achieved relative tolerance -->
-        <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>	<!-- If we choose absolute Residium for Newton-Update set here to be achieved absoulte tolerance -->
-        <Parameter name="updateTol" type="double" value="1.0e-4"/>		<!-- If we choose update Residium for Newton-Update set here to be achieved absoulte tolerance -->
+        <!-- Nonlinear Solver Stopping Criteria-->
+        <!-- Inside the FEDDLib one can choose either NOX (Trilinos package) or FixedPoint/ Newton for the nonlinear solver - All relevant implementations are inside feddlib/problems/Solver/NonLinearSolver_def.hpp-->
+        
+        <!-- - Internal Newton Solver - If one choose either FixedPoint or Newton the routine is defined inside NonLinearSolver_def.hpp and one can set following parameters -->
+        <Parameter name="Criterion" type="string" value="Update"/>		<!-- {Residium (Default), Update} --> <!-- Residium computes ||F(x_k+1)||/||F(x_0)|| (here relative residuum per Default) whereas Update computes the differences between current and old step solution ||x_k - x_k+1||--> <!-- Read inside feddlib/problems/Solver/NonLinearSolver_def.hpp-->
+        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/> 	<!-- If we choose Residium as Criterion -> relative Residium for Newton-Update set here -> to be achieved relative tolerance -->
+        <Parameter name="updateTol" type="double" value="1.0e-4"/>		<!-- If we choose Update as Criterion ->   update Residium for Newton-Update set here -> to be achieved update tolerance -->
+        
+        
+        <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>	<!-- If we choose Residium as Criterion -> absolute Residium for Newton-Update set here to be achieved absoulte tolerance -->
+
         <Parameter name="Combo" type="string" value="OR"/>
         <Parameter name="Use update tol" type="bool" value="false"/>		<!-- As stop criterion we look at | u_k+1  - u_k| - So the solution update-->
         <Parameter name="Use rel tol" type="bool" value="true"/>		<!-- As stop criterion look at R/R_0 -->
         <Parameter name="Use abs tol" type="bool" value="false"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
         
-
-
-        
-        <Parameter name="MaxNonLinIts" type="int" value="20"/>		<!-- {int value} 		- Maximum number of Newton iterations (nonlinear Solver) performed -->
-        <Parameter name="Cancel MaxNonLinIts" type="bool" value="false"/>    <!-- {true, false}		- If set to true the nonlinear solver will stop reaching the maximum number of nonlinear iterations even if the specified tolerance is not reached -->
+        <Parameter name="Cancel MaxNonLinIts" type="bool" value="false"/>    <!-- {true, false}		- If set to true the nonlinear solver will stop reaching the defined maximum number of nonlinear iterations even if the specified tolerance is not reached --> <!-- Read inside feddlib/problems/Solver/NonLinearSolver_def.hpp-->
+        <Parameter name="MaxNonLinIts" type="int" value="20"/>		<!-- {int value} 		- Maximum number of Newton iterations (nonlinear Solver) performed --> <!-- Read inside feddlib/problems/Solver/NonLinearSolver_def.hpp-->
         <Parameter name="Symmetric gradient" type="bool" value="false"/>	<!-- ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????? -->
     </ParameterList>
 
