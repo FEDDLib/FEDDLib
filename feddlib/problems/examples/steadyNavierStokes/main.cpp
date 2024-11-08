@@ -351,6 +351,7 @@ int main(int argc, char *argv[]) {
 
                 std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
 
+                domainVelocity->exportNodeFlags();
                 // ####################
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
                 
@@ -465,7 +466,7 @@ int main(int argc, char *argv[]) {
                 if (!bcType.compare("LDC")) {
                     if (dim==2){
                         bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
-                        bcFactory->addBC(zeroDirichlet2D, 3, 0, domainVelocity, "Dirichlet", dim);
+                        //bcFactory->addBC(zeroDirichlet2D, 3, 0, domainVelocity, "Dirichlet", dim);
                         bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1);
 
                         bcFactory->addBC(ldcFunc2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);

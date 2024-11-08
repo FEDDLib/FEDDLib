@@ -177,6 +177,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
         this->feFactory_->assemblyPressureMeanValue( this->dim_,this->getFEType(1),P) ;
 
+        // Velocity component is set to zero, such that the projection vector only influences the pressure part
         MultiVectorPtr_Type vel0(new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
         vel0->putScalar(0.);
 
@@ -204,9 +205,13 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 Mvelocity->resumeFill();
                 Mvelocity->fillComplete();
             }
-            else
-                this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
+            else{ // For whatever reason, when we have a time problem a higher degree for the quadrature improves results
+                if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> -1 ) // In case we have a timeproblem
+                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
+                else
+                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true );
 
+            }
             //
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
             if(this->parameterList_->sublist("Parameter").get("BC in LSC Mu",false)){
@@ -226,8 +231,6 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             bcBlockMatrix->addBlock(Lp,0,0);
             this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix); 
             this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp );
-
-
         } 
         
         if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 

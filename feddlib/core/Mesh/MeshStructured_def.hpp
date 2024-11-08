@@ -3813,14 +3813,14 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,string 
                         if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) && this->pointsUni_->at(i).at(1) < (coorRec[1] + tol) ) {
                             this->bcFlagUni_->at(i) = 1; // bottom
                         }
-                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) && this->pointsUni_->at(i).at(1) > (coorRec[1] + height - tol) ) {
-                            this->bcFlagUni_->at(i) = 2; // top
-                        }
                         if (this->pointsUni_->at(i).at(0) > (coorRec[0]+length - tol) && this->pointsUni_->at(i).at(1) > (coorRec[1] + tol) && this->pointsUni_->at(i).at(1) < (coorRec[1] + height - tol)) {
                             this->bcFlagUni_->at(i) = 1; // right
                         }
                         if (this->pointsUni_->at(i).at(0) < (coorRec[0] +tol)) {
                             this->bcFlagUni_->at(i) = 1; //Left
+                        }
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) && this->pointsUni_->at(i).at(1) > (coorRec[1] + height - tol) ) {
+                            this->bcFlagUni_->at(i) = 2; // top
                         }
                         if (this->pointsUni_->at(i).at(0) < (coorRec[0] +tol) && this->pointsUni_->at(i).at(1) < (coorRec[1] +tol)) {
                             this->bcFlagUni_->at(i) = 3; // (0,0) point of ldc
@@ -3830,14 +3830,14 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,string 
                         if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) && this->pointsRep_->at(i).at(1) < (coorRec[1] + tol) ) {
                             this->bcFlagRep_->at(i) = 1; // bottom 
                         }
-                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) && this->pointsRep_->at(i).at(1) > (coorRec[1] + height - tol) ) {
-                            this->bcFlagRep_->at(i) = 2;
-                        }
                         if (this->pointsRep_->at(i).at(0) > (coorRec[0]+length - tol) && this->pointsRep_->at(i).at(1) > (coorRec[1] + tol) && this->pointsRep_->at(i).at(1) < (coorRec[1] + height - tol)) {
                             this->bcFlagRep_->at(i) = 1;
                         }
                         if (this->pointsRep_->at(i).at(0) < (coorRec[0] +tol)) {
                             this->bcFlagRep_->at(i) = 1;
+                        }
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) && this->pointsRep_->at(i).at(1) > (coorRec[1] + height - tol) ) {
+                            this->bcFlagRep_->at(i) = 2;
                         }
                         if (this->pointsRep_->at(i).at(0) < (coorRec[0] +tol) && this->pointsRep_->at(i).at(1) < (coorRec[1] +tol)) {
                             this->bcFlagRep_->at(i) = 3;

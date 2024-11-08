@@ -7721,7 +7721,7 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     }
 }
 
-/// @brief Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value. We need this to be in matrix format, as it is added to the system
+/// @brief Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value. 
 /// @param dim Dimension
 /// @param FEType FEType
 /// @param a Matrix Ptr with resulting assembly
@@ -7733,7 +7733,7 @@ void FE<SC,LO,GO,NO>::assemblyPressureMeanValue( int dim,
 
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
 
-    TEUCHOS_TEST_FOR_EXCEPTION( a.is_null(), std::runtime_error, "Matrix is null." );
+    TEUCHOS_TEST_FOR_EXCEPTION( a.is_null(), std::runtime_error, "Multivector is null." );
 
     UN FEloc;
     FEloc = checkFE(dim,FEType);
@@ -7742,10 +7742,9 @@ void FE<SC,LO,GO,NO>::assemblyPressureMeanValue( int dim,
 
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
 
-    MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-    // last parameter should alwayss be the degree
+
     UN deg = 2; 
 
     vec2D_dbl_ptr_Type quadPoints;
@@ -7756,15 +7755,11 @@ void FE<SC,LO,GO,NO>::assemblyPressureMeanValue( int dim,
     SC detB;
     SC absDetB;
     SmallMatrix<SC> B(dim);
-    GO glob_i, glob_j;
-    vec_dbl_Type v_i(dim);
-    vec_dbl_Type v_j(dim);
-  
-
+   
+    // Repeated version we assemble
     MultiVectorPtr_Type a_rep = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FEloc)->getMapRepeated(), 1 ) );
     a_rep->putScalar(0.);
 	Teuchos::ArrayRCP< SC > values_a = a_rep->getDataNonConst(0);
-
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
@@ -7775,7 +7770,7 @@ void FE<SC,LO,GO,NO>::assemblyPressureMeanValue( int dim,
         for (UN i=0; i < phi->at(0).size(); i++) {
             Teuchos::Array<SC> value( 1, 0. );
             for (UN w=0; w<weights->size(); w++){
-                value[0] += weights->at(w) * phi->at(w).at(i)*1.0;
+                value[0] += weights->at(w) * phi->at(w).at(i)*1.0; // We integrate the 1 function over the elements
             }
             value[0] *= absDetB;
             //value[0] = 10.;
@@ -7785,10 +7780,9 @@ void FE<SC,LO,GO,NO>::assemblyPressureMeanValue( int dim,
         }
     }
 
+    // Adding it together in the unique vector
     a->putScalar(0.);
-
-    a->exportFromVector( a_rep, true, "Add" ); 
-    
+    a->exportFromVector( a_rep, true, "Add" );  
 }
 
 /// @brief Assembling projection matrix P = I_p - a^T (a a^T)^-1 a. This hopefully will be passed to FROSch through parameter list. We use a simplified version, where a is NOT \int p \Omega, but just const==1
