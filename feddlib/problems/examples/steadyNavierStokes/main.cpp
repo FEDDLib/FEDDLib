@@ -440,6 +440,14 @@ int main(int argc, char *argv[]) {
 
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
                         }
+                        else if( !pcdBC.compare("Both")){
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+
+                        }
                         else if( !pcdBC.compare("Mixed")){
                             bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
 
