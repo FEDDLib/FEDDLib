@@ -207,9 +207,9 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             }
             else{ // For whatever reason, when we have a time problem a higher degree for the quadrature improves results
                 if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> -1 ) // In case we have a timeproblem
-                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
+                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
                 else
-                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true );
+                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
 
             }
             //
