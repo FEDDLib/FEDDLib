@@ -288,7 +288,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
                 vec_dbl_Type funcParameter(1,kinVisco);
                 this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,Kext, funcParameter, this->rhsFuncVec_[0],this->parameterList_);
-                Kext->addMatrix(1.,Kp,1.); // adding advection to diffusion
+                Kext->addMatrix(-1.,Kp,1.); // adding advection to diffusion
             }
 
             bcBlockMatrix->addBlock(AdvPressure,0,0);
@@ -494,7 +494,7 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
                 MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
                 vec_dbl_Type funcParameter(1,kinVisco);
                 this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,Kext, funcParameter, this->rhsFuncVec_[0],this->parameterList_);
-                Kext->addMatrix(1.,Fp,1.); // adding advection to diffusion
+                Kext->addMatrix(-1.,Fp,1.); // adding advection to diffusion
             }
             // Setting boundary conditions in Fp
             bcBlockMatrix->addBlock(AdvPressure,0,0);
