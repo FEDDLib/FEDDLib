@@ -4470,8 +4470,6 @@ void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, string FEType){
                 case 1:
                     break;
                 case 2:
-                    break;
-                case 3:
                     int numNodesTriangle;
                     if(FEType == "P1")
                         numNodesTriangle=3;
@@ -4480,7 +4478,7 @@ void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, string FEType){
                     else 
                         TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"For flag option and discretization no surfaces are available");
 
-
+                    cout << " Building Surface " << endl;
                     for( int T =0; T< this->elementsC_->numberElements(); T++){
 
                         vec_int_Type nodeList = this->elementsC_->getElement(T).getVectorNodeList();
@@ -4533,50 +4531,50 @@ void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, string FEType){
                             midpoint[2] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(2) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(2) )/3.;
 
                             int flag =10.;
-                            // x=0 Face  
+                            // x=-1 Face  
                             if (midpoint.at(0) < (coorRec[0] + tol) ) {
-                                flag = 1;
+                                flag = 2;
                                 if(v_E[0] > 0 )
                                     flipSurface(surfaceElements_vec[i]);
                             }
-                            // z=0 Face
-                            if (midpoint.at(0) > (coorRec[0] + tol) &&
-                                midpoint.at(2) < (coorRec[2] + tol) ) {
-                                flag = 3;
-                                if(v_E[2] > 0 )
-                                    flipSurface(surfaceElements_vec[i]);
-                            }
-                            // z=1 Face
-                            if (midpoint.at(0) > (coorRec[0] + tol) &&
-                                midpoint.at(2) > (coorRec[2] + height - tol) ) {
-                                if(v_E[2] < 0 )
-                                   flipSurface(surfaceElements_vec[i]);
-                                flag = 4;
-                            }
-                            // y=0 Face
-                            if (midpoint.at(0) > (coorRec[0] + tol) &&
-                                midpoint.at(1) < (coorRec[1] + tol) ) {
-                                if(v_E[1]> 0 )
-                                    flipSurface(surfaceElements_vec[i]);
-                                flag = 2;
-                            }
-                            // y=1 Face
-                            if (midpoint.at(0) > (coorRec[0] + tol) &&
-                                midpoint.at(1) > (coorRec[1] + width - tol) ) {
-                                if(v_E[1]< 0 )
-                                    flipSurface(surfaceElements_vec[i]);
-                                flag = 5;
-                            }
-                            // x=1 Face
-                            if (midpoint.at(0) > (coorRec[0] + length - tol) &&
-                                midpoint.at(1) > (coorRec[1] + tol) &&
-                                midpoint.at(1) < (coorRec[1] + width - tol)&&
-                                midpoint.at(2) > (coorRec[2] + tol) &&
-                                midpoint.at(2) < (coorRec[2] + height - tol)) {
-                                if(v_E[0]< 0 )
-                                    flipSurface(surfaceElements_vec[i]);
-                                flag = 6;
-                            }
+                            // // z=0 Face
+                            // if (midpoint.at(0) > (coorRec[0] + tol) &&
+                            //     midpoint.at(2) < (coorRec[2] + tol) ) {
+                            //     flag = 3;
+                            //     if(v_E[2] > 0 )
+                            //         flipSurface(surfaceElements_vec[i]);
+                            // }
+                            // // z=1 Face
+                            // if (midpoint.at(0) > (coorRec[0] + tol) &&
+                            //     midpoint.at(2) > (coorRec[2] + height - tol) ) {
+                            //     if(v_E[2] < 0 )
+                            //        flipSurface(surfaceElements_vec[i]);
+                            //     flag = 4;
+                            // }
+                            // // y=0 Face
+                            // if (midpoint.at(0) > (coorRec[0] + tol) &&
+                            //     midpoint.at(1) < (coorRec[1] + tol) ) {
+                            //     if(v_E[1]> 0 )
+                            //         flipSurface(surfaceElements_vec[i]);
+                            //     flag = 2;
+                            // }
+                            // // y=1 Face
+                            // if (midpoint.at(0) > (coorRec[0] + tol) &&
+                            //     midpoint.at(1) > (coorRec[1] + width - tol) ) {
+                            //     if(v_E[1]< 0 )
+                            //         flipSurface(surfaceElements_vec[i]);
+                            //     flag = 5;
+                            // }
+                            // // x=1 Face
+                            // if (midpoint.at(0) > (coorRec[0] + length - tol) &&
+                            //     midpoint.at(1) > (coorRec[1] + tol) &&
+                            //     midpoint.at(1) < (coorRec[1] + width - tol)&&
+                            //     midpoint.at(2) > (coorRec[2] + tol) &&
+                            //     midpoint.at(2) < (coorRec[2] + height - tol)) {
+                            //     if(v_E[0]< 0 )
+                            //         flipSurface(surfaceElements_vec[i]);
+                            //     flag = 6;
+                            // }
                             p1[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(0);
                             p1[1] =this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(1);
                             p1[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(2);

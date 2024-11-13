@@ -135,8 +135,6 @@ public:
 
     void setPressureMassMatrix(MatrixPtr_Type massMatrix) const;
 
-    void setPressureProjection(BlockMultiVectorPtr_Type pressureProjection) const;
-
     void setFaCSIBCFactory( BCConstPtr_Type bcFactory ){ faCSIBCFactory_ = bcFactory; };
 
     bool hasFaCSIBCFactory(){ return !faCSIBCFactory_.is_null(); };
@@ -148,6 +146,8 @@ public:
     void exportCoarseBasisFSI( );
 
     bool isPreconditionerComputed() const{return precondtionerIsBuilt_;};
+
+    void setPressureProjection(BlockMultiVectorPtr_Type pressureProjection) const;
 
     BlockMultiVectorPtr_Type getPressureProjection(){return pressureProjection_;};
 

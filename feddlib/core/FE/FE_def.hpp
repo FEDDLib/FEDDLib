@@ -7036,7 +7036,6 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
 
     MapConstPtr_Type map = domainVec_.at(1)->getMapRepeated();
 
-    vec3D_dbl_ptr_Type     dPhi;
     vec2D_dbl_ptr_Type     phi,phiV;
     vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
@@ -7044,22 +7043,14 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
 
     UN deg = Helper::determineDegree( dim-1, FEType, FEType, Grad, Std, extraDeg);
 
-    Helper::getDPhi(dPhi, weights, dim-1, FEType, deg);
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
     Helper::getPhi(phiV, weights, dim-1, FEType2, deg);
-
-    double kinVisc = parameters->sublist("Parameter").get("Viscosity",1.);
 
     SC detB;
     SC absDetB;
     SmallMatrix<SC> B(dim);
-    SmallMatrix<SC> Binv(dim);
-    SmallMatrix<SC> B1(dim);
-    SmallMatrix<SC> Binv1(dim);  
-    GO glob_i, glob_j;
-    vec_dbl_Type v_i(dim);
-    vec_dbl_Type v_j(dim);
-
+    
+    
     vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
     vec_dbl_Type uLocN(  weights->size() , -1. );
 
@@ -7080,7 +7071,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
             if(subEl->getDimension() == dim-1){
                 // Setting flag to the placeholder (second last entry). The last entry at (funcParameter.size() - 1) should always be the degree of the surface function
                
-                vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                vec_int_Type nodeList = feSub.getVectorNodeListNonConst();
                 vec_int_Type nodeListP = elements->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
 
                 vec_dbl_Type v_E(dim,1.);
@@ -7091,9 +7082,10 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
                 func( &x[0], &valueFunc[0], paramsFunc);
                 if(valueFunc[0] > 0.){
 
-                    Helper::computeSurfaceNormal(dim, pointsRep,nodeList,v_E,norm_v_E);
+                    Helper::computeSurfaceNormal(dim, pointsRep,nodeListP,v_E,norm_v_E);
 
-                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    Helper::buildTransformationSurface( nodeListP, pointsRep, B, b, FEType);
+
                     elScaling = B.computeScaling( );
                     for (int w=0; w<phiV->size(); w++){ //quads points
                         for (int d=0; d<dim; d++) {
@@ -7110,7 +7102,6 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
                             uLocN[w] += uLoc[d][w] *v_E[d] / norm_v_E;
                         }
                     }
-                
                     for (UN i=0; i < phi->at(0).size(); i++) {
                         Teuchos::Array<SC> value( phi->at(0).size(), 0. );
                         Teuchos::Array<GO> indices( phi->at(0).size(), 0 );
@@ -7125,50 +7116,50 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
                         GO row = GO ( map->getGlobalElement( nodeListP[i] ) );
                         A->insertGlobalValues( row, indices(), value() );
                     }
-                    vec_int_Type kn1= elements->getElement(T).getVectorNodeListNonConst();
-                    vec_dbl_ptr_Type 	value(new vec_dbl_Type(dim,0.0));
-                    vec2D_dbl_ptr_Type	QuadPts;
-                    vec_dbl_ptr_Type    weightsDummy = Teuchos::rcp(new vec_dbl_Type(0));
-                    Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B1);
-                    detB = B1.computeInverse(Binv1);
-                    absDetB = std::fabs(detB);
-                    Helper::getQuadratureValues(dim, deg, QuadPts, weightsDummy, FEType);
+                    // vec_int_Type kn1= elements->getElement(T).getVectorNodeListNonConst();
+                    // vec_dbl_ptr_Type 	value(new vec_dbl_Type(dim,0.0));
+                    // vec2D_dbl_ptr_Type	QuadPts;
+                    // vec_dbl_ptr_Type    weightsDummy = Teuchos::rcp(new vec_dbl_Type(0));
+                    // Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B1);
+                    // detB = B1.computeInverse(Binv1);
+                    // absDetB = std::fabs(detB);
+                    // Helper::getQuadratureValues(dim, deg, QuadPts, weightsDummy, FEType);
 
-                    for (UN i=0; i < phi->at(0).size(); i++) {
-                        Teuchos::Array<SC> value(  phi->at(0).size(), 0. );
-                        Teuchos::Array<GO> indices(  phi->at(0).size(), 0 );
-                        for(int w=0; w< weights->size(); w++){
-                            for (UN j=0; j < value.size(); j++) {
+                    // for (UN i=0; i < phi->at(0).size(); i++) {
+                    //     Teuchos::Array<SC> value(  phi->at(0).size(), 0. );
+                    //     Teuchos::Array<GO> indices(  phi->at(0).size(), 0 );
+                    //     for(int w=0; w< weights->size(); w++){
+                    //         for (UN j=0; j < value.size(); j++) {
 
-                                vec_dbl_Type deriPhi1( dim,0.0)  ;
-                                vec_dbl_ptr_Type valuePhi(new vec_dbl_Type(dim,0.0));
+                    //             vec_dbl_Type deriPhi1( dim,0.0)  ;
+                    //             vec_dbl_ptr_Type valuePhi(new vec_dbl_Type(dim,0.0));
 
-                                auto it1 = find( kn1.begin(), kn1.end() ,nodeListP[j] );
-                                int id_in_element = distance( kn1.begin() , it1 );
+                    //             auto it1 = find( kn1.begin(), kn1.end() ,nodeListP[j] );
+                    //             int id_in_element = distance( kn1.begin() , it1 );
 
-                                Helper::gradPhi(dim,1,id_in_element,QuadPts->at(w),valuePhi);
-                                for (int d=0; d<dim; d++) {
-                                    deriPhi1[d] = valuePhi->at(d);
-                                }
+                    //             Helper::gradPhi(dim,1,id_in_element,QuadPts->at(w),valuePhi);
+                    //             for (int d=0; d<dim; d++) {
+                    //                 deriPhi1[d] = valuePhi->at(d);
+                    //             }
 
-                                vec_dbl_Type deriPhiT1(dim,0.);
-                                for(int q=0; q<dim; q++){
-                                    for(int s=0; s< dim ; s++)
-                                        deriPhiT1[q] += (deriPhi1[s]*Binv1[s][q]);
+                    //             vec_dbl_Type deriPhiT1(dim,0.);
+                    //             for(int q=0; q<dim; q++){
+                    //                 for(int s=0; s< dim ; s++)
+                    //                     deriPhiT1[q] += (deriPhi1[s]*Binv1[s][q]);
                                     
-                                }
-                                // Phi might have other quad points
-                                for (UN d=0; d<dim; d++) {
-                                    value[j] -= kinVisc*weights->at(w) * deriPhi1[d]* v_E[d]/norm_v_E * (*phi)[w][i];
-                                }
-                                value[j] *= elScaling;
-                                indices[j] = GO (  map->getGlobalElement( nodeListP[j] ) );
-                            }
-                            GO row = GO ( map->getGlobalElement( nodeListP[i] ) );
-                            A->insertGlobalValues( row, indices(), value() );
+                    //             }
+                    //             // Phi might have other quad points
+                    //             for (UN d=0; d<dim; d++) {
+                    //                 value[j] -= kinVisc*weights->at(w) * deriPhi1[d]* v_E[d]/norm_v_E * (*phi)[w][i];
+                    //             }
+                    //             value[j] *= elScaling;
+                    //             indices[j] = GO (  map->getGlobalElement( nodeListP[j] ) );
+                    //         }
+                    //         GO row = GO ( map->getGlobalElement( nodeListP[i] ) );
+                    //         A->insertGlobalValues( row, indices(), value() );
                             
-                        }   
-                    }
+                    //     }   
+                    // }
                 }
             }
         }
@@ -7387,41 +7378,41 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
 }
 
 /// Compute Surface Normal based on surface nodes,
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::computeSurfaceNormal(int dim,
-                                            vec2D_dbl_ptr_Type pointsRep,
-                                            vec_int_Type nodeList,
-                                            vec_dbl_Type &v_E,
-                                            double &norm_v_E)
-{
+// template <class SC, class LO, class GO, class NO>
+// void FE<SC,LO,GO,NO>::computeSurfaceNormal(int dim,
+//                                             vec2D_dbl_ptr_Type pointsRep,
+//                                             vec_int_Type nodeList,
+//                                             vec_dbl_Type &v_E,
+//                                             double &norm_v_E)
+// {
+//     cout << " Here " << endl;
+//     vec_dbl_Type p1(dim),p2(dim);
 
-    vec_dbl_Type p1(dim),p2(dim);
-
-    if(dim==2){
-        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
-        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
-        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+//     if(dim==2){
+//         v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+//         v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+//         norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
         
-    }
-    else if(dim==3){
+//     }
+//     else if(dim==3){
+       
+//         p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+//         p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+//         p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
 
-        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
-        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
-        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+//         p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+//         p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+//         p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
 
-        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
-        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
-        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
-
-        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
-        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
-        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+//         v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+//         v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+//         v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
         
-        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+//         norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
         
-    }
+//     }
 
-}
+// }
 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,

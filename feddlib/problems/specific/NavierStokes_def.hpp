@@ -210,7 +210,6 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
                 else
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
-
             }
             //
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));

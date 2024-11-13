@@ -335,12 +335,12 @@ int main(int argc, char *argv[]) {
                 }
                 if(parameterListProblem->sublist("Parameter").get("Robin BC",false)==true)
                 {
-                    if(!meshType.compare("structured") || !meshType.compare("structured_bfs")){
-                        domainPressure->getMesh()->buildEdges(domainPressure->getElementsC());
+                    // if(!meshType.compare("structured") || !meshType.compare("structured_bfs")){
+                    //     domainPressure->getMesh()->buildEdges(domainPressure->getElementsC());
                         
-                        domainPressure->setUnstructuredMesh(domainPressure->getMesh());
-                        domainVelocity->buildP2ofP1Domain( domainPressure );
-                    }
+                    //     domainPressure->setUnstructuredMesh(domainPressure->getMesh());
+                    //     domainVelocity->buildP2ofP1Domain( domainPressure );
+                    // }
                     //domainPressure->exportMesh(true,false,"BFS_h_H_25_9_subdomains.mesh");
                     //domainVelocity->exportNodeFlags();
                     domainVelocity->preProcessMesh(true,false);
