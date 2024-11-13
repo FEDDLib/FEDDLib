@@ -4478,7 +4478,6 @@ void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, string FEType){
                     else 
                         TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"For flag option and discretization no surfaces are available");
 
-                    cout << " Building Surface " << endl;
                     for( int T =0; T< this->elementsC_->numberElements(); T++){
 
                         vec_int_Type nodeList = this->elementsC_->getElement(T).getVectorNodeList();
