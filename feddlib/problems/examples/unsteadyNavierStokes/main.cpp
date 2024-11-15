@@ -222,7 +222,7 @@ int main(int argc, char *argv[]) {
         parameterListAll->setParameters(*parameterListSolver);
 
         std::string bcType = parameterListProblem->sublist("Parameter").get("BC Type","parabolic");
-
+        cout << " byType " << endl;
         int minNumberSubdomains;
         if (!meshType.compare("structured")) {
             minNumberSubdomains = 1;
@@ -312,7 +312,7 @@ int main(int argc, char *argv[]) {
                 }
             }
             std::vector<double> parameter_vec(1);
-            if ( !bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark") || !bcType.compare("parabolic_benchmark_sin") )
+            if ( !bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark") || !bcType.compare("parabolic_benchmark_sin") || !bcType.compare("poiseuille") )
                 parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MaxVelocity",1.5);
             else if ( !bcType.compare("partialCFD") ) //  Fuer CFD3
                 parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MeanVelocity",2.);
