@@ -460,6 +460,16 @@ int main(int argc, char *argv[]) {
 
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
                         }
+                        else if( !pcdBC.compare("InletOutletWall")){
+                             if(verbose)
+                                cout << " --------- PCD Info: Setting outlet of Laplace to dirichlet. Setting inlet, outlet and wall of Fp to Dirichlet ----------- " << endl;
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 1, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+
+                        }
                         else if( !pcdBC.compare("OutletWall1")){
                              if(verbose)
                                 cout << " --------- PCD Info: Setting outlet of Laplace to dirichlet. Setting outlet and wall of Fp to Dirichlet ----------- " << endl;
