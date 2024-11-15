@@ -140,6 +140,15 @@ void inflow3DRichter(double* x, double* res, double t, const double* parameters)
     return;
 }
 
+void dummyFuncRhs(double* x, double* res, double* parameters){
+    if(parameters[0]==2)
+        res[0]=1;
+    else
+        res[0] = 0.;
+
+    return;
+}
+
 void dummyFunc(double* x, double* res, double t, const double* parameters){
 
     return;
@@ -310,6 +319,21 @@ int main(int argc, char *argv[]) {
                         domainVelocity = domainPressure;
                     
                 }
+            }
+            if(parameterListProblem->sublist("Parameter").get("Robin BC",false)==true)
+            {
+                // if(!meshType.compare("structured") || !meshType.compare("structured_bfs")){
+                //     domainPressure->getMesh()->buildEdges(domainPressure->getElementsC());
+                    
+                //     domainPressure->setUnstructuredMesh(domainPressure->getMesh());
+                //     domainVelocity->buildP2ofP1Domain( domainPressure );
+                // }
+                //domainPressure->exportMesh(true,false,"BFS_h_H_25_9_subdomains.mesh");
+                //domainVelocity->exportNodeFlags();
+                domainVelocity->preProcessMesh(true,false);
+                domainVelocity->preProcessMesh(true,false);
+
+                domainPressure->preProcessMesh(true,false);
             }
             std::vector<double> parameter_vec(1);
             if ( !bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark") || !bcType.compare("parabolic_benchmark_sin") || !bcType.compare("poiseuille") )
@@ -499,6 +523,7 @@ int main(int argc, char *argv[]) {
             navierStokes.addBoundariesPressureLaplace(bcFactoryPressureLaplace);
             navierStokes.addBoundariesPressureFp(bcFactoryPressureFp);
 
+            navierStokes.addRhsFunction( dummyFunc );
 
             navierStokes.initializeProblem();
             

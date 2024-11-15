@@ -207,6 +207,15 @@ void dummyFunc(double* x, double* res, double t, const double* parameters)
     return;
 }
 
+void dummyFunc(double* x, double* res, double* parameters){
+    if(parameters[0]==2)
+        res[0]=1;
+    else
+        res[0] = 0.;
+
+    return;
+}
+
 
 typedef unsigned UN;
 typedef double SC;
@@ -397,6 +406,21 @@ int main(int argc, char *argv[])
                     }
                 }
             }
+            if(parameterListProblem->sublist("Parameter").get("Robin BC",false)==true)
+            {
+                // if(!meshType.compare("structured") || !meshType.compare("structured_bfs")){
+                //     domainPressure->getMesh()->buildEdges(domainPressure->getElementsC());
+                    
+                //     domainPressure->setUnstructuredMesh(domainPressure->getMesh());
+                //     domainVelocity->buildP2ofP1Domain( domainPressure );
+                // }
+                //domainPressure->exportMesh(true,false,"BFS_h_H_25_9_subdomains.mesh");
+                //domainVelocity->exportNodeFlags();
+                domainVelocity->preProcessMesh(true,false);
+                domainVelocity->preProcessMesh(true,false);
+
+                domainPressure->preProcessMesh(true,false);
+            }
             //domainFluidPressure->setUnstructuredMesh(domainFluidPressure->getMesh());
             //domainFluidPressure->exportMesh(" ");
             //domainFluidVelocity->exportProcessor("Fluid");
@@ -508,6 +532,8 @@ int main(int argc, char *argv[])
             navierStokes.addBoundaries(bcFactory);
             navierStokes.addBoundariesPressureLaplace(bcFactoryPressureLaplace);
             navierStokes.addBoundariesPressureFp(bcFactoryPressureFp);
+
+            navierStokes.addRhsFunction( dummyFunc );
 
             navierStokes.initializeProblem();
             
