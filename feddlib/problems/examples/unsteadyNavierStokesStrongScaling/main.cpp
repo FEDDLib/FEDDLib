@@ -204,7 +204,7 @@ void oneFunc(double* x, double* res, double* parameters){
 
 
 void dummyFunc(double* x, double* res, double* parameters){
-    if(parameters[0]==2)
+    if(parameters[0]==4)
         res[0]=1;
     else
         res[0] = 0.;
