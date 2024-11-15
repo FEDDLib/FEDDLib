@@ -112,7 +112,7 @@ void inflowParabolic3D(double* x, double* res, double t, const double* parameter
 void inflowPoiseuille3D(double* x, double* res, double t, const double* parameters){
 
     double maxVelo = parameters[0];
-    double iota = 4*maxVelo;
+    double iota = 16*maxVelo;
 
     res[0] = iota * x[1] * (1.-x[1]) * x[2]*(1-x[2]);
     res[1] = 0.;
