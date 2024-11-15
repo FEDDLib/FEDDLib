@@ -231,7 +231,6 @@ int main(int argc, char *argv[]) {
         parameterListAll->setParameters(*parameterListSolver);
 
         std::string bcType = parameterListProblem->sublist("Parameter").get("BC Type","parabolic");
-        cout << " byType " << endl;
         int minNumberSubdomains;
         if (!meshType.compare("structured")) {
             minNumberSubdomains = 1;

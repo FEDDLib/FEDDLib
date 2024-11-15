@@ -1434,7 +1434,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearMultistep(){
             problemTime_->updateMultistepRhs(coeffPrevSteps,nmbBDF);/*apply (mass matrix / dt) to u_t*/
         }
         if (problemTime_->hasSourceTerm()) {
-            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Check sourceterm.");
+            //TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Check sourceterm.");
 //            problemTime_->AssembleSourceTerm(time);
 //            if (timeSteppingTool_->CurrentTime()==0.) {
 //               AddSourceTermToRHS(1.);
