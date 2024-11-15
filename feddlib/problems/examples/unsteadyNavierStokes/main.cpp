@@ -109,7 +109,17 @@ void inflowParabolic3D(double* x, double* res, double t, const double* parameter
 
     return;
 }
+void inflowPoiseuille3D(double* x, double* res, double t, const double* parameters){
 
+    double maxVelo = parameters[0];
+    double iota = 4*maxVelo;
+
+    res[0] = iota * x[1] * (1.-x[1]) * x[2]*(1-x[2]);
+    res[1] = 0.;
+    res[2] = 0.;
+
+    return;
+}
 void inflow3DRichter(double* x, double* res, double t, const double* parameters)
 {
     double H = parameters[1];
@@ -312,7 +322,7 @@ int main(int argc, char *argv[]) {
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureLaplace( new BCBuilder<SC,LO,GO,NO>( ) );
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureFp( new BCBuilder<SC,LO,GO,NO>( ) );
 
-            if (!bcType.compare("parabolic") || !bcType.compare("Couette"))
+            if (!bcType.compare("parabolic") || !bcType.compare("Couette") || !bcType.compare("poiseuille"))
                 parameter_vec.push_back(1.);//height of inflow region
             else if(!bcType.compare("parabolic_benchmark_sin") || !bcType.compare("parabolic_benchmark") || !bcType.compare("partialCFD"))
                 parameter_vec.push_back(.41);//height of inflow region
@@ -325,7 +335,7 @@ int main(int argc, char *argv[]) {
 
             string pcdBC = parameterListProblem->sublist("Parameter").get("PCD BC","Inlet");
 
-            if (!bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark")) {//flag of obstacle
+            if (!bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark")|| !bcType.compare("poiseuille") ) {//flag of obstacle
                 if (dim==2){
                     bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
                     bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
@@ -355,8 +365,11 @@ int main(int argc, char *argv[]) {
                 }
                 else if (dim==3){
                     bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
-                    bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-//                    bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
+                    if(!bcType.compare("poiseuille"))
+                        bcFactory->addBC(inflowPoiseuille3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+                    else 
+                        bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+//                 //                    bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
 //                    bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
                     bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
                  
