@@ -367,6 +367,9 @@ int main(int argc, char *argv[]) {
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
                 
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureLaplace( new BCBuilder<SC,LO,GO,NO>( ) );
+
+                Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureLpFp( new BCBuilder<SC,LO,GO,NO>( ) );
+
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureFp( new BCBuilder<SC,LO,GO,NO>( ) );
 
                 if (!bcType.compare("parabolic") || !bcType.compare("poiseuille") )
@@ -464,8 +467,14 @@ int main(int argc, char *argv[]) {
                         }
                         else if( !pcdBC.compare("Mixed")){
                             bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
-
+                            
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
+                        }
+                        else if( !pcdBC.compare("Mixed Lp")){
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+
+                            bcFactoryPressureLpFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
                         }
     
                         
@@ -520,6 +529,8 @@ int main(int argc, char *argv[]) {
                     navierStokes.addBoundaries(bcFactory);
                     navierStokes.addBoundariesPressureLaplace(bcFactoryPressureLaplace);
                     navierStokes.addBoundariesPressureFp(bcFactoryPressureFp);
+                    navierStokes.addBoundariesPressureLpFp(bcFactoryPressureLpFp);
+
                     navierStokes.addRhsFunction( dummyFunc );
 
                     navierStokes.initializeProblem();

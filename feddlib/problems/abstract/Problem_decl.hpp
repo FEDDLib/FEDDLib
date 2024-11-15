@@ -145,6 +145,8 @@ public:
 
     void addBoundariesPressureFp(const BCConstPtr_Type &bcFactory);
 
+    void addBoundariesPressureLpFp(const BCConstPtr_Type &bcFactory);
+
     void setBoundaries(double time=.0) const;
 
     void setBoundariesRHS(double time=.0) const;
@@ -242,6 +244,8 @@ protected:
     mutable BCConstPtr_Type         bcFactory_;
     mutable BCConstPtr_Type         bcFactoryPressureLaplace_;
     mutable BCConstPtr_Type         bcFactoryPressureFp_;
+    mutable BCConstPtr_Type         bcFactoryPressureLpFp_;
+
 
 
     FEFacPtr_Type feFactory_;
