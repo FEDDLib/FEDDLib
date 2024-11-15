@@ -416,10 +416,10 @@ int main(int argc, char *argv[])
                 // }
                 //domainPressure->exportMesh(true,false,"BFS_h_H_25_9_subdomains.mesh");
                 //domainVelocity->exportNodeFlags();
-                domainVelocity->preProcessMesh(true,false);
-                domainVelocity->preProcessMesh(true,false);
+                domainFluidVelocity->preProcessMesh(true,false);
+                domainFluidVelocity->preProcessMesh(true,false);
 
-                domainPressure->preProcessMesh(true,false);
+                domainFluidPressure->preProcessMesh(true,false);
             }
             //domainFluidPressure->setUnstructuredMesh(domainFluidPressure->getMesh());
             //domainFluidPressure->exportMesh(" ");

@@ -523,7 +523,7 @@ int main(int argc, char *argv[]) {
             navierStokes.addBoundariesPressureLaplace(bcFactoryPressureLaplace);
             navierStokes.addBoundariesPressureFp(bcFactoryPressureFp);
 
-            navierStokes.addRhsFunction( dummyFunc );
+            navierStokes.addRhsFunction( dummyFuncRhs );
 
             navierStokes.initializeProblem();
             
