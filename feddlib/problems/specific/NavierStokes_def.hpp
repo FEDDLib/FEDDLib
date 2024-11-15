@@ -277,7 +277,6 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 bcBlockMatrix->addBlock(Ap2,0,0);
                 this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix); 
                 this->bcFactoryPressureLpFp_->setSystemScaled(bcBlockMatrix); 
-  
             }
             
             if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 2",false)){  // Setting in Ap2 the boundaries of Fp
@@ -484,7 +483,8 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
             // ---------------------
             if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 1",false)){ // Setting in Ap2 the boundaries of Lp
                 bcBlockMatrix->addBlock(Ap2,0,0);
-                this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix);        
+                this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix);  
+                this->bcFactoryPressureLpFp_->setSystemScaled(bcBlockMatrix);       
             }
             
             if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 2",true)){  // Setting in Ap2 the boundaries of Fp
