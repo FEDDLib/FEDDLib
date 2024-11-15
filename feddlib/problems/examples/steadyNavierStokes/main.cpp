@@ -447,22 +447,41 @@ int main(int argc, char *argv[]) {
                         bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
 
                         if( !pcdBC.compare("Inlet")){
-
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting inlet of Laplace and Fp to Dirichlet ----------- " << endl;
                             bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
 
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
                         }
                         else if( !pcdBC.compare("Outlet")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting outlet of Laplace and Fp to Dirichlet ----------- " << endl;   
                             bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
 
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
                         }
-                        else if( !pcdBC.compare("Outlet")){
+                        else if( !pcdBC.compare("OutletWall1")){
+                             if(verbose)
+                                cout << " --------- PCD Info: Setting outlet of Laplace to dirichlet. Setting outlet and wall of Fp to Dirichlet ----------- " << endl;
                             bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
 
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 1, 0, domainPressure, "Dirichlet", 1);
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+
+                        }
+                        else if( !pcdBC.compare("OutletWall2")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting outlet and wall of Laplace and Fp to Dirichlet ----------- " << endl;
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 1, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 1, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+
                         }
                         else if( !pcdBC.compare("Both")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting outlet of Laplace and inlet and outlet of Fp to Dirichlet ----------- " << endl;
                             bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
 
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
@@ -470,11 +489,15 @@ int main(int argc, char *argv[]) {
 
                         }
                         else if( !pcdBC.compare("Mixed")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting outlet of Laplace and inlet Fp to Dirichlet ----------- " << endl;
                             bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
                             
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
                         }
                         else if( !pcdBC.compare("Mixed Lp")){
+                             if(verbose)
+                                cout << " --------- PCD Info: Setting outlet of Laplace and intlet Fp to Dirichlet and setting Ap in Fp inlet to Dirichlet ----------- " << endl;
                             bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
 
