@@ -456,14 +456,7 @@ int main(int argc, char *argv[]) {
                             
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
                         }
-                        else if( !pcdBC.compare("Mixed Lp")){
-                             if(verbose)
-                                cout << " --------- PCD Info: Setting outlet of Laplace and intlet Fp to Dirichlet and setting Ap in Fp inlet to Dirichlet ----------- " << endl;
-                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
-                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
-
-                            bcFactoryPressureLpFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
-                        }
+                       
     
                     
                 }
