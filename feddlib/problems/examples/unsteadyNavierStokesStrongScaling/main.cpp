@@ -202,10 +202,6 @@ void oneFunc(double* x, double* res, double* parameters){
     res[0] = 1.;
 }
 
-void dummyFunc(double* x, double* res, double t, const double* parameters)
-{
-    return;
-}
 
 void dummyFunc(double* x, double* res, double* parameters){
     if(parameters[0]==2)

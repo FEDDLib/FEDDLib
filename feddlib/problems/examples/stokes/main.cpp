@@ -111,6 +111,19 @@ void dummyFunc(double* x, double* res, double t, const double* parameters){
     return;
 }
 
+
+void inflowPoiseuille3D(double* x, double* res, double t, const double* parameters){
+
+    double maxVelo = parameters[0];
+    double iota = 16*maxVelo;
+
+    res[0] = iota * x[1] * (1.-x[1]) * x[2]*(1-x[2]);
+    res[1] = 0.;
+    res[2] = 0.;
+
+    return;
+}
+
 typedef unsigned UN;
 typedef default_sc SC;
 typedef default_lo LO;
@@ -308,7 +321,7 @@ int main(int argc, char *argv[]) {
             // ####################
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
             
-            if (!bcType.compare("parabolic"))
+            if (!bcType.compare("parabolic") || !bcType.compare("poiseuille"))
                 parameter_vec.push_back(1.);//height of inflow region
             else if(!bcType.compare("parabolic_benchmark"))
                 parameter_vec.push_back(.41);//height of inflow region
@@ -325,7 +338,11 @@ int main(int argc, char *argv[]) {
                 bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
                 bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
             }
-
+            else if(dim==3 &&!bcType.compare("poiseuille"))
+            {
+                bcFactory->addBC(inflowPoiseuille3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);       
+                bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
+            }
             if (!bcType.compare("parabolic_benchmark")) {//flag of obstacle
                 if (dim==2)
                     bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
