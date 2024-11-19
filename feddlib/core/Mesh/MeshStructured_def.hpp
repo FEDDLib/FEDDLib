@@ -4150,6 +4150,74 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,string 
                         }
                     }
                     break;
+                case 5: //LDC
+                    for (int i=0; i<this->pointsUni_->size(); i++) {
+                        if (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol) ) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                        //bottom
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + tol) ) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                        //top
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsUni_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                            this->bcFlagUni_->at(i) = 2;
+                        }
+                        //front
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + tol) ) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                        //back
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsUni_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                        //out
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                            this->pointsUni_->at(i).at(1) > (coorRec[1] + tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                            this->pointsUni_->at(i).at(2) > (coorRec[2] + tol) &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + height - tol)) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                    }
+                    for (int i=0; i<this->pointsUni_->size(); i++) {
+                        if (this->pointsRep_->at(i).at(0) < (coorRec[0] - tol) ) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        //bottom
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + tol) ) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        //top
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsRep_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                            this->bcFlagRep_->at(i) = 2;
+                        }
+                        //front
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + tol) ) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        //back
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsRep_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        //out
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                            this->pointsRep_->at(i).at(1) > (coorRec[1] + tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                            this->pointsRep_->at(i).at(2) > (coorRec[2] + tol) &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + height - tol)) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
