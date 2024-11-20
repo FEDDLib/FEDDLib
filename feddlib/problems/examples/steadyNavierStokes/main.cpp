@@ -526,6 +526,7 @@ int main(int argc, char *argv[]) {
 
                             bcFactoryPressureLpFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
                         }
+                        else{}
     
                         
                     }
