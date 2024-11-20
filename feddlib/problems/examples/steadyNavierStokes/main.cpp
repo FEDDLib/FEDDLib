@@ -513,7 +513,7 @@ int main(int argc, char *argv[]) {
                         }
                         else if( !pcdBC.compare("Mixed2")){
                             if(verbose)
-                                cout << " --------- PCD Info: Setting outlet of Laplace and inlet Fp to Dirichlet ----------- " << endl;
+                                cout << " --------- PCD Info: Setting Inlet of Laplace and outlet Fp to Dirichlet ----------- " << endl;
                             bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
                             
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
