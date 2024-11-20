@@ -287,24 +287,24 @@ int main(int argc, char *argv[]) {
                         domainVelocity->buildMesh( 1,"Square", dim, discVelocity, n, m, numProcsCoarseSolve);
                     }
                     if (!meshType.compare("structured_ldc")) {
-                    // Structured Mesh for Lid-Driven Cavity Test
-                    TEUCHOS_TEST_FOR_EXCEPTION( size%minNumberSubdomains != 0 , std::logic_error, "Wrong number of processors for structured mesh.");
-                    if (dim == 2) {
-                        n = (int) (std::pow( size/minNumberSubdomains ,1/2.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
-                        std::vector<double> x(2);
-                        x[0]=0.0;    x[1]=0.0;
-                        domainPressure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., comm ) );
-                        domainVelocity.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., comm ) );
-                    }
-                    else if (dim == 3){
-                        n = (int) (std::pow( size/minNumberSubdomains, 1/3.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
-                        std::vector<double> x(3);
-                        x[0]=0.0;    x[1]=0.0;	x[2]=0.0;
-                        domainPressure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
-                        domainVelocity.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
-                    }
-                    domainPressure->buildMesh( 5,"Square", dim, discPressure, n, m, numProcsCoarseSolve);
-                    domainVelocity->buildMesh( 5,"Square", dim, discVelocity, n, m, numProcsCoarseSolve);
+                        // Structured Mesh for Lid-Driven Cavity Test
+                        TEUCHOS_TEST_FOR_EXCEPTION( size%minNumberSubdomains != 0 , std::logic_error, "Wrong number of processors for structured mesh.");
+                        if (dim == 2) {
+                            n = (int) (std::pow( size/minNumberSubdomains ,1/2.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
+                            std::vector<double> x(2);
+                            x[0]=0.0;    x[1]=0.0;
+                            domainPressure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., comm ) );
+                            domainVelocity.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., comm ) );
+                        }
+                        else if (dim == 3){
+                            n = (int) (std::pow( size/minNumberSubdomains, 1/3.) + 100*Teuchos::ScalarTraits<double>::eps()); // 1/H
+                            std::vector<double> x(3);
+                            x[0]=0.0;    x[1]=0.0;	x[2]=0.0;
+                            domainPressure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
+                            domainVelocity.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
+                        }
+                        domainPressure->buildMesh( 5,"Square", dim, discPressure, n, m, numProcsCoarseSolve);
+                        domainVelocity->buildMesh( 5,"Square", dim, discVelocity, n, m, numProcsCoarseSolve);
                     }
                     if (!meshType.compare("structured_bfs")) {
                         TEUCHOS_TEST_FOR_EXCEPTION( size%minNumberSubdomains != 0 , std::logic_error, "Wrong number of processors for structured BFS mesh.");
@@ -361,7 +361,8 @@ int main(int argc, char *argv[]) {
                 }
                 std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
 
-                //domainVelocity->exportNodeFlags();
+                // domainVelocity->exportNodeFlags();
+                // domainVelocity->exportSurfaceNormals();
                 // ####################
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
                 

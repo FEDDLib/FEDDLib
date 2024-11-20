@@ -7081,7 +7081,6 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
 
                 func( &x[0], &valueFunc[0], paramsFunc);
                 if(valueFunc[0] > 0.){
-
                     Helper::computeSurfaceNormal(dim, pointsRep,nodeListP,v_E,norm_v_E);
 
                     Helper::buildTransformationSurface( nodeListP, pointsRep, B, b, FEType);
