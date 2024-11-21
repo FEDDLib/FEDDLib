@@ -368,8 +368,6 @@ int main(int argc, char *argv[]) {
                 
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureLaplace( new BCBuilder<SC,LO,GO,NO>( ) );
 
-                Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureLpFp( new BCBuilder<SC,LO,GO,NO>( ) );
-
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureFp( new BCBuilder<SC,LO,GO,NO>( ) );
 
                 if (!bcType.compare("parabolic") || !bcType.compare("poiseuille") )
@@ -518,15 +516,9 @@ int main(int argc, char *argv[]) {
                             
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
                         }
-                        else if( !pcdBC.compare("Mixed Lp")){
-                             if(verbose)
-                                cout << " --------- PCD Info: Setting outlet of Laplace and intlet Fp to Dirichlet and setting Ap in Fp inlet to Dirichlet ----------- " << endl;
-                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
-                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+                        else{
 
-                            bcFactoryPressureLpFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
                         }
-                        else{}
     
                         
                     }
@@ -561,7 +553,6 @@ int main(int argc, char *argv[]) {
                     navierStokes.addBoundaries(bcFactory);
                     navierStokes.addBoundariesPressureLaplace(bcFactoryPressureLaplace);
                     navierStokes.addBoundariesPressureFp(bcFactoryPressureFp);
-                    navierStokes.addBoundariesPressureLpFp(bcFactoryPressureLpFp);
 
                     navierStokes.addRhsFunction( dummyFunc );
 

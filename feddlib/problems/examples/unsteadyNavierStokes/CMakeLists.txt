@@ -21,8 +21,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_unsteadyNavierStokes
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_unsteadyNavierStokes
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-	SOURCE_FILES dfg_fsi_fluid_h004.mesh
+	SOURCE_FILES dfg_fsi_fluid_h004.mesh DFG3DCylinder_1k.mesh DFG3DCylinder_6k.mesh Turek3DCylinder_1k.mesh Turek3DCylinder_6k.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    DEST_FILES dfg_fsi_fluid_h004.mesh
+    DEST_FILES dfg_fsi_fluid_h004.mesh  DFG3DCylinder_1k.mesh DFG3DCylinder_6k.mesh Turek3DCylinder_1k.mesh Turek3DCylinder_6k.mesh
 	EXEDEPS unsteadyNavierStokes
 )

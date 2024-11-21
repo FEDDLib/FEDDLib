@@ -354,13 +354,6 @@ namespace FEDD
     }
 
     template <class SC, class LO, class GO, class NO>
-    void Problem<SC, LO, GO, NO>::addBoundariesPressureLpFp(const BCConstPtr_Type &bcFactory)
-    {
-
-        bcFactoryPressureLpFp_ = bcFactory;
-    }
-
-    template <class SC, class LO, class GO, class NO>
     void Problem<SC, LO, GO, NO>::addBoundariesPressureLaplace(const BCConstPtr_Type &bcFactory)
     {
 
