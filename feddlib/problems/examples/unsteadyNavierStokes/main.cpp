@@ -81,11 +81,22 @@ void inflowParabolic2D(double* x, double* res, double t, const double* parameter
     return;
 }
 
-void inflowParabolic2DSin(double* x, double* res, double t, const double* parameters){
+void inflowParabolic2DSinBenchmark(double* x, double* res, double t, const double* parameters){
 
     double H = parameters[1];
     res[0] = sin(M_PI*t*0.125)*( 6*x[1]*(H-x[1]) ) / (H*H);
     res[1] = 0.;
+
+    return;
+}
+
+
+void inflowParabolic3DSinBenchmark(double* x, double* res, double t, const double* parameters){
+
+    double H = parameters[1];
+    res[0] = 16*parameters[0]*x[1]*x[2]*sin(M_PI*t*0.125)*(H-x[1])*(H-x[2])/ (H*H*H*H);
+    res[1] = 0.;
+    res[2] = 0.;
 
     return;
 }
@@ -117,6 +128,16 @@ void inflowPoiseuille3D(double* x, double* res, double t, const double* paramete
     res[0] = iota * x[1] * (1.-x[1]) * x[2]*(1-x[2]);
     res[1] = 0.;
     res[2] = 0.;
+
+    return;
+}
+void inflowPoiseuille2D(double* x, double* res, double t, const double* parameters){
+
+    double maxVelo = parameters[0];
+    double iota = 4*maxVelo;
+
+    res[0] = iota * x[1] * (1.-x[1]);
+    res[1] = 0.;
 
     return;
 }
@@ -358,10 +379,16 @@ int main(int argc, char *argv[]) {
 
             string pcdBC = parameterListProblem->sublist("Parameter").get("PCD BC","Inlet");
 
-            if (!bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark")|| !bcType.compare("poiseuille") ) {//flag of obstacle
+            if (!bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark")|| !bcType.compare("poiseuille")|| !bcType.compare("parabolic_benchmark_sin") ) {//flag of obstacle
                 if (dim==2){
+                    if(!bcType.compare("poiseuille"))
+                        bcFactory->addBC(inflowPoiseuille2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+                    else if(!bcType.compare("parabolic_benchmark_sin"))
+                        bcFactory->addBC(inflowParabolic2DSinBenchmark, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+                    else 
+                        bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+
                     bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
-                    bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 //                    bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
 //                    bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
                     bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
@@ -390,8 +417,11 @@ int main(int argc, char *argv[]) {
                     bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim);
                     if(!bcType.compare("poiseuille"))
                         bcFactory->addBC(inflowPoiseuille3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+                    else if(!bcType.compare("parabolic_benchmark_sin"))
+                        bcFactory->addBC(inflowParabolic3DSinBenchmark, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
                     else 
                         bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+                        
 //                 //                    bcFactory->addBC(dummyFunc, 3, 0, domainVelocity, "Neumann", dim);
 //                    bcFactory->addBC(dummyFunc, 666, 1, domainPressure, "Neumann", 1);
                     bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
@@ -458,16 +488,6 @@ int main(int argc, char *argv[]) {
                        
     
                     
-                }
-            }
-            else if (!bcType.compare("parabolic_benchmark_sin")) {
-                if (dim==2){
-                    bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim);
-                    bcFactory->addBC(inflowParabolic2DSin, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-                    bcFactory->addBC(zeroDirichlet2D, 4, 0, domainVelocity, "Dirichlet", dim);
-                }
-                else if (dim==3){
-                    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Test for 2D only: parabolic_benchmark_sin");
                 }
             }
             else if (!bcType.compare("partialCFD")) { // Fuer CFD3 Test
