@@ -7,39 +7,39 @@ double OneFunc(double* x, int* parameter)
     return 1.0;
 }
 
-void drag2D(double* x, double* res, double t, const double* parameters)
-{
-    res[0] = 1.;
-    res[1] = 0.;
+// void drag2D(double* x, double* res, double t, const double* parameters)
+// {
+//     res[0] = 1.;
+//     res[1] = 0.;
     
-    return;
-}
+//     return;
+// }
 
-void drag3D(double* x, double* res, double t, const double* parameters)
-{
-    res[0] = 1.;
-    res[1] = 0.;
-    res[2] = 0.;
+// void drag3D(double* x, double* res, double t, const double* parameters)
+// {
+//     res[0] = 1.;
+//     res[1] = 0.;
+//     res[2] = 0.;
     
-    return;
-}
+//     return;
+// }
 
-void lift2D(double* x, double* res, double t, const double* parameters)
-{
-    res[0] = 0.;
-    res[1] = 1.;
+// void lift2D(double* x, double* res, double t, const double* parameters)
+// {
+//     res[0] = 0.;
+//     res[1] = 1.;
     
-    return;
-}
+//     return;
+// }
 
-void lift3D(double* x, double* res, double t, const double* parameters)
-{
-    res[0] = 0.;
-    res[1] = 1.;
-    res[2] = 0.;
+// void lift3D(double* x, double* res, double t, const double* parameters)
+// {
+//     res[0] = 0.;
+//     res[1] = 1.;
+//     res[2] = 0.;
     
-    return;
-}
+//     return;
+// }
 
 namespace FEDD {
 // Funktionen fuer die rechte Seite der Struktur/ Fluid/ Geometrie sind im jeweiligen Problem
@@ -1365,75 +1365,77 @@ template<class SC,class LO,class GO,class NO>
 void FSI<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
     if ( this->getParameterList()->sublist("General").get("Export drag and lift",false) ) {
         
-        int dim = this->dim_;
-        TEUCHOS_TEST_FOR_EXCEPTION( this->parameterList_->sublist("Parameter").get("Criterion","Residual") == "Update",  std::runtime_error, "Wrong nonlinear criterion to calculate the drag coefficient. The last system is the Newton system but we need the fixed point system. Either use Criterion=Residual or implement for Criterion=Update." );
-        
-        TEUCHOS_TEST_FOR_EXCEPTION( this->problemFluid_->hasSourceTerm(),  std::runtime_error, "We need to substract the additional source term: drag = < F*u + B_T*p + C1_T*lamba - f, v >" );
-        
-        Teuchos::Array<SC> drag(1);
-        Teuchos::Array<SC> lift(1);
-        
-        BlockMultiVectorPtr_Type uDrag = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
-        BlockMultiVectorPtr_Type uLift = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
-        // should be the last fixed point system without boundary conditions or the last extrapolation system without boundary values.
-        // We need to reassemble B and BT, because we might have set Dirichlet boundary conditions in BT (less likely in B)
-        this->problemFluid_->assembleDivAndStab();
-        
-        this->problemFluid_->getSystem()->apply( *this->problemFluid_->getSolution(), *uDrag );
-        this->problemFluid_->getSystem()->apply( *this->problemFluid_->getSolution(), *uLift );
-        
-        MultiVectorPtr_Type C1T_lambda = Teuchos::rcp( new MultiVector_Type( this->getSolution()->getBlock(0) ) );
-        this->system_->getBlock(0,3)->apply( *this->getSolution()->getBlock(3), *C1T_lambda );
-        
-        uDrag->getBlockNonConst(0)->update( 1., *C1T_lambda, 1. ); // velocity + C1_T * lambda
-        uLift->getBlockNonConst(0)->update( 1., *C1T_lambda, 1. ); // velocity + C1_T * lambda
-        
-        BCPtr_Type bcFactoryDrag = Teuchos::rcp( new BC_Type( ) );
-        BCPtr_Type bcFactoryLift = Teuchos::rcp( new BC_Type( ) );
-        
-        DomainConstPtr_Type domainVelocityConst = this->problemFluid_->getDomain(0);
-        DomainPtr_Type domainVelocity = Teuchos::rcp_const_cast<Domain_Type>(domainVelocityConst);
-        if( dim == 2 ){
-            bcFactoryDrag->addBC(drag2D, 4, 0, domainVelocity, "Dirichlet", dim); // obstacle
-            bcFactoryDrag->addBC(drag2D, 5, 0, domainVelocity, "Dirichlet", dim); // interface; check main fsi for matching flags at the obstacle and interface
-            bcFactoryLift->addBC(lift2D, 4, 0, domainVelocity, "Dirichlet", dim);
-            bcFactoryLift->addBC(lift2D, 5, 0, domainVelocity, "Dirichlet", dim);
-        }
-        else if( dim == 3 ){
-            bcFactoryDrag->addBC(drag3D, 3, 0, domainVelocity, "Dirichlet", dim); // check main fsi for matching
-            bcFactoryDrag->addBC(drag3D, 6, 0, domainVelocity, "Dirichlet", dim); // check main fsi for matching flags at the obstacle and interface
-            bcFactoryLift->addBC(lift3D, 3, 0, domainVelocity, "Dirichlet", dim);
-            bcFactoryLift->addBC(lift3D, 6, 0, domainVelocity, "Dirichlet", dim);
-        }
-        
-        BlockMultiVectorPtr_Type vD = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
-        BlockMultiVectorPtr_Type vL = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
-        
-        vD->putScalar(0.);
-        vL->putScalar(0.);
-        
-        bcFactoryDrag->setRHS( vD );
-        bcFactoryLift->setRHS( vL );
-        
-        uDrag->dot( vD, drag() );
-        uLift->dot( vL, lift() );
-        
-//        double density = this->problemFluid_->getParameterList()->sublist("Parameter").get("Density",1.);
-//        double uMean = this->getParameterList()->sublist("Parameter").get("MeanVelocity",2.0);
-//        double L = 0.;
-//        if ( dim == 2)
-//            L = 2.*0.05;
-//        else
-//            L = 1.;
-//        
-//        drag[0] *= -(2./(density*uMean*uMean*L));
-//        lift[0] *= -(2./(density*uMean*uMean*L));
+        this->problemFluid_->computeValuesOfInterestAndExport();
 
-        drag[0] *= -1.;
-        lift[0] *= -1.;
+//         int dim = this->dim_;
+//         TEUCHOS_TEST_FOR_EXCEPTION( this->parameterList_->sublist("Parameter").get("Criterion","Residual") == "Update",  std::runtime_error, "Wrong nonlinear criterion to calculate the drag coefficient. The last system is the Newton system but we need the fixed point system. Either use Criterion=Residual or implement for Criterion=Update." );
         
-        exporterTxtDrag_->exportData( drag[0] );
-        exporterTxtLift_->exportData( lift[0] );
+//         TEUCHOS_TEST_FOR_EXCEPTION( this->problemFluid_->hasSourceTerm(),  std::runtime_error, "We need to substract the additional source term: drag = < F*u + B_T*p + C1_T*lamba - f, v >" );
+        
+//         Teuchos::Array<SC> drag(1);
+//         Teuchos::Array<SC> lift(1);
+        
+//         BlockMultiVectorPtr_Type uDrag = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
+//         BlockMultiVectorPtr_Type uLift = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
+//         // should be the last fixed point system without boundary conditions or the last extrapolation system without boundary values.
+//         // We need to reassemble B and BT, because we might have set Dirichlet boundary conditions in BT (less likely in B)
+//         this->problemFluid_->assembleDivAndStab();
+        
+//         this->problemFluid_->getSystem()->apply( *this->problemFluid_->getSolution(), *uDrag );
+//         this->problemFluid_->getSystem()->apply( *this->problemFluid_->getSolution(), *uLift );
+        
+//         MultiVectorPtr_Type C1T_lambda = Teuchos::rcp( new MultiVector_Type( this->getSolution()->getBlock(0) ) );
+//         this->system_->getBlock(0,3)->apply( *this->getSolution()->getBlock(3), *C1T_lambda );
+        
+//         uDrag->getBlockNonConst(0)->update( 1., *C1T_lambda, 1. ); // velocity + C1_T * lambda
+//         uLift->getBlockNonConst(0)->update( 1., *C1T_lambda, 1. ); // velocity + C1_T * lambda
+        
+//         BCPtr_Type bcFactoryDrag = Teuchos::rcp( new BC_Type( ) );
+//         BCPtr_Type bcFactoryLift = Teuchos::rcp( new BC_Type( ) );
+        
+//         DomainConstPtr_Type domainVelocityConst = this->problemFluid_->getDomain(0);
+//         DomainPtr_Type domainVelocity = Teuchos::rcp_const_cast<Domain_Type>(domainVelocityConst);
+//         if( dim == 2 ){
+//             bcFactoryDrag->addBC(drag2D, 4, 0, domainVelocity, "Dirichlet", dim); // obstacle
+//             bcFactoryDrag->addBC(drag2D, 5, 0, domainVelocity, "Dirichlet", dim); // interface; check main fsi for matching flags at the obstacle and interface
+//             bcFactoryLift->addBC(lift2D, 4, 0, domainVelocity, "Dirichlet", dim);
+//             bcFactoryLift->addBC(lift2D, 5, 0, domainVelocity, "Dirichlet", dim);
+//         }
+//         else if( dim == 3 ){
+//             bcFactoryDrag->addBC(drag3D, 3, 0, domainVelocity, "Dirichlet", dim); // check main fsi for matching
+//             bcFactoryDrag->addBC(drag3D, 6, 0, domainVelocity, "Dirichlet", dim); // check main fsi for matching flags at the obstacle and interface
+//             bcFactoryLift->addBC(lift3D, 3, 0, domainVelocity, "Dirichlet", dim);
+//             bcFactoryLift->addBC(lift3D, 6, 0, domainVelocity, "Dirichlet", dim);
+//         }
+        
+//         BlockMultiVectorPtr_Type vD = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
+//         BlockMultiVectorPtr_Type vL = Teuchos::rcp( new BlockMultiVector_Type( this->problemFluid_->getSolution() ) );
+        
+//         vD->putScalar(0.);
+//         vL->putScalar(0.);
+        
+//         bcFactoryDrag->setRHS( vD );
+//         bcFactoryLift->setRHS( vL );
+        
+//         uDrag->dot( vD, drag() );
+//         uLift->dot( vL, lift() );
+        
+// //        double density = this->problemFluid_->getParameterList()->sublist("Parameter").get("Density",1.);
+// //        double uMean = this->getParameterList()->sublist("Parameter").get("MeanVelocity",2.0);
+// //        double L = 0.;
+// //        if ( dim == 2)
+// //            L = 2.*0.05;
+// //        else
+// //            L = 1.;
+// //        
+// //        drag[0] *= -(2./(density*uMean*uMean*L));
+// //        lift[0] *= -(2./(density*uMean*uMean*L));
+
+//         drag[0] *= -1.;
+//         lift[0] *= -1.;
+        
+//         exporterTxtDrag_->exportData( drag[0] );
+//         exporterTxtLift_->exportData( lift[0] );
     }
 }
 

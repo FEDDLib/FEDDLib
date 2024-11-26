@@ -1,6 +1,9 @@
 #ifndef NAVIERSTOKES_decl_hpp
 #define NAVIERSTOKES_decl_hpp
 #include "feddlib/problems/abstract/NonLinearProblem.hpp"
+#include "feddlib/problems/abstract/TimeProblem.hpp"
+#include "feddlib/problems/Solver/TimeSteppingTools.hpp"
+
 #include "Xpetra_ThyraUtils.hpp"
 #include "Xpetra_CrsMatrixWrap.hpp"
 #include <Thyra_ProductVectorBase.hpp>
@@ -48,6 +51,8 @@ public:
 
     typedef typename Problem_Type::BlockMultiVector_Type BlockMultiVector_Type;
 
+    typedef typename Problem_Type::Domain_Type Domain_Type;
+    typedef Teuchos::RCP<Domain_Type > DomainPtr_Type;
     typedef typename Problem_Type::DomainConstPtr_Type DomainConstPtr_Type;
     typedef typename Problem_Type::CommConstPtr_Type CommConstPtr_Type;
 
@@ -60,6 +65,14 @@ public:
     typedef typename NonLinearProblem_Type::ThyraVec_Type ThyraVec_Type;
     typedef typename NonLinearProblem_Type::ThyraOp_Type ThyraOp_Type;
     typedef Thyra::BlockedLinearOpBase<SC> ThyraBlockOp_Type;
+
+
+    typedef typename Problem_Type::BC_Type BC_Type;
+    typedef typename Teuchos::RCP<BC_Type> BCPtr_Type;
+
+    typedef ExporterParaView<SC,LO,GO,NO> Exporter_Type;
+    typedef Teuchos::RCP<Exporter_Type> ExporterPtr_Type;
+    typedef Teuchos::RCP<ExporterTxt> ExporterTxtPtr_Type;
 
     typedef typename NonLinearProblem_Type::TpetraOp_Type TpetraOp_Type;
     //@}
@@ -90,11 +103,12 @@ public:
     virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const; //standard or reverse
     
     void calculateNonLinResidualVecWithMeshVelo(std::string type, double time, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const;
-//    virtual int ComputeDragLift(vec_dbl_ptr_Type &values);
+    
+    //virtual int ComputeDragLift(vec_dbl_ptr_Type &values);
 
     virtual void getValuesOfInterest( vec_dbl_Type& values ){};
     
-    virtual void computeValuesOfInterestAndExport() {};
+    virtual void computeValuesOfInterestAndExport();
 
 //    virtual void assembleExternal( std::string type ){};
     /*####################*/
@@ -106,6 +120,8 @@ public:
     vec_int_ptr_Type pressureIDsLoc;
     MultiVectorPtr_Type u_rep_;
     MultiVectorPtr_Type p_rep_;
+    ExporterTxtPtr_Type exporterTxtDrag_;
+    ExporterTxtPtr_Type exporterTxtLift_;
 
 private:
     mutable bool stokesTekoPrecUsed_; //Help variable to signal that we constructed the initial preconditioner for NOX with the Stokes system and we do not need to compute it if fill_W_prec is called for the first time. However, the preconditioner is only correct if a Stokes system is solved in the first nonlinear iteration. This only affects the block preconditioners of Teko

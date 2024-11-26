@@ -566,6 +566,11 @@ int main(int argc, char *argv[]) {
                     NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
                     nlSolver.solve( navierStokes );
                     comm->barrier();
+
+
+                    if (parameterListAll->sublist("General").get("Export drag and lift",false) ){
+                        navierStokes.computeValuesOfInterestAndExport();
+                    }
                 }
     //            if (saveVector>0) {
     //                string outName = "vector_RE_" + to_string(RE) + "_" + to_string(dim) + "D_N_" + to_string(Size) +".h5";

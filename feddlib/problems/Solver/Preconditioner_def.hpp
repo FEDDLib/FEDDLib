@@ -437,7 +437,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
             // We could simply add 'a' of projection to the parameterlist. There it will be extracted in the Overlapping Operator and used to project the pressure.
             // As it is extracted in the Overlapping Operator we need to pass it to the sublist. Also we have an additional parameter <Parameter name="Use Pressure Correction" type="bool" value="true"/> in the <ParameterList name="AlgebraicOverlappingOperator"> sublist to trigger the read in FROSch.
            
-           if(!pressureProjection_.is_null()){
+           if(!pressureProjection_.is_null() && ( dofsPerNodeVector.size() > 1 || dofsPerNodeVector[0] == 1) ){
                 pressureProjection_->merge(); // We merge the projection vector, as FROSch does not distinguish between blocks
 
                 pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").sublist("AlgebraicOverlappingOperator").set("Projection",pressureProjection_->getMergedVector()->getXpetraMultiVectorNonConst());

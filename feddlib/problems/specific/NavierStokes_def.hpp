@@ -33,6 +33,39 @@ void syOne2D(double* x, double* res, double t, double* parameter){
 
     return;
 }
+
+void drag2D(double* x, double* res, double t, const double* parameters)
+{
+    res[0] = 1.;
+    res[1] = 0.;
+    
+    return;
+}
+
+void drag3D(double* x, double* res, double t, const double* parameters)
+{
+    res[0] = 1.;
+    res[1] = 0.;
+    res[2] = 0.;
+    
+    return;
+}
+void lift2D(double* x, double* res, double t, const double* parameters)
+{
+    res[0] = 0.;
+    res[1] = 1.;
+    
+    return;
+}
+
+void lift3D(double* x, double* res, double t, const double* parameters)
+{
+    res[0] = 0.;
+    res[1] = 1.;
+    res[2] = 0.;
+    
+    return;
+}
 void sDummyFunc(double* x, double* res, double t, double* parameter){
 
     return;
@@ -108,8 +141,14 @@ p_rep_()
             MYASSERT(false,"Not implemented to calc coefficients in 3D!");
 #endif
         }
-    }
 
+    }
+    if ( parameterList->sublist("General").get("Export drag and lift",false) ){
+        exporterTxtDrag_ = Teuchos::rcp(new ExporterTxt () );
+        exporterTxtDrag_->setup( "drag_force", this->comm_ );
+        exporterTxtLift_ = Teuchos::rcp(new ExporterTxt () );
+        exporterTxtLift_->setup( "lift_force", this->comm_ );
+    }
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -183,6 +222,29 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
         // Adding components to projection vector 
         projection->addBlock(vel0,0);
+        projection->addBlock(P,1);
+
+        // Setting projection vector in preconditioner to later pass to paramterlist in FROSch
+        this->getPreconditionerConst()->setPressureProjection( projection );    
+
+        if (this->verbose_)
+            std::cout << "\n 'Use pressure correction' was set to 'true'. This requieres a version of Trilinos of that includes pressure correction in the FROSch_OverlappingOperator!!" << std::endl;  
+
+    }
+    else if(this->parameterList_->sublist("Parameter").get("Use Pressure Correction",false) && (!this->getFEType(0).compare("P2") || (!this->getFEType(0).compare("Q2") && !this->getFEType(1).compare("Q1"))) && !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Teko")){ 
+        // Projection vector a: \int p dx, for pressure component and 0 for velocity.
+        BlockMultiVectorPtr_Type projection(new BlockMultiVector_Type (1));
+
+        MultiVectorPtr_Type P(new MultiVector_Type( this->getDomain(1)->getMapUnique(), 1 ) );
+
+        this->feFactory_->assemblyPressureMeanValue( this->dim_,this->getFEType(1),P) ;
+
+        // Velocity component is set to zero, such that the projection vector only influences the pressure part
+        // MultiVectorPtr_Type vel0(new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
+        // vel0->putScalar(0.);
+
+        // Adding components to projection vector 
+        // projection->addBlock(vel0,0);
         projection->addBlock(P,1);
 
         // Setting projection vector in preconditioner to later pass to paramterlist in FROSch
@@ -596,90 +658,79 @@ void NavierStokes<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray
         std::cout << "done -- " << std::endl;
 }
 
-//template<class SC,class LO,class GO,class NO>
-//int NavierStokes<SC,LO,GO,NO>::ComputeDragLift(vec_dbl_ptr_Type &values){
-//
-//    int dimension = this->domainPtr_vec_.at(0)->GetDimension();
-//    MultiVector_ptr_vec_ptr_Type sol_unique_vec(new std::vector<MultiVector_ptr_Type>(0));
-//    this->system_->FillSplitVector64(*this->solution_, sol_unique_vec);
-//    this->system_->BuildRepeatedVectorBlocks(sol_unique_vec);
-//    Vector_ptr_Type u_rep(new Epetra_Vector(*(this->system_->GetRepeatedVec(0))));
-//    Teuchos::RCP<Epetra_FECrsMatrix> 	N(new Epetra_FECrsMatrix(Epetra_DataAccess::Copy,*(this->domainPtr_vec_.at(0)->GetMapXDimUnique()),10));
-//    u_rep.reset(new Epetra_Vector(*(this->system_->GetRepeatedVec(0))));
-//    N.reset(new Epetra_FECrsMatrix(Epetra_DataAccess::Copy,*(this->domainPtr_vec_.at(0)->GetMapXDimUnique()),10));
-//    this->feFactory_->AssemblyAdvectionXDim(dimension, this->domain_FEType_vec_.at(0), 7, N, u_rep /* u */, setZeros);
-//
-//    Teuchos::RCP<Epetra_CrsMatrix>   	AN(new Epetra_CrsMatrix(Epetra_DataAccess::Copy,*(this->domainPtr_vec_.at(0)->GetMapXDimUnique()),10));
-//
-//    EpetraExt::MatrixMatrix::Add(*A_,false,1.,*AN,1.);
-//    EpetraExt::MatrixMatrix::Add(*N,false,1.,*AN,1.);
-//
-//    AN.reset(new Epetra_CrsMatrix(Epetra_DataAccess::Copy,*(this->domainPtr_vec_.at(0)->GetMapXDimUnique()),10));
-//    EpetraExt::MatrixMatrix::Add(*A_,false,1.,*AN,1.);
-//    EpetraExt::MatrixMatrix::Add(*N,false,1.,*AN,1.);
-//    AN->FillComplete();
-//
-//
-//    Teuchos::RCP<Epetra_FECrsMatrix> 	B_T (new Epetra_FECrsMatrix(Epetra_DataAccess::Copy,*(this->domainPtr_vec_.at(0)->GetMapXDimUnique()),5));
-//    Teuchos::RCP<Epetra_FECrsMatrix> 	B (new Epetra_FECrsMatrix(Epetra_DataAccess::Copy,*(this->domainPtr_vec_.at(1)->GetMapUnique()),5));
-//    this->feFactory_->AssemblyDivergence(dimension, this->domain_FEType_vec_.at(0), this->domain_FEType_vec_.at(1), 2, B, B_T, setZeros, this->domainPtr_vec_.at(0)->GetMapXDimUnique(), this->domainPtr_vec_.at(1)->GetMapUnique());
-//    B_T->Scale(-1.);
-//    Teuchos::RCP<BlockElement> 	BE_AN(new BlockElement(AN));
-//    Teuchos::RCP<BlockElement> 	BE_B_T(new BlockElement(B_T));
-//
-//    BE_AN.reset(new BlockElement(AN));
-//    BE_B_T.reset(new BlockElement(B_T));
-//
-//    this->system_->ReplaceBlock(BE_AN,0,0);
-//    this->system_->ReplaceBlock(BE_B_T,0,1);
-//
-//    Teuchos::RCP<BCBuilder> bCFactoryDrag(new BCBuilder(sublist(this->parameterList_,"Parameter")));
-//    Teuchos::RCP<BCBuilder> bCFactoryLift(new BCBuilder(sublist(this->parameterList_,"Parameter")));
-//
-//    bCFactoryDrag->AddBC(sxOne2D, 4, 0, this->domainPtr_vec_.at(0), "Dirichlet", dimension);
-//    bCFactoryDrag->AddBC(sDummyFunc, 666, 1, this->domainPtr_vec_.at(1), "Neumann", 1);
-//
-//    bCFactoryLift->AddBC(syOne2D, 4, 0, this->domainPtr_vec_.at(0), "Dirichlet", dimension);
-//    bCFactoryLift->AddBC(sDummyFunc, 666, 1, this->domainPtr_vec_.at(1), "Neumann", 1);
-//
-//    Teuchos::RCP<Epetra_Vector>  dragVec(new Epetra_Vector(*(*this->solution_)(0)));
-//    Teuchos::RCP<Epetra_Vector>	liftVec(new Epetra_Vector(*(*this->solution_)(0)));
-//    dragVec->PutScalar(0.);
-//    liftVec->PutScalar(0.);
-//    bCFactoryDrag->SetRHS(this->system_, dragVec);
-//    bCFactoryLift->SetRHS(this->system_, liftVec);
-//
-//    Teuchos::RCP<Epetra_Vector>	mat_sol(new Epetra_Vector(*(*this->solution_)(0)));
-//    this->system_->Apply(*this->solution_,*mat_sol);
-//    mat_sol->Scale(-1.);
-//    double dragCoeff;
-//    double liftCoeff;
-//    mat_sol->Dot(*dragVec,&dragCoeff);
-//    mat_sol->Dot(*liftVec,&liftCoeff);
-//    values->at(0) = dragCoeff;
-//    values->at(1) = liftCoeff;
-//    if (this->verbose_) {
-//        cout<< "Not scaled drag coefficient: " << dragCoeff<< endl;
-//        cout<< "Not scaled lift coefficient: " << liftCoeff<< endl;
-//    }
-//    Teuchos::RCP<Epetra_Vector>     pressureSolutuion( new Epetra_Vector(*((*(sol_unique_vec->at(1)))(0))));
-//    double p1 = numeric_limits<double>::min();
-//    double p2 = numeric_limits<double>::min();
-//    if (pressureIDsLoc->at(0)>-1) {
-//        p1 = (*pressureSolutuion)[pressureIDsLoc->at(0)];
-//
-//    }
-//    if (pressureIDsLoc->at(1)>-1) {
-//        p2 = (*pressureSolutuion)[pressureIDsLoc->at(1)];
-//    }
-//    this->comm_->Barrier();
-//    double res;
-//    this->comm_->MaxAll(&p1,&res,1);
-//    values->at(2) = res;
-//    this->comm_->MaxAll(&p2,&res,1);
-//    values->at(3) = res;
-//    return 0;
-//}
+template<class SC,class LO,class GO,class NO>
+void NavierStokes<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
+
+   if ( this->parameterList_->sublist("General").get("Export drag and lift",false) ) {
+        cout << " Exporting drag and lift " << endl;
+        int dim = this->dim_;
+        TEUCHOS_TEST_FOR_EXCEPTION( this->parameterList_->sublist("Parameter").get("Criterion","Residual") == "Update",  std::runtime_error, "Wrong nonlinear criterion to calculate the drag coefficient. The last system is the Newton system but we need the fixed point system. Either use Criterion=Residual or implement for Criterion=Update." );
+        
+        //TEUCHOS_TEST_FOR_EXCEPTION( this->hasSourceTerm(),  std::runtime_error, "We need to substract the additional source term: drag = < F*u + B_T*p + C1_T*lamba - f, v >" );
+        
+        Teuchos::Array<SC> drag(1);
+        Teuchos::Array<SC> lift(1);
+        
+        BlockMultiVectorPtr_Type uDrag = Teuchos::rcp( new BlockMultiVector_Type( this->getSolution() ) );
+        BlockMultiVectorPtr_Type uLift = Teuchos::rcp( new BlockMultiVector_Type( this->getSolution() ) );
+        // should be the last fixed point system without boundary conditions or the last extrapolation system without boundary values.
+        // We need to reassemble B and BT, because we might have set Dirichlet boundary conditions in BT (less likely in B)
+        this->assembleDivAndStab();
+        
+        this->getSystem()->apply( *this->getSolution(), *uDrag );
+        this->getSystem()->apply( *this->getSolution(), *uLift );
+        
+        //MultiVectorPtr_Type C1T_lambda = Teuchos::rcp( new MultiVector_Type( this->getSolution()->getBlock(0) ) );
+        //this->system_->getBlock(0,3)->apply( *this->getSolution()->getBlock(3), *C1T_lambda );
+        
+        //uDrag->getBlockNonConst(0)->update( 1., *C1T_lambda, 1. ); // velocity + C1_T * lambda
+        //uLift->getBlockNonConst(0)->update( 1., *C1T_lambda, 1. ); // velocity + C1_T * lambda
+        
+        BCPtr_Type bcFactoryDrag = Teuchos::rcp( new BC_Type( ) );
+        BCPtr_Type bcFactoryLift = Teuchos::rcp( new BC_Type( ) );
+        
+        DomainConstPtr_Type domainVelocityConst = this->getDomain(0);
+        DomainPtr_Type domainVelocity = Teuchos::rcp_const_cast<Domain_Type>(domainVelocityConst);
+        if( dim == 2 ){
+            bcFactoryDrag->addBC(drag2D, 4, 0, domainVelocity, "Dirichlet", dim); // obstacle
+            bcFactoryDrag->addBC(drag2D, 5, 0, domainVelocity, "Dirichlet", dim); // interface; check main fsi for matching flags at the obstacle and interface
+            bcFactoryLift->addBC(lift2D, 4, 0, domainVelocity, "Dirichlet", dim);
+            bcFactoryLift->addBC(lift2D, 5, 0, domainVelocity, "Dirichlet", dim);
+        }
+        else if( dim == 3 ){
+            bcFactoryDrag->addBC(drag3D, 4, 0, domainVelocity, "Dirichlet", dim); // check main fsi for matching
+            bcFactoryDrag->addBC(drag3D, 6, 0, domainVelocity, "Dirichlet", dim); // check main fsi for matching flags at the obstacle and interface
+            bcFactoryLift->addBC(lift3D, 4, 0, domainVelocity, "Dirichlet", dim);
+            bcFactoryLift->addBC(lift3D, 6, 0, domainVelocity, "Dirichlet", dim);
+        }
+        
+        BlockMultiVectorPtr_Type vD = Teuchos::rcp( new BlockMultiVector_Type( this->getSolution() ) );
+        BlockMultiVectorPtr_Type vL = Teuchos::rcp( new BlockMultiVector_Type( this->getSolution() ) );
+        
+        vD->putScalar(0.);
+        vL->putScalar(0.);
+        
+        bcFactoryDrag->setRHS( vD );
+        bcFactoryLift->setRHS( vL );
+        
+        uDrag->dot( vD, drag() );
+        uLift->dot( vL, lift() );
+        
+       double density = this->getParameterList()->sublist("Parameter").get("Density",1.);
+       double D = 0.1;
+       double H = 0.41;
+       double uMean = this->getParameterList()->sublist("Parameter").get("MeanVelocity",1.0);
+       
+       drag[0] *= -(2./(density*uMean*uMean*D*H));
+       lift[0] *= -(2./(density*uMean*uMean*D*H));
+
+        // drag[0] *= -1.;
+        // lift[0] *= -1.;
+        
+        exporterTxtDrag_->exportData( drag[0] );
+        exporterTxtLift_->exportData( lift[0] );
+    }
+}
 
 //template<class SC,class LO,class GO,class NO>
 //typename NavierStokes<SC,LO,GO,NO>::MultiVector_Type NavierStokes<SC,LO,GO,NO>::GetExactSolution(double time){
