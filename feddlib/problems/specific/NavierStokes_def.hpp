@@ -676,7 +676,8 @@ void NavierStokes<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
         // should be the last fixed point system without boundary conditions or the last extrapolation system without boundary values.
         // We need to reassemble B and BT, because we might have set Dirichlet boundary conditions in BT (less likely in B)
         this->assembleDivAndStab();
-        
+        this->reAssemble("FixedPoint");
+
         this->getSystem()->apply( *this->getSolution(), *uDrag );
         this->getSystem()->apply( *this->getSolution(), *uLift );
         
