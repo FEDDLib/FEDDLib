@@ -150,7 +150,7 @@ p_rep_()
         exporterTxtLift_->setup( "lift_force", this->comm_ );
     }
     if ( parameterList->sublist("Parameter").get("Set Zeros",false) ){
-        double eps = parameterList->sublist("Parameter").get("Zeros Tolerance",1.e-13)
+        double eps = parameterList->sublist("Parameter").get("Zeros Tolerance",1.e-13);
         this->feFactory_->doSetZeros(eps);
     }
 }
