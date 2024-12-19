@@ -149,6 +149,10 @@ p_rep_()
         exporterTxtLift_ = Teuchos::rcp(new ExporterTxt () );
         exporterTxtLift_->setup( "lift_force", this->comm_ );
     }
+    if ( parameterList->sublist("Parameter").get("Set Zeros",false) ){
+        double eps = parameterList->sublist("Parameter").get("Zeros Tolerance",1.e-13)
+        this->feFactory_->doSetZeros(eps);
+    }
 }
 
 template<class SC,class LO,class GO,class NO>
