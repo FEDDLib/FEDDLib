@@ -176,8 +176,7 @@ void NavierStokes<SC,LO,GO,NO>::assemble( std::string type ) const{
             std::cout << "done -- " << std::endl;
     }
     else if(type=="UpdateTime"){
-        cout << " Newtonstep is reset to 0" << endl;
-        newtonStep_ = 0;
+        this->newtonStep_ = 0;
     }
     else
         reAssemble( type );
@@ -874,7 +873,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
         if (fill_W_prec ) {
         
             int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
-            if(newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
+            if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
             {
                 this->setupPreconditioner( "Monolithic" );
             }
@@ -895,7 +894,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
 //                Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *f_out, vecThyraNonConst.ptr() );
 //                solverPList->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
             }
-            newtonStep_ ++; 
+            this->newtonStep_ ++; 
 
 
         }

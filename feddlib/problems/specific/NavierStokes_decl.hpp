@@ -117,7 +117,6 @@ public:
     mutable MatrixPtr_Type 	Mp_;
     mutable MatrixPtr_Type 	Ap_;
 
-    mutable int newtonStep_;
     vec_int_ptr_Type pressureIDsLoc;
     MultiVectorPtr_Type u_rep_;
     MultiVectorPtr_Type p_rep_;
