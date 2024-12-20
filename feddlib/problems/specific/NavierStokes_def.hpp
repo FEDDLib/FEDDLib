@@ -578,7 +578,7 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
                 if(this->parameterList_->sublist("Timestepping Parameter").get("BDF",1) < 2) // BDF 1
                     Mp2->scale(1./dt);
                 else // BDF 2
-                    Mp2->scale(3./(2*dt));
+                    Mp2->scale(3./(2.*dt));
                 Mp2->fillComplete();
 
                 bcBlockMatrix->addBlock(Mp2,0,0);
