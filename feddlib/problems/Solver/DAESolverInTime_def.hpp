@@ -1446,7 +1446,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearMultistep(){
         }
         //NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
         nlSolver.solve(*problemTime_,time,its);
-
+        problemTime_->assemble("UpdateTime");
         // After the first time step we can use the desired BDF Parameters
         if (timeSteppingTool_->currentTime()==0.) {
             problemTime_->setTimeParameters(massCoeff, problemCoeff);

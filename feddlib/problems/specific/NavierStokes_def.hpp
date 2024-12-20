@@ -99,6 +99,8 @@ p_rep_()
     u_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
     p_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
 
+    newtonStep_=0;
+
     if (parameterList->sublist("Parameter").get("Calculate Coefficients",false)) {
         vec2D_dbl_ptr_Type vectmpPointsPressure = domainPressure->getPointsUnique();
         vec2D_dbl_Type::iterator it;
@@ -172,6 +174,10 @@ void NavierStokes<SC,LO,GO,NO>::assemble( std::string type ) const{
         
         if (this->verbose_)
             std::cout << "done -- " << std::endl;
+    }
+    else if(type=="UpdateTime"){
+        cout << " Newtonstep is reset to 0" << endl;
+        newtonStep_ = 0;
     }
     else
         reAssemble( type );
@@ -865,10 +871,13 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
 
         }
 
-        if (fill_W_prec) {
+        if (fill_W_prec ) {
         
-            this->setupPreconditioner( "Monolithic" );
-
+            int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
+            if(newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
+            {
+                this->setupPreconditioner( "Monolithic" );
+            }
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
             // If this is the case, we need to pre apply the coarse level to the residual(f_out).
 
@@ -886,6 +895,8 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
 //                Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *f_out, vecThyraNonConst.ptr() );
 //                solverPList->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
             }
+            newtonStep_ ++; 
+
 
         }
     }
