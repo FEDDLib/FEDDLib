@@ -877,6 +877,10 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
             {
                 this->setupPreconditioner( "Monolithic" );
             }
+            else{
+                if (this->verbose_)
+                    cout << " ############ Skipping preconditioner reconstruction #############" << endl;
+            }
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
             // If this is the case, we need to pre apply the coarse level to the residual(f_out).
 
@@ -1004,7 +1008,15 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
 
         if (fill_W_prec) {
             if (stokesTekoPrecUsed_){
-                this->setupPreconditioner( "Teko" );
+                int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
+                if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
+                {
+                    this->setupPreconditioner( "Teko" );
+                }
+                else{
+                    if (this->verbose_)
+                        cout << " ############ Skipping preconditioner reconstruction #############" << endl;
+                }
             }
             else
                 stokesTekoPrecUsed_ = true;
