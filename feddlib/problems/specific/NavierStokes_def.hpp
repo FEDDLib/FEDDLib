@@ -1042,6 +1042,8 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
 
 
             }
+            this->newtonStep_ ++; 
+
         }
     }
 }
