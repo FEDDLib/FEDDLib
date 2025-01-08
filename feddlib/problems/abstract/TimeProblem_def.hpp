@@ -1253,16 +1253,22 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
             int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
             NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
 
-            if(nonLinProb->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
-            {
-                if (this->verbose_)
-                    cout << " Resetting Preconditioner " << endl; 
-                this->problem_->setupPreconditioner( "Monolithic" );
+            if (precInitOnly_){
+
+                if(nonLinProb->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
+                {
+                    if (this->verbose_)
+                        cout << " Resetting Preconditioner " << endl; 
+                    this->problem_->setupPreconditioner( "Monolithic" );
+                }
+                else{
+                    if (this->verbose_)
+                        cout << " ############ Skipping preconditioner reconstruction #############" << endl;
+                }
             }
-            else{
-                if (this->verbose_)
-                    cout << " ############ Skipping preconditioner reconstruction #############" << endl;
-            }
+            else
+                precInitOnly_ = true; // If a Monolithic preconditioner was constructed for the first time this variable is false. Because the preconditioner was not only initialized but already constructed. We can now set this variable to true to always setup all following preconditioners in the above if case
+           
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
             // If this is the case, we need to pre apply the coarse level to the residual(f_out).
             
