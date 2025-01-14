@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
             if (verbose)
             {
                 cout << "###############################################" <<endl;
-                cout << "############ Starting FSI  ... ################" <<endl;
+                cout << "############ Starting Unsteady NS... ##########" <<endl;
                 cout << "###############################################" <<endl;
             }
 
@@ -412,7 +412,6 @@ int main(int argc, char *argv[])
                 // }
                 //domainPressure->exportMesh(true,false,"BFS_h_H_25_9_subdomains.mesh");
                 //domainVelocity->exportNodeFlags();
-                domainFluidVelocity->preProcessMesh(true,false);
                 domainFluidVelocity->preProcessMesh(true,false);
 
                 domainFluidPressure->preProcessMesh(true,false);
@@ -504,20 +503,25 @@ int main(int argc, char *argv[])
                 bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // outflow ring
                 
                 if( !pcdBC.compare("Inlet")){
-                    bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting inlet of Laplace and Fp to Dirichlet ----------- " << endl;
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 4, 0, domainPressure, "Dirichlet", 1);
 
-                    bcFactoryPressureFp->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
-                }
-                else if( !pcdBC.compare("Outlet")){
-                    bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 5, 0, domainFluidPressure, "Dirichlet", 1);
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 4, 0, domainPressure, "Dirichlet", 1);
+                        }
+                else if( !pcdBC.compare("BC0")){
+                    if(verbose)
+                        cout << " --------- PCD Info (BC-0): Setting outlet of Laplace and Fp to Dirichlet ----------- " << endl;   
+                    bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 5, 0, domainPressure, "Dirichlet", 1);
 
-                    bcFactoryPressureFp->addBC(zeroDirichlet3D, 5, 0, domainFluidPressure, "Dirichlet", 1);
+                    bcFactoryPressureFp->addBC(zeroDirichlet3D, 5, 0, domainPressure, "Dirichlet", 1);
                 }
-                else if( !pcdBC.compare("Mixed")){
-                    bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 5, 0, domainFluidPressure, "Dirichlet", 1);
-
-                    bcFactoryPressureFp->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
+                else if( !pcdBC.compare("BC4")){
+                    if(verbose)
+                        cout << " --------- PCD Info (BC-4): Setting outlet of Laplace ----------- " << endl;
+                    bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 5, 0, domainPressure, "Dirichlet", 1);
                 }
+                        
                 
             }
 

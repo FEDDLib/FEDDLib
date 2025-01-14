@@ -1146,6 +1146,7 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_
         }
         else{
             nonLinProb->setupPreconditioner( type ); //nonLinProb->initializePreconditioner( type );
+            precInitOnly_ = false;
         }
     }
     
