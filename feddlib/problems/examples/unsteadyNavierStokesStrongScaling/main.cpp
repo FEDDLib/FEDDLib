@@ -493,37 +493,37 @@ int main(int argc, char *argv[])
             // Fluid-RW
             string pcdBC = parameterListProblem->sublist("Parameter").get("PCD BC","Inlet");
 
-            {                               
-                //bcFactory->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                string rampType = parameterListProblem->sublist("Parameter Fluid").get("Ramp type","cos");
-                
-                bcFactory->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow ring
-                bcFactory->addBC(parabolicInflow3DArteryHeartBeat, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
-                bcFactory->addBC(zeroDirichlet3D, 6, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // Wall
-                bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // outflow ring
-                
-                if( !pcdBC.compare("Inlet")){
-                            if(verbose)
-                                cout << " --------- PCD Info: Setting inlet of Laplace and Fp to Dirichlet ----------- " << endl;
-                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
+                                           
+            //bcFactory->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
+            string rampType = parameterListProblem->sublist("Parameter Fluid").get("Ramp type","cos");
+            
+            bcFactory->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow ring
+            bcFactory->addBC(parabolicInflow3DArteryHeartBeat, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+            bcFactory->addBC(zeroDirichlet3D, 6, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // Wall
+            bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // outflow ring
+            
+            if( !pcdBC.compare("Inlet")){
+                        if(verbose)
+                            cout << " --------- PCD Info: Setting inlet of Laplace and Fp to Dirichlet ----------- " << endl;
+                        bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
 
-                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
-                        }
-                else if( !pcdBC.compare("BC0")){
-                    if(verbose)
-                        cout << " --------- PCD Info (BC-0): Setting outlet of Laplace and Fp to Dirichlet ----------- " << endl;   
-                    bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 5, 0, domainFluidPressure, "Dirichlet", 1);
+                        bcFactoryPressureFp->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
+                    }
+            else if( !pcdBC.compare("BC0")){
+                if(verbose)
+                    cout << " --------- PCD Info (BC-0): Setting outlet of Laplace and Fp to Dirichlet ----------- " << endl;   
+                bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 5, 0, domainFluidPressure, "Dirichlet", 1);
 
-                    bcFactoryPressureFp->addBC(zeroDirichlet3D, 5, 0, domainFluidPressure, "Dirichlet", 1);
-                }
-                else if( !pcdBC.compare("BC4")){
-                    if(verbose)
-                        cout << " --------- PCD Info (BC-4): Setting outlet of Laplace ----------- " << endl;
-                    bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 5, 0, domainFluidPressure, "Dirichlet", 1);
-                }
+                bcFactoryPressureFp->addBC(zeroDirichlet3D, 5, 0, domainFluidPressure, "Dirichlet", 1);
+            }
+            else if( !pcdBC.compare("BC4")){
+                if(verbose)
+                    cout << " --------- PCD Info (BC-4): Setting outlet of Laplace ----------- " << endl;
+                bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 5, 0, domainFluidPressure, "Dirichlet", 1);
+            }
                         
                 
-            }
+            
 
             int timeDisc = parameterListProblem->sublist("Timestepping Parameter").get("Butcher table",0);
 
