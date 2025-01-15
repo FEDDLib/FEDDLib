@@ -387,7 +387,7 @@ int main(int argc, char *argv[])
                         if(parameterListProblem->sublist("General").get("ParaViewCoarse",false)){
                             domainP1fluid->exportElementFlags("Fluid");
                             domainP1fluid->exportNodeFlags("Fluid");
-                            domainP1fluid->exportProcessor("Distribution")
+                            domainP1fluid->exportProcessor("Distribution");
                         }
 
 
