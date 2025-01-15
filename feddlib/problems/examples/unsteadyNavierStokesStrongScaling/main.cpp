@@ -11,6 +11,7 @@
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
+#include <Teuchos_StackedTimer.hpp>
 
 /*! Test case for specific artery geometrie or straight tube geometry. Inflow depends on inflow region
 	-> straight tube: Inflow in (0,0,z)*laplaceInflow direction
@@ -279,6 +280,8 @@ int main(int argc, char *argv[])
         mpiSession.~GlobalMPISession();
         return 0;
     }
+    Teuchos::RCP<StackedTimer> stackedTimer = rcp(new StackedTimer("Unsteady Navier-Stokes",true));
+    TimeMonitor::setStackedTimer(stackedTimer);
 
     bool verbose (comm->getRank() == 0);
 
@@ -503,12 +506,12 @@ int main(int argc, char *argv[])
             bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // outflow ring
             
             if( !pcdBC.compare("Inlet")){
-                        if(verbose)
-                            cout << " --------- PCD Info: Setting inlet of Laplace and Fp to Dirichlet ----------- " << endl;
-                        bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
+                if(verbose)
+                    cout << " --------- PCD Info: Setting inlet of Laplace and Fp to Dirichlet ----------- " << endl;
+                bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
 
-                        bcFactoryPressureFp->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
-                    }
+                bcFactoryPressureFp->addBC(zeroDirichlet3D, 4, 0, domainFluidPressure, "Dirichlet", 1);
+            }
             else if( !pcdBC.compare("BC0")){
                 if(verbose)
                     cout << " --------- PCD Info (BC-0): Setting outlet of Laplace and Fp to Dirichlet ----------- " << endl;   
@@ -558,7 +561,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    TimeMonitor_Type::report(std::cout);
-
+    Teuchos::TimeMonitor::report(cout);
+    stackedTimer->stop("Unsteady Navier-Stokes");
+	StackedTimer::OutputOptions options;
+	options.output_fraction = options.output_histogram = options.output_minmax = true;
+	stackedTimer->report((std::cout),comm,options);
     return(EXIT_SUCCESS);
 }
