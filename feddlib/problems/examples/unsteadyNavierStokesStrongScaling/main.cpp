@@ -305,7 +305,7 @@ int main(int argc, char *argv[])
         // Fuer das Geometrieproblem, falls GE       
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
         string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
-        
+
         string feTypeV = parameterListProblem->sublist("Parameter").get("Discretization Velocity","P2");
         string feTypeP = parameterListProblem->sublist("Parameter").get("Discretization Pressure","P1");
         string preconditionerMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
@@ -384,8 +384,13 @@ int main(int argc, char *argv[])
                         
                         partitionerP1.readAndPartition(15, "mm",true); // converting mesh from mm unit to cm unit
                         
-                        domainP1fluid->exportElementFlags("Fluid");
-                        domainP1fluid->exportNodeFlags("Fluid");
+                        if(parameterListProblem->sublist("General").get("ParaViewCoarse",false)){
+                            domainP1fluid->exportElementFlags("Fluid");
+                            domainP1fluid->exportNodeFlags("Fluid");
+                            domainP1Fluid->exportProcessor("Distribution")
+                        }
+
+
 
                         if (!feTypeV.compare("P2")){
                             domainP2fluid->buildP2ofP1Domain( domainP1fluid );
