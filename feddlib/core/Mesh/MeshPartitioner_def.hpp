@@ -311,7 +311,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
      METIS_OBJTYPE_CUT Edge-cut minimization.
      METIS_OBJTYPE_VOL Total communication volume minimization.
     */
-    options[METIS_OPTION_OBJTYPE] = pList_->get("OBJTYPE","METIS_OBJTYPE_CUT"); // METIS_OBJTYPE_CUT;// or METIS_OBJTYPE_VOL
+    options[METIS_OPTION_OBJTYPE] = pList_->get("OBJTYPE",METIS_OBJTYPE_CUT); // METIS_OBJTYPE_CUT;// or METIS_OBJTYPE_VOL
     
     /*
      options[METIS_OPTION_RTYPE]
@@ -321,7 +321,8 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
      METIS_RTYPE_SEP2SIDED Two-sided node FM refinement.
      METIS_RTYPE_SEP1SIDED One-sided node FM refinement.
     */
-    options[METIS_OPTION_RTYPE] = pList_->get("RTYPE","METIS RTYPE FM"); // METIS_RTYPE_GREEDY;
+    idx_t rtype = pList_->get("RTYPE",METIS_RTYPE_FM);
+    options[METIS_OPTION_RTYPE] = rtype; //pList_->get("RTYPE","METIS_RTYPE_FM"); // METIS_RTYPE_GREEDY;
 
     /*
     options[METIS_OPTION_NITER]
