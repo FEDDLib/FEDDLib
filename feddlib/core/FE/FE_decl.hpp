@@ -321,6 +321,13 @@ class FE {
                             MultiVectorPtr_Type u, 
                             bool callFillComplete);
 
+    void assemblyCFLandRe(int dim,
+                        std::string FEType,
+                        ParameterListPtr_Type params,
+                        MultiVectorPtr_Type CFL,
+                        MultiVectorPtr_Type Re,
+                        MultiVectorPtr_Type u, 
+                        bool callFillComplete=true);
     // Advection with vector valued w_h with scalar p_h: w_h \cdot \nabla p_h
     void assemblyAdvectionVecFieldScalar(int dim,
                             std::string FEType,

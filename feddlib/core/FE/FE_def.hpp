@@ -3644,6 +3644,84 @@ void FE<SC,LO,GO,NO>::assemblyElasticityStressesAceFEM(int dim,
 }
 
 template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyCFLandRe(int dim,
+                                        std::string FEType,
+                                        ParameterListPtr_Type params,
+                                        MultiVectorPtr_Type CFL,
+                                        MultiVectorPtr_Type Re,
+                                        MultiVectorPtr_Type u, 
+                                        bool callFillComplete){
+
+    TEUCHOS_TEST_FOR_EXCEPTION( u->getNumVectors()>1, std::logic_error, "Implement for numberMV > 1 ." );
+    TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
+    
+    UN FEloc = checkFE(dim,FEType);
+
+    ElementsPtr_Type elements = domainVec_.at(0)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(0)->getPointsRepeated();
+
+    // MapConstPtr_Type map = domainVec_.at(1)->getMapRepeated();
+    // Parameter for CFL
+    double nu = params->sublist("Parameter").get("Viscosity",1.0);
+    double deltaT = params->sublist("Timestepping Parameter").get("dt",0.);
+
+    
+
+    vec2D_dbl_ptr_Type     phiV;
+    vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+    // UN extraDeg = Helper::determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
+    // UN deg = Helper::determineDegree( dim, FEType, FEType, Grad, Std, extraDeg); // We use the FEType of the velocity for quadratur degree
+
+    Helper::getPhi(phiV, weights, dim, FEType, 1); // degree 1 -> one point to evaluate element
+
+    SC detB;
+    SC absDetB;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    GO glob_i, glob_j;
+    vec_dbl_Type v_i(dim);
+    vec_dbl_Type v_j(dim);
+
+    vec_dbl_Type uLoc(dim);
+    Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
+
+    Teuchos::ArrayRCP<  SC > REArray = Re->getDataNonConst(0);
+    Teuchos::ArrayRCP<  SC > CFLArray = CFL->getDataNonConst(0);
+
+    for (UN T=0; T<elements->numberElements(); T++) {
+
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
+        detB = B.computeInverse(Binv);
+        absDetB = std::fabs(detB);
+
+        for (int d=0; d<dim; d++) {
+            uLoc[d] = 0.;
+            for (int w=0; w<phiV->size(); w++){ //quads points
+                for (int i=0; i < phiV->at(0).size(); i++) {
+                    LO index = dim * elements->getElement(T).getNode(i) + d;
+                    uLoc[d] += uArray[index] * phiV->at(w).at(i);
+                }
+            }
+            // uLoc[d] *= 1./absDetB;
+        }
+
+        double diamT = elements->getElement(T).getDiamElement();
+        //cout << " Diam T " << diamT << endl;
+        double normU = 0.;
+        for (int d=0; d<dim; d++) 
+            normU += fabs(uLoc[d]);
+
+        //cout << " Velocity in x " << uLoc[0] << " in y " << uLoc[1] << " in z " << uLoc[2] << " Norm " << normU << endl;
+        // cout << " Estimate Re in element T "<< T << " RE =" << (normU * diamT) / nu << endl;
+        // cout << " Estimate CFL in element T "<< T << " CFL =" << (normU *deltaT) / diamT << endl;
+        REArray[T] = (normU * diamT) / nu;
+        CFLArray[T] = (normU *deltaT) / diamT;
+    }
+}
+
+template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyAdvectionVecFieldScalar(int dim,
                                                   std::string FEType,
                                                   std::string FETypeV,

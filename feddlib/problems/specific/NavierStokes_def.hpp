@@ -76,6 +76,13 @@ double OneFunction(double* x, int* parameter)
     return 1.0;
 }
 
+using namespace std;
+using Teuchos::reduceAll;
+using Teuchos::REDUCE_SUM;
+using Teuchos::REDUCE_MAX;
+using Teuchos::REDUCE_MIN;
+using Teuchos::outArg;
+
 namespace FEDD {
 
 
@@ -100,6 +107,22 @@ p_rep_()
     p_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
 
     newtonStep_=0;
+
+    domainVelocity->getMesh()->calcDiamTetraeder();
+    
+    timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
+
+    // Reynolds number and CFL number estimations
+    exporterTxtCFLMax_ = Teuchos::rcp(new ExporterTxt () );
+    exporterTxtCFLMax_->setup( "CFL_max", this->comm_ );
+    exporterTxtReMax_ = Teuchos::rcp(new ExporterTxt () );
+    exporterTxtReMax_->setup( "Re_max", this->comm_ );
+    
+    exporterTxtCFLMin_ = Teuchos::rcp(new ExporterTxt () );
+    exporterTxtCFLMin_->setup( "CFL_min", this->comm_ );
+    // exporterTxtReMin_ = Teuchos::rcp(new ExporterTxt () );
+    // exporterTxtReMin_->setup( "Re_min", this->comm_ );
+    // ---------------------------------------------
 
     if (parameterList->sublist("Parameter").get("Calculate Coefficients",false)) {
         vec2D_dbl_ptr_Type vectmpPointsPressure = domainPressure->getPointsUnique();
@@ -177,6 +200,8 @@ void NavierStokes<SC,LO,GO,NO>::assemble( std::string type ) const{
     }
     else if(type=="UpdateTime"){
         this->newtonStep_ = 0;
+        timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
+
     }
     else
         reAssemble( type );
@@ -742,6 +767,57 @@ void NavierStokes<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
         
         exporterTxtDrag_->exportData( drag[0] );
         exporterTxtLift_->exportData( lift[0] );
+    }
+
+    if ( this->parameterList_->sublist("General").get("Export Re and CFL",true) ) {
+
+        MultiVectorPtr_Type Re(new MultiVector_Type( this->getDomain(0)->getElementMap(), 1 ) );
+        MultiVectorPtr_Type CFL(new MultiVector_Type( this->getDomain(0)->getElementMap(), 1 ) );
+
+        this->feFactory_->assemblyCFLandRe(this->dim_,this->domain_FEType_vec_.at(0), this->parameterList_,CFL,Re,u_rep_);
+
+        //Re->print();
+        Teuchos::Array<SC> norm(1);
+        CFL->normInf(norm());               
+        exporterTxtCFLMax_->exportData( norm[0] );
+
+
+        Teuchos::ArrayRCP<  SC > CFLArray = CFL->getDataNonConst(0);
+        double minimum = 1000.;
+        for (int i=0 ; i< CFLArray.size(); i++)
+            if(minimum > CFLArray[i])
+                minimum = CFLArray[i];
+
+        reduceAll<int, double> (*this->getComm(), REDUCE_MIN, minimum, outArg (minimum));
+
+        exporterTxtCFLMin_->exportData( minimum );
+
+        Re->normInf(norm());               
+        exporterTxtReMax_->exportData( norm[0] );
+        // exporterTxtReMin_->exportData( reMin[0] );
+        if ( exporterRe_.is_null() && this->parameterList_->sublist("General").get("Export RE and CFL",false)){
+            exporterRe_ = Teuchos::rcp(new Exporter_Type());
+            
+            DomainConstPtr_Type dom = this->getDomain(0);
+            std::string varName = "RE_CFL_Element";
+            
+            MeshPtr_Type meshNonConst = Teuchos::rcp_const_cast<Mesh_Type>( dom->getMesh() );
+            exporterRe_->setup(varName, meshNonConst,"P0");
+
+            MultiVectorConstPtr_Type exportVector = Re;
+            
+            exporterRe_->addVariable( exportVector, "RE", "Scalar", 1, dom->getElementMap() );
+
+            MultiVectorConstPtr_Type exportVector2 = CFL;
+            exporterRe_->addVariable( exportVector2, "CFL", "Scalar", 1, dom->getElementMap() );
+
+        }
+
+        if (!exporterRe_.is_null())
+            this->exporterRe_->save( this->timeSteppingTool_->currentTime() );
+        
+
+
     }
 }
 

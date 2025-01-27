@@ -70,6 +70,11 @@ public:
     typedef typename Problem_Type::BC_Type BC_Type;
     typedef typename Teuchos::RCP<BC_Type> BCPtr_Type;
 
+    typedef typename Problem_Type::Domain_Type::Mesh_Type Mesh_Type;
+    typedef typename Problem_Type::Domain_Type::MeshPtr_Type MeshPtr_Type;
+    typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
+    typedef Teuchos::RCP<MeshUnstr_Type> MeshUnstrPtr_Type;
+    
     typedef ExporterParaView<SC,LO,GO,NO> Exporter_Type;
     typedef Teuchos::RCP<Exporter_Type> ExporterPtr_Type;
     typedef Teuchos::RCP<ExporterTxt> ExporterTxtPtr_Type;
@@ -122,6 +127,12 @@ public:
     MultiVectorPtr_Type p_rep_;
     ExporterTxtPtr_Type exporterTxtDrag_;
     ExporterTxtPtr_Type exporterTxtLift_;
+    ExporterTxtPtr_Type exporterTxtCFLMax_;
+    ExporterTxtPtr_Type exporterTxtCFLMin_;
+    ExporterTxtPtr_Type exporterTxtReMax_;
+    ExporterTxtPtr_Type exporterTxtReMin_;
+    mutable ExporterPtr_Type exporterRe_;
+    mutable Teuchos::RCP<TimeSteppingTools>	timeSteppingTool_;
 
 private:
     mutable bool stokesTekoPrecUsed_; //Help variable to signal that we constructed the initial preconditioner for NOX with the Stokes system and we do not need to compute it if fill_W_prec is called for the first time. However, the preconditioner is only correct if a Stokes system is solved in the first nonlinear iteration. This only affects the block preconditioners of Teko

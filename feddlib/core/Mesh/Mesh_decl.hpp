@@ -212,15 +212,20 @@ public:
     /// @brief This just gives us the element locations of nodes that determine an edge
     void setLocalEdgeIndices(vec2D_int_Type &localEdgeIndices);
 
+    /// @brief Compute the volume of a tetrahedra
+    vec_dbl_Type determineVolTet(ElementsPtr_Type elements, vec2D_dbl_ptr_Type points);
 
-	/*! 
-		\brief Returns elements as a vector type contrary to the C-object list.
-	*/
-	vec2D_int_ptr_Type getElements();
-    
-	/*! 
-		\brief Building Edge Map
-	*/
+    /// @brief Compute the circum diameter of tetrahedra
+    void calcDiamTetraeder();
+
+    /*!
+            \brief Returns elements as a vector type contrary to the C-object list.
+    */
+    vec2D_int_ptr_Type getElements();
+
+    /*!
+            \brief Building Edge Map
+    */
     void buildEdgeMap();
     /* ###################################################################### */
     

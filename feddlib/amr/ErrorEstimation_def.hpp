@@ -358,21 +358,21 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 		it = min_element(h_T.begin(), h_T.end()); // 
 		minh_T =  h_T[distance(h_T.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxh_T, outArg (maxh_T));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minh_T, outArg (minh_T));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minh_T, outArg (minh_T));
 
 		it = max_element(rho_T.begin(), rho_T.end()); // 
 		maxrho_T =  rho_T[distance(rho_T.begin(), it)];
 		it = min_element(rho_T.begin(), rho_T.end()); // 
 		minrho_T =  rho_T[distance(rho_T.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxrho_T, outArg (maxrho_T));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minrho_T, outArg (minrho_T));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minrho_T, outArg (minrho_T));
 
 		it = max_element(areaTriangles.begin(), areaTriangles.end()); // 
 		maxArea_T = areaTriangles[distance(areaTriangles.begin(), it)];
 		it = min_element(areaTriangles.begin(), areaTriangles.end()); // 
 		minArea_T =  areaTriangles[distance(areaTriangles.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxArea_T, outArg (maxArea_T));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minArea_T, outArg (minArea_T));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minArea_T, outArg (minArea_T));
 
 
 		it = max_element(C_T.begin(), C_T.end()); // 
@@ -380,7 +380,7 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 		it = min_element(C_T.begin(), C_T.end()); // 
 		minC_T =  C_T[distance(C_T.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxC_T, outArg (maxC_T));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minC_T, outArg (minC_T));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minC_T, outArg (minC_T));
 
 		if(inputMesh_->getComm()->getRank() == 0){
 			cout << "	Mesh Quality Assesment 2D of current mesh" << endl;
@@ -425,7 +425,7 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 
 		minh_Tri =  h_Tri[distance(h_Tri.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxh_Tri, outArg (maxh_Tri));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minh_Tri, outArg (minh_Tri));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minh_Tri, outArg (minh_Tri));
 
 		// h_Tetraeder
 		it = max_element(h_T.begin(), h_T.end()); // 
@@ -434,7 +434,7 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 
 		minh_T =  h_T[distance(h_T.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxh_T, outArg (maxh_T));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minh_T, outArg (minh_T));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minh_T, outArg (minh_T));
 
 		// rho_Tri
 		it = max_element(rho_Tri.begin(), rho_Tri.end()); // 
@@ -442,7 +442,7 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 		it = min_element(rho_Tri.begin(), rho_Tri.end()); // 
 		minrho_Tri =  rho_Tri[distance(rho_Tri.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxrho_Tri, outArg (maxrho_Tri));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minrho_Tri, outArg (minrho_Tri));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minrho_Tri, outArg (minrho_Tri));
 
 		// rho_Tetraeder
 		it = max_element(rho_T.begin(), rho_T.end()); // 
@@ -450,7 +450,7 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 		it = min_element(rho_T.begin(), rho_T.end()); // 
 		minrho_T =  rho_T[distance(rho_T.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxrho_T, outArg (maxrho_T));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minrho_T, outArg (minrho_T));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minrho_T, outArg (minrho_T));
 
 		// Area Triangles
 		it = max_element(areaTriangles.begin(), areaTriangles.end()); // 
@@ -458,7 +458,7 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 		it = min_element(areaTriangles.begin(), areaTriangles.end()); // 
 		minArea_T =  areaTriangles[distance(areaTriangles.begin(), it)];
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxArea_T, outArg (maxArea_T));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minArea_T, outArg (minArea_T));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minArea_T, outArg (minArea_T));
 
 		// Volume Tetraeder
 		it = max_element(volTetraeder.begin(), volTetraeder.end()); // 
@@ -468,7 +468,7 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 		minVol_T =  volTetraeder[distance(volTetraeder.begin(), it)];
 
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxVol_T, outArg (maxVol_T));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minVol_T, outArg (minVol_T));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minVol_T, outArg (minVol_T));
 
 		// C_Tri
 		it = max_element(C_Tri.begin(), C_Tri.end()); // 
@@ -478,7 +478,7 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 		minC_Tri =  C_Tri[distance(C_Tri.begin(), it)];
 
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxC_Tri, outArg (maxC_Tri));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minC_Tri, outArg (minC_Tri));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minC_Tri, outArg (minC_Tri));
 
 		// C_T
 		vec_dbl_Type C_T(elements->numberElements());
@@ -492,7 +492,7 @@ void ErrorEstimation<SC,LO,GO,NO>::writeMeshQuality(MeshUnstrPtr_Type inputMesh)
 		minC_T =  C_T[distance(C_T.begin(), it)];
 
 		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, maxC_T, outArg (maxC_T));
-		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MAX, minC_T, outArg (minC_T));
+		reduceAll<int, double> (*inputMesh_->getComm(), REDUCE_MIN, minC_T, outArg (minC_T));
 
 
 		if(inputMesh_->getComm()->getRank() == 0){
@@ -695,7 +695,7 @@ void ErrorEstimation<SC,LO,GO,NO>::tagFlag( MeshUnstrPtr_Type inputMeshP1,int fl
 		}
 	}
 		
-	reduceAll<int, int> (*inputMesh_->getComm(), REDUCE_MAX, taggedElements, outArg (taggedElements));
+	reduceAll<int, int> (*inputMesh_->getComm(), REDUCE_SUM, taggedElements, outArg (taggedElements));
 
 	if(inputMesh_->getComm()->getRank()==0){
 		cout << "	__________________________________________________________________________________________________________ " << endl;

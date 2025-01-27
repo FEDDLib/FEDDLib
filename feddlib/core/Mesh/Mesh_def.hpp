@@ -1312,5 +1312,101 @@ void Mesh<SC,LO,GO,NO>::setLocalEdgeIndices(vec2D_int_Type &localEdgeIndices ){
     }
 }
 
+/*!
+ \brief function, that determines volume of tetrahedra.
+
+@param[in] elements Elements.
+@param[in] edgeElements Edges.
+@param[in] points Points.
+
+@param[out] volumeTetrahedra Volume of tetrahedras
+*/
+template <class SC, class LO, class GO, class NO>
+vec_dbl_Type Mesh<SC,LO,GO,NO>::determineVolTet(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points){
+	
+	vec_dbl_Type volumeTetrahedra(elements->numberElements());
+
+	vec_dbl_Type p1(3),p2(3), p3(3), v_K(3);
+
+	vec2D_dbl_Type p(4,vec_dbl_Type(3));
+
+	for(int k=0; k< elements->numberElements() ; k++){
+
+		// Calculating edges of Tetraeder
+		vec_LO_Type nodeList = 	elements->getElement(k).getVectorNodeListNonConst();
+		
+		for(int i=0; i<4; i++){
+			p[i] = points->at(nodeList[i]);
+		}
+
+		p1[0] = p[0][0] - p[1][0];
+		p1[1] = p[0][1] - p[1][1];
+		p1[2] =	p[0][2] - p[1][2];
+
+		p2[0] = p[0][0] - p[2][0];
+		p2[1] = p[0][1] - p[2][1];
+		p2[2] =	p[0][2] - p[2][2];
+
+		p3[0] = p[0][0] - p[3][0];
+		p3[1] = p[0][1] - p[3][1];
+		p3[2] =	p[0][2] - p[3][2];
+
+		
+		v_K[0] = p1[1]*p2[2] - p1[2]*p2[1];
+		v_K[1] = p1[2]*p2[0] - p1[0]*p2[2];
+		v_K[2] = p1[0]*p2[1] - p1[1]*p2[0];
+
+		
+		volumeTetrahedra[k] = fabs(p3[0] * v_K[0] + p3[1] * v_K[1] +p3[2] * v_K[2]) / 6. ;
+	}
+
+	return volumeTetrahedra;
+}
+
+/*!
+ \brief Calculating the circumdiameter of tetraeder.
+
+@param[in] elements Elements.
+@param[in] points Points.
+@param[in] volTet Volume of tetrahedra.
+
+@param[out] diamElements Uncircumdiameter of tetrahedra.
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+void Mesh<SC,LO,GO,NO>::calcDiamTetraeder(){
+	
+    vec_dbl_Type volTet = determineVolTet(this->elementsC_, this->pointsRep_);
+
+	// vec_dbl_Type diamElements(elements->numberElements());
+    double diamElement=0;
+	double a,b,c,A,B,C;
+
+	vec2D_dbl_Type p(4,vec_dbl_Type(this->dim_));
+	for(int k=0; k< this->elementsC_->numberElements() ; k++){	
+		
+		// Calculating edges of Tetraeder
+		vec_LO_Type nodeList = 	this->elementsC_->getElement(k).getVectorNodeListNonConst();
+		
+		for(int i=0; i<4; i++){
+			p[i] = this->pointsRep_->at(nodeList[i]);
+		}
+
+		a = sqrt(pow(p[0][0] - p[1][0],2)+ pow(p[0][1] - p[1][1],2) +pow(p[0][2] - p[1][2],2));
+		b = sqrt(pow(p[0][0] - p[2][0],2)+ pow(p[0][1] - p[2][1],2) +pow(p[0][2] - p[2][2],2));
+		c = sqrt(pow(p[0][0] - p[3][0],2)+ pow(p[0][1] - p[3][1],2) +pow(p[0][2] - p[3][2],2));
+
+		A = sqrt(pow(p[3][0] - p[2][0],2)+ pow(p[3][1] - p[2][1],2) +pow(p[3][2] - p[2][2],2));
+		B = sqrt(pow(p[1][0] - p[3][0],2)+ pow(p[1][1] - p[3][1],2) +pow(p[1][2] - p[3][2],2));
+		C = sqrt(pow(p[1][0] - p[2][0],2)+ pow(p[1][1] - p[2][1],2) +pow(p[1][2] - p[2][2],2));		
+
+
+		diamElement = sqrt(((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C))) / (12*volTet[k]) ;	
+
+        this->elementsC_->getElement(k).setDiamElement(diamElement);
+	}
+}
+
 }
 #endif

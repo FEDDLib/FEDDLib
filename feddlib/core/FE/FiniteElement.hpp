@@ -107,6 +107,9 @@ class FiniteElement {
 
 	bool isMarkedEdge(){return markedEdge_;};
 
+	void setDiamElement(double diam){diamElement_=diam;};
+	double getDiamElement(){return diamElement_;};
+
 private:
     
     vec_LO_Type localNodeIDs_; /*! Node IDs that define this element. */
@@ -120,6 +123,7 @@ private:
 	GO predecessorElement_ = -1;
 	LO refinementEdge_=-1;
 	vec_LO_Type markedEdges_;
+    double diamElement_ = -1;
     
     
 public:    
