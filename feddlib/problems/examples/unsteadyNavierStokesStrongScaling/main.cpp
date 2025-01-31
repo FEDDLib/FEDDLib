@@ -476,9 +476,21 @@ int main(int argc, char *argv[])
                 
                 parameter_vec.push_back(maxValue);
 
+                MultiVectorPtr_Type solutionLaplaceRep  = Teuchos::rcp(new MultiVector_Type ( domainFluidVelocity->getMapRepeated() ) );
+                // solutionLaplace->print();
+                solutionLaplaceRep->importFromVector(solutionLaplace,true);
+                // solutionLaplaceRep->print();
+                solutionLaplaceRep->scale(1./maxValue);
+                
+                FE<SC,LO,GO,NO> fe;
+                fe.addFE(domainFluidVelocity);
+                double flowRateParabolic=0.;
+
+                fe.assemblyFlowRate(dim, flowRateParabolic, domainFluidVelocity->getFEType(),1, 4, solutionLaplaceRep);
+                cout << " Flowrate parabolic " << flowRateParabolic << endl;
 
 
-                /*Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+                Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
                 
                 exPara->setup("parabolicInflow", domainFluidVelocity->getMesh(), feTypeV);
                 
@@ -486,7 +498,7 @@ int main(int argc, char *argv[])
                 exPara->addVariable( valuesConst, "values", "Scalar", 1, domainFluidVelocity->getMapUnique() );
 
                 exPara->save(0.0);
-                exPara->closeExporter();*/
+                exPara->closeExporter();
 
             }
             parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Heart Beat Start",0.2) ); // Adding the heart beat start last

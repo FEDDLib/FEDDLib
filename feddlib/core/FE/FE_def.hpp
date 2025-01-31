@@ -3684,7 +3684,6 @@ void FE<SC,LO,GO,NO>::assemblyCFLandRe(int dim,
     vec_dbl_Type v_i(dim);
     vec_dbl_Type v_j(dim);
 
-    vec_dbl_Type uLoc(dim);
     Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
 
     Teuchos::ArrayRCP<  SC > REArray = Re->getDataNonConst(0);
@@ -3692,33 +3691,168 @@ void FE<SC,LO,GO,NO>::assemblyCFLandRe(int dim,
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
-        detB = B.computeInverse(Binv);
-        absDetB = std::fabs(detB);
-
-        for (int d=0; d<dim; d++) {
-            uLoc[d] = 0.;
-            for (int w=0; w<phiV->size(); w++){ //quads points
-                for (int i=0; i < phiV->at(0).size(); i++) {
-                    LO index = dim * elements->getElement(T).getNode(i) + d;
-                    uLoc[d] += uArray[index] * phiV->at(w).at(i);
-                }
+        // compute max_i ||u|| over element
+        double max_u = 0.;
+        double norm_u;
+        for (int i=0; i < elements->getElement(T).getVectorNodeList().size(); i++) {
+            norm_u = 0.;
+            for (int d=0; d<dim; d++) {
+                LO index = dim * elements->getElement(T).getNode(i) + d;
+                norm_u += uArray[index];
             }
-            // uLoc[d] *= 1./absDetB;
+            if(norm_u > max_u)
+                max_u =  norm_u;
         }
 
         double diamT = elements->getElement(T).getDiamElement();
-        //cout << " Diam T " << diamT << endl;
-        double normU = 0.;
-        for (int d=0; d<dim; d++) 
-            normU += fabs(uLoc[d]);
+        double rhoT = elements->getElement(T).getRhoElement();
+        double maxE = elements->getElement(T).getLongestEdgeLength();
+        // cout << " Diam T " << diamT << "Rho T "<< rhoT << " || max u " << max_u << " maxE " << "delta t " << deltaT << endl;
+        
 
-        //cout << " Velocity in x " << uLoc[0] << " in y " << uLoc[1] << " in z " << uLoc[2] << " Norm " << normU << endl;
-        // cout << " Estimate Re in element T "<< T << " RE =" << (normU * diamT) / nu << endl;
-        // cout << " Estimate CFL in element T "<< T << " CFL =" << (normU *deltaT) / diamT << endl;
-        REArray[T] = (normU * diamT) / nu;
-        CFLArray[T] = (normU *deltaT) / diamT;
+        
+        REArray[T] = (max_u * maxE) / nu;
+        CFLArray[T] = (max_u *deltaT) / rhoT;
+
+        // cout << " Estimate Re in element T "<< T << " RE =" << REArray[T]<< endl;
+        // cout << " Estimate CFL in element T "<< T << " CFL =" << CFLArray[T] << endl;
     }
+}
+
+
+template <class SC, class LO, class GO, class NO>
+int FE<SC,LO,GO,NO>::assemblyFlowRate(int dim,
+                                        double &flowRateParabolic,
+                                        string FEType, 
+                                        int dofs,
+                                        int inflowFlag,
+                                        MultiVectorPtr_Type solution_rep,
+                                        int FEloc){
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+   
+    Helper::getPhi(phi, weights, dim-1, FEType, 2);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, 2, quadPoints, w, FEType);
+    w.reset();
+
+    int inletFlag=inflowFlag; //params->sublist("Parameter Fluid").get("Fluid Flag",4); 
+
+   
+    SC elScaling;
+    vec_dbl_Type b(dim);
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+  
+    double flowRateInlet=0.;
+ 
+    vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
+
+    Teuchos::ArrayRCP< const SC > uArray = solution_rep->getData(0);
+    // Step 0: determie flowrate on inlet to calculate resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                if(feSub.getFlag() == inletFlag){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, solution_rep,dofs);
+
+                    
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    
+                       // cout << " Normal Vector " << v_E[0] << " " << v_E[1] << " "<< v_E[2] << endl; 
+                    }
+                    
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                    // Step 1: Quadrature Points on physical surface:    
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    Teuchos::Array<SC> value(0);
+                    value.resize(  numNodes_T, 0. ); // Volumetric flow rate over one surface is a skalar value
+                    // //cout << " Velocity over node ";
+                    // for (int w=0; w<phi->size(); w++){ //quads points
+                    //     for (int d=0; d<dim; d++) {
+                    //         uLoc[d][w] = 0.;
+                    //         for (int i=0; i < phi->at(0).size(); i++) {
+                    //             LO index = dim * nodeList[i] + d;
+                    //             uLoc[d][w] += uArray[index] * phi->at(w).at(i);
+                    //         }
+                    //     }
+                    // }
+
+                    for (UN i=0; i < numNodes_T; i++) {
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {
+                            for (int j=0; j<dim; j++){
+                                if(dofs==1){
+                                    value[i] += weights->at(w) *v_E[j]/norm_v_E *solution_u[i]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+                                else{
+                                     
+                                    LO index = dim * i + j;
+                                    value[i] += weights->at(w) *v_E[j]/norm_v_E *solution_u[index]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+
+                            }
+                        }             
+                        flowRateInlet +=  value[i] * elScaling;
+    
+                    }
+                }
+
+
+            }
+        }
+    }
+    reduceAll<int, double> (*domainVec_.at(0)->getComm(), REDUCE_SUM, flowRateInlet, outArg (flowRateInlet));
+    if(flowRateInlet < 0  && domainVec_.at(0)->getComm()->getRank() == 0)
+        cout << " ###### WARNING: the flow rate you computed is negative. Either the surface normal has the wrong orientation, or your solution is negative. Or both :D. Flowrate:"<< flowRateInlet << " ####### " << endl; 
+    int isNeg=0;
+
+    if(flowRateInlet <0)
+        isNeg = 1;
+    flowRateParabolic = fabs(flowRateInlet);
+
+    return isNeg;
+
 }
 
 template <class SC, class LO, class GO, class NO>

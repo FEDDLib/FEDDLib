@@ -218,6 +218,10 @@ public:
     /// @brief Compute the circum diameter of tetrahedra
     void calcDiamTetraeder();
 
+    /// @brief Compute the incircum diameter of tetrahedra
+    void calcRhoTetraeder();
+
+    void determineLongestEdge();
     /*!
             \brief Returns elements as a vector type contrary to the C-object list.
     */

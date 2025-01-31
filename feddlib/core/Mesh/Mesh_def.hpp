@@ -1408,5 +1408,158 @@ void Mesh<SC,LO,GO,NO>::calcDiamTetraeder(){
 	}
 }
 
+
+/*!
+ \brief Calcutlating the incircumdiameter of tetrahedra.
+
+@param[in] elements Elements.
+@param[in] surfaceTriangleElements TriangleElements.
+@param[in] volTet Volume of tetrahedra.
+@param[in] areaTriangles Area of faces of tetrahedra.
+
+@param[out] rhoElements Incircumdiameter of tetrahedra.
+
+*/
+
+template <class SC, class LO, class GO, class NO>
+void Mesh<SC,LO,GO,NO>::calcRhoTetraeder(){
+	
+    vec_dbl_Type volTet = determineVolTet(this->elementsC_, this->pointsRep_);
+
+    double rhoElement =0.;
+	
+	vec_LO_Type surfaceOfEl(4);
+	
+    vec2D_dbl_ptr_Type points = this->pointsRep_;
+	vec_dbl_Type vecTmp(3),vecTmp1(3),vecTmp2(3);
+    double lengthA, lengthB,lengthC,s1,A1,A2,A3,A4;
+	for(int k=0; k< this->elementsC_->numberElements() ; k++){	
+		// Calculating edges of Tetraeder
+        // ----------
+        // areas
+        // ----------
+        FiniteElement elementTmp = this->elementsC_->getElement(k);
+        vecTmp[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(1)).at(0);
+		vecTmp[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(1)).at(1);
+		vecTmp[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(1)).at(2);
+		lengthA = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2)+pow(vecTmp[2],2));
+	
+		vecTmp1[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(2)).at(0);
+		vecTmp1[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(2)).at(1);
+		vecTmp1[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(2)).at(2);
+		lengthB = sqrt(pow(vecTmp1[0],2)+pow(vecTmp1[1],2)+pow(vecTmp1[2],2));
+
+		vecTmp2[0] = points->at(elementTmp.getNode(1)).at(0) - points->at(elementTmp.getNode(2)).at(0);
+		vecTmp2[1] = points->at(elementTmp.getNode(1)).at(1) - points->at(elementTmp.getNode(2)).at(1);
+		vecTmp2[2] = points->at(elementTmp.getNode(1)).at(2) - points->at(elementTmp.getNode(2)).at(2);
+		lengthC = sqrt(pow(vecTmp2[0],2)+pow(vecTmp2[1],2)+pow(vecTmp2[2],2));
+
+		s1 = (lengthA+lengthB+lengthC)/2.;
+		A1 = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));
+
+        // ----------
+        vecTmp[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(1)).at(0);
+		vecTmp[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(1)).at(1);
+		vecTmp[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(1)).at(2);
+		lengthA = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2)+pow(vecTmp[2],2));
+	
+		vecTmp1[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(3)).at(0);
+		vecTmp1[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(3)).at(1);
+		vecTmp1[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(3)).at(2);
+		lengthB = sqrt(pow(vecTmp1[0],2)+pow(vecTmp1[1],2)+pow(vecTmp1[2],2));
+
+		vecTmp2[0] = points->at(elementTmp.getNode(1)).at(0) - points->at(elementTmp.getNode(3)).at(0);
+		vecTmp2[1] = points->at(elementTmp.getNode(1)).at(1) - points->at(elementTmp.getNode(3)).at(1);
+		vecTmp2[2] = points->at(elementTmp.getNode(1)).at(2) - points->at(elementTmp.getNode(3)).at(2);
+		lengthC = sqrt(pow(vecTmp2[0],2)+pow(vecTmp2[1],2)+pow(vecTmp2[2],2));
+
+		s1 = (lengthA+lengthB+lengthC)/2.;
+		A2 = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));
+
+        // ----------
+
+        vecTmp[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(2)).at(0);
+		vecTmp[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(2)).at(1);
+		vecTmp[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(2)).at(2);
+		lengthA = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2)+pow(vecTmp[2],2));
+	
+		vecTmp1[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(3)).at(0);
+		vecTmp1[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(3)).at(1);
+		vecTmp1[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(3)).at(2);
+		lengthB = sqrt(pow(vecTmp1[0],2)+pow(vecTmp1[1],2)+pow(vecTmp1[2],2));
+
+		vecTmp2[0] = points->at(elementTmp.getNode(2)).at(0) - points->at(elementTmp.getNode(3)).at(0);
+		vecTmp2[1] = points->at(elementTmp.getNode(2)).at(1) - points->at(elementTmp.getNode(3)).at(1);
+		vecTmp2[2] = points->at(elementTmp.getNode(2)).at(2) - points->at(elementTmp.getNode(3)).at(2);
+		lengthC = sqrt(pow(vecTmp2[0],2)+pow(vecTmp2[1],2)+pow(vecTmp2[2],2));
+
+		s1 = (lengthA+lengthB+lengthC)/2.;
+		A3 = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));
+
+        // ----------
+        vecTmp[0] = points->at(elementTmp.getNode(1)).at(0) - points->at(elementTmp.getNode(2)).at(0);
+		vecTmp[1] = points->at(elementTmp.getNode(1)).at(1) - points->at(elementTmp.getNode(2)).at(1);
+		vecTmp[2] = points->at(elementTmp.getNode(1)).at(2) - points->at(elementTmp.getNode(2)).at(2);
+		lengthA = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2)+pow(vecTmp[2],2));
+	
+		vecTmp1[0] = points->at(elementTmp.getNode(1)).at(0) - points->at(elementTmp.getNode(3)).at(0);
+		vecTmp1[1] = points->at(elementTmp.getNode(1)).at(1) - points->at(elementTmp.getNode(3)).at(1);
+		vecTmp1[2] = points->at(elementTmp.getNode(1)).at(2) - points->at(elementTmp.getNode(3)).at(2);
+		lengthB = sqrt(pow(vecTmp1[0],2)+pow(vecTmp1[1],2)+pow(vecTmp1[2],2));
+
+		vecTmp2[0] = points->at(elementTmp.getNode(2)).at(0) - points->at(elementTmp.getNode(3)).at(0);
+		vecTmp2[1] = points->at(elementTmp.getNode(2)).at(1) - points->at(elementTmp.getNode(3)).at(1);
+		vecTmp2[2] = points->at(elementTmp.getNode(2)).at(2) - points->at(elementTmp.getNode(3)).at(2);
+		lengthC = sqrt(pow(vecTmp2[0],2)+pow(vecTmp2[1],2)+pow(vecTmp2[2],2));
+
+		s1 = (lengthA+lengthB+lengthC)/2.;
+		A4 = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));
+
+
+		rhoElement = (6*volTet[k]) / (A1 + A2 +A3 +A4);
+
+        this->elementsC_->getElement(k).setRhoElement(rhoElement);
+
+	}
+
+}
+
+
+template <class SC, class LO, class GO, class NO>
+void Mesh<SC,LO,GO,NO>::determineLongestEdge( ){
+	// We have to determine which edge is longer, as we use the opposite node of the longer edge for the element construction
+    vec2D_dbl_ptr_Type points = this->pointsRep_;
+
+    vec_dbl_Type P1(this->dim_),P2(this->dim_);
+	double maxLength=0.0;
+	int maxEntry=0;
+	LO p1ID,p2ID;
+    vec2D_LO_Type edgeVec = {{0,1},{0,2},{0,3},{1,2},{1,3},{2,3}};
+	for(int k=0; k< this->elementsC_->numberElements() ; k++){	
+
+        FiniteElement elementTmp = this->elementsC_->getElement(k);
+        
+        double max_length=0.;
+        for(int i=0; i<edgeVec.size();i++){
+            p1ID =this->elementsC_->getElement(k).getNode(edgeVec[i][0]);
+            p2ID =this->elementsC_->getElement(k).getNode(edgeVec[i][1]);
+            P1 = points->at(p1ID);
+            P2 = points->at(p2ID);
+            double sum=0;
+            for(int j=0; j< P1.size();j++)
+                sum += pow(P1[j]-P2[j],2);
+            sum =  sqrt(sum);
+            if( sum > max_length)
+                max_length=  sum;
+        }    
+	
+        this->elementsC_->getElement(k).setLongestEdgeLength(max_length);
+
+		
+	}
+		
+	
+}
+
 }
 #endif

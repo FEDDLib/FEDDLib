@@ -479,7 +479,13 @@ class FE {
                                            MapConstPtr_Type map2_unique, // Velocity-Map unique als VecField
                                            MultiVectorPtr_Type u, // Geschwindigkeit
                                            bool callFillComplete = true);
-
+    int assemblyFlowRate(int dim,
+                                        double &flowRateParabolic,
+                                        string FEType, 
+                                        int dofs,
+                                        int inflowFlag,
+                                        MultiVectorPtr_Type solution_rep,
+                                        int FEloc=0);
 
     /// @brief Assembling Pressure Integral to determine pressure mean value
     /// @param dim Dimension

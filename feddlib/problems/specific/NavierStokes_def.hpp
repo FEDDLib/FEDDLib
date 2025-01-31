@@ -108,21 +108,27 @@ p_rep_()
 
     newtonStep_=0;
 
-    domainVelocity->getMesh()->calcDiamTetraeder();
     
+
     timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
 
-    // Reynolds number and CFL number estimations
-    exporterTxtCFLMax_ = Teuchos::rcp(new ExporterTxt () );
-    exporterTxtCFLMax_->setup( "CFL_max", this->comm_ );
-    exporterTxtReMax_ = Teuchos::rcp(new ExporterTxt () );
-    exporterTxtReMax_->setup( "Re_max", this->comm_ );
-    
-    exporterTxtCFLMin_ = Teuchos::rcp(new ExporterTxt () );
-    exporterTxtCFLMin_->setup( "CFL_min", this->comm_ );
-    // exporterTxtReMin_ = Teuchos::rcp(new ExporterTxt () );
-    // exporterTxtReMin_->setup( "Re_min", this->comm_ );
-    // ---------------------------------------------
+    if(this->dim_ ==3){
+        // Values we need to estimate RE and CFL in 3D
+        domainVelocity->getMesh()->calcDiamTetraeder();
+        domainVelocity->getMesh()->calcRhoTetraeder();
+        domainVelocity->getMesh()->determineLongestEdge();
+        // Reynolds number and CFL number estimations
+        exporterTxtCFLMax_ = Teuchos::rcp(new ExporterTxt () );
+        exporterTxtCFLMax_->setup( "CFL_max", this->comm_ );
+        exporterTxtReMax_ = Teuchos::rcp(new ExporterTxt () );
+        exporterTxtReMax_->setup( "Re_max", this->comm_ );
+        
+        exporterTxtCFLMin_ = Teuchos::rcp(new ExporterTxt () );
+        exporterTxtCFLMin_->setup( "CFL_min", this->comm_ );
+        // exporterTxtReMin_ = Teuchos::rcp(new ExporterTxt () );
+        // exporterTxtReMin_->setup( "Re_min", this->comm_ );
+        // ---------------------------------------------
+    }
 
     if (parameterList->sublist("Parameter").get("Calculate Coefficients",false)) {
         vec2D_dbl_ptr_Type vectmpPointsPressure = domainPressure->getPointsUnique();
@@ -699,7 +705,6 @@ template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
 
    if ( this->parameterList_->sublist("General").get("Export drag and lift",false) ) {
-        cout << " Exporting drag and lift " << endl;
         int dim = this->dim_;
         TEUCHOS_TEST_FOR_EXCEPTION( this->parameterList_->sublist("Parameter").get("Criterion","Residual") == "Update",  std::runtime_error, "Wrong nonlinear criterion to calculate the drag coefficient. The last system is the Newton system but we need the fixed point system. Either use Criterion=Residual or implement for Criterion=Update." );
         
@@ -769,7 +774,7 @@ void NavierStokes<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
         exporterTxtLift_->exportData( lift[0] );
     }
 
-    if ( this->parameterList_->sublist("General").get("Export Re and CFL",true) ) {
+    if ( this->parameterList_->sublist("General").get("Export RE and CFL",true) ) {
 
         MultiVectorPtr_Type Re(new MultiVector_Type( this->getDomain(0)->getElementMap(), 1 ) );
         MultiVectorPtr_Type CFL(new MultiVector_Type( this->getDomain(0)->getElementMap(), 1 ) );
@@ -795,7 +800,7 @@ void NavierStokes<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
         Re->normInf(norm());               
         exporterTxtReMax_->exportData( norm[0] );
         // exporterTxtReMin_->exportData( reMin[0] );
-        if ( exporterRe_.is_null() && this->parameterList_->sublist("General").get("Export RE and CFL",false)){
+        if ( exporterRe_.is_null() && this->parameterList_->sublist("General").get("Plot RE and CFL",false)){
             exporterRe_ = Teuchos::rcp(new Exporter_Type());
             
             DomainConstPtr_Type dom = this->getDomain(0);

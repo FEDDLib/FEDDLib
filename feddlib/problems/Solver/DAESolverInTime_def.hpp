@@ -516,12 +516,12 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinear(){
         if (print) {
             exportTimestep();
         }
-        if (parameterList_->sublist("General").get("Export drag and lift",false)) {
+        // if (parameterList_->sublist("General").get("Export drag and lift",false)) {
             //vec_dbl_ptr_Type values(new vec_dbl_Type(4));
             //TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Drag and Lift are not implemented.");
             //nonLinearProblem_->ComputeDragLift(values);
             problemTime_->computeValuesOfInterestAndExport();
-        }
+        // }
     }
 
     if (print) {
@@ -1461,12 +1461,12 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearMultistep(){
             newtonIterations.push_back((*its)[1]);
 
         }
-        if (parameterList_->sublist("General").get("Export drag and lift",false)) {
+        //if (parameterList_->sublist("General").get("Export drag and lift",false)) {
             //vec_dbl_ptr_Type values(new vec_dbl_Type(4));
             //TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Drag and Lift are not implemented.");
             //nonLinearProblem_->ComputeDragLift(values);
             problemTime_->computeValuesOfInterestAndExport();
-        }
+        //}
         if (print) {
             exportTimestep();
         }

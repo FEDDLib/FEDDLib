@@ -110,6 +110,12 @@ class FiniteElement {
 	void setDiamElement(double diam){diamElement_=diam;};
 	double getDiamElement(){return diamElement_;};
 
+    void setRhoElement(double rho){rhoElement_=rho;};
+	double getRhoElement(){return rhoElement_;};
+
+    void setLongestEdgeLength(double longestEdgeLength){longestEdgeLength_=longestEdgeLength;};
+	double getLongestEdgeLength(){return longestEdgeLength_;};
+
 private:
     
     vec_LO_Type localNodeIDs_; /*! Node IDs that define this element. */
@@ -124,7 +130,9 @@ private:
 	LO refinementEdge_=-1;
 	vec_LO_Type markedEdges_;
     double diamElement_ = -1;
-    
+    double rhoElement_ = -1;
+    double longestEdgeLength_ = -1;
+
     
 public:    
 
