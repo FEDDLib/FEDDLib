@@ -818,10 +818,16 @@ void NavierStokes<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
 
         }
 
-        if (!exporterRe_.is_null())
+        if (!exporterRe_.is_null()){
+            MultiVectorConstPtr_Type exportVector = Re;
+            MultiVectorConstPtr_Type exportVector2 = CFL;
+
+            this->exporterRe_->updateVariables(exportVector, "RE");
+            this->exporterRe_->updateVariables(exportVector2, "CFL");
+            
             this->exporterRe_->save( this->timeSteppingTool_->currentTime() );
         
-
+        }
 
     }
 }
