@@ -133,6 +133,8 @@ public:
     
     void writeVariablesHDF5();
 
+    void updateVariables(MultiVecConstPtr_Type &u, std::string varName);
+
     void readVariablesHDF5();
     
     void initHDF5();
