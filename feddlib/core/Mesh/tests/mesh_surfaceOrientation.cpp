@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
         
         Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
         
-        exPara->setup( "surfaceNnormalDirectionOnSurface", domainP1->getMesh(), "P0" );
+        exPara->setup( "surfaceNormalDirectionOnSurface", domainP1->getMesh(), "P0" );
         MultiVectorConstPtr_Type mvFlagConst = mvFlag;
         exPara->addVariable( mvFlagConst, "flag", "Scalar", 1, domainP1->getElementMap());
         

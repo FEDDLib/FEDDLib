@@ -14,6 +14,14 @@ SET(General_HEADERS
 	General/DifferentiableFuncClass.hpp
 	General/DifferentiableFuncClass_decl.hpp
 	General/DifferentiableFuncClass_def.hpp	
+	General/HDF5Import.hpp
+	General/HDF5Import_decl.hpp
+	General/HDF5Import_def.hpp
+	General/HDF5Export.hpp
+	General/HDF5Export_decl.hpp
+	General/HDF5Export_def.hpp
+	General/HDF5Import.cpp
+	General/HDF5Export.cpp
 CACHE INTERNAL "")
 
 SET(General_SOURCES

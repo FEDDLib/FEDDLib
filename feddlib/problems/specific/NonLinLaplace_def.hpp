@@ -277,10 +277,6 @@ void NonLinLaplace<SC, LO, GO, NO>::calculateNonLinResidualVec(
     std::string type, double time) const {
 
     this->reAssemble("Rhs");
-    // TODO understand how the boundary conditions are handled
-    //  Seems that they are included in the solution vector and corrected for
-    //  here Why is this a good approach?
-
     // rhs_ contains the dirichlet boundary conditions
     // Apparently so does bcFactory_. Not sure why both do.
     if (!type.compare("standard")) {
@@ -290,20 +286,14 @@ void NonLinLaplace<SC, LO, GO, NO>::calculateNonLinResidualVec(
                                            time);
     } else if (!type.compare("reverse")) {
         // this = -1*this + 1*rhs
-        /* std::cout << "Solution !!!!!!!!!!!!!!!!!!!!!!\n"; */
-        /* this->solution_->getBlock(0)->print(); */
 
         this->residualVec_->update(1., *this->rhs_, -1.);
-        /* std::cout << "Before !!!!!!!!!!!!!!!!!!!!!!\n"; */
-        /* this->residualVec_->getBlock(0)->print(); */
 
         // Sets the residualVec_ at the boundary = boundary condition - solution
         // Necessary since reAssemble("Rhs") only assembles the residual on
         // internal nodes
         this->bcFactory_->setBCMinusVector(this->residualVec_, this->solution_,
                                            time);
-        /* std::cout << "After !!!!!!!!!!!!!!!!!!!!!!\n"; */
-        /* this->residualVec_->getBlock(0)->print(); */
     } else {
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,
                                    "Unknown type for residual computation.");
