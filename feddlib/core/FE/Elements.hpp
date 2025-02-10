@@ -3,7 +3,7 @@
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/Utils/FEDDUtils.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "feddlib/core/LinearAlgebra/Map_Tpetra.hpp"
+#include "feddlib/core/LinearAlgebra/Map.hpp"
 #include "FiniteElement.hpp"
 #include "Teuchos_RCPDecl.hpp"
 #include "Teuchos_RCPBoostSharedPtrConversions.hpp"
@@ -30,7 +30,7 @@ public:
     typedef default_sc SC;
     typedef default_no NO;
     
-    typedef Teuchos::RCP<const Map_Tpetra<LO,GO,NO> > MapConstPtr_Type;
+    typedef Teuchos::RCP<const Map<LO,GO,NO> > MapConstPtr_Type;
     
     typedef SmallMatrix<SC> SM_SC_Type;
     typedef std::vector<SM_SC_Type> vecSM_SC_Type;

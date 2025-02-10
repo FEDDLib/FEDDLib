@@ -52,7 +52,7 @@ public:
     typedef EdgeElements EdgeElements_Type;
     typedef Teuchos::RCP<EdgeElements_Type> EdgeElementsPtr_Type;
      
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map<LO,GO,NO> Map_Type;
     typedef typename Map_Type::MapPtr_Type MapPtr_Type;
     typedef typename Map_Type::MapConstPtr_Type MapConstPtr_Type;
 

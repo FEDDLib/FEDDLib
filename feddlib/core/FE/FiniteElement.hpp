@@ -28,7 +28,7 @@ class FiniteElement {
     typedef Elements Elements_Type;
     typedef Teuchos::RCP<Elements_Type> ElementsPtr_Type;
     
-    typedef Teuchos::RCP<const Map_Tpetra<LO,GO,NO> > MapConstPtr_Type;
+    typedef Teuchos::RCP<const Map<LO,GO,NO> > MapConstPtr_Type;
     
     FiniteElement();
     

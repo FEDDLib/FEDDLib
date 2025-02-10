@@ -110,7 +110,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DMiniTPM(std::string FEType,
         pointsRepGlobMapping[i] = i;
     }
 
-    this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>((GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>((GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -390,7 +390,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
             cout << "-- Building P1 Repeated and Unique Map ... " << flush;
         }
 
-        this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -518,7 +518,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
         if (verbose)
             cout << "-- Building P2 Repeated and Unique Map ... " << flush;
 
-        this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -748,7 +748,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
             }
         }
 
-        this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -861,7 +861,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
             }
         }
 
-        this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -1178,9 +1178,9 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DCube(int N,
             }
         }
     }
-    this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
-    this->mapUnique_.reset(new Map_Tpetra<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapUnique_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     buildElementsClass(elementsVec);
 
@@ -1270,7 +1270,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ1Cube(int N,
             }
         }
     }
-    this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -1410,7 +1410,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2Cube(int N,
         }
     }
 
-    this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -1618,7 +1618,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2_20Cube(int N,
         }
     }
 
-    this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -1798,7 +1798,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2BFS(int N,
         }
     }
 
-    this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2005,7 +2005,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
 
 
 
-        this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
         if (verbose) {
@@ -2120,7 +2120,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
 
 
 
-        this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2248,7 +2248,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
 
-        this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2489,7 +2489,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         }
 
 
-        this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2651,7 +2651,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
             }
         }
 
-        this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2962,9 +2962,9 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DBFS(int N,
             }
         }
     }
-    this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
-    this->mapUnique_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapUnique_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     buildElementsClass(elementsVec);
 
@@ -3568,7 +3568,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
     counter =0;
     int    P2M = 2*(M+1)-1;
 
-    this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
@@ -3885,7 +3885,7 @@ void MeshStructured<SC,LO,GO,NO>::buildElementMap(){
         elementsGlobalMapping[i] = i + offset;
 
     std::string underlyingLib = this->mapRepeated_->getUnderlyingLib();
-    this->elementMap_.reset(new Map_Tpetra<LO,GO,NO>(  (GO) -1, elementsGlobalMapping(), 0, this->comm_) );
+    this->elementMap_.reset(new Map<LO,GO,NO>(  (GO) -1, elementsGlobalMapping(), 0, this->comm_) );
 
 }
 

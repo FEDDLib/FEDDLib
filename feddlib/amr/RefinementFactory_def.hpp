@@ -412,7 +412,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		Teuchos::RCP<std::vector<GO> > elementsGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsElements ) );
 		Teuchos::ArrayView<GO> elementsGlobMappingArray = Teuchos::arrayViewFromVector( *elementsGlobMapping);
 
-		this->elementMap_.reset(new Map_Tpetra<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), elementsGlobMappingArray, 0, this->comm_) );
+		this->elementMap_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), elementsGlobMappingArray, 0, this->comm_) );
 
 		// determine global number of elements
 		this->numElementsGlob_ = this->elementMap_->getMaxAllGlobalIndex()+1;  
@@ -792,7 +792,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeEleme
 		Teuchos::RCP<std::vector<GO> > pointsRepGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDs ) );
 		Teuchos::ArrayView<GO> pointsRepGlobMappingArray = Teuchos::arrayViewFromVector( *pointsRepGlobMapping );
 		
-		this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
+		this->mapRepeated_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
 		this->mapUnique_ = this->mapRepeated_->buildUniqueMap( this->rankRange_ );
 	
 	
@@ -1139,7 +1139,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 		Teuchos::RCP<std::vector<GO>> edgesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsEdges ) );
 		Teuchos::ArrayView<GO> edgesGlobMappingArray = Teuchos::arrayViewFromVector( *edgesGlobMapping);
 
-		this->edgeMap_.reset(new Map_Tpetra<LO,GO,NO>(Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
+		this->edgeMap_.reset(new Map<LO,GO,NO>(Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
 		//this->edgeMap_->print();
 }
 

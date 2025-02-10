@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
     TEUCHOS_TEST_FOR_EXCEPTION( option>3 || option<1, std::logic_error, "Chooes option beteween 1 and 3 for FaCSI test.");
     
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map<LO,GO,NO> Map_Type;
     typedef RCP<Map_Type> MapPtr_Type;
     typedef RCP<const Map_Type> MapConstPtr_Type;
     typedef Matrix<SC,LO,GO,NO> Matrix_Type;

@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map<LO,GO,NO> Map_Type;
     typedef RCP<Map_Type> MapPtr_Type;
     typedef RCP<const Map_Type> MapConstPtr_Type;
 

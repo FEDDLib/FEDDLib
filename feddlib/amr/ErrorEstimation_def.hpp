@@ -2250,7 +2250,7 @@ void ErrorEstimation<SC,LO,GO,NO>::buildTriangleMap(){
 		Teuchos::RCP<std::vector<GO>> surfacesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsSurfaces ) );
 		Teuchos::ArrayView<GO> surfacesGlobMappingArray = Teuchos::arrayViewFromVector( *surfacesGlobMapping);
 
-		this->surfaceTriangleMap_.reset(new Map_Tpetra<LO,GO,NO>(Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingArray, 0, inputMesh_->getComm()) );
+		this->surfaceTriangleMap_.reset(new Map<LO,GO,NO>(Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingArray, 0, inputMesh_->getComm()) );
 }
 
 /*!

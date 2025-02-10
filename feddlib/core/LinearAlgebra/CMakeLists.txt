@@ -10,9 +10,10 @@ LinearAlgebra/BlockMultiVector_decl.hpp
 LinearAlgebra/BlockMultiVector_def.hpp
 LinearAlgebra/Map_decl.hpp
 LinearAlgebra/Map_def.hpp
-LinearAlgebra/Map_Tpetra_decl.hpp
-LinearAlgebra/Map_Tpetra_def.hpp
-LinearAlgebra/Map_Tpetra.hpp
+LinearAlgebra/Map.hpp
+LinearAlgebra/Map_Xpetra_decl.hpp
+LinearAlgebra/Map_Xpetra_def.hpp
+LinearAlgebra/Map_Xpetra.hpp
 LinearAlgebra/Matrix_decl.hpp
 LinearAlgebra/Matrix_def.hpp
 LinearAlgebra/Matrix.hpp
@@ -26,7 +27,7 @@ LinearAlgebra/BlockMap.cpp
 LinearAlgebra/BlockMatrix.cpp
 LinearAlgebra/BlockMultiVector.cpp
 LinearAlgebra/Map.cpp
-LinearAlgebra/Map_Tpetra.cpp
+LinearAlgebra/Map_Xpetra.cpp
 LinearAlgebra/Matrix.cpp
 LinearAlgebra/MultiVector.cpp
 CACHE INTERNAL "")

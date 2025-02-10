@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     typedef RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
     typedef RCP<const BlockMultiVector_Type> BlockMultiVectorConstPtr_Type;
     
-    typedef Map_Tpetra<> Map_Type;
+    typedef Map<> Map_Type;
     typedef RCP<Map_Type> MapPtr_Type;
     typedef RCP<const Map_Type> MapConstPtr_Type;
     typedef MeshPartitioner<SC,LO,GO,NO> MeshPartitioner_Type;

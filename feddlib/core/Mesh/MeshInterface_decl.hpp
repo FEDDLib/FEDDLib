@@ -2,7 +2,7 @@
 #define MESHINTERFACE_decl_hpp
 
 #include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/LinearAlgebra/Map_Tpetra.hpp"
+#include "feddlib/core/LinearAlgebra/Map.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 
 /*!
@@ -21,7 +21,7 @@ class MeshInterface  {
 public:
     typedef MeshInterface<SC,LO,GO,NO> MeshInterface_Type;
     typedef Teuchos::RCP<MeshInterface_Type> MeshInterfacePtr_Type;
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map<LO,GO,NO> Map_Type;
     typedef typename Map_Type::MapPtr_Type MapPtr_Type;
     typedef typename Map_Type::MapConstPtr_Type MapConstPtr_Type;
     typedef typename Map_Type::Comm_Type Comm_Type;

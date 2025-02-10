@@ -1,7 +1,7 @@
 #ifndef EdgeElements_hpp
 #define EdgeElements_hpp
 #include "Elements.hpp"
-#include "feddlib/core/LinearAlgebra/Map_Tpetra.hpp"
+#include "feddlib/core/LinearAlgebra/Map.hpp"
 #include <Teuchos_OrdinalTraits.hpp>
 /*!
  Declaration of EdgeElements
@@ -21,7 +21,7 @@ class EdgeElements : public Elements {
     typedef default_go GO;
     typedef default_no NO;
     typedef Elements Elements_Type;
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map<LO,GO,NO> Map_Type;
     typedef typename Map_Type::MapPtr_Type MapPtr_Type;
     typedef typename Map_Type::MapConstPtr_Type MapConstPtr_Type;
     typedef Teuchos::RCP<FE_vec_Type> FE_vec_ptr_Type;

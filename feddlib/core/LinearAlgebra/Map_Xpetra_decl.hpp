@@ -1,5 +1,5 @@
-#ifndef MAP_TPETRA_DECL_hpp
-#define MAP_TPETRA_DECL_hpp
+#ifndef MAP_XPETRA_DECL_hpp
+#define MAP_XPETRA_DECL_hpp
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
@@ -13,15 +13,6 @@
 #include "Xpetra_ThyraUtils.hpp"
 #include <Thyra_VectorSpaceBase_decl.hpp>
 
-#include <Tpetra_Map.hpp>
-#include <Tpetra_MultiVector.hpp>
-#include <Tpetra_Vector.hpp>
-#include <Tpetra_Export.hpp>
-#include <Tpetra_Import.hpp>
-#include <Thyra_TpetraThyraWrappers.hpp>
-#include <Thyra_TpetraVector.hpp>
-#include <Thyra_TpetraMultiVector.hpp>
-#include <Thyra_TpetraVectorSpace.hpp>
 /*!
  Declaration of Map
  
@@ -34,18 +25,13 @@
 using namespace std;
 namespace FEDD {
 template < class LO = default_lo, class GO = default_go, class NO = default_no>
-class Map_Tpetra {
+class Map_Xpetra {
     
 public:
     
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map_Xpetra<LO,GO,NO> Map_Type;
     typedef Teuchos::RCP<Map_Type> MapPtr_Type;
     typedef Teuchos::RCP<const Map_Type> MapConstPtr_Type;
-
-    typedef Tpetra::Map<LO,GO,NO> TpetraMap_Type;
-    typedef Teuchos::RCP<TpetraMap_Type> TpetraMapPtr_Type;
-    typedef Teuchos::RCP<const TpetraMap_Type> TpetraMapConstPtr_Type;
-    typedef const TpetraMapConstPtr_Type TpetraMapConstPtrConst_Type;
     
     typedef Xpetra::Map<LO,GO,NO> XpetraMap_Type;
     typedef Teuchos::RCP<XpetraMap_Type> XpetraMapPtr_Type;
@@ -60,25 +46,35 @@ public:
     typedef Teuchos::RCP<Comm_Type> CommPtr_Type;
     typedef Teuchos::RCP<const Comm_Type> CommConstPtr_Type;
 
-    Map_Tpetra();
+    Map_Xpetra();
     
-    Map_Tpetra( const TpetraMapConstPtr_Type& tpetraMatPtrIn );
+    Map_Xpetra( const XpetraMapConstPtr_Type& xpetraMatPtrIn );
     
-    Map_Tpetra( const Map_Type& mapIn );
+    Map_Xpetra( const Map_Type& mapIn );
     
-    Map_Tpetra(GO numGlobalElements,
+    Map_Xpetra(std::string lib,
+        GO numGlobalElements,
         const Teuchos::ArrayView<const GO> &elementList,
         GO indexBase,
         const CommConstPtr_Type &comm);
 
-    Map_Tpetra(GO numGlobalElements,
+    Map_Xpetra(std::string lib,
+        GO numGlobalElements,
         LO numLocalElements,
         GO indexBase,
         const CommConstPtr_Type &comm);
 
     
-    ~Map_Tpetra();
+    ~Map_Xpetra();
+    
+    std::string getUnderlyingLib( ) const;
 
+    MapPtr_Type buildVecFieldMap(UN numDofs, std::string ordering="NodeWise") const;
+    
+    XpetraMapConstPtr_Type getXpetraMap() const;
+    
+    ThyraVSBConstPtr_Type getThyraVectorSpaceBase() const;
+    
     LO getNodeNumElements() const;
     
     GO getGlobalNumElements() const;
@@ -86,44 +82,30 @@ public:
     GO getGlobalElement(LO id) const;
     
     LO getLocalElement(GO id) const;
-
-    CommConstPtr_Type getComm() const;
-
-    Teuchos::ArrayView<const GO> getNodeElementList() const;
-
-    GO getIndexBase() const; 
-
-    std::string getUnderlyingLib( ) const;       
     
-    MapPtr_Type buildVecFieldMap(UN numDofs, std::string ordering="NodeWise") const;
-   
-    TpetraMapConstPtr_Type getTpetraMap() const;
-
-    XpetraMapConstPtr_Type getXpetraMap();
-
+    Teuchos::ArrayView<const GO> getNodeElementList() const;
+    
     GO getMaxAllGlobalIndex() const;
     
     LO getMaxLocalIndex() const;
     
     void print(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME) const;
 
-    ThyraVSBConstPtr_Type getThyraVectorSpaceBase() const;
+    CommConstPtr_Type getComm() const;
 
     CommPtr_Type getCommNonConst();
-
     /*!
      @param[in] numFreeProcs: Do not use the last numFreeProcs of MPI communicator in the building process
      */
-    Teuchos::RCP<Map_Tpetra<LO,GO,NO> > buildUniqueMap( int numFreeProcs=0 ) const;
+    Teuchos::RCP<Map_Xpetra<LO,GO,NO> > buildUniqueMap( int numFreeProcs=0 ) const;
     
-    Teuchos::RCP<Map_Tpetra<LO,GO,NO> > buildUniqueMap( tuple_intint_Type rankRange ) const;
-   
+    Teuchos::RCP<Map_Xpetra<LO,GO,NO> > buildUniqueMap( tuple_intint_Type rankRange ) const;
+    
+    GO getIndexBase() const;
     
 private:
     
-    TpetraMapConstPtr_Type map_;
-    XpetraMapConstPtr_Type mapX_;
-
+    XpetraMapConstPtr_Type map_;
 };
 }
 

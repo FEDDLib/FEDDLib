@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     typedef Matrix<SC,LO,GO,NO> Matrix_Type;
     typedef RCP<Matrix_Type> MatrixPtr_Type;
 
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map<LO,GO,NO> Map_Type;
     typedef RCP<Map_Type> MapPtr_Type;
 
     Teuchos::Array<GO> indices(2);

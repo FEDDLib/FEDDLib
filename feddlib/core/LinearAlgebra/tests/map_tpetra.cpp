@@ -3,7 +3,7 @@
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "feddlib/core/LinearAlgebra/Map_Tpetra.hpp"
+#include "feddlib/core/LinearAlgebra/Map.hpp"
 
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map<LO,GO,NO> Map_Type;
     typedef RCP<Map_Type> MapPtr_Type;
 
 

@@ -1,6 +1,6 @@
-#ifndef MAP_TPETRA_hpp
-#define MAP_TPETRA_hpp
-#include "Map_Tpetra_decl.hpp"
+#ifndef MAP_Xpetra_hpp
+#define MAP_Xpetra_hpp
+#include "Map_Xpetra_decl.hpp"
 // #ifndef HAVE_EXPLICIT_INSTANTIATION
 //     #include "Map_def.hpp"
 // #endif

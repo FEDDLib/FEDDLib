@@ -51,9 +51,9 @@ public:
     typedef Teuchos::RCP<Problem_Type> ProblemPtr_Type;
     typedef Teuchos::RCP<TimeProblem_Type> TimeProblemPtr_Type;
     typedef Teuchos::RCP<MinPrecProblem_Type> MinPrecProblemPtr_Type;
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
-    typedef Teuchos::RCP<Map_Tpetra<LO,GO,NO> > MapPtr_Type;
-    typedef Teuchos::RCP<const Map_Tpetra<LO,GO,NO> > MapConstPtr_Type;
+    typedef Map<LO,GO,NO> Map_Type;
+    typedef Teuchos::RCP<Map<LO,GO,NO> > MapPtr_Type;
+    typedef Teuchos::RCP<const Map<LO,GO,NO> > MapConstPtr_Type;
     typedef Teuchos::RCP<Thyra::PreconditionerBase<SC> > ThyraPrecPtr_Type;
     typedef Teuchos::RCP<const Thyra::PreconditionerBase<SC> > ThyraPrecConstPtr_Type;
     typedef Teuchos::RCP<Thyra::LinearOpBase<SC> > ThyraLinOpPtr_Type;

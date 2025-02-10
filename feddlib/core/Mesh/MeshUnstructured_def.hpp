@@ -239,7 +239,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     Teuchos::RCP<std::vector<GO> > pointsRepGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDs ) );
     Teuchos::ArrayView<GO> pointsRepGlobMappingArray = Teuchos::arrayViewFromVector( *pointsRepGlobMapping );
     
-    this->mapRepeated_.reset(new Map_Tpetra<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
     
     if (verbose)
         cout << "done --" << endl;
@@ -1296,7 +1296,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildEdgeMap(){
 		Teuchos::RCP<std::vector<GO>> edgesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsEdges ) );
 		Teuchos::ArrayView<GO> edgesGlobMappingArray = Teuchos::arrayViewFromVector( *edgesGlobMapping);
 
-		this->edgeMap_.reset(new Map_Tpetra<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
+		this->edgeMap_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
 		//this->edgeMap_->print();
 }
 

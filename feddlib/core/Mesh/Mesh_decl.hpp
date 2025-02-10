@@ -36,7 +36,7 @@ public:
     typedef Teuchos::RCP<const Teuchos::Comm<int> > CommConstPtr_Type;
     typedef const CommConstPtr_Type CommConstPtrConst_Type;
     
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map<LO,GO,NO> Map_Type;
     typedef Teuchos::RCP<Map_Type> MapPtr_Type;
     typedef Teuchos::RCP<const Map_Type> MapConstPtr_Type;
     typedef Teuchos::RCP<const Map_Type> MapConstPtrConst_Type;

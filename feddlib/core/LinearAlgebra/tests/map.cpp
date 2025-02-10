@@ -3,7 +3,7 @@
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "feddlib/core/LinearAlgebra/Map.hpp"
+#include "feddlib/core/LinearAlgebra/Map_Xpetra.hpp"
 
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     typedef RCP<XpetraMap_Type> XpetraMapPtr_Type;
     typedef RCP<const XpetraMap_Type> XpetraMapConstPtr_Type;
 
-    typedef Map<LO,GO,NO> Map_Type;
+    typedef Map_Xpetra<LO,GO,NO> Map_Type;
     typedef RCP<Map_Type> MapPtr_Type;
 
     TEUCHOS_TEST_FOR_EXCEPTION(!(!ulib_str.compare("Tpetra") || !ulib_str.compare("Epetra") ) , std::runtime_error,"Unknown algebra type");

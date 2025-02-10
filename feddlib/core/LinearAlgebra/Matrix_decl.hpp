@@ -4,7 +4,7 @@
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 
-#include "Map_Tpetra.hpp"
+#include "Map.hpp"
 #include "MultiVector.hpp"
 #include "BlockMultiVector.hpp"
 
@@ -45,7 +45,7 @@ public:
     typedef Xpetra::MultiVector<SC,LO,GO,NO> XpetraMV_Type;
     typedef Teuchos::RCP<XpetraMV_Type> XpetraMVPtr_Type;*/
 
-    typedef Map_Tpetra<LO,GO,NO> Map_Type;
+    typedef Map<LO,GO,NO> Map_Type;
     typedef Teuchos::RCP<Map_Type> MapPtr_Type;
     typedef Teuchos::RCP<const Map_Type> MapConstPtr_Type;
 
