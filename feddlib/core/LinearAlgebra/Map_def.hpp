@@ -108,14 +108,14 @@ typename Map<LO,GO,NO>::MapPtr_Type Map<LO,GO,NO>::buildVecFieldMap(UN numDofs, 
 template < class LO, class GO, class NO>
 typename Map<LO,GO,NO>::XpetraMapConstPtr_Type Map<LO,GO,NO>::getXpetraMap() const{
     
-    TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"map is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"getXpetraMap(): map_ is null.");
     
     return map_;
 }
 template < class LO, class GO, class NO>
 typename Map<LO,GO,NO>::ThyraVSBConstPtr_Type Map<LO,GO,NO>::getThyraVectorSpaceBase() const{
     
-    TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"map is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"getThyraVectorSpaceBase(): map_ is null.");
     return Xpetra::ThyraUtils<default_sc,LO,GO,NO>::toThyra( map_ );
 }
 

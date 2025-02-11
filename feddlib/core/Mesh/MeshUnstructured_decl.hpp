@@ -8,7 +8,7 @@
 #include "feddlib/core/FE/EdgeElements.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "feddlib/core/FE/TriangleElements.hpp"
-
+#include "feddlib/core/General/ExporterParaView.hpp"
 /*!
  Declaration of MeshUnstructured
  
@@ -33,6 +33,7 @@ class MeshUnstructured : public Mesh<SC,LO,GO,NO> {
 public:
     typedef Mesh<SC,LO,GO,NO> Mesh_Type;
     typedef Teuchos::RCP<MeshUnstructured<SC,LO,GO,NO> > MeshUnstrPtr_Type;
+    typedef Teuchos::RCP<Mesh_Type> MeshPtr_Type;
 
     typedef std::vector<MeshUnstrPtr_Type> MeshUnstrPtrArray_Type;
 
@@ -86,7 +87,7 @@ public:
     void setP2SurfaceElements( MeshUnstrPtr_Type meshP1 );
     
 	/*! 
-		\brief Helper function for setP2SurfaceElements. Adds the correct nodes to the meshP1 subelements.
+		\brief Helper function for setP2SurfaceElements. Adds the correct nodes to the meshP1 subelements. Based on sorted Elements.
 		@param[in] feP2 P2 element 
 		@param[in] surfFeP1 P1 surface element that need new P2 nodes
 		@param[in] surfacePermutation Surface permutations of element
@@ -94,6 +95,15 @@ public:
 	*/
     void setSurfaceP2( FiniteElement &feP2, const FiniteElement &surfFeP1, const vec2D_int_Type &surfacePermutation, int dim );
     
+	/*! 
+		\brief Helper function for setP2SurfaceElements. Adds the correct nodes to the meshP1 subelements. Based on unsorted elements. Different approach than above. Based on edge Midpoints.
+
+		@param[in] feP2 P2 element 
+		@param[in] surfFeP1 P1 surface element that need new P2 nodes
+		@param[in] surfacePermutation Surface permutations of element
+		@param[in] dim Dimension
+	*/
+	void addSurfaceP2Nodes( FiniteElement &feP2, const FiniteElement &surfFeP1, const vec2D_int_Type &surfacePermutation, int dim );
 	/*! 
 		\brief Depending on the sorting of P1 surface nodes we have to adjust the new ordering of P2 edge midpoints for surfaces in 3D
 	*/	
@@ -224,6 +234,31 @@ public:
 		\brief Building an edgemap from scratch when edges are already distributed parallel
 	*/
 	void buildEdgeMap();
+
+	/*! 
+		\brief Exporting Mesh as .mesh file. For most detailed export we also write surfaces and edges. This can be useful/necessary
+		@param[in] meshName for export
+		@param[in] exportEdges wether to export edges or not
+		@param[in] exportSurfaces whether to export surfaces or not
+
+	*/
+	void exportMesh(MapConstPtr_Type mapUnique, MapConstPtr_Type mapRep, bool exportEdges=false, bool exportSurface=false, std::string meshName="export.mesh");
+
+	/*!
+	
+	
+	
+	
+	*/
+	void exportNodeFlags();
+	
+	/*!
+	
+	
+	
+	
+	*/
+	void exportElementFlags();
 
     /* ###################################################################### */
     

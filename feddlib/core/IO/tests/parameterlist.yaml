@@ -1,0 +1,6 @@
+%YAML 1.1
+---
+ParameterList:
+  'ParameterLists File Paths': [sublist1.yaml,  sublist2.xml]
+  'ParameterLists File Names': [Sublist1,       Sublist2]
+  'ParameterLists File Types': [yaml,           xml]

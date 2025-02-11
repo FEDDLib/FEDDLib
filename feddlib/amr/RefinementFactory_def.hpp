@@ -896,7 +896,6 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 		
 		
 		vec_int_Type originFlag(4,this->volumeID_); // Triangle Flag
-
 		int numberSubElSurf=0;
 		vec_LO_Type triTmp(3);
 		vec_int_Type originTriangleTmp(3);
@@ -904,6 +903,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 		if (elements->getElement(T).subElementsInitialized() ){
 			numberSubElSurf = elements->getElement(T).getSubElements()->numberElements();
 			for(int k=0; k< numberSubElSurf ; k++){
+				//cout << " Flags of Subelements " << elements->getElement(T).getSubElements()->getElement(k).getFlag() << endl;
 				triTmp =elements->getElement(T).getSubElements()->getElement(k).getVectorNodeList();
 				for(int j=0; j<4 ; j++){
 					originTriangleTmp = originTriangles[j];
@@ -2635,7 +2635,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElemen
 			for(int j=0; j<4 ; j++){
 				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
 				triTmp = surfaceTmp.getVectorNodeList();
-				//sort(triTmp.begin(),triTmp.end());
+				sort(triTmp.begin(),triTmp.end());
 				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
 					originFlag[i] = surfaceTmp.getFlag();
 					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
@@ -3115,7 +3115,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 			for(int j=0; j<4 ; j++){
 				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
 				triTmp = surfaceTmp.getVectorNodeList();
-				//sort(triTmp.begin(),triTmp.end());
+				sort(triTmp.begin(),triTmp.end());
 				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
 					originFlag[i] = surfaceTmp.getFlag();
 					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
@@ -3517,7 +3517,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElemen
 			for(int j=0; j<4 ; j++){
 				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
 				triTmp = surfaceTmp.getVectorNodeList();
-				//sort(triTmp.begin(),triTmp.end());
+				sort(triTmp.begin(),triTmp.end());
 				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
 					originFlag[i] = surfaceTmp.getFlag();
 					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
@@ -3858,7 +3858,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
 			for(int j=0; j<4 ; j++){
 				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
 				triTmp = surfaceTmp.getVectorNodeList();
-				//sort(triTmp.begin(),triTmp.end());
+				sort(triTmp.begin(),triTmp.end());
 				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
 					originFlag[i] = surfaceTmp.getFlag();
 					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
@@ -4362,14 +4362,15 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		vec_int_Type edgeNumbers = edgeElements->getEdgesOfElement(indexElement); // indeces of edges belonging to element
 
 		// Extract the four points of tetraeder
-		vec_int_Type nodeInd(0);
+		/*vec_int_Type nodeInd(0);
 		for(int i=0; i<6; i++)	{
 			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(0));
 			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(1));
 		}
 		sort( nodeInd.begin(), nodeInd.end() );
 		nodeInd.erase( unique( nodeInd.begin(), nodeInd.end() ), nodeInd.end() );
-		
+		*/
+		vec_int_Type nodeInd = elements->getElement(indexElement).getVectorNodeList();
 
 		vec2D_dbl_ptr_Type pointsRep = this->pointsRep_;
 		// Right now the Nodes are ordered by the local Indices, which differ depending on the number of Processors. Hence the refinements are not
@@ -4377,7 +4378,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// If we sort the nodes by their values and not their local Indices, we can solve that problem, as these values don't change
 		// This can also be done by using the global IDs of nodes
 
-		vec2D_dbl_Type points(4,vec_dbl_Type(4));
+		/*vec2D_dbl_Type points(4,vec_dbl_Type(4));
 		points[0] = {pointsRep->at(nodeInd[0]).at(0),pointsRep->at(nodeInd[0]).at(1),pointsRep->at(nodeInd[0]).at(2), (double) nodeInd[0]};
 		points[1] = {pointsRep->at(nodeInd[1]).at(0),pointsRep->at(nodeInd[1]).at(1),pointsRep->at(nodeInd[1]).at(2), (double) nodeInd[1]};
 		points[2] = {pointsRep->at(nodeInd[2]).at(0),pointsRep->at(nodeInd[2]).at(1),pointsRep->at(nodeInd[2]).at(2), (double) nodeInd[2]};
@@ -4388,7 +4389,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		nodeInd[0] = (int) points[0][3];
 		nodeInd[1] = (int) points[1][3];
 		nodeInd[2] = (int) points[2][3];
-		nodeInd[3] = (int) points[3][3];
+		nodeInd[3] = (int) points[3][3];*/
+
+		// NOTE: The above described way of ensuring 100% equal refinement on a varing number of processors is disabled, as we want to keep natural element properties (Sorting such that determinant of element is always > 0)
 
 		// With our sorted Nodes we construct edges as follows
 
@@ -4454,7 +4457,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 			for(int j=0; j<4 ; j++){
 				FiniteElement surfaceTmp = surfaceTriangleElements->getElement(surfaceElementsIDs[j]);
 				triTmp = surfaceTmp.getVectorNodeList();
-				//sort(triTmp.begin(),triTmp.end());
+				sort(triTmp.begin(),triTmp.end());
 				if(triTmp[0] == originTriangleTmp[0] && triTmp[1] == originTriangleTmp[1] && triTmp[2] == originTriangleTmp[2]  ) {
 					originFlag[i] = surfaceTmp.getFlag();
 					interfaceSurface[i] = surfaceTmp.isInterfaceElement();
@@ -4545,9 +4548,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		predecessorElement[5] = -1;
 
 		// Subelements of thetrahedron
-		newTriangles[0]= {nodeInd[0],midPointInd[0],midPointInd[1]};
+		newTriangles[0]= {nodeInd[0],midPointInd[1],midPointInd[0]};
 		newTriangles[1]= {nodeInd[0],midPointInd[0],midPointInd[2]};
-		newTriangles[2]= {nodeInd[0],midPointInd[1],midPointInd[2]};
+		newTriangles[2]= {nodeInd[0],midPointInd[2],midPointInd[1]};
 		newTriangles[3]= {midPointInd[0],midPointInd[1],midPointInd[2]};
 
 		newTrianglesFlag[0]= originFlag[0]; 
@@ -4561,8 +4564,8 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		isInterfaceSurface[3] = false;
 
 		newTriangleEdgeIDs[0]={0,1,3,0,2,4,1,2,5,3,4,5};
-		// Element 2: (x_1,x_01,x_12,x_13)
-		(newElements)[1]={nodeInd[1],midPointInd[0],midPointInd[3],midPointInd[4]};
+		// Element 2: (x_01,x_1,x_12,x_13)
+		(newElements)[1]={midPointInd[0],nodeInd[1],midPointInd[3],midPointInd[4]};
 
 		(newEdges)[6] = {nodeInd[1] ,midPointInd[0]}; 
 		(newEdges)[7] = {nodeInd[1] ,midPointInd[3]}; 
@@ -4594,7 +4597,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 		// Subelements of tetrahedron
 		newTriangles[4]= {nodeInd[1],midPointInd[0],midPointInd[3]};
-		newTriangles[5]= {nodeInd[1],midPointInd[0],midPointInd[4]};
+		newTriangles[5]= {nodeInd[1],midPointInd[4],midPointInd[0]};
 		newTriangles[6]= {nodeInd[1],midPointInd[3],midPointInd[4]};
 		newTriangles[7]= {midPointInd[0],midPointInd[3],midPointInd[4]};
 
@@ -4641,9 +4644,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		predecessorElement[17] = -1;
 
 		// Subelements of thetrahedron
-		newTriangles[8]= {nodeInd[2],midPointInd[1],midPointInd[3]};
+		newTriangles[8]= {nodeInd[2],midPointInd[3],midPointInd[1]};
 		newTriangles[9]= {nodeInd[2],midPointInd[1],midPointInd[5]};
-		newTriangles[10]= {nodeInd[2],midPointInd[3],midPointInd[5]};
+		newTriangles[10]= {nodeInd[2],midPointInd[5],midPointInd[3]};
 		newTriangles[11]= {midPointInd[1],midPointInd[3],midPointInd[5]};
 
 		newTrianglesFlag[8]= originFlag[0]; 
@@ -4659,7 +4662,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		newTriangleEdgeIDs[2]={12,13,15,12,14,16,13,14,17,15,16,17};
 
 		// Element 4: (x_3,x_03,x_13,x_23)
-		(newElements)[3]={nodeInd[3],midPointInd[2],midPointInd[4],midPointInd[5]};
+		(newElements)[3]={midPointInd[2],midPointInd[4],midPointInd[5],nodeInd[3]};
 
 		(newEdges)[18] = {nodeInd[3] ,midPointInd[2]}; 
 		(newEdges)[19] = {nodeInd[3] ,midPointInd[4]}; 
@@ -4692,7 +4695,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 		// Subelements of thetrahedron
 		newTriangles[12]= {nodeInd[3],midPointInd[2],midPointInd[4]};
-		newTriangles[13]= {nodeInd[3],midPointInd[2],midPointInd[5]};
+		newTriangles[13]= {nodeInd[3],midPointInd[5],midPointInd[2]};
 		newTriangles[14]= {nodeInd[3],midPointInd[4],midPointInd[5]};
 		newTriangles[15]= {midPointInd[2],midPointInd[4],midPointInd[5]};
 
@@ -4732,13 +4735,15 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		// Diagonal 1 represents the second shortest
 		// Diagonal 2 represents the longest
 
-		// If the Diagonal is not within that rand we allways use diaInd =0. Same Diagonal with consistent indexing of elements
-		if(refinement3DDiagonal_>2 || refinement3DDiagonal_ < 0)
+		// If the Diagonal is not within that range we allways use diaInd =0. Same Diagonal with consistent indexing of elements
+		if(refinement3DDiagonal_>2 || refinement3DDiagonal_ == 0)
 			diaInd =0;
-		else 
+		else {
 			diaInd = (int) dia[refinement3DDiagonal_][1];
+			TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "The Refinement feature to pick a specific internal Diagonal in regular refinement is not yet orientation preserving!");
 
-		
+		}
+
 
 		// Element 5: (x_01,x_02,x_03,x_12)
 		if(diaInd ==0){
@@ -4776,7 +4781,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 			// Subelements of thetrahedron
 			newTriangles[16]= {midPointInd[0],midPointInd[1],midPointInd[2]};
 			newTriangles[17]= {midPointInd[0],midPointInd[1],midPointInd[4]};
-			newTriangles[18]= {midPointInd[0],midPointInd[2],midPointInd[4]};
+			newTriangles[18]= {midPointInd[0],midPointInd[4],midPointInd[2]};
 			newTriangles[19]= {midPointInd[1],midPointInd[2],midPointInd[4]};
 
 
@@ -4793,7 +4798,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 			newTriangleEdgeIDs[4]={24,25,27,24,26,28,25,26,29,27,28,29};
 
 			// Element 6: (x_01,x_02,x_12,x_13)
-			(newElements)[5]={midPointInd[0],midPointInd[1],midPointInd[3],midPointInd[4]};
+			(newElements)[5]={midPointInd[0],midPointInd[3],midPointInd[1],midPointInd[4]};
 
 			(newEdges)[30] = {midPointInd[0],midPointInd[1]}; 
 			(newEdges)[31] = {midPointInd[0] ,midPointInd[3]}; 
@@ -4891,7 +4896,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 			newTriangleEdgeIDs[6]={36,37,39,36,38,40,37,38,41,39,40,41};
 
 			// Element 8: (x_02,x_12,x_13,x_23)
-			(newElements)[7]={midPointInd[1],midPointInd[3],midPointInd[4],midPointInd[5]};
+			(newElements)[7]={midPointInd[1],midPointInd[3],midPointInd[5],midPointInd[4]};
 
 			(newEdges)[42] = {midPointInd[1] ,midPointInd[3]}; 
 			(newEdges)[43] = {midPointInd[1] ,midPointInd[4]}; 
@@ -4925,7 +4930,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 			newTriangles[28]= {midPointInd[1],midPointInd[3],midPointInd[4]};
 			newTriangles[29]= {midPointInd[1],midPointInd[3],midPointInd[5]};
 			newTriangles[30]= {midPointInd[1],midPointInd[4],midPointInd[5]};
-			newTriangles[31]= {midPointInd[3],midPointInd[4],midPointInd[5]};
+			newTriangles[31]= {midPointInd[3],midPointInd[5],midPointInd[4]};
 
 			newTrianglesFlag[28]= this->volumeID_; 
 			newTrianglesFlag[29]= this->volumeID_; 
@@ -5092,7 +5097,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 			newTriangleEdgeIDs[6]={36,37,39,36,38,40,37,38,41,39,40,41};
 
 			// Element 8: (x_02,x_12,x_13,x_23)
-			(newElements)[7]={midPointInd[0],midPointInd[2],midPointInd[4],midPointInd[5]};
+			(newElements)[7]={midPointInd[0],midPointInd[4],midPointInd[2],midPointInd[5]};
 
 			(newEdges)[42] = {midPointInd[0] ,midPointInd[2]}; 
 			(newEdges)[43] = {midPointInd[0] ,midPointInd[4]}; 
@@ -5348,7 +5353,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		int offsetElements = this->elementsC_->numberElements(); 
 		int offsetEdges = this->edgeElements_->numberElements(); 
 		for( int i=0;i<8; i++){
-			sort( newElements.at(i).begin(), newElements.at(i).end() );
+			//sort( newElements.at(i).begin(), newElements.at(i).end() );
 			FiniteElement feNew(newElements.at(i),this->volumeID_);
 			feNew.setFiniteElementRefinementType("regular");	
 			feNew.setPredecessorElement(indexElement);
@@ -5378,7 +5383,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 		int offsetSurfaces =this->surfaceTriangleElements_->numberElements();
 		int offsetSurface =0;
 		for( int i=0;i<32; i++){
-			sort( newTriangles.at(i).begin(), newTriangles.at(i).end() );
+			//sort( newTriangles.at(i).begin(), newTriangles.at(i).end() );
 			FiniteElement feNew(newTriangles[i],newTrianglesFlag[i]);
 			feNew.setInterfaceElement(isInterfaceSurface[i]);
 			if(i<28){

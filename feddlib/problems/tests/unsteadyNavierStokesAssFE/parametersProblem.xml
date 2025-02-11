@@ -1,0 +1,63 @@
+<ParameterList name="unsteady Navier-Stokes">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="2"/>
+        <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
+        <Parameter name="Discretization Pressure" type="string" value="P1"/>
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
+        <Parameter name="BC Type" type="string"   value="partialCFD"/><!-- parabolic, parabolic_benchmark, partialCFD, parabolic_benchmark_sin-->
+        <Parameter name="Compute Inflow" type="bool" value="true"/>
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+        <Parameter name="H/h" type="int" value="3"/>
+        <Parameter name="Viscosity" type="double" value=".001"/>
+        <Parameter name="Density" type="double" value="1."/>
+        <Parameter name="MaxVelocity" type="double" value="1.5"/>
+        <Parameter name="MeanVelocity"  type="double" value="1.0"/>
+        
+        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>
+        <Parameter name="updateTol" type="double" value="1.0e-4"/>
+        <Parameter name="Combo" type="string" value="OR"/>
+        <Parameter name="Use update tol" type="bool" value="false"/>
+        <Parameter name="Use rel tol" type="bool" value="true"/>
+        <Parameter name="Use abs tol" type="bool" value="false"/>
+        <Parameter name="Use WRMS" type="bool" value="false"/>
+        
+        <Parameter name="MaxNonLinIts" type="int" value="10"/>
+        <Parameter name="Cancel MaxNonLinIts" type="bool" value="false"/>
+        <Parameter name="Symmetric gradient" type="bool" value="false"/>
+    </ParameterList>
+    <ParameterList name="Mesh Partitioner">
+        
+        <Parameter name="Contiguous" type="bool" value="true"/>        
+        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h008.mesh"/>
+    </ParameterList>
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="Linearization" type="string" value="Newton"/> <!-- FixedPoint, Newton, Extrapolation, NOX-->
+        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>
+        <Parameter name="ParaView export subdomain" type="bool" value="false"/>
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko-->
+    </ParameterList>
+    <ParameterList name="Timestepping Parameter">
+        <Parameter name="Class"                                 type="string"		value="Singlestep"/> <!--Multistep, Singlestep-->
+        <Parameter name="BDF"		                    		type="int"		   	value="2"/>
+        <Parameter name="Butcher table"                    		type="int"		   	value="1"/>
+        <Parameter name="Full implicit pressure"                type="bool"		   	value="true"/>
+        <Parameter name="Correct pressure"                      type="bool"         value="false"/>
+        <Parameter name="Semi implicit pressure"                type="bool"         value="false"/>
+        <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
+        <Parameter name="Final time"	                    	type="double"   	value="0.2"/>
+        <Parameter name="dt"			                    	type="double"   	value="0.1"/>
+        <!-- adaptive variables -->
+        <Parameter name="Print Solution Short" type="bool" value="true"/>
+        <Parameter name="Adaptive error" type="int" value="0"/><!--0:euclidian, 1:L2-->
+        <Parameter name="Adaptive calculation" type="int" value="0"/><!--0:PI controller with last step ,1:PI simple-->
+        <Parameter name="Adaptive tolerance" type="double"   	value="1.e-5"/>
+        <Parameter name="dtmin" type="double"   	value=".0005"/>
+        <Parameter name="dtmax" type="double"   	value=".1"/>
+        <Parameter name="Safety factor" type="double"   	value=".9"/>
+        <Parameter name="Convergence order" type="int"   		value="3"/>
+    </ParameterList>
+</ParameterList>

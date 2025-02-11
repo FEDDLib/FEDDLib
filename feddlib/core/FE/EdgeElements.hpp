@@ -56,19 +56,21 @@ class EdgeElements : public Elements {
 
     void matchEdgesToElements( MapConstPtr_Type elementMap ); // matches the corresponding edges to the elements
 
-    void setMidpoint( int elementIndex, int nodeIndex );
+    void setMidpoint( LO edgeId, LO localID );
 	
-	int getMidpoint( int elementIndex );
+    int getMidpoint( LO edgeId );
 
-	void sortUniqueAndSetGlobalIDsParallel( MapConstPtr_Type elementMap, vec2D_GO_Type& combinedElements );
+    LO findEdgeId ( LO nodeId1, LO nodeID2);
 
-	void setElementsOfEdgeLocalEntry(int index, int entry);
+    void sortUniqueAndSetGlobalIDsParallel( MapConstPtr_Type elementMap, vec2D_GO_Type& combinedElements );
 
-	void setElementsOfEdgeGlobalEntry(int index, int entry);
+    void setElementsOfEdgeLocalEntry(int index, int entry);
+
+    void setElementsOfEdgeGlobalEntry(int index, int entry);
 
     void setUpElementsOfEdge( MapConstPtr_Type elementMap, MapConstPtr_Type edgeMap );
 
-	vec_GO_Type determineInterfaceEdges( MapConstPtr_Type edgeMap );
+    vec_GO_Type determineInterfaceEdges( MapConstPtr_Type edgeMap );
 	
 		
     
@@ -77,7 +79,7 @@ class EdgeElements : public Elements {
     vec2D_GO_Type elementsOfEdgeGlobal_;
     vec2D_LO_Type elementsOfEdgeLocal_;
     vec2D_int_Type edgesOfElements_; // Edges of Element i are being stored in row i of edgesOfElements_
-	vec_int_Type midPointsInd_; // Returns the local index of the Node that is the midpoint of edge 'i'
+	  vec_LO_Type midPointsLocalID_; // Returns the local index of the Node that is the midpoint of edge 'i'
     
 };
 }

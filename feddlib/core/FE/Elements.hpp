@@ -86,6 +86,9 @@ public:
     
     vec2D_int_Type getSubElementPermutation();
     
+    vec2D_LO_Type getElementsNodeList();
+
+    void setElementsNodeList();
     /*! Initialized BT^{-1} and det(BT^{-1}) for FE element T */
     void initializeFEData( vec2D_dbl_ptr_Type pointsRep );
     
@@ -105,6 +108,8 @@ public:
     vecSM_SC_Type vecBTinv_;
     vec_dbl_Type vecDetBTinv_;
     bool feDataInitialized_;
+
+    vec2D_LO_Type elementsNodeList_;
       
 };
 }

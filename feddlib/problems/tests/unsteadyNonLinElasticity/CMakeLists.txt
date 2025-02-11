@@ -1,28 +1,28 @@
 TRIBITS_ADD_EXECUTABLE(
-	unsteadyNonLinElasticity
+	unsteadyNonLinElasticityAssFE
 	SOURCES main.cpp
 )
 
 TRIBITS_ADD_TEST(
-	unsteadyNonLinElasticity
-	NAME unsteadyNonLinElasticity
+	unsteadyNonLinElasticityAssFE
+	NAME unsteadyNonLinElasticityAssFE
 	ARGS
 #--precfile=parametersPrecMumps.xml
 	NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_unsteadyNonLinElasticity
+TRIBITS_COPY_FILES_TO_BINARY_DIR(data_unsteadyNonLinElasticityAssFE
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrec.xml  parametersProblem.xml parametersSolver.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
 	DEST_FILES parametersPrec.xml  parametersProblem.xml parametersSolver.xml
-	EXEDEPS unsteadyNonLinElasticity
+	EXEDEPS unsteadyNonLinElasticityAssFE
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_unsteadyNonLinElasticity
+TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_unsteadyNonLinElasticityAssFE
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES testFoam2.mesh
+    SOURCE_FILES cube_h_1.mesh
     DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    DEST_FILES testFoam2.mesh
-    EXEDEPS unsteadyNonLinElasticity
+    DEST_FILES cube_h_1.mesh
+    EXEDEPS unsteadyNonLinElasticityAssFE
 )

@@ -363,7 +363,7 @@ void three(double* x, double* res, double t, const double* parameters){
 }
 void four(double* x, double* res, double t, const double* parameters){
     
-    res[0] =parameters[0]*1.-1.;
+    res[0] =parameters[0]*1.;
     res[1] = 0.;
     res[2] = 0.;
     
@@ -667,6 +667,7 @@ int main(int argc, char *argv[]) {
 		
 
 		int j=0;
+		vec_int_Type iterations(0);
 		MAIN_TIMER_START(Total," Step 4:	 Total RefinementAlgorithm");
 		while(j<maxIter+1 ){
 
@@ -678,6 +679,13 @@ int main(int argc, char *argv[]) {
 		    else
 		        domainVelocity = domainPressure;
 			
+			domainVelocity->exportNodeFlags();
+			domainPressure->preProcessMesh(true,true); // Preprocessing pressure mesh
+			domainVelocity->preProcessMesh(true,true); // Preprocessing velocity mesh
+
+   			domainVelocity->exportSurfaceNormals("domain"); // exporting to check if correct
+    		domainVelocity->exportElementOrientation("domain"); // exporting to check if correct
+
 			MAIN_TIMER_STOP(buildP2);		
 
 			MAIN_TIMER_START(Bounds," Step 1:	 bcFactory");
@@ -687,7 +695,8 @@ int main(int argc, char *argv[]) {
 			bcFactory->addBC(flag2Func, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 			//bcFactory->addBC(flag3Func, 3, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 			bcFactory->addBC(flag4Func, 4, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-			bcFactory->addBC(flag5Func, 5, 0, domainPressure, "Dirichlet", dim, parameter_vec);
+			bcFactory->addBC(flag5Func, 5, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
+			bcFactory->addBC(zeroDirichlet2D, 7, 1, domainPressure, "Dirichlet", dim, parameter_vec);
 
       
 			MAIN_TIMER_STOP(Bounds);	
@@ -705,7 +714,8 @@ int main(int argc, char *argv[]) {
 				stokes->assemble();
 				stokes->setBoundaries();          
 				stokes->setBoundariesRHS();                
-				stokes->solve();
+				int iter = stokes->solve();
+				iterations.push_back(iter);
 
 			}
 			MAIN_TIMER_STOP(Solver);	
@@ -727,6 +737,9 @@ int main(int argc, char *argv[]) {
 			domainPressure = domainRefined;
 			domainVelocity = domainPressure;
 			
+			
+			//domainRefined->exportNodeFlags("Pressure");
+
 			j++;
 			MAIN_TIMER_STOP(Refinement);	
         
@@ -734,6 +747,9 @@ int main(int argc, char *argv[]) {
        
             
         }
+		if(verbose)
+			for(int i=0; i< iterations.size(); i++)
+				cout << " Iteration in step " << i << ": " << iterations[i] << endl;
 
 		MAIN_TIMER_STOP(Total);	
 		Teuchos::TimeMonitor::report(cout,"Main");

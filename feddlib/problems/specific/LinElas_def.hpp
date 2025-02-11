@@ -1,4 +1,4 @@
-#ifndef LINEALS_def_hpp
+#ifndef LINELAS_def_hpp
 #define LINELAS_def_hpp
 #include "LinElas_decl.hpp"
 namespace FEDD {
@@ -91,7 +91,7 @@ void LinElas<SC,LO,GO,NO>::assemble( std::string type ) const
     this->system_->addBlock( K, 0, 0 );
     
     this->assembleSourceTerm( 0. );
-    this->sourceTerm_->scale(density);
+    //this->sourceTerm_->scale(density);
     this->addToRhs( this->sourceTerm_ );
     
     if (this->verbose_)

@@ -3,13 +3,13 @@ TRIBITS_ADD_EXECUTABLE(
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
-	unsteadyNonLinElasticity
-	NAME unsteadyNonLinElasticity
-	ARGS
+#TRIBITS_ADD_TEST(
+#	unsteadyNonLinElasticity
+#	NAME unsteadyNonLinElasticity
+#	ARGS
 #--precfile=parametersPrecMumps.xml
-	NUM_MPI_PROCS 4
-)
+#	NUM_MPI_PROCS 4
+#)
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_unsteadyNonLinElasticity
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}

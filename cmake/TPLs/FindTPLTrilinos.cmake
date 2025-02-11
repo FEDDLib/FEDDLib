@@ -62,7 +62,7 @@ list (APPEND XLib_OPTIONAL_Trilinos_PKGS
 
 # Required packages (to be moved outside, like REQUIRED COMPONENTS ...)
 list (APPEND XLib_REQUIRED_Trilinos_PKGS
-  "Belos" "Epetra" "EpetraExt" "ShyLU_DDFROSch" "Stratimikos" "Teko" "Teuchos" "Thyra" "Tpetra" "Xpetra" "Zoltan2")
+  "Belos" "Epetra" "EpetraExt" "ShyLU_DDFROSch" "Stratimikos" "Teko" "Teuchos" "Thyra" "Tpetra" "Xpetra")
 
 # Start scanning Trilinos configuration
 foreach (TYPE IN ITEMS "OPTIONAL" "REQUIRED")
@@ -126,5 +126,6 @@ endforeach (TPL)
 set (TPL_Trilinos_INCLUDE_DIRS ${XLib_Trilinos_INCLUDE_DIRS})
 set (TPL_Trilinos_LIBRARY_DIRS Trilinos::all_selected_libs) 
 set (TPL_Trilinos_LIBRARIES Trilinos::all_selected_libs) 
+
 
 

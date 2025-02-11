@@ -1,9 +1,9 @@
 SetFactory("OpenCASCADE");
 
-lc = 0.1;
+lc = 1.;
 Point(1) = {-2, -2, 0, lc};
-Point(2) = {-2, 2, 0, lc};
-Point(3) = {2, 2, 0, lc};
+Point(2) = {-2, 4, 0, lc};
+Point(3) = {2, 4, 0, lc};
 Point(4) = {2, -2, 0, lc};
 Line(1) = {1,2};
 Line(2) = {2,3};

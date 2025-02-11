@@ -28,7 +28,7 @@ typedef unsigned UN;
 typedef double SC;
 typedef int LO;
 typedef default_go GO;
-typedef KokkosClassic::DefaultNode::DefaultNodeType NO;
+typedef Tpetra::KokkosClassic::DefaultNode::DefaultNodeType NO;
 using namespace FEDD;
 int main(int argc, char *argv[]) {
 
@@ -52,23 +52,30 @@ int main(int argc, char *argv[]) {
     Teuchos::CommandLineProcessor myCLP;
     string ulib_str = "Tpetra";
     myCLP.setOption("ulib",&ulib_str,"Underlying lib");
+     string exportfilename = "export.mesh";
+    myCLP.setOption("fileExport",&exportfilename,"Export Mesh filename");
+    string filename = "square.mesh";
+    myCLP.setOption("file",&filename,"Mesh filename");
 	string xmlProblemFile = "parametersProblem.xml";
     myCLP.setOption("problemfile",&xmlProblemFile,".xml file with Inputparameters.");
-
+    myCLP.recogniseAllOptions(true);
+    myCLP.throwExceptions(false);
  	ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
-   
+   // --fileExport=plaque_short_fluid_fine.xml --file=plaque_short_fluid.xml
+   // --fileExport=plaque_short_solid_fine.xml --file=plaque_short_solid.xml
+
     ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
 
 
     // Mesh
     int dim = parameterListProblem->sublist("Parameter").get("Dimension",3);
-    int level = parameterListProblem->sublist("Parameter").get("Level",2);
+    int level = parameterListProblem->sublist("Parameter").get("Level",1);
     int m = parameterListProblem->sublist("Parameter").get("H/h",5);
     std::string FEType = parameterListProblem->sublist("Parameter").get("Discretization","P2");
     std::string meshType = parameterListProblem->sublist("Parameter").get("Mesh Type","structured");
     std::string meshName = parameterListProblem->sublist("Parameter").get("Mesh Name","");
     std::string meshDelimiter = parameterListProblem->sublist("Parameter").get("Mesh Delimiter"," ");
-    int volumeID= parameterListProblem->sublist("Parameter").get("VolumeID",99);
+    int volumeID= parameterListProblem->sublist("Parameter").get("VolumeID",15);
 
     int n;
     int size = comm->getSize();
@@ -103,13 +110,19 @@ int main(int argc, char *argv[]) {
     DomainPtr_Type domainRefined;
 	domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );
 	{
-		domainRefined = meshRefiner.refineUniform(domainP1,level );
+		//domainRefined = meshRefiner.refineUniform(domainP1,level); //refineFlag(domainP1,level,6 );
+        domainRefined = meshRefiner.refineFlag(domainP1,level,6);
+
 	}
 	domainP1=domainRefined;
 	domain = domainRefined;
-	domain->buildP2ofP1Domain( domainP1 );		
-			
+
+	comm->barrier();
+
+    domainP1->exportMesh(true,true,exportfilename);
+    comm->barrier();
 	// ----------
+	domain->buildP2ofP1Domain( domainP1 );		
                    
                     
     MultiVectorPtr_Type mvFlag = rcp(new MultiVector_Type( domain->getMapUnique() ) );
@@ -127,6 +140,29 @@ int main(int argc, char *argv[]) {
     
     exPara->save(0.0);
     exPara->closeExporter();
+
+     Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaE(new ExporterParaView<SC,LO,GO,NO>());
+
+    Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolutionE(new MultiVector<SC,LO,GO,NO>(domain->getElementMap()));
+    
+    Teuchos::ArrayRCP< SC > entriesE  = exportSolutionE->getDataNonConst(0);
+    for(int i=0; i<domain->getElementsC()->numberElements(); i++){
+        entriesE[i] = domain->getElementsC()->getElement(i).getFlag();
+    }
+
+    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConstE = exportSolutionE;
+
+    exParaE->setup("Flags_Elements", domain->getMesh(), "P0");
+
+    exParaE->addVariable(exportSolutionConstE, "Flags_Elements", "Scalar", 1,domain->getElementMap());
+
+    exParaE->save(0.0);
+
+    exParaE->closeExporter();
+
+
+   
+
 
     return(EXIT_SUCCESS);
 }

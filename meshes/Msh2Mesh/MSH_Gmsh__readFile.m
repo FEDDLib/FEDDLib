@@ -105,7 +105,7 @@ function [x,elementTypes,cElements,cElementsRaw,cElementTags,elementTypesRaw,nod
 %   makes the files larger and less efficient to read. 
 %   Furthermore, it is much more difficult to read these files somewhat 
 %   efficiently. For this, you need to read in chunks from the file and then 
-%   analyze them. 
+%   analyze them. \n
 %   Currently, this somewhat efficient reading method is not implemented, 
 %   so reading binary MSH-files, exported by Gmsh, is not recommended 
 %   (and very slow).

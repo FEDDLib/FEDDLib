@@ -14,9 +14,7 @@
  Mesh Element Flags test
 
  @brief  Mesh Element Flags test
- @author Christian Hochmuth
  @version 1.0
- @copyright CH
  */
 
 
@@ -27,7 +25,7 @@ typedef unsigned UN;
 typedef double SC;
 typedef int LO;
 typedef default_go GO;
-typedef KokkosClassic::DefaultNode::DefaultNodeType NO;
+typedef Tpetra::KokkosClassic::DefaultNode::DefaultNodeType NO;
 using namespace FEDD;
 int main(int argc, char *argv[]) {
 
@@ -71,7 +69,6 @@ int main(int argc, char *argv[]) {
     std::string FEType="P2";
     int numProcsCoarseSolve = 0;
     bool boolExportMesh = true;
-
 
     DomainPtr_Type domainP1;
     DomainPtr_Type domain;

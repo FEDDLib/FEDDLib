@@ -1,0 +1,34 @@
+<ParameterList name="Problem">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
+        <Parameter name="Discretization Pressure" type="string" value="P1"/>
+        <Parameter name="Mesh Type" type="string" value="structured_bfs"/> <!--structured, unstructured -->
+        <Parameter name="BC Type" type="string" value="parabolic"/><!-- parabolic, parabolic_benchmark, partialCFD-->
+        <Parameter name="Mesh Name" type="string" value="dfg_fsi_fluid_h004.mesh"/><!--dfg_fsi_fluid_h002.mesh, richter_3d_fluid_h0035.mesh -->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+        <Parameter name="H/h" type="int" value="2"/>
+        <Parameter name="Symmetric gradient" type="bool" value="false"/>
+        <Parameter name="Viscosity" type="double" value="1.0e-2"/>
+        <Parameter name="Density" type="double" value="1.0e-0"/>
+        <Parameter name="MaxVelocity" type="double" value="1."/>
+        <Parameter name="MeanVelocity" type="double" value="1.0"/>
+        <Parameter name="relNonLinTol" type="double" value="1.0e-6"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-6"/>
+        <Parameter name="MaxNonLinIts" type="int" value="15"/>
+        <Parameter name="Set Zeros" type="bool" value="false"/>
+        <Parameter name="Myeps" type="double" value="1.0e-14"/>
+        <Parameter name="Combo" type="string" value="OR"/>
+        <Parameter name="Use WRMS" type="bool" value="false"/>
+    </ParameterList>
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="Linearization" type="string" value="Newton"/> <!-- FixedPoint, Newton, NOX-->
+        <Parameter name="ParaViewExport" type="bool" value="false"/>
+        <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>
+        <Parameter name="ParaView export subdomain" type="bool" value="false"/>
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic -->
+        <Parameter name="Delete P1 Data" type="bool" value="false"/><!-- only for Monolithic and Newton -->
+    </ParameterList>
+</ParameterList>

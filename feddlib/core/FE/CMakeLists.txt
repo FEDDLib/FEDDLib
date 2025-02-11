@@ -11,6 +11,7 @@ SET(FE_HEADERS
 	FE/FiniteElement.hpp
 	FE/TriangleElements.hpp
     FE/sms.hpp
+	FE/Helper.hpp
 CACHE INTERNAL "")
 
 SET(FE_SOURCES
@@ -22,6 +23,7 @@ SET(FE_SOURCES
     FE/FiniteElement.cpp  
 	FE/TriangleElements.cpp  
     FE/SMSUtility.cpp
+	FE/Helper.cpp
 CACHE INTERNAL "")
 
 

@@ -1,0 +1,47 @@
+<ParameterList name="DeformationDiffusion">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension"							    type="int"   	value="3"/>
+        <Parameter name="Discretization"                        type="string"   value="P2"/><!--P1, P2-->
+	    <Parameter name="Density"					            type="double"   value="1."/>
+	    <Parameter name="Poisson Ratio"					        type="double"   value="0.49e-0"/>
+	    <Parameter name="Material model" 						type="string" value="Neo-Hooke"/> <!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
+        <Parameter name="Solution" 					        	type="double" value="0."/> <!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
+        <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+        <Parameter name="Dofs"                                  type="int"      value="4"/>
+        <Parameter name="Structure Model"                       type="string"      value="SCI_sophisticated"/>
+
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+         <Parameter name="E0"                                     type="double"   value="0.38"/>
+        <Parameter name="E1"                                     type="double"   value="0.30"/>
+        <Parameter name="c1"                                     type="double"   value="0.25e-0"/>
+        <Parameter name="m"                                     type="double"   value="0.0"/>
+    </ParameterList>																	  
+  
+    <ParameterList name="Mesh Partitioner">        
+        <Parameter name="Mesh 1 Name"                           type="string"   value="tetrahedron.mesh"/>
+    </ParameterList>
+    
+
+</ParameterList>

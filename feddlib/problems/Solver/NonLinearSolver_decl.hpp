@@ -44,6 +44,7 @@ public:
 
     void solve(TimeProblem_Type& problem, double time=0., vec_dbl_ptr_Type valuesForExport = Teuchos::null );
     
+	int getNonLinIts() {return nonLinearIts_;};
 private:
 #ifdef FEDD_HAVE_NOX
     void solveNOX(NonLinearProblem_Type& problem);
@@ -62,6 +63,10 @@ private:
     void solveExtrapolation(TimeProblem_Type& problem, double time);
     
     std::string 	type_;
+
+	int nonLinearIts_ =0;
+
+
 };
 }
 #endif

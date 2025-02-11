@@ -1,0 +1,5 @@
+IndentWidth: 4
+ColumnLimit: 200
+Language: Cpp
+UseTab: Never
+TabWidth: 4

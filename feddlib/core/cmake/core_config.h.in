@@ -3,3 +3,5 @@
 #cmakedefine FEDD_HAVE_NOX
 
 #cmakedefine FEDD_HAVE_ZOLTAN2
+
+#cmakedefine FEDD_HAVE_ACEGENINTERFACE

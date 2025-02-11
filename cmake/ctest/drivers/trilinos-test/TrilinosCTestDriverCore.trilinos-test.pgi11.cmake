@@ -118,7 +118,7 @@ MACRO(TRILINOS_SYSTEM_SPECIFIC_CTEST_DRIVER)
       "-DCMAKE_CXX_COMPILER:FILEPATH=/home/trilinos/pgi11.1/linux86-64/11.1/bin/pgCC"
       "-DCMAKE_C_COMPILER:FILEPATH=/home/trilinos/pgi11.1/linux86-64/11.1/bin/pgcc"
       "-DCMAKE_Fortran_COMPILER:FILEPATH=/home/trilinos/pgi11.1/linux86-64/11.1/bin/pgf90"
-      "-DTrilinos_EXTRA_LINK_FLAGS:STRING='-L/home/trilinos/pgi11.1/linux86-64/11.1/lib -L/usr/lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lpgf90 -lpgf90_rpm1 -lpgf902 -lpgf90rtl -lpgftnrtl  -lnspgc -lpgc  -lrt -lpthread  -lm -lgcc -lc -lgcc'"
+      "-DTrilinos_EXTRA_LINK_FLAGS:STRING='-L/home/trilinos/pgi11.1/linux86-64/11.1/lib -L/usr/lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lpgf90 -lpgf90_rpm1 -lpgf902 -lpgf90rtl -lpgftnrtl  -lnspgc -lpgc  -lrt -lpthread -lgcc -lc -lgcc'"
       "-DTrilinos_SKIP_FORTRANCINTERFACE_VERIFY_TEST:BOOL=ON"
       )
 

@@ -102,6 +102,8 @@ public:
     
     DomainPtr_Type refineUniform(DomainPtr_Type domainP1, int level);
     
+	DomainPtr_Type refineFlag(DomainPtr_Type domainP1, int level ,int flag);
+	
 	MultiVectorConstPtr_Type calcExactSolution();
 	MultiVectorConstPtr_Type calcExactSolutionP();
 	//void determineCoarsening();

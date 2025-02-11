@@ -1,0 +1,110 @@
+<!-- Problem specific parameters like e.g. dimension, FE type -->
+<ParameterList name="Problem">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="2"/>
+        <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
+        <Parameter name="Discretization Pressure" type="string" value="P1"/>
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
+        <Parameter name="BC Type" type="string"   value="partialCFD"/><!-- parabolic, parabolic_benchmark, partialCFD, parabolic_benchmark_sin-->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+        <Parameter name="Viscosity" type="double" value="0.000035"/> <!-- kinematic Viscosity-->
+        <Parameter name="Density" type="double" value="1000.0"/>
+        
+        <Parameter name="H/h" type="int" value="3"/>
+        <Parameter name="MaxVelocity" type="double" value="1.5"/>
+        <Parameter name="MeanVelocity"  type="double" value="1.0"/>
+        <Parameter name="Height Inflow"  type="double" value="0.1"/>
+        <Parameter name="Constant Pressure Gradient" type="double" value="10.0"/>
+        
+        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/> <!-- -4 -->
+        <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>
+        <Parameter name="updateTol" type="double" value="1.0e-4"/>
+        <Parameter name="Combo" type="string" value="OR"/>
+        <Parameter name="Use update tol" type="bool" value="false"/>
+        <Parameter name="Use rel tol" type="bool" value="true"/>
+        <Parameter name="Use abs tol" type="bool" value="false"/>
+        <Parameter name="Use WRMS" type="bool" value="false"/>
+        
+        <Parameter name="MaxNonLinIts" type="int" value="20"/>
+        <Parameter name="Cancel MaxNonLinIts" type="bool" value="false"/>
+        <Parameter name="Symmetric gradient" type="bool" value="false"/>
+    </ParameterList>
+
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>        
+	<Parameter name="Mesh 1 Name" type="string" value="rectangle_200.mesh"/>
+    </ParameterList>
+
+    <!-- Material specific parameters like e.g. Newtonian fluid, Carreau-Yasuda model and corresponding parameters -->
+    <ParameterList name="Material">    
+        <Parameter name="Newtonian" type="bool" value="false"/> <!-- If false than User has to set below one of the ShearThinning Models and define parameters -->
+        <Parameter name="compareNavierStokes" type="bool" value="true"/> <!-- Compare to Navier-Stokes Solver for Newtonian Fluid -->  
+
+        <Parameter name="ShearThinningModel" type="string" value="Power-Law"/> <!-- Power-Law, Carreau-Yasuda, Dimensionless Carreau-Model  -->
+        <Parameter name="WriteOutViscosity" type="bool" value="true"/> <!-- If material is non-newtonian and this variable is set true the viscosity is computed in one element in the center of mass and written out in paraview format -->  
+        
+        
+        
+        <Parameter name="Additional NeumannBoundaryIntegral" type="bool" value="false"/> <!-- For stress-divergence formulation we have to add boundary integral at outflow to obtain same outflow condition as in the convential formulation with the Laplacian term -->
+        <Parameter name="BoundaryFlag_Additional NeumannBoundaryIntegral" type="int" value="3" /> <!-- So if we want to add the additional boundary integral for the equivalent outflow condition we have to set the boundary flag"-->
+        <!--************************* WE ONLY SET THIS FOR ONE FLAG NUMBER SO IF WE WANT TO ADD THE INTEGRAL ON MORE BOUNDARIES WE HAVE TO EXTEND IT -->
+       
+        
+	<!--********************FOR CHOSEN MODEL USER HAS TO SET MATERIAL PARAMETERS BELOW**************************-->
+	     <Parameter name="Numerical_ZeroValue_ShearRate" type="double" value="1.0e-12"/> <!-- Independent of the model we have to ensure that IF the shear rate is in the denominator of an term (for example in the Gateaux-derivatives) than we should not divide by zero but instead set shear rate to a really small value -->
+    <!-- ALL VARIABLES ARE IN SI UNITS WHICH ARE WRITTEN AS COMMENT BEYOND THE PHSICAL QUANTITY -->	
+
+
+	<!-- Power Law assumes for the viscosity eta the functional form \eta(\gamma) = K \gamma^(n-1) -->
+        <!-- For n=1 we have Newtonian Fluid with constant viscosity corresponding to the value of K-->
+        <Parameter name="PowerLawParameter K" type="double" value="0.035"/>
+        <Parameter name="PowerLaw index n" type="double" value="1.0"/> <!-- for n<1 we have shear thinning behaviour 0.61 !!! funktioniert--> 
+        <!-- In Power-Law model the viscosity could be unphysically zero or infinity for high or low shear rates therefore we have to catch these cases by defining max and min values for viscosity which we will name as Numerical_xxx value-->
+        <Parameter name="Numerical_InftyShearRateViscosity" type="double" value="0.0000000001"/>
+	    <Parameter name="Numerical_ZeroShearRateViscosity" type="double" value="0.35"/> <!-- lower , higher? -->
+		
+	<!-- Carreau Yasuda assumes for the viscosity eta the functional form \eta(\gamma) = \eta_{\infty} + (\eta_0 - \eta_{\infty})*( (  1+(\lambda*\gamma)^a  )^((n-1)/a)   ) -->
+        <!-- For a=2 we have Carreau Model-->
+        <!-- For a=1-n we have Cross Model-->
+        <!-- For a=1 and n=0 we have Simplified Cross Model-->
+        <Parameter name="InftyShearRateViscosity_etaInfty" type="double" value="0.00345"/> <!-- [Pa s] --> <!-- [Ref. Cardiovascular Mathematics p.237] 0.00345 -->
+        <Parameter name="ZeroShearRateViscosity_eta0" type="double" value="0.056"/> <!-- [Pa s] --> <!-- [Ref. Cardiovascular Mathematics p.237] 0.056 -->
+        <Parameter name="InflectionPoint_a" type="double" value="1.25 "/> <!-- [] --> <!-- [Ref. Cardiovascular Mathematics p.237] 1.25 -->
+        <Parameter name="FluidIndex_n" type="double" value="0.22"/> <!-- [] --> <!-- [Ref. Cardiovascular Mathematics p.237] 0.22 -->
+        <Parameter name="CharacteristicTime_Lambda" type="double" value="1.902"/> <!-- [s] --> <!-- [Ref. Cardiovascular Mathematics p.237] 1.902 -->
+
+	<!-- Dimensionless Carreau Model was fitted based on simulation data of the group of Prof. Gompper located in Jülich and assumes for the viscosity eta the functional form \eta(\gamma) = \eta_{\infty} + (\eta_0 - \eta_{\infty})*( (  1+(\lambda*\gamma)^2  )^((n-1)/2)   ) but \eta(\gamma)= (\eta(\gamma)_actual/ \eta(\gamma)_ref so we have to multiply the value with the reference viscosity ) -->
+	<!-- THE PARAMETERS IN EQUATION ARE DIMENSIONLESS THEREFORE WE HAVE TO MULTIPLY BY THE REFERENCE VISCOSITY TO OBTAIN THE ACTUAL VISCOSITY-->
+        <Parameter name="Dimless_InftyShearRateViscosity_etaInfty" type="double" value="3.3707"/> <!-- [] -->
+        <Parameter name="Dimless_ZeroShearRateViscosity_eta0" type="double" value="230.6330"/> <!--[]  -->
+        <Parameter name="Reference_Viscosity" type="double" value="0.0012"/> <!--[Pa s]  -->
+        <Parameter name="Carreau_FluidIndex_n" type="double" value="0.45"/> <!-- [] -->  
+        <Parameter name="Dimless_CharacteristicTime_Lambda" type="double" value="-300"/> <!-- [] --> -
+        
+        
+        
+</ParameterList>
+
+
+    <!-- Exporter for Paraview -->
+    <ParameterList name="Exporter">
+        <Parameter name="Export coarse functions" type="bool" value="false"/>
+        <Parameter name="Name coarse functions block1" type="string" value="phiU"/>
+        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
+        <Parameter name="Name coarse functions block1" type="string" value="phiP"/>
+        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
+    </ParameterList>
+    
+    <!-- Nonlinear Solution method (Preconditioner) as well as Parallelization specific parameters like e.g. Newton -->
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="Linearization" type="string" value="Newton"/> <!-- FixedPoint, Newton, NOX-->
+        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>
+        <Parameter name="ParaView export subdomain" type="bool" value="false"/>
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko -->
+        <Parameter name="Assemble Velocity Mass" type="bool" value="false"/>
+        <Parameter name="Delete P1 Data" type="bool" value="false"/><!-- only for Monolithic and Newton -->
+    </ParameterList>
+</ParameterList>

@@ -22,9 +22,32 @@
  @author Christian Hochmuth
  @version 1.0
  @copyright CH
+
+
  */
 
 namespace FEDD {
+     /*!
+    \class Meshpartitioner
+    \brief This class partitions a given input P1-Mesh and distributes it among the different processors. 
+
+    \tparam SC The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.g., for using complex instead
+    \tparam LO The local ordinal type. The is the index type for local indices
+    \tparam GO The global ordinal type. The is the index type for global indices
+    \tparam NO The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.
+
+    General Structure of partitioning:
+    - Mesh entities are read 
+    - Partitioned via Metis (METIS_PartMeshDual)
+    - Corresponding Node- and Elementlists are distributed accordingly
+
+    Mesh entities must include the nodes and elements. Additional information of edges and surfaces (in 3D) can be necessary for problems where complex boundary conditions are set on surfaces or edges.
+
+    In general elements follow a hierarchical structure. For example a 3D tetrahedral element owns all 2D and 1D entities (triangle/surface, edges) that are part of the surface. 
+
+    As of now each surface and element node list is sorted to improve find/search operations. This influences for example the calculation of surface normals.
+    
+    */
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class MeshPartitioner {
     
@@ -95,7 +118,7 @@ public:
 	/*! 
 		\brief Finding the surfaces corresponding to a specfic element and then setting subelements
 	*/
-    void findAndSetSurfacesPartitioned( vec2D_int_Type& surfElements_vec, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation, vec_GO_Type& linearSurfacePartitionOffset, int globalElID);
+    void findAndSetSurfacesPartitioned( vec2D_int_Type& surfElements_vec,vec2D_int_Type& surfElements_vec_unsorted, vec_int_Type& surfElementsFlag_vec, FiniteElement& element, vec2D_int_Type& permutation, vec_GO_Type& linearSurfacePartitionOffset, int globalElID);
 
 	/*! 
 		\brief Setting local IDs to the edges in 3D case with respect to the local numbering of elements

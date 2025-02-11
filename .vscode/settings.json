@@ -1,6 +1,14 @@
 {
     "files.associations": {
-        "iostream": "cpp",
-        "ostream": "cpp"
+        "*.tcc": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "regex": "cpp",
+        "*.ipp": "cpp",
+        "memory": "cpp",
+        "future": "cpp",
+        "istream": "cpp",
+        "functional": "cpp",
+        "*.inc": "cpp"
     }
 }

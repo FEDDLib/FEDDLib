@@ -30,6 +30,7 @@ Problem<SC,LO,GO,NO>(parameterList, domainVelocity->getComm())
 
     this->addVariable( domainVelocity , FETypeVelocity , "u" , domainVelocity->getDimension());
     this->addVariable( domainPressure , FETypePressure , "p" , 1);
+    
     this->dim_ = this->getDomain(0)->getDimension();
 }
 
@@ -89,6 +90,7 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
     BT->fillComplete( pressureMap, this->getDomain(0)->getMapVecFieldUnique() );
     
     this->system_.reset(new BlockMatrix_Type(2));
+  
     this->system_->addBlock( A, 0, 0 );
     this->system_->addBlock( BT, 0, 1 );
     this->system_->addBlock( B, 1, 0 );
@@ -133,7 +135,7 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
 
     this->assembleSourceTerm( 0. );
     this->addToRhs( this->sourceTerm_ );
-
+    //this->rhs_->print();
     
     if (this->verbose_)
         std::cout << "done -- " << std::endl;

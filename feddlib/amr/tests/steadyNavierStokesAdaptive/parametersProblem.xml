@@ -60,7 +60,7 @@
         <Parameter name="ParaViewCoarse" type="bool" value="false"/>
         <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>
         <Parameter name="ParaView export subdomain" type="bool" value="false"/>
-        <Parameter name="Preconditioner Method" type="string" value="Teko"/><!-- Monolithic, Teko -->
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko -->
         <Parameter name="Assemble Velocity Mass" type="bool" value="false"/>
         <Parameter name="Delete P1 Data" type="bool" value="false"/><!-- only for Monolithic and Newton -->
     </ParameterList>

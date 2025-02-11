@@ -267,7 +267,7 @@ void TimeSteppingTools::advanceTime(bool printInfo){
         exporterTxtError_->exportData(t_);
     }
 
-    t_+=dt_prev_;
+    t_+=dt_;
 
     if (printInfo)
         this->printInfo();

@@ -31,7 +31,7 @@ class Domain {
     \tparam NO The Kokkos Node type. This would allow for performance portability when using Kokkos. Currently, this is not used.
     
     Example: If you construct a Stokes finite element problem, you get a velocity and pressure 'P2-P1' discretization and, thus, one domain for the P2 elements and one for the P1 elements, with the respective node list etc.
-     
+    
 	*/
 
 public:
@@ -93,7 +93,7 @@ public:
     Domain(CommConstPtr_Type comm, int dimension);
 
     /*!
-         \brief Constructor for structured meshes build in FEDDLib
+         \brief Constructor for 2D structured meshes build in FEDDLib
          @param[in] coor
          @param[in] l
          @param[in] h
@@ -102,7 +102,7 @@ public:
     Domain(vec_dbl_Type coor, double l, double h, CommConstPtr_Type comm);
 
  	/*!
-         \brief Constructor for strucutred meshes build in FEDDLib
+         \brief Constructor for 3D strucutred meshes build in FEDDLib
          @param[in] coor
          @param[in] l length
          @param[in] w width
@@ -126,7 +126,7 @@ public:
     /*!
          \brief Information about the domain
     */
-    void info();
+    void info() const;
 
  	/*!
          \brief Build structured mesh in FEDDLib 
@@ -332,6 +332,14 @@ public:
 
     */
     void setMesh(MeshUnstrPtr_Type meshUnstr); 
+
+     /*!
+         \brief Initialize dummy mesh for i.e. lagrange multiplier that only represents on 'point' in that sense. i.e. for setting pressure mean value in P2-P1 stokes problem. This is necassary if a variable does not live on a mesh. 
+         \brief This function might not be necassary in the long run.
+         @param[in] map for this dummy mesh. Maybe the mesh only represents one point (i.e. for lagrange mp). 
+
+    */
+    void initDummyMesh(MapPtr_Type map); 
     
     /*!
          \brief  Build unique node and dof interfaceMap in interface numbering
@@ -416,7 +424,7 @@ public:
     LO getNumPoints(std::string type="Unique") const;/*local*/
 
 	/*!
-         \brief Check geometriy
+         \brief Checks geometriy
          @param[in] MeshType
          @param[in] dim
          \return 
@@ -520,50 +528,80 @@ public:
          
     */
     MultiVectorPtr_Type getNodeListMV() const;
-/* ----------------------------------------------------------------------------------------*/
 
-private:
+    /*!
+         \brief Exporting Mesh
+         
+    */
+   void exportMesh(bool exportEdges = false, bool exportSurfaces=false, std::string exportMesh="export.mesh");
 
-    CommConstPtr_Type 		comm_;
-    MeshPtr_Type 			mesh_;
-    int                     dim_;
-    vec_dbl_Type            coorRec;
-    double 					length;
-    double		 			height;
-    double 					width;
-    int 					n_;
-    int 					m_;
-    std::string				FEType_;
-    mutable MapPtr_Type mapVecFieldUnique_;
-    mutable  MapPtr_Type mapVecFieldRepeated_;
-    
-    string_vec_ptr_Type     geometries2DVec_;
-    string_vec_ptr_Type		geometries3DVec_;
-    vec_dbl_ptr_Type        distancesToInterface_;
+     /*!
+         \brief Option of preprocessing mesh by making consistent outward normal and/or consistent element orientation, where we always have positive det of transformation to reference element
+         @param correctSurfaceNormals bool for normal direction
+         @param correctElementDirection bool for surface direction
+    */ 
+   void preProcessMesh(bool correctSurfaceNormals, bool correctElementDirection);
 
-    // Unique Interface-Maps als nodes und als dofs in der Interface-Nummerierung
-    MapPtr_Type             interfaceMapUnique_; // nodes
-    MapPtr_Type             interfaceMapVecFieldUnique_; // dofs
+   /// @brief Exporting Paraview file displaying element flags of the underlying mesh
+   /// @param name
+   void exportElementFlags(std::string name = "default");
 
-    // Unique Fluid/Struktur-Interface-Maps als nodes und als dofs in der globalen Nummerierung
-    MapPtr_Type             globalInterfaceMapUnique_;
-    MapPtr_Type             globalInterfaceMapVecFieldUnique_;
-    MapPtr_Type             partialGlobalInterfaceVecFieldMap_;
-    MapPtr_Type otherGlobalInterfaceMapUnique_;
-    MapPtr_Type otherGlobalInterfaceMapVecFieldUnique_;
-    MapPtr_Type otherPartialGlobalInterfaceVecFieldMap_;
-    // Dies ist ein (unique) partitionierter Vektor, der fuer jeden Stelle im Vektor i
-    // (= lokale Interface ID; also jeder Proz. haelt nur ein Teil des Interfaces)
-    // angibt, welche lokale ID dies in der globalen Nummerierung ist.
-    // Beide zeigen auf denselben physischen Knoten des Interfaces!
-    // TODO Fehlerhaft
-    vec_long_Type           vecLocalInterfaceIDinGlobal_;
+   /// @brief Exporting Paraview file displaying node flags of the underlying mesh
+   /// @param name export suffix to identify flags
+   void exportNodeFlags(std::string name = "default");
 
-    std::string meshType_;
-    int numProcsCoarseSolve_;
-    int flagsOption_;
+   /// @brief Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not able to plot only the surfaces, the normals are displayed in each node. This means, that at corners, the visualization is incorrect (i.e. node belongs to surfaces which are in different directions)
+   /// @param name export suffix to identify flags
+   void exportSurfaceNormals(std::string name = "default");
+
+   /// @brief Exporting Paraview file displaying element volume of underlying mesh. 
+   /// @param name export suffix to identify flags
+   void exportElementOrientation(std::string name = "default");
+
+   /* ----------------------------------------------------------------------------------------*/
+
+   private:
+   CommConstPtr_Type comm_; // underlying comm
+   MeshPtr_Type mesh_;      // underlying mesh as base class mesh type. usually underlying mesh is either structured or unstructured
+   int dim_;                // dimension
+   vec_dbl_Type coorRec;
+   double length;
+   double height;
+   double width;
+   int n_;
+   int m_;
+   std::string FEType_; // Finite element discretization
+   mutable MapPtr_Type mapVecFieldUnique_;
+   mutable MapPtr_Type mapVecFieldRepeated_;
+
+   string_vec_ptr_Type geometries2DVec_; // list with available 2D structured geometries
+   string_vec_ptr_Type geometries3DVec_; // list with available 3D structured geometries
+   vec_dbl_ptr_Type distancesToInterface_;
+
+   // Unique Interface-Maps als nodes und als dofs in der Interface-Nummerierung
+   MapPtr_Type interfaceMapUnique_;         // nodes
+   MapPtr_Type interfaceMapVecFieldUnique_; // dofs
+
+   // Unique Fluid/Struktur-Interface-Maps als nodes und als dofs in der globalen Nummerierung
+   MapPtr_Type globalInterfaceMapUnique_;
+   MapPtr_Type globalInterfaceMapVecFieldUnique_;
+   MapPtr_Type partialGlobalInterfaceVecFieldMap_;
+   MapPtr_Type otherGlobalInterfaceMapUnique_;
+   MapPtr_Type otherGlobalInterfaceMapVecFieldUnique_;
+   MapPtr_Type otherPartialGlobalInterfaceVecFieldMap_;
+   // Dies ist ein (unique) partitionierter Vektor, der fuer jeden Stelle im Vektor i
+   // (= lokale Interface ID; also jeder Proz. haelt nur ein Teil des Interfaces)
+   // angibt, welche lokale ID dies in der globalen Nummerierung ist.
+   // Beide zeigen auf denselben physischen Knoten des Interfaces!
+   // TODO Fehlerhaft
+   vec_long_Type vecLocalInterfaceIDinGlobal_;
+
+   std::string meshType_;
+   int numProcsCoarseSolve_;
+   int flagsOption_;
 
     };
+   
 }
 
 #endif

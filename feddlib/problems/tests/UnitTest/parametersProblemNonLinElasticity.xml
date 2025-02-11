@@ -1,0 +1,37 @@
+<ParameterList name="Elasticity">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization" type="string" value="P1"/><!--P1, P2; velocity, pressure always P1 -->
+        <Parameter name="Mesh Type" type="string" value="structured"/> <!--structured, unstructured, structured_bfs -->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>
+        <Parameter name="H/h" type="int" value="6"/>
+        <Parameter name="relNonLinTol" type="double" value="1.0e-8"/>
+        <Parameter name="MaxNonLinIts" type="int" value="10"/>
+        <Parameter name="Criterion" type="string" value="Residual"/>
+        <Parameter name="Volume force" type="double" value="-.03"/>
+        <Parameter name="Material model" type="string" value="Saint Venant-Kirchhoff"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
+        <Parameter name="Density" type="double" value="1."/>
+        <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
+        <Parameter name="Poisson Ratio" type="double" value="0.4"/>
+        <Parameter name="Mu" type="double" value="0.3571"/>
+        <Parameter name="E" type="double" value="1."/>
+    </ParameterList>
+
+    <ParameterList name="Exporter">
+        <Parameter name="Export coarse functions" type="bool" value="false"/>
+        <Parameter name="Name coarse functions block1" type="string" value="phiU"/>
+        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
+    </ParameterList>
+
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        <Parameter name="Mesh 1 Name" type="string" value="testFoam.mesh"/>
+    </ParameterList>
+    
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="ParaViewExport" type="bool"  value="true"/>
+        <Parameter name="Set Zeros" type="bool" value="true"/>
+        <Parameter name="Linearization" type="string" value="Newton"/> <!-- FixedPoint, Newton, Mixed-->
+    </ParameterList>
+</ParameterList>

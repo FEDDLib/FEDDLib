@@ -117,6 +117,8 @@ public:
 
 	void tagAll(MeshUnstrPtr_Type meshUnstr);
 
+	void tagFlag( MeshUnstrPtr_Type inputMeshP1,int flag);
+
 	std::string refinementRestriction_ = "none";
 	std::string markingStrategy_ = "Maximum";
 	double theta_ = 0.5;

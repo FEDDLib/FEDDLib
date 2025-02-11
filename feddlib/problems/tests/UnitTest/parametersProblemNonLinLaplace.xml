@@ -1,0 +1,29 @@
+<ParameterList name="nonlinear Laplace">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension"							    type="int"   	value="2"/>
+        <Parameter name="Discretization"                        type="string"   value="P1"/><!--P1, P2-->
+        <Parameter name="Mesh Type" type="string" value="structured"/> <!--structured, unstructured -->
+        <Parameter name="Mesh Name" type="string" value="square.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh-->
+	    <Parameter name="Source Type" type="string"   value="surface"/>
+        <Parameter name="Mesh Delimiter"					    type="string"   value=" "/>
+        <Parameter name="H/h"							    	type="int"   	value="10"/>   
+          <Parameter name="relNonLinTol" type="double" value="1.0e-8"/>
+        <Parameter name="MaxNonLinIts" type="int" value="10"/>
+        <Parameter name="Criterion" type="string" value="Residual"/>     
+    </ParameterList>
+
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        <Parameter name="Mesh 1 Name" type="string" value="square.mesh"/>
+    </ParameterList>
+    
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse"		                type="int"      value="0"/>
+        <Parameter name="ParaViewExport"			            type="bool"     value="true"/>
+        <Parameter name="ParaViewCoarse"                        type="bool"     value="true"/>
+        <Parameter name="Preconditioner Method"                 type="string"   value="Monolithic"/><!-- Monolithic, Diagonal, Triangular -->
+        <Parameter name="Scale mass matrix"                     type="bool"     value="true"/>
+        <Parameter name="Set Zeros"		                        type="bool"     value="true"/>
+        <Parameter name="Linearization"                         type="string"   value="Newton"/> <!-- FixedPoint, Newton, Extrapolation-->
+    </ParameterList>
+</ParameterList>
