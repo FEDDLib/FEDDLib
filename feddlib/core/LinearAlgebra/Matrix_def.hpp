@@ -204,7 +204,7 @@ void Matrix<SC,LO,GO,NO>::fillComplete(){
 
 template <class SC, class LO, class GO, class NO>
 void Matrix<SC,LO,GO,NO>::fillComplete(MapConstPtr_Type domainMap, MapConstPtr_Type rangeMap){
-    matrix_->fillComplete( domainMap->getTpetraMap(), rangeMap->getTpetraMap() );
+    matrix_->fillComplete( domainMap, rangeMap);
 }
 
 template <class SC, class LO, class GO, class NO>
