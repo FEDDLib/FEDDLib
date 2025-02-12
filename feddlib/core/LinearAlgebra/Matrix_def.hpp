@@ -165,7 +165,7 @@ Teuchos::RCP<const Thyra::LinearOpBase<SC> > Matrix<SC,LO,GO,NO>::getThyraLinOp(
 
     thyraOp = Thyra::createLinearOp(tpOperator);
 
-    return thyraOp;
+    return Teuchos::rcp_const_cast<Thyra::LinearOpBase<SC> > (thyraOp); // thyraOp;
 
 }
 
@@ -182,7 +182,7 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > Matrix<SC,LO,GO,NO>::getThyraLinOpNonCons
 
     thyraOp = Thyra::createLinearOp(tpOperator);
 
-    return Teuchos::rcp_const_cast<Thyra::LinearOpBase<SC> > (thyraOp); // is this now const or not?? 
+    return thyraOp; // Teuchos::rcp_const_cast<Thyra::LinearOpBase<SC> > (thyraOp); // is this now const or not?? 
 }
     
 template <class SC, class LO, class GO, class NO>
