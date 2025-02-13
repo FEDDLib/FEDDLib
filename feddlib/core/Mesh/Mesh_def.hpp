@@ -1516,7 +1516,7 @@ void Mesh<SC,LO,GO,NO>::calcRhoTetraeder(){
 		A4 = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));
 
 
-		rhoElement = (6*volTet[k]) / (A1 + A2 +A3 +A4);
+		rhoElement = (6*volTet[k]) / (A1 + A2 +A3 +A4); // DURCHMESSER
 
         this->elementsC_->getElement(k).setRhoElement(rhoElement);
 
