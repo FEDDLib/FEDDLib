@@ -389,9 +389,9 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelE
             Teuchos::RCP<Thyra::MultiVectorBase<SC> > f_thyra = this->getResidualVector()->getThyraMultiVector();
             f_out->assign(*f_thyra);
         }
-
         TpetraMatrixPtr_Type W;
         if (fill_W) {
+            cout << " Fill W " << endl;
 
             this->reAssemble("Newton"); // ReAssembling matrices with updated u  in this class
 
@@ -407,7 +407,9 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelE
             //Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>& xTpetraMat = dynamic_cast<Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>&>(*crsOp.getCrsMatrix());
             
             Teuchos::RCP<TpetraMatrix_Type> tpetraMatTpetra = W_systemTpetraNonConst; //xTpetraMat.getTpetra_CrsMatrixNonConst();
-        
+            
+            tpetraMatTpetra->describe(*out,Teuchos::VERB_EXTREME);
+
             W_tpetraMat->resumeFill();
 
             for (auto i=0; i<tpetraMatTpetra->getMap()->getLocalNumElements(); i++) {
@@ -417,11 +419,11 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelE
                 W_tpetraMat->replaceLocalValues( i, indices, values);
             }
             W_tpetraMat->fillComplete();
-
+            W_tpetraMat->describe(*out,Teuchos::VERB_EXTREME);
         }
-
         if (fill_W_prec) {
-        
+            cout << " Fill W prec " << endl;
+
             this->setupPreconditioner( "Monolithic" );
 
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.

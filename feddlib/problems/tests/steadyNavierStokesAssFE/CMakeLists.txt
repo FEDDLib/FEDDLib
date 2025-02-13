@@ -1,3 +1,5 @@
+set(MPIEXEC_EXECTUABLE "mpirun")
+
 TRIBITS_ADD_EXECUTABLE(
 	steadyNavierStokesAssFE
 	SOURCES main.cpp
