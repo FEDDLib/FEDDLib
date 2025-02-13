@@ -145,21 +145,21 @@ class FE {
                                      BC_func_Type func,
                                      std::vector<SC>& funcParameter);
     
-    void assemblyAceGenTPM( MatrixPtr_Type &A00,
-                            MatrixPtr_Type &A01,
-                            MatrixPtr_Type &A10,
-                            MatrixPtr_Type &A11,
-                            MultiVectorPtr_Type &F0,
-                            MultiVectorPtr_Type &F1,
-                            MapPtr_Type &mapRepeated1,
-                            MapPtr_Type &mapRepeated2,
-                            ParameterListPtr_Type parameterList,
-                            MultiVectorPtr_Type u_repeatedNewton=Teuchos::null,
-                            MultiVectorPtr_Type p_repeatedNewton=Teuchos::null,
-                            MultiVectorPtr_Type u_repeatedTime=Teuchos::null,
-                            MultiVectorPtr_Type p_repeatedTime=Teuchos::null,
-                           bool update=true,
-                           bool updateHistory=true);
+    // void assemblyAceGenTPM( MatrixPtr_Type &A00,
+    //                         MatrixPtr_Type &A01,
+    //                         MatrixPtr_Type &A10,
+    //                         MatrixPtr_Type &A11,
+    //                         MultiVectorPtr_Type &F0,
+    //                         MultiVectorPtr_Type &F1,
+    //                         MapPtr_Type &mapRepeated1,
+    //                         MapPtr_Type &mapRepeated2,
+    //                         ParameterListPtr_Type parameterList,
+    //                         MultiVectorPtr_Type u_repeatedNewton=Teuchos::null,
+    //                         MultiVectorPtr_Type p_repeatedNewton=Teuchos::null,
+    //                         MultiVectorPtr_Type u_repeatedTime=Teuchos::null,
+    //                         MultiVectorPtr_Type p_repeatedTime=Teuchos::null,
+    //                        bool update=true,
+    //                        bool updateHistory=true);
     
     
     void addFE(DomainConstPtr_Type domain);
@@ -654,21 +654,37 @@ private:
      */
     void mr3d(double* v, double (*E), double (*Nu), double (*C), double** F, double** Pmat, double**** Amat);
 
+    /*! AceGen code for 3D Saint-Venant-Kirchhoff material model 
+    @param[out] v: values needed for the computaion of F, not needed after computation
+    @param[in] lam: lambda
+    @param[in] mue: mu
+    @param[in] F: deformation gradient, basis functions
+    @param[out] P: stresses
+    @param[out] A: strains
+    */
     void stvk3d(double* v,double (*lam),double (*mue),double** F,double** Pmat,double**** Amat);
-
+    
+    /*! AceGen code for 2D Saint-Venant-Kirchhoff material model 
+    @param[out] v: values needed for the computaion of F, not needed after computation
+    @param[in] lam: lambda
+    @param[in] mue: mu
+    @param[in] F: deformation gradient, basis functions
+    @param[out] P: stresses
+    @param[out] A: strains
+    */
     void stvk2d(double* v, double (*lam),double (*mue),double** F ,double** Pmat,double**** Amat);
     
-    void SMTSetElSpecBiot(ElementSpec *es,int *idata/*not needed*/,int ic,int ng, vec_dbl_Type& paraVec);
+    // void SMTSetElSpecBiot(ElementSpec *es,int *idata/*not needed*/,int ic,int ng, vec_dbl_Type& paraVec);
     
-    void SMTSetElSpecBiotStVK(ElementSpec *es,int *idata/*not needed*/,int ic,int ng, vec_dbl_Type& paraVec);
+    // void SMTSetElSpecBiotStVK(ElementSpec *es,int *idata/*not needed*/,int ic,int ng, vec_dbl_Type& paraVec);
     
-    void SMTSetElSpecBiot3D(ElementSpec *es,int *idata/*not needed*/,int ic,int ng, vec_dbl_Type& paraVec);
+    // void SMTSetElSpecBiot3D(ElementSpec *es,int *idata/*not needed*/,int ic,int ng, vec_dbl_Type& paraVec);
     
-    void SKR_Biot(double* v,ElementSpec *es,ElementData *ed, NodeSpec **ns, NodeData **nd,double *rdata,int *idata,double *p,double **s);
+    // void SKR_Biot(double* v,ElementSpec *es,ElementData *ed, NodeSpec **ns, NodeData **nd,double *rdata,int *idata,double *p,double **s);
     
-    void SKR_Biot_StVK(double* v,ElementSpec *es,ElementData *ed, NodeSpec **ns, NodeData **nd,double *rdata,int *idata,double *p,double **s);
+    // void SKR_Biot_StVK(double* v,ElementSpec *es,ElementData *ed, NodeSpec **ns, NodeData **nd,double *rdata,int *idata,double *p,double **s);
     
-    void SKR_Biot3D(double* v,ElementSpec *es,ElementData *ed, NodeSpec **ns, NodeData **nd,double *rdata,int *idata,double *p,double **s);
+    // void SKR_Biot3D(double* v,ElementSpec *es,ElementData *ed, NodeSpec **ns, NodeData **nd,double *rdata,int *idata,double *p,double **s);
     
     //End of AceGen code
     

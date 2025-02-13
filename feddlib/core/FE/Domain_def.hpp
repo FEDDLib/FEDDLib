@@ -103,7 +103,7 @@ partialGlobalInterfaceVecFieldMap_(),
     geometries2DVec_.reset(new string_vec_Type(0));
     geometries2DVec_->push_back("Square");
     geometries2DVec_->push_back("BFS");
-    geometries2DVec_->push_back("SquareTPM");
+    // geometries2DVec_->push_back("SquareTPM");
     geometries2DVec_->push_back("structuredMiniTest");
 //    geometries2DVec->push_back("REC");
 }
@@ -235,16 +235,16 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
                     meshStructured->setGeometry2DRectangle(coorRec, length, height);
                     meshStructured->buildMesh2DBFS(FEType, n_, m_, numProcsCoarseSolve);
                     break;
-                case 2:
-                    meshStructured->setGeometry2DRectangle(coorRec, length, height);
-                    meshStructured->buildMesh2DTPM(FEType, n_, m_, numProcsCoarseSolve);
-                    break;
-                case 3:
-                    meshStructured->setGeometry2DRectangle(coorRec, length, height);
-                    meshStructured->buildMesh2DMiniTPM(FEType, n_, m_, numProcsCoarseSolve);
-                    break;
+                // case 2:
+                //     meshStructured->setGeometry2DRectangle(coorRec, length, height);
+                //     meshStructured->buildMesh2DTPM(FEType, n_, m_, numProcsCoarseSolve);
+                //     break;
+                // case 3:
+                //     meshStructured->setGeometry2DRectangle(coorRec, length, height);
+                //     meshStructured->buildMesh2DMiniTPM(FEType, n_, m_, numProcsCoarseSolve);
+                //     break;
                 default:
-                    TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Select valid mesh. Structured types are 'structured' and 'structured_bfs' in 2D. TPM test meshes also available.");
+                    TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Select valid mesh. Structured types are 'structured' and 'structured_bfs' in 2D.");
                     break;
             }
 
