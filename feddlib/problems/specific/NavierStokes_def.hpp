@@ -570,8 +570,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
             
             Teuchos::RCP<TpetraMatrix_Type> tpetraMatTpetra = W_systemTpetraNonConst; //xTpetraMat.getTpetra_CrsMatrixNonConst();
             
-            tpetraMatTpetra->describe(*out,Teuchos::VERB_EXTREME);
-
             W_tpetraMat->resumeFill();
 
             for (auto i=0; i<tpetraMatTpetra->getMap()->getLocalNumElements(); i++) {
@@ -581,7 +579,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
                 W_tpetraMat->replaceLocalValues( i, indices, values);
             }
             W_tpetraMat->fillComplete();
-            W_tpetraMat->describe(*out,Teuchos::VERB_EXTREME);
 
         }
 

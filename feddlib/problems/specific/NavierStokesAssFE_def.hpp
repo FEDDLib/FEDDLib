@@ -407,9 +407,6 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelE
             //Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>& xTpetraMat = dynamic_cast<Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>&>(*crsOp.getCrsMatrix());
             
             Teuchos::RCP<TpetraMatrix_Type> tpetraMatTpetra = W_systemTpetraNonConst; //xTpetraMat.getTpetra_CrsMatrixNonConst();
-            
-            tpetraMatTpetra->describe(*out,Teuchos::VERB_EXTREME);
-
             W_tpetraMat->resumeFill();
 
             for (auto i=0; i<tpetraMatTpetra->getMap()->getLocalNumElements(); i++) {
@@ -419,7 +416,6 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelE
                 W_tpetraMat->replaceLocalValues( i, indices, values);
             }
             W_tpetraMat->fillComplete();
-            W_tpetraMat->describe(*out,Teuchos::VERB_EXTREME);
         }
         if (fill_W_prec) {
             cout << " Fill W prec " << endl;
