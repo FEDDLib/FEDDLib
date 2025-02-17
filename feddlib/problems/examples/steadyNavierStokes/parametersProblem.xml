@@ -48,6 +48,8 @@
         <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, NOX-->
         <Parameter name="ParaViewExport" type="bool" value="true"/>
         <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="Export RE and CFL" type="bool" value="true"/>
+        <Parameter name="Plot RE and CFL" type="bool" value="false"/>
         <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>
         <Parameter name="ParaView export subdomain" type="bool" value="false"/>
         <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko -->

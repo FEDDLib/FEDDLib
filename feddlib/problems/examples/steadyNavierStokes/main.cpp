@@ -614,10 +614,8 @@ int main(int argc, char *argv[]) {
                     nlSolver.solve( navierStokes );
                     comm->barrier();
 
+                    navierStokes.computeValuesOfInterestAndExport();
 
-                    if (parameterListAll->sublist("General").get("Export drag and lift",false) ){
-                        navierStokes.computeValuesOfInterestAndExport();
-                    }
                 }
     //            if (saveVector>0) {
     //                string outName = "vector_RE_" + to_string(RE) + "_" + to_string(dim) + "D_N_" + to_string(Size) +".h5";

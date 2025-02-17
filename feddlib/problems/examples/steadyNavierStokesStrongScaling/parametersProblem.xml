@@ -1,0 +1,52 @@
+<ParameterList name="unsteady Navier-Stokes">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
+        <Parameter name="Discretization Pressure" type="string" value="P1"/>
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
+        <Parameter name="BC Type" type="string" value="Compute Inflow"/><!--partialCFD,Richter3DFull-->
+        <Parameter name="Compute Inflow" type="bool" value="true"/>
+        <Parameter name="Mesh Name" type="string" value="arterie_with_plaque_initma_media_adventitia_fluid_fine.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh-->
+        <Parameter name="Max Ramp Time" type="double" value="0.1"/>
+        <Parameter name="Mesh Unit" type="string" value="mm"/> <!--  unstructured -->
+	    <Parameter name="Convert Mesh" type="bool" value="false"/> <!--  unstructured -->
+         <Parameter name="Use Pressure Correction" type="bool" value="false"/>     <!-- applying it locally to first level in preconditioner -->
+        <Parameter name="Use Local Pressure Correction" type="bool" value="false"/>    <!-- applying in globally after apply of first level-->
+        <Parameter name="Use Global Pressure Correction" type="bool" value="false"/>    <!-- applying projection globally after first and second level-->
+
+
+        <Parameter name="Viscosity" type="double" value="3.0e-02"/> <!-- kinematic viscocity cm²/s-->
+        <Parameter name="Density" type="double" value="1.0e-0"/> <!-- g/cm³ -->
+        <Parameter name="Max Velocity" type="double" value="40"/> <!-- cm/s -->
+        <Parameter name="Mean Velocity"  type="double" value="1.0"/>
+        
+        <Parameter name="relNonLinTol" type="double" value="1.0e-8"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-8"/>
+        <Parameter name="updateTol" type="double" value="1.0e-8"/>
+        <Parameter name="Combo" type="string" value="OR"/>
+        <Parameter name="Use update tol" type="bool" value="false"/>
+        <Parameter name="Use rel tol" type="bool" value="true"/>
+        <Parameter name="Use abs tol" type="bool" value="false"/>
+        <Parameter name="Use WRMS" type="bool" value="false"/>
+        
+        <Parameter name="MaxNonLinIts" type="int" value="10"/>
+        <Parameter name="Cancel MaxNonLinIts" type="bool" value="true"/>
+        <Parameter name="Symmetric gradient" type="bool" value="false"/>
+    </ParameterList>
+    <ParameterList name="Mesh Partitioner">
+        
+        <Parameter name="Contiguous" type="bool" value="true"/>        
+        <Parameter name="Mesh 1 Name" type="string" value="arterie_with_plaque_initma_media_adventitia_fluid_fine.mesh"/>
+    </ParameterList>
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, Extrapolation, NOX-->
+        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>
+        <Parameter name="ParaView export subdomain" type="bool" value="false"/>
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko-->
+        <Parameter name="Assemble Velocity Mass" type="bool" value="true"/><!-- For LSC Preconditioner -->
+
+    </ParameterList>
+</ParameterList>
