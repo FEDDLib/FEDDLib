@@ -435,6 +435,30 @@ int main(int argc, char *argv[])
 
             navierStokes.computeValuesOfInterestAndExport();
         
+            if ( parameterListAll->sublist("General").get("ParaViewExport",false) ) {
+                    Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());
+                    Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaPressure(new ExporterParaView<SC,LO,GO,NO>());
+
+                    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = navierStokes.getSolution()->getBlock(0);
+                    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = navierStokes.getSolution()->getBlock(1);
+
+                    DomainPtr_Type dom = domainFluidVelocity;
+
+                    exParaVelocity->setup("velocity", dom->getMesh(), dom->getFEType());
+                                        
+                    UN dofsPerNode = dim;
+                    exParaVelocity->addVariable(exportSolutionV, "u", "Vector", dofsPerNode, dom->getMapUnique());
+
+                    dom = domainPressure;
+                    exParaPressure->setup("pressure", dom->getMesh(), dom->getFEType());
+
+                    exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getMapUnique());
+
+
+                    exParaVelocity->save(0.0);
+                    exParaPressure->save(0.0);
+
+            }
             if (verbose) {
                 cout << "###############################################################" <<endl;
                 cout << "##################### Steady Navier-Stokes ####################" <<endl;
