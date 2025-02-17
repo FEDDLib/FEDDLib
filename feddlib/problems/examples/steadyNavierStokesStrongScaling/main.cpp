@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
     }
 
     Teuchos::TimeMonitor::report(cout);
-    stackedTimer->stop("Unsteady Navier-Stokes");
+    stackedTimer->stop("Steady Navier-Stokes");
 	StackedTimer::OutputOptions options;
 	options.output_fraction = options.output_histogram = options.output_minmax = true;
 	stackedTimer->report((std::cout),comm,options);
