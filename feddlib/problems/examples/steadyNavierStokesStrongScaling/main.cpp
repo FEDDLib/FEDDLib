@@ -449,7 +449,7 @@ int main(int argc, char *argv[])
                     UN dofsPerNode = dim;
                     exParaVelocity->addVariable(exportSolutionV, "u", "Vector", dofsPerNode, dom->getMapUnique());
 
-                    dom = domainPressure;
+                    dom = domainFluidPressure;
                     exParaPressure->setup("pressure", dom->getMesh(), dom->getFEType());
 
                     exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getMapUnique());
