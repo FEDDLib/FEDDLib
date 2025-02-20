@@ -451,8 +451,10 @@ int main(int argc, char *argv[]) {
                         bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim); // Wall
                         if(!bcType.compare("poiseuille"))
                             bcFactory->addBC(inflowPoiseuille3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
-                        else if(!bcType.compare("LDC"))
+                        else if(!bcType.compare("LDC")){
                             bcFactory->addBC(ldcFunc3D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec);
+                            // bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1);
+                        }
                         else 
                             bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 
@@ -589,8 +591,6 @@ int main(int argc, char *argv[]) {
                 NavierStokes<SC,LO,GO,NO> navierStokes( domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll );
 
                 domainVelocity->info();
-
-
                 domainPressure->info();
                 navierStokes.info();
 
@@ -630,26 +630,19 @@ int main(int argc, char *argv[]) {
                     Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = navierStokes.getSolution()->getBlock(0);
                     Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = navierStokes.getSolution()->getBlock(1);
 
-
-//                    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = navierStokes.getRhs()->getBlock(0);
-//                    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = navierStokes.getRhs()->getBlock(1);
-
-                    DomainPtr_Type dom = domainVelocity;
-
-                    exParaVelocity->setup("velocity", dom->getMesh(), dom->getFEType());
+                    exParaVelocity->setup("velocity", domainVelocity->getMesh(), domainVelocity->getFEType());
                                         
                     UN dofsPerNode = dim;
-                    exParaVelocity->addVariable(exportSolutionV, "u", "Vector", dofsPerNode, dom->getMapUnique());
-
-                    dom = domainPressure;
-                    exParaPressure->setup("pressure", dom->getMesh(), dom->getFEType());
-
-                    exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, dom->getMapUnique());
-
-
+                    exParaVelocity->addVariable(exportSolutionV, "u", "Vector", dofsPerNode, domainVelocity->getMapUnique());
                     exParaVelocity->save(0.0);
+
+                    exParaPressure->setup("pressure", domainPressure->getMesh(), domainPressure->getFEType());
+                    exParaPressure->addVariable(exportSolutionP, "p", "Scalar", 1, domainPressure->getMapUnique());
                     exParaPressure->save(0.0);
 
+                    exParaPressure->closeExporter();
+                    exParaVelocity->closeExporter();
+                
                 }
                 if (verbose) {
                     cout << "###############################################################" <<endl;
