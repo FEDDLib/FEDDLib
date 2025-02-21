@@ -455,6 +455,12 @@ int main(int argc, char *argv[]) {
                             bcFactory->addBC(ldcFunc3D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec);
                             // bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1);
                         }
+                        else if(!bcType.compare("LDC_2")){
+                            bcFactory->addBC(ldcFunc3D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec);
+                            bcFactory->addBC(zeroDirichlet3D, 3, 0, domainVelocity, "Dirichlet", dim);
+
+                            // bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1);
+                        }
                         else 
                             bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 
