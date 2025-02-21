@@ -458,6 +458,9 @@ int main(int argc, char *argv[])
                     exParaVelocity->save(0.0);
                     exParaPressure->save(0.0);
 
+                    domainFluidVelocity->exportProcessor("Fluid");
+
+
             }
             if (verbose) {
                 cout << "###############################################################" <<endl;
