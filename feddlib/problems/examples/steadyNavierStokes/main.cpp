@@ -376,7 +376,7 @@ int main(int argc, char *argv[]) {
                     parameter_vec.push_back(.41);//height of inflow region
                 else if(!bcType.compare("Richter3D"))
                     parameter_vec.push_back(.4);
-                 else if(!bcType.compare("LDC")) // Lid Driven Cavity Test
+                 else if(!bcType.compare("LDC")   || !bcType.compare("LDC_2")) // Lid Driven Cavity Test
                     parameter_vec.push_back(0.);//Dummy
                 else
                     TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Select a valid boundary condition.");
@@ -385,7 +385,7 @@ int main(int argc, char *argv[]) {
                 if ( !bcType.compare("parabolic") || 
                     !bcType.compare("parabolic_benchmark") 
                     || !bcType.compare("poiseuille")
-                    || !bcType.compare("LDC") ) {//flag of obstacle
+                    || !bcType.compare("LDC") ||  !bcType.compare("LDC_2") ) {//flag of obstacle
                     if (dim==2){
                         if(!bcType.compare("LDC"))
                             bcFactory->addBC(ldcFunc2D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec);
