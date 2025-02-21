@@ -821,21 +821,28 @@ int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( LO p1ID, LO p2ID, LO localEd
                     fe.findEdgeFlagInSubElements( edge, newFlags, false /*we are not in a subElement yet*/, permutation, foundLineSegment );
 
                     //We need to mark this point since it can still be on the surface and another element holds the corresponding surface with the correct flag.
-                    if (newFlags.size() == 0 && newFlag > this->volumeID_)
-                        newFlag = this->volumeID_; //do we need this?
+                    if (newFlags.size() == 0 && newFlag > this->volumeID_){
+                        if(flag1 >= flag2)
+                            newFlag = flag1;
+                        else if(flag1 <= flag2)
+                            newFlag = flag2; 
+                        else
+                            newFlag = this->volumeID_; //do we need this?
 
-                    //If we found a line element, then we choose this flag
-                    if (foundLineSegment){
-                        foundFlag = true;
-                        newFlag = newFlags [0];
                     }
-                    else {
-                        // We use the lowest flag of all surfaces
-                        
-                        for (int k = 0; k < newFlags.size(); k++) {
+                    else{
+                        //If we found a line element, then we choose this flag
+                        if (foundLineSegment){
                             foundFlag = true;
-                        if (newFlag > newFlags[k] )
-                                newFlag = newFlags[k];
+                            newFlag = newFlags [0];
+                        }
+                        else {
+                            // We use the lowest flag of all surfaces
+                            for (int k = 0; k < newFlags.size(); k++) {
+                                foundFlag = true;
+                            if (newFlag > newFlags[k] )
+                                    newFlag = newFlags[k];
+                            }
                         }
                     }
                 }
@@ -1077,7 +1084,7 @@ void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
 		Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesActiveArray, 0, this->comm_) );
 
 	MultiVectorLOPtr_Type flagsImport = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesNeeded, 1 ) );
-	flagsImport->putScalar(this->volumeID_);
+	flagsImport->putScalar(-1);
 
 	MultiVectorLOPtr_Type flagsExport = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesActive, 1 ) );
 	Teuchos::ArrayRCP< LO > flagExportEntries  = flagsExport->getDataNonConst(0);
@@ -1091,7 +1098,10 @@ void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
 	for(int i=0; i<flagImportEntries.size(); i++){
 		LO entry = edgeMap->getLocalElement(edgesNeeded[i]);
 		if(newFlags[entry] ==-1){
-			newFlags[entry] = flagImportEntries[i];
+            if(flagImportEntries[i] == -1 ) // the other processors also don't have the flag
+                newFlags[entry]= std::max(( *this->getBCFlagRepeated() )[edgeElements->getElement(entry).getNode(0)], ( *this->getBCFlagRepeated() )[edgeElements->getElement(entry).getNode(1)]);
+			else
+                newFlags[entry] = flagImportEntries[i];
 		}
 	}
 
@@ -2004,6 +2014,15 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
         
 
     }
+    else 
+    {
+        myFile << "Edges";
+        myFile << endl;
+        myFile << 0;
+        myFile << endl;
+        myFile << endl;
+
+    }
     this->comm_->barrier();
       // ################ Surfaces #################
     if(exportSurface && this->dim_ >2){
@@ -2155,6 +2174,15 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
         }
         if(verbose)
             std::cout << "... done -----" << '\n';
+
+    }
+    else 
+    {
+        myFile << "Triangles";
+        myFile << endl;
+        myFile << 0;
+        myFile << endl;
+        myFile << endl;
 
     }
 

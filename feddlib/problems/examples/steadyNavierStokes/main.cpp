@@ -352,17 +352,23 @@ int main(int argc, char *argv[]) {
                     //     domainPressure->setUnstructuredMesh(domainPressure->getMesh());
                     //     domainVelocity->buildP2ofP1Domain( domainPressure );
                     // }
-                    //domainPressure->exportMesh(true,false,"BFS_h_H_25_9_subdomains.mesh");
                     //domainVelocity->exportNodeFlags();
                     domainVelocity->preProcessMesh(true,false);
                     domainVelocity->preProcessMesh(true,false);
 
                     domainPressure->preProcessMesh(true,false);
                 }
+
+
+                 if(parameterListProblem->sublist("Parameter").get("Export Mesh",false)==true)
+                {
+                    domainPressure->setUnstructuredMesh(domainPressure->getMesh());
+                    domainPressure->exportMesh(false,false,"BFS_"+std::to_string(m)+"_"+std::to_string(size)+"_subdomains.mesh");
+                }
                 std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
 
-                // domainVelocity->exportNodeFlags();
-                // domainVelocity->exportProcessor();
+                domainVelocity->exportNodeFlags();
+                domainVelocity->exportProcessor();
                 // ####################
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
                 
