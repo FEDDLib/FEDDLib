@@ -360,15 +360,15 @@ int main(int argc, char *argv[]) {
                 }
 
 
-                 if(parameterListProblem->sublist("Parameter").get("Export Mesh",false)==true)
+                if(parameterListProblem->sublist("Parameter").get("Export Mesh",false)==true)
                 {
                     domainPressure->setUnstructuredMesh(domainPressure->getMesh());
                     domainPressure->exportMesh(false,false,"BFS_"+std::to_string(m)+"_"+std::to_string(size)+"_subdomains.mesh");
                 }
                 std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
 
-                domainVelocity->exportNodeFlags();
-                domainVelocity->exportProcessor();
+                // domainVelocity->exportNodeFlags();
+                // domainVelocity->exportProcessor();
                 // ####################
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
                 
