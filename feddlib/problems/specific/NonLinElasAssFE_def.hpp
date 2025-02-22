@@ -136,8 +136,9 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         fUnique->exportFromVector( fRep, true, "Add" );
 
         this->residualVec_->addBlock( fUnique, 0 );
-            
-        assembleSourceTermLoadstepping();
+
+        if(loadStepping_)  
+            assembleSourceTermLoadstepping();
 
 
     }
