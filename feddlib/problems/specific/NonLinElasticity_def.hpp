@@ -117,9 +117,6 @@ void NonLinElasticity<SC,LO,GO,NO>::reAssemble(std::string type) const {
     }
     else if(type=="Newton"){ //we already assemble the new tangent when we calculate the stresses above
         
-//        MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 10 ) );
-//        this->feFactory_->assemblyElasticityJacobianAceFEM(this->dim_, this->getDomain(0)->getFEType(), W, u_rep_, material_model, E_, nu_, C_);
-//        this->system_->addBlock( W, 0, 0 );
     }
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
@@ -192,7 +189,6 @@ void NonLinElasticity<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBas
         if (fill_W) {
             
             this->reAssemble("Newton");
-            
             this->setBoundariesSystem();
             
             Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);

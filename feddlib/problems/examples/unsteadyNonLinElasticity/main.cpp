@@ -19,7 +19,6 @@ void rhsY2D(double* x, double* res, double* parameters){
     if (parameters[0]<=parameters[2])
         res[1] = parameters[1];
     
-    std::cout << "res[1]:" << res[1] <<" parameters[0]:"<<parameters[0] << " parameters[2]:" << parameters[2]<< std::endl;
     return;
 }
 

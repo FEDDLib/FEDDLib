@@ -62,27 +62,20 @@ void NonLinElasAssFE<SC,LO,GO,NO>::assemble(std::string type) const{
         double density = this->parameterList_->sublist("Parameter").get("Density",1000.);
         string sourceType = 	this->parameterList_->sublist("Parameter").get("Source Type","volume");
 
+        this->assembleSourceTerm( 0. );
+        if(sourceType == "volume")
+            this->sourceTerm_->scale(density);
+        
+        this->addToRhs( this->sourceTerm_ );
+
+        this->setBoundariesRHS();           
 
         this->solution_->putScalar(0.);
         
         u_rep_ = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);              
-       // this->assembleSourceTerm( 0. );
-        /*if(loadStepping_==true)
-            assembleSourceTermLoadstepping(0.);
-        else*/
-            this->assembleSourceTerm(0.);
-
-        if(sourceType == "volume")
-            this->sourceTerm_->scale(density);
-
-        this->addToRhs( this->sourceTerm_ );
-        
-        this->setBoundariesRHS();
-                
-        
-        
+        u_rep_->importFromVector(u, true);                         
+               
         if (this->verbose_)
             std::cout << "done -- " << std::endl;
         
@@ -136,16 +129,14 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         fUnique->exportFromVector( fRep, true, "Add" );
 
         this->residualVec_->addBlock( fUnique, 0 );
-            
-        assembleSourceTermLoadstepping();
+
+        if(loadStepping_) 
+            assembleSourceTermLoadstepping();
 
 
     }
     else if(type=="Newton"){ //we already assemble the new tangent when we calculate the stresses above
         
-//        MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 10 ) );
-//        this->feFactory_->assemblyElasticityJacobianAceFEM(this->dim_, this->getDomain(0)->getFEType(), W, u_rep_, material_model, E_, nu_, C_);
-//        this->system_->addBlock( W, 0, 0 );
     }
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
@@ -217,7 +208,6 @@ void NonLinElasAssFE<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase
         if (fill_W) {
             
             this->reAssemble("Newton");
-            
             this->setBoundariesSystem();
             
             Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
