@@ -325,7 +325,6 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
     ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
     
     this->system_->addBlock( ANW, 0, 0 );
-    this->system_->print();
 
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
@@ -589,7 +588,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
             }
             W_tpetraMat->fillComplete();
 
-            W_tpetraMat->describe(*out);
+            W_tpetraMat->describe(*out, VERB_EXTREME);
 
         }
 
