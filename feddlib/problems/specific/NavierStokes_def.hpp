@@ -880,7 +880,7 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
         stokesTekoPrecUsed_ = false;
     }
     else{
-        this->setupPreconditioner( type ); // initializePreconditioner( type );
+        initializePreconditioner( type ); // this->setupPreconditioner( type ); //
     }
     
 
