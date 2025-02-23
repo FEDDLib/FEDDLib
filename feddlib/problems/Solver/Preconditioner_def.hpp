@@ -278,6 +278,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
     thyraMatrix->describe(*out,Teuchos::VERB_EXTREME);
 
     UN numberOfBlocks = parameterList->get("Number of blocks",1);
+    cout << " Preconditioner:: buildPreconditionerMonolithic - number of blocks " << numberOfBlocks << endl;
     Teuchos::ArrayRCP<Teuchos::RCP<Xpetra::Map<LO,GO,NO> > > repeatedMaps(numberOfBlocks);
 
     typedef Xpetra::MultiVector<SC,LO,GO,NO> XMultiVector;
