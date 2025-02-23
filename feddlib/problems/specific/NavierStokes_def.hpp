@@ -588,7 +588,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
             }
             W_tpetraMat->fillComplete();
 
-            W_tpetraMat->describe(*out, VERB_EXTREME);
+            W_tpetraMat->describe(*out, Teuchos::VERB_EXTREME);
 
         }
 
