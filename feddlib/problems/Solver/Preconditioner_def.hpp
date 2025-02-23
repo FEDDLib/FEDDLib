@@ -274,7 +274,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
     else if(!timeProblem_.is_null())
         thyraMatrix = timeProblem_->getSystemCombined()->getThyraLinOp();
 
-    RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
+    Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
     thyraMatrix->describe(*out,Teuchos::VERB_EXTREME);
 
     UN numberOfBlocks = parameterList->get("Number of blocks",1);
