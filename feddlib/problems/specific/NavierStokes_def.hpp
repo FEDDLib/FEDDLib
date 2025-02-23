@@ -286,6 +286,8 @@ void NavierStokes<SC,LO,GO,NO>::reAssembleFSI(std::string type, MultiVectorPtr_T
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
+    cout << " NavierStokes::reAssemble ( " << type << " ) " << endl;
+
     
     if (this->verbose_)
         std::cout << "-- Reassembly Navier-Stokes ("<< type <<") ... " << std::flush;
@@ -309,6 +311,9 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         N->addMatrix(1.,ANW,1.);
     }
     else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
+        
+            cout << " NavierStokes::reAssemble (Newton) " << endl;
+
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
         this->feFactory_->assemblyAdvectionInUVecField( this->dim_, this->domain_FEType_vec_.at(0), W, u_rep_, true );
         W->resumeFill();
@@ -320,7 +325,8 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
     ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
     
     this->system_->addBlock( ANW, 0, 0 );
-    
+    this->system_->print();
+
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
 }
@@ -505,7 +511,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
                                                         const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
 {
 
-
+    cout << " NavierStokes::evalModelImplMonolithic " << endl;
     using Teuchos::RCP;
     using Teuchos::rcp;
     using Teuchos::rcp_dynamic_cast;
@@ -537,11 +543,14 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
 
 
     if ( fill_f || fill_W || fill_W_prec ) {
+        cout << " NavierStokes::evalModelImplMonolithic ( fill_f || fill_W || fill_W_prec ) " << endl;
 
         // ****************
         // Get the underlying xpetra objects
         // ****************
         if (fill_f) {
+
+            cout << " NavierStokes::evalModelImplMonolithic ( fill_f ) " << endl;
 
             this->calculateNonLinResidualVec("standard"); // Calculating residual Vector
 
@@ -553,7 +562,8 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
 
         XpetraMatrixPtr_Type W;
         if (fill_W) {
-
+            
+            cout << " NavierStokes::evalModelImplMonolithic ( fill_W ) " << endl;
             this->reAssemble("Newton"); // ReAssembling matrices with updated u  in this class
 
             this->setBoundariesSystem(); // setting boundaries to the system
@@ -579,10 +589,15 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
             }
             W_tpetraMat->fillComplete();
 
+            W_tpetraMat->describe(*out);
+
         }
 
         if (fill_W_prec) {
+
+            cout << " NavierStokes::evalModelImplMonolithic ( fill_W_prec ) " << endl;
         
+
             this->setupPreconditioner( "Monolithic" );
 
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
