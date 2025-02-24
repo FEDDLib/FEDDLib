@@ -117,6 +117,8 @@ void BlockMatrix<SC,LO,GO,NO>::addBlock(const MatrixPtr_Type& matrix, int i, int
 
 template <class SC, class LO, class GO, class NO>
 void BlockMatrix<SC,LO,GO,NO>::merge(){
+    cout << " BlockMatrix:: merge() " << endl;
+
     if ( mergedMap_.is_null() ) {
         blockMap_->merge();
         mergedMap_ = Teuchos::rcp_const_cast<Map_Type>(blockMap_->getMergedMap());
@@ -132,7 +134,7 @@ void BlockMatrix<SC,LO,GO,NO>::merge(){
         if (maxNumEntriesBlockRow > maxNumEntries)
             maxNumEntries = maxNumEntriesBlockRow;
     }
-    
+    cout << " BlockMatrix:: merge() - maxNumEntries " << maxNumEntries << endl;
 //    if ( mergedMatrix_.is_null() ){
     mergedMatrix_ = Teuchos::rcp( new Matrix_Type( mergedMap_, maxNumEntries ) ); // we should identify the number of entries per row.
     this->determineLocalOffsets();
@@ -146,6 +148,12 @@ void BlockMatrix<SC,LO,GO,NO>::merge(){
         }
     }
     mergedMatrix_->fillComplete( mergedMap_, mergedMap_ ); // only for square matrices!
+    mergedMatrix_->getMap("row");
+    mergedMatrix_->getMap("col");
+    mergedMatrix_->getMap("domain");
+    mergedMatrix_->getMap("range");
+
+
 //    }
 //    else {
 //        mergedMatrix_->resumeFill();
