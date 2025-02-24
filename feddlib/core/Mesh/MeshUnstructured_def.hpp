@@ -780,7 +780,7 @@ int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( LO p1ID, LO p2ID, LO localEd
 
     int flag2 = ( *this->getBCFlagRepeated() )[p2ID];
 
-    int newFlag = std::numeric_limits<int>::max();
+    int newFlag = 100;
 
     if(flag1 == this->volumeID_ || flag2 == this->volumeID_ ) // one node is in an inner node, than the new node is an inner node aswell
         newFlag = this->volumeID_;
@@ -820,14 +820,13 @@ int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( LO p1ID, LO p2ID, LO localEd
                     fe.findEdgeFlagInSubElements( edge, newFlags, false /*we are not in a subElement yet*/, permutation, foundLineSegment );
 
                     //We need to mark this point since it can still be on the surface and another element holds the corresponding surface with the correct flag.
-                    if (newFlags.size() == 0 && newFlag > this->volumeID_){
-                        // if(flag1 >= flag2)
-                        //     newFlag = flag2;
-                        // else if(flag1 <= flag2)
-                        //     newFlag = flag1; 
-                        // else
+                    if (newFlags.size() == 0 && newFlag > this->volumeID_ && elementsOfEdge.size()<4 ){
+                        if(flag1 >= flag2)
+                            newFlag = flag2;
+                        else if(flag1 <= flag2)
+                            newFlag = flag1; 
+                        else
                             newFlag = this->volumeID_; //do we need this?
-
                     }
                     else{
                         //If we found a line element, then we choose this flag
@@ -1100,7 +1099,7 @@ void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
 		LO entry = edgeMap->getLocalElement(edgesNeeded[i]);
 		if(newFlags[entry] ==-1){
             if(flagImportEntries[i] == -1 ) // the other processors also don't have the flag
-                newFlags[entry]= std::max(( *this->getBCFlagRepeated() )[edgeElements->getElement(entry).getNode(0)], ( *this->getBCFlagRepeated() )[edgeElements->getElement(entry).getNode(1)]);
+                newFlags[entry]= std::min(( *this->getBCFlagRepeated() )[edgeElements->getElement(entry).getNode(0)], ( *this->getBCFlagRepeated() )[edgeElements->getElement(entry).getNode(1)]);
 			else
                 newFlags[entry] = flagImportEntries[i];
 		}
