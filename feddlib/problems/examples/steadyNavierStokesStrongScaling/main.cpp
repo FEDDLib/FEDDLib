@@ -297,7 +297,7 @@ int main(int argc, char *argv[])
             //domainFluidPressure->setUnstructuredMesh(domainFluidPressure->getMesh());
             //domainFluidPressure->exportMesh(" ");
             //domainFluidVelocity->exportProcessor("Fluid");
-            domainFluidVelocity->exportNodeFlags("Fluid");
+            //domainFluidVelocity->exportNodeFlags("Fluid");
                      
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",1.));
             parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Max Ramp Time",0.1) );
