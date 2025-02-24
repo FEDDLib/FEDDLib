@@ -325,6 +325,8 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
     ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
     
     this->system_->addBlock( ANW, 0, 0 );
+    cout << "#################### Merged Matrix after reassemble ##################" << endl;
+    this->system_->getMergedMatrix()->print();
 
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
@@ -871,7 +873,7 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
     this->initializeSolverBuilder();
 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-    //this->setBoundariesSystem();
+    this->setBoundariesSystem();
 
     cout << " ###################### system_->getMergedMatrix() ###################### " << endl;
     this->system_->getMergedMatrix()->print();
