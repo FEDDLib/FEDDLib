@@ -871,7 +871,7 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
     this->initializeSolverBuilder();
 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-    this->setBoundariesSystem();
+    //this->setBoundariesSystem();
 
     cout << " ###################### system_->getMergedMatrix() ###################### " << endl;
     this->system_->getMergedMatrix()->print();
