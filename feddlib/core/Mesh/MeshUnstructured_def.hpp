@@ -766,9 +766,6 @@ int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( FiniteElement& fe, LO p1ID, 
 template <class SC, class LO, class GO, class NO>
 int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( LO p1ID, LO p2ID, LO localEdgeID, vec2D_LO_Type& markedPoint ){
     
-    if( this->comm_->getRank() == 0 )
-        cout << "\n \t \t [Notification] Check flag setting procesa gain. Now specific to structured meshes. \n" << endl;
-
     ElementsPtr_Type elements = this->getElementsC();
 
     vec2D_int_Type permutation = elements->getElementEdgePermutation();
@@ -824,11 +821,11 @@ int MeshUnstructured<SC,LO,GO,NO>::determineFlagP2( LO p1ID, LO p2ID, LO localEd
 
                     //We need to mark this point since it can still be on the surface and another element holds the corresponding surface with the correct flag.
                     if (newFlags.size() == 0 && newFlag > this->volumeID_){
-                        if(flag1 >= flag2)
-                            newFlag = flag2;
-                        else if(flag1 <= flag2)
-                            newFlag = flag1; 
-                        else
+                        // if(flag1 >= flag2)
+                        //     newFlag = flag2;
+                        // else if(flag1 <= flag2)
+                        //     newFlag = flag1; 
+                        // else
                             newFlag = this->volumeID_; //do we need this?
 
                     }
@@ -986,6 +983,8 @@ void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
 	vec_int_Type newFlags(edgeElements->numberElements());
 
 	MapConstPtr_Type edgeMap = this->getEdgeMap();
+    if( this->comm_->getRank() == 0 )
+        cout << "\n \t \t [Notification] Check flag setting procesa gain. Now specific to structured meshes. \n" << endl;
 
 	vec_int_Type markedTrue(edgeElements->numberElements());
 	for(int i=0; i< edgeElements->numberElements() ; i++){

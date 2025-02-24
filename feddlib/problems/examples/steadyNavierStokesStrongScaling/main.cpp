@@ -251,8 +251,10 @@ int main(int argc, char *argv[])
                         pListPartitioner->set("Build Surface List",false);
                     }
                     MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
-                    
-                    partitionerP1.readAndPartition(15, "mm",true); // converting mesh from mm unit to cm unit
+
+                    bool convertMesh = parameterListAll->sublist("Parameter").get("Convert Mesh",false);
+
+                    partitionerP1.readAndPartition(15, "mm",convertMesh); // converting mesh from mm unit to cm unit
                     
                     if(parameterListProblem->sublist("General").get("ParaViewCoarse",false)){
                         domainP1fluid->exportElementFlags("Fluid");
@@ -295,7 +297,7 @@ int main(int argc, char *argv[])
             //domainFluidPressure->setUnstructuredMesh(domainFluidPressure->getMesh());
             //domainFluidPressure->exportMesh(" ");
             //domainFluidVelocity->exportProcessor("Fluid");
-
+            domainFluidVelocity->exportNodeFlags("Fluid");
                      
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",1.));
             parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Max Ramp Time",0.1) );
