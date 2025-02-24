@@ -367,7 +367,7 @@ int main(int argc, char *argv[]) {
                 }
                 std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
 
-                domainVelocity->exportNodeFlags();
+                //domainVelocity->exportNodeFlags();
                 // domainVelocity->exportProcessor();
                 // ####################
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
