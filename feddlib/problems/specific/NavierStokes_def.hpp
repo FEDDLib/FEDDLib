@@ -869,12 +869,13 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op_Bl
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_prec() const
 {
-
+    cout << " NavierStokes:: create_W_prec " << endl;
     this->initializeSolverBuilder();
 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     this->setBoundariesSystem();
-
+    this->system()->getMergedMatrix()->print();
+    
     if (!type.compare("Teko")) { //
         this->setupPreconditioner( type );
         stokesTekoPrecUsed_ = false;
