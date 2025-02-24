@@ -336,7 +336,7 @@ int main(int argc, char *argv[]) {
                         ParameterListPtr_Type pListPartitioner = sublist( parameterListProblem, "Mesh Partitioner" );
                         MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
                         
-                        partitionerP1.readAndPartition(10);
+                        partitionerP1.readAndPartition(0);
 
                         if (discVelocity=="P2")
                             domainVelocity->buildP2ofP1Domain( domainPressure );
