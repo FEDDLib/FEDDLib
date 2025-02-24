@@ -872,6 +872,8 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
     cout << " NavierStokes:: create_W_prec " << endl;
     this->initializeSolverBuilder();
 
+    this->reAssemble("FixedPoint");
+    this->reAssemble("Newton");
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     this->setBoundariesSystem();
 
