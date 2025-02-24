@@ -588,9 +588,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
             }
             W_tpetraMat->fillComplete();
 
-            cout << " ###################### OUTPUT W_tpetraMat ###################### " << endl;
-            W_tpetraMat->describe(*out, Teuchos::VERB_EXTREME);
-
         }
 
         if (fill_W_prec) {
