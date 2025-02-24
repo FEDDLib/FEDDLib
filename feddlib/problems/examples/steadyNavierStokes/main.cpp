@@ -342,11 +342,6 @@ int main(int argc, char *argv[]) {
 
                     navierStokes.setBoundariesRHS();
 
-					navierStokes.getSystem()->getBlock(0,0)->print();
-   					// navierStokes.getSystem()->getBlock(0,1)->print();
-					//navierStokes.getSystem()->getBlock(1,0)->print();
-					//navierStokes.getSystem()->getBlock(1,1)->print();
-
                     std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
                     NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
                     nlSolver.solve( navierStokes );

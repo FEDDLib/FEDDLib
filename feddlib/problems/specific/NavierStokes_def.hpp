@@ -588,6 +588,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
             }
             W_tpetraMat->fillComplete();
 
+            cout << " ###################### OUTPUT W_tpetraMat ###################### " << endl;
             W_tpetraMat->describe(*out, Teuchos::VERB_EXTREME);
 
         }
@@ -874,6 +875,8 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     this->setBoundariesSystem();
+
+    cout << " ###################### system_->getMergedMatrix() ###################### " << endl;
     this->system_->getMergedMatrix()->print();
 
     if (!type.compare("Teko")) { //
