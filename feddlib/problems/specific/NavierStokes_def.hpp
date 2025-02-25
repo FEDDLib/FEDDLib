@@ -346,7 +346,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
             // Pressure Laplace matrix
             MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-            this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 1, Lp, true );//assemblyIdentity(Lp); //
+            this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );//assemblyIdentity(Lp); //
             Ap_.reset(new Matrix_Type(Lp)); // Setting Ap_ as Lp without any BC
         
             // Adding Boundary Conditions
