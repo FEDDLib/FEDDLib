@@ -2393,7 +2393,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplace(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = Helper::determineDegree(dim,FEType,FEType,Grad,Grad);
+    UN deg = Helper::determineDegree(dim,FEType,FEType,Grad,Grad)+degree;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
     SC detB;
@@ -3882,9 +3882,9 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecFieldScalar(int dim,
     UN extraDeg = Helper::determineDegree( dim, FETypeV, Std); //Elementwise assembly of grad u
     UN deg = Helper::determineDegree( dim, FETypeV, FETypeV, Grad, Std, extraDeg); // We use the FEType of the velocity for quadratur degree
 
-    Helper::getDPhi(dPhi, weights, dim, FEType, deg);
-    Helper::getPhi(phi, weights, dim, FEType, deg);
-    Helper::getPhi(phiV, weights, dim, FETypeV, deg);
+    Helper::getDPhi(dPhi, weights, dim, FEType, deg+extraDeg);
+    Helper::getPhi(phi, weights, dim, FEType, deg+extraDeg);
+    Helper::getPhi(phiV, weights, dim, FETypeV, deg+extraDeg);
 
 
     SC detB;

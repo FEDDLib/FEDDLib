@@ -109,8 +109,8 @@ p_rep_()
     this->newtonStep_=0;
 
     
-
-    timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
+    if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> 0)
+        timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
 
     if(this->dim_ ==3){
         // Values we need to estimate RE and CFL in 3D
@@ -307,12 +307,13 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 Mvelocity->resumeFill();
                 Mvelocity->fillComplete();
             }
-            else{ // For whatever reason, when we have a time problem a higher degree for the quadrature improves results
+            else{ // For whatever reason, when we have a stationary problem a higher degree for the quadrature improves results
                 if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> 0 ) // In case we have a timeproblem
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
                 else
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
             }
+            cout << " DT according to list " << this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.) << endl;
             //
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
             if(this->parameterList_->sublist("Parameter").get("BC in LSC Mu",false)){
@@ -825,7 +826,11 @@ void NavierStokes<SC,LO,GO,NO>::computeValuesOfInterestAndExport(){
             this->exporterRe_->updateVariables(exportVector, "RE");
             this->exporterRe_->updateVariables(exportVector2, "CFL");
             
-            this->exporterRe_->save( this->timeSteppingTool_->currentTime() );
+            double exportTime = 0.0;
+            if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> 0)
+                exportTime=this->timeSteppingTool_->currentTime() ;
+
+            this->exporterRe_->save(exportTime );
         
         }
 
