@@ -313,7 +313,6 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 else
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
             }
-            cout << " DT according to list " << this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.) << endl;
             //
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
             if(this->parameterList_->sublist("Parameter").get("BC in LSC Mu",false)){
