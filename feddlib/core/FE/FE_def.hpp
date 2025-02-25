@@ -3882,9 +3882,9 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecFieldScalar(int dim,
     UN extraDeg = Helper::determineDegree( dim, FETypeV, Std); //Elementwise assembly of grad u
     UN deg = Helper::determineDegree( dim, FETypeV, FETypeV, Grad, Std, extraDeg); // We use the FEType of the velocity for quadratur degree
 
-    Helper::getDPhi(dPhi, weights, dim, FEType, deg+extraDeg);
-    Helper::getPhi(phi, weights, dim, FEType, deg+extraDeg);
-    Helper::getPhi(phiV, weights, dim, FETypeV, deg+extraDeg);
+    Helper::getDPhi(dPhi, weights, dim, FEType, deg);
+    Helper::getPhi(phi, weights, dim, FEType, deg);
+    Helper::getPhi(phiV, weights, dim, FETypeV, deg);
 
 
     SC detB;
