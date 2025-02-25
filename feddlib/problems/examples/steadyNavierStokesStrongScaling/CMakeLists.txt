@@ -13,8 +13,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNS
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_steadyNS
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES arterie_with_plaque_initma_media_adventitia_fluid_fine.mesh fsi_benchmark_curved_fluid_5k.mesh
+    SOURCE_FILES arterie_with_plaque_initma_media_adventitia_fluid_fine.mesh fsi_benchmark_curved_fluid_5k.mesh aneurysmBenchmark.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES arterie_with_plaque_initma_media_adventitia_fluid_fine.mesh fsi_benchmark_curved_fluid_5k.mesh
+	DEST_FILES arterie_with_plaque_initma_media_adventitia_fluid_fine.mesh fsi_benchmark_curved_fluid_5k.mesh aneurysmBenchmark.mesh
 	EXEDEPS steadyNavierStokes_scaling
 )

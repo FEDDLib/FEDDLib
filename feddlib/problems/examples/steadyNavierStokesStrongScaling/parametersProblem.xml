@@ -5,6 +5,7 @@
         <Parameter name="Discretization Pressure" type="string" value="P1"/>
         <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
         <Parameter name="BC Type" type="string" value="Compute Inflow"/><!--partialCFD,Richter3DFull-->
+        <Parameter name="Geometry Type" type="string" value="Aneurysm"/><!--partialCFD,Richter3DFull-->
         <Parameter name="Compute Inflow" type="bool" value="true"/>
         <Parameter name="Mesh Name" type="string" value="arterie_with_plaque_initma_media_adventitia_fluid_fine.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh-->
         <Parameter name="Max Ramp Time" type="double" value="0.1"/>

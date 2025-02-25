@@ -74,7 +74,19 @@ void parabolicInflow3DArtery(double* x, double* res, double t, const double* par
 
     return;
 }
+void parabolicInflow3DArteryX(double* x, double* res, double t, const double* parameters)
+{
+    // parameters[0] is the maxium desired velocity
+    // parameters[1] end of ramp
+    // parameters[2] is the maxium solution value of the laplacian parabolic inflow problme
+    // we use x[0] for the laplace solution in the considered point. Therefore, point coordinates are missing
+    res[0] = parameters[0] / parameters[2] * x[0];
+    res[1] = 0.;
+    res[2] = 0.;
 
+
+    return;
+}
 
 void rhsDummy(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
@@ -297,7 +309,7 @@ int main(int argc, char *argv[])
             //domainFluidPressure->setUnstructuredMesh(domainFluidPressure->getMesh());
             //domainFluidPressure->exportMesh(" ");
             //domainFluidVelocity->exportProcessor("Fluid");
-            //domainFluidVelocity->exportNodeFlags("Fluid");
+            domainFluidVelocity->exportNodeFlags("Fluid");
                      
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",1.));
             parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Max Ramp Time",0.1) );
@@ -389,7 +401,11 @@ int main(int argc, char *argv[])
             string rampType = parameterListProblem->sublist("Parameter Fluid").get("Ramp type","cos");
             
             bcFactory->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow ring
-            bcFactory->addBC(parabolicInflow3DArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+            if(geometryType == "Artery")
+                bcFactory->addBC(parabolicInflow3DArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+            else
+                bcFactory->addBC(parabolicInflow3DArteryX, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
+
             bcFactory->addBC(zeroDirichlet3D, 6, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // Wall
             bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // outflow ring
             
