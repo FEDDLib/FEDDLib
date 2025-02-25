@@ -339,7 +339,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
               // Pressure mass matrix
             MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true,2 ); //assemblyIdentity(Mpressure);//
+            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true,0 ); //assemblyIdentity(Mpressure);//
             Mp_= Mpressure;
             this->getPreconditionerConst()->setPressureMass( Mpressure );
             // --------------------------------------------------------------------------------------------
