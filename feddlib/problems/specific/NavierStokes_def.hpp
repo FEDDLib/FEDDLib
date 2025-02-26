@@ -311,7 +311,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> 0 ) // In case we have a timeproblem
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
                 else
-                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
+                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
             }
             //
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
@@ -326,7 +326,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 std::cout << "\nVelocity mass matrix for LSC block preconditioner is assembled and used for the preconditioner." << std::endl;
 
             MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-            this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 0, Lp, true );//assemblyIdentity(Lp); //
+            this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 3, Lp, true );//assemblyIdentity(Lp); //
             //    this->feFactory_->assemblyLaplacePressureDisc( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );//assemblyIdentity(Lp); //
 
             bcBlockMatrix->addBlock(Lp,0,0);
