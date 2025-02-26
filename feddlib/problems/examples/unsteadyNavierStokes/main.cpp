@@ -213,9 +213,7 @@ int main(int argc, char *argv[]) {
     double length = 4.;
     myCLP.setOption("length",&length,"length of domain.");
 
-    ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
-
-    double maxVelocity =  parameterListProblem->sublist("Parameter").get("MaxVelocity",1.5);
+    double maxVelocity = -999;
     myCLP.setOption("maxVelocity",&maxVelocity,"maximum inflow velocity");
 
     myCLP.recogniseAllOptions(true);
@@ -232,6 +230,8 @@ int main(int argc, char *argv[]) {
         ParameterListPtr_Type parameterListPrec = Teuchos::getParametersFromXmlFile(xmlPrecFile);
 
         ParameterListPtr_Type parameterListSolver = Teuchos::getParametersFromXmlFile(xmlSolverFile);
+        
+        ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
 
         ParameterListPtr_Type parameterListPrecTeko = Teuchos::getParametersFromXmlFile(xmlTekoPrecFile);
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
@@ -246,7 +246,9 @@ int main(int argc, char *argv[]) {
         bool computeInflow = parameterListProblem->sublist("Parameter").get("Compute Inflow",false);
         int         n;
 
-
+        if(maxVelocity < -998)
+            parameterListProblem->sublist("Parameter").get("MaxVelocity",2.);   
+            
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
         if (!precMethod.compare("Monolithic"))
             parameterListAll->setParameters(*parameterListPrec);
