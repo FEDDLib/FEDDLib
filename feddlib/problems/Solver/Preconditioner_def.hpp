@@ -805,14 +805,15 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
     Teko::LinearOp thyraF = system->getBlock(0,0)->getThyraLinOp();
     Teko::LinearOp thyraBT = system->getBlock(0,1)->getThyraLinOp();
     Teko::LinearOp thyraB = system->getBlock(1,0)->getThyraLinOp();
-
-    if (!system->blockExists(1,1)){
-        MatrixPtr_Type dummy;
-        dummy.reset( new Matrix_Type( system->getBlock(1,0)->getMap(), 1 ) );
-        dummy->fillComplete();
-        system->addBlock( dummy, 1, 1 );
+    Teko::LinearOp thyraC;
+    if (system->blockExists(1,1)){
+        // MatrixPtr_Type dummy;
+        // dummy.reset( new Matrix_Type( system->getBlock(1,0)->getMap(), 1 ) );
+        // dummy->fillComplete();
+        // system->addBlock( dummy, 1, 1 );
+        thyraC = system->getBlock(1,1)->getThyraLinOp();
     }
-    Teko::LinearOp thyraC = system->getBlock(1,1)->getThyraLinOp();
+    // Teko::LinearOp thyraC = system->getBlock(1,1)->getThyraLinOp();
 
     tekoLinOp_ = Thyra::block2x2(thyraF,thyraBT,thyraB,thyraC);
 
