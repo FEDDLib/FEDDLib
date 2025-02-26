@@ -213,6 +213,11 @@ int main(int argc, char *argv[]) {
     double length = 4.;
     myCLP.setOption("length",&length,"length of domain.");
 
+    ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
+
+    double maxVelocity =  parameterListProblem->sublist("Parameter").get("MaxVelocity",1.5);
+    myCLP.setOption("maxVelocity",&maxVelocity,"maximum inflow velocity");
+
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
     Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = myCLP.parse(argc,argv);
@@ -223,7 +228,6 @@ int main(int argc, char *argv[]) {
     Teuchos::RCP<StackedTimer> stackedTimer = rcp(new StackedTimer("Unsteady Navier-Stokes",true));
     TimeMonitor::setStackedTimer(stackedTimer);
     {
-        ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
 
         ParameterListPtr_Type parameterListPrec = Teuchos::getParametersFromXmlFile(xmlPrecFile);
 
@@ -355,9 +359,12 @@ int main(int argc, char *argv[]) {
 
                 domainPressure->preProcessMesh(true,false);
             }
+            if(verbose)
+                cout << " Maximum Inflow Velocity " << maxVelocity << endl;
+                
             std::vector<double> parameter_vec(1);
             if ( !bcType.compare("parabolic") || !bcType.compare("parabolic_benchmark") || !bcType.compare("parabolic_benchmark_sin") || !bcType.compare("poiseuille") )
-                parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MaxVelocity",1.5);
+                parameter_vec[0] = maxVelocity;
             else if ( !bcType.compare("partialCFD") ) //  Fuer CFD3
                 parameter_vec[0] = parameterListProblem->sublist("Parameter").get("MeanVelocity",2.);
                         
