@@ -472,13 +472,19 @@ int main(int argc, char *argv[]) {
 
                         bcFactory->addBC(zeroDirichlet3D, 4, 0, domainVelocity, "Dirichlet", dim);
 
-                        // if( !pcdBC.compare("Inlet")){
-                        //     if(verbose)
-                        //         cout << " --------- PCD Info: Setting inlet of Laplace and Fp to Dirichlet ----------- " << endl;
-                        //     bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
+                        if( !pcdBC.compare("Inlet")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting inlet of Laplace and Fp to Dirichlet ----------- " << endl;
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
 
-                        //     bcFactoryPressureFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
-                        // }
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 2, 0, domainPressure, "Dirichlet", 1);
+                        }
+                        else if( !pcdBC.compare("WallOutlet")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting outlet and wall of Laplace and Fp to Dirichlet ----------- " << endl;
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 1, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+                        }
                         if( !pcdBC.compare("BC0")){
                             if(verbose)
                                 cout << " --------- PCD Info: Setting outlet of Laplace and Fp to Dirichlet ----------- " << endl;   
