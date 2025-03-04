@@ -823,6 +823,18 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
 
             pListThyraSolver->setParameters( *tekoPList );
 
+            // Pressure Projection for Block Preconditioners
+            if(!pressureProjection_.is_null()){
+                pressureProjection_->merge();
+                pListThyraSolver->sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Pressure").sublist("AlgebraicOverlappingOperator").set("Projection",pressureProjection_->getMergedVector()->getXpetraMultiVectorNonConst());
+                // In case of pressure correction we set the parameter in the paramterlist to true
+                pListThyraSolver->sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Pressure").sublist("AlgebraicOverlappingOperator").set("Use Pressure Correction", true);
+
+                // Local correction on overlapping subdomains
+                pListThyraSolver->sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Pressure").sublist("AlgebraicOverlappingOperator").set("Use Local Pressure Correction", true);
+
+            }
+
             solverBuilder->setParameterList( pListThyraSolver );
             precFactory_ = solverBuilder->createPreconditioningStrategy("");//createPreconditioningStrategy(*solverBuilder); // this might be the issue
 
@@ -887,6 +899,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
                 rh_->addRequestCallback( callbackPCD );
 
             }
+
+            
+
 
             Teuchos::RCP< Teko::StratimikosFactory > tekoFactory = Teuchos::rcp_dynamic_cast<Teko::StratimikosFactory>(precFactory_);
             tekoFactory->setRequestHandler( rh_ );
