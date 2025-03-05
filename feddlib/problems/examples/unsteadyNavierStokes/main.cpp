@@ -247,8 +247,8 @@ int main(int argc, char *argv[]) {
         int         n;
 
         if(maxVelocity < -998)
-            parameterListProblem->sublist("Parameter").get("MaxVelocity",2.);   
-            
+            maxVelocity= parameterListProblem->sublist("Parameter").get("MaxVelocity",2.);   
+
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
         if (!precMethod.compare("Monolithic"))
             parameterListAll->setParameters(*parameterListPrec);
