@@ -395,6 +395,10 @@ int main(int argc, char *argv[]) {
                     if (dim==2){
                         if(!bcType.compare("LDC"))
                             bcFactory->addBC(ldcFunc2D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec);
+                        else if(!bcType.compare("LDC_2")){
+                            bcFactory->addBC(ldcFunc3D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec);
+                            bcFactory->addBC(zeroDirichlet3D, 3, 0, domainVelocity, "Dirichlet", dim);
+                        }
                         else 
                             bcFactory->addBC(inflowParabolic2D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 
