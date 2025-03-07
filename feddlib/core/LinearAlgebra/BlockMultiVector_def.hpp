@@ -257,14 +257,8 @@ template <class SC, class LO, class GO, class NO>
 Teuchos::RCP< Thyra::MultiVectorBase<SC> > BlockMultiVector<SC,LO,GO,NO>::getThyraMultiVector( ) {
     TEUCHOS_TEST_FOR_EXCEPTION( blockMultiVector_.size() == 0, std::logic_error,"BlockMultiVector size is 0.");
     Teuchos::RCP<Thyra::MultiVectorBase<SC> > thyraMV;
-    if (blockMultiVector_.size() == 1){
-        TEUCHOS_TEST_FOR_EXCEPTION( blockMultiVector_[0].is_null(), std::runtime_error, "Block in BlockMultiVector is null.");
-        thyraMV = blockMultiVector_[0]->getThyraMultiVector( );
-    }
-    else {
-        this->merge();
-        thyraMV = mergedMultiVector_->getThyraMultiVector( );
-    }
+    this->merge();
+    thyraMV = mergedMultiVector_->getThyraMultiVector( );
     return thyraMV;
 }
 
@@ -272,14 +266,8 @@ template <class SC, class LO, class GO, class NO>
 Teuchos::RCP<const Thyra::MultiVectorBase<SC> > BlockMultiVector<SC,LO,GO,NO>::getThyraMultiVectorConst( ) {
     TEUCHOS_TEST_FOR_EXCEPTION( blockMultiVector_.size() == 0, std::logic_error,"BlockMultiVector size is 0.");
     Teuchos::RCP<const Thyra::MultiVectorBase<SC> > thyraMV;
-    if (blockMultiVector_.size() == 1){
-        TEUCHOS_TEST_FOR_EXCEPTION( blockMultiVector_[0].is_null(), std::runtime_error, "Block in BlockMultiVector is null.");
-        thyraMV = blockMultiVector_[0]->getThyraMultiVectorConst( );
-    }
-    else{
-        this->merge();
-        thyraMV = mergedMultiVector_->getThyraMultiVector( );
-    }
+    this->merge();
+    thyraMV = mergedMultiVector_->getThyraMultiVector( );
     return thyraMV;
 }
     
