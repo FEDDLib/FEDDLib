@@ -165,6 +165,19 @@ public:
     /// @param displacementRepeated displacement in repeated dist.
     void moveMesh( MultiVectorPtr_Type displacementUnique, MultiVectorPtr_Type displacementRepeated );
     
+    /*!
+            \brief Get SurfaceElement order
+            \return surfaceElementOrder_
+    */
+    int getSurfaceElementOrder() { return surfaceElementOrder_; };
+
+    /*!
+            \brief Get EdgeElement order
+            \return edgesElementOrder_
+    */
+    int getEdgeElementOrder() { return edgesElementOrder_; };
+
+
     // Creates an AABBTree from own vertice- and elementlist.
     void create_AABBTree();
     
@@ -223,8 +236,6 @@ public:
 
     MapPtr_Type mapUniqueP2Map_;
     MapPtr_Type mapRepeatedP2Map_;
-    
-    ParameterListPtr_Type pList_;
 
     int elementOrder_;
     int surfaceElementOrder_;

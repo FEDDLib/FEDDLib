@@ -101,16 +101,6 @@ void Mesh<SC,LO,GO,NO>::setElementFlags(std::string type){
     }
 
 }
-
-template <class SC, class LO, class GO, class NO>
-void Mesh<SC,LO,GO,NO>::setParameterList( ParameterListPtr_Type& pL ) {
-    pList_ = pL;
-}
-
-template <class SC, class LO, class GO, class NO>
-ParameterListConstPtr_Type Mesh<SC,LO,GO,NO>::getParameterList( ) const{
-    return pList_;
-}
     
 template <class SC, class LO, class GO, class NO>
 vec_int_ptr_Type Mesh<SC,LO,GO,NO>::getElementsFlag() const{
