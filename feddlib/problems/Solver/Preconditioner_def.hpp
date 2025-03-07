@@ -228,17 +228,15 @@ void Preconditioner<SC,LO,GO,NO>::initPreconditionerBlock( )
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::buildPreconditioner( std::string type )
 {
-
-#ifdef PRECONDITIONER_TIMER
+// #ifdef PRECONDITIONER_TIMER
     CommConstPtr_Type comm;
     if (!problem_.is_null())
         comm = problem_->getComm();
     else if(!timeProblem_.is_null())
         comm = timeProblem_->getComm();
-    comm->barrier();
+    // comm->barrier();
     Teuchos::TimeMonitor preconditionerTimeMonitor(*preconditionerTimer_);
-#endif
-
+// #endif
     if (!type.compare("Monolithic")){
         buildPreconditionerMonolithic( );
     }
@@ -252,7 +250,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditioner( std::string type )
     else if( type == "FaCSI" || type == "FaCSI-Teko" ){
         buildPreconditionerFaCSI( type );
     }
-    else if(type == "Triangular" || type == "Diagonal" || type == "PCD" ){
+    else if(!type.compare("Triangular") || !type.compare("Diagonal")  || !type.compare("PCD")){
         buildPreconditionerBlock2x2( );
     }
     else
@@ -883,6 +881,11 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
 
             }
             else if(!tekoPList->sublist("Preconditioner Types").sublist("Teko").get("Inverse Type", "SIMPLE").compare("PCD")){
+                // Velocity Mass Matrix
+                Teko::LinearOp thyraMass = velocityMassMatrix_;
+                Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackMass = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "Velocity Mass Matrix", thyraMass ) );
+                rh_->addRequestCallback( callbackMass );
+
                 // Pressure Laplace
                 Teko::LinearOp thyraLaplace = pressureLaplace_;
                 Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackLaplace = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "Pressure Laplace Operator", thyraLaplace ) );
@@ -945,7 +948,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             //rh->addRequestCallback( callbackPCD );
 
             // Changing the content of the pointer
-            rh_->updateRequestCallback(callbackPCD,2); // We need to update the pcd operator in the call back pointer. Otherwise it will no reach the correct functions in pcd
+            rh_->updateRequestCallback(callbackPCD,3); // We need to update the pcd operator in the call back pointer. Otherwise it will no reach the correct functions in pcd
 
         }
         //thyraPrec_ = precFactory_->createPrec();
@@ -1176,7 +1179,7 @@ void Preconditioner<SC,LO,GO,NO>::setPressureProjection(BlockMultiVectorPtr_Type
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
 {
-   
+    cout << " Build preconditioner 2 x 2 " << endl;
     typedef Domain<SC,LO,GO,NO> Domain_Type;
     typedef Teuchos::RCP<const Domain_Type> DomainConstPtr_Type;
     typedef std::vector<DomainConstPtr_Type> DomainConstPtr_vec_Type;

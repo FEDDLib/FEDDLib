@@ -425,6 +425,25 @@ int main(int argc, char *argv[]) {
                             bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
 
                         }
+                        if( !pcdBC.compare("Inlet")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting inlet of Laplace and Fp to Dirichlet ----------- " << endl;
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet2D, 2, 0, domainPressure, "Dirichlet", 1);
+
+                            bcFactoryPressureFp->addBC(zeroDirichlet2D, 2, 0, domainPressure, "Dirichlet", 1);
+                        }
+                        else if( !pcdBC.compare("WallOutlet")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting outlet and wall of Laplace to Dirichlet ----------- " << endl;
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet2D, 1, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet2D, 3, 0, domainPressure, "Dirichlet", 1);
+                        }
+                        else if( !pcdBC.compare("WallInlet")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting intlet and wall of Laplace to Dirichlet ----------- " << endl;
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet2D, 1, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet2D, 2, 0, domainPressure, "Dirichlet", 1);
+                        }
                         // else if( !pcdBC.compare("OutletWall2")){
                         //     if(verbose)
                         //         cout << " --------- PCD Info: Setting outlet and wall of Laplace and Fp to Dirichlet ----------- " << endl;
@@ -636,7 +655,7 @@ int main(int argc, char *argv[]) {
                     nlSolver.solve( navierStokes );
                     comm->barrier();
 
-                    navierStokes.computeValuesOfInterestAndExport();
+                    //navierStokes.computeValuesOfInterestAndExport();
 
                 }
     //            if (saveVector>0) {

@@ -302,6 +302,9 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             MatrixPtr_Type Mvelocity(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
             //
             if(this->parameterList_->sublist("Parameter").get("BFBT",false)){
+                if(this->verbose_)
+                    std::cout << "\n Setting M_u to be the identity Matrix to use BFBT preconditioner " << std::endl;
+
                 this->feFactory_->assemblyIdentity( Mvelocity, true );
                 Mvelocity->resumeFill();
                 Mvelocity->fillComplete();
@@ -310,13 +313,14 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> 0 ) // In case we have a timeproblem
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
                 else
-                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
+                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
             }
+        
             //
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
             if(this->parameterList_->sublist("Parameter").get("BC in LSC Mu",false)){
                 bcBlockMatrix->addBlock(Mvelocity,0,0);
-                this->bcFactory_->setSystem(bcBlockMatrix); // setSystemScaled(bcBlockMatrix); 
+                this->bcFactory_->setSystemScaled(bcBlockMatrix); // setSystemScaled(bcBlockMatrix); 
             }
             //
             this->getPreconditionerConst()->setVelocityMassMatrix( Mvelocity );
@@ -325,7 +329,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 std::cout << "\nVelocity mass matrix for LSC block preconditioner is assembled and used for the preconditioner." << std::endl;
 
             MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-            this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 3, Lp, true );//assemblyIdentity(Lp); //
+            this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 0, Lp, true );//assemblyIdentity(Lp); //
             //    this->feFactory_->assemblyLaplacePressureDisc( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );//assemblyIdentity(Lp); //
 
             bcBlockMatrix->addBlock(Lp,0,0);
@@ -335,6 +339,12 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         
         if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
         || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD") ){
+            
+            // Velocity mass matrix
+            MatrixPtr_Type Mvelocity(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
+            this->getPreconditionerConst()->setVelocityMassMatrix( Mvelocity );
+
 
               // Pressure mass matrix
             MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
@@ -415,7 +425,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true );
         SC kinVisco = this->parameterList_->sublist("Parameter").get("Viscosity",1.);
         Mpressure->scale(-1./kinVisco);
-        this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
+        this->getPreconditionerConst()->setPressureMassMatrix( Mpressure ); // FOR PCD THIS IS DUMMY
     }
     
     
@@ -861,7 +871,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::I
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     if ( !type.compare("Monolithic"))
         evalModelImplMonolithic( inArgs, outArgs );
-    else if ( !type.compare("Teko")){
+    else if ( !type.compare("Teko") || !type.compare("Diagonal") || !type.compare("PCD")){
 #ifdef FEDD_HAVE_TEKO
         evalModelImplBlock( inArgs, outArgs );
 #else
@@ -1103,11 +1113,13 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
         }
 
         if (fill_W_prec) {
+            std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
+
             if (stokesTekoPrecUsed_){
                 int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
                 if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
                 {
-                    this->setupPreconditioner( "Teko" );
+                    this->setupPreconditioner( type );
                 }
                 else{
                     if (this->verbose_)
@@ -1214,7 +1226,7 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op() 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     if ( !type.compare("Monolithic"))
         return create_W_op_Monolithic( );
-    else if ( !type.compare("Teko")){
+    else if ( !type.compare("Teko") || !type.compare("Diagonal") || !type.compare("PCD")  ){
 #ifdef FEDD_HAVE_TEKO
         return create_W_op_Block( );
 #else
@@ -1252,6 +1264,15 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op_Bl
 
     Teuchos::RCP<const Thyra::LinearOpBase<SC> > W_opConst = Thyra::block2x2(thyraF,thyraBT,thyraB,thyraC);
     Teuchos::RCP<Thyra::LinearOpBase<SC> > W_op = Teuchos::rcp_const_cast<Thyra::LinearOpBase<SC> >(W_opConst);
+    
+    // BlockMatrixPtr_Type system = this->getSystem();
+    
+    // Teuchos::RCP<const ThyraBlockOp_Type> W_opBlocksConst = system->getThyraLinBlockOp();
+    // Teuchos::RCP<ThyraBlockOp_Type> W_opBlocks = Teuchos::rcp_const_cast<ThyraBlockOp_Type >(W_opBlocksConst);
+    // Teuchos::RCP<ThyraOp_Type> W_op = Teuchos::rcp_dynamic_cast<ThyraOp_Type >(W_opBlocks);
+
+
+
     return W_op;
 }
 #endif
