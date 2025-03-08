@@ -8003,6 +8003,7 @@ void FE<SC,LO,GO,NO>::assemblyWeightedMatrix( int dim,
     {
 
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
+    TEUCHOS_TEST_FOR_EXCEPTION(FEType == "Q2" || FEType =="Q1",std::logic_error, "Not implemented for Q");
 
     TEUCHOS_TEST_FOR_EXCEPTION( a.is_null(), std::runtime_error, "Multivector is null." );
 
@@ -8026,7 +8027,7 @@ void FE<SC,LO,GO,NO>::assemblyWeightedMatrix( int dim,
 
         vec_LO_Type nodesBoundary(0);
 		
-        for(int i=0; i< nodes.size(); i++)
+        for(int i=0; i< dim+1; i++)
             if((*bcFlags)[nodes[i]] != volumeFlag)
                 nodesBoundary.push_back(nodes[i]);
 
@@ -8035,14 +8036,14 @@ void FE<SC,LO,GO,NO>::assemblyWeightedMatrix( int dim,
             double norm_v_E = 1.;
 
             vec_int_Type surface = vec_int_Type(nodesBoundary.begin() , nodesBoundary.begin()+ dim);
-            //cout << " Compute normal for ID " << surface[0] << ": (" << (*pointsRep)[surface[0]][0] << " " << (*pointsRep)[surface[1]][1]  << ") and ID " << surface[1] << ": (" << (*pointsRep)[surface[1]][0] << " " << (*pointsRep)[surface[1]][1] << ") " << endl;
+            // cout << " Compute normal for ID " << surface[0] << ": (" << (*pointsRep)[surface[0]][0] << " " << (*pointsRep)[surface[1]][1]  << ") and ID " << surface[1] << ": (" << (*pointsRep)[surface[1]][0] << " " << (*pointsRep)[surface[1]][1] << ") " << endl;
             Helper::computeSurfaceNormal(dim, pointsRep,surface,v_E,norm_v_E); // Surface normal of surface element
 
             // dimension x , y , z 
             for(int d =0 ; d<dim; d++){
                 double norm = fabs((1./norm_v_E) * v_E[d]);
                 double maxValue = std::max(norm,eps);
-                //cout << " Max Value " << maxValue << " norm ve " << norm << " eps " << eps << " ve " << v_E[0] << " " << v_E[1] <<  endl;
+                // cout << " Max Value " << maxValue << " norm v_E " << norm_v_E << " eps " << eps << " ve " << v_E[0] << " " << v_E[1] <<  endl;
                 for(int j = 0; j< nodesBoundary.size(); j++){     
                     values_a[nodesBoundary[j]*d + d] = maxValue;
                 }
@@ -8054,7 +8055,7 @@ void FE<SC,LO,GO,NO>::assemblyWeightedMatrix( int dim,
     a->putScalar(0.);
     a->exportFromVector( a_rep, true, "Insert" ); 
 
-    //a->print(); 
+    // a->print(); 
 }
 
 /// @brief Assembling projection matrix P = I_p - a^T (a a^T)^-1 a. This hopefully will be passed to FROSch through parameter list. We use a simplified version, where a is NOT \int p \Omega, but just const==1

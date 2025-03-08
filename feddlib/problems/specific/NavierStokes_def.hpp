@@ -326,7 +326,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             this->getPreconditionerConst()->setVelocityMassMatrix( Mvelocity );
 
            if (this->verbose_)
-                std::cout << "\nVelocity mass matrix for LSC block preconditioner is assembled and used for the preconditioner." << std::endl;
+                std::cout << "\n Velocity mass matrix for LSC block preconditioner is assembled and used for the preconditioner." << std::endl;
 
             MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
             this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 0, Lp, true );//assemblyIdentity(Lp); //
@@ -337,10 +337,18 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp );
 
             // Weighting Vector for Scaling Matrix H
-            MultiVectorPtr_Type W(new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
-            double epsilon = this->parameterList_->sublist("Parameter").get("Scaling W Matrix",0.1);
-            this->feFactory_->assemblyWeightedMatrix( this->dim_,this->getFEType(0), epsilon,0 ,W) ;
-            this->getPreconditionerConst()->setWScaling( W );
+            if(this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("LSC").sublist("Strategy Settings").get("Use W-Scaling",false)||
+            this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("LSC").get("Use W-Scaling",false))
+            {
+                MultiVectorPtr_Type W(new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
+                double epsilon = this->parameterList_->sublist("Parameter").get("Scaling W Matrix",0.1);
+                this->feFactory_->assemblyWeightedMatrix( this->dim_,this->getFEType(0), epsilon,0 ,W) ;
+                this->getPreconditionerConst()->setWScaling( W );
+
+                if (this->verbose_)
+                    std::cout << "\n Computed W-Scaling Vector for LSC and added to preconditioner." << std::endl;
+
+            }
 
         } 
         
