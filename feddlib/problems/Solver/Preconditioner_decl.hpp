@@ -149,6 +149,10 @@ public:
 
     void setPressureProjection(BlockMultiVectorPtr_Type pressureProjection) const;
 
+    void setWScaling(MultiVectorPtr_Type wScaling) const { wScaling_ = wScaling;};
+
+    MultiVectorPtr_Type getWScaling() const { return wScaling_;};
+
     BlockMultiVectorPtr_Type getPressureProjection(){return pressureProjection_;};
 
 
@@ -196,6 +200,9 @@ private:
     mutable MatrixPtr_Type pressureMassMatrix_;
 
     mutable BlockMultiVectorPtr_Type pressureProjection_;
+
+    mutable MultiVectorPtr_Type wScaling_;
+
 
     ParameterListPtr_Type pListPhiExport_;
 #define PRECONDITIONER_TIMER

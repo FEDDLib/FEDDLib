@@ -7987,6 +7987,76 @@ void FE<SC,LO,GO,NO>::assemblyPressureMeanValue( int dim,
     a->exportFromVector( a_rep, true, "Add" );  
 }
 
+
+/// @brief Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value. 
+/// @param dim Dimension
+/// @param FEType FEType
+/// @param eps weight for boundary node
+/// @param volumeFlag flag of inner elements
+/// @param a Multivector Ptr with resulting assembly
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyWeightedMatrix( int dim,
+                                   std::string FEType,
+                                   double eps, 
+                                   int volumeFlag,
+                                   MultiVectorPtr_Type  a)
+    {
+
+    TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
+
+    TEUCHOS_TEST_FOR_EXCEPTION( a.is_null(), std::runtime_error, "Multivector is null." );
+
+    UN FEloc;
+    FEloc = checkFE(dim,FEType);
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+  
+    // Repeated version we assemble
+    MultiVectorPtr_Type a_rep = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FEloc)->getMapVecFieldRepeated(), 1 ) );
+    a_rep->putScalar(1.); // Default value is 1
+	Teuchos::ArrayRCP< SC > values_a = a_rep->getDataNonConst(0);
+
+    vec_int_ptr_Type bcFlags = domainVec_.at(FEloc)->getBCFlagRepeated();
+
+    for (UN T=0; T<elements->numberElements(); T++) {
+
+        vec_LO_Type nodes = elements->getElement(T).getVectorNodeList();
+
+        vec_LO_Type nodesBoundary(0);
+		
+        for(int i=0; i< nodes.size(); i++)
+            if((*bcFlags)[nodes[i]] != volumeFlag)
+                nodesBoundary.push_back(nodes[i]);
+
+        if(nodesBoundary.size()>dim-1){
+            vec_dbl_Type v_E(dim,1.);
+            double norm_v_E = 1.;
+
+            vec_int_Type surface = vec_int_Type(nodesBoundary.begin() , nodesBoundary.begin()+ dim);
+            //cout << " Compute normal for ID " << surface[0] << ": (" << (*pointsRep)[surface[0]][0] << " " << (*pointsRep)[surface[1]][1]  << ") and ID " << surface[1] << ": (" << (*pointsRep)[surface[1]][0] << " " << (*pointsRep)[surface[1]][1] << ") " << endl;
+            Helper::computeSurfaceNormal(dim, pointsRep,surface,v_E,norm_v_E); // Surface normal of surface element
+
+            // dimension x , y , z 
+            for(int d =0 ; d<dim; d++){
+                double norm = fabs((1./norm_v_E) * v_E[d]);
+                double maxValue = std::max(norm,eps);
+                //cout << " Max Value " << maxValue << " norm ve " << norm << " eps " << eps << " ve " << v_E[0] << " " << v_E[1] <<  endl;
+                for(int j = 0; j< nodesBoundary.size(); j++){     
+                    values_a[nodesBoundary[j]*d + d] = maxValue;
+                }
+            }
+        }
+    }
+
+    // Adding it together in the unique vector
+    a->putScalar(0.);
+    a->exportFromVector( a_rep, true, "Insert" ); 
+
+    //a->print(); 
+}
+
 /// @brief Assembling projection matrix P = I_p - a^T (a a^T)^-1 a. This hopefully will be passed to FROSch through parameter list. We use a simplified version, where a is NOT \int p \Omega, but just const==1
 /// @param dim Dimension
 /// @param FEType FEType

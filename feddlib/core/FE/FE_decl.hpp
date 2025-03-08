@@ -499,6 +499,8 @@ class FE {
     /// @param a Resultin matrix with one column
     void assemblyProjectionMatrix(int dim, std::string FEType, MatrixPtr_Type P);
 
+    void assemblyWeightedMatrix(int dim, std::string FEType, double eps, int volumeFlag, MultiVectorPtr_Type a);
+
     void assemblyRHS(int dim,
                      std::string FEType,
                      MultiVectorPtr_Type  a,

@@ -90,7 +90,13 @@ precFactory_()
         setPressureProjection(problem->getUnderlyingProblem()->preconditioner_->getPressureProjection());
     }
     
+
+
     #ifdef FEDD_HAVE_TEKO
+
+    if(!problem->getUnderlyingProblem()->preconditioner_->getWScaling().is_null()){
+        setWScaling(problem->getUnderlyingProblem()->preconditioner_->getWScaling());
+    }
 
     if(!problem->getUnderlyingProblem()->preconditioner_->getVelocityMassMatrix().is_null()){
         setVelocityMassMatrix(problem->getUnderlyingProblem()->preconditioner_->getVelocityMassMatrix());
@@ -832,7 +838,12 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
                 pListThyraSolver->sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Pressure").sublist("AlgebraicOverlappingOperator").set("Use Local Pressure Correction", true);
 
             }
+            if(!wScaling_.is_null()){
+                //typedef Teuchos::RCP<Thyra::MultiVectorBase<double> > MultiVector;
+                pListThyraSolver->sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("LSC").sublist("Strategy Settings").set("W-Scaling Vector",wScaling_->getThyraMultiVector());
+                
 
+            }    
             solverBuilder->setParameterList( pListThyraSolver );
             precFactory_ = solverBuilder->createPreconditioningStrategy("");//createPreconditioningStrategy(*solverBuilder); // this might be the issue
 

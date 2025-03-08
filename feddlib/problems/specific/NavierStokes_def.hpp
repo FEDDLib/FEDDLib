@@ -335,6 +335,13 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             bcBlockMatrix->addBlock(Lp,0,0);
             this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix); 
             this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp );
+
+            // Weighting Vector for Scaling Matrix H
+            MultiVectorPtr_Type W(new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
+            double epsilon = this->parameterList_->sublist("Parameter").get("Scaling W Matrix",0.1);
+            this->feFactory_->assemblyWeightedMatrix( this->dim_,this->getFEType(0), epsilon,0 ,W) ;
+            this->getPreconditionerConst()->setWScaling( W );
+
         } 
         
         if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
