@@ -1341,7 +1341,6 @@ void MeshUnstructured<SC,LO,GO,NO>::readMeshSize(){
     this->elementOrder_ = orderElement;
     this->surfaceElementOrder_ = orderSurface;
     this->edgesElementOrder_ = orderEdges;
-    this->numElements_ = numElement;
     this->numSurfaces_ = numSurface;
     this->numEdges_ = numEdges;
     this->numNodes_ = numNode;
@@ -1469,11 +1468,11 @@ void MeshUnstructured<SC,LO,GO,NO>::readElements(){
     if (verbose)
         std::cout << "### Starting to read element data ... " << std::flush;
 
-    vec_int_Type    elementFlags( numElements_, 0 );
-    vec_int_Type    elementsCont( numElements_* elementOrder_, 0 );
+    vec_int_Type    elementFlags( this->numElementsGlob_, 0 );
+    vec_int_Type    elementsCont( this->numElementsGlob_* this->elementOrder_, 0 );
         
     // We need the edges of surface elements to use special surface flags, which are only set on 1D line segments. We need to save these edges to determine the correct flag of P2 elements which might be build later
-    meshReadData ( meshFileName_, "element", delimiter_, this->getDimension(), numElements_, elementOrder_, elementsCont, elementFlags );
+    meshReadData ( meshFileName_, "element", delimiter_, this->getDimension(), this->numElementsGlob_, this->elementOrder_, elementsCont, elementFlags );
 
     if (verbose){
         std::cout << "done." << std::endl;
@@ -1485,10 +1484,10 @@ void MeshUnstructured<SC,LO,GO,NO>::readElements(){
     
 	
     int id;
-    for (int i=0; i<numElements_; i++) {
-        vec_int_Type tmp(elementOrder_);
-        for (int j=0; j<elementOrder_; j++){
-            id = elementsCont.at(i*elementOrder_ + j) - 1;
+    for (int i=0; i<this->numElementsGlob_; i++) {
+        vec_int_Type tmp(this->elementOrder_);
+        for (int j=0; j<this->elementOrder_; j++){
+            id = elementsCont.at(i*this->elementOrder_ + j) - 1;
             tmp.at(j) = id;
         }
         FiniteElement fe( tmp , elementFlags[i] );
@@ -1507,10 +1506,10 @@ void MeshUnstructured<SC,LO,GO,NO>::readSurfaces(){
         std::cout << "### Starting to read surface data ... " << std::flush;
     
     vec_int_Type    surfaceFlags( numSurfaces_, 0 );
-    vec_int_Type    surfacesCont( numSurfaces_* surfaceElementOrder_, 0 );
+    vec_int_Type    surfacesCont( numSurfaces_* this->surfaceElementOrder_, 0 );
         
     // We need the edges of surface elements to use special surface flags, which are only set on 1D line segments. We need to save these edges to determine the correct flag of P2 elements which might be build later
-    meshReadData ( meshFileName_, "surface", delimiter_, this->getDimension(), numSurfaces_, surfaceElementOrder_, surfacesCont, surfaceFlags );
+    meshReadData ( meshFileName_, "surface", delimiter_, this->getDimension(), numSurfaces_, this->surfaceElementOrder_, surfacesCont, surfaceFlags );
         
     if (verbose){
         std::cout << "done." << std::endl;
@@ -1519,9 +1518,9 @@ void MeshUnstructured<SC,LO,GO,NO>::readSurfaces(){
     ElementsPtr_Type surfaceElementsMesh = this->getSurfaceElements();
     
     for (int i=0; i<numSurfaces_; i++) {
-        vec_int_Type tmp(surfaceElementOrder_);
-        for (int j=0; j<surfaceElementOrder_; j++)
-            tmp.at(j) = surfacesCont.at( i * surfaceElementOrder_ + j ) - 1;// -1 to have start index 0
+        vec_int_Type tmp(this->surfaceElementOrder_);
+        for (int j=0; j<this->surfaceElementOrder_; j++)
+            tmp.at(j) = surfacesCont.at( i * this->surfaceElementOrder_ + j ) - 1;// -1 to have start index 0
         
         //cout << " Reading surfaces " << tmp[0] << " " << tmp[1] << " " << tmp[2] << std::endl;
         //sort( tmp.begin(), tmp.end() ); // we sort here in order to identify the corresponding element faster! !!! We refrain from that so the numbering of surface element nodes remains the consisten with respct to normals.
@@ -1542,10 +1541,10 @@ void MeshUnstructured<SC,LO,GO,NO>::readLines(){
         std::cout << "### Starting to read line data ... " << std::flush;
 
     vec_int_Type    edgeFlags( numEdges_, 0 );
-    vec_int_Type    edgesCont( numEdges_* edgesElementOrder_, 0 );
+    vec_int_Type    edgesCont( numEdges_* this->edgesElementOrder_, 0 );
         
     // We need the edges of surface elements to use special surface flags, which are only set on 1D line segments. We need to save these edges to determine the correct flag of P2 elements which might be build later
-    meshReadData ( meshFileName_, "line", delimiter_, this->getDimension(), numEdges_, edgesElementOrder_, edgesCont, edgeFlags );
+    meshReadData ( meshFileName_, "line", delimiter_, this->getDimension(), numEdges_, this->edgesElementOrder_, edgesCont, edgeFlags );
 
     
     if (verbose){
@@ -1557,9 +1556,9 @@ void MeshUnstructured<SC,LO,GO,NO>::readLines(){
     
     //Continous edge surface elements to FiniteElement object (only relevant in 3D)
     for (int i=0; i<numEdges_; i++) {
-        vec_int_Type tmp(edgesElementOrder_);
-        for (int j=0; j<edgesElementOrder_; j++)
-            tmp.at(j) = edgesCont.at( i * edgesElementOrder_ + j ) - 1;// -1 to have start index 0
+        vec_int_Type tmp(this->edgesElementOrder_);
+        for (int j=0; j<this->edgesElementOrder_; j++)
+            tmp.at(j) = edgesCont.at( i * this->edgesElementOrder_ + j ) - 1;// -1 to have start index 0
         
         sort( tmp.begin(), tmp.end() ); // we sort here in order to identify the corresponding element faster!
         FiniteElement feEdge( tmp , edgeFlags[i] );

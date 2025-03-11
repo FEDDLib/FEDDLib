@@ -149,13 +149,6 @@ public:
     */
     LO getApproxEntriesPerRow() const;
 
-	/*!
-         \brief Set mesh parameter list
-         @param[in] pl Parameterlist
-
-    */
-    void setMeshParameterList( ParameterListPtr_Type& pl );
-    
     /*!
          \brief Get dimension
          \return dimension

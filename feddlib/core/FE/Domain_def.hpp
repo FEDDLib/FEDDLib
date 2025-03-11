@@ -166,12 +166,6 @@ void Domain<SC,LO,GO,NO>::initializeFEData(){
 
     this->getElementsC()->initializeFEData( this->getPointsRepeated() );
 }
-
-template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::setMeshParameterList( ParameterListPtr_Type& pl ){
-    TEUCHOS_TEST_FOR_EXCEPTION( mesh_.is_null(), std::runtime_error, "Mesh is null." );
-    mesh_->setParameterList( pl );
-}
     
 template <class SC, class LO, class GO, class NO>
 vec_int_ptr_Type Domain<SC,LO,GO,NO>::getElementsFlag() const{
