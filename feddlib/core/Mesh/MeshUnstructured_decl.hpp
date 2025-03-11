@@ -208,18 +208,6 @@ public:
     void setMeshFileName(string meshFileName, string delimiter);
     
 	/*! 
-		\brief Get SurfaceElement order
-		\return surfaceElementOrder_
-	*/
-    int getSurfaceElementOrder(){return surfaceElementOrder_;};
-    
-	/*! 
-		\brief Get EdgeElement order
-		\return edgesElementOrder_
-	*/
-    int getEdgeElementOrder(){return edgesElementOrder_;};
-    
-	/*! 
 		\brief Get global number of nodes
 		\return numNodes_
 	*/
