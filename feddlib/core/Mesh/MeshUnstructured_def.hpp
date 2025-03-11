@@ -238,7 +238,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     Teuchos::RCP<std::vector<GO> > pointsRepGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDs ) );
     Teuchos::ArrayView<GO> pointsRepGlobMappingArray = Teuchos::arrayViewFromVector( *pointsRepGlobMapping );
     
-    this->mapRepeated_.reset(new Map<LO,GO,NO>( meshP1->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
     
     if (verbose)
         std::cout << "done --" << std::endl;
@@ -1003,7 +1003,7 @@ void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
 		Teuchos::ArrayView<GO> edgeSwitchArray = Teuchos::arrayViewFromVector( edgeSwitch);
 
 		MapPtr_Type mapGlobalInterface =
-			Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgeSwitchArray, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type(  Teuchos::OrdinalTraits<GO>::invalid(), edgeSwitchArray, 0, this->comm_) );
 
 		// Global IDs of Procs
 		// Setting newPoints as to be communicated Values
@@ -1065,10 +1065,10 @@ void MeshUnstructured<SC,LO,GO,NO>::assignEdgeFlags(){
 	Teuchos::ArrayView<GO> edgesActiveArray = Teuchos::arrayViewFromVector( edgesActive);
 	
 	MapPtr_Type mapEdgesNeeded =
-		Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesNeededArray, 0, this->comm_) );
+		Teuchos::rcp( new Map_Type(  Teuchos::OrdinalTraits<GO>::invalid(), edgesNeededArray, 0, this->comm_) );
 
 	MapPtr_Type mapEdgesActive =
-		Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesActiveArray, 0, this->comm_) );
+		Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), edgesActiveArray, 0, this->comm_) );
 
 	MultiVectorLOPtr_Type flagsImport = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesNeeded, 1 ) );
 	flagsImport->putScalar(this->volumeID_);
@@ -1110,10 +1110,10 @@ void MeshUnstructured<SC,LO,GO,NO>::buildEdgeMap(){
 		Teuchos::ArrayView<GO> localProcArray = Teuchos::arrayViewFromVector( localProc);
 
 		MapPtr_Type mapGlobalProc =
-			Teuchos::rcp( new Map_Type( this->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type(  Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
 
 		MapPtr_Type mapProc =
-			Teuchos::rcp( new Map_Type( this->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
 		
 
 		vec2D_int_Type interfaceEdgesLocalId(1,vec_int_Type(1));
@@ -1295,7 +1295,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildEdgeMap(){
 		Teuchos::RCP<std::vector<GO>> edgesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsEdges ) );
 		Teuchos::ArrayView<GO> edgesGlobMappingArray = Teuchos::arrayViewFromVector( *edgesGlobMapping);
 
-		this->edgeMap_.reset(new Map<LO,GO,NO>(this->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
+		this->edgeMap_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
 		//this->edgeMap_->print();
 }
 
@@ -1599,7 +1599,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
 	Teuchos::ArrayView<GO> globalNodesArrayImp = Teuchos::arrayViewFromVector( globalImportIDsNodes);
     // Map of global IDs with missing Elements
 	MapPtr_Type mapNodesImport =
-		Teuchos::rcp( new Map_Type( this->mapUnique_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalNodesArrayImp, 0, this->getComm()) );
+		Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), globalNodesArrayImp, 0, this->getComm()) );
 
     MultiVectorPtr_Type nodesImp = Teuchos::rcp( new MultiVector_Type( mapNodesImport, 1 ) );	
 	Teuchos::ArrayRCP< SC > entriesNodesImp  = nodesImp->getDataNonConst(0);
@@ -1724,10 +1724,10 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
             Teuchos::ArrayView<GO> localProcArray = Teuchos::arrayViewFromVector( localProc);
 
             MapPtr_Type mapGlobalProc =
-                Teuchos::rcp( new Map_Type( this->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
+                Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
 
             MapPtr_Type mapProc =
-                Teuchos::rcp( new Map_Type( this->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
+                Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
             
             MultiVectorLOPtr_Type exportLocalEntry = Teuchos::rcp( new MultiVectorLO_Type( mapProc, 1 ) );
             exportLocalEntry->putScalar( (LO) numSubEl );
@@ -1753,7 +1753,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
             Teuchos::RCP<std::vector<GO> > edgesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsElements ) );
             Teuchos::ArrayView<GO> edgesGlobMappingArray = Teuchos::arrayViewFromVector( *edgesGlobMapping);
             MapPtr_Type mapEdgesExport =
-                Teuchos::rcp( new Map_Type( this->mapUnique_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->getComm()) );
+                Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->getComm()) );
 
             vec_GO_Type vecGlobalIDsEdgesImport(0);
             int maxIndex = mapEdgesExport->getMaxAllGlobalIndex();
@@ -1764,7 +1764,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
             Teuchos::RCP<std::vector<GO> > edgesGlobMappingImport = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsEdgesImport ) );
             Teuchos::ArrayView<GO> edgesGlobMappingImportArray = Teuchos::arrayViewFromVector( *edgesGlobMappingImport);
             MapPtr_Type mapEdgesImport =
-                Teuchos::rcp( new Map_Type( this->mapUnique_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingImportArray, 0, this->getComm()) );
+                Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingImportArray, 0, this->getComm()) );
 
             int numberEdges = maxIndex+1;
 
@@ -1863,7 +1863,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
             Teuchos::ArrayView<GO> globalEdgesArrayImp = Teuchos::arrayViewFromVector( globalImportIDsEdges);
             // Map of global IDs with missing Elements
             MapPtr_Type mapEdgesImport =
-                Teuchos::rcp( new Map_Type( this->mapUnique_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesArrayImp, 0, this->getComm()) );
+                Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesArrayImp, 0, this->getComm()) );
 
             MultiVectorPtr_Type edgesImp = Teuchos::rcp( new MultiVector_Type( mapEdgesImport, 1 ) );	
             Teuchos::ArrayRCP< SC > entriesEdgesImp  = edgesImp->getDataNonConst(0);
@@ -2021,10 +2021,10 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
             Teuchos::ArrayView<GO> localProcArray = Teuchos::arrayViewFromVector( localProc);
 
             MapPtr_Type mapGlobalProc =
-                Teuchos::rcp( new Map_Type( this->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
+                Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
 
             MapPtr_Type mapProc =
-                Teuchos::rcp( new Map_Type( this->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
+                Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
             
             MultiVectorLOPtr_Type exportLocalEntry = Teuchos::rcp( new MultiVectorLO_Type( mapProc, 1 ) );
             exportLocalEntry->putScalar( (LO) numSubEl );
@@ -2048,7 +2048,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
             Teuchos::RCP<std::vector<GO> > surfacesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsElements ) );
             Teuchos::ArrayView<GO> surfacesGlobMappingArray = Teuchos::arrayViewFromVector( *surfacesGlobMapping);
             MapPtr_Type mapSurfacesExport =
-                Teuchos::rcp( new Map_Type( this->mapUnique_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingArray, 0, this->getComm()) );
+                Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingArray, 0, this->getComm()) );
 
 
             vec_GO_Type vecGlobalIDsSurfacesImport(0);
@@ -2060,7 +2060,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
             Teuchos::RCP<std::vector<GO> > surfacesGlobMappingImport = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsSurfacesImport ) );
             Teuchos::ArrayView<GO> surfacesGlobMappingImportArray = Teuchos::arrayViewFromVector( *surfacesGlobMappingImport);
             MapPtr_Type mapSurfacesImport =
-                Teuchos::rcp( new Map_Type( this->mapUnique_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingImportArray, 0, this->getComm()) );
+                Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingImportArray, 0, this->getComm()) );
 
             int numberSurfaces = maxIndex+1;
 
@@ -2151,7 +2151,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
 	Teuchos::ArrayView<GO> globalElementArrayImp = Teuchos::arrayViewFromVector( globalImportIDs);
     // Map of global IDs with missing Elements
 	MapPtr_Type mapElementImport =
-		Teuchos::rcp( new Map_Type( this->elementMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalElementArrayImp, 0, this->getComm()) );
+		Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), globalElementArrayImp, 0, this->getComm()) );
    
     MultiVectorPtr_Type idsElement = Teuchos::rcp( new MultiVector_Type( mapElementImport, 1 ) );	
 	Teuchos::ArrayRCP< SC > entriesElement  = idsElement->getDataNonConst(0);

@@ -1,44 +1,21 @@
 <ParameterList name="steady linear elasticity">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension"							    type="int"   	value="3"/>
-        <Parameter name="Discretization"                        type="string"   value="P2"/><!--P1, P2-->
-
-        <Parameter name="Mesh Type" type="string" value="structured"/> <!--structured, unstructured -->
-        
-        <Parameter name="Volume force" type="double" value="1"/>
-	    <Parameter name="Source Type" type="string"   value="surface"/>
-        <Parameter name="Mesh Delimiter"					    type="string"   value=" "/>
+        <Parameter name="Surface force" type="double" value="1"/>
         <Parameter name="H/h"							    	type="int"   	value="6"/>        
 	    <Parameter name="Density"					            type="double"   value="1."/>
 	    <Parameter name="Poisson Ratio"					        type="double"   value="0.3e-0"/>
         <Parameter name="Mu" type="double" value="384.6153846153146"/> <!-- choose as: E/(2*(1+poissonRatio)--> 
         <Parameter name="E" type="double" value="1000"/>
     </ParameterList>
-
-    
-    <ParameterList name="Exporter">
-        <Parameter name="Write new mesh" type="bool" value="false"/>
-        <Parameter name="Export every X timesteps" type="int" value="1"/>
-        
-        <Parameter name="Export coarse functions" type="bool" value="false"/>
-        
-        <Parameter name="Name coarse functions block1" type="string" value="phiU"/>    
-        
-    </ParameterList>
     
     <ParameterList name="Mesh Partitioner">
-        
         <Parameter name="Contiguous" type="bool" value="true"/>
-        
         <Parameter name="Mesh 1 Name" type="string" value="cube_h_1.mesh"/>
     </ParameterList>
     
     <ParameterList name="General">
         <Parameter name="Mpi Ranks Coarse"		                type="int"      value="0"/>
         <Parameter name="ParaViewExport"			            type="bool"     value="true"/>
-        <Parameter name="ParaViewCoarse"                        type="bool"     value="true"/>
         <Parameter name="Preconditioner Method"                 type="string"   value="Monolithic"/><!-- Monolithic, Diagonal, Triangular -->
-        <Parameter name="Scale mass matrix"                     type="bool"     value="true"/>
-        <Parameter name="Set Zeros"		                        type="bool"     value="true"/>
     </ParameterList>
 </ParameterList>

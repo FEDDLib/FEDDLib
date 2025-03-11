@@ -57,6 +57,10 @@ namespace FEDD {
 //#define FEDD_TIMER_STOP(A) A.reset();
 //#endif
 
+#define FEDDLIB_WARNING(CLASS,VERBOSE,OUTPUT) if (VERBOSE) std::cerr << std::setw(5) << " " << "[WARNING] " << CLASS << ": " << OUTPUT << std::endl;
+
+#define FEDDLIB_NOTIFICATION(CLASS,VERBOSE,OUTPUT) if (VERBOSE) std::cerr << std::setw(5) << " " << "[NOTIFICATION] " << CLASS << ": " << OUTPUT << std::endl;
+
     
 typedef unsigned UN;
 

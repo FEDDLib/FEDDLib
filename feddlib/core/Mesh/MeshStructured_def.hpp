@@ -108,7 +108,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DMiniTPM(std::string FEType,
         pointsRepGlobMapping[i] = i;
     }
 
-    this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>((GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -388,7 +388,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
             std::cout << "-- Building P1 Repeated and Unique Map ... " << std::flush;
         }
 
-        this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -516,7 +516,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
         if (verbose)
             std::cout << "-- Building P2 Repeated and Unique Map ... " << std::flush;
 
-        this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -545,11 +545,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
             std::cout << " done! --" << std::endl;
         }
 
-        //                Triangle numbering
+        // Triangle numbering
         //                    2
         //                  * *
         //                *   *
-        //              4	  5
+        //              4     5
         //            *       *
         //          *         *
         //        1 * * 3 * * 0
@@ -746,7 +746,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
             }
         }
 
-        this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -859,7 +859,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
             }
         }
 
-        this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -884,14 +884,14 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
             }
         }
 
-        //                Face 1          Face2               Face 3            Face 4
-        //                    2      2 * * 9 * * 3        3 * * 9 * * 2          	3
-        //                  * *      *          *          *          * 		  * *
-        //                *   *      *        *             *        *          *   *
-        //              5	  6      6      7                8      5         8	    7
-        //            *       *      *    *                   *    *        *       *
-        //          *         *      *  *                      *  *       *         *
-        //        1 * * 4 * * 0       0                         1       1 * * 4 * * 0
+        //            Face 1             Face2                Face 3           Face 4
+        //                    2      2 * * 9 * * 3        3 * * 9 * * 2                3
+        //                  * *      *          *          *          *              * *
+        //                *   *      *        *             *        *             *   *
+        //              5     6      6      7                8      5            8     7
+        //            *       *      *    *                   *    *           *       *
+        //          *         *      *  *                      *  *          *         *
+        //        1 * * 4 * * 0      0                           1         1 * * 4 * * 0
 
 
         int    P2M = 2*(M+1)-1;
@@ -1176,9 +1176,9 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DCube(int N,
             }
         }
     }
-    this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
-    this->mapUnique_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapUnique_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     buildElementsClass(elementsVec);
 
@@ -1268,7 +1268,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ1Cube(int N,
             }
         }
     }
-    this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -1408,7 +1408,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2Cube(int N,
         }
     }
 
-    this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -1616,7 +1616,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2_20Cube(int N,
         }
     }
 
-    this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -1796,7 +1796,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2BFS(int N,
         }
     }
 
-    this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2003,7 +2003,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
 
 
 
-        this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
         if (verbose) {
@@ -2118,7 +2118,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
 
 
 
-        this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2246,7 +2246,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
 
-        this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2276,11 +2276,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
             std::cout << " done! --" << std::endl;
         }
 
-        //                Triangle numbering
+        // Triangle numbering
         //                    2
         //                  * *
         //                *   *
-        //              4	  5
+        //              4     5
         //            *       *
         //          *         *
         //        1 * * 3 * * 0
@@ -2487,7 +2487,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         }
 
 
-        this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2649,7 +2649,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
             }
         }
 
-        this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+        this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
@@ -2675,14 +2675,14 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
             std::cout << " done! --" << std::endl;
         }
 
-        //                Face 1          Face2               Face 3            Face 4
-        //                    2      2 * * 9 * * 3        3 * * 9 * * 2          	3
-        //                  * *      *          *          *          * 		  * *
-        //                *   *      *        *             *        *          *   *
-        //              5	  6      6      7                8      5         8	    7
-        //            *       *      *    *                   *    *        *       *
-        //          *         *      *  *                      *  *       *         *
-        //        1 * * 4 * * 0       0                         1       1 * * 4 * * 0
+        //            Face 1              Face2               Face 3          Face 4
+        //                    2      2 * * 9 * * 3        3 * * 9 * * 2               3
+        //                  * *      *          *          *          *             * *
+        //                *   *      *        *             *        *            *   *
+        //              5     6      6      7                8      5           8     7
+        //            *       *      *    *                   *    *          *       *
+        //          *         *      *  *                      *  *         *         *
+        //        1 * * 4 * * 0      0                          1         1 * * 4 * * 0
 
 
         int    P2M = 2*(M+1)-1;
@@ -2960,9 +2960,9 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DBFS(int N,
             }
         }
     }
-    this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
-    this->mapUnique_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapUnique_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
     buildElementsClass(elementsVec);
 
@@ -3566,7 +3566,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
     counter =0;
     int    P2M = 2*(M+1)-1;
 
-    this->mapRepeated_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
@@ -3735,14 +3735,14 @@ void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, std::string FET
                         vec2D_LO_Type surfaceElements_vec(4,vec_LO_Type(numNodesTriangle)); // four surfaces per element
 
 
-        //                Face 1          Face2               Face 3            Face 4
-        //                    2      2 * * 9 * * 3        3 * * 9 * * 2          	3
-        //                  * *      *          *          *          * 		  * *
-        //                *   *      *        *             *        *          *   *
-        //              5	  6      6      7                8      5         8	    7
-        //            *       *      *    *                   *    *        *       *
-        //          *         *      *  *                      *  *       *         *
-        //        1 * * 4 * * 0       0                         1       1 * * 4 * * 0
+        //           Face 1              Face2                Face 3          Face 4
+        //                    2      2 * * 9 * * 3        3 * * 9 * * 2               3
+        //                  * *      *          *          *          *             * *
+        //                *   *      *        *             *        *            *   *
+        //              5     6      6      7                8      5           8     7
+        //            *       *      *    *                   *    *          *       *
+        //          *         *      *  *                      *  *         *         *
+        //        1 * * 4 * * 0      0                          1         1 * * 4 * * 0
                         if(FEType == "P1"){
                             surfaceElements_vec[0] = {nodeList[1],nodeList[0],nodeList[2]};
                             surfaceElements_vec[1] = {nodeList[0],nodeList[3],nodeList[2]};
@@ -3883,7 +3883,7 @@ void MeshStructured<SC,LO,GO,NO>::buildElementMap(){
         elementsGlobalMapping[i] = i + offset;
 
     std::string underlyingLib = this->mapRepeated_->getUnderlyingLib();
-    this->elementMap_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, elementsGlobalMapping(), 0, this->comm_) );
+    this->elementMap_.reset(new Map<LO,GO,NO>(  (GO) -1, elementsGlobalMapping(), 0, this->comm_) );
 
 }
 

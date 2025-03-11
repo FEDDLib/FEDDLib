@@ -81,7 +81,7 @@ public:
     /// @brief Imported MultiVector in Epetra format
     Epetra_MultiVector* u_import_Epetra_;
     /// @brief Imported file in Xpetra format
-    MultiVectorPtr_Type u_import_Xpetra_;
+    MultiVectorPtr_Type u_import_Tpetra_;
 
 };
 

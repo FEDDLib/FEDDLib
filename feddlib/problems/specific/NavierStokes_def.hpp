@@ -527,10 +527,10 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
     const RCP<Thyra::PreconditionerBase<SC> > W_prec_out = outArgs.get_W_prec();
 
     typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> tpetra_extract;
-    typedef Xpetra::Matrix<SC,LO,GO,NO> XpetraMatrix_Type;
-    typedef RCP<XpetraMatrix_Type> XpetraMatrixPtr_Type;
-    typedef RCP<const XpetraMatrix_Type> XpetraMatrixConstPtr_Type;
-
+    typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
+    typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
+    typedef RCP<const TpetraMatrix_Type> TpetraMatrixConstPtr_Type;
+ 
     const bool fill_f = nonnull(f_out);
     const bool fill_W = nonnull(W_out);
     const bool fill_W_prec = nonnull(W_prec_out);
@@ -551,30 +551,31 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
             f_out->assign(*f_thyra);
         }
 
-        XpetraMatrixPtr_Type W;
+        TpetraMatrixPtr_Type W;
         if (fill_W) {
+            cout << " Fill W " << endl;
 
             this->reAssemble("Newton"); // ReAssembling matrices with updated u  in this class
 
             this->setBoundariesSystem(); // setting boundaries to the system
 
-			// Changing the system Matrix into a tpetra Matrix (block matrices have 'getXpetraMatrix' feature)
-            Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
+			Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
             Teuchos::RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
-
-            XpetraMatrixConstPtr_Type W_systemXpetra = this->getSystem()->getMergedMatrix()->getXpetraMatrix(); // The current system matrix of this class
-
-            XpetraMatrixPtr_Type W_systemXpetraNonConst = rcp_const_cast<XpetraMatrix_Type>(W_systemXpetra);
-            Xpetra::CrsMatrixWrap<SC,LO,GO,NO>& crsOp = dynamic_cast<Xpetra::CrsMatrixWrap<SC,LO,GO,NO>&>(*W_systemXpetraNonConst);
-            Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>& xTpetraMat = dynamic_cast<Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>&>(*crsOp.getCrsMatrix());
-            Teuchos::RCP<TpetraMatrix_Type> tpetraMatXpetra = xTpetraMat.getTpetra_CrsMatrixNonConst();
-
+            
+            TpetraMatrixConstPtr_Type W_systemTpetra = this->getSystem()->getMergedMatrix()->getTpetraMatrix();           
+            TpetraMatrixPtr_Type W_systemTpetraNonConst = rcp_const_cast<TpetraMatrix_Type>(W_systemTpetra);
+            
+            //Tpetra::CrsMatrixWrap<SC,LO,GO,NO>& crsOp = dynamic_cast<Xpetra::CrsMatrixWrap<SC,LO,GO,NO>&>(*W_systemXpetraNonConst);
+            //Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>& xTpetraMat = dynamic_cast<Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>&>(*crsOp.getCrsMatrix());
+            
+            Teuchos::RCP<TpetraMatrix_Type> tpetraMatTpetra = W_systemTpetraNonConst; //xTpetraMat.getTpetra_CrsMatrixNonConst();
+            
             W_tpetraMat->resumeFill();
 
-            for (auto i=0; i<tpetraMatXpetra->getMap()->getLocalNumElements(); i++) {
+            for (auto i=0; i<tpetraMatTpetra->getMap()->getLocalNumElements(); i++) {
                 typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
                 typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;
-                tpetraMatXpetra->getLocalRowView( i, indices, values);
+                tpetraMatTpetra->getLocalRowView( i, indices, values);
                 W_tpetraMat->replaceLocalValues( i, indices, values);
             }
             W_tpetraMat->fillComplete();
@@ -582,7 +583,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
         }
 
         if (fill_W_prec) {
-        
+            cout << " Fill W prec " << endl;
             this->setupPreconditioner( "Monolithic" );
 
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
@@ -645,9 +646,9 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
     const RCP<Thyra::PreconditionerBase<SC> > W_prec_out = outArgs.get_W_prec();
 
     typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> tpetra_extract;
-    typedef Xpetra::Matrix<SC,LO,GO,NO> XpetraMatrix_Type;
-    typedef RCP<XpetraMatrix_Type> XpetraMatrixPtr_Type;
-    typedef RCP<const XpetraMatrix_Type> XpetraMatrixConstPtr_Type;
+    typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
+    typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
+    typedef RCP<const TpetraMatrix_Type> TpetraMatrixConstPtr_Type;
 
     const bool fill_f = nonnull(f_out);
     const bool fill_W = nonnull(W_out);
@@ -674,7 +675,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
             f_out->assign(*f);
         }
 
-        XpetraMatrixPtr_Type W;
+        TpetraMatrixPtr_Type W;
         if (fill_W) {
 
             typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
@@ -690,18 +691,16 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
 
             RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
 
-            XpetraMatrixConstPtr_Type W_matrixXpetra = this->getSystem()->getBlock(0,0)->getXpetraMatrix();
-            XpetraMatrixPtr_Type W_matrixXpetraNonConst = rcp_const_cast<XpetraMatrix_Type>(W_matrixXpetra);
-            Xpetra::CrsMatrixWrap<SC,LO,GO,NO>& crsOp = dynamic_cast<Xpetra::CrsMatrixWrap<SC,LO,GO,NO>&>(*W_matrixXpetraNonConst);
-            Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>& xTpetraMat = dynamic_cast<Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>&>(*crsOp.getCrsMatrix());
-            RCP<TpetraMatrix_Type> tpetraMatXpetra = xTpetraMat.getTpetra_CrsMatrixNonConst();
+            TpetraMatrixConstPtr_Type W_matrixTpetra = this->getSystem()->getBlock(0,0)->getTpetraMatrix();
+            TpetraMatrixPtr_Type W_matrixTpetraNonConst = rcp_const_cast<TpetraMatrix_Type>(W_matrixTpetra);
+            RCP<TpetraMatrix_Type> tpetraMatTpetra = W_matrixTpetraNonConst;
 
             W_tpetraMat->resumeFill();
 
-            for (auto i=0; i<tpetraMatXpetra->getMap()->getLocalNumElements(); i++) {
+            for (auto i=0; i<tpetraMatTpetra->getMap()->getLocalNumElements(); i++) {
                 typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
                 typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;
-                tpetraMatXpetra->getLocalRowView( i, indices, values);
+                tpetraMatTpetra->getLocalRowView( i, indices, values);
                 W_tpetraMat->replaceLocalValues( i, indices, values);
             }
             W_tpetraMat->fillComplete();

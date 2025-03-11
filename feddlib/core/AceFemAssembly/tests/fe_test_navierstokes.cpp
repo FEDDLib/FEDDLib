@@ -62,8 +62,6 @@ int main(int argc, char *argv[]) {
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
 
     //myCLP.setOption("dim",&dim,"dim");
     //int m = 2;

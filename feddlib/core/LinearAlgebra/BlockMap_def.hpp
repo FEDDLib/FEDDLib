@@ -73,7 +73,7 @@ void BlockMap<LO,GO,NO>::merge( ){
         CommConstPtr_Type comm = blockMap_[0]->getComm();
         typedef Teuchos::OrdinalTraits<GO> GOOT;
 
-        mergedMap_ = Teuchos::rcp( new Map_Type( blockMap_[0]->getUnderlyingLib(), GOOT::invalid(), globalElementList(), GOST::zero(), comm ) );
+        mergedMap_ = Teuchos::rcp( new Map_Type( GOOT::invalid(), globalElementList(), GOST::zero(), comm ) );
     }
 }
 

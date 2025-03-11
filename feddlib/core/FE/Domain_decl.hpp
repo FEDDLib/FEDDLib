@@ -56,8 +56,7 @@ public:
             
     typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
     typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
-	typedef Teuchos::RCP<const MultiVector_Type> MultiVectorPtrConst_Type;
-
+    typedef Teuchos::RCP<const MultiVector_Type> MultiVectorPtrConst_Type;
 
     typedef Map<LO,GO,NO> Map_Type;
     typedef Teuchos::RCP<Map_Type> MapPtr_Type;

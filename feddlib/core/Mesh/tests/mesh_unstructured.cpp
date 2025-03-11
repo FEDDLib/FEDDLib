@@ -81,8 +81,6 @@ int main(int argc, char *argv[]) {
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra"; //this does nothing atm
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
     string filename = "dfg_fsi_fluid_h004.mesh";
     myCLP.setOption("file",&filename,"Mesh filename");
     int dim = 2;

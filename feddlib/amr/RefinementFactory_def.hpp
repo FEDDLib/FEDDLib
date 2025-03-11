@@ -162,14 +162,14 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 
 
 		if(this->comm_->getRank() == 0){
-			std::cout << " 	-- Mesh Refinement -- " << std::endl;
-			std::cout << "	__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " \t-- Mesh Refinement -- " << std::endl;
+			std::cout << "\t__________________________________________________________________________________________________________ " << std::endl;
 			std::cout << " " << std::endl;
-			std::cout << " 	Start Iteration " << iteration+1 << " of "<< this->dim_ << "D Mesh Refinement " << std::endl;
-			std::cout << " 	Number of Elements:	" << this->elementMap_->getGlobalNumElements() << std::endl;
-			std::cout << " 	Number of Nodes:	" << this->mapUnique_->getGlobalNumElements() << std::endl; 
-			std::cout << " 	Number of Edges:	" << this->edgeMap_->getGlobalNumElements() << std::endl;
-			std::cout << "	__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " \tStart Iteration " << iteration+1 << " of "<< this->dim_ << "D Mesh Refinement " << std::endl;
+			std::cout << " \tNumber of Elements:\t" << this->elementMap_->getGlobalNumElements() << std::endl;
+			std::cout << " \tNumber of Nodes:\t" << this->mapUnique_->getGlobalNumElements() << std::endl; 
+			std::cout << " \tNumber of Edges:\t" << this->edgeMap_->getGlobalNumElements() << std::endl;
+			std::cout << "\t__________________________________________________________________________________________________________ " << std::endl;
 		}
 
 
@@ -178,7 +178,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// Part I: Regular Refinement of Mesh
 		// We refine the elements that were determined by our error estimation regular
 		// ------------------------------------------------------------------------------------------------------	
-		MESH_TIMER_START(preprocessingTimer," Step 0:	 Preprocessing");
+		MESH_TIMER_START(preprocessingTimer," Step 0:\t Preprocessing");
 		const int myRank = this->comm_->getRank();
 		// match the Edges to the Elements for being able to tag the edges of Elements in case of refinement
 		edgeElements->matchEdgesToElements(this->elementMap_);
@@ -237,9 +237,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		int numPoints=0;
 		MESH_TIMER_STOP(preprocessingTimer);
 
-		MESH_TIMER_START(regularRefinementTimer," Step 1:	 Tagging Edges for Refinement");
+		MESH_TIMER_START(regularRefinementTimer," Step 1:\t Tagging Edges for Refinement");
 		
-		// Depending on dimension we add a certain number of elements in the 2D case it's 3, in the 3D it's 7		
+		// Depending on dimension we add a certain number of elements in the 2D case it's 3, in the 3D it's 7
 		for(int i=0; i<elements->numberElements();i++){
 			if(elements->getElement(i).isTaggedForRefinement()){
 				numPoints= this->pointsRep_->size();
@@ -259,7 +259,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// InterfaceEdges can be determined by the vector 'elementsOfEdgesLocal' as the vector carries a -1 for 
 		// for each element belonging to an edge that is not on the processor in question
 		// ------------------------------------------------------------------------------------------------------
-		MESH_TIMER_START(commEdgesTimer," Step 2:	 Communicating tagged edges");
+		MESH_TIMER_START(commEdgesTimer," Step 2:\t Communicating tagged edges");
 		MapConstPtr_Type edgeMap = this->getEdgeMap();
 
 
@@ -279,9 +279,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		Teuchos::ArrayView<GO> globalEdgesInterfaceTaggedArray = Teuchos::arrayViewFromVector( globalInterfaceIDsTagged);
 
 		MapPtr_Type mapInterfaceEdges =
-			Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesInterfaceArray, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesInterfaceArray, 0, this->comm_) );
 		MapPtr_Type mapInterfaceEdgesTagged =
-			Teuchos::rcp( new Map_Type( edgeMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesInterfaceTaggedArray, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type(  Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesInterfaceTaggedArray, 0, this->comm_) );
 
 		// Multivector based on interfaceEdges Map with zero entries 
 		MultiVectorGOPtr_Type taggedEdgesGlobal = Teuchos::rcp( new MultiVectorGO_Type(mapInterfaceEdges, 1 ) );
@@ -319,7 +319,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// refinement restrictions
 		// ------------------------------------------------------------------------------------------------------
 
-		MESH_TIMER_START(checkTimer," Step 3:	 Checking Restrictions");		
+		MESH_TIMER_START(checkTimer," Step 3:\t Checking Restrictions");		
 		this->refinementRestrictions(meshP1, elements ,edgeElements, surfaceTriangleElements, newPoints, newPointsRepeated, globalInterfaceIDsTagged, mapInterfaceEdges, newElements);
 
 		sort(globalInterfaceIDsTagged.begin(), globalInterfaceIDsTagged.end());
@@ -333,7 +333,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// consequently we update the maps for those new points depending on nodes on interface and points unqiuely
 		// on processors
 		// ------------------------------------------------------------------------------------------------------
-		MESH_TIMER_START(nodeTimer," Step 4:	 Updating Node Map");		
+		MESH_TIMER_START(nodeTimer," Step 4:\t Updating Node Map");		
 		// determine global interface IDs of untagged edges 	
 		int maxRank = std::get<1>(this->rankRange_);
 		// determine unique map
@@ -351,10 +351,10 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		Teuchos::ArrayView<GO> localProcArray = Teuchos::arrayViewFromVector( localProc);
 
 		MapPtr_Type mapGlobalProc =
-			Teuchos::rcp( new Map_Type( meshP1->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, this->comm_) );
 
 		MapPtr_Type mapProc =
-			Teuchos::rcp( new Map_Type( meshP1->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type(  Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, this->comm_) );
 		
 		this->buildNodeMap(edgeElements, mapGlobalProc, mapProc, newPoints, newPointsRepeated);
 
@@ -368,7 +368,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// All edges are tagged and checked for additional restricitions. The mesh can now be refined and regular
 		// and irregular refinement rules can be performed	
 		// ------------------------------------------------------------------------------------------------------
-		MESH_TIMER_START(irregRefTimer," Step 5:	 Irregular Refinement");		
+		MESH_TIMER_START(irregRefTimer," Step 5:\t Irregular Refinement");		
 		this->refineMeshRegIreg(elements, edgeElements, newElements,edgeMap, surfaceTriangleElements);
 		MESH_TIMER_STOP(irregRefTimer);		
 
@@ -379,7 +379,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// the list of elements only extends throughout the refinement steps, so we only neew to allocate the 
 		// globalIDs for elements that extend our last element number
 		// ------------------------------------------------------------------------------------------------------
-		MESH_TIMER_START(elementMapTimer," Step 6:	 Updating Element Map");		
+		MESH_TIMER_START(elementMapTimer," Step 6:\t Updating Element Map");		
 		MapConstPtr_Type elementMap = meshP1->getElementMap();
 		// information of new elements
 		MultiVectorLOPtr_Type exportLocalEntry = Teuchos::rcp( new MultiVectorLO_Type( mapProc, 1 ) );
@@ -411,7 +411,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		Teuchos::RCP<std::vector<GO> > elementsGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsElements ) );
 		Teuchos::ArrayView<GO> elementsGlobMappingArray = Teuchos::arrayViewFromVector( *elementsGlobMapping);
 
-		this->elementMap_.reset(new Map<LO,GO,NO>(meshP1->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), elementsGlobMappingArray, 0, this->comm_) );
+		this->elementMap_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), elementsGlobMappingArray, 0, this->comm_) );
 
 		// determine global number of elements
 		this->numElementsGlob_ = this->elementMap_->getMaxAllGlobalIndex()+1;  
@@ -425,7 +425,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// procs is still missing there (this will be finalized in Part X)
 		// ------------------------------------------------------------------------------------------------------
 
-		MESH_TIMER_START(uniqueEdgesTimer," Step 7:	 Making Edges Unique");		
+		MESH_TIMER_START(uniqueEdgesTimer," Step 7:\t Making Edges Unique");		
 		vec2D_GO_Type combinedEdgeElements;
 		this->edgeElements_->sortUniqueAndSetGlobalIDsParallel(this->elementMap_,combinedEdgeElements);
 		MESH_TIMER_STOP(uniqueEdgesTimer);		
@@ -440,7 +440,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// Then we determine those of interface edges with the procedure discribed above
 		// ------------------------------------------------------------------------------------------------------
 
-		MESH_TIMER_START(edgeMapTimer," Step 8:	 Creating EdgeMap");		
+		MESH_TIMER_START(edgeMapTimer," Step 8:\t Creating EdgeMap");		
 		this->buildEdgeMap(mapGlobalProc, mapProc);
 		MESH_TIMER_STOP(edgeMapTimer);		
 
@@ -450,7 +450,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 		// we started the setup before (sortUniqueAndSetGlobalIDsParallel) an now finalize it with the information of other processors
 		// the edges on the interface need the global element number of the neighbouring processor
 		// ------------------------------------------------------------------------------------------------------
-		MESH_TIMER_START(elementsOfEdgeTimer," Step 9:	 Updating ElementsOfEdgeLocal/Global");		
+		MESH_TIMER_START(elementsOfEdgeTimer," Step 9:\t Updating ElementsOfEdgeLocal/Global");		
 		this->edgeElements_->setElementsEdges( combinedEdgeElements );
 
 		this->edgeElements_->setUpElementsOfEdge( this->elementMap_, this->edgeMap_);
@@ -480,13 +480,13 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 
 		
 		if(this->comm_->getRank() == 0){
-			std::cout << "	__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << "\t__________________________________________________________________________________________________________ " << std::endl;
 			std::cout << " " << std::endl;
-			std::cout << " 	... finished Iteration " << iteration+1 << " of " << this->dim_ << "D Mesh Refinement " << std::endl;
-			std::cout << " 	Number of new Elements:	" << this->elementMap_->getGlobalNumElements() - meshP1->elementMap_-> getGlobalNumElements() << std::endl;
-			std::cout << " 	Number of new Nodes:	" << this->mapUnique_->getGlobalNumElements()- meshP1->mapUnique_-> getGlobalNumElements() << std::endl; 
-			std::cout << " 	Number of new Edges:	" << this->edgeMap_->getGlobalNumElements()- meshP1->edgeMap_-> getGlobalNumElements() << std::endl;
-			std::cout << "	__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " \t... finished Iteration " << iteration+1 << " of " << this->dim_ << "D Mesh Refinement " << std::endl;
+			std::cout << " \tNumber of new Elements:\t" << this->elementMap_->getGlobalNumElements() - meshP1->elementMap_-> getGlobalNumElements() << std::endl;
+			std::cout << " \tNumber of new Nodes:\t" << this->mapUnique_->getGlobalNumElements()- meshP1->mapUnique_-> getGlobalNumElements() << std::endl; 
+			std::cout << " \tNumber of new Edges:\t" << this->edgeMap_->getGlobalNumElements()- meshP1->edgeMap_-> getGlobalNumElements() << std::endl;
+			std::cout << "\t__________________________________________________________________________________________________________ " << std::endl;
 			std::cout << " " << std::endl;
 		}
 
@@ -791,7 +791,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeEleme
 		Teuchos::RCP<std::vector<GO> > pointsRepGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDs ) );
 		Teuchos::ArrayView<GO> pointsRepGlobMappingArray = Teuchos::arrayViewFromVector( *pointsRepGlobMapping );
 		
-		this->mapRepeated_.reset(new Map<LO,GO,NO>( this->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
+		this->mapRepeated_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
 		this->mapUnique_ = this->mapRepeated_->buildUniqueMap( this->rankRange_ );
 	
 	
@@ -839,7 +839,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildSurfaceTriangleElements(ElementsPtr_Ty
 
 		// Extract the four points of tetraeder
 		vec_int_Type nodeInd(0);
-		for(int i=0; i<6; i++)	{
+		for(int i=0; i<6; i++){
 			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(0));
 			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(1));
 		}
@@ -1138,7 +1138,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 		Teuchos::RCP<std::vector<GO>> edgesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsEdges ) );
 		Teuchos::ArrayView<GO> edgesGlobMappingArray = Teuchos::arrayViewFromVector( *edgesGlobMapping);
 
-		this->edgeMap_.reset(new Map<LO,GO,NO>(this->getMapRepeated()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
+		this->edgeMap_.reset(new Map<LO,GO,NO>(Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
 		//this->edgeMap_->print();
 }
 
@@ -1147,10 +1147,10 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 
 \brief Refinement Restrictions
 \brief In 2D we can add some Restrictions to the Mesh Refinement:
-\brief Bisection:	this will keep the regularity of the Mesh by only refining whith a irregular strategy 
+\brief Bisection:      this will keep the regularity of the Mesh by only refining whith a irregular strategy 
 			  	when the longest edge is involved. If not we add a node to the longest edge, whereby 
 					the irregular refinement strategy is changed.
-\brief GreenTags:	this will only check tagged green Elements, if its irregular refinement tag from the previous
+\brief GreenTags:      this will only check tagged green Elements, if its irregular refinement tag from the previous
 					refinement is 'green' and if so not refine it green again but add a node to the longest
 					edge and thus refine it blue.
 \brief In the 3D Case we simply never refine an element irregularly twice, this strategy is called simply 'Bey'.
@@ -1301,7 +1301,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 			// Constructing a map of the global IDs of the tagged Edges	
 			Teuchos::ArrayView<GO> globalEdgesArray = Teuchos::arrayViewFromVector( globalEdges);
 			MapPtr_Type mapEdgesTagged =
-				Teuchos::rcp( new Map_Type( meshP1->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesArray, 0, this->comm_) );
+				Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesArray, 0, this->comm_) );
 			// Multivector based on taggesEdgesMap with one as entries
 			MultiVectorLOPtr_Type isActiveEdge = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesTagged, 1 ) );
 			isActiveEdge->putScalar( (LO) 1);
@@ -1443,7 +1443,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 			// Constructing a map of the global IDs of the tagged Edges	
 			Teuchos::ArrayView<GO> globalEdgesArray = Teuchos::arrayViewFromVector( untaggedIDs);
 			MapPtr_Type mapEdgesTagged =
-				Teuchos::rcp( new Map_Type( meshP1->getEdgeMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesArray, 0, this->comm_) );
+				Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), globalEdgesArray, 0, this->comm_) );
 			// Multivector based on taggesEdgesMap with one as entries
 			MultiVectorLOPtr_Type isActiveEdge = Teuchos::rcp( new MultiVectorLO_Type( mapEdgesTagged, 1 ) );
 			isActiveEdge->putScalar( (LO) 1);
@@ -1651,7 +1651,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		Teuchos::ArrayView<GO> edgesInterfaceGlobalID_ = Teuchos::arrayViewFromVector( edgesInterfaceGlobalID);
 
 		MapPtr_Type mapGlobalInterface =
-			Teuchos::rcp( new Map_Type( this->edgeMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesInterfaceGlobalID_, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type(  Teuchos::OrdinalTraits<GO>::invalid(), edgesInterfaceGlobalID_, 0, this->comm_) );
 		//mapGlobalInterface->print();
 
 		// Global IDs of Procs
@@ -1711,7 +1711,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 		Teuchos::ArrayView<GO> edgesInterfaceGlobalID_ = Teuchos::arrayViewFromVector( edgesInterfaceGlobalID);
 
 		MapPtr_Type mapGlobalInterface =
-			Teuchos::rcp( new Map_Type( this->edgeMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesInterfaceGlobalID_, 0, this->comm_) );
+			Teuchos::rcp( new Map_Type(Teuchos::OrdinalTraits<GO>::invalid(), edgesInterfaceGlobalID_, 0, this->comm_) );
 
 		// As edges can be part of multiple elements on different processors we collect the number of elements connected to the edge in total
 		MultiVectorLOPtr_Type numberInterfaceElements = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterface, 1 ) );
@@ -1780,7 +1780,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 			Teuchos::ArrayView<GO> edgesInterfaceGlobalIDProc_ = Teuchos::arrayViewFromVector( edgesInterfaceGlobalIDProc);
 
 			MapPtr_Type mapGlobalInterfaceProcs =
-				Teuchos::rcp( new Map_Type( this->edgeMap_->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), edgesInterfaceGlobalIDProc_, 0, this->comm_) );
+				Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), edgesInterfaceGlobalIDProc_, 0, this->comm_) );
 
 			for(int j=0; j< myNumberElementsMax; j++){
 				MultiVectorLOPtr_Type interfaceElements = Teuchos::rcp( new MultiVectorLO_Type( mapGlobalInterfaceProcs, 1 ) );
@@ -2378,9 +2378,9 @@ void RefinementFactory<SC,LO,GO,NO>::refineRed(EdgeElementsPtr_Type edgeElements
 		vec_int_Type midPointInd(3);
 
 		for(int i=0; i<3; i++)	
-				midPointInd[i] = edgeElements->getMidpoint(edgeNumbers[i]);
+			midPointInd[i] = edgeElements->getMidpoint(edgeNumbers[i]);
 				
-		// -> Edge 1: midPoint[0] - mutualNode[0] = mutualNode of Edge 1 and 2 
+		// -> Edge 1: midPoint[0] - mutualNode[0] = mutualNode of Edge 1 and 2
 		// -> Edge 2: midPoint[1] - mutualNode[1] = mutualNode of Edge 1 and 3
 		// -> Edge 3: midpoint[3] - mutualNode[2] = mutualNode of Edge 2 and 3
 		// Mutal Node of two edges
@@ -2553,7 +2553,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType4(EdgeElementsPtr_Type edgeElemen
 		vec_int_Type nodeInd1(0);
 		vec_int_Type nodeInd2(0);
 		bool firstEdge = true;
-		for(int i=0; i<6; i++)	{
+		for(int i=0; i<6; i++){
 
 			if(edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement() && firstEdge ==false){
 				nodeInd2.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(0));
@@ -2987,7 +2987,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 		vec_int_Type edgeNumbersUntagged(0);
 		// Extract the three points of tetraeder, that connect the tagged edges
 		vec_int_Type nodeInd(0);
-		for(int i=0; i<6; i++)	{
+		for(int i=0; i<6; i++){
 			if(edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement()){
 				nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(0));
 				nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(1));
@@ -3420,7 +3420,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType2(EdgeElementsPtr_Type edgeElemen
 		vec_int_Type edgeNumbersUntagged(0);
 		// Extract the three points of tetraeder, that connect the tagged edges
 		vec_int_Type nodeInd(0);
-		for(int i=0; i<6; i++)	{
+		for(int i=0; i<6; i++){
 			if(edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement()){
 				nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(0));
 				nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(1));
@@ -3774,7 +3774,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
 		// Extract the three points of tetraeder, that connect the tagged edges
 		vec_int_Type nodeInd(0);
 		int node4=0;
-		for(int i=0; i<6; i++)	{
+		for(int i=0; i<6; i++){
 			if(edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement()){
 				nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(0));
 				nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(1));
@@ -3873,7 +3873,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType1(EdgeElementsPtr_Type edgeElemen
 		// Edge 4 = [x_1,x_3] -> x_13
 		// Edge 5 = [x_2,x_3] -> x_23
 
-		for(int i=0; i<6; i++)	{
+		for(int i=0; i<6; i++){
 		  if(edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement())
 			midPointInd.push_back(edgeElements->getMidpoint(edgeNumbers[i]));
 		}
@@ -4363,7 +4363,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 		// Extract the four points of tetraeder
 		/*vec_int_Type nodeInd(0);
-		for(int i=0; i<6; i++)	{
+		for(int i=0; i<6; i++){
 			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(0));
 			nodeInd.push_back(edgeElements->getElement(edgeNumbers[i]).getNode(1));
 		}
@@ -4483,7 +4483,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 
 
-		for(int i=0; i<6; i++)	{
+		for(int i=0; i<6; i++){
 			if(!edgeElements->getElement(edgeNumbers[i]).isTaggedForRefinement()) // we tag every edge, after we refine an element -> no tag - no refinement on that edge so far
 				{   			
 				this->addMidpoint(edgeElements,edgeNumbers[i]);
@@ -5536,8 +5536,8 @@ void RefinementFactory<SC,LO,GO,NO>::bisectElement3(EdgeElementsPtr_Type edgeEle
 
 				
 		// -> longest Edge: Edge 1: midPoint[0] - mutualNode[0] = mutualNode of Edge 1 and 2 
-		// -> 				Edge 2: midPoint[1] - mutualNode[1] = mutualNode of Edge 1 and 3
-		// -> 				Edge 3: midpoint[2] - mutualNode[2] = mutualNode of Edge 2 and 3
+		// ->               Edge 2: midPoint[1] - mutualNode[1] = mutualNode of Edge 1 and 3
+		// ->               Edge 3: midpoint[2] - mutualNode[2] = mutualNode of Edge 2 and 3
 
 		for(int i=0; i<3; i++){	
 			if(edgeNumbersTmp[i] == entry)	{

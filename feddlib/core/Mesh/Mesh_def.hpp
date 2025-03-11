@@ -136,7 +136,6 @@ typename Mesh<SC,LO,GO,NO>::MapConstPtr_Type Mesh<SC,LO,GO,NO>::getElementMap(){
     return elementMap_;
 }
 
-
 // edgeMap
 template <class SC, class LO, class GO, class NO>
 typename Mesh<SC,LO,GO,NO>::MapConstPtr_Type Mesh<SC,LO,GO,NO>::getEdgeMap(){

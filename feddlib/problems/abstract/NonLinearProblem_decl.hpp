@@ -40,6 +40,13 @@ public:
     typedef typename Problem_Type::BlockMatrix_Type BlockMatrix_Type;
     typedef typename Problem_Type::BlockMatrixPtr_Type BlockMatrixPtr_Type;
     
+
+    typedef Tpetra::Map<LO,GO,NO> TpetraMap_Type;
+    typedef Teuchos::RCP<TpetraMap_Type> TpetraMapPtr_Type;
+    typedef Teuchos::RCP<const TpetraMap_Type> TpetraMapConstPtr_Type;
+    typedef const TpetraMapConstPtr_Type TpetraMapConstPtrConst_Type;
+
+
     typedef BlockMap<LO,GO,NO> BlockMap_Type;
     typedef Teuchos::RCP<BlockMap_Type> BlockMapPtr_Type;
     typedef Teuchos::RCP<const BlockMap_Type> BlockMapConstPtr_Type;

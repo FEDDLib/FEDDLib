@@ -368,7 +368,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     
     //  Building repeated node map
     Teuchos::ArrayView<GO> pointsRepGlobMapping =  Teuchos::arrayViewFromVector( pointsRepIndices );
-    meshUnstr->mapRepeated_.reset( new Map<LO,GO,NO>( underlyingLib, OTGO::invalid(), pointsRepGlobMapping, 0, this->comm_) );
+    meshUnstr->mapRepeated_.reset( new Map<LO,GO,NO>(OTGO::invalid(), pointsRepGlobMapping, 0, this->comm_) );
     MapConstPtr_Type mapRepeated = meshUnstr->mapRepeated_;
 
     // We keep the global elements if we want to build edges later. Otherwise they will be deleted
@@ -380,7 +380,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
         Teuchos::ArrayView<GO> elementsGlobalMapping =  Teuchos::arrayViewFromVector( locepart );
         // elementsGlobalMapping -> elements per Processor
 
-        meshUnstr->elementMap_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, elementsGlobalMapping, 0, this->comm_) );
+        meshUnstr->elementMap_.reset(new Map<LO,GO,NO>( (GO) -1, elementsGlobalMapping, 0, this->comm_) );
         
         {
             int localSurfaceCounter = 0;
@@ -487,7 +487,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
 
         // Setup for the EdgeMap
         Teuchos::ArrayView<GO> edgesGlobalMapping =  Teuchos::arrayViewFromVector( locedpart );
-        meshUnstr->edgeMap_.reset(new Map<LO,GO,NO>( underlyingLib, (GO) -1, edgesGlobalMapping, 0, this->comm_) );
+        meshUnstr->edgeMap_.reset(new Map<LO,GO,NO>( (GO) -1, edgesGlobalMapping, 0, this->comm_) );
     }
 
     

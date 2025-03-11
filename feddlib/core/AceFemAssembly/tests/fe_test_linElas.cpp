@@ -54,8 +54,6 @@ int main(int argc, char *argv[]) {
     // Command Line Parameters
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemLinElas.xml");
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
     int dim = params->sublist("Parameter").get("Dimension",3);
     myCLP.setOption("dim",&dim,"dim");
     int m = 2;

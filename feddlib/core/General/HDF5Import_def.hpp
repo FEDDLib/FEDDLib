@@ -43,7 +43,7 @@ commEpetra_()
     inputFilename_ = inputFilename; //  Name of input file
     hdf5importer_->Open(inputFilename_+".h5"); // We 'open' the file and connect to HDF5 iXpetramporter 
 
-    u_import_Xpetra_.reset(new MultiVector_Type(readMap)); // The general import vector is defined via readMap
+    u_import_Tpetra_.reset(new MultiVector_Type(readMap)); // The general import vector is defined via readMap
 
 
 }
@@ -55,14 +55,14 @@ typename HDF5Import<SC, LO, GO, NO>::MultiVectorPtr_Type HDF5Import<SC,LO,GO,NO>
     hdf5importer_->Read(varName,*readMap_,u_import_Epetra_); // Reading the variable 'varName' from the file and distribute according to readMap_ to u_import_
 
     //  Now we write the contents of the eptera multivector u_import to u_import_mv
-    Teuchos::ArrayRCP<SC> tmpData = u_import_Xpetra_->getDataNonConst(0);
-    for (int i=0; i<u_import_Xpetra_->getLocalLength(); i++) {
+    Teuchos::ArrayRCP<SC> tmpData = u_import_Tpetra_->getDataNonConst(0);
+    for (int i=0; i<u_import_Tpetra_->getLocalLength(); i++) {
         tmpData[i] = u_import_Epetra_->Values()[i]; // this is how you access epetra values of multi vectors
     }
 
     hdf5importer_->Flush();
 
-    return u_import_Xpetra_;
+    return u_import_Tpetra_;
     
 }
 template<class SC,class LO,class GO,class NO>

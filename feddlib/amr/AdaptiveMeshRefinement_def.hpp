@@ -775,7 +775,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 		Teuchos::ArrayView<GO> repIDsVecArray = Teuchos::arrayViewFromVector(repIDsVec);
 		// global Ids of Elements' Nodes
 		MapPtr_Type mapRepSystem =
-				Teuchos::rcp( new Map_Type( elementMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), repIDsVecArray , 0, domainP12_->getComm()) );
+				Teuchos::rcp( new Map_Type(  Teuchos::OrdinalTraits<GO>::invalid(), repIDsVecArray , 0, domainP12_->getComm()) );
 
 		MultiVectorPtr_Type mvValuesError =  Teuchos::rcp( new MultiVector_Type( mapRepSystem, 1 ) );
 		Teuchos::ArrayRCP< SC > mvValuesErrorA  = mvValuesError->getDataNonConst(0);	
@@ -811,7 +811,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 
 			// global Ids of Elements' Nodes
 			MapPtr_Type mapNodeExport =
-				Teuchos::rcp( new Map_Type( elementMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalNodeArray, 0, domainP12_->getComm()) );
+				Teuchos::rcp( new Map_Type(Teuchos::OrdinalTraits<GO>::invalid(), globalNodeArray, 0, domainP12_->getComm()) );
 					
 			MultiVectorPtr_Type notMV  =  Teuchos::rcp( new MultiVector_Type( mapNodeExport, 1 ) );
 			Teuchos::ArrayRCP<SC> notMVA = notMV->getDataNonConst(0);
@@ -990,11 +990,11 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 	Teuchos::ArrayView<GO> localProcArray = Teuchos::arrayViewFromVector( localProc);
 
 	MapPtr_Type mapGlobalProc =
-		Teuchos::rcp( new Map_Type( domainP1_->getElementMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, comm_) );
+		Teuchos::rcp( new Map_Type(  Teuchos::OrdinalTraits<GO>::invalid(), globalProcArray, 0, comm_) );
 
 	// Global IDs of Procs
 	MapPtr_Type mapProc =
-		Teuchos::rcp( new Map_Type( domainP1_->getElementMap()->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, comm_) );
+		Teuchos::rcp( new Map_Type(  Teuchos::OrdinalTraits<GO>::invalid(), localProcArray, 0, comm_) );
 	
 	MultiVectorPtr_Type exportLocalEntry = Teuchos::rcp( new MultiVector_Type( mapProc, 1 ) );
 
@@ -1019,38 +1019,38 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 			cout << " Summary of Mesh Refinement" << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " Marking Strategy:	" << markingStrategy_ << endl;
-			cout << " Theta:			" << theta_ << endl;
+			cout << " Marking Strategy:\t" << markingStrategy_ << endl;
+			cout << " Theta:\t\t\t" << theta_ << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " Tolerance:			" << tol_ << endl;
-			cout << " Max number of Iterations:	" <<  maxIter_ << endl;
-			cout << " Number of Processors:		" << maxRank_ +1 << endl;
-			cout << " Number of Refinements:		" << currentIter_ << endl;
+			cout << " Tolerance:\t\t\t" << tol_ << endl;
+			cout << " Max number of Iterations:\t" <<  maxIter_ << endl;
+			cout << " Number of Processors:\t\t\t" << maxRank_ +1 << endl;
+			cout << " Number of Refinements:\t\t" << currentIter_ << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
-			cout << " Refinementlevel|| Elements	|| Nodes	|| Max. estimated error  " << endl;
+			cout << " Refinementlevel|| Elements\t|| Nodes\t|| Max. estimated error  " << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			for(int i=0; i<= currentIter_; i++)
-				cout <<" "<< i << "		|| " << numElements[i] << "		|| " << numNodes[i]<< "		|| " << maxErrorEl[i]<<  endl;
+				cout <<" "<< i << "\t\t|| " << numElements[i] << "\t\t|| " << numNodes[i]<< "\t\t|| " << maxErrorEl[i]<<  endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;
 			if(exactSolInput_ == true){
 				cout << " Maximal error in nodes after Refinement. " << endl;
 				for (int i=1; i<=currentIter_ ; i++)
-					cout <<" "<< i << ":	" << maxErrorKn[i] << endl;
+					cout <<" "<< i << ":\t" << maxErrorKn[i] << endl;
 				cout << "__________________________________________________________________________________________________________ " << endl;
-				cout << " || u-u_h ||_H1	||	|| u-u_h ||_L2  ||" ;
+				cout << " || u-u_h ||_H1\t||\t|| u-u_h ||_L2  ||" ;
 				if( calculatePressure_== true  && exactSolPInput_ == true  ){
-					cout << " 	|| p-p_h||_L2 " << endl;
+					cout << " \t|| p-p_h||_L2 " << endl;
 				}
 				else
 					cout << endl;
 				cout << "__________________________________________________________________________________________________________ " << endl;
 				for (int i=1; i<=currentIter_ ; i++){
-					cout <<" "<< i << ":	"<<  std::setprecision(5) << std::fixed << errorH1[i]<< "		||	" << errorL2[i] ;
+					std::cout <<" "<< i << ":\t"<<  std::setprecision(5) << std::fixed << errorH1[i]<< "\t\t||\t" << errorL2[i] ;
 					if( calculatePressure_== true  && exactSolPInput_ == true  ){
-						cout << " 	 	||	" << std::setprecision(5) << std::fixed <<  errorL2P[i] << endl;
+						std::cout << " \t \t||\t" << std::setprecision(5) << fixed <<  errorL2P[i] << std::endl;
 					}
 					else
 						cout << endl;
@@ -1058,10 +1058,10 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 			
 				cout << "__________________________________________________________________________________________________________ " << endl;
 			}
-			cout << " ||u-u_h||_H1 / ||u ||_H1 	||  eta / ||u_h ||_H1	" << endl;
+			cout << " ||u-u_h||_H1 / ||u ||_H1 \t||  eta / ||u_h ||_H1\t" << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			for (int i=1; i<=currentIter_ ; i++){
-				cout <<" "<< i << ":	" << relError[i] << " 		||	" << eRelError[i]  << endl;
+				cout <<" "<< i << ":\t" << relError[i] << " \t\t||\t" << eRelError[i]  << endl;
 			}
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << " " << endl;

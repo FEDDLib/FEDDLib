@@ -60,7 +60,11 @@ public:
     typedef Teuchos::RCP<Epetra_MultiVector>	 					EpetraMVPtr_Type;
     typedef Teuchos::RCP<Epetra_Map>                               	EpetraMapPtr_Type;
 
-    
+    typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
+    typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
+    typedef Teuchos::RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
+   
+   
     typedef EpetraExt::HDF5 HDF5_Type;
     typedef Teuchos::RCP<HDF5_Type> HDF5Ptr_Type;
     

@@ -1554,8 +1554,9 @@ int Helper::getDPhiAtCM(vec3D_dbl_ptr_Type &DPhi,
 
 
     }
-    
-    // TODO [JK]: missing return value
+
+    return 0;  // TODO [JK]: hotfix for strange core dumps. Make function "return" void?
+
 }
 
 

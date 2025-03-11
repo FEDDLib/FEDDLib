@@ -28,6 +28,18 @@ TRIBITS_ADD_TEST(
     NUM_MPI_PROCS 4
 )
 
+### Map Tpetra
+TRIBITS_ADD_EXECUTABLE(
+	map_tpetra
+	SOURCES map_tpetra.cpp
+)
+
+TRIBITS_ADD_TEST(
+	map_tpetra
+    NAME map_tpetra
+    ARGS
+    NUM_MPI_PROCS 4
+)
 
 ### Matrix
 TRIBITS_ADD_EXECUTABLE(
