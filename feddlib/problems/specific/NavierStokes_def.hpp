@@ -313,7 +313,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> 0 ) // In case we have a timeproblem
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
                 else
-                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
+                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,2 );
             }
         
             //
