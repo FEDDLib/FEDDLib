@@ -160,7 +160,6 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
 {
     // alpha and beta are ignored!
     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
-    
     using Teuchos::rcpFromRef;
     typedef Teuchos::ScalarTraits<SC> ST;
     typedef RCP<MultiVectorBase<SC> > MultiVectorPtr;
@@ -241,6 +240,7 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
     else{
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,"Unknow 2x2 block preconditioner type. Select Diagonal or Triangular.");
     }
+
 }
 }
 

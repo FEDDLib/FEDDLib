@@ -820,6 +820,14 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
 
     tekoLinOp_ = Thyra::block2x2(thyraF,thyraBT,thyraB,thyraC);
 
+    CommConstPtr_Type comm;
+    if (!problem_.is_null())
+        comm = problem_->getComm();
+    else if(!timeProblem_.is_null())
+        comm = timeProblem_->getComm();
+
+    bool verbose ( comm->getRank() == 0 );
+
     if (!precondtionerIsBuilt_) {
 
         if ( precFactory_.is_null() ){
@@ -841,8 +849,14 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             if(!wScaling_.is_null()){
                 //typedef Teuchos::RCP<Thyra::MultiVectorBase<double> > MultiVector;
                 pListThyraSolver->sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("LSC").sublist("Strategy Settings").set("W-Scaling Vector",wScaling_->getThyraMultiVector());
-                
 
+                 
+                if(verbose)
+                    cout << "## wScaling_ is set to LSC preconditioner  ##" << endl;
+                    
+                
+                
+           
             }    
             solverBuilder->setParameterList( pListThyraSolver );
             precFactory_ = solverBuilder->createPreconditioningStrategy("");//createPreconditioningStrategy(*solverBuilder); // this might be the issue
@@ -850,13 +864,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             // Here we have the request handler, which manages the callback matrices/operators
             rh_.reset(new Teko::RequestHandler());
 
-            CommConstPtr_Type comm;
-            if (!problem_.is_null())
-                comm = problem_->getComm();
-            else if(!timeProblem_.is_null())
-                comm = timeProblem_->getComm();
-            bool verbose ( comm->getRank() == 0 );
-
+            
             
             if(velocityMassMatrix_.is_null())
             {   
@@ -969,6 +977,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
  
         precFactory_->initializePrec(thyraMatrixSourceOp, thyraPrec_.get());
     }
+    if(verbose)
+        cout << " buildPreconditionerTeko -- done. " << endl;
+
 
 }
 
@@ -1190,7 +1201,6 @@ void Preconditioner<SC,LO,GO,NO>::setPressureProjection(BlockMultiVectorPtr_Type
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
 {
-    cout << " Build preconditioner 2 x 2 " << endl;
     typedef Domain<SC,LO,GO,NO> Domain_Type;
     typedef Teuchos::RCP<const Domain_Type> DomainConstPtr_Type;
     typedef std::vector<DomainConstPtr_Type> DomainConstPtr_vec_Type;

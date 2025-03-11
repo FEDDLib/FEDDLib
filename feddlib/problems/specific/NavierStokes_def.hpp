@@ -1301,7 +1301,7 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     this->setBoundariesSystem();
 
-    if (!type.compare("Teko")) { //
+    if (!type.compare("Teko") || !type.compare("Diagonal") || !type.compare("Triangular")) { //
         this->setupPreconditioner( type );
         stokesTekoPrecUsed_ = false;
     }
