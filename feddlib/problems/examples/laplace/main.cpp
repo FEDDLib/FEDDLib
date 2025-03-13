@@ -210,9 +210,9 @@ int main(int argc, char *argv[]) {
             exPara->setup("solutionLaplace", domain->getMesh(), FEType);
             
             if (vL)
-                exPara->addVariable(exportSolution, "u", "Vector", dim, domain->getMapUnique(), domain->getMapUniqueP2());
+                exPara->addVariable(exportSolution, "u", "Vector", dim, domain->getMapUnique());
             else
-                exPara->addVariable(exportSolution, "u", "Scalar", 1, domain->getMapUnique(), domain->getMapUniqueP2());
+                exPara->addVariable(exportSolution, "u", "Scalar", 1, domain->getMapUnique());
 
             exPara->save(0.0);
 
