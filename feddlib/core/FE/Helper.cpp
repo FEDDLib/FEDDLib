@@ -1476,17 +1476,17 @@ void Helper::getQuadratureValues(int dim,
 }
 
 
-int Helper::getDPhiAtCM(vec3D_dbl_ptr_Type &DPhi,
-                     int dim,
-		             std::string FEType)
-    {
-    int 			nmbLocElPts;
-    int 			intFE;
+void Helper::getDPhiAtCM(vec3D_dbl_ptr_Type &DPhi,
+                         int dim,
+                         std::string FEType)
+{
+    int	nmbLocElPts;
+    int	intFE;
     vec_dbl_Type CM(dim, 0.0);
-    vec_dbl_ptr_Type 	value(new vec_dbl_Type(dim,0.0));
+    vec_dbl_ptr_Type value(new vec_dbl_Type(dim,0.0));
     TEUCHOS_TEST_FOR_EXCEPTION(dim == 1,std::logic_error, "getDPhiAtCMNot implemented for dim=1");
 
-    if (dim==2) 
+    if (dim==2)
     {
         
         // As we are in the reference element the center of mass is just:
@@ -1551,11 +1551,8 @@ int Helper::getDPhiAtCM(vec3D_dbl_ptr_Type &DPhi,
                 }
             }
         }
-
-
     }
-
-    }
+}
 
 
 

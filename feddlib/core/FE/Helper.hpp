@@ -118,10 +118,9 @@ public:
     /// @param DPhi grad Phi p
     /// @param Dimension Dimension
     /// @param FEType Finite Element Type
-    /// @return 
-    static int getDPhiAtCM(vec3D_dbl_ptr_Type &DPhi,
-                     int dim,
-		             std::string FEType);   
+    static void getDPhiAtCM(vec3D_dbl_ptr_Type &DPhi,
+                            int dim,
+                            std::string FEType);
 
 
     /// @brief Applying the transformation matriX B to the gradient of phi, as is done in when transforming the gradient of phi to the reference element
