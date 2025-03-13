@@ -386,7 +386,7 @@ int main(int argc, char *argv[])
 
 						exPara->setup("FlagsFluid",domainFluidVelocity->getMesh(), discType);
 
-						exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainFluidVelocity->getMapUnique(), domainFluidVelocity->getMapUniqueP2());
+						exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainFluidVelocity->getMapUnique());
 
 						exPara->save(0.0);
 
@@ -404,7 +404,7 @@ int main(int argc, char *argv[])
 
 						exPara2->setup("FlagsStructure", domainStructure->getMesh(), discType);
 
-						exPara2->addVariable(exportSolutionConst2, "Flags", "Scalar", 1,domainStructure->getMapUnique(), domainStructure->getMapUniqueP2());
+						exPara2->addVariable(exportSolutionConst2, "Flags", "Scalar", 1,domainStructure->getMapUnique());
 
 						exPara2->save(0.0);
 

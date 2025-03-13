@@ -81,17 +81,9 @@ public:
     /// @return mapRepeated_
     MapConstPtr_Type getMapRepeated() const;
 
-    /// @brief Getter for unique node P2 map. Dont know what this is for exactly. Think this object is empty
-    /// @return 
-    MapConstPtr_Type getMapUniqueP2() const;
-    
-    /// @brief Getter for repeated node P2 map. Dont know what this is for exactly. Think this object is empty
-    /// @return 
-    MapConstPtr_Type getMapRepeatedP2() const;
-    
     /// @brief Getter for element map 
     /// @return 
-    MapConstPtr_Type getElementMap();
+    MapConstPtr_Type getElementMap() const;
 	
     /// @brief Getter for edge map
     /// @return 
@@ -233,9 +225,6 @@ public:
     vec2D_dbl_ptr_Type		pointsUniRef_; // Unique Referenzkonfiguration
     
     //vec_int_ptr_Type 		elementFlag_;
-
-    MapPtr_Type mapUniqueP2Map_;
-    MapPtr_Type mapRepeatedP2Map_;
 
     int elementOrder_;
     int surfaceElementOrder_;

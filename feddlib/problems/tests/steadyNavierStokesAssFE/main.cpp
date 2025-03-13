@@ -331,7 +331,7 @@ int main(int argc, char *argv[]) {
 
 			exPara->setup("FlagsFluid",domainVelocity->getMesh(), discVelocity);
 
-			exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainVelocity->getMapUnique(), domainVelocity->getMapUniqueP2());
+			exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainVelocity->getMapUnique());
 
 			exPara->save(0.0);
 			// ---------------------

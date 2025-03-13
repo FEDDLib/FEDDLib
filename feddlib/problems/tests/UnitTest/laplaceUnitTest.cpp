@@ -175,8 +175,8 @@ int main(int argc, char *argv[]) {
 
             exPara->setup("solutionLaplace", domain->getMesh(), FEType);
             
-            exPara->addVariable(exportSolution, "u_current", "Scalar", 1, domain->getMapUnique(), domain->getMapUniqueP2());
-            exPara->addVariable(solutionImported, "u_imported", "Scalar", 1, domain->getMapUnique(), domain->getMapUniqueP2());
+            exPara->addVariable(exportSolution, "u_current", "Scalar", 1, domain->getMapUnique());
+            exPara->addVariable(solutionImported, "u_imported", "Scalar", 1, domain->getMapUnique());
 
             exPara->save(0.0);
 

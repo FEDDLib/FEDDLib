@@ -171,20 +171,6 @@ public:
     MapConstPtr_Type getMapRepeated() const;
 
     /*!
-         \brief Get map of uniquely distributed P2 nodes of the processors.
-         \return mapUniqueP2
-
-    */
-    MapConstPtr_Type getMapUniqueP2() const;
-
-    /*!
-         \brief Get map of repeated (not uniquely distributed) P1 nodes of processors
-         \return mapRepeatedP2
-
-    */
-    MapConstPtr_Type getMapRepeatedP2() const;
-    
-    /*!
          \brief Get map of elements
          \return elementMap
 
