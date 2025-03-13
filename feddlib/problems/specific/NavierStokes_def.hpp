@@ -315,6 +315,19 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 else
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
             }
+
+            // MatrixPtr_Type Mvelocity0(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+            // this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity0, true,0 );
+            // Mvelocity0->writeMM("M_0");
+
+            //  MatrixPtr_Type Mvelocity1(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+            // this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity1, true,1 );
+            // Mvelocity1->writeMM("M_1");
+            // //
+            // MatrixPtr_Type Mvelocity2(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+            // this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity2, true,2 );
+            // Mvelocity2->writeMM("M_2");
+
         
             //
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
@@ -330,7 +343,6 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
             MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
             this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 0, Lp, true );//assemblyIdentity(Lp); //
-            //    this->feFactory_->assemblyLaplacePressureDisc( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );//assemblyIdentity(Lp); //
 
             bcBlockMatrix->addBlock(Lp,0,0);
             this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix); 
@@ -363,7 +375,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
               // Pressure mass matrix
             MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true,0 ); //assemblyIdentity(Mpressure);//
+            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true,2 ); //assemblyIdentity(Mpressure);//
             Mp_= Mpressure;
             this->getPreconditionerConst()->setPressureMass( Mpressure );
             // --------------------------------------------------------------------------------------------

@@ -804,12 +804,51 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
     else if(!timeProblem_.is_null())
         system = timeProblem_->getSystemCombined();
 
+    CommConstPtr_Type comm;
+    if (!problem_.is_null())
+        comm = problem_->getComm();
+    else if(!timeProblem_.is_null())
+        comm = timeProblem_->getComm();
+
+    bool verbose ( comm->getRank() == 0 );
+
     TEUCHOS_TEST_FOR_EXCEPTION( system->size()!=2, std::logic_error, "Wrong size of system for Teko-Block-Preconditioners.");
 
     Teko::LinearOp thyraF = system->getBlock(0,0)->getThyraLinOp();
-    Teko::LinearOp thyraBT = system->getBlock(0,1)->getThyraLinOp();
     Teko::LinearOp thyraB = system->getBlock(1,0)->getThyraLinOp();
+    Teko::LinearOp thyraBT = system->getBlock(0,1)->getThyraLinOp();
+    // Easiest option would be to insert not block (1,0) but transpose block 0,1
+    
+    if (!problem_.is_null() && problem_->getParameterList()->sublist("Parameter").get("Symmetric BC",false)){
 
+        if(problem_->getParameterList()->sublist("Parameter").get("Symmetric B",false)){
+            if(verbose)
+                cout << " ###### Making BC in B symmetric ###### " << endl;
+            MatrixPtr_Type matrixB(new Matrix_Type(system->getBlock(1,0)) );
+            problem_->getBCFactory()->setDirichletColumn(matrixB,false);
+            thyraB = matrixB->getThyraLinOp();
+        }
+        if(problem_->getParameterList()->sublist("Parameter").get("Symmetric F",false)){
+            if(verbose)
+                cout << " ###### Making BC in F symmetric ###### " << endl;
+            MatrixPtr_Type matrixF(new Matrix_Type(system->getBlock(0,0)) );
+            problem_->getBCFactory()->setDirichletColumn(matrixF,true);
+            thyraF = matrixF->getThyraLinOp();
+        }
+       
+        // BlockMatrixPtr_Type systemSymm(new BlockMatrix_Type (2));
+        // systemSymm->addBlock(matrixF,0,0);
+        // systemSymm->addBlock(matrixB,1,0);
+        // systemSymm->addBlock(system->getBlock(0,1),0,1);
+        // systemSymm->getMergedMatrix()->writeMM("MergedSystem");
+
+        // matrixB->writeMM("matrixB");
+
+        // system->getBlock(0,1)->writeMM("matrixBT");
+
+    }
+    // else if(!timeProblem_.is_null())
+    //     timeProblem_->getBCFactory->setDirichletColumn(matrixB)
     if (!system->blockExists(1,1)){
         MatrixPtr_Type dummy;
         dummy.reset( new Matrix_Type( system->getBlock(1,0)->getMap(), 1 ) );
@@ -820,13 +859,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
 
     tekoLinOp_ = Thyra::block2x2(thyraF,thyraBT,thyraB,thyraC);
 
-    CommConstPtr_Type comm;
-    if (!problem_.is_null())
-        comm = problem_->getComm();
-    else if(!timeProblem_.is_null())
-        comm = timeProblem_->getComm();
-
-    bool verbose ( comm->getRank() == 0 );
+    
 
     if (!precondtionerIsBuilt_) {
 
@@ -852,10 +885,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
 
                  
                 if(verbose)
-                    cout << "## wScaling_ is set to LSC preconditioner  ##" << endl;
-                    
-                
-                
+                    cout << "## wScaling_ is set to LSC preconditioner  ##" << endl; 
            
             }    
             solverBuilder->setParameterList( pListThyraSolver );

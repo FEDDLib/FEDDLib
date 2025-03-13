@@ -166,6 +166,10 @@ public:
     /// @param blockMatrix 
     void setSystemScaled(const BlockMatrixPtr_Type &blockMatrix) const;
     
+    /// @brief Set boundary conditions to system
+    /// @param blockMatrix 
+    void setDirichletColumn(const MatrixPtr_Type &Matrix, bool isDiagonalBlock) const;
+    
 //    void setSystem(const MatrixPtr_Type &matrix) const;
     
     /// @brief 

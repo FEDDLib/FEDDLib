@@ -586,6 +586,93 @@ bool BCBuilder<SC,LO,GO,NO>::findFlag(LO flag, int block, int &loc) const{
     return hasFlag;
 }
 
+
+template<class SC,class LO,class GO,class NO>
+void BCBuilder<SC,LO,GO,NO>::setDirichletColumn(const MatrixPtr_Type &Matrix, bool isDiagonalBlock) const{
+
+    Matrix->resumeFill();
+    int loc = 0;
+    vec_int_ptr_Type bcFlagsRep = vecDomain_.at(loc)->getBCFlagRepeated();
+    vec_int_ptr_Type bcFlagsUnique = vecDomain_.at(loc)->getBCFlagUnique();
+    MapConstPtr_Type mapRepeated = vecDomain_.at(loc)->getMapVecFieldRepeated();    
+    MapConstPtr_Type mapUnique = vecDomain_.at(loc)->getMapVecFieldUnique();    
+
+    UN dofs = vecDofs_.at(0);
+    //vecDomain_.at(loc)->getMapUnique()->print();
+    // ## Step 1: Import all boundary conditions requiered for the underlying column map. We need to set all column entries that on processor own to zero, if it contains a boundary node ##
+    MapConstPtr_Type colMap = Matrix->getMap("col");
+    MapConstPtr_Type rowMap = Matrix->getMap("row");
+    // max global index
+    // GO maxGlobalID = colMap->getMaxAllGlobalIndex();
+    // // global IDs vec
+    // vec_GO_Type globalIDs(maxGlobalID+1,-1);
+    // // fill from 0 to maxGlobalID
+    // for(int i=0; i< maxGlobalID+1; i++)
+    //     globalIDs[i] = i;
+    // // constructing Map for importing all BC
+    // Teuchos::ArrayView<GO> globalBCArrayImp = Teuchos::arrayViewFromVector( globalIDs);
+    // MapPtr_Type mapFlagsImport = Teuchos::rcp( new Map_Type( colMap->getUnderlyingLib(), Teuchos::OrdinalTraits<GO>::invalid(), globalBCArrayImp, 0, colMap->getComm()) );
+    // // Build multivector containing BC in unique distribution
+    MultiVectorPtr_Type bcFlagsImport = Teuchos::rcp( new MultiVector_Type( colMap, 1 ) ); // Flags I need to import in order to set my columns right	
+    bcFlagsImport->putScalar(0);
+
+    MultiVectorPtr_Type bcFlagsExport = Teuchos::rcp( new MultiVector_Type( mapUnique, 1 ) );
+    bcFlagsExport->putScalar(0);
+    Teuchos::ArrayRCP< SC > bcFlagsMvEntries  = bcFlagsExport->getDataNonConst(0);
+    for(int i=0; i< bcFlagsUnique->size() ; i++){
+        // if(fabs((*bcFlagsUnique)[i]) < 10)
+        for(int d=0; d< 2; d++ ){
+            bcFlagsMvEntries[i*dofs+d] = (*bcFlagsUnique)[i];
+        }
+    }
+    // bcFlagsExport->print();
+    // // Multivector containing all BC Flags per Processor
+    // MultiVectorPtr_Type bcFlagsMvAll = Teuchos::rcp( new MultiVector_Type( mapFlagsImport, 1 ) );
+    // bcFlagsMvAll->putScalar(-1);
+    // // Import to each processor
+    bcFlagsImport->importFromVector(bcFlagsExport,false, "Insert");
+    // bcFlagsImport->print();
+    // colMap->print();
+    // // bcFlagsMvAll->print();
+    // // ## Step 2: Replace all local values in the columns corresponding to dirichlet boundary conditions
+    // Teuchos::ArrayRCP< SC > bcFlagsGlobal  = bcFlagsMvAll->getDataNonConst(0);
+    // Loop over all boundary conditions
+    
+    // cout << " Setting Dirichlet Row 1 for node " << localDof << " of type " << vecBCType_.at(loc)  <<endl;
+    //GO globalDof = matrix->getMap()->getGlobalElement( localDof );
+    Teuchos::ArrayRCP< SC > bcFlags  = bcFlagsImport->getDataNonConst(0);
+    for(LO k=0; k < rowMap->getNodeNumElements(); k++){
+        Teuchos::ArrayView<const SC> valuesOld;
+        Teuchos::ArrayView<const LO> indices;
+        Matrix->getLocalRowView(k, indices, valuesOld);
+        Teuchos::Array<SC> values = valuesOld;
+        for(int i =0; i<vecFlag_.size(); i++){
+            UN dofsPerNode = vecDofs_.at(i);
+            if (vecBCType_.at(i) == "Dirichlet") {
+                for (UN j=0; j<indices.size(); j++){
+                    if(valuesOld[j] != 0)
+                    {
+                        // GO goID = colMap->getGlobalElement(indices[j]);
+                        // LO loIDrep = mapRepeated->getLocalElement(goID/dofsPerNode);
+                        // if(loIDrep > -1){
+                            // LO idBC = loIDrep;
+                        if ( bcFlags[indices[j]] ==  vecFlag_[i] && !(rowMap->getGlobalElement(k) == colMap->getGlobalElement( indices[j] ) && isDiagonalBlock) ){ // If the global flag is a dirichlet flag we set column entry to zero 
+                            values[j] = 0;
+                        }
+                        // }
+                        // else{
+                        //     cout << rowMap->getGlobalElement(k) << " Calling for id ind BC " << loIDrep << " for local column index " << indices[j] << " global column index " << goID  << endl;
+                        //     cout << "  ------ " << endl;
+                        // }
+                    }    
+                }
+            }
+        }
+        Matrix->replaceLocalValues(k, indices(), values());
+    }
+    Matrix->fillComplete(Matrix->getMap("domain"), Matrix->getMap("range"));
+}
+
 template<class SC,class LO,class GO,class NO>
 void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) const{
 

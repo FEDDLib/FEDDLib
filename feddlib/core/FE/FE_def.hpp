@@ -2240,7 +2240,6 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
     UN deg = Helper::determineDegree(dim,FEType,FEType,Std,Std,extraDeg);
-
     Helper::getPhi( phi, weights, dim, FEType, deg );
 
     SC detB;

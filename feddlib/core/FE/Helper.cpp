@@ -1717,8 +1717,8 @@ void Helper::getQuadratureValues(int dim,
         if (FEType.at(0)=='P') {
             if (Degree==2)
                 Degree=3;
-            if (Degree==4)
-                Degree=5;
+            // if (Degree==4)
+            //     Degree=5;
 
             TEUCHOS_TEST_FOR_EXCEPTION(Degree>6, std::runtime_error, "Tetrahedron quadrature rules only up to degree 6 available.");
             
@@ -1932,6 +1932,7 @@ void Helper::getQuadratureValues(int dim,
                     
                     break;
                 case 6: //Keast
+                    cout << " WARNING :: Using Keast Quadrule - might not be correct!! " << endl;
                     QuadPts.reset(new vec2D_dbl_Type(24,vec_dbl_Type(3,0.0)));
                     QuadW->resize(24);
                     a = .356191386222545;
