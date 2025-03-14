@@ -6,13 +6,8 @@
 #include <iostream>
 #include <sstream>
 
-
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
-
-
-#include "feddlib/core/FE/FE.hpp"
-
-
+#include "feddlib/core/FE/Helper.hpp"
 
 using namespace FEDD;
 
@@ -145,17 +140,132 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
+
     /////////////// 2D Tests ///////////////
-    /*
-        {
-            auto f = [](SC x, SC y) -> SC { return x*y; };
-            SC r = 1.0; // expected result
-            const int dim = 2;
-            int degree = 0;
-            std::string FEType = "P";
-            if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE) return EXIT_FAILURE;
-        }
-    */
+
+    // Test 9: 2D, triangle, polynomial order 0
+    {
+        auto f = [](SC x, SC y) -> SC { return 1.0; };
+        SC r = 0.5; // expected result
+        const int dim = 2;
+        int degree = 0;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // Test 10: 2D, triangle, polynomial order 1
+    {
+        auto f = [](SC x, SC y) -> SC { return 3.0 + 2.0*x + y; };
+        SC r = 2.0; // expected result
+        const int dim = 2;
+        int degree = 1;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // Test 11: 2D, triangle, polynomial order 2
+    {
+        auto f = [](SC x, SC y) -> SC { return -4.0 + x - y + 2.0*x*x + 4.0*y*y + 12.0*x*y; };
+        SC r = -1.0; // expected result
+        const int dim = 2;
+        int degree = 2;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // Test 12: 2D, triangle, polynomial order 3
+    {
+        auto f = [](SC x, SC y) -> SC { return 0.5 + 2.0*x + 3.0*y - 2.0*x*x - 3.0*y*y + 6.0*x*y + x*x*x - 2.0*y*y*y + x*x*y - 2.0*x*y*y; };
+        SC r = 0.85; // expected result
+        const int dim = 2;
+        int degree = 3;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // Test 13: 2D, triangle, polynomial order 4
+    {
+        auto f = [](SC x, SC y) -> SC { return -5.0 - 0.5*x + y + x*x + 0.5*y*y - x*y - 0.5*x*x*y + x*y*y + 1.5*x*x*x - y*y*y + x*x*x*x - x*x*x*y + 3.0*x*x*y*y - x*y*y*y + 1.5*y*y*y*y; };
+        SC r = -2.21-2.0/300.0; // expected result
+        const int dim = 2;
+        int degree = 4;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // Test 14: 2D, triangle, polynomial order 5
+    {
+        auto f = [](SC x, SC y) -> SC { return 1.0 - x + 2.0*y - 2.5*x*x + 1.5*y*y + x*y + 4.0*x*x*y + 2.0*x*y*y - 3.0*x*x*x + 0.5*y*y*y - 1.5*x*x*x*x - 2.0*x*x*x*y + 2.0*x*x*y*y + 0.5*x*y*y*y + y*y*y*y - 42.0*x*x*x*x*x - 21.0*x*x*x*x*y + -21.0*x*x*x*y*y + 42.0*x*x*y*y*y - 63.0*x*y*y*y*y + 21.0*y*y*y*y*y; };
+        SC r = -5.0/90.0 - 0.2125; // expected result
+        const int dim = 2;
+        int degree = 5;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+//    // Test 15: 2D, triangle, polynomial order 6
+//    {
+//        auto f = [](SC x, SC y) -> SC { return ; };
+//        SC r = -5.0/90.0 - 0.2125; // expected result
+//        const int dim = 2;
+//        int degree = 5;
+//        std::string FEType = "P";
+//        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+//            return EXIT_FAILURE;
+//    }
+//
+//    // Test 16: 2D, triangle, polynomial order 7
+//    {
+//        auto f = [](SC x, SC y) -> SC { return ; };
+//        SC r = -5.0/90.0 - 0.2125; // expected result
+//        const int dim = 2;
+//        int degree = 5;
+//        std::string FEType = "P";
+//        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+//            return EXIT_FAILURE;
+//    }
+
+
+    /////////////// 3D Tests ///////////////
+
+    // Test 17: 3D, tetrahedron, polynomial order 0
+    {
+        auto f = [](SC x, SC y, SC z) -> SC { return 1.0; };
+        SC r = 1.0/6.0; // expected result
+        const int dim = 3;
+        int degree = 0;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // Test 18: 3D, tetrahedron, polynomial order 1
+    {
+        auto f = [](SC x, SC y, SC z) -> SC { return 0.5 - x + 2.0*y + 3.0*z; };
+        SC r = 0.25; // expected result
+        const int dim = 3;
+        int degree = 1;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // Test 19: 3D, tetrahedron, polynomial order 2
+    {
+        auto f = [](SC x, SC y, SC z) -> SC { return -0.5 + 2.0*x + y + z + 5.0*x*x + 4.0*y*y + 3.0*z*z + 2.0*x*y + x*z - y*z; };
+        SC r = 0.3; // expected result
+        const int dim = 3;
+        int degree = 2;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
 
     std::cout << "testQuadRules: All " << test << " tests passed." << std::endl;
 
