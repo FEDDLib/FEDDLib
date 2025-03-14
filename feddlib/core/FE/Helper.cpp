@@ -1230,11 +1230,11 @@ void Helper::getQuadratureValues(int dim,
             } else if (Degree <= 2) {
                 // Akin - 1994 - Finite elements for analysis and design (p.198)
 
-                QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(3,0.0)));
-                QuadW->resize(1);
+                QuadPts.reset(new vec2D_dbl_Type(4,vec_dbl_Type(3,0.0)));
+                QuadW->resize(4);
 
                 a = (5.0 + 3.0*sqrt(5.0))/20.0;
-                a = (5.0 - 3.0*sqrt(5.0))/20.0;
+                b = (5.0 - 1.0*sqrt(5.0))/20.0;
 
                 QuadPts->at(0).at(0) = a;
                 QuadPts->at(0).at(1) = b;
@@ -1244,13 +1244,13 @@ void Helper::getQuadratureValues(int dim,
                 QuadPts->at(1).at(1) = a;
                 QuadPts->at(1).at(2) = b;
 
-                QuadPts->at(1).at(0) = b;
-                QuadPts->at(1).at(1) = b;
-                QuadPts->at(1).at(2) = a;
+                QuadPts->at(2).at(0) = b;
+                QuadPts->at(2).at(1) = b;
+                QuadPts->at(2).at(2) = a;
 
-                QuadPts->at(1).at(0) = b;
-                QuadPts->at(1).at(1) = b;
-                QuadPts->at(1).at(2) = b;
+                QuadPts->at(3).at(0) = b;
+                QuadPts->at(3).at(1) = b;
+                QuadPts->at(3).at(2) = b;
 
                 a = 1.0/24.0;
                 QuadW->at(0) = a;
