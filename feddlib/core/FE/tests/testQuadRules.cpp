@@ -267,6 +267,50 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
+    // [TODO] Test 20: 3D, tetrahedron, polynomial order 3
+    {
+        auto f = [](SC x, SC y, SC z) -> SC { return x*x*x - 42*x*y*z + 42*z*z*z; };
+        SC r = 0.3; // expected result
+        const int dim = 3;
+        int degree = 3;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // [TODO] Test 21: 3D, tetrahedron, polynomial order 4
+    {
+        auto f = [](SC x, SC y, SC z) -> SC { return 21.0*x*x*x*x - 840.0*x*y*y*z + 21.0*z*z*z*z; };
+        SC r = -0.1 - 1.0/30.0; // expected result
+        const int dim = 3;
+        int degree = 4;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // [TODO] Test 22: 3D, tetrahedron, polynomial order 5
+    {
+        auto f = [](SC x, SC y, SC z) -> SC { return 21.0*pow(x,5) - 84.0*x*y*y*y*z + 21.0*pow(z,5); };
+        SC r = 0.1125; // expected result
+        const int dim = 3;
+        int degree = 5;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // [TODO] Test 23: 3D, tetrahedron, polynomial order 6
+    {
+        auto f = [](SC x, SC y, SC z) -> SC { return 21.0*pow(x,6) - 84.0*x*y*y*y*y*z + 21.0*pow(z,6); };
+        SC r = 7.0/90.0; // expected result
+        const int dim = 3;
+        int degree = 6;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
     std::cout << "testQuadRules: All " << test << " tests passed." << std::endl;
 
     return (EXIT_SUCCESS);
