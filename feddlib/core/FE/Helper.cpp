@@ -1455,15 +1455,15 @@ void Helper::getQuadratureValues(int dim,
                 // Keast - 1985 - Moderate-Degree Tetrahedral Quadrature Formulas (p.342)
                 QuadPts.reset(new vec2D_dbl_Type(24,vec_dbl_Type(3,0.0)));
                 QuadW->resize(24);
-                a = .356191386222545;
-                b = .214602871259152;
-                c = .877978124396166;
-                d = .040673958534611;
-                f = .032986329573173;
-                g = .322337890142276;
-                h = .269672331458316;
-                i = .063661001875018;
-                j = .603005664791649;
+                a = .356191386222544953;
+                b = .214602871259151684;
+                c = .877978124396165982;
+                d = .406739585346113397/10.0;
+                f = .329863295731730594/10.0;
+                g = .322337890142275646;
+                h = .269672331458315867;
+                i = .636610018750175299/10.0;
+                j = .603005664791649076;
                 
                 QuadPts->at(0).at(0) 	= a;
                 QuadPts->at(0).at(1)    = b;
@@ -1561,10 +1561,10 @@ void Helper::getQuadratureValues(int dim,
                 QuadPts->at(23).at(1)   = h;
                 QuadPts->at(23).at(2)   = i;
                 
-                a = 0.665379170949465/100.0;
-                b = 0.167953517588678/100.0;
-                c = 0.922619692394240/100.0;
-                d = 0.803571428571428/100.0;
+                a = 0.665379170969464506/100.0;
+                b = 0.167953517588677620/100.0;
+                c = 0.922619692394239843/100.0;
+                d = 0.803571428571428248/100.0;
                 
                 QuadW->at(0)  = a;
                 QuadW->at(1)  = a;
@@ -1606,7 +1606,7 @@ void Helper::getQuadratureValues(int dim,
         oss << std::scientific << std::setprecision(2) << error_volume;
         std::string str = oss.str();
         TEUCHOS_TEST_FOR_EXCEPTION(
-            error_volume > std::numeric_limits<double>::epsilon()*100.0, 
+            error_volume > std::numeric_limits<double>::epsilon()*10.0, 
             std::runtime_error, 
             "Quadrature weights do not sum to (approximately) " << volume_ref_element << 
             ", the length/area/volume of the reference element. [error:" + str  + "].");
