@@ -728,7 +728,7 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
             this->bcFactory_->setBCMinusVector( A_X_D, A_X_D, 0. ); 
             A_X_D->getBlock(1)->scale(-1);
 
-            // this->rhs_->update(-1.,A_X_D,0.);
+            this->rhs_->update(1.,A_X_D,0.);
            
           
         }
@@ -814,11 +814,11 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
         dummySys_noRB->apply( *X_D, *A_X_D ); 
         A_X_D->scale(-1.);
         this->bcFactory_->setRHS(A_X_D);
-        A_X_D->scale(-1.);
+        // A_X_D->scale(-1.);
         // A_X_D->print();
         // this->bcFactory_->setBCMinusVector( A_X_D, A_X_D, time ); 
         // this->bcFactory_->setVectorMinusBC( A_X_D, A_X_D, time ); 
-        // A_X_D->getBlock(1)->scale(-1);
+        A_X_D->getBlock(1)->scale(-1);
         // A_X_D->print();
 
         // Setting all boundaries to system
@@ -835,7 +835,7 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
 
         if (!type.compare("standard")){
             if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
-                this->rhs_->update(1.,A_X_D,0.);
+                this->rhs_->update(-1.,A_X_D,-1.);
             
             this->residualVec_->update(-1.,*this->rhs_,1.);
 
@@ -846,7 +846,7 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
         }
         else if(!type.compare("reverse")){
             if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
-                this->rhs_->update(1.,A_X_D,0.);
+                this->rhs_->update(-1.,A_X_D,-1.);
             this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
 
     //        if ( !this->sourceTerm_.is_null() )

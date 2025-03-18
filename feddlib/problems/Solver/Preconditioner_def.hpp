@@ -813,7 +813,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
     bool verbose ( comm->getRank() == 0 );
 
     TEUCHOS_TEST_FOR_EXCEPTION( system->size()!=2, std::logic_error, "Wrong size of system for Teko-Block-Preconditioners.");
-    system->getMergedMatrix()->writeMM("F_Teko");
+    // system->getMergedMatrix()->writeMM("F_Teko");
     Teko::LinearOp thyraF = system->getBlock(0,0)->getThyraLinOp();
     Teko::LinearOp thyraB = system->getBlock(1,0)->getThyraLinOp();
     Teko::LinearOp thyraBT = system->getBlock(0,1)->getThyraLinOp();
