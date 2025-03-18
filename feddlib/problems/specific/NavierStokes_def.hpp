@@ -724,9 +724,9 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
             // X_D->print();
             // dummySys_noRB->print();
             dummySys_noRB->apply( *X_D, *A_X_D ); 
-            A_X_D->scale(-1.);
+            // A_X_D->scale(-1.);
             this->bcFactory_->setRHS(A_X_D);
-            A_X_D->getBlockNonConst(1)->scale(-1.0);
+            // A_X_D->getBlockNonConst(1)->scale(-1.0);
             this->rhs_->update(1.,A_X_D,0.);
             // this->rhs_->print();
           
@@ -847,7 +847,7 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
             this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );    
         }
     }
-    this->residualVec_->print();
+    // this->residualVec_->print();
     //######################
      // We need to account for different parameters of time discretizations here
     // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
