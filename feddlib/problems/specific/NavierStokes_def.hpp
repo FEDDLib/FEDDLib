@@ -681,8 +681,8 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         }
     }
     else if(type=="Newton"){ 
-        if(this->parameterList_->sublist("Parameter").get("Symmetric BC",true))
-            this->reAssemble("FixedPoint");
+        // if(this->parameterList_->sublist("Parameter").get("Symmetric BC",true))
+        //     this->reAssemble("FixedPoint");
 
         // We assume that reAssmble("FixedPoint") was already called for the current iterate
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
@@ -694,12 +694,12 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         W->addMatrix(1.,ANW,1.);
 
         // #######################################
-        if(this->parameterList_->sublist("Parameter").get("Symmetric BC",true)){
-            ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
-            this->system_->addBlock( ANW, 0, 0 );
+        if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false)){
+            // ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
+            // this->system_->addBlock( ANW, 0, 0 );
 
             BlockMatrixPtr_Type dummySys_noRB(new BlockMatrix_Type (2));
-            dummySys_noRB->addBlock(this->system_->getBlock(0,0),0,0);
+            dummySys_noRB->addBlock(W,0,0);
             dummySys_noRB->addBlock(B_,1,0);
             dummySys_noRB->addBlock(BT_,0,1);
             if(this->system_->blockExists(1,1))
@@ -723,13 +723,12 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
             A_X_D->scale(0.);
             // X_D->print();
             // dummySys_noRB->print();
-            dummySys_noRB->apply( *X_D, *A_X_D );
+            dummySys_noRB->apply( *X_D, *A_X_D ); 
+            A_X_D->scale(-1.);
             this->bcFactory_->setRHS(A_X_D);
-            this->bcFactory_->setBCMinusVector( A_X_D, A_X_D, 0. ); 
-            A_X_D->getBlock(1)->scale(-1);
-
+            A_X_D->getBlockNonConst(1)->scale(-1.0);
             this->rhs_->update(1.,A_X_D,0.);
-           
+            // this->rhs_->print();
           
         }
 
@@ -809,19 +808,12 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
         // X_D->print();
         BlockMultiVectorPtr_Type A_X_D = Teuchos::rcp( new BlockMultiVector_Type( X_D ) );  
         A_X_D->scale(0.);
-        // X_D->print();
-        // dummySys_noRB->print();
+        
         dummySys_noRB->apply( *X_D, *A_X_D ); 
         A_X_D->scale(-1.);
         this->bcFactory_->setRHS(A_X_D);
-        // A_X_D->scale(-1.);
-        // A_X_D->print();
-        // this->bcFactory_->setBCMinusVector( A_X_D, A_X_D, time ); 
-        // this->bcFactory_->setVectorMinusBC( A_X_D, A_X_D, time ); 
-        A_X_D->getBlock(1)->scale(-1);
-        // A_X_D->print();
-
-        // Setting all boundaries to system
+        A_X_D->getBlockNonConst(0)->scale(-1);
+               // Setting all boundaries to system
         this->bcFactory_->setSystem(this->system_);
         // this->bcFactory_->setRHS(this->solution_);
 
@@ -834,19 +826,19 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
         //this->bcFactory_->setVectorMinusBC( A_X_D, A_X_D, time ); 
 
         if (!type.compare("standard")){
-            if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
-                this->rhs_->update(-1.,A_X_D,-1.);
-            
+            // if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
+            //     this->rhs_->update(1.,A_X_D,1.);
+
             this->residualVec_->update(-1.,*this->rhs_,1.);
 
     //        if ( !this->sourceTerm_.is_null() )
     //            this->residualVec_->update(-1.,*this->sourceTerm_,1.);
             // this might be set again by the TimeProblem after addition of M*u
-            this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
+            // this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
         }
         else if(!type.compare("reverse")){
-            if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
-                this->rhs_->update(-1.,A_X_D,-1.);
+            // if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
+            //     this->rhs_->update(-1.,A_X_D,0.);
             this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
 
     //        if ( !this->sourceTerm_.is_null() )
@@ -855,7 +847,7 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
             this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );    
         }
     }
-    // this->residualVec_->print();
+    this->residualVec_->print();
     //######################
      // We need to account for different parameters of time discretizations here
     // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN

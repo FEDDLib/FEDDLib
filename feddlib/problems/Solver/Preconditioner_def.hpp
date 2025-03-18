@@ -843,6 +843,20 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             problem_->getBCFactory()->setDirichletColumn(matrixM,true);
             velocityMassMatrix_ = matrixM->getThyraLinOp();
         }
+        if(problem_->getParameterList()->sublist("Parameter").get("Symmetric Ap in Prec",false)){
+            if(verbose)
+                cout << " ###### Making BC in Ap symmetric ###### " << endl;
+            MatrixPtr_Type matrixAp(new Matrix_Type(pressureLaplaceMatrixPtr_));
+            problem_->getBCFactoryPressureLaplace()->setDirichletColumn(matrixAp,true);
+            pressureLaplace_ = matrixAp->getThyraLinOp();
+        }
+        if(problem_->getParameterList()->sublist("Parameter").get("Symmetric Fp in Prec",false)){
+            if(verbose)
+                cout << " ###### Making BC in Fp symmetric ###### " << endl;
+            MatrixPtr_Type matrixFp(new Matrix_Type(pcdOperatorMatrixPtr_));
+            problem_->getBCFactoryPressureFp()->setDirichletColumn(matrixFp,true);
+            pcdOperator_ = matrixFp->getThyraLinOp();
+        }
     }
        
     //     // BlockMatrixPtr_Type systemSymm(new BlockMatrix_Type (2));

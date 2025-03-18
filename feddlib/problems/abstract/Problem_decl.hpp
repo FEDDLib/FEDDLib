@@ -141,9 +141,15 @@ public:
 
     void addBoundaries(const BCConstPtr_Type &bcFactory);
 
+    BCConstPtr_Type getBCFactory();
+
     void addBoundariesPressureLaplace(const BCConstPtr_Type &bcFactory);
 
+    BCConstPtr_Type getBCFactoryPressureLaplace(){ return bcFactoryPressureLaplace_;};
+
     void addBoundariesPressureFp(const BCConstPtr_Type &bcFactory);
+
+    BCConstPtr_Type getBCFactoryPressureFp(){return  bcFactoryPressureFp_;};
 
     void setBoundaries(double time=.0) const;
 
@@ -176,8 +182,6 @@ public:
     bool getVerbose() const;
 
     FEFacConstPtr_Type getFEFactory();
-
-    BCConstPtr_Type getBCFactory();
 
     DomainConstPtr_Type getDomain(int i) const;
 
