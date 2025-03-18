@@ -233,10 +233,11 @@ public:
     /// @return 
     int dofsPerNodeAtBlock(int block);
         
+    void setParameterList(ParameterListPtr_Type parameterList){parameterList_ = parameterList;};
 //    DomainPtr_Type domainOfBlock(int block) const;
     
 private:
-    
+    ParameterListPtr_Type parameterList_;
     std::vector<BC_func_Type> vecBC_func_;
     vec_int_Type vecFlag_;
     vec_int_Type vecBlockID_;

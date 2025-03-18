@@ -621,7 +621,7 @@ void BCBuilder<SC,LO,GO,NO>::setDirichletColumn(const MatrixPtr_Type &Matrix, bo
     Teuchos::ArrayRCP< SC > bcFlagsMvEntries  = bcFlagsExport->getDataNonConst(0);
     for(int i=0; i< bcFlagsUnique->size() ; i++){
         // if(fabs((*bcFlagsUnique)[i]) < 10)
-        for(int d=0; d< 2; d++ ){
+        for(int d=0; d< dofs; d++ ){
             bcFlagsMvEntries[i*dofs+d] = (*bcFlagsUnique)[i];
         }
     }
@@ -696,7 +696,7 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
             boolBlockHasRobin = blockHasRobinBC(blockRow,loc);
 
         }
-
+        
         if (boolBlockHasDirichlet){
             for (UN blockCol = 0; blockCol < numBlocks ; blockCol++) {
                 if ( blockMatrix->blockExists( blockRow, blockCol ) ) {
@@ -712,6 +712,12 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
                     setRobinBC( matrix, loc, blockRow, blockRow==blockCol );
                 }
             }
+        }
+        if(parameterList_->sublist("Parameter").get("Symmetric BC",false) ){
+            if(parameterList_->sublist("Parameter").get("Symmetric F",false))
+                setDirichletColumn(blockMatrix->getBlock( 0, 0 ),true);  
+            if(parameterList_->sublist("Parameter").get("Symmetric B",false) )   
+                setDirichletColumn(blockMatrix->getBlock( 1, 0 ),false);  
         }
     }
 }
@@ -804,6 +810,12 @@ void BCBuilder<SC,LO,GO,NO>::setSystemScaled(const BlockMatrixPtr_Type &blockMat
                     setRobinBC( matrix, loc, blockRow, blockRow==blockCol );
                 }
             }
+        }
+        if(parameterList_->sublist("Parameter").get("Symmetric BC",false) ){
+            if(parameterList_->sublist("Parameter").get("Symmetric F",false))
+                setDirichletColumn(blockMatrix->getBlock( 0, 0 ),true);  
+            // if(parameterList_->sublist("Parameter").get("Symmetric B",false) )   
+            //     setDirichletColumn(blockMatrix->getBlock( 1, 0 ),false);  
         }
     }
 }

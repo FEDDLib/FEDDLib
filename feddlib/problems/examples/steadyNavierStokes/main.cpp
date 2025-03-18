@@ -371,10 +371,13 @@ int main(int argc, char *argv[]) {
                 // domainVelocity->exportProcessor();
                 // ####################
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
-                
+                bcFactory->setParameterList(parameterListProblem);
+
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureLaplace( new BCBuilder<SC,LO,GO,NO>( ) );
+                bcFactoryPressureLaplace->setParameterList(parameterListProblem);
 
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureFp( new BCBuilder<SC,LO,GO,NO>( ) );
+                bcFactoryPressureFp->setParameterList(parameterListProblem);
 
                 if (!bcType.compare("parabolic") || !bcType.compare("poiseuille") )
                     parameter_vec.push_back(1.);//height of inflow region

@@ -119,6 +119,9 @@ public:
     /*####################*/
 
     mutable MatrixPtr_Type 	A_;
+    mutable MatrixPtr_Type 	B_;
+    mutable MatrixPtr_Type 	BT_;
+
     mutable MatrixPtr_Type 	Mp_;
     mutable MatrixPtr_Type 	Ap_;
 

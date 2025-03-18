@@ -315,15 +315,20 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 else
                     this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
             }
+            // this->getComm()->barrier();
 
             // MatrixPtr_Type Mvelocity0(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
             // this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity0, true,0 );
             // Mvelocity0->writeMM("M_0");
+                
+            // this->getComm()->barrier();
 
             //  MatrixPtr_Type Mvelocity1(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
             // this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity1, true,1 );
             // Mvelocity1->writeMM("M_1");
             // //
+            // this->getComm()->barrier();
+
             // MatrixPtr_Type Mvelocity2(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
             // this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity2, true,2 );
             // Mvelocity2->writeMM("M_2");
@@ -494,6 +499,13 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
     
     this->system_->addBlock( BT, 0, 1 );
     this->system_->addBlock( B, 1, 0 );
+
+    MatrixPtr_Type B1(new Matrix_Type( pressureMap, this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    MatrixPtr_Type BT1(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) );
+    this->feFactory_->assemblyDivAndDivTFast(this->dim_, this->getFEType(0), this->getFEType(1), 2, B1, BT1, this->getDomain(0)->getMapVecFieldUnique(), pressureMap, true );
+
+    B_ = B1; 
+    BT_ = BT1;
     
     if ( !this->getFEType(0).compare("P1") || !this->getFEType(0).compare("Q1") ) {
         C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
@@ -668,7 +680,11 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
             NAVIER_STOKES_STOP(ReassemblePCD);       
         }
     }
-    else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
+    else if(type=="Newton"){ 
+        if(this->parameterList_->sublist("Parameter").get("Symmetric BC",true))
+            this->reAssemble("FixedPoint");
+
+        // We assume that reAssmble("FixedPoint") was already called for the current iterate
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
         this->feFactory_->assemblyAdvectionInUVecField( this->dim_, this->domain_FEType_vec_.at(0), W, u_rep_, true );
         W->resumeFill();
@@ -676,8 +692,54 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         W->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
         this->system_->getBlock( 0, 0 )->addMatrix(1.,ANW,0.);
         W->addMatrix(1.,ANW,1.);
+
+        // #######################################
+        if(this->parameterList_->sublist("Parameter").get("Symmetric BC",true)){
+            ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
+            this->system_->addBlock( ANW, 0, 0 );
+
+            BlockMatrixPtr_Type dummySys_noRB(new BlockMatrix_Type (2));
+            dummySys_noRB->addBlock(this->system_->getBlock(0,0),0,0);
+            dummySys_noRB->addBlock(B_,1,0);
+            dummySys_noRB->addBlock(BT_,0,1);
+            if(this->system_->blockExists(1,1))
+                dummySys_noRB->addBlock(this->system_->getBlock(1,1),1,1);
+
+            // this->residualVec_->print();
+            //  // If we delete the columns also for setting BC we need to add something to the Residual
+            BlockMultiVectorPtr_Type X_D = Teuchos::rcp( new BlockMultiVector_Type( 2 ) );
+            MultiVectorPtr_Type uRes = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(0) ) );
+            MultiVectorPtr_Type pRes = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(1) ) );
+            
+            pRes->scale(0.);
+            uRes->scale(0.);
+            X_D->addBlock(uRes,0);
+            X_D->addBlock(pRes,1);
+
+            this->bcFactory_->setBCMinusVector( X_D, X_D, 0. ); 
+            // X_D->print();
+            // X_D->print();
+            BlockMultiVectorPtr_Type A_X_D = Teuchos::rcp( new BlockMultiVector_Type( X_D ) );  
+            A_X_D->scale(0.);
+            // X_D->print();
+            // dummySys_noRB->print();
+            dummySys_noRB->apply( *X_D, *A_X_D );
+            this->bcFactory_->setRHS(A_X_D);
+            this->bcFactory_->setBCMinusVector( A_X_D, A_X_D, 0. ); 
+            A_X_D->getBlock(1)->scale(-1);
+
+            // this->rhs_->update(-1.,A_X_D,0.);
+           
+          
+        }
+
+        // #######################################
+
+
+
     }
-    ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
+    if(!ANW->isFillComplete())
+        ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
     
     this->system_->addBlock( ANW, 0, 0 );
     
@@ -690,6 +752,117 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
 }
+
+
+template<class SC,class LO,class GO,class NO>
+void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
+    if (this->verbose_)
+        std::cout << "--- calculateNonLinResidualVec ("<< type <<") ... " << std::flush;
+    
+    this->reAssemble("FixedPoint");
+
+    // We need to account for different parameters of time discretizations here
+    // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
+    if(this->parameterList_->sublist("Parameter").get("Old BC",true)){
+        if (this->coeff_.size() == 0)
+            this->system_->apply( *this->solution_, *this->residualVec_ );
+        else
+            this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
+        
+        if (!type.compare("standard")){
+            this->residualVec_->update(-1.,*this->rhs_,1.);
+    //        if ( !this->sourceTerm_.is_null() )
+    //            this->residualVec_->update(-1.,*this->sourceTerm_,1.);
+            // this might be set again by the TimeProblem after addition of M*u
+            this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
+            
+        }
+        else if(!type.compare("reverse")){
+            this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
+    //        if ( !this->sourceTerm_.is_null() )
+    //            this->residualVec_->update(1.,*this->sourceTerm_,1.);
+            // this might be set again by the TimeProblem after addition of M*u
+            this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );    
+        }
+    }
+    else{
+        BlockMatrixPtr_Type dummySys_noRB(new BlockMatrix_Type (2));
+        dummySys_noRB->addBlock(this->system_->getBlock(0,0),0,0);
+        dummySys_noRB->addBlock(B_,1,0);
+        dummySys_noRB->addBlock(BT_,0,1);
+        if(this->system_->blockExists(1,1))
+            dummySys_noRB->addBlock(this->system_->getBlock(1,1),1,1);
+
+        // this->residualVec_->print();
+        //  // If we delete the columns also for setting BC we need to add something to the Residual
+        BlockMultiVectorPtr_Type X_D = Teuchos::rcp( new BlockMultiVector_Type( 2 ) );
+        MultiVectorPtr_Type uRes = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(0) ) );
+        MultiVectorPtr_Type pRes = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(1) ) );
+        
+        pRes->scale(0.);
+        uRes->scale(0.);
+        X_D->addBlock(uRes,0);
+        X_D->addBlock(pRes,1);
+
+        this->bcFactory_->setBCMinusVector( X_D, X_D, time ); 
+        // X_D->print();
+        // X_D->print();
+        BlockMultiVectorPtr_Type A_X_D = Teuchos::rcp( new BlockMultiVector_Type( X_D ) );  
+        A_X_D->scale(0.);
+        // X_D->print();
+        // dummySys_noRB->print();
+        dummySys_noRB->apply( *X_D, *A_X_D ); 
+        A_X_D->scale(-1.);
+        this->bcFactory_->setRHS(A_X_D);
+        A_X_D->scale(-1.);
+        // A_X_D->print();
+        // this->bcFactory_->setBCMinusVector( A_X_D, A_X_D, time ); 
+        // this->bcFactory_->setVectorMinusBC( A_X_D, A_X_D, time ); 
+        // A_X_D->getBlock(1)->scale(-1);
+        // A_X_D->print();
+
+        // Setting all boundaries to system
+        this->bcFactory_->setSystem(this->system_);
+        // this->bcFactory_->setRHS(this->solution_);
+
+        if (this->coeff_.size() == 0)
+            this->system_->apply( *this->solution_, *this->residualVec_ );
+        else
+            this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
+        
+        
+        //this->bcFactory_->setVectorMinusBC( A_X_D, A_X_D, time ); 
+
+        if (!type.compare("standard")){
+            if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
+                this->rhs_->update(1.,A_X_D,0.);
+            
+            this->residualVec_->update(-1.,*this->rhs_,1.);
+
+    //        if ( !this->sourceTerm_.is_null() )
+    //            this->residualVec_->update(-1.,*this->sourceTerm_,1.);
+            // this might be set again by the TimeProblem after addition of M*u
+            this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
+        }
+        else if(!type.compare("reverse")){
+            if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
+                this->rhs_->update(1.,A_X_D,0.);
+            this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
+
+    //        if ( !this->sourceTerm_.is_null() )
+    //            this->residualVec_->update(1.,*this->sourceTerm_,1.);
+            // this might be set again by the TimeProblem after addition of M*u
+            this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );    
+        }
+    }
+    // this->residualVec_->print();
+    //######################
+     // We need to account for different parameters of time discretizations here
+    // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
+
+
+}
+
 
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions){
@@ -973,7 +1146,8 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
             this->reAssemble("Newton"); // ReAssembling matrices with updated u  in this class
 
             this->setBoundariesSystem(); // setting boundaries to the system
-
+            // this->bcFactory_->setDirichletColumn(this->getSystem()->getBlock(1,0),false);
+            // this->bcFactory_->setDirichletColumn(this->getSystem()->getBlock(0,0),true);
 			// Changing the system Matrix into a tpetra Matrix (block matrices have 'getXpetraMatrix' feature)
             Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
             Teuchos::RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
@@ -1113,7 +1287,8 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
             this->reAssemble("Newton");
 
             this->setBoundariesSystem();
-
+            // this->bcFactory_->setDirichletColumn(this->getSystem()->getBlock(1,0),false);
+            // this->bcFactory_->setDirichletColumn(this->getSystem()->getBlock(0,0),true);
             RCP<ThyraBlockOp_Type> W_blocks = rcp_dynamic_cast<ThyraBlockOp_Type>(W_out);
             RCP<const ThyraOp_Type> W_block00 = W_blocks->getBlock(0,0);
             RCP<ThyraOp_Type> W_block00NonConst = rcp_const_cast<ThyraOp_Type>( W_block00 );
@@ -1183,35 +1358,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
     }
 }
 #endif
-
-template<class SC,class LO,class GO,class NO>
-void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
-    this->reAssemble("FixedPoint");
-
-    // We need to account for different parameters of time discretizations here
-    // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
-    if (this->coeff_.size() == 0)
-        this->system_->apply( *this->solution_, *this->residualVec_ );
-    else
-        this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
-    
-    if (!type.compare("standard")){
-        this->residualVec_->update(-1.,*this->rhs_,1.);
-//        if ( !this->sourceTerm_.is_null() )
-//            this->residualVec_->update(-1.,*this->sourceTerm_,1.);
-        // this might be set again by the TimeProblem after addition of M*u
-        this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
-        
-    }
-    else if(!type.compare("reverse")){
-        this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
-//        if ( !this->sourceTerm_.is_null() )
-//            this->residualVec_->update(1.,*this->sourceTerm_,1.);
-        // this might be set again by the TimeProblem after addition of M*u
-        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );    
-    }
-
-}
 
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std::string type, double time, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const{
@@ -1312,6 +1458,8 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     this->setBoundariesSystem();
+    // this->bcFactory_->setDirichletColumn(this->getSystem()->getBlock(1,0),false);
+    // this->bcFactory_->setDirichletColumn(this->getSystem()->getBlock(0,0),true);
 
     if (!type.compare("Teko") || !type.compare("Diagonal") || !type.compare("Triangular")) { //
         this->setupPreconditioner( type );

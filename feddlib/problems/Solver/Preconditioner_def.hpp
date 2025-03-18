@@ -813,40 +813,49 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
     bool verbose ( comm->getRank() == 0 );
 
     TEUCHOS_TEST_FOR_EXCEPTION( system->size()!=2, std::logic_error, "Wrong size of system for Teko-Block-Preconditioners.");
-
+    system->getMergedMatrix()->writeMM("F_Teko");
     Teko::LinearOp thyraF = system->getBlock(0,0)->getThyraLinOp();
     Teko::LinearOp thyraB = system->getBlock(1,0)->getThyraLinOp();
     Teko::LinearOp thyraBT = system->getBlock(0,1)->getThyraLinOp();
     // Easiest option would be to insert not block (1,0) but transpose block 0,1
     
-    if (!problem_.is_null() && problem_->getParameterList()->sublist("Parameter").get("Symmetric BC",false)){
+    if (!problem_.is_null() && problem_->getParameterList()->sublist("Parameter").get("Symmetric BC in Prec",false)){
 
-        if(problem_->getParameterList()->sublist("Parameter").get("Symmetric B",false)){
+        if(problem_->getParameterList()->sublist("Parameter").get("Symmetric B in Prec",false)){
             if(verbose)
                 cout << " ###### Making BC in B symmetric ###### " << endl;
             MatrixPtr_Type matrixB(new Matrix_Type(system->getBlock(1,0)) );
             problem_->getBCFactory()->setDirichletColumn(matrixB,false);
             thyraB = matrixB->getThyraLinOp();
         }
-        if(problem_->getParameterList()->sublist("Parameter").get("Symmetric F",false)){
+        if(problem_->getParameterList()->sublist("Parameter").get("Symmetric F in Prec",false)){
             if(verbose)
                 cout << " ###### Making BC in F symmetric ###### " << endl;
             MatrixPtr_Type matrixF(new Matrix_Type(system->getBlock(0,0)) );
             problem_->getBCFactory()->setDirichletColumn(matrixF,true);
             thyraF = matrixF->getThyraLinOp();
         }
-       
-        // BlockMatrixPtr_Type systemSymm(new BlockMatrix_Type (2));
-        // systemSymm->addBlock(matrixF,0,0);
-        // systemSymm->addBlock(matrixB,1,0);
-        // systemSymm->addBlock(system->getBlock(0,1),0,1);
-        // systemSymm->getMergedMatrix()->writeMM("MergedSystem");
-
-        // matrixB->writeMM("matrixB");
-
-        // system->getBlock(0,1)->writeMM("matrixBT");
-
+        if(problem_->getParameterList()->sublist("Parameter").get("Symmetric M in Prec",false)){
+            if(verbose)
+                cout << " ###### Making BC in M symmetric ###### " << endl;
+            MatrixPtr_Type matrixM(new Matrix_Type(velocityMassMatrixMatrixPtr_ ));
+            problem_->getBCFactory()->setDirichletBCScaled( matrixM, 0, 0, true );
+            problem_->getBCFactory()->setDirichletColumn(matrixM,true);
+            velocityMassMatrix_ = matrixM->getThyraLinOp();
+        }
     }
+       
+    //     // BlockMatrixPtr_Type systemSymm(new BlockMatrix_Type (2));
+    //     // systemSymm->addBlock(matrixF,0,0);
+    //     // systemSymm->addBlock(matrixB,1,0);
+    //     // systemSymm->addBlock(system->getBlock(0,1),0,1);
+    //     // systemSymm->getMergedMatrix()->writeMM("MergedSystem");
+
+    //     // matrixB->writeMM("matrixB");
+
+    //     // system->getBlock(0,1)->writeMM("matrixBT");
+
+    // }
     // else if(!timeProblem_.is_null())
     //     timeProblem_->getBCFactory->setDirichletColumn(matrixB)
     if (!system->blockExists(1,1)){

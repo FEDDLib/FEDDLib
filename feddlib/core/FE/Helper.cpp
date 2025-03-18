@@ -1717,8 +1717,8 @@ void Helper::getQuadratureValues(int dim,
         if (FEType.at(0)=='P') {
             if (Degree==2)
                 Degree=3;
-            // if (Degree==4)
-            //     Degree=5;
+            if (Degree==4)
+                Degree=5;
 
             TEUCHOS_TEST_FOR_EXCEPTION(Degree>6, std::runtime_error, "Tetrahedron quadrature rules only up to degree 6 available.");
             
@@ -1817,9 +1817,9 @@ void Helper::getQuadratureValues(int dim,
                     QuadPts->at(10).at(1)   = c;
                     QuadPts->at(10).at(2)   = d;
                     
-                    a = -.078933333333333;
-                    b = .045733333333333;
-                    c= .149333333333333;
+                    a = -.078933333333333/6.;
+                    b = .045733333333333/6.;
+                    c= .149333333333333/6.;
                     
                     
                     QuadW->at(0) = a;
@@ -1836,6 +1836,7 @@ void Helper::getQuadratureValues(int dim,
                     QuadW->at(9) = c;
                     QuadW->at(10) = c;
                     
+                    break;
                 case 5:
                     QuadPts.reset(new vec2D_dbl_Type(15,vec_dbl_Type(3,0.0)));
                     QuadW->resize(15);
@@ -2039,12 +2040,12 @@ void Helper::getQuadratureValues(int dim,
                     
                     QuadPts->at(23).at(0) 	= j;
                     QuadPts->at(23).at(1)   = h;
-                    QuadPts->at(23).at(2)   = j;
+                    QuadPts->at(23).at(2)   = i;
                     
-                    a = .039922750258168;
-                    b = .010077211055321;
-                    c = .055357181543654;
-                    d = .048214285714286;
+                    a = .039922750258168/6.;
+                    b = .010077211055321/6.; // ### /6. added
+                    c = .055357181543654/6.;
+                    d = .048214285714286/6.;
                     
                     QuadW->at(0)    = a;
                     QuadW->at(1)    = a;
