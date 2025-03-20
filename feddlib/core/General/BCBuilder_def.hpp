@@ -772,7 +772,7 @@ bool BCBuilder<SC,LO,GO,NO>::blockHasRobinBC(int block, int &loc) const{
 }
 
 template<class SC,class LO,class GO,class NO>
-void BCBuilder<SC,LO,GO,NO>::setSystemScaled(const BlockMatrixPtr_Type &blockMatrix) const{
+void BCBuilder<SC,LO,GO,NO>::setSystemScaled(const BlockMatrixPtr_Type &blockMatrix,double eps) const{
 
    UN numBlocks = blockMatrix->size();
     int loc;
@@ -799,7 +799,7 @@ void BCBuilder<SC,LO,GO,NO>::setSystemScaled(const BlockMatrixPtr_Type &blockMat
             for (UN blockCol = 0; blockCol < numBlocks ; blockCol++) {
                 if ( blockMatrix->blockExists( blockRow, blockCol ) ) {
                     MatrixPtr_Type matrix = blockMatrix->getBlock( blockRow, blockCol );
-                    setDirichletBCScaled( matrix, loc, blockRow, blockRow==blockCol );
+                    setDirichletBCScaled( matrix, loc, blockRow, blockRow==blockCol,eps );
                 }
             }
         }
@@ -857,7 +857,7 @@ void BCBuilder<SC,LO,GO,NO>::setDirichletBC(const MatrixPtr_Type &matrix, int lo
 }
 
 template<class SC,class LO,class GO,class NO>
-void BCBuilder<SC,LO,GO,NO>::setDirichletBCScaled(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock) const{
+void BCBuilder<SC,LO,GO,NO>::setDirichletBCScaled(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock, double eps) const{
     
     matrix->resumeFill();
     bool isDirichlet;
@@ -883,7 +883,7 @@ void BCBuilder<SC,LO,GO,NO>::setDirichletBCScaled(const MatrixPtr_Type &matrix, 
             if (isDirichlet) {
 
                 if (isDiagonalBlock)
-                    setLocalRowEntry(matrix, i, dofsPerNode, locThisFlag );
+                    setLocalRowEntry(matrix, i, dofsPerNode, locThisFlag,eps );
                 else
                     setLocalRowZero(matrix, i, dofsPerNode, locThisFlag );
             }
@@ -928,7 +928,7 @@ void BCBuilder<SC,LO,GO,NO>::setLocalRowOne(const MatrixPtr_Type &matrix, LO loc
 }
 
 template<class SC,class LO,class GO,class NO>
-void BCBuilder<SC,LO,GO,NO>::setLocalRowEntry(const MatrixPtr_Type &matrix, LO localNode, UN dofsPerNode, int loc) const{
+void BCBuilder<SC,LO,GO,NO>::setLocalRowEntry(const MatrixPtr_Type &matrix, LO localNode, UN dofsPerNode, int loc,double eps) const{
     
     Teuchos::ArrayView<const SC> valuesOld;
     Teuchos::ArrayView<const LO> indices;
@@ -947,11 +947,16 @@ void BCBuilder<SC,LO,GO,NO>::setLocalRowEntry(const MatrixPtr_Type &matrix, LO l
            // cout << " Setting Dirichlet Row 1 for node " << localDof << " of type " << vecBCType_.at(loc)  <<endl;
             GO globalDof = matrix->getMap()->getGlobalElement( localDof );
             matrix->getLocalRowView(localDof, indices, valuesOld);
+            double rowSum = 0.;
+            for (UN j=0; j<indices.size(); j++) {
+               rowSum += abs(valuesOld[j]);
+            }
             Teuchos::Array<SC> values( valuesOld.size(), Teuchos::ScalarTraits<SC>::zero() );
             bool setOne = false;
             for (UN j=0; j<indices.size() && !setOne; j++) {
                 if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
-                    values[j] = valuesOld[j];
+                    values[j] = valuesOld[j]*eps;
+
                     setOne = true;
                 }
             }

@@ -301,6 +301,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
          || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("SIMPLE")) {
             MatrixPtr_Type Mvelocity(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
             //
+            int extraDeg = this->parameterList_->sublist("Parameter").get("Extra Deg",0);
             if(this->parameterList_->sublist("Parameter").get("BFBT",false)){
                 if(this->verbose_)
                     std::cout << "\n Setting M_u to be the identity Matrix to use BFBT preconditioner " << std::endl;
@@ -311,9 +312,9 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             }
             else{ // For whatever reason, when we have a stationary problem a higher degree for the quadrature improves results
                 if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> 0 ) // In case we have a timeproblem
-                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
+                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,extraDeg );
                 else
-                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,0 );
+                    this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true,extraDeg );
             }
             // this->getComm()->barrier();
 
@@ -337,8 +338,9 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             //
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
             if(this->parameterList_->sublist("Parameter").get("BC in LSC Mu",false)){
+                double epsilon = this->parameterList_->sublist("Parameter").get("Scaling Mu Matrix",0.0);
                 bcBlockMatrix->addBlock(Mvelocity,0,0);
-                this->bcFactory_->setSystemScaled(bcBlockMatrix); // setSystemScaled(bcBlockMatrix); 
+                this->bcFactory_->setSystemScaled(bcBlockMatrix,1.0+epsilon); // setSystemScaled(bcBlockMatrix); 
             }
             //
             this->getPreconditionerConst()->setVelocityMassMatrix( Mvelocity );
@@ -350,8 +352,10 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 0, Lp, true );//assemblyIdentity(Lp); //
 
             bcBlockMatrix->addBlock(Lp,0,0);
-            this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix); 
-            this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp );
+            double eps = this->parameterList_->sublist("Parameter").get("Scaling Ap Matrix",0.0);
+
+            this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix, 1.0+eps ); 
+            this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp);
 
             // Weighting Vector for Scaling Matrix H
             if(this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("LSC").sublist("Strategy Settings").get("Use W-Scaling",false)||
@@ -393,8 +397,10 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             // Adding Boundary Conditions
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
             bcBlockMatrix->addBlock(Lp,0,0);
+            double epsilon = this->parameterList_->sublist("Parameter").get("Scaling Ap Matrix",0.0);
+
             this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix); 
-            this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp );
+            this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp, 1.+ epsilon );
             //gitLp->writeMM("A_p");
             // --------------------------------------------------------------------------------------------
 
@@ -405,8 +411,6 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             MatrixPtr_Type AdvPressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
             this->feFactory_->assemblyAdvectionVecFieldScalar( this->dim_, this->domain_FEType_vec_.at(1), this->domain_FEType_vec_.at(0),AdvPressure, u_rep_, true ); 
            
-            bool scaledDiag = this->parameterList_->sublist("Parameter").get("Scale Diag",true);
-
             // Diffusion component: \nu * \Delta
             MatrixPtr_Type Ap2(new Matrix_Type( Ap_) );
             //this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 2, Ap2, true );//assemblyIdentity(Lp);
@@ -415,17 +419,17 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             Ap2->scale(kinVisco);
             Ap2->fillComplete(); 
             // ---------------------
-            if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 1",false)){ // Setting in Ap2 the boundaries of Lp
-                BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
-                bcBlockMatrix->addBlock(Ap2,0,0);
-                this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix); 
-            }
+            // if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 1",false)){ // Setting in Ap2 the boundaries of Lp
+            //     BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
+            //     bcBlockMatrix->addBlock(Ap2,0,0);
+            //     this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix); 
+            // }
             
-            if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 2",false)){  // Setting in Ap2 the boundaries of Fp
-                BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
-                bcBlockMatrix->addBlock(Ap2,0,0);
-                this->bcFactoryPressureFp_->setSystemScaled(bcBlockMatrix);     
-            }
+            // if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 2",false)){  // Setting in Ap2 the boundaries of Fp
+            //     BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
+            //     bcBlockMatrix->addBlock(Ap2,0,0);
+            //     this->bcFactoryPressureFp_->setSystemScaled(bcBlockMatrix);     
+            // }
             
             if(this->parameterList_->sublist("Parameter").get("Robin BC",false)){
                 MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
@@ -434,16 +438,15 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 Kext->addMatrix(-1.,Kp,1.); // adding advection to diffusion
             }
 
-            bcBlockMatrix->addBlock(AdvPressure,0,0);
-
-            this->bcFactoryPressureFp_->setSystemScaled(bcBlockMatrix); 
-
             // Adding laplace an convection together
             Ap2->addMatrix(1.,Kp,1.); // adding advection to diffusion
             AdvPressure->addMatrix(1.,Kp,1.); // adding advection to diffusion
-
+            
             Kp->fillComplete();
 
+            bcBlockMatrix->addBlock(Kp,0,0);
+            epsilon = this->parameterList_->sublist("Parameter").get("Scaling Fp Matrix",0.0);
+            this->bcFactoryPressureFp_->setSystemScaled(bcBlockMatrix,1.+epsilon);
 
             this->getPreconditionerConst()->setPCDOperator( Kp );  
 
@@ -630,15 +633,15 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
             Ap2->scale(kinVisco);
             Ap2->fillComplete(); 
             // ---------------------
-            if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 1",false)){ // Setting in Ap2 the boundaries of Lp
-                bcBlockMatrix->addBlock(Ap2,0,0);
-                this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix);  
-            }
+            // if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 1",false)){ // Setting in Ap2 the boundaries of Lp
+            //     bcBlockMatrix->addBlock(Ap2,0,0);
+            //     this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix);  
+            // }
             
-            if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 2",true)){  // Setting in Ap2 the boundaries of Fp
-                bcBlockMatrix->addBlock(Ap2,0,0);
-                this->bcFactoryPressureFp_->setSystemScaled(bcBlockMatrix);     
-            }
+            // if(this->parameterList_->sublist("Parameter").get("Fp-Ap Option 2",true)){  // Setting in Ap2 the boundaries of Fp
+            //     bcBlockMatrix->addBlock(Ap2,0,0);
+            //     this->bcFactoryPressureFp_->setSystemScaled(bcBlockMatrix);     
+            // }
             
             if(this->parameterList_->sublist("Parameter").get("Robin BC",false)){
                 MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
@@ -647,13 +650,12 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
                 Kext->addMatrix(-1.,Fp,1.); // adding advection to diffusion
             }
             // Setting boundary conditions in Fp
-            bcBlockMatrix->addBlock(AdvPressure,0,0);
-            this->bcFactoryPressureFp_->setSystemScaled(bcBlockMatrix); 
+           
 
             // Adding laplace an convection together
             Ap2->addMatrix(1.,Fp,1.); // adding advection to diffusion
             AdvPressure->addMatrix(1.,Fp,1.); // adding advection to diffusion
-
+  
             // Finally if we deal with a transient problem we additionally add the Mass term 1/delta t M_p
             if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> -1 ){ // In case we have a timeproblem
                 MatrixPtr_Type Mp2(new Matrix_Type( Mp_ ) );
@@ -671,10 +673,12 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
                 Mp2->addMatrix(1.,Fp,1.);
 
             }
-
-
-
             Fp->fillComplete();
+
+            bcBlockMatrix->addBlock(Fp,0,0);   
+            double epsilon = this->parameterList_->sublist("Parameter").get("Scaling Fp Matrix",0.0);
+            this->bcFactoryPressureFp_->setSystemScaled(bcBlockMatrix,1.+epsilon); 
+
 
             this->getPreconditionerConst()->setPCDOperator( Fp );       
             NAVIER_STOKES_STOP(ReassemblePCD);       
@@ -694,43 +698,43 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         W->addMatrix(1.,ANW,1.);
 
         // #######################################
-        if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false)){
-            // ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
-            // this->system_->addBlock( ANW, 0, 0 );
+        // if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false)){
+        //     // ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
+        //     // this->system_->addBlock( ANW, 0, 0 );
 
-            BlockMatrixPtr_Type dummySys_noRB(new BlockMatrix_Type (2));
-            dummySys_noRB->addBlock(W,0,0);
-            dummySys_noRB->addBlock(B_,1,0);
-            dummySys_noRB->addBlock(BT_,0,1);
-            if(this->system_->blockExists(1,1))
-                dummySys_noRB->addBlock(this->system_->getBlock(1,1),1,1);
+        //     BlockMatrixPtr_Type dummySys_noRB(new BlockMatrix_Type (2));
+        //     dummySys_noRB->addBlock(W,0,0);
+        //     dummySys_noRB->addBlock(B_,1,0);
+        //     dummySys_noRB->addBlock(BT_,0,1);
+        //     if(this->system_->blockExists(1,1))
+        //         dummySys_noRB->addBlock(this->system_->getBlock(1,1),1,1);
 
-            // this->residualVec_->print();
-            //  // If we delete the columns also for setting BC we need to add something to the Residual
-            BlockMultiVectorPtr_Type X_D = Teuchos::rcp( new BlockMultiVector_Type( 2 ) );
-            MultiVectorPtr_Type uRes = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(0) ) );
-            MultiVectorPtr_Type pRes = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(1) ) );
+        //     // this->residualVec_->print();
+        //     //  // If we delete the columns also for setting BC we need to add something to the Residual
+        //     BlockMultiVectorPtr_Type X_D = Teuchos::rcp( new BlockMultiVector_Type( 2 ) );
+        //     MultiVectorPtr_Type uRes = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(0) ) );
+        //     MultiVectorPtr_Type pRes = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(1) ) );
             
-            pRes->scale(0.);
-            uRes->scale(0.);
-            X_D->addBlock(uRes,0);
-            X_D->addBlock(pRes,1);
+        //     pRes->scale(0.);
+        //     uRes->scale(0.);
+        //     X_D->addBlock(uRes,0);
+        //     X_D->addBlock(pRes,1);
 
-            this->bcFactory_->setBCMinusVector( X_D, X_D, 0. ); 
-            // X_D->print();
-            // X_D->print();
-            BlockMultiVectorPtr_Type A_X_D = Teuchos::rcp( new BlockMultiVector_Type( X_D ) );  
-            A_X_D->scale(0.);
-            // X_D->print();
-            // dummySys_noRB->print();
-            dummySys_noRB->apply( *X_D, *A_X_D ); 
-            // A_X_D->scale(-1.);
-            this->bcFactory_->setRHS(A_X_D);
-            // A_X_D->getBlockNonConst(1)->scale(-1.0);
-            this->rhs_->update(1.,A_X_D,0.);
-            // this->rhs_->print();
+        //     this->bcFactory_->setBCMinusVector( X_D, X_D, 0. ); 
+        //     // X_D->print();
+        //     // X_D->print();
+        //     BlockMultiVectorPtr_Type A_X_D = Teuchos::rcp( new BlockMultiVector_Type( X_D ) );  
+        //     A_X_D->scale(0.);
+        //     // X_D->print();
+        //     // dummySys_noRB->print();
+        //     dummySys_noRB->apply( *X_D, *A_X_D ); 
+        //     A_X_D->scale(-1.);
+        //     this->bcFactory_->setRHS(A_X_D);
+        //     A_X_D->getBlockNonConst(1)->scale(-1.0);
+        //     this->rhs_->update(-1.,A_X_D,0.);
+        //     // this->rhs_->print();
           
-        }
+        // }
 
         // #######################################
 
@@ -826,8 +830,8 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
         //this->bcFactory_->setVectorMinusBC( A_X_D, A_X_D, time ); 
 
         if (!type.compare("standard")){
-            // if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
-            //     this->rhs_->update(1.,A_X_D,1.);
+            if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
+                this->rhs_->update(-1.,A_X_D,0.);
 
             this->residualVec_->update(-1.,*this->rhs_,1.);
 
@@ -837,8 +841,9 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
             // this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
         }
         else if(!type.compare("reverse")){
-            // if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
-            //     this->rhs_->update(-1.,A_X_D,0.);
+            if(this->parameterList_->sublist("Parameter").get("Symmetric BC",false))
+                this->rhs_->update(-1.,A_X_D,0.);
+            
             this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
 
     //        if ( !this->sourceTerm_.is_null() )

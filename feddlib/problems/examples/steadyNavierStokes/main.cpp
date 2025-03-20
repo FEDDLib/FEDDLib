@@ -441,6 +441,12 @@ int main(int argc, char *argv[]) {
                             bcFactoryPressureLaplace->addBC(zeroDirichlet2D, 1, 0, domainPressure, "Dirichlet", 1);
                             bcFactoryPressureLaplace->addBC(zeroDirichlet2D, 3, 0, domainPressure, "Dirichlet", 1);
                         }
+                        else if( !pcdBC.compare("InletOutlet")){
+                            if(verbose)
+                                cout << " --------- PCD Info: Setting outlet and wall of Laplace to Dirichlet ----------- " << endl;
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet2D, 1, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet2D, 3, 0, domainPressure, "Dirichlet", 1);
+                        }
                         else if( !pcdBC.compare("WallInlet")){
                             if(verbose)
                                 cout << " --------- PCD Info: Setting intlet and wall of Laplace to Dirichlet ----------- " << endl;

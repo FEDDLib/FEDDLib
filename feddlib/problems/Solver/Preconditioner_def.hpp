@@ -885,7 +885,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
     
 
     if (!precondtionerIsBuilt_) {
-
         if ( precFactory_.is_null() ){
             ParameterListPtr_Type pListThyraSolver = sublist( parameterList, "ThyraSolver" );
 

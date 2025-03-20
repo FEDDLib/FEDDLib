@@ -164,7 +164,7 @@ public:
     
     /// @brief Set boundary conditions to system
     /// @param blockMatrix 
-    void setSystemScaled(const BlockMatrixPtr_Type &blockMatrix) const;
+    void setSystemScaled(const BlockMatrixPtr_Type &blockMatrix,double eps=1.0) const;
     
     /// @brief Set boundary conditions to system
     /// @param blockMatrix 
@@ -184,14 +184,14 @@ public:
     /// @param loc 
     /// @param blockRow 
     /// @param isDiagonalBlock 
-    void setDirichletBCScaled(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock) const;
+    void setDirichletBCScaled(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock, double eps=1.0) const;
 
     /// @brief 
     /// @param matrix 
     /// @param localNode 
     /// @param dofsPerNode 
     /// @param loc 
-    void setLocalRowEntry(const MatrixPtr_Type &matrix, LO localNode, UN dofsPerNode, int loc) const;
+    void setLocalRowEntry(const MatrixPtr_Type &matrix, LO localNode, UN dofsPerNode, int loc, double eps) const;
     
     /// @brief 
     /// @param matrix 
