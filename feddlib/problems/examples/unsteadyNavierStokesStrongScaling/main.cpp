@@ -503,9 +503,14 @@ int main(int argc, char *argv[])
             }
             parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Heart Beat Start",0.2) ); // Adding the heart beat start last
 
-            Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+            bcFactory->setParameterList(parameterListProblem);
+
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureLaplace( new BCBuilder<SC,LO,GO,NO>( ) );
+            bcFactoryPressureLaplace->setParameterList(parameterListProblem);
+
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureFp( new BCBuilder<SC,LO,GO,NO>( ) );
+            bcFactoryPressureFp->setParameterList(parameterListProblem);
 
             // TODO: Vermutlich braucht man keine bcFactoryFluid und bcFactoryStructure,
             // da die RW sowieso auf dem FSI-Problem gesetzt werden.
