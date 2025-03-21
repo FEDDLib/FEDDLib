@@ -366,20 +366,20 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 this->feFactory_->assemblyWeightedMatrix( this->dim_,this->getFEType(0), epsilon,0 ,W, this->parameterList_) ;
                 this->getPreconditionerConst()->setWScaling( W );
 
-                ExporterPtr_Type Exporter = Teuchos::rcp(new Exporter_Type());
+                // ExporterPtr_Type Exporter = Teuchos::rcp(new Exporter_Type());
                 
-                DomainConstPtr_Type dom = this->getDomain(0);
-                std::string varName = "W";
+                // DomainConstPtr_Type dom = this->getDomain(0);
+                // std::string varName = "W";
                 
-                MeshPtr_Type meshNonConst = Teuchos::rcp_const_cast<Mesh_Type>( dom->getMesh() );
+                // MeshPtr_Type meshNonConst = Teuchos::rcp_const_cast<Mesh_Type>( dom->getMesh() );
 
-                Exporter->setup(varName, meshNonConst, this->getFEType(0));
+                // Exporter->setup(varName, meshNonConst, this->getFEType(0));
 
-                MultiVectorConstPtr_Type exportVector = W;
+                // MultiVectorConstPtr_Type exportVector = W;
                 
-                Exporter->addVariable( exportVector, "W_Scaling", "Vector", this->dim_, dom->getMapUnique() );
+                // Exporter->addVariable( exportVector, "W_Scaling", "Vector", this->dim_, dom->getMapUnique() );
 
-                Exporter->save(0.);
+                // Exporter->save(0.);
 
                 if (this->verbose_)
                     std::cout << "\n Computed W-Scaling Vector for LSC and added to preconditioner." << std::endl;
