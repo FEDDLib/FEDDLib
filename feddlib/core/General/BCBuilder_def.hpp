@@ -24,6 +24,7 @@ BCBuilder<SC,LO,GO,NO>::BCBuilder():
     vecBC_Parameters_(),
     vecExternalSol_(0),
     resultPtr_(),
+    parameterList_(),
     pointPtr_()
 #ifdef BCBuilder_TIMER
 ,SetSystemRowTimer_(Teuchos::TimeMonitor::getNewCounter("BCBuilder: SetSystemRow")),

@@ -858,7 +858,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             pcdOperator_ = matrixFp->getThyraLinOp();
         }
     }
-    else if(!timeProblem_.is_null()){
+    else if(!timeProblem_.is_null()&& problem_->getParameterList()->sublist("Parameter").get("Symmetric BC in Prec",false)){
 
         if(timeProblem_->getParameterList()->sublist("Parameter").get("Symmetric B in Prec",false)){
             if(verbose)

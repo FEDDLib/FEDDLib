@@ -454,7 +454,7 @@ int main(int argc, char *argv[])
                 ParameterListPtr_Type parameterListLaplace(new Teuchos::ParameterList(*parameterListProblemL)) ;
                 parameterListLaplace->setParameters(*parameterListPrecL);
                 parameterListLaplace->setParameters(*parameterListSolverL);
-                
+                bcFactoryLaplace->setParameterList(parameterListLaplace);
                 Laplace<SC,LO,GO,NO> laplace( domainFluidVelocity, feTypeV, parameterListLaplace, false );
                 {
                     laplace.addRhsFunction(oneFunc);
@@ -487,7 +487,8 @@ int main(int argc, char *argv[])
                 double flowRateParabolic=0.;
 
                 fe.assemblyFlowRate(dim, flowRateParabolic, domainFluidVelocity->getFEType(),1, 4, solutionLaplaceRep);
-                cout << " Flowrate parabolic " << flowRateParabolic << endl;
+                if(verbose)
+                    cout << " -------> Flowrate parabolic " << flowRateParabolic << endl;
 
 
                 Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
@@ -503,7 +504,7 @@ int main(int argc, char *argv[])
             }
             parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Heart Beat Start",0.2) ); // Adding the heart beat start last
 
-             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+            Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
             bcFactory->setParameterList(parameterListProblem);
 
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryPressureLaplace( new BCBuilder<SC,LO,GO,NO>( ) );
