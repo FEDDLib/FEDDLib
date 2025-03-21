@@ -447,16 +447,16 @@ void TimeProblem<SC,LO,GO,NO>::calculateNonLinResidualVec( std::string type, dou
 
         // for FSI we need to reassemble the massmatrix system if the mesh was moved for geometry implicit computations
         if (this->parameterList_->sublist("Parameter").get("FSI",false) ){
-            bool geometryExplicit = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
-            if( !geometryExplicit ) {
-                typedef FSI<SC,LO,GO,NO> FSI_Type;
-                typedef Teuchos::RCP<FSI_Type> FSIPtr_Type;
+            // bool geometryExplicit = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
+            // if( !geometryExplicit ) {
+            //     typedef FSI<SC,LO,GO,NO> FSI_Type;
+            //     typedef Teuchos::RCP<FSI_Type> FSIPtr_Type;
                 
-                MatrixPtr_Type massmatrix;                
-                FSIPtr_Type fsi = Teuchos::rcp_dynamic_cast<FSI_Type>( this->problem_ );
-                fsi->setFluidMassmatrix( massmatrix );
-                this->systemMass_->addBlock( massmatrix, 0, 0 );
-            }
+            //     MatrixPtr_Type massmatrix;                
+            //     FSIPtr_Type fsi = Teuchos::rcp_dynamic_cast<FSI_Type>( this->problem_ );
+            //     fsi->setFluidMassmatrix( massmatrix );
+            //     this->systemMass_->addBlock( massmatrix, 0, 0 );
+            // }
         }
         // we need to add M/dt*u_(t+1)^k (the last results of the nonlinear method) to the residualVec_
         //Copy

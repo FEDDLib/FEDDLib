@@ -363,8 +363,23 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             {
                 MultiVectorPtr_Type W(new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
                 double epsilon = this->parameterList_->sublist("Parameter").get("Scaling W Matrix",0.1);
-                this->feFactory_->assemblyWeightedMatrix( this->dim_,this->getFEType(0), epsilon,0 ,W) ;
+                this->feFactory_->assemblyWeightedMatrix( this->dim_,this->getFEType(0), epsilon,0 ,W, this->parameterList_) ;
                 this->getPreconditionerConst()->setWScaling( W );
+
+                ExporterPtr_Type Exporter = Teuchos::rcp(new Exporter_Type());
+                
+                DomainConstPtr_Type dom = this->getDomain(0);
+                std::string varName = "W";
+                
+                MeshPtr_Type meshNonConst = Teuchos::rcp_const_cast<Mesh_Type>( dom->getMesh() );
+
+                Exporter->setup(varName, meshNonConst, this->getFEType(0));
+
+                MultiVectorConstPtr_Type exportVector = W;
+                
+                Exporter->addVariable( exportVector, "W_Scaling", "Vector", this->dim_, dom->getMapUnique() );
+
+                Exporter->save(0.);
 
                 if (this->verbose_)
                     std::cout << "\n Computed W-Scaling Vector for LSC and added to preconditioner." << std::endl;
@@ -399,8 +414,8 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             bcBlockMatrix->addBlock(Lp,0,0);
             double epsilon = this->parameterList_->sublist("Parameter").get("Scaling Ap Matrix",0.0);
 
-            this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix); 
-            this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp, 1.+ epsilon );
+            this->bcFactoryPressureLaplace_->setSystemScaled(bcBlockMatrix,1.+ epsilon ); 
+            this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp);
             //gitLp->writeMM("A_p");
             // --------------------------------------------------------------------------------------------
 

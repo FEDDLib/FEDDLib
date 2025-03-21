@@ -7998,7 +7998,8 @@ void FE<SC,LO,GO,NO>::assemblyWeightedMatrix( int dim,
                                    std::string FEType,
                                    double eps, 
                                    int volumeFlag,
-                                   MultiVectorPtr_Type  a)
+                                   MultiVectorPtr_Type  a,
+                                   ParameterListPtr_Type param)
     {
 
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
@@ -8013,6 +8014,8 @@ void FE<SC,LO,GO,NO>::assemblyWeightedMatrix( int dim,
 
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
   
+  	int neumannFlag = param->sublist("Parameter").get("Neumann Boundary Flag Velocity",3);
+
     // Repeated version we assemble
     MultiVectorPtr_Type a_rep = Teuchos::rcp( new MultiVector_Type( domainVec_.at(FEloc)->getMapVecFieldRepeated(), 1 ) );
     a_rep->putScalar(1.); // Default value is 1
@@ -8029,30 +8032,70 @@ void FE<SC,LO,GO,NO>::assemblyWeightedMatrix( int dim,
         for(int i=0; i< dim+1; i++)
             if((*bcFlags)[nodes[i]] != volumeFlag)
                 nodesBoundary.push_back(nodes[i]);
+        
+        if(nodesBoundary.size() == dim+1) // Then somehow all points belong to the surface
+        {
+            vec2D_int_Type surfaceCombos(dim+1,vec_int_Type(dim));
+            if(dim == 2){
+		        (surfaceCombos)[0]={nodesBoundary[0],nodesBoundary[1]};
+		        (surfaceCombos)[1]={nodesBoundary[0],nodesBoundary[2]};
+		        (surfaceCombos)[2]={nodesBoundary[2],nodesBoundary[3]};
+            }
+            if(dim == 3){
+		        (surfaceCombos)[0]={nodesBoundary[0],nodesBoundary[1],nodesBoundary[2]};
+		        (surfaceCombos)[1]={nodesBoundary[0],nodesBoundary[1],nodesBoundary[3]};
+		        (surfaceCombos)[2]={nodesBoundary[0],nodesBoundary[2],nodesBoundary[3]};
+		        (surfaceCombos)[3]={nodesBoundary[1],nodesBoundary[2],nodesBoundary[3]};
+            }
+            bool correctSurfaceFound = false;
+            for(int i=0; i< dim+1 && !correctSurfaceFound; i++){
+                vec_dbl_Type v_E(dim,1.);
+                double norm_v_E = 1.;
 
+                vec_int_Type surface = surfaceCombos[i];
+                // cout << " Compute normal for ID " << surface[0] << ": (" << (*pointsRep)[surface[0]][0] << " " << (*pointsRep)[surface[1]][1]  << ") and ID " << surface[1] << ": (" << (*pointsRep)[surface[1]][0] << " " << (*pointsRep)[surface[1]][1] << ") " << endl;
+                Helper::computeSurfaceNormal(dim, pointsRep,surface,v_E,norm_v_E); // Surface normal of surface element
+                
+                for(int d = 0; d< dim ; d++)
+                    if(fabs((1./norm_v_E) * v_E[d])+1.e-10 >= 1){
+                        correctSurfaceFound=true;
+                        nodesBoundary = surface;
+                    }
+            }        
+
+
+        }
+        
         if(nodesBoundary.size()>dim-1){
+
             vec_dbl_Type v_E(dim,1.);
             double norm_v_E = 1.;
 
             vec_int_Type surface = vec_int_Type(nodesBoundary.begin() , nodesBoundary.begin()+ dim);
             // cout << " Compute normal for ID " << surface[0] << ": (" << (*pointsRep)[surface[0]][0] << " " << (*pointsRep)[surface[1]][1]  << ") and ID " << surface[1] << ": (" << (*pointsRep)[surface[1]][0] << " " << (*pointsRep)[surface[1]][1] << ") " << endl;
             Helper::computeSurfaceNormal(dim, pointsRep,surface,v_E,norm_v_E); // Surface normal of surface element
-
-            // dimension x , y , z 
+            
+            // cout << " Max Value " << maxValue << " norm v_E " << norm_v_E << " eps " << eps << " ve " << v_E[0] << " " << v_E[1] <<  endl;
             for(int d =0 ; d<dim; d++){
                 double norm = fabs((1./norm_v_E) * v_E[d]);
-                double maxValue = std::max(norm,eps);
-                // cout << " Max Value " << maxValue << " norm v_E " << norm_v_E << " eps " << eps << " ve " << v_E[0] << " " << v_E[1] <<  endl;
-                for(int j = 0; j< nodesBoundary.size(); j++){     
-                    values_a[nodesBoundary[j]*d + d] = maxValue;
+                if(norm -1.e-6 < 0){
+                    double maxValue = std::max(norm,eps);
+                    // cout << " Max Value " << maxValue << " norm v_E " << norm_v_E << " eps " << eps << " ve " << v_E[0] << " " << v_E[1] <<  endl;
+                    for(int j = 0; j< nodes.size(); j++){  
+                        if((*bcFlags)[nodes[j]] != 0)   
+                            values_a[nodes[j]*dim + d] = maxValue;
+                    }
                 }
             }
+            
         }
     }
 
     // Adding it together in the unique vector
     a->putScalar(0.);
+    // a_rep->print();
     a->exportFromVector( a_rep, true, "Insert" ); 
+    // a->print();
 
     // a->print(); 
 }
