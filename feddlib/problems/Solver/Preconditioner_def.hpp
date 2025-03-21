@@ -858,6 +858,45 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             pcdOperator_ = matrixFp->getThyraLinOp();
         }
     }
+    else if(!timeProblem_.is_null()){
+
+        if(timeProblem_->getParameterList()->sublist("Parameter").get("Symmetric B in Prec",false)){
+            if(verbose)
+                cout << " ###### Making BC in B symmetric ###### " << endl;
+            MatrixPtr_Type matrixB(new Matrix_Type(system->getBlock(1,0)) );
+            timeProblem_->getUnderlyingProblem()->getBCFactory()->setDirichletColumn(matrixB,false);
+            thyraB = matrixB->getThyraLinOp();
+        }
+        if(timeProblem_->getParameterList()->sublist("Parameter").get("Symmetric F in Prec",false)){
+            if(verbose)
+                cout << " ###### Making BC in F symmetric ###### " << endl;
+            MatrixPtr_Type matrixF(new Matrix_Type(system->getBlock(0,0)) );
+            timeProblem_->getUnderlyingProblem()->getBCFactory()->setDirichletColumn(matrixF,true);
+            thyraF = matrixF->getThyraLinOp();
+        }
+        if(timeProblem_->getParameterList()->sublist("Parameter").get("Symmetric M in Prec",false)){
+            if(verbose)
+                cout << " ###### Making BC in M symmetric ###### " << endl;
+            MatrixPtr_Type matrixM(new Matrix_Type(velocityMassMatrixMatrixPtr_ ));
+            timeProblem_->getUnderlyingProblem()->getBCFactory()->setDirichletBCScaled( matrixM, 0, 0, true );
+            timeProblem_->getUnderlyingProblem()->getBCFactory()->setDirichletColumn(matrixM,true);
+            velocityMassMatrix_ = matrixM->getThyraLinOp();
+        }
+        if(timeProblem_->getParameterList()->sublist("Parameter").get("Symmetric Ap in Prec",false)){
+            if(verbose)
+                cout << " ###### Making BC in Ap symmetric ###### " << endl;
+            MatrixPtr_Type matrixAp(new Matrix_Type(pressureLaplaceMatrixPtr_));
+            timeProblem_->getUnderlyingProblem()->getBCFactoryPressureLaplace()->setDirichletColumn(matrixAp,true);
+            pressureLaplace_ = matrixAp->getThyraLinOp();
+        }
+        if(timeProblem_->getParameterList()->sublist("Parameter").get("Symmetric Fp in Prec",false)){
+            if(verbose)
+                cout << " ###### Making BC in Fp symmetric ###### " << endl;
+            MatrixPtr_Type matrixFp(new Matrix_Type(pcdOperatorMatrixPtr_));
+            timeProblem_->getUnderlyingProblem()->getBCFactoryPressureFp()->setDirichletColumn(matrixFp,true);
+            pcdOperator_ = matrixFp->getThyraLinOp();
+        }
+    }
        
     //     // BlockMatrixPtr_Type systemSymm(new BlockMatrix_Type (2));
     //     // systemSymm->addBlock(matrixF,0,0);
