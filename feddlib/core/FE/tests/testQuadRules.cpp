@@ -267,10 +267,10 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
-    // [TODO] Test 20: 3D, tetrahedron, polynomial order 3
+    // Test 20: 3D, tetrahedron, polynomial order 3
     {
-        auto f = [](SC x, SC y, SC z) -> SC { return x*x*x - 42*x*y*z + 42*z*z*z; };
-        SC r = 0.3; // expected result
+        auto f = [](SC x, SC y, SC z) -> SC { return 0.5 - 26*z + 60*y*x + 42*x*x*x + 54*x*x*y + 54*x*x*z + 54*x*y*y + 54*x*y*z + 54*x*z*z + 42*y*y*y + 54*y*y*z + 54*y*z*z + 42*z*z*z; };
+        SC r = 1.525; // expected result
         const int dim = 3;
         int degree = 3;
         std::string FEType = "P";
