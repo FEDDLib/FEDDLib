@@ -278,10 +278,10 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
-    // [TODO] Test 21: 3D, tetrahedron, polynomial order 4
+    // Test 21: 3D, tetrahedron, polynomial order 4
     {
-        auto f = [](SC x, SC y, SC z) -> SC { return 21.0*x*x*x*x - 840.0*x*y*y*z + 21.0*z*z*z*z; };
-        SC r = -0.1 - 1.0/30.0; // expected result
+        auto f = [](SC x, SC y, SC z) -> SC { return -6.0 - 48.0*x + 60.0*x*x + 60.0*x*x*y + 336.0*x*x*x*y + 1260.0*x*x*y*z + 42.0*x*x*z*z - 42.0*x*z*z*z - 10.5*y*y*y*y - 630.0*y*y*z*z - 63.0*z*z*z*z; };
+        SC r = -1.8; // expected result
         const int dim = 3;
         int degree = 4;
         std::string FEType = "P";
@@ -289,10 +289,10 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
-    // [TODO] Test 22: 3D, tetrahedron, polynomial order 5
+    // Test 22: 3D, tetrahedron, polynomial order 5
     {
-        auto f = [](SC x, SC y, SC z) -> SC { return 21.0*pow(x,5) - 84.0*x*y*y*y*z + 21.0*pow(z,5); };
-        SC r = 0.1125; // expected result
+        auto f = [](SC x, SC y, SC z) -> SC { return 8.0 + 18.0*y - 30.0*x*z + 180.0*x*y*y - 1260.0*x*y*y*z + 3360.0*x*x*x*y*z + 3360.0*x*x*x*z*z - 336.0*x*x*y*z*z + 336.0*x*y*y*y*y - 840.0*x*z*z*z*z + 168.0*y*y*y*y*z + 672.0*y*z*z*z*z; };
+        SC r = 3.5; // expected result
         const int dim = 3;
         int degree = 5;
         std::string FEType = "P";
@@ -300,10 +300,10 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
-    // [TODO] Test 23: 3D, tetrahedron, polynomial order 6
+    // Test 23: 3D, tetrahedron, polynomial order 6
     {
-        auto f = [](SC x, SC y, SC z) -> SC { return 21.0*pow(x,6) - 84.0*x*y*y*y*y*z + 21.0*pow(z,6); };
-        SC r = 7.0/90.0; // expected result
+        auto f = [](SC x, SC y, SC z) -> SC { return -7.0 + 24.0*z - 30.0*y*z + 840.0*x*y*z + 52.5*pow(z,4) - 3360.0*x*y*z*z*z + 1008.0*pow(x,6) - 6048.0*pow(x,5)*y + 1512.0*pow(x,3)*y*y*z - 4536.0*pow(x,3)*y*z*z + 1512.0*x*pow(y,4)*z + 1512.0*x*pow(z,5) + 1512.0*y*pow(z,5); };
+        SC r = 1.5; // expected result
         const int dim = 3;
         int degree = 6;
         std::string FEType = "P";
