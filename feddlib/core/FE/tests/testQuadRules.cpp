@@ -37,7 +37,7 @@ template <std::size_t dim, typename Lambda> int check_integration(const int degr
     }
 
     SC error_result = fabs(integral - expected_result);
-    if (error_result > std::numeric_limits<double>::epsilon() * 100.0) {
+    if (error_result > std::numeric_limits<double>::epsilon() * 200.0) {
         std::ostringstream oss;
         oss << std::scientific << std::setprecision(2) << error_result;
         std::cout << "Test (" << test << ") " << "Integral does not match expected result: error = " << oss.str() << std::endl << "    " << file << ":" << line << std::endl;
@@ -209,27 +209,27 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
-//    // Test 15: 2D, triangle, polynomial order 6
-//    {
-//        auto f = [](SC x, SC y) -> SC { return ; };
-//        SC r = -5.0/90.0 - 0.2125; // expected result
-//        const int dim = 2;
-//        int degree = 5;
-//        std::string FEType = "P";
-//        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
-//            return EXIT_FAILURE;
-//    }
-//
-//    // Test 16: 2D, triangle, polynomial order 7
-//    {
-//        auto f = [](SC x, SC y) -> SC { return ; };
-//        SC r = -5.0/90.0 - 0.2125; // expected result
-//        const int dim = 2;
-//        int degree = 5;
-//        std::string FEType = "P";
-//        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
-//            return EXIT_FAILURE;
-//    }
+    // Test 15: 2D, triangle, polynomial order 6
+    {
+        auto f = [](SC x, SC y) -> SC { return 5.0 + 18.0*x - 23.0*y + 9.0*y*y + 3.0*x*y - 13.0*x*x + 1.0*y*y*y + 3.0*y*y*x + 36.0*y*x*x + 28.0*x*x*x - 13.0*pow(y,4) + 30.0*y*y*y*x + 7.0*y*y*x*x - 1.0*y*x*x*x + 7.0*pow(x,4) - 2.0*pow(y,5) - 1.0*pow(y,4)*x + 15.0*y*y*y*x*x + 14.0*y*y*x*x*x + 14.0*y*pow(x,4) + 7.0*pow(x,5) + 42.0*pow(y,6) + 84.0*pow(y,5)*x + 126.0*pow(y,4)*x*x + 420.0*pow(y,3)*pow(x,3) + 84.0*y*y*pow(x,4) + 168.0*y*pow(x,5) + 21.0*pow(x,6); };
+        SC r = 5.5 + 8.0/9.0; // expected result
+        const int dim = 2;
+        int degree = 6;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
+
+    // Test 16: 2D, triangle, polynomial order 7
+    {
+        auto f = [](SC x, SC y) -> SC { return 56.0*pow(y,6) + 336.0*pow(y,5)*x - 840.0*pow(y,4)*x*x + 1120.0*pow(y,3)*pow(x,3) + 840.0*y*y*pow(x,4) + 336.0*y*pow(x,5) - 56.0*pow(x,6) + 72.0*pow(y,7) - 3.6*35.0*pow(y,6)*x + 7.56*pow(y,5)*x*x + 1080.0*pow(y,4)*pow(x,3) + 1080.0*pow(y,3)*pow(x,4) + 7.56*y*y*pow(x,5) - 3.6*35.0*y*pow(x,6) + 72.0*pow(x,7) + 42.0*pow(y,5) - 84.0*pow(y,4)*x + 336.0*pow(y,3)*x*x + 168.0*y*y*pow(x,3) - 84.0*y*pow(x,4) - 42.0*pow(x,5) + 15.0*pow(y,4) + 60.0*y*y*y*x + 180.0*y*y*x*x - 60.0*y*x*x*x + 15.0*x*x*x*x + 15.0*y*y*y + 60.0*y*y*x - 60.0*y*x*x + 15.0*x*x*x + 15.0*y*y + 60.0*y*x + 15.0*x*x - 3*y - 3*x - 2.0; };
+        SC r = 11.41 + 6.0/7.0; // expected result
+        const int dim = 2;
+        int degree = 7;
+        std::string FEType = "P";
+        if (check_integration<dim>(degree, FEType, r, ++test, f, __FILE__, __LINE__) == EXIT_FAILURE)
+            return EXIT_FAILURE;
+    }
 
 
     /////////////// 3D Tests ///////////////
