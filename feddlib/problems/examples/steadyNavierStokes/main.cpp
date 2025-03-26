@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
             parameterListAll->setParameters(*parameterListPrec);
         else if(precMethod == "Teko")
             parameterListAll->setParameters(*parameterListPrecTeko);
-        else if(precMethod == "Diagonal" || precMethod == "Triangular" || precMethod == "PCD")
+        else if(precMethod == "Diagonal" || precMethod == "Triangular" || precMethod == "PCD" || precMethod == "LSC")
             parameterListAll->setParameters(*parameterListPrecBlock);
 
         parameterListAll->setParameters(*parameterListSolver);    

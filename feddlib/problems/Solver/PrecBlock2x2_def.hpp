@@ -80,8 +80,23 @@ void PrecBlock2x2<SC,LO,GO,NO>::setTriangular(ThyraLinOpPtr_Type velocityInv,
     BT_ = BT;
     
     initialize();
+}
 
+template<class SC, class LO, class GO, class NO>
+void PrecBlock2x2<SC,LO,GO,NO>::setTriangular(ThyraLinOpPtr_Type velocityInv,
+                        ThyraLinOpPtr_Type laplaceInverse,
+                        ThyraLinOpPtr_Type massMatrixVInverse,
+                       ThyraLinOpPtr_Type BT){
 
+    setVeloctiyInv(velocityInv);
+    
+    setPressureInvs(laplaceInverse,massMatrixVInverse);
+
+    setType("LSC");
+
+    BT_ = BT;
+    
+    initialize();
 }
 
 template<class SC, class LO, class GO, class NO>
@@ -103,8 +118,16 @@ void PrecBlock2x2<SC,LO,GO,NO>::setPressureInvs(ThyraLinOpPtr_Type laplaceInvers
     convectionDiffusionOperator_=convectionDiffusionOperator;
     massMatrixInverse_=massMatrixInverse;
     massMatrixVInverse_=massMatrixVInverse;
-
 }
+
+template<class SC, class LO, class GO, class NO>
+void PrecBlock2x2<SC,LO,GO,NO>::setPressureInvs(ThyraLinOpPtr_Type laplaceInverse,
+                        ThyraLinOpPtr_Type massMatrixVInverse){
+
+    laplaceInverse_ = laplaceInverse;
+    massMatrixVInverse_=massMatrixVInverse;
+}
+
 
 template<class SC, class LO, class GO, class NO>
 void PrecBlock2x2<SC,LO,GO,NO>::setType(std::string type){
@@ -231,6 +254,40 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
         
         Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
         
+        BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
+        
+        velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);
+                    // std::cout << " ################################################## " << std::endl;
+            
+    }
+    else if (type_ == "LSC"){
+        TEUCHOS_TEST_FOR_EXCEPTION(laplaceInverse_.is_null(), std::runtime_error,"laplaceInverse_ not set.");
+        TEUCHOS_TEST_FOR_EXCEPTION(massMatrixVInverse_.is_null(), std::runtime_error,"massMatrixVInverse_ not set.");
+        // For PCD we need apply the 'pressure inverse' differently, as it is made up of three components.
+        Teuchos::RCP< MultiVectorBase< SC > > X_res_1 = X_1->clone_mv();
+        Teuchos::RCP< MultiVectorBase< SC > > X_res_2 = X_1->clone_mv();
+
+        // X_1->describe(*out,Teuchos::VERB_EXTREME);
+        
+        // std::cout << " Apply Laplace Matrix " << std::endl;
+        laplaceInverse_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.); 
+        // Y_1->describe(*out,Teuchos::VERB_EXTREME);
+
+        Teuchos::RCP< MultiVectorBase< SC > > X_res_0 = X_0->clone_mv();
+        BT_->apply(NOTRANS, *Y_1, X_res_0.ptr(), 1., 0.);
+        massMatrixVInverse_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
+        F_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
+        massMatrixVInverse_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
+        BT_->apply(TRANS, *X_res_0, Y_1.ptr(), 1., 0.);
+
+        // std::cout << " Apply Laplace Matrix " << std::endl;
+        laplaceInverse_->apply(NOTRANS, *Y_1, Y_1.ptr(), -1., 0.); 
+        
+        // Y_1->describe(*out,Teuchos::VERB_EXTREME);
+
+        //pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.);
+        
+        Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
         BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
         
         velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);

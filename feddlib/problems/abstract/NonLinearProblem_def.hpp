@@ -162,6 +162,26 @@ namespace FEDD
         return its;
     }
 
+
+    template <class SC, class LO, class GO, class NO>
+    int NonLinearProblem<SC, LO, GO, NO>::solve2(const std::string &criterion, double &criterionValue)
+    {
+         //    BlockMatrixPtr_Type system
+        int its = solveUpdate();
+
+        if (criterion == "Update")
+        {
+            this->solution_->update(-1., *previousSolution_, 1.);
+            Teuchos::Array<SC> updateNorm(1);
+            this->solution_->norm2(updateNorm());
+            criterionValue = updateNorm[0];
+            this->solution_->update(1., *previousSolution_, 1.);
+        }
+
+
+        return its;
+    }
+
     template <class SC, class LO, class GO, class NO>
     typename NonLinearProblem<SC, LO, GO, NO>::BlockMultiVectorPtr_Type NonLinearProblem<SC, LO, GO, NO>::getResidualVector() const
     {
@@ -236,7 +256,7 @@ namespace FEDD
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method", "Monolithic");
         if (!type.compare("Monolithic"))
             initVectorSpacesMonolithic();
-        else if (!type.compare("Teko") || type == "FaCSI" || type == "FaCSI-Teko" || type == "Diagonal" || type == "Triangular" ||type == "PCD"  )
+        else if (!type.compare("Teko") || type == "FaCSI" || type == "FaCSI-Teko" || type == "Diagonal" || type == "Triangular" ||type == "PCD" ||type == "LSC"  )
             initVectorSpacesBlock();
         else
             TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unkown preconditioner/solver type.");

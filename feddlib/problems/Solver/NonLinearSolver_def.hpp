@@ -39,6 +39,9 @@ void NonLinearSolver<SC,LO,GO,NO>::solve(NonLinearProblem_Type &problem){
     else if(!type_.compare("Newton")){
         solveNewton(problem);
     }
+    else if(!type_.compare("Newton2")){
+        solveNewton2(problem);
+    }
     else if(!type_.compare("NOX")){
 #ifdef FEDD_HAVE_NOX
         solveNOX(problem);
@@ -104,6 +107,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(NonLinearProblem_Type &problem){
         Thyra::assign(initial_guess.ptr(), *solMV->col(0));
     }
     else{
+        if(verbose)
+            cout << " ####### ZERO INITIAL GUESS #######" << endl;
         Thyra::V_S(initial_guess.ptr(),Teuchos::ScalarTraits<SC>::zero());
     } 
 
@@ -370,6 +375,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton( NonLinearProblem_Type &problem )
     int maxNonLinIts = problem.getParameterList()->sublist("Parameter").get("MaxNonLinIts",10);
     double criterionValue = 1.;
     std::string criterion = problem.getParameterList()->sublist("Parameter").get("Criterion","Residual");
+    vec_int_Type gmres_iter(0);
 
     while ( nlIts < maxNonLinIts ) {
         //this makes only sense for Navier-Stokes/Stokes, for other problems, e.g., non linear elasticity, it should do nothing.
@@ -388,17 +394,29 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton( NonLinearProblem_Type &problem )
         
         if (criterion=="Residual"){
             criterionValue = residual/residual0;
-            if (verbose)
-                cout << "### Newton iteration : " << nlIts << "  relative nonlinear residual : " << criterionValue << endl;
+             if (verbose){
+                cout << " \n " << endl;
+                cout << " ############################################################# " << endl;
+                cout << " ### Newton iteration : " << nlIts << "  relative nonlinear residual : " << criterionValue << " residual value " << residual << endl;
+                cout << " ############################################################# " << endl;
+                cout << " \n " << endl;
+            } 
             if ( criterionValue < tol )
                 break;
         }
 
-        gmresIts += problem.solveAndUpdate( criterion, criterionValue );
+        int gmresit =0;
+        gmresit = problem.solveAndUpdate( criterion, criterionValue );
+        gmresIts += gmresit;
+        gmres_iter.push_back(gmresit);
         nlIts++;
         if(criterion=="Update"){
-            if (verbose)
+            if (verbose){
+                cout << " ############################################################# " << endl;
                 cout << "### Newton iteration : " << nlIts << "  residual of update : " << criterionValue << endl;
+                cout << " ############################################################# " << endl;
+
+            }
             if ( criterionValue < tol )
                 break;
         }
@@ -407,8 +425,97 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton( NonLinearProblem_Type &problem )
     }
 
     gmresIts/=nlIts;
-    if (verbose)
-        cout << "### Total Newton iterations : " << nlIts << "  with average gmres its : " << gmresIts << endl;
+    if (verbose){
+        cout << " ############################################################# " << endl;
+        cout << " ### Total Newton iterations : " << nlIts << "  with average gmres its : " << gmresIts << endl;
+        cout << " ### Final Newton relative nonlinear residual : " << criterionValue << " final residual value " << residual << endl;
+        cout << " ### GMRES iterations [" ;
+        for(int i=0; i< gmres_iter.size(); i++)
+            cout << gmres_iter[i] << ", " ; 
+        cout << "]" << endl;
+        cout << " ############################################################# " << endl;
+    }
+    if ( problem.getParameterList()->sublist("Parameter").get("Cancel MaxNonLinIts",false) ) {
+        TEUCHOS_TEST_FOR_EXCEPTION(nlIts == maxNonLinIts ,std::runtime_error,"Maximum nonlinear Iterations reached. Problem might have converged in the last step. Still we cancel here.");
+    }
+}
+
+
+template<class SC,class LO,class GO,class NO>
+void NonLinearSolver<SC,LO,GO,NO>::solveNewton2( NonLinearProblem_Type &problem ){
+
+    bool verbose = problem.getVerbose();
+
+    TEUCHOS_TEST_FOR_EXCEPTION(problem.getRhs()->getNumVectors()!=1,std::logic_error,"We need to change the code for numVectors>1.")
+    // -------
+    // Newton
+    // -------
+    double	gmresIts = 0.;
+    double residual0 = 1.;
+    double residual = 1.;
+    double tol = problem.getParameterList()->sublist("Parameter").get("relNonLinTol",1.0e-6);
+    int nlIts=0;
+    int maxNonLinIts = problem.getParameterList()->sublist("Parameter").get("MaxNonLinIts",10);
+    double criterionValue = 1.;
+    std::string criterion = problem.getParameterList()->sublist("Parameter").get("Criterion","Residual");
+    vec_int_Type gmres_iter(0);
+    while ( nlIts < maxNonLinIts ) {
+        //this makes only sense for Navier-Stokes/Stokes, for other problems, e.g., non linear elasticity, it should do nothing.
+
+        problem.calculateNonLinResidualVec("residual_W");
+
+        residual = problem.calculateResidualNorm();
+
+        problem.assemble("Newton");
+
+        problem.calculateNonLinResidualVec("rhs_W");
+        problem.setBoundariesSystem();
+
+        if (nlIts==0)
+            residual0 = residual;
+        
+        criterionValue = residual/residual0;
+
+        if(criterion=="Residual"){
+
+            if (verbose){
+                cout << " \n " << endl;
+                cout << " ############################################################# " << endl;
+                cout << " ### Newton iteration : " << nlIts << "  relative nonlinear residual : " << criterionValue << " residual value " << residual << endl;
+                cout << " ############################################################# " << endl;
+                cout << " \n " << endl;
+            }    
+            if ( criterionValue < tol )
+                break;
+        }        
+        int gmresit =0;
+        gmresit = problem.solve2( criterion, criterionValue );
+        gmresIts += gmresit;
+        gmres_iter.push_back(gmresit);
+        nlIts++;
+        if(criterion=="Update"){
+            if (verbose){
+                cout << " ############################################################# " << endl;
+                cout << "### Newton iteration : " << nlIts << "  residual of update : " << criterionValue << endl;
+                cout << " ############################################################# " << endl;
+
+            }    
+            if ( criterionValue < tol )
+                break;
+        }
+    }
+
+    gmresIts/=nlIts;
+    if (verbose){
+        cout << " ############################################################# " << endl;
+        cout << " ### Total Newton iterations : " << nlIts << "  with average gmres its : " << gmresIts << endl;
+        cout << " ### Final Newton relative nonlinear residual : " << criterionValue << " final residual value " << residual << endl;
+        cout << " ### GMRES iterations [" ;
+        for(int i=0; i< gmres_iter.size(); i++)
+            cout << gmres_iter[i] << ", " ; 
+        cout << "]" << endl;
+        cout << " ############################################################# " << endl;
+    }
     if ( problem.getParameterList()->sublist("Parameter").get("Cancel MaxNonLinIts",false) ) {
         TEUCHOS_TEST_FOR_EXCEPTION(nlIts == maxNonLinIts ,std::runtime_error,"Maximum nonlinear Iterations reached. Problem might have converged in the last step. Still we cancel here.");
     }
@@ -525,9 +632,6 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
         problem.assemble("Newton"); 
 
         problem.setBoundariesSystem();
-
-        problem.getSystem()->writeMM("Assembled");
-
 
         if (timestepping == "External"){//AceGen
             gmresIts += problem.solveAndUpdate( "ResidualAceGen", criterionValue );

@@ -714,12 +714,6 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
                 }
             }
         }
-        if(parameterList_->sublist("Parameter").get("Symmetric BC",false) ){
-            if(parameterList_->sublist("Parameter").get("Symmetric F",false))
-                setDirichletColumn(blockMatrix->getBlock( 0, 0 ),true);  
-            if(parameterList_->sublist("Parameter").get("Symmetric B",false) )   
-                setDirichletColumn(blockMatrix->getBlock( 1, 0 ),false);  
-        }
     }
 }
 
@@ -811,12 +805,6 @@ void BCBuilder<SC,LO,GO,NO>::setSystemScaled(const BlockMatrixPtr_Type &blockMat
                     setRobinBC( matrix, loc, blockRow, blockRow==blockCol );
                 }
             }
-        }
-        if(parameterList_->sublist("Parameter").get("Symmetric BC",false) ){
-            if(parameterList_->sublist("Parameter").get("Symmetric F",false))
-                setDirichletColumn(blockMatrix->getBlock( 0, 0 ),true);  
-            // if(parameterList_->sublist("Parameter").get("Symmetric B",false) )   
-            //     setDirichletColumn(blockMatrix->getBlock( 1, 0 ),false);  
         }
     }
 }

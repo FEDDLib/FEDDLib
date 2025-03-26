@@ -155,7 +155,7 @@ public:
 
     BlockMultiVectorPtr_Type getPressureProjection(){return pressureProjection_;};
 
-
+    MatrixPtr_Type buildDiagonalInverse(MatrixPtr_Type massMatrix, string diagonalType);
 private:
     ThyraPrecPtr_Type thyraPrec_;
     bool precondtionerIsBuilt_;

@@ -60,6 +60,8 @@ private:
 
     void solveNewton(NonLinearProblem_Type& problem);
     
+    void solveNewton2(NonLinearProblem_Type& problem);
+
     void solveFixedPoint(TimeProblem_Type& problem, double time);
     
     void solveNewton(TimeProblem_Type& problem, double time, vec_dbl_ptr_Type valuesForExport = Teuchos::null );

@@ -49,13 +49,22 @@ public:
                         ThyraLinOpPtr_Type massMatrixVInverse,
                        ThyraLinOpPtr_Type BT);
 
+    void setTriangular(ThyraLinOpPtr_Type velocityInv,
+                    ThyraLinOpPtr_Type laplaceInverse,
+                    ThyraLinOpPtr_Type massMatrixVInverse,
+                    ThyraLinOpPtr_Type BT);
+
     void setPressureInvs(ThyraLinOpPtr_Type laplaceInverse, ThyraLinOpPtr_Type convectionDiffusionOperator, ThyraLinOpPtr_Type massMatrixInverse, ThyraLinOpPtr_Type massMatrixVInverse);
+
+    void setPressureInvs(ThyraLinOpPtr_Type laplaceInverse, ThyraLinOpPtr_Type massMatrixVInverse);
 
     void setVeloctiyInv(ThyraLinOpPtr_Type veloctiyInv);
     
     void setPressureInv(ThyraLinOpPtr_Type pressureInv);
 
     void setB(ThyraLinOpPtr_Type B) {B_ = B;};
+
+    void setF(ThyraLinOpPtr_Type F) {F_ = F;};
 
     void setType(std::string type);
     
@@ -89,6 +98,7 @@ private:
     ThyraLinOpPtr_Type pressureInv_;
     ThyraLinOpPtr_Type BT_;
     ThyraLinOpPtr_Type B_;
+    ThyraLinOpPtr_Type F_;
     ThyraLinOpPtr_Type laplaceInverse_;
     ThyraLinOpPtr_Type convectionDiffusionOperator_;
     ThyraLinOpPtr_Type massMatrixInverse_;

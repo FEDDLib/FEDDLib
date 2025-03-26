@@ -33,7 +33,7 @@ int LinearSolver<SC,LO,GO,NO>::solve(Problem_Type* problem, BlockMultiVectorPtr_
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Teko not found! Build Trilinos with Teko.");
 #endif
     }
-    else if (type=="Diagonal" || type=="Triangular" || type == "PCD" ){
+    else if (type=="Diagonal" || type=="Triangular" || type == "PCD"  || type == "LSC" ){
         its = solveBlock( problem, rhs, type );
     }
     else
@@ -73,6 +73,8 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
     bool verbose(problem->getVerbose());
     int its=0;
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
+        if(verbose)
+            cout << " ####### ZERO INITIAL GUESS #######" << endl;
         problem->getSolution()->putScalar(0.);
     }
     Teuchos::RCP<Thyra::MultiVectorBase<SC> >thyraX = problem->getSolution()->getThyraMultiVector();
@@ -144,6 +146,8 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
     ProblemPtr_Type problem = timeProblem->getUnderlyingProblem();
 
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
+        if(verbose)
+            cout << " ####### ZERO INITIAL GUESS #######" << endl;
         problem->getSolution()->putScalar(0.);
     }
 
@@ -215,6 +219,8 @@ int LinearSolver<SC,LO,GO,NO>::solveTeko(Problem_Type* problem, BlockMultiVector
     bool verbose(problem->getVerbose());
     int its=0;
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
+        if(verbose)
+            cout << " ####### ZERO INITIAL GUESS #######" << endl;
         problem->getSolution()->putScalar(0.);
     }
     // typedef Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > 	Teko::BlockedMultiVector
@@ -290,6 +296,8 @@ int LinearSolver<SC,LO,GO,NO>::solveTeko(TimeProblem_Type* timeProblem, BlockMul
 
     ProblemPtr_Type problem = timeProblem->getUnderlyingProblem();
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
+        if(verbose)
+            cout << " ####### ZERO INITIAL GUESS #######" << endl;
         problem->getSolution()->putScalar(0.);
     }
     // typedef Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > 	Teko::BlockedMultiVector
@@ -371,6 +379,8 @@ int LinearSolver<SC,LO,GO,NO>::solveBlock(Problem_Type* problem, BlockMultiVecto
     int its=0;
     
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
+        if(verbose)
+            cout << " ####### ZERO INITIAL GUESS #######" << endl;
         problem->getSolution()->putScalar(0.);
     }
     
@@ -437,7 +447,7 @@ int LinearSolver<SC,LO,GO,NO>::solveBlock(Problem_Type* problem, BlockMultiVecto
         
         problem->getSolution()->fromThyraProdMultiVector( thyraX );
     }
-    
+
     return its;
 }
     
@@ -454,6 +464,8 @@ int LinearSolver<SC,LO,GO,NO>::solveBlock(TimeProblem_Type* timeProblem, BlockMu
     
     ProblemPtr_Type problem = timeProblem->getUnderlyingProblem();
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
+        if(verbose)
+            cout << " ####### ZERO INITIAL GUESS #######" << endl;
         problem->getSolution()->putScalar(0.);
     }
 

@@ -146,7 +146,7 @@ void Preconditioner<SC,LO,GO,NO>::initializePreconditioner( std::string type )
     if ( type == "Monolithic" || type == "FaCSI" || type == "Diagonal" || type == "Triangular"){
         if (type == "Monolithic")
             initPreconditionerMonolithic( );
-        else if (type == "FaCSI" || type == "Diagonal" || type == "Triangular" || type == "PCD")
+        else if (type == "FaCSI" || type == "Diagonal" || type == "Triangular" || type == "PCD" || type == "LSC")
             initPreconditionerBlock( );
         
     }
@@ -256,7 +256,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditioner( std::string type )
     else if( type == "FaCSI" || type == "FaCSI-Teko" ){
         buildPreconditionerFaCSI( type );
     }
-    else if(!type.compare("Triangular") || !type.compare("Diagonal")  || !type.compare("PCD")){
+    else if(!type.compare("Triangular") || !type.compare("Diagonal")  || !type.compare("PCD")  || !type.compare("LSC") ){
         buildPreconditionerBlock2x2( );
     }
     else
@@ -1425,6 +1425,31 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         probMass_->setupPreconditioner( "Monolithic" ); // single matrix
         massMatrixInverse_ = probMass_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
 
+    }
+    else if (type == "LSC") {
+
+        if (verbose) {
+            std::cout << "\t --- -------------------------------------------------------- ---"<< std::endl;
+            std::cout << "\t --- Building LSC Operator Components " << std::endl;
+            std::cout << "\t --- -------------------------------------------------------- ---"<< std::endl;
+        }
+
+        if (probLaplace_.is_null()) {
+            probLaplace_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
+            DomainConstPtr_vec_Type domain2(0);
+            domain2.push_back( problem_->getDomain(1) );
+            probLaplace_->initializeDomains( domain2 );
+            probLaplace_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+        }
+
+        BlockMatrixPtr_Type Ap = Teuchos::rcp( new BlockMatrix_Type(1) );
+        Ap->addBlock(pressureLaplaceMatrixPtr_,0,0);
+
+        probLaplace_->initializeSystem( Ap );
+
+        probLaplace_->setupPreconditioner( "Monolithic" ); // single matrix
+        laplaceInverse_ = probLaplace_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
+
         if (probVMass_.is_null()) {
             probVMass_ = Teuchos::rcp( new MinPrecProblem_Type( plVelocity, comm ) );
             DomainConstPtr_vec_Type domain1(0);
@@ -1435,12 +1460,22 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         BlockMatrixPtr_Type Qv = Teuchos::rcp( new BlockMatrix_Type(1) );       
         Qv->addBlock(velocityMassMatrixMatrixPtr_,0,0);
 
-        probVMass_->initializeSystem( Qv );
+        bool explicitInverse = parameterList->sublist("General").get("Mu Explicit Inverse",false);
+        string typeDiag = parameterList->sublist("General").get("Diagonal Approximation","Diagonal");
 
-        probVMass_->setupPreconditioner( "Monolithic" ); // single matrix
-        massMatrixVInverse_ = probVMass_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
-        
+        if(explicitInverse)
+        {
+            probVMass_->initializeSystem( Qv );
+            probVMass_->setupPreconditioner( "Monolithic" ); // single matrix
+            massMatrixVInverse_ = probVMass_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
+        }
+        else
+        {
+           massMatrixVInverse_ = buildDiagonalInverse(velocityMassMatrixMatrixPtr_, typeDiag)->getThyraLinOp() ;
+        }
+            
     }
+
     
     if (type == "Diagonal") {
         blockPrec2x2->setDiagonal(precVelocity_,
@@ -1469,6 +1504,34 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         ThyraLinOpPtr_Type B = system->getBlock(1,0)->getThyraLinOpNonConst();
         blockPrec2x2->setB(B);        
     }
+    else if (type == "LSC") {
+        //pcdOperatorScaled->print();
+        ThyraLinOpPtr_Type BT = system->getBlock(0,1)->getThyraLinOpNonConst();
+        blockPrec2x2->setTriangular(precVelocity_,
+                                    laplaceInverse_,
+                                    massMatrixVInverse_,
+                                    BT);
+
+        if (parameterList->sublist("Parameter").get("Symmetric BC in Prec",false)){
+
+            if(parameterList->sublist("Parameter").get("Symmetric B in Prec",false)){
+                if(verbose)
+                    cout << " ###### Making BC in B symmetric ###### " << endl;
+                MatrixPtr_Type matrixB(new Matrix_Type(system->getBlock(1,0)) );
+                problem_->getBCFactory()->setDirichletColumn(matrixB,false);
+                ThyraLinOpPtr_Type thyraB = matrixB->getThyraLinOp();
+                blockPrec2x2->setB(thyraB); 
+            }
+        }
+        else{
+            ThyraLinOpPtr_Type B = system->getBlock(1,0)->getThyraLinOpNonConst();
+            blockPrec2x2->setB(B); 
+        }
+        ThyraLinOpPtr_Type F = system->getBlock(0,0)->getThyraLinOpNonConst();
+        blockPrec2x2->setF(F);    
+            
+       
+    }
     
     LinSolverBuilderPtr_Type solverBuilder;
     if (!timeProblem_.is_null())
@@ -1491,6 +1554,74 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     
     precondtionerIsBuilt_ = true;
     
+}
+
+
+template <class SC,class LO,class GO,class NO>
+typename Preconditioner<SC,LO,GO,NO>::MatrixPtr_Type Preconditioner<SC,LO,GO,NO>::buildDiagonalInverse(MatrixPtr_Type massMatrix, string diagonalType){
+    MatrixPtr_Type diagInverse(new Matrix_Type( massMatrix->getMap("row"), 1) ); // Diagonal matrix
+    MapConstPtr_Type colMap = massMatrix->getMap("col");
+    MapConstPtr_Type rowMap = massMatrix->getMap("row");
+
+    
+    if(diagonalType == "Diagonal")
+    {
+        for(int i =0; i< rowMap->getNodeNumElements(); i ++){
+            Teuchos::ArrayView<const SC> valuesOld;
+            Teuchos::ArrayView<const LO>  indices;
+            massMatrix->getLocalRowView(i, indices, valuesOld);
+
+            GO globalDof = rowMap->getGlobalElement( i );
+
+            Teuchos::Array<SC> values( 1, 0);
+            Teuchos::Array<GO> indicesGO( 1 , 0 );
+            bool setOne = false;
+
+            for (UN j=0; j<indices.size() && !setOne; j++) {
+                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
+                    values[0] = 1./valuesOld[j]; // Diagonal Value
+                    indicesGO[0] = colMap->getGlobalElement(indices[j]);
+                    setOne=true;
+                }
+            }
+            GO row = GO ( rowMap->getGlobalElement( i) );
+            diagInverse->insertGlobalValues( row, indicesGO(), values() );
+        }
+    }
+    else if(diagonalType == "AbsRowSum") 
+    {
+        for(int i =0; i< rowMap->getNodeNumElements(); i ++){
+            Teuchos::ArrayView<const SC> valuesOld;
+            Teuchos::ArrayView<const LO>  indices;
+            massMatrix->getLocalRowView(i, indices, valuesOld);
+
+            GO globalDof = rowMap->getGlobalElement( i );
+
+            double rowSum = 0.;
+            for (UN j=0; j<indices.size(); j++) {
+               rowSum += abs(valuesOld[j]);
+            }
+
+            Teuchos::Array<SC> values( 1, 0);
+            Teuchos::Array<GO> indicesGO( 1 , 0 );
+            bool setOne = false;
+
+            for (UN j=0; j<indices.size() && !setOne; j++) {
+                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
+                    values[0] = 1./rowSum; // Diagonal Value
+                    indicesGO[0] = colMap->getGlobalElement(indices[j]);
+                    setOne = true;
+
+                }
+            }
+            GO row = GO ( rowMap->getGlobalElement( i) );
+            diagInverse->insertGlobalValues( row, indicesGO(), values() );      
+        }
+    }
+
+    diagInverse->fillComplete();
+    // diagInverse->writeMM("Mu_Inverse_LSC");
+    return diagInverse;
 }
 
     
