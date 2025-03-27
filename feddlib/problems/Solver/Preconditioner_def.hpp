@@ -858,7 +858,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             pcdOperator_ = matrixFp->getThyraLinOp();
         }
     }
-    else if(!timeProblem_.is_null()&& problem_->getParameterList()->sublist("Parameter").get("Symmetric BC in Prec",false)){
+    else if(!timeProblem_.is_null()&& timeProblem_->getParameterList()->sublist("Parameter").get("Symmetric BC in Prec",false)){
 
         if(timeProblem_->getParameterList()->sublist("Parameter").get("Symmetric B in Prec",false)){
             if(verbose)
@@ -898,16 +898,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
         }
     }
        
-    //     // BlockMatrixPtr_Type systemSymm(new BlockMatrix_Type (2));
-    //     // systemSymm->addBlock(matrixF,0,0);
-    //     // systemSymm->addBlock(matrixB,1,0);
-    //     // systemSymm->addBlock(system->getBlock(0,1),0,1);
-    //     // systemSymm->getMergedMatrix()->writeMM("MergedSystem");
-
-    //     // matrixB->writeMM("matrixB");
-
-    //     // system->getBlock(0,1)->writeMM("matrixBT");
-
     // }
     // else if(!timeProblem_.is_null())
     //     timeProblem_->getBCFactory->setDirichletColumn(matrixB)
