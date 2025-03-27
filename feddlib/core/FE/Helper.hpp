@@ -1,6 +1,10 @@
 #ifndef Helper_hpp
 #define Helper_hpp
 
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+
 //#include "AssembleFE_decl.hpp"
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"

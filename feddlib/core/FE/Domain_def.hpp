@@ -457,18 +457,6 @@ typename Domain<SC,LO,GO,NO>::MapConstPtr_Type Domain<SC,LO,GO,NO>::getMapRepeat
 }
 
 template <class SC, class LO, class GO, class NO>
-typename Domain<SC,LO,GO,NO>::MapConstPtr_Type Domain<SC,LO,GO,NO>::getMapUniqueP2() const{
-
-    return mesh_->getMapUniqueP2();
-}
-
-template <class SC, class LO, class GO, class NO>
-typename Domain<SC,LO,GO,NO>::MapConstPtr_Type Domain<SC,LO,GO,NO>::getMapRepeatedP2() const{
-
-    return mesh_->getMapRepeatedP2();
-}
-
-template <class SC, class LO, class GO, class NO>
 typename Domain<SC,LO,GO,NO>::MapConstPtr_Type Domain<SC,LO,GO,NO>::getElementMap() const{
 
     return mesh_->getElementMap();
@@ -1129,7 +1117,7 @@ void Domain<SC, LO, GO, NO>::exportElementFlags(string name)
 
         exPara->setup("Mesh_Element_Flags_"+name,this->getMesh(), "P0");
 
-        exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,this->getElementMap(), this->getElementMap());
+        exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,this->getElementMap());
 
         exPara->save(0.0);
 
