@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
     
     exPara->setup( "NodeFlagsP2", domain->getMesh(), "P2" );
     MultiVectorConstPtr_Type mvFlagConst = mvFlag;
-    exPara->addVariable( mvFlagConst, "Flags", "Scalar", 1, domain->getMapUnique(), domain->getMapUnique());
+    exPara->addVariable( mvFlagConst, "Flags", "Scalar", 1, domain->getMapUnique());
     
     exPara->save(0.0);
     exPara->closeExporter();

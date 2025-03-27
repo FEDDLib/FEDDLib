@@ -452,7 +452,7 @@ int main(int argc, char *argv[])
             }
             Teuchos::RCP<const MultiVector<SC, LO, GO, NO>> exportSolutionConst = exportSolution;
             exParaF->setup("Flags", domainVelocity->getMesh(), domainVelocity->getFEType());
-            exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1, domainVelocity->getMapUnique(), domainVelocity->getMapUniqueP2());
+            exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1, domainVelocity->getMapUnique());
             exParaF->save(0.0);
 
             //**************************** Plot Subdomains without overlap ****************************************

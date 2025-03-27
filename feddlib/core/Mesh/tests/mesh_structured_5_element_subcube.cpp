@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
         
         exPara->setup( "Element5SubcubeMeshWithFlagsOption3", domain->getMesh(), FEType );
         MultiVectorConstPtr_Type mvFlagConst = mvFlag;
-        exPara->addVariable( mvFlagConst, "Flags", "Scalar", 1,domain->getMapUnique(), domain->getMapUnique());
+        exPara->addVariable( mvFlagConst, "Flags", "Scalar", 1,domain->getMapUnique());
         
         exPara->save(0.0);
         exPara->closeExporter();

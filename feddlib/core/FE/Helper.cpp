@@ -898,581 +898,647 @@ void Helper::getQuadratureValues(int dim,
                                   vec2D_dbl_ptr_Type &QuadPts,
                                   vec_dbl_ptr_Type &QuadW,
                                   std::string FEType){
-    double a, b, c, P1, P2;
+    // quadrature formulas exact up to a certain polynomial degree
+
+    TEUCHOS_TEST_FOR_EXCEPTION(Degree<0, std::runtime_error, "Quadrature rule: negative degree specified.");
+    double a, b, c, P1, P2, volume_ref_element;
 
     double b1,b2,c1,c2,d,e,f,g,h,i,j;
-    if (dim==1){
+    if (dim == 1){
         // points are for interval [0,1]
-        TEUCHOS_TEST_FOR_EXCEPTION(Degree>2, std::runtime_error, "Quadrature rule in 1d only up to degree 3.");
-        switch (Degree) {
-            case 0:
-                QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(1,0.0)));
-                QuadW->resize(1);
-                QuadPts->at(0).at(0) = 0.5;
-                QuadW->at(0) = 1.;
-                break;
-            case 1:
-                QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(1,0.0)));
-                QuadW->resize(1);
-                QuadPts->at(0).at(0) = 0.5;
-                QuadW->at(0) = 1.;
-                break;
-            case 2:
-                QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
-                QuadW->resize(2);
-                QuadPts->at(0).at(0) = - 0.5/sqrt(3.)+0.5;
-                QuadPts->at(1).at(0) = 0.5/sqrt(3.)+0.5;
-                QuadW->at(0) = .5;
-                QuadW->at(1) = .5;
-                break;
-            case 3:
-                QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
-                QuadW->resize(2);
-                QuadPts->at(0).at(0) = - 0.5/sqrt(3.)+0.5;
-                QuadPts->at(1).at(0) = 0.5/sqrt(3.)+0.5;
-                QuadW->at(0) = .5;
-                QuadW->at(1) = .5;
-                break;
-            default:
-                break;
+        volume_ref_element = 1.0; // length of unit interval [0,1]
+
+        TEUCHOS_TEST_FOR_EXCEPTION(Degree>7, std::runtime_error, "Quadrature rule in 1D only up to degree 7.");
+
+        if (Degree <= 1) {
+            QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(1,0.0)));
+            QuadW->resize(1);
+            QuadPts->at(0).at(0) = 0.5;
+            QuadW->at(0) = 1.0;
+        } else if (Degree <= 3) {
+            QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
+            QuadW->resize(2);
+            QuadPts->at(0).at(0) = 0.5 - 0.5/sqrt(3.0);
+            QuadPts->at(1).at(0) = 0.5 + 0.5/sqrt(3.0);
+            QuadW->at(0) = 0.5;
+            QuadW->at(1) = 0.5;
+	} else if (Degree <= 5) {
+            QuadPts.reset(new vec2D_dbl_Type(3,vec_dbl_Type(1,0.0)));
+            QuadW->resize(3);
+            QuadPts->at(0).at(0) = 0.5 - 0.5*sqrt(3.0/5.0);
+            QuadPts->at(1).at(0) = 0.5;
+            QuadPts->at(2).at(0) = 0.5 + 0.5*sqrt(3.0/5.0);
+            QuadW->at(0) = 5.0 / 18.0;
+            QuadW->at(1) = 8.0 / 18.0;
+            QuadW->at(2) = 5.0 / 18.0;
+        } else if (Degree <= 7) {
+            QuadPts.reset(new vec2D_dbl_Type(4,vec_dbl_Type(1,0.0)));
+            QuadW->resize(4);
+            QuadPts->at(0).at(0) = 0.5 * (1.0 - sqrt( 3.0/7.0 + 2.0/7.0*sqrt(6.0/5.0) ));
+            QuadPts->at(1).at(0) = 0.5 * (1.0 - sqrt( 3.0/7.0 - 2.0/7.0*sqrt(6.0/5.0) ));
+            QuadPts->at(2).at(0) = 0.5 * (1.0 + sqrt( 3.0/7.0 - 2.0/7.0*sqrt(6.0/5.0) ));
+            QuadPts->at(3).at(0) = 0.5 * (1.0 + sqrt( 3.0/7.0 + 2.0/7.0*sqrt(6.0/5.0) ));
+            QuadW->at(0) = 0.5 * (18.0 - sqrt(30.0))/36.0;
+            QuadW->at(1) = 0.5 * (18.0 + sqrt(30.0))/36.0;
+            QuadW->at(2) = 0.5 * (18.0 + sqrt(30.0))/36.0;
+            QuadW->at(3) = 0.5 * (18.0 - sqrt(30.0))/36.0;
         }
-    }
-    if (dim==2) {
+    } else if (dim == 2) {
+        volume_ref_element = 0.5; // area of unit triangle
 
-        TEUCHOS_TEST_FOR_EXCEPTION(Degree>7, std::runtime_error, "Quadrature rule in 2d only up to degree 7.");
-        if (Degree==3 || Degree==4)
-            Degree=5;
+        TEUCHOS_TEST_FOR_EXCEPTION(Degree>7, std::runtime_error, "Quadrature rules for triangles only up to degree 7.");
 
-        if (Degree==6)
-            Degree=7;
-        switch (Degree) {
-            case 1:
+        if (Degree <= 1) {
+            QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(2,0.0)));
+            QuadW->resize(1);
+            QuadPts->at(0).at(0) = 1/3.;
+            QuadPts->at(0).at(1) = 1/3.;
+            QuadW->at(0) = 1/2.;
+        } else if (Degree <= 2) {
+            QuadPts.reset(new vec2D_dbl_Type(3,vec_dbl_Type(2,0.0)));
+            QuadW->resize(3);
 
-                QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(2,0.0)));
-                QuadW->resize(1);
-                QuadPts->at(0).at(0) = 1/3.;
-                QuadPts->at(0).at(1) = 1/3.;
-                QuadW->at(0)	= 1/2.;
-                break;
+            QuadPts->at(0).at(0) = 0.5;
+            QuadPts->at(0).at(1) = 0.5;
 
-            case 2:
+            QuadPts->at(1).at(0) = 0.0;
+            QuadPts->at(1).at(1) = 0.5;
 
-                QuadPts.reset(new vec2D_dbl_Type(3,vec_dbl_Type(2,0.0)));
-                QuadW->resize(3);
-                a = 1/6.;
-                QuadPts->at(0).at(0) 	= 0.5;
-                QuadPts->at(0).at(1)    = 0.5;
+            QuadPts->at(2).at(0) = 0.5;
+            QuadPts->at(2).at(1) = 0.0;
 
-                QuadPts->at(1).at(0) 	= 0.;
-                QuadPts->at(1).at(1) 	= 0.5;
+            a = 1/6.;
+            QuadW->at(0) = a;
+            QuadW->at(1) = a;
+            QuadW->at(2) = a;
+        } else if (Degree <= 3) {
+            QuadPts.reset(new vec2D_dbl_Type(4,vec_dbl_Type(2,0.0)));
+            QuadW->resize(4);
 
-                QuadPts->at(2).at(0) 	= 0.5;
-                QuadPts->at(2).at(1) 	= 0.;
+            QuadPts->at(0).at(0) = 1.0/3.0;
+            QuadPts->at(0).at(1) = 1.0/3.0;
 
-                QuadW->at(0) 		= a;
-                QuadW->at(1)            = a;
-                QuadW->at(2)            = a;
+            QuadPts->at(1).at(0) = 0.6;
+            QuadPts->at(1).at(1) = 0.2;
 
-                break;
+            QuadPts->at(2).at(0) = 0.2;
+            QuadPts->at(2).at(1) = 0.6;
 
-            case 5:
-                QuadPts.reset(new vec2D_dbl_Type(7,vec_dbl_Type(2,0.0)));
-                QuadW->resize(7);
-                a = 0.470142064105115;
-                b = 0.101286507323456;
-                P1 = 0.066197076394253;
-                P2 = 0.062969590272413;
+            QuadPts->at(3).at(0) = 0.2;
+            QuadPts->at(3).at(1) = 0.2;
 
-                QuadPts->at(0).at(0) 	= 1/3.;
-                QuadPts->at(0).at(1)    = 1/3.;
+            a = 0.2604166666666665;
+            QuadW->at(0) = -0.28125;
+            QuadW->at(1) = a;
+            QuadW->at(2) = a;
+            QuadW->at(3) = a;
+        } else if (Degree <= 3) {
+            // [1] Dunavant, (1985)
+            //     High Degree Efficient Symmetrical Gaussian Quadrature Rules For The Triangle
+            //
+            // [2] Akin, (1994)
+            //     Finite elements for analysis and design (p.200)
+            QuadPts.reset(new vec2D_dbl_Type(4,vec_dbl_Type(2,0.0)));
+            QuadW->resize(4);
 
-                QuadPts->at(1).at(0) 	= a;
-                QuadPts->at(1).at(1) 	= a;
+            QuadPts->at(0).at(0) = 1.0/3.0;
+            QuadPts->at(0).at(1) = 1.0/3.0;
 
-                QuadPts->at(2).at(0) 	= 1-2.*a;
-                QuadPts->at(2).at(1) 	= a;
+            QuadPts->at(1).at(0) = 0.6;
+            QuadPts->at(1).at(1) = 0.2;
 
-                QuadPts->at(3).at(0) 	= a;
-                QuadPts->at(3).at(1) 	= 1-2.*a;
+            QuadPts->at(2).at(0) = 0.2;
+            QuadPts->at(2).at(1) = 0.6;
 
-                QuadPts->at(4).at(0) 	= b;
-                QuadPts->at(4).at(1) 	= b;
+            QuadPts->at(3).at(0) = 0.2;
+            QuadPts->at(3).at(1) = 0.2;
 
-                QuadPts->at(5).at(0) 	= 1-2.*b;
-                QuadPts->at(5).at(1) 	= b;
+            a = 0.2604166666666665;
+            QuadW->at(0) = -0.28125;
+            QuadW->at(1) = a;
+            QuadW->at(2) = a;
+            QuadW->at(3) = a;
+        } else if (Degree <= 4) {
+            // [1] Dunavant, (1985)
+            //     High Degree Efficient Symmetrical Gaussian Quadrature Rules For The Triangle
+            //
+            // [2] Akin, (1994)
+            //     Finite elements for analysis and design (p.200)
+            QuadPts.reset(new vec2D_dbl_Type(6,vec_dbl_Type(2,0.0)));
+            QuadW->resize(6);
 
-                QuadPts->at(6).at(0) 	= b;
-                QuadPts->at(6).at(1) 	= 1-2.*b;
+            a = 0.10810301816807;
+            b = 0.445948490915965;
+            QuadPts->at(0).at(0) = a;
+            QuadPts->at(0).at(1) = b;
 
-                QuadW->at(0) 			= 9/80.;
-                QuadW->at(1)            = P1;
-                QuadW->at(2)            = P1;
-                QuadW->at(3) 			= P1;
-                QuadW->at(4)            = P2;
-                QuadW->at(5)            = P2;
-                QuadW->at(6)            = P2;
+            QuadPts->at(1).at(0) = b;
+            QuadPts->at(1).at(1) = a;
 
-                break;
-            case 7:
-                // 28 Punkte
-                
-                QuadPts.reset(new vec2D_dbl_Type(28,vec_dbl_Type(2,0.0)));
-                QuadW.reset(new vec_dbl_Type(28,0.0));
-                
-                // x punkt
-                QuadPts->at(0).at(0) = 0.777777777777778;
-                QuadPts->at(1).at(0) = 0.111111111111111;
-                QuadPts->at(2).at(0) = 0.111111111111111;
-                QuadPts->at(3).at(0) = 0.666666666666667;
-                QuadPts->at(4).at(0) = 0.222222222222222;
-                QuadPts->at(5).at(0) = 0.111111111111111;
-                QuadPts->at(6).at(0) = 0.222222222222222;
-                QuadPts->at(7).at(0) = 0.111111111111111;
-                QuadPts->at(8).at(0) = 0.666666666666667;
-                QuadPts->at(9).at(0) = 0.555555555555556;
-                QuadPts->at(10).at(0) = 0.333333333333333;
-                QuadPts->at(11).at(0) = 0.111111111111111;
-                QuadPts->at(12).at(0) = 0.333333333333333;
-                QuadPts->at(13).at(0) = 0.111111111111111;
-                QuadPts->at(14).at(0) = 0.555555555555556;
-                QuadPts->at(15).at(0) = 0.555555555555556;
-                QuadPts->at(16).at(0) = 0.222222222222222;
-                QuadPts->at(17).at(0) = 0.222222222222222;
-                QuadPts->at(18).at(0) = 0.444444444444444;
-                QuadPts->at(19).at(0) = 0.444444444444444;
-                QuadPts->at(20).at(0) = 0.111111111111111;
-                QuadPts->at(21).at(0) = 0.444444444444444;
-                QuadPts->at(22).at(0) = 0.333333333333333;
-                QuadPts->at(23).at(0) = 0.222222222222222;
-                QuadPts->at(24).at(0) = 0.333333333333333;
-                QuadPts->at(25).at(0) = 0.222222222222222;
-                QuadPts->at(26).at(0) = 0.444444444444444;
-                QuadPts->at(27).at(0) = 0.333333333333333;
-                
-                // y punkt
-                QuadPts->at(0).at(1) = 0.111111111111111;
-                QuadPts->at(1).at(1) = 0.111111111111111;
-                QuadPts->at(2).at(1) = 0.777777777777778;
-                QuadPts->at(3).at(1) = 0.222222222222222;
-                QuadPts->at(4).at(1) = 0.111111111111111;
-                QuadPts->at(5).at(1) = 0.666666666666667;
-                QuadPts->at(6).at(1) = 0.666666666666667;
-                QuadPts->at(7).at(1) = 0.222222222222222;
-                QuadPts->at(8).at(1) = 0.111111111111111;
-                QuadPts->at(9).at(1) = 0.333333333333333;
-                QuadPts->at(10).at(1) = 0.111111111111111;
-                QuadPts->at(11).at(1) = 0.555555555555556;
-                QuadPts->at(12).at(1) = 0.555555555555556;
-                QuadPts->at(13).at(1) = 0.333333333333333;
-                QuadPts->at(14).at(1) = 0.111111111111111;
-                QuadPts->at(15).at(1) = 0.222222222222222;
-                QuadPts->at(16).at(1) = 0.222222222222222;
-                QuadPts->at(17).at(1) = 0.555555555555556;
-                QuadPts->at(18).at(1) = 0.444444444444444;
-                QuadPts->at(19).at(1) = 0.111111111111111;
-                QuadPts->at(20).at(1) = 0.444444444444444;
-                QuadPts->at(21).at(1) = 0.333333333333333;
-                QuadPts->at(22).at(1) = 0.222222222222222;
-                QuadPts->at(23).at(1) = 0.444444444444444;
-                QuadPts->at(24).at(1) = 0.444444444444444;
-                QuadPts->at(25).at(1) = 0.333333333333333;
-                QuadPts->at(26).at(1) = 0.222222222222222;
-                QuadPts->at(27).at(1) = 0.333333333333333;
-                
-                // Gewichte
-                QuadW->at(0) 			= 0.342410714285714/2.0;
-                QuadW->at(1) 			= 0.342410714285714/2.0;
-                QuadW->at(2) 			= 0.342410714285714/2.0;
-                QuadW->at(3) 			= -0.561160714285714/2.0;
-                QuadW->at(4) 			= -0.561160714285714/2.0;
-                QuadW->at(5) 			= -0.561160714285714/2.0;
-                QuadW->at(6) 			= -0.561160714285714/2.0;
-                QuadW->at(7) 			= -0.561160714285714/2.0;
-                QuadW->at(8) 			= -0.561160714285714/2.0;
-                QuadW->at(9) 			= 1.295089285714286/2.0;
-                QuadW->at(10) 			= 1.295089285714286/2.0;
-                QuadW->at(11) 			= 1.295089285714286/2.0;
-                QuadW->at(12) 			= 1.295089285714286/2.0;
-                QuadW->at(13) 			= 1.295089285714286/2.0;
-                QuadW->at(14) 			= 1.295089285714286/2.0;
-                QuadW->at(15) 			= 0.172767857142857/2.0;
-                QuadW->at(16) 			= 0.172767857142857/2.0;
-                QuadW->at(17) 			= 0.172767857142857/2.0;
-                QuadW->at(18) 			= -1.354910714285714/2.0;
-                QuadW->at(19) 			= -1.354910714285714/2.0;
-                QuadW->at(20) 			= -1.354910714285714/2.0;
-                QuadW->at(21) 			= -0.408482142857143/2.0;
-                QuadW->at(22) 			= -0.408482142857143/2.0;
-                QuadW->at(23) 			= -0.408482142857143/2.0;
-                QuadW->at(24) 			= -0.408482142857143/2.0;
-                QuadW->at(25) 			= -0.408482142857143/2.0;
-                QuadW->at(26) 			= -0.408482142857143/2.0;
-                QuadW->at(27) 			= 1.566517857142857/2.0;
-                
-                break;
-                
+            QuadPts->at(2).at(0) = b;
+            QuadPts->at(2).at(1) = b;
+
+            a = 0.816847572980459;
+            b = 0.09157621350977101;
+            QuadPts->at(3).at(0) = a;
+            QuadPts->at(3).at(1) = b;
+
+            QuadPts->at(4).at(0) = b;
+            QuadPts->at(4).at(1) = a;
+
+            QuadPts->at(5).at(0) = b;
+            QuadPts->at(5).at(1) = b;
+
+            a = 0.1116907948390055;
+            b = 0.054975871827661;
+            QuadW->at(0) = a;
+            QuadW->at(1) = a;
+            QuadW->at(2) = a;
+            QuadW->at(3) = b;
+            QuadW->at(4) = b;
+            QuadW->at(5) = b;
+        } else if (Degree <= 5) {
+            QuadPts.reset(new vec2D_dbl_Type(7,vec_dbl_Type(2,0.0)));
+            QuadW->resize(7);
+
+            a = 0.470142064105115;
+            b = 0.101286507323456;
+            P1 = 0.066197076394253;
+            P2 = 0.062969590272413;
+
+            QuadPts->at(0).at(0) = 1/3.;
+            QuadPts->at(0).at(1) = 1/3.;
+
+            QuadPts->at(1).at(0) = a;
+            QuadPts->at(1).at(1) = a;
+				 
+            QuadPts->at(2).at(0) = 1-2.*a;
+            QuadPts->at(2).at(1) = a;
+				 
+            QuadPts->at(3).at(0) = a;
+            QuadPts->at(3).at(1) = 1-2.*a;
+				 
+            QuadPts->at(4).at(0) = b;
+            QuadPts->at(4).at(1) = b;
+				 
+            QuadPts->at(5).at(0) = 1-2.*b;
+            QuadPts->at(5).at(1) = b;
+				 
+            QuadPts->at(6).at(0) = b;
+            QuadPts->at(6).at(1) = 1-2.*b;
+
+            QuadW->at(0) = 9/80.;
+            QuadW->at(1) = P1;
+            QuadW->at(2) = P1;
+            QuadW->at(3) = P1;
+            QuadW->at(4) = P2;
+            QuadW->at(5) = P2;
+            QuadW->at(6) = P2;
+        } else if (Degree <= 6) {
+            // [1] Dunavant, (1985)
+            //     High Degree Efficient Symmetrical Gaussian Quadrature Rules For The Triangle
+            //
+            // [2] Akin, (1994)
+            //     Finite elements for analysis and design (p.200)
+            QuadPts.reset(new vec2D_dbl_Type(12,vec_dbl_Type(2,0.0)));
+            QuadW->resize(12);
+
+            SC quadPts_[2][12] =
+            {
+                {0.501426509658179,0.249286745170910,0.249286745170910,0.873821971016996,0.063089014491502,0.063089014491502,0.053145049844817,0.310352451033784,0.636502499121399,0.636502499121399,0.053145049844817,0.310352451033784},
+                {0.249286745170910,0.501426509658179,0.249286745170910,0.063089014491502,0.873821971016996,0.063089014491502,0.310352451033784,0.053145049844817,0.053145049844817,0.310352451033784,0.636502499121399,0.636502499121399}
+            };
+            for (int i = 0; i < QuadW->size(); i++) {
+                QuadPts->at(i).at(0) = quadPts_[0][i];
+                QuadPts->at(i).at(1) = quadPts_[1][i];
             }
-    }
-    else if(dim==3){
-        if (FEType.at(0)=='P') {
-            if (Degree==2)
-                Degree=3;
-            if (Degree==4)
-                Degree=5;
+
+            SC quadW_[12] = {0.0583931378631895,0.0583931378631895,0.0583931378631895,0.0254224531851035,0.0254224531851035,0.0254224531851035,0.041425537809187,0.041425537809187,0.041425537809187,0.041425537809187,0.041425537809187,0.041425537809187};
+            for (int i = 0; i < QuadW->size(); i++) {
+                QuadW->at(i) = quadW_[i];
+            }
+        } else if (Degree <= 7) {
+            // [1] Dunavant, (1985)
+            //     High Degree Efficient Symmetrical Gaussian Quadrature Rules For The Triangle
+            //
+            // [2] Akin, (1994)
+            //     Finite elements for analysis and design (p.200)
+            QuadPts.reset(new vec2D_dbl_Type(13,vec_dbl_Type(2,0.0)));
+            QuadW->resize(13);
+
+            SC quadPts_[2][13] =
+            {
+                {0.333333333333333,0.47930806784192,0.26034596607904,0.26034596607904,0.869739794195568,0.06513010290221601,0.06513010290221601,0.048690315425316,0.312865496004874,0.63844418856981,0.63844418856981,0.048690315425316,0.312865496004874},
+                {0.333333333333333,0.26034596607904,0.47930806784192,0.26034596607904,0.06513010290221601,0.869739794195568,0.06513010290221601,0.312865496004874,0.048690315425316,0.048690315425316,0.312865496004874,0.63844418856981,0.63844418856981}
+            };
+            for (int i = 0; i < QuadW->size(); i++) {
+                QuadPts->at(i).at(0) = quadPts_[0][i];
+                QuadPts->at(i).at(1) = quadPts_[1][i];
+            }
+
+            SC quadW_[13] = {-0.074785022233841,0.087807628716604,0.087807628716604,0.087807628716604,0.026673617804419,0.026673617804419,0.026673617804419,0.0385568804451285,0.0385568804451285,0.0385568804451285,0.0385568804451285,0.0385568804451285,0.0385568804451285};
+            for (int i = 0; i < QuadW->size(); i++) {
+                QuadW->at(i) = quadW_[i];
+            }
+        }
+    } else if(dim == 3) {
+        volume_ref_element = 1.0/6.0; // area of unit tetrahedron
+
+        if (FEType.at(0)=='P') { // TODO: [JK] Why is the element type only queried here and not in 2D?
 
             TEUCHOS_TEST_FOR_EXCEPTION(Degree>6, std::runtime_error, "Tetrahedron quadrature rules only up to degree 6 available.");
             
-            switch (Degree) {
-                case 1:
-                    QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(1);
-                    QuadPts->at(0).at(0) 	= 0.25;
-                    QuadPts->at(0).at(1) 	= 0.25;
-                    QuadPts->at(0).at(2) 	= 0.25;
-                    QuadW->at(0)			= 1/6.;
-                    break;
-                    
-                case 3:
-                    QuadPts.reset(new vec2D_dbl_Type(5,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(5);
-                    a = .25;
-                    b = 1./6.;
-                    c = .5;
-                    QuadPts->at(0).at(0) = a;
-                    QuadPts->at(0).at(1) = a;
-                    QuadPts->at(0).at(2) = a;
-                    
-                    QuadPts->at(1).at(0) = b;
-                    QuadPts->at(1).at(1) = b;
-                    QuadPts->at(1).at(2) = b;
-                    
-                    QuadPts->at(2).at(0) = b;
-                    QuadPts->at(2).at(1) = b;
-                    QuadPts->at(2).at(2) = c;
-                    
-                    QuadPts->at(3).at(0) = b;
-                    QuadPts->at(3).at(1) = c;
-                    QuadPts->at(3).at(2) = b;
-                    
-                    QuadPts->at(4).at(0) = c;
-                    QuadPts->at(4).at(1) = b;
-                    QuadPts->at(4).at(2) = b;
-                    
-                    QuadW->at(0)		 = -2./15.;
-                    QuadW->at(1)		 = 3./40.;
-                    QuadW->at(2)		 = 3./40.;
-                    QuadW->at(3)		 = 3./40.;
-                    QuadW->at(4)		 = 3./40.;
-                    break;
-                case 4:
-                    QuadPts.reset(new vec2D_dbl_Type(11,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(11);
-                    
-                    a = .785714285714286;
-                    b = .071428571428571;
-                    c = .100596423833201;
-                    d = .399403576166799;
-                    
-                    QuadPts->at(0).at(0) 	= .25;
-                    QuadPts->at(0).at(1)    = .25;
-                    QuadPts->at(0).at(2)    = .25;
-                    
-                    QuadPts->at(1).at(0) 	= a;
-                    QuadPts->at(1).at(1)    = b;
-                    QuadPts->at(1).at(2)    = b;
-                    
-                    QuadPts->at(2).at(0) 	= b;
-                    QuadPts->at(2).at(1)    = b;
-                    QuadPts->at(2).at(2)    = b;
-                    
-                    QuadPts->at(3).at(0) 	= b;
-                    QuadPts->at(3).at(1)    = b;
-                    QuadPts->at(3).at(2)    = a;
-                    
-                    QuadPts->at(4).at(0) 	= b;
-                    QuadPts->at(4).at(1)    = a;
-                    QuadPts->at(4).at(2)    = b;
-                    
-                    QuadPts->at(5).at(0) 	= c;
-                    QuadPts->at(5).at(1)    = d;
-                    QuadPts->at(5).at(2)    = d;
-                    
-                    QuadPts->at(6).at(0) 	= d;
-                    QuadPts->at(6).at(1)    = c;
-                    QuadPts->at(6).at(2)    = d;
-                    
-                    QuadPts->at(7).at(0) 	= d;
-                    QuadPts->at(7).at(1)    = d;
-                    QuadPts->at(7).at(2)    = c;
-                    
-                    QuadPts->at(8).at(0) 	= d;
-                    QuadPts->at(8).at(1)    = c;
-                    QuadPts->at(8).at(2)    = c;
-                    
-                    QuadPts->at(9).at(0) 	= c;
-                    QuadPts->at(9).at(1)    = d;
-                    QuadPts->at(9).at(2)    = c;
-                    
-                    QuadPts->at(10).at(0) 	= c;
-                    QuadPts->at(10).at(1)   = c;
-                    QuadPts->at(10).at(2)   = d;
-                    
-                    a = -.078933333333333;
-                    b = .045733333333333;
-                    c= .149333333333333;
-                    
-                    
-                    QuadW->at(0) = a;
-                    
-                    QuadW->at(1) = b;
-                    QuadW->at(2) = b;
-                    QuadW->at(3) = b;
-                    QuadW->at(4) = b;
-                    
-                    QuadW->at(5) = c;
-                    QuadW->at(6) = c;
-                    QuadW->at(7) = c;
-                    QuadW->at(8) = c;
-                    QuadW->at(9) = c;
-                    QuadW->at(10) = c;
-                    
-                case 5:
-                    QuadPts.reset(new vec2D_dbl_Type(15,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(15);
-                    a 	= 0.25;
-                    b1 	= (7.+sqrt(15.))/34.;
-                    b2 	= (7.-sqrt(15.))/34.;
-                    c1 	= (13.-3.*sqrt(15.))/34.;
-                    c2 	= (13.+3.*sqrt(15.))/34.;
-                    d 	= (5.-sqrt(15.))/20.;
-                    e 	= (5.+sqrt(15.))/20.;
-                    
-                    QuadPts->at(0).at(0) 	= a;
-                    QuadPts->at(0).at(1)    = a;
-                    QuadPts->at(0).at(2)    = a;
-                    
-                    QuadPts->at(1).at(0) 	= b1;
-                    QuadPts->at(1).at(1)    = b1;
-                    QuadPts->at(1).at(2)    = b1;
-                    
-                    QuadPts->at(2).at(0) 	= b1;
-                    QuadPts->at(2).at(1)    = b1;
-                    QuadPts->at(2).at(2)    = c1;
-                    
-                    QuadPts->at(3).at(0) 	= b1;
-                    QuadPts->at(3).at(1)    = c1;
-                    QuadPts->at(3).at(2)    = b1;
-                    
-                    QuadPts->at(4).at(0) 	= c1;
-                    QuadPts->at(4).at(1)    = b1;
-                    QuadPts->at(4).at(2)    = b1;
-                    
-                    QuadPts->at(5).at(0) 	= b2;
-                    QuadPts->at(5).at(1)    = b2;
-                    QuadPts->at(5).at(2)    = b2;
-                    
-                    QuadPts->at(6).at(0) 	= b2;
-                    QuadPts->at(6).at(1)    = b2;
-                    QuadPts->at(6).at(2)    = c2;
-                    
-                    QuadPts->at(7).at(0) 	= b2;
-                    QuadPts->at(7).at(1)    = c2;
-                    QuadPts->at(7).at(2)    = b2;
-                    
-                    QuadPts->at(8).at(0) 	= c2;
-                    QuadPts->at(8).at(1)    = b2;
-                    QuadPts->at(8).at(2)    = b2;
-                    
-                    QuadPts->at(9).at(0) 	= d;
-                    QuadPts->at(9).at(1)    = d;
-                    QuadPts->at(9).at(2)    = e;
-                    
-                    QuadPts->at(10).at(0) 	= d;
-                    QuadPts->at(10).at(1)   = e;
-                    QuadPts->at(10).at(2)   = d;
-                    
-                    QuadPts->at(11).at(0) 	= e;
-                    QuadPts->at(11).at(1)	= d;
-                    QuadPts->at(11).at(2)	= d;
-                    
-                    QuadPts->at(12).at(0) 	= d;
-                    QuadPts->at(12).at(1)	= e;
-                    QuadPts->at(12).at(2)	= e;
-                    
-                    QuadPts->at(13).at(0) 	= e;
-                    QuadPts->at(13).at(1)	= d;
-                    QuadPts->at(13).at(2)	= e;
-                    
-                    QuadPts->at(14).at(0) 	= e;
-                    QuadPts->at(14).at(1)	= e;
-                    QuadPts->at(14).at(2)	= d;
-                    
-                    
-                    P1 	= (2665.-14.*sqrt(15.))/226800.;
-                    P2 	= (2665.+14.*sqrt(15.))/226800.;
-                    b	= 5./567.;
-                    
-                    QuadW->at(0) 			= 8./405.;
-                    QuadW->at(1)            = P1;
-                    QuadW->at(2)            = P1;
-                    QuadW->at(3) 			= P1;
-                    QuadW->at(4)            = P1;
-                    
-                    QuadW->at(5)            = P2;
-                    QuadW->at(6)            = P2;
-                    QuadW->at(7)            = P2;
-                    QuadW->at(8)            = P2;
-                    
-                    QuadW->at(9) 			= b;
-                    QuadW->at(10)           = b;
-                    QuadW->at(11)           = b;
-                    QuadW->at(12) 			= b;
-                    QuadW->at(13)           = b;
-                    QuadW->at(14)           = b;
-                    
-                    break;
-                case 6: //Keast
-                    QuadPts.reset(new vec2D_dbl_Type(24,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(24);
-                    a = .356191386222545;
-                    b = .214602871259152;
-                    c = .877978124396166;
-                    d = .040673958534611;
-                    f = .032986329573173;
-                    g = .322337890142276;
-                    h = .269672331458316;
-                    i = .063661001875018;
-                    j = .603005664791649;
-                    
-                    QuadPts->at(0).at(0) 	= a;
-                    QuadPts->at(0).at(1)    = b;
-                    QuadPts->at(0).at(2)    = b;
+            if (Degree <= 1) {
+                QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(3,0.0)));
+                QuadW->resize(1);
+                QuadPts->at(0).at(0) = 0.25;
+                QuadPts->at(0).at(1) = 0.25;
+                QuadPts->at(0).at(2) = 0.25;
+                QuadW->at(0)         = 1/6.;
+            } else if (Degree <= 2) {
+                // Akin - 1994 - Finite elements for analysis and design (p.198)
 
-                    QuadPts->at(1).at(0) 	= b;
-                    QuadPts->at(1).at(1)    = b;
-                    QuadPts->at(1).at(2)    = b;
+                QuadPts.reset(new vec2D_dbl_Type(4,vec_dbl_Type(3,0.0)));
+                QuadW->resize(4);
 
-                    QuadPts->at(2).at(0) 	= b;
-                    QuadPts->at(2).at(1)    = b;
-                    QuadPts->at(2).at(2)    = a;
+                a = (5.0 + 3.0*sqrt(5.0))/20.0;
+                b = (5.0 - 1.0*sqrt(5.0))/20.0;
 
-                    QuadPts->at(3).at(0) 	= b;
-                    QuadPts->at(3).at(1)    = a;
-                    QuadPts->at(3).at(2)    = b;
+                QuadPts->at(0).at(0) = a;
+                QuadPts->at(0).at(1) = b;
+                QuadPts->at(0).at(2) = b;
 
-                    QuadPts->at(4).at(0) 	= c;
-                    QuadPts->at(4).at(1)    = d;
-                    QuadPts->at(4).at(2)    = d;
-                    
-                    QuadPts->at(5).at(0) 	= d;
-                    QuadPts->at(5).at(1)    = d;
-                    QuadPts->at(5).at(2)    = d;
+                QuadPts->at(1).at(0) = b;
+                QuadPts->at(1).at(1) = a;
+                QuadPts->at(1).at(2) = b;
 
-                    QuadPts->at(6).at(0) 	= d;
-                    QuadPts->at(6).at(1)    = d;
-                    QuadPts->at(6).at(2)    = c;
-                    
-                    QuadPts->at(7).at(0) 	= d;
-                    QuadPts->at(7).at(1)    = c;
-                    QuadPts->at(7).at(2)    = d;
+                QuadPts->at(2).at(0) = b;
+                QuadPts->at(2).at(1) = b;
+                QuadPts->at(2).at(2) = a;
 
-                    QuadPts->at(8).at(0) 	= f;
-                    QuadPts->at(8).at(1)    = g;
-                    QuadPts->at(8).at(2)    = g;
+                QuadPts->at(3).at(0) = b;
+                QuadPts->at(3).at(1) = b;
+                QuadPts->at(3).at(2) = b;
 
-                    QuadPts->at(9).at(0) 	= g;
-                    QuadPts->at(9).at(1)    = g;
-                    QuadPts->at(9).at(2)    = g;
+                a = 1.0/24.0;
+                QuadW->at(0) = a;
+                QuadW->at(1) = a;
+                QuadW->at(2) = a;
+                QuadW->at(3) = a;
+            } else if (Degree <= 3) {
+                QuadPts.reset(new vec2D_dbl_Type(5,vec_dbl_Type(3,0.0)));
+                QuadW->resize(5);
+                a = .25;
+                b = 1./6.;
+                c = .5;
+                QuadPts->at(0).at(0) = a;
+                QuadPts->at(0).at(1) = a;
+                QuadPts->at(0).at(2) = a;
+                
+                QuadPts->at(1).at(0) = b;
+                QuadPts->at(1).at(1) = b;
+                QuadPts->at(1).at(2) = b;
+                
+                QuadPts->at(2).at(0) = b;
+                QuadPts->at(2).at(1) = b;
+                QuadPts->at(2).at(2) = c;
+                
+                QuadPts->at(3).at(0) = b;
+                QuadPts->at(3).at(1) = c;
+                QuadPts->at(3).at(2) = b;
+                
+                QuadPts->at(4).at(0) = c;
+                QuadPts->at(4).at(1) = b;
+                QuadPts->at(4).at(2) = b;
+                
+                QuadW->at(0) = -2./15.;
+                QuadW->at(1) = 3./40.;
+                QuadW->at(2) = 3./40.;
+                QuadW->at(3) = 3./40.;
+                QuadW->at(4) = 3./40.;
+            } else if (Degree <= 4) {
+                QuadPts.reset(new vec2D_dbl_Type(11,vec_dbl_Type(3,0.0)));
+                QuadW->resize(11);
+                
+                a = .785714285714286;
+                b = .071428571428571;
+                c = .100596423833201;
+                d = .399403576166799;
+                
+                QuadPts->at(0).at(0) 	= .25;
+                QuadPts->at(0).at(1)    = .25;
+                QuadPts->at(0).at(2)    = .25;
+                
+                QuadPts->at(1).at(0) 	= a;
+                QuadPts->at(1).at(1)    = b;
+                QuadPts->at(1).at(2)    = b;
+                
+                QuadPts->at(2).at(0) 	= b;
+                QuadPts->at(2).at(1)    = b;
+                QuadPts->at(2).at(2)    = b;
+                
+                QuadPts->at(3).at(0) 	= b;
+                QuadPts->at(3).at(1)    = b;
+                QuadPts->at(3).at(2)    = a;
+                
+                QuadPts->at(4).at(0) 	= b;
+                QuadPts->at(4).at(1)    = a;
+                QuadPts->at(4).at(2)    = b;
+                
+                QuadPts->at(5).at(0) 	= c;
+                QuadPts->at(5).at(1)    = d;
+                QuadPts->at(5).at(2)    = d;
+                
+                QuadPts->at(6).at(0) 	= d;
+                QuadPts->at(6).at(1)    = c;
+                QuadPts->at(6).at(2)    = d;
+                
+                QuadPts->at(7).at(0) 	= d;
+                QuadPts->at(7).at(1)    = d;
+                QuadPts->at(7).at(2)    = c;
+                
+                QuadPts->at(8).at(0) 	= d;
+                QuadPts->at(8).at(1)    = c;
+                QuadPts->at(8).at(2)    = c;
+                
+                QuadPts->at(9).at(0) 	= c;
+                QuadPts->at(9).at(1)    = d;
+                QuadPts->at(9).at(2)    = c;
+                
+                QuadPts->at(10).at(0) 	= c;
+                QuadPts->at(10).at(1)   = c;
+                QuadPts->at(10).at(2)   = d;
+                
+                a = -0.078933333333333/6.0;
+                b = 0.045733333333333/6.0;
+                c = 0.149333333333333/6.0;
+                
+                QuadW->at(0) = a;
+                
+                QuadW->at(1) = b;
+                QuadW->at(2) = b;
+                QuadW->at(3) = b;
+                QuadW->at(4) = b;
+                
+                QuadW->at(5) = c;
+                QuadW->at(6) = c;
+                QuadW->at(7) = c;
+                QuadW->at(8) = c;
+                QuadW->at(9) = c;
+                QuadW->at(10) = c;
+            } else if (Degree <= 5) {
+                QuadPts.reset(new vec2D_dbl_Type(15,vec_dbl_Type(3,0.0)));
+                QuadW->resize(15);
+                a 	= 0.25;
+                b1 	= (7.+sqrt(15.))/34.;
+                b2 	= (7.-sqrt(15.))/34.;
+                c1 	= (13.-3.*sqrt(15.))/34.;
+                c2 	= (13.+3.*sqrt(15.))/34.;
+                d 	= (5.-sqrt(15.))/20.;
+                e 	= (5.+sqrt(15.))/20.;
+                
+                QuadPts->at(0).at(0) 	= a;
+                QuadPts->at(0).at(1)    = a;
+                QuadPts->at(0).at(2)    = a;
+                
+                QuadPts->at(1).at(0) 	= b1;
+                QuadPts->at(1).at(1)    = b1;
+                QuadPts->at(1).at(2)    = b1;
+                
+                QuadPts->at(2).at(0) 	= b1;
+                QuadPts->at(2).at(1)    = b1;
+                QuadPts->at(2).at(2)    = c1;
+                
+                QuadPts->at(3).at(0) 	= b1;
+                QuadPts->at(3).at(1)    = c1;
+                QuadPts->at(3).at(2)    = b1;
+                
+                QuadPts->at(4).at(0) 	= c1;
+                QuadPts->at(4).at(1)    = b1;
+                QuadPts->at(4).at(2)    = b1;
+                
+                QuadPts->at(5).at(0) 	= b2;
+                QuadPts->at(5).at(1)    = b2;
+                QuadPts->at(5).at(2)    = b2;
+                
+                QuadPts->at(6).at(0) 	= b2;
+                QuadPts->at(6).at(1)    = b2;
+                QuadPts->at(6).at(2)    = c2;
+                
+                QuadPts->at(7).at(0) 	= b2;
+                QuadPts->at(7).at(1)    = c2;
+                QuadPts->at(7).at(2)    = b2;
+                
+                QuadPts->at(8).at(0) 	= c2;
+                QuadPts->at(8).at(1)    = b2;
+                QuadPts->at(8).at(2)    = b2;
+                
+                QuadPts->at(9).at(0) 	= d;
+                QuadPts->at(9).at(1)    = d;
+                QuadPts->at(9).at(2)    = e;
+                
+                QuadPts->at(10).at(0) 	= d;
+                QuadPts->at(10).at(1)   = e;
+                QuadPts->at(10).at(2)   = d;
+                
+                QuadPts->at(11).at(0) 	= e;
+                QuadPts->at(11).at(1)	= d;
+                QuadPts->at(11).at(2)	= d;
+                
+                QuadPts->at(12).at(0) 	= d;
+                QuadPts->at(12).at(1)	= e;
+                QuadPts->at(12).at(2)	= e;
+                
+                QuadPts->at(13).at(0) 	= e;
+                QuadPts->at(13).at(1)	= d;
+                QuadPts->at(13).at(2)	= e;
+                
+                QuadPts->at(14).at(0) 	= e;
+                QuadPts->at(14).at(1)	= e;
+                QuadPts->at(14).at(2)	= d;
+                
+                
+                P1 	= (2665.-14.*sqrt(15.))/226800.;
+                P2 	= (2665.+14.*sqrt(15.))/226800.;
+                b	= 5./567.;
+                
+                QuadW->at(0) = 8./405.;
+                QuadW->at(1) = P1;
+                QuadW->at(2) = P1;
+                QuadW->at(3) = P1;
+                QuadW->at(4) = P1;
 
-                    QuadPts->at(10).at(0) 	= g;
-                    QuadPts->at(10).at(1)   = g;
-                    QuadPts->at(10).at(2)   = f;
+                QuadW->at(5) = P2;
+                QuadW->at(6) = P2;
+                QuadW->at(7) = P2;
+                QuadW->at(8) = P2;
 
-                    QuadPts->at(11).at(0) 	= g;
-                    QuadPts->at(11).at(1)   = f;
-                    QuadPts->at(11).at(2)   = g;
-                    
-                    QuadPts->at(12).at(0) 	= h;
-                    QuadPts->at(12).at(1)   = i;
-                    QuadPts->at(12).at(2)   = i;
-                    
-                    QuadPts->at(13).at(0) 	= i;
-                    QuadPts->at(13).at(1)   = h;
-                    QuadPts->at(13).at(2)   = i;
-                    
-                    QuadPts->at(14).at(0) 	= i;
-                    QuadPts->at(14).at(1)   = i;
-                    QuadPts->at(14).at(2)   = h;
-                    
-                    QuadPts->at(15).at(0) 	= j;
-                    QuadPts->at(15).at(1)   = i;
-                    QuadPts->at(15).at(2)   = i;
+                QuadW->at(9) 			= b;
+                QuadW->at(10)           = b;
+                QuadW->at(11)           = b;
+                QuadW->at(12) 			= b;
+                QuadW->at(13)           = b;
+                QuadW->at(14)           = b;
+            } else if (Degree <= 6) {
+                // Keast - 1985 - Moderate-Degree Tetrahedral Quadrature Formulas (p.342)
+                QuadPts.reset(new vec2D_dbl_Type(24,vec_dbl_Type(3,0.0)));
+                QuadW->resize(24);
+                a = .356191386222544953;
+                b = .214602871259151684;
+                c = .877978124396165982;
+                d = .406739585346113397/10.0;
+                f = .329863295731730594/10.0;
+                g = .322337890142275646;
+                h = .269672331458315867;
+                i = .636610018750175299/10.0;
+                j = .603005664791649076;
+                
+                QuadPts->at(0).at(0) 	= a;
+                QuadPts->at(0).at(1)    = b;
+                QuadPts->at(0).at(2)    = b;
 
-                    QuadPts->at(16).at(0) 	= i;
-                    QuadPts->at(16).at(1)   = j;
-                    QuadPts->at(16).at(2)   = i;
+                QuadPts->at(1).at(0) 	= b;
+                QuadPts->at(1).at(1)    = b;
+                QuadPts->at(1).at(2)    = b;
 
-                    QuadPts->at(17).at(0) 	= i;
-                    QuadPts->at(17).at(1)   = i;
-                    QuadPts->at(17).at(2)   = j;
-                    
-                    QuadPts->at(18).at(0) 	= i;
-                    QuadPts->at(18).at(1)   = h;
-                    QuadPts->at(18).at(2)   = j;
+                QuadPts->at(2).at(0) 	= b;
+                QuadPts->at(2).at(1)    = b;
+                QuadPts->at(2).at(2)    = a;
 
-                    QuadPts->at(19).at(0) 	= h;
-                    QuadPts->at(19).at(1)   = j;
-                    QuadPts->at(19).at(2)   = i;
-                    
-                    QuadPts->at(20).at(0) 	= j;
-                    QuadPts->at(20).at(1)   = i;
-                    QuadPts->at(20).at(2)   = h;
-                    
-                    QuadPts->at(21).at(0) 	= i;
-                    QuadPts->at(21).at(1)   = j;
-                    QuadPts->at(21).at(2)   = h;
+                QuadPts->at(3).at(0) 	= b;
+                QuadPts->at(3).at(1)    = a;
+                QuadPts->at(3).at(2)    = b;
 
-                    QuadPts->at(22).at(0) 	= h;
-                    QuadPts->at(22).at(1)   = i;
-                    QuadPts->at(22).at(2)   = j;
-                    
-                    QuadPts->at(23).at(0) 	= j;
-                    QuadPts->at(23).at(1)   = h;
-                    QuadPts->at(23).at(2)   = j;
-                    
-                    a = .039922750258168;
-                    b = .010077211055321;
-                    c = .055357181543654;
-                    d = .048214285714286;
-                    
-                    QuadW->at(0)    = a;
-                    QuadW->at(1)    = a;
-                    QuadW->at(2)    = a;
-                    QuadW->at(3)    = a;
-                    QuadW->at(4)    = b;
-                    QuadW->at(5)    = b;
-                    QuadW->at(6)    = b;
-                    QuadW->at(7)    = b;
-                    QuadW->at(8)    = c;
-                    QuadW->at(9)    = c;
-                    QuadW->at(10)   = c;
-                    QuadW->at(11)   = c;
-                    QuadW->at(12)   = d;
-                    QuadW->at(13)   = d;
-                    QuadW->at(14)   = d;
-                    QuadW->at(15)   = d;
-                    QuadW->at(16)   = d;
-                    QuadW->at(17)   = d;
-                    QuadW->at(18)   = d;
-                    QuadW->at(19)   = d;
-                    QuadW->at(20)   = d;
-                    QuadW->at(21)   = d;
-                    QuadW->at(22)   = d;
-                    QuadW->at(23)   = d;
-            }
+                QuadPts->at(4).at(0) 	= c;
+                QuadPts->at(4).at(1)    = d;
+                QuadPts->at(4).at(2)    = d;
+                
+                QuadPts->at(5).at(0) 	= d;
+                QuadPts->at(5).at(1)    = d;
+                QuadPts->at(5).at(2)    = d;
+
+                QuadPts->at(6).at(0) 	= d;
+                QuadPts->at(6).at(1)    = d;
+                QuadPts->at(6).at(2)    = c;
+                
+                QuadPts->at(7).at(0) 	= d;
+                QuadPts->at(7).at(1)    = c;
+                QuadPts->at(7).at(2)    = d;
+
+                QuadPts->at(8).at(0) 	= f;
+                QuadPts->at(8).at(1)    = g;
+                QuadPts->at(8).at(2)    = g;
+
+                QuadPts->at(9).at(0) 	= g;
+                QuadPts->at(9).at(1)    = g;
+                QuadPts->at(9).at(2)    = g;
+
+                QuadPts->at(10).at(0) 	= g;
+                QuadPts->at(10).at(1)   = g;
+                QuadPts->at(10).at(2)   = f;
+
+                QuadPts->at(11).at(0) 	= g;
+                QuadPts->at(11).at(1)   = f;
+                QuadPts->at(11).at(2)   = g;
+                
+                QuadPts->at(12).at(0) 	= h;
+                QuadPts->at(12).at(1)   = i;
+                QuadPts->at(12).at(2)   = i;
+                
+                QuadPts->at(13).at(0) 	= i;
+                QuadPts->at(13).at(1)   = h;
+                QuadPts->at(13).at(2)   = i;
+                
+                QuadPts->at(14).at(0) 	= i;
+                QuadPts->at(14).at(1)   = i;
+                QuadPts->at(14).at(2)   = h;
+                
+                QuadPts->at(15).at(0) 	= j;
+                QuadPts->at(15).at(1)   = i;
+                QuadPts->at(15).at(2)   = i;
+
+                QuadPts->at(16).at(0) 	= i;
+                QuadPts->at(16).at(1)   = j;
+                QuadPts->at(16).at(2)   = i;
+
+                QuadPts->at(17).at(0) 	= i;
+                QuadPts->at(17).at(1)   = i;
+                QuadPts->at(17).at(2)   = j;
+                
+                QuadPts->at(18).at(0) 	= i;
+                QuadPts->at(18).at(1)   = h;
+                QuadPts->at(18).at(2)   = j;
+
+                QuadPts->at(19).at(0) 	= h;
+                QuadPts->at(19).at(1)   = j;
+                QuadPts->at(19).at(2)   = i;
+                
+                QuadPts->at(20).at(0) 	= j;
+                QuadPts->at(20).at(1)   = i;
+                QuadPts->at(20).at(2)   = h;
+                
+                QuadPts->at(21).at(0) 	= i;
+                QuadPts->at(21).at(1)   = j;
+                QuadPts->at(21).at(2)   = h;
+
+                QuadPts->at(22).at(0) 	= h;
+                QuadPts->at(22).at(1)   = i;
+                QuadPts->at(22).at(2)   = j;
+                
+                QuadPts->at(23).at(0) 	= j;
+                QuadPts->at(23).at(1)   = h;
+                QuadPts->at(23).at(2)   = i;
+                
+                a = 0.665379170969464506/100.0;
+                b = 0.167953517588677620/100.0;
+                c = 0.922619692394239843/100.0;
+                d = 0.803571428571428248/100.0;
+                
+                QuadW->at(0)  = a;
+                QuadW->at(1)  = a;
+                QuadW->at(2)  = a;
+                QuadW->at(3)  = a;
+                QuadW->at(4)  = b;
+                QuadW->at(5)  = b;
+                QuadW->at(6)  = b;
+                QuadW->at(7)  = b;
+                QuadW->at(8)  = c;
+                QuadW->at(9)  = c;
+                QuadW->at(10) = c;
+                QuadW->at(11) = c;
+                QuadW->at(12) = d;
+                QuadW->at(13) = d;
+                QuadW->at(14) = d;
+                QuadW->at(15) = d;
+                QuadW->at(16) = d;
+                QuadW->at(17) = d;
+                QuadW->at(18) = d;
+                QuadW->at(19) = d;
+                QuadW->at(20) = d;
+                QuadW->at(21) = d;
+                QuadW->at(22) = d;
+                QuadW->at(23) = d;
+            } // quadrature formulas for tetrahedra
+        } // Pk finite elements (P1, P2, ...)
+    } // 3D quadrature formulas
+
+    {
+        // Sanity check: do weights sum to 1 for unit interval [0,1], 1/2 for unit triangle, 1/6 for unit tetrahedron.
+        // This does not imply a correct quadrature rule, but it must hold.
+        double volume = 0.0;
+        for (int i = 0; i < QuadW->size(); i++) {
+            volume += QuadW->at(i);
         }
+        double error_volume = fabs(volume - volume_ref_element);
+        std::ostringstream oss;
+        oss << std::scientific << std::setprecision(2) << error_volume;
+        std::string str = oss.str();
+        TEUCHOS_TEST_FOR_EXCEPTION(
+            error_volume > std::numeric_limits<double>::epsilon()*10.0, 
+            std::runtime_error, 
+            "Quadrature weights do not sum to (approximately) " << volume_ref_element << 
+            ", the length/area/volume of the reference element. [error:" + str  + "].");
     }
-    
 }
 
 
