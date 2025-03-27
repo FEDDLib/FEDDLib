@@ -1147,7 +1147,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
                                                    const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
 {
 
-
     using Teuchos::RCP;
     using Teuchos::rcp;
     using Teuchos::rcp_dynamic_cast;
@@ -1331,6 +1330,8 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op() 
     }
     else
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Unkown preconditioner/solver type.");
+
+    
 }
 
 template<class SC,class LO,class GO,class NO>

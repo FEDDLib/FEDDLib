@@ -107,8 +107,6 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(NonLinearProblem_Type &problem){
         Thyra::assign(initial_guess.ptr(), *solMV->col(0));
     }
     else{
-        if(verbose)
-            cout << " ####### ZERO INITIAL GUESS #######" << endl;
         Thyra::V_S(initial_guess.ptr(),Teuchos::ScalarTraits<SC>::zero());
     } 
 
