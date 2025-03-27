@@ -802,23 +802,6 @@ int Helper::getFuncAtQuadNodes(vec_dbl_ptr_Type &funcVals,
     return intFE;
 }
 
-/*!
-
-\brief Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information. !! Input can be improved with just delivering the coordinates of the surface nodes to determine the quad points
-
-@param[in] dim Dimension for which the quadrature points are needed.
-@param[in] FEType Finite element type for which the quadrature points are needed.
-@param[in] QuadW Vector to be filled with the quadrature weights accordingly
-@param[in] vec_LO_Type surfaceIDs for which you need the quadrature points.
-@param[in] points The repeated(!) points of current problem to identify the surface node ids. 
-
-@param[out] QuadPts Quadrature points
-@param[out] QuadW Quadrature weights
-
-\brief Keep in mind that elementwise quadPoints are defined on reference element whereas surface quadPoints at hand are defined on the input surface, which is typically not the reference Element. 
-
-*/
-
 vec2D_dbl_Type Helper::getQuadratureValuesOnSurface(int dim, std::string FEType, vec_dbl_Type &QuadW, vec_LO_Type surfaceIDs, vec2D_dbl_ptr_Type points){
 
 	vec2D_dbl_Type QuadPts(QuadW.size(), vec_dbl_Type(dim));
