@@ -48,8 +48,6 @@ template <class SC = default_sc, class LO = default_lo, class GO = default_go, c
 class FE {
   public:
 
-    enum VarType {Std=0,Grad=1};
-
     typedef Domain<SC,LO,GO,NO> Domain_Type;
     typedef Teuchos::RCP<Domain_Type> DomainPtr_Type;
     typedef Teuchos::RCP<const Domain_Type> DomainConstPtr_Type;
