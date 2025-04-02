@@ -240,7 +240,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Type 
 
 	UN deg = Helper::determineDegree(dim,FEType,Grad); // Not complete
 	//UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
-    //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, extraDeg);
+    //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, 0) + extraDeg;
 
 	Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -314,7 +314,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Ty
 
 	UN deg = Helper::determineDegree(dim,FEType,Grad); // Not complete
 	//UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
-    //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, extraDeg);
+    //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, 0) + extraDeg;
 
 	Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
