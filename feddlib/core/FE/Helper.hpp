@@ -164,8 +164,7 @@ public:
                               std::string FEType1,
                               std::string FEType2,
                               int type1,
-                              int type2,
-                              UN extraDeg = 0);
+                              int type2);
 
     static UN determineDegree(UN dim,
                               std::string FEType,

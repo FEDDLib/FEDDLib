@@ -62,7 +62,7 @@ UN Helper::determineDegree(UN dim, std::string FEType, VarType orderOfDerivative
     return deg;
 }
 
-UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, int type1,int type2, UN extraDeg){
+UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, int type1,int type2){
 
     TEUCHOS_TEST_FOR_EXCEPTION( dim==2 && ( FEType1=="P2-CR" || FEType2=="P2-CR"), std::runtime_error, "P2-CR should be only available in 3D."); // TODO: [JK] I don't think this exception should be here unless P2-CR does not exist in theory. If it is simply not implemented, the error should be thrown when trying to use its basis functions (e.g., during assembly).
     UN deg1, deg2;
@@ -136,7 +136,7 @@ UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, int
             deg2 = 2;
     }
 
-    UN deg = deg1+deg2+extraDeg;
+    UN deg = deg1+deg2;
     
     return deg;
 }
