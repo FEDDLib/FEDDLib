@@ -3,60 +3,68 @@
 using namespace std;
 namespace FEDD {
 
-
-UN Helper::determineDegree(UN dim, std::string FEType, UN degFunc){
-   
-	UN deg;
+UN Helper::requiredQuadratureDegreeForBasisfunction(UN dim, std::string FEType){
+    // dim is currently not used, but might be in the future for different types of finite elements.
+    UN deg;
     if (!FEType.compare("P0"))
         deg = 0;
     else if (!FEType.compare("P1"))
         deg = 1;
     else if (!FEType.compare("P2"))
         deg = 2;
+    else if (!FEType.compare("Q1"))
+        deg = 1;
     else if (!FEType.compare("Q2"))
         deg = 2;
-    
-    deg += degFunc;
-
-    if (deg==0)
-        deg = 1;
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown finite element type: " + FEType);
 
     return deg;
 }
 
-UN Helper::determineDegree(UN dim, std::string FEType, int type){
+UN Helper::requiredQuadratureDegreeForGradientOfBasisfunction(UN dim, std::string FEType){
+    // In 1D, Qk finite elements are the same as Pk finite elements.
     UN deg;
-    if (!FEType.compare("P0")) {
+    if (!FEType.compare("P0"))
         deg = 0;
-    }
-    else if (!FEType.compare("P1")) {
-        if (type==Std)
-            deg = 1;
-        else if (type==Grad)
-            deg = 0;
-    }
-    else if (!FEType.compare("P2")) {
-        if (type==Std)
-            deg = 2;
-        else if (type==Grad)
-            deg = 1;
-    }
-    else if (!FEType.compare("Q2")) {
-        if (type==Std)
-            deg = 2;
-        else if (type==Grad)
-            deg = 2;
-    }
-    
-    if (deg==0)
+    else if (!FEType.compare("P1"))
+        deg = 0;
+    else if (!FEType.compare("P2"))
         deg = 1;
+    else if (!FEType.compare("Q1"))
+        deg = (dim > 1 ? 1 : 0);
+        // Example: f(x,y) = x*y.
+        // Gradient(f(x,y)) = [y,x]
+        // The required degree in x direction of the first argument is 0 but 1 for the second argument. 
+        // The same holds for the y direction. Thus, we need degree 1 in each (x and y) direction.
+    else if (!FEType.compare("Q2"))
+        deg = (dim > 1 ? 2 : 1);
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown finite element type: " + FEType);
 
+    return deg;
+}
+
+UN Helper::determineDegree(UN dim, std::string FEType, UN degFunc){
+    UN deg = requiredQuadratureDegreeForBasisfunction(dim,FEType);
+    deg += degFunc;
+    return deg;
+}
+
+UN Helper::determineDegree(UN dim, std::string FEType, VarType orderOfDerivative){
+    UN deg;
+    if (orderOfDerivative == Std)        // Std  = 0 = no derivative
+        deg = requiredQuadratureDegreeForBasisfunction(dim,FEType);
+    else if (orderOfDerivative == Grad)  // Grad = 1 = first derivative = gradient
+        deg = requiredQuadratureDegreeForGradientOfBasisfunction(dim,FEType);
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown order of derivative: " + orderOfDerivative);
     return deg;
 }
 
 UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, int type1,int type2, UN extraDeg){
 
-    TEUCHOS_TEST_FOR_EXCEPTION( dim==2 && ( FEType1=="P2-CR" || FEType2=="P2-CR"), std::runtime_error, "P2-CR should be only available in 3D.");
+    TEUCHOS_TEST_FOR_EXCEPTION( dim==2 && ( FEType1=="P2-CR" || FEType2=="P2-CR"), std::runtime_error, "P2-CR should be only available in 3D."); // TODO: [JK] I don't think this exception should be here unless P2-CR does not exist in theory. If it is simply not implemented, the error should be thrown when trying to use its basis functions (e.g., during assembly).
     UN deg1, deg2;
     if (!FEType1.compare("P0")) {
         deg1 = 0;
@@ -75,7 +83,7 @@ UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, int
     }
     else if (!FEType1.compare("P2-CR")) {
         if (type1==Std)
-            deg1 = 4;
+            deg1 = 4; // [JK] Was ist das fuer ein Element, das in einem Tetraeder mit einer P2-Formel Ordnung 4 rausbekommt?!
         else if (type1==Grad)
             deg1 = 3;
     }
@@ -129,11 +137,10 @@ UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, int
     }
 
     UN deg = deg1+deg2+extraDeg;
-    if (deg==0)
-        deg = 1;
     
     return deg;
 }
+
 void Helper::buildTransformationSurface(const vec_int_Type& element,
                                                  vec2D_dbl_ptr_Type pointsRep,
                                                  SmallMatrix<SC>& B,

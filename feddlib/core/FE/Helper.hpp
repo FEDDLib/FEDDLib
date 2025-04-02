@@ -172,24 +172,22 @@ public:
                               UN degFunc);
 
     /*!
-    \brief Determine specific polynomial degree relating to a finite element basis function.
+    \brief Determine polynomial degree of a finite element basis function or its gradient that is required to select the correct quadrature formula for exact integration.
 
-    For edges, triangles, and tetrahedra (i.e., for Pk elements), this functions returns the maximum polynomial degree in any direction. 
-    For edges, rectangles, and cuboids (i.e., for Qk elements), this function returns the polynomial degree on the reference element in x, y, or z direction. 
-    The degree is determined either for the original function or its gradient.
+    \details
+    This is a wrapper. 
+    See Helper::requiredQuadratureDegreeForBasisfunction for details in case the degree is required for a basis function.
+    See Helper::requiredQuadratureDegreeForGradientOfBasisfunction for details in case the degree is required for the gradient of a basis function.
 
-    Example in 2D:
-    a) FEType="P1": phi_1(x,y) = 1-x-y is linear, and grad(phi_1(x,y)) = [-1,-1] is constant. The remaining basis functions are similar. Thus, degree=1 for type=Std, and degree=0 for type=Grad.
-    b) FEType="Q1": phi_1(x,y) = x*y is quadratic but linear in each coordinate direction. grad(phi_1(x,y)) = [y,x] is also linear in each coordinate direction. The remaining basis functions are similar. Thus, degree=1 for type=Std, and degree=1 for type=Grad.
+    \param[in] dim  Dimension of the domain.
+    \param[in] FEType  Finite element type, e.g., "P1", "Q2" etc.
+    \param[in] orderOfDerivative  {Std,Grad} Order of the derivative: order=0 (type=Std) is the original function, order=1 (type=Grad) is the gradient, i.e., the first derivative.
 
-    \param[in] dim Dimension of the domain. TODO: [JK] This is not used. Can we get rid of it?
-    \param[in] FEType Finite element type
-    \param[in] type {Std,Grad} Order of the derivative: order=0 (type=Std) is the original function, order=1 (type=Grad) is the first derivative.
-    \return polynomial degree
+    \return a polynomial degree for a finite element basis function or its gradient
     */
     static UN determineDegree(UN dim,
                               std::string FEType,
-                              int type);
+                              VarType orderOfDerivative);
                        
 
     /// @brief Get basisfunction phi per quadrature point
@@ -229,6 +227,58 @@ public:
 private:
 	
 	Helper(){};
+
+    /*!
+    \brief Determine polynomial degree of a finite element basis function that is required to select the correct quadrature formula for exact integration.
+
+    \details
+    See Helper::requiredQuadratureDegreeForGradientOfBasisfunction for the analogous function to determine the degree for the gradient of a finite element basis function.
+
+    For a finite element basis function: 
+    For edges, triangles, and tetrahedra (i.e., for Pk elements), this function returns the polynomial degree (i.e., the maximum degree in any direction). This can be used to select the correct quadrature formula to integrate the basis function exactly.
+    For edges, rectangles, and cuboids (i.e., for Qk elements), this function returns the polynomial degree on the reference element in x, y, or z direction. This can be used to select the correct tensor-product quadrature formula for exact integration of the basis function.
+
+    Examples in 2D:
+    a) FEType="P1" (triangle): phi_1(x,y) = 1-x-y is linear. 
+       (All other basis functions are similar.)
+       1 is returned.
+    b) FEType="Q1" (quadrilateral): phi_1(x,y) = x*y is quadratic but linear in each coordinate direction.
+       (All other basis functions are similar.)
+       1 is returned.
+
+    \param[in] dim  Dimension of the domain. This is currently not used but may be in the future if other finite elements are implemented.
+    \param[in] FEType  Finite element type, e.g., "P1", "Q2" etc.
+
+    \return a polynomial degree for a finite element basis function
+    */
+    static UN requiredQuadratureDegreeForBasisfunction(UN dim, std::string FEType);
+
+    /*!
+    \brief Determine polynomial degree of the gradient of a finite element basis function that is required to select the correct quadrature formula for exact integration.
+
+    \details
+    See Helper::requiredQuadratureDegreeForBasisfunction for the analogous function to determine the degree for a finite element basis function.
+
+    For the gradient of a finite element basis function: 
+    For edges, triangles, and tetrahedra (i.e., for Pk elements), this function returns the polynomial degree (i.e., the maximum degree in any direction). This can be used to select the correct quadrature formula to integrate the gradient of a basis function exactly.
+    For edges, rectangles, and cuboids (i.e., for Qk elements), this function returns the polynomial degree on the reference element in x, y, or z direction. This can be used to select the correct tensor-product quadrature formula for exact integration of the gradient of a basis function.
+
+    Examples in 2D:
+    a) FEType="P1" (triangle): phi_1(x,y) = 1-x-y is linear. 
+       grad(phi_1(x,y)) = [-1,-1] is constant.
+       (All other basis functions are similar.)
+       0 is returned.
+    b) FEType="Q1" (quadrilateral): phi_1(x,y) = x*y is quadratic but linear in each coordinate direction.
+       grad(phi_1(x,y)) = [y,x] is also linear in each coordinate direction.
+       (All other basis functions are similar.)
+       1 is returned.
+
+    \param[in] dim  Dimension of the domain.
+    \param[in] FEType  Finite element type, e.g., "P1", "Q2" etc.
+
+    \return a polynomial degree for the gradient of a finite element basis function
+    */
+    static UN requiredQuadratureDegreeForGradientOfBasisfunction(UN dim, std::string FEType);
 
 };
 }
