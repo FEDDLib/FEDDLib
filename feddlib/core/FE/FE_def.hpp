@@ -1512,7 +1512,7 @@ void FE<SC,LO,GO,NO>::assemblyReactionTerm(int dim,
 
 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
 
-	UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, extraDeg);
+	UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, 0) + extraDeg;
 
 	Helper::getPhi(phi, weights, dim, FEType, deg);
 	
@@ -1603,7 +1603,7 @@ void FE<SC,LO,GO,NO>::assemblyLinearReactionTerm(int dim,
 
 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
 
-	UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, extraDeg);
+	UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, 0) + extraDeg;
 
 	Helper::getPhi(phi, weights, dim, FEType, deg);
 	
@@ -1675,7 +1675,7 @@ void FE<SC,LO,GO,NO>::assemblyDReactionTerm(int dim,
 
 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
 
-	UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, extraDeg);
+	UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, 0) + extraDeg;
 
 	Helper::getPhi(phi, weights, dim, FEType, deg);
 	
@@ -3601,7 +3601,7 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecField(int dim,
 //
 //        UN extraDeg = determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
 //
-//        UN deg = determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, extraDeg);
+//        UN deg = determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, 0) + extraDeg;
 //
 //        getDPhi(dPhi, weights, dim, FEType, deg);
 //        getPhi(phi, weights, dim, FEType, deg);
@@ -3666,7 +3666,7 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecField(int dim,
 
         UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
 
-        UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, extraDeg);
+        UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Grad, Helper::Std, 0) + extraDeg;
 
         Helper::getDPhi(dPhi, weights, dim, FEType, deg);
         Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -3756,7 +3756,7 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionInUVecField(int dim,
 
     UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Grad); //Elementwise assembly of u
 
-    UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Std, Helper::Std, extraDeg);
+    UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Std, Helper::Std, 0) + extraDeg;
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -5345,7 +5345,7 @@ void FE<SC,LO,GO,NO>::assemblyAdditionalConvection(int dim,
     vec2D_dbl_ptr_Type			quadPts;
 
     UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Grad); // Fuer diskretes (\grad \cdot w) in den Gausspuntken
-    UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Std, Helper::Std, extraDeg);
+    UN deg = Helper::determineDegree( dim, FEType, FEType, Helper::Std, Helper::Std, 0) + extraDeg;
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -5718,7 +5718,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeVelocity(int dim,
 
     // Hoechste Quadraturordnung angeben (= Zusaetzlicher Term wg. non-conservativ); bei P2/P1 hier Ordnung 6
     UN extraDeg = Helper::determineDegree( dim, FEType1, Helper::Grad) + Helper::determineDegree( dim, FEType1, Helper::Grad);
-    UN deg = Helper::determineDegree( dim, FEType1, FEType1, Helper::Std, Helper::Std, extraDeg);
+    UN deg = Helper::determineDegree( dim, FEType1, FEType1, Helper::Std, Helper::Std, 0) + extraDeg;
 
     Helper::getDPhi(dPhiU, weights, dim, FEType1, deg);
     Helper::getPhi(phiU, weights, dim, FEType1, deg);
@@ -6554,7 +6554,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
     vec2D_dbl_ptr_Type			quadPts;
 
     UN extraDeg = Helper::determineDegree( dim, FEType1, Helper::Grad);
-    UN deg = Helper::determineDegree( dim, FEType1, FEType1, Helper::Std, Helper::Grad, extraDeg);
+    UN deg = Helper::determineDegree( dim, FEType1, FEType1, Helper::Std, Helper::Grad, 0) + extraDeg;
 
     Helper::getDPhi(dPhiU, weights, dim, FEType1, deg);
     Helper::getPhi(phiU, weights, dim, FEType1, deg);
