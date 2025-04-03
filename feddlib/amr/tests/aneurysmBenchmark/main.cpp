@@ -322,7 +322,7 @@ int main(int argc, char *argv[]) {
 			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolution = laplace.getSolution()->getBlock(0);
 			exPara->setup("solutionLaplace", domainVelocity->getMesh(), feTypeV); 
-		    exPara->addVariable(exportSolution, "u", "Scalar", 1, domainVelocity->getMapUnique(), domainVelocity->getMapUniqueP2());
+		    exPara->addVariable(exportSolution, "u", "Scalar", 1, domainVelocity->getMapUnique());
 		    exPara->save(0.0);
 	        
 			MAIN_TIMER_STOP(LaplaceInlet);	

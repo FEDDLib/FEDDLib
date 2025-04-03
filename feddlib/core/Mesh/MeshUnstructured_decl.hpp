@@ -72,8 +72,6 @@ public:
     
     ~MeshUnstructured();
        
-    virtual void dummy() {};
-     
 	/*! 
 		\brief Function to build a P2 mesh of a P1 mesh
 		@param[in] meshP1 The p1 mesh we use for building P2 mesh

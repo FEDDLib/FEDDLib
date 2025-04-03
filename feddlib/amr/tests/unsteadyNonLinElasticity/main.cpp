@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
 
 		exParaF->setup("Flags", domain->getMesh(), FEType);
 
-		exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domain->getMapUnique(), domain->getMapUniqueP2());
+		exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domain->getMapUnique());
 
 		exParaF->save(0.0);
 

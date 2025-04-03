@@ -197,7 +197,7 @@ int main(int argc, char *argv[]) {
             exPara->setup( domain->getDimension(), domain->getNumElementsGlobal(), domain->getElements(), domain->getPointsUnique(), domain->getMapUnique(), domain->getMapRepeated(), FEType, "solutionLaplace1", 1, comm );
 
 
-            exPara->addVariable(exportSolution, "u", "Scalar", 1, domain->getMapUnique(), domain->getMapUniqueP2());
+            exPara->addVariable(exportSolution, "u", "Scalar", 1, domain->getMapUnique());
 
             exPara->save(0.0);
 
