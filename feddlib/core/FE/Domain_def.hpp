@@ -166,12 +166,6 @@ void Domain<SC,LO,GO,NO>::initializeFEData(){
 
     this->getElementsC()->initializeFEData( this->getPointsRepeated() );
 }
-
-template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::setMeshParameterList( ParameterListPtr_Type& pl ){
-    TEUCHOS_TEST_FOR_EXCEPTION( mesh_.is_null(), std::runtime_error, "Mesh is null." );
-    mesh_->setParameterList( pl );
-}
     
 template <class SC, class LO, class GO, class NO>
 vec_int_ptr_Type Domain<SC,LO,GO,NO>::getElementsFlag() const{
@@ -460,18 +454,6 @@ template <class SC, class LO, class GO, class NO>
 typename Domain<SC,LO,GO,NO>::MapConstPtr_Type Domain<SC,LO,GO,NO>::getMapRepeated() const{
 
     return mesh_->getMapRepeated();
-}
-
-template <class SC, class LO, class GO, class NO>
-typename Domain<SC,LO,GO,NO>::MapConstPtr_Type Domain<SC,LO,GO,NO>::getMapUniqueP2() const{
-
-    return mesh_->getMapUniqueP2();
-}
-
-template <class SC, class LO, class GO, class NO>
-typename Domain<SC,LO,GO,NO>::MapConstPtr_Type Domain<SC,LO,GO,NO>::getMapRepeatedP2() const{
-
-    return mesh_->getMapRepeatedP2();
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -1134,7 +1116,7 @@ void Domain<SC, LO, GO, NO>::exportElementFlags(string name)
 
         exPara->setup("Mesh_Element_Flags_"+name,this->getMesh(), "P0");
 
-        exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,this->getElementMap(), this->getElementMap());
+        exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,this->getElementMap());
 
         exPara->save(0.0);
 

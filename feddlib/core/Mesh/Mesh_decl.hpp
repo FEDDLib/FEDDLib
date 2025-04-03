@@ -51,11 +51,10 @@ public:
     //
     Mesh();
 
-    Mesh(CommConstPtrConst_Type& comm);
-    
-    ~Mesh();
-    
-    
+    Mesh(CommConstPtrConst_Type &comm);
+
+    virtual ~Mesh() = default;
+
     /*!
      Delete all member variables
      */
@@ -81,17 +80,9 @@ public:
     /// @return mapRepeated_
     MapConstPtr_Type getMapRepeated() const;
 
-    /// @brief Getter for unique node P2 map. Dont know what this is for exactly. Think this object is empty
-    /// @return 
-    MapConstPtr_Type getMapUniqueP2() const;
-    
-    /// @brief Getter for repeated node P2 map. Dont know what this is for exactly. Think this object is empty
-    /// @return 
-    MapConstPtr_Type getMapRepeatedP2() const;
-    
     /// @brief Getter for element map 
     /// @return 
-    MapConstPtr_Type getElementMap();
+    MapConstPtr_Type getElementMap() const;
 	
     /// @brief Getter for edge map
     /// @return 
@@ -112,9 +103,7 @@ public:
     /// @brief Getter for flags corresponting to unique points
     /// @return bcFlagUni_
     vec_int_ptr_Type getBCFlagUnique() const;
-        
-    virtual void dummy() = 0;
-    
+
     /// @brief Returns element list as c-object
     /// @return elementsC_
     ElementsPtr_Type getElementsC();
@@ -165,6 +154,19 @@ public:
     /// @param displacementRepeated displacement in repeated dist.
     void moveMesh( MultiVectorPtr_Type displacementUnique, MultiVectorPtr_Type displacementRepeated );
     
+    /*!
+            \brief Get SurfaceElement order
+            \return surfaceElementOrder_
+    */
+    int getSurfaceElementOrder() { return surfaceElementOrder_; };
+
+    /*!
+            \brief Get EdgeElement order
+            \return edgesElementOrder_
+    */
+    int getEdgeElementOrder() { return edgesElementOrder_; };
+
+
     // Creates an AABBTree from own vertice- and elementlist.
     void create_AABBTree();
     
@@ -220,11 +222,6 @@ public:
     vec2D_dbl_ptr_Type		pointsUniRef_; // Unique Referenzkonfiguration
     
     //vec_int_ptr_Type 		elementFlag_;
-
-    MapPtr_Type mapUniqueP2Map_;
-    MapPtr_Type mapRepeatedP2Map_;
-    
-    ParameterListPtr_Type pList_;
 
     int elementOrder_;
     int surfaceElementOrder_;

@@ -2,6 +2,10 @@
 #define BCBuilder_def_hpp
 
 #include "BCBuilder_decl.hpp"
+#include "feddlib/core/Utils/FEDDUtils.hpp"
+#include <Teuchos_RCPDecl.hpp>
+#include <Teuchos_ScalarTraitsDecl.hpp>
+#include <Xpetra_MatrixFactory.hpp>
 
 /*!
  Definition of BCBuilder
@@ -608,9 +612,34 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
 
         if (boolBlockHasDirichlet){
             for (UN blockCol = 0; blockCol < numBlocks ; blockCol++) {
-                if ( blockMatrix->blockExists( blockRow, blockCol ) ) {
-                    MatrixPtr_Type matrix = blockMatrix->getBlock( blockRow, blockCol );
-                    setDirichletBC( matrix, loc, blockRow, blockRow==blockCol );
+                if (blockMatrix->blockExists(blockRow, blockCol)) {
+                    MatrixPtr_Type matrix = blockMatrix->getBlock(blockRow, blockCol);
+                    setDirichletBC(matrix, loc, blockRow, blockRow == blockCol);
+                } else if (blockRow == blockCol) {
+                    // If the current block is a diagonal block but does not exist we need to create it and insert the
+                    // value 1 in all diagonal entries of the block corresponding to a Dirichlet boundary condition. We
+                    // only need max. one entry per row.
+
+                    // To get the correct domain from vecDomain_ we need to know the index of any (in this case the
+                    // first) entry that was done with addBC for this block
+                    const auto it = std::find(this->vecBlockID_.begin(), this->vecBlockID_.end(), blockRow);
+                    const auto matrixMap = this->vecDomain_.at(it - this->vecBlockID_.begin())->getMapUnique();
+                    // Use Xpetra::MatrixFactory to build a matrix with known row and column maps
+                    auto xpetraMatrix = Xpetra::MatrixFactory<SC, LO, GO, NO>::Build(matrixMap->getXpetraMap(),
+                                                                                     matrixMap->getXpetraMap(), 1);
+                    MatrixPtr_Type matrix = Teuchos::rcp(new Matrix_Type(xpetraMatrix));
+
+                    // Fill the matrix with zeros on the diagonal
+                    Teuchos::Array<LO> colIndex(1, 0);
+                    Teuchos::Array<SC> val(1, Teuchos::ScalarTraits<SC>::zero());
+                    for (auto i = 0; i < matrixMap->getNodeNumElements(); i++) {
+                        colIndex[0] = i;
+                        // Since the matrix has a column map we can use insertLocalValues(). This is more efficient!
+                        matrix->insertLocalValues(i, colIndex, val);
+                    }
+                    matrix->fillComplete(matrixMap, matrixMap);
+                    setDirichletBC(matrix, loc, blockRow, true);
+                    blockMatrix->addBlock(matrix, blockRow, blockCol);
                 }
             }
         }
@@ -624,7 +653,6 @@ void BCBuilder<SC,LO,GO,NO>::setDirichletBC(const MatrixPtr_Type &matrix, int lo
     bool isDirichlet;
     UN dofsPerNode = vecDofs_.at(loc);
     vec_int_ptr_Type bcFlags = vecDomain_.at(loc)->getBCFlagUnique();
-    MapConstPtr_Type nodeMap = vecDomain_.at(loc)->getMapUnique();
 
     for (LO i=0; i<bcFlags->size(); i++) { // flags are for nodes.
         int flag = bcFlags->at(i);

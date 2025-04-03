@@ -72,8 +72,6 @@ public:
     
     ~MeshUnstructured();
        
-    virtual void dummy() {};
-     
 	/*! 
 		\brief Function to build a P2 mesh of a P1 mesh
 		@param[in] meshP1 The p1 mesh we use for building P2 mesh
@@ -208,18 +206,6 @@ public:
     void setMeshFileName(string meshFileName, string delimiter);
     
 	/*! 
-		\brief Get SurfaceElement order
-		\return surfaceElementOrder_
-	*/
-    int getSurfaceElementOrder(){return surfaceElementOrder_;};
-    
-	/*! 
-		\brief Get EdgeElement order
-		\return edgesElementOrder_
-	*/
-    int getEdgeElementOrder(){return edgesElementOrder_;};
-    
-	/*! 
 		\brief Get global number of nodes
 		\return numNodes_
 	*/
@@ -275,10 +261,6 @@ public:
  	string meshFileName_;
     string delimiter_;
 
-    int elementOrder_;
-    int surfaceElementOrder_;
-    int edgesElementOrder_;
-    int numElements_;
     int numSurfaces_;
     int numEdges_;
     int numNodes_;

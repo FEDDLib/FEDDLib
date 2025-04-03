@@ -226,7 +226,9 @@ int main(int argc, char *argv[]) {
         Teuchos::RCP<ExporterParaView<SC, LO, GO, NO>> exPara(new ExporterParaView<SC, LO, GO, NO>());
         Teuchos::RCP<const MultiVector<SC, LO, GO, NO>> exportSolution = nonLinLaplace.getSolution()->getBlock(0);
         exPara->setup("solutionNonLinLaplace", domain->getMesh(), FEType);
-        exPara->addVariable(exportSolution, "u", "Scalar", 1, domain->getMapUnique(), domain->getMapUniqueP2());
+
+        exPara->addVariable(exportSolution, "u", "Scalar", 1, domain->getMapUnique());
+
         exPara->save(0.0);
     }
 

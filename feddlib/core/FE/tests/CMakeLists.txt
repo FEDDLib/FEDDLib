@@ -55,6 +55,19 @@ ARGS
 NUM_MPI_PROCS 1
 )
 
+### TestQuadRules
+TRIBITS_ADD_EXECUTABLE(
+testQuadRules
+SOURCES testQuadRules.cpp
+)
+
+TRIBITS_ADD_TEST(
+testQuadRules
+NAME testQuadRules
+ARGS
+NUM_MPI_PROCS 1
+)
+
 
 ### SurfaceIntegral
 TRIBITS_ADD_EXECUTABLE(

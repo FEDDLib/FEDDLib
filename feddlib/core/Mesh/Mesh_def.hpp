@@ -31,8 +31,6 @@ elementMap_(),
 comm_(),
 pointsRepRef_(),
 pointsUniRef_(),
-mapUniqueP2Map_(),
-mapRepeatedP2Map_(),
 AABBTree_()
 {
 
@@ -58,8 +56,6 @@ edgeMap_(),
 comm_(comm),
 pointsRepRef_(),
 pointsUniRef_(),
-mapUniqueP2Map_(),
-mapRepeatedP2Map_(),
 AABBTree_()
 {
     AABBTree_.reset(new AABBTree_Type());
@@ -68,11 +64,6 @@ AABBTree_()
     elementsC_.reset(new Elements());
 
     FEType_ = "P1";
-}
-
-template <class SC, class LO, class GO, class NO>
-Mesh<SC,LO,GO,NO>::~Mesh(){
-
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -101,16 +92,6 @@ void Mesh<SC,LO,GO,NO>::setElementFlags(std::string type){
     }
 
 }
-
-template <class SC, class LO, class GO, class NO>
-void Mesh<SC,LO,GO,NO>::setParameterList( ParameterListPtr_Type& pL ) {
-    pList_ = pL;
-}
-
-template <class SC, class LO, class GO, class NO>
-ParameterListConstPtr_Type Mesh<SC,LO,GO,NO>::getParameterList( ) const{
-    return pList_;
-}
     
 template <class SC, class LO, class GO, class NO>
 vec_int_ptr_Type Mesh<SC,LO,GO,NO>::getElementsFlag() const{
@@ -132,19 +113,7 @@ typename Mesh<SC,LO,GO,NO>::MapConstPtr_Type Mesh<SC,LO,GO,NO>::getMapRepeated()
 }
 
 template <class SC, class LO, class GO, class NO>
-typename Mesh<SC,LO,GO,NO>::MapConstPtr_Type Mesh<SC,LO,GO,NO>::getMapUniqueP2() const{
-
-    return mapUniqueP2Map_;
-}
-
-template <class SC, class LO, class GO, class NO>
-typename Mesh<SC,LO,GO,NO>::MapConstPtr_Type Mesh<SC,LO,GO,NO>::getMapRepeatedP2() const{
-
-    return mapRepeatedP2Map_;
-}
-
-template <class SC, class LO, class GO, class NO>
-typename Mesh<SC,LO,GO,NO>::MapConstPtr_Type Mesh<SC,LO,GO,NO>::getElementMap(){
+typename Mesh<SC,LO,GO,NO>::MapConstPtr_Type Mesh<SC,LO,GO,NO>::getElementMap() const{
     TEUCHOS_TEST_FOR_EXCEPTION( elementMap_.is_null(), std::runtime_error, "Element map of mesh does not exist." );
     return elementMap_;
 }
