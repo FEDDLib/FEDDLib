@@ -161,6 +161,23 @@ int main(int argc, char *argv[])
        // in arterial walls using parallel monolithic domain decomposition methods' section 6.2
        // ########################
 
+		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaF(new ExporterParaView<SC,LO,GO,NO>());
+
+		Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domain->getMapUnique()));
+		vec_int_ptr_Type BCFlags = domain->getBCFlagUnique();
+
+		Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
+		for(int i=0; i< entries.size(); i++){
+			entries[i] = BCFlags->at(i);
+		}
+
+		Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+		exParaF->setup("Flags", domain->getMesh(), FEType);
+
+		exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domain->getMapUnique());
+
+		exParaF->save(0.0);
 
 		Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 

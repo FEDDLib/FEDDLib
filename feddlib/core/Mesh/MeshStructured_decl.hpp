@@ -42,8 +42,6 @@ public:
 
     ~MeshStructured();
     
-    virtual void dummy() {};
-    
     void setGeometry2DRectangle(std::vector<double> coordinates, double l, double h);
     
     void setGeometry3DBox(std::vector<double> coordinates, double l, double w, double h);

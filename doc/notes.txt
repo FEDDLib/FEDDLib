@@ -1,0 +1,29 @@
+-----------------------------------------------------------------------------
+How does FROSch construct the overlap from the fully assembled system matrix?
+
+Example for a fluid problem with velocity and pressure fields:
+
+K = ( A  B^T )
+    ( B  0   )
+
+"A" relates to the velocity field, and the rows of "B" to the pressure field. 
+Since the bottom-right block is zero, it cannot be used to algebraically construct an overlap.
+
+Consider the following mesh with numbered P1 finite element nodes (we can ignore the P2 finite element nodes for the description; they don't change anything).
+
+   1__2__3__4
+   |\ | /| /|
+   | \|/ |/ |
+   5__6__7__8
+
+Each node in this 2D problem is associated with two velocity degrees of freedom and one pressure degree of freedom. 
+We partition the mesh into two subdomains with uniquely distributed degrees of freedom: subdomain (1) contains the nodes (1,2,5,6), and subdomain (2) contains the nodes (3,4,7,8). The corresponding velocity and pressure degrees of freedom are I1 := (1,2,5,6, 9,10,13,14, 17,18,21,22) and I2 := (3,4,7,8, 11,12,15,16, 19,20,23,24) if they are sorted as (velocity x, velocity y, pressure). These are the sets we extend to obtain overlapping subdomains.
+
+We focus on subdomain (1): For all indices i in I1, define a set O1 in which all indices j are such that K_{i,j} != 0. Then set I1 <-- I1 union O1. Now I1 describes the subdomain with overlap 1. This is repeated until the desired overlap size is reached.
+
+In the mesh above, phi_2 (potentially (*)) interacts with the basis functions phi_j, j in {1,2,3,6, 9,10,11,14, 17,18,19,22}. Specifically, via phi_2, all degrees of freedom associated with node 3 are added to I1, including the pressure degree of freedom, which is included via a nonzero entry in B^T. Just looking at the pressure function phi_18 associated with node 2, the velocity degrees of freedom associated with node 3 would be added (via the matrix B) but not the corresponding pressure degree of freedom 19.
+
+Conclusion: The pressure degrees of freedom are included in the overlap indirectly via the velocity degrees of freedom, since they interact (have nonzero entries) in B^T.
+
+(*) We assume that a basis function phi_i is only nonzero on elements next to "i" (nodal basis function). Furthermore, there exist cases, even for diffusion problems, in which the bilinear form evaluated for phi_i and phi_j is zero, even though they are neighbors (i.e., their support has a positive measure).
+-----------------------------------------------------------------------------
