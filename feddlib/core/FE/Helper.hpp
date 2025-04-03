@@ -160,12 +160,6 @@ public:
                     const SmallMatrix<SC>& Binv);
 
 
-    static UN determineDegree(UN dim,
-                              std::string FEType1,
-                              std::string FEType2,
-                              VarType orderOfDerivative1,
-                              VarType orderOfDerivative2);
-
     /*!
     \brief Determine polynomial degree of a finite element basis function or its gradient that is required to select the correct quadrature formula for exact integration.
 

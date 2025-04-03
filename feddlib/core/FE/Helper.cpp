@@ -77,17 +77,6 @@ UN Helper::determineDegree(UN dim, std::string FEType, VarType orderOfDerivative
     return deg;
 }
 
-UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, VarType orderOfDerivative1, VarType orderOfDerivative2){
-
-    UN deg1, deg2;
-    deg1 = Helper::determineDegree(dim, FEType1, orderOfDerivative1);
-    deg2 = Helper::determineDegree(dim, FEType2, orderOfDerivative2);
-
-    UN deg = deg1 + deg2;
-
-    return deg;
-}
-
 void Helper::buildTransformationSurface(const vec_int_Type& element,
                                                  vec2D_dbl_ptr_Type pointsRep,
                                                  SmallMatrix<SC>& B,

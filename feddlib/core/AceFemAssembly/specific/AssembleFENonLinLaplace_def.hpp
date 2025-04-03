@@ -63,8 +63,7 @@ void AssembleFENonLinLaplace<SC, LO, GO, NO>::assemblyNonLinLaplacian(
     SmallMatrixPtr_Type &elementMatrix) {
 
     int dim = this->getDim();
-    UN deg = Helper::determineDegree(dim, this->FEType_, this->FEType_,
-                                      Helper::Grad, Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim, this->FEType_,Helper::Grad); // TODO: [JK] 2025/04 Please check if degree is really sufficient. What about u_0^2?
 
     vec3D_dbl_ptr_Type dPhi;
     vec2D_dbl_ptr_Type phi;
@@ -135,8 +134,7 @@ template <class SC, class LO, class GO, class NO>
 void AssembleFENonLinLaplace<SC, LO, GO, NO>::assembleRHS() {
 
     int dim = this->getDim();
-    UN deg = Helper::determineDegree(dim, this->FEType_, this->FEType_,
-                                      Helper::Grad, Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim, this->FEType_, Helper::Grad); // TODO: [JK] 2025/04 Please check if degree is really sufficient. What about u_0^2?
 
     vec3D_dbl_ptr_Type dPhi;
     vec2D_dbl_ptr_Type phi;
