@@ -166,10 +166,6 @@ public:
                               int type1,
                               int type2);
 
-    static UN determineDegree(UN dim,
-                              std::string FEType,
-                              UN degFunc);
-
     /*!
     \brief Determine polynomial degree of a finite element basis function or its gradient that is required to select the correct quadrature formula for exact integration.
 

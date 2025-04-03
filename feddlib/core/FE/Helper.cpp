@@ -45,12 +45,6 @@ UN Helper::requiredQuadratureDegreeForGradientOfBasisfunction(UN dim, std::strin
     return deg;
 }
 
-UN Helper::determineDegree(UN dim, std::string FEType, UN degFunc){
-    UN deg = requiredQuadratureDegreeForBasisfunction(dim,FEType);
-    deg += degFunc;
-    return deg;
-}
-
 UN Helper::determineDegree(UN dim, std::string FEType, VarType orderOfDerivative){
     UN deg;
     if (orderOfDerivative == Std)        // Std  = 0 = no derivative
