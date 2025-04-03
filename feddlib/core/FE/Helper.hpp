@@ -163,8 +163,8 @@ public:
     static UN determineDegree(UN dim,
                               std::string FEType1,
                               std::string FEType2,
-                              int type1,
-                              int type2);
+                              VarType orderOfDerivative1,
+                              VarType orderOfDerivative2);
 
     /*!
     \brief Determine polynomial degree of a finite element basis function or its gradient that is required to select the correct quadrature formula for exact integration.
@@ -241,7 +241,7 @@ private:
        (All other basis functions are similar.)
        1 is returned.
 
-    \param[in] dim  Dimension of the domain. This is currently not used but may be in the future if other finite elements are implemented.
+    \param[in] dim  Dimension of the domain.
     \param[in] FEType  Finite element type, e.g., "P1", "Q2" etc.
 
     \return a polynomial degree for a finite element basis function

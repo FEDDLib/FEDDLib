@@ -1,14 +1,15 @@
 #include "Helper.hpp"
 
+#include <string>
+
 using namespace std;
 namespace FEDD {
 
 UN Helper::requiredQuadratureDegreeForBasisfunction(UN dim, std::string FEType){
-    // dim is currently not used, but might be in the future for different types of finite elements.
     UN deg;
     if (!FEType.compare("P0"))
         deg = 0;
-    else if (!FEType.compare("P1"))
+    else if ( !FEType.compare("P1") || !FEType.compare("P1-disc") )
         deg = 1;
     else if (!FEType.compare("P2"))
         deg = 2;
@@ -16,8 +17,26 @@ UN Helper::requiredQuadratureDegreeForBasisfunction(UN dim, std::string FEType){
         deg = 1;
     else if (!FEType.compare("Q2"))
         deg = 2;
+    else if ( (dim == 3) && (!FEType.compare("Q2-20")) ) // Q2 serendipity
+        deg = 2;
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown finite element type: " + FEType);
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown finite element type: " + FEType + ", dimension: " + std::to_string(dim) + ".");
+
+    // TODO: [JK] 2025/04 Removed P2-CR element, since it is unclear what type of element it really is.
+    //                    P2-CR sounds like polynomial 2 Crouzeix-Raviart. 
+    //                    3D: I assume that this should have a degree of freedom on each edge of the tetrahedron and on each face, 10 in total.
+    //                    This fits to the 10 DOFs mentioned in the Mesh class.
+    //                    But this would use standard P2 basis functions on the element itself. 
+    //                    It spans the standard P2 space and only uses different nodes, where the basis functions assume the value 1 and 0, respectively.
+    //                    Thus, I don't understand why a polynomial degree of 4 is returned below.
+    //                    With a little more investigation, we can re-add this element. Probably, the degree below should be 2 for the 
+    //                    basis function and 1 for the gradient.
+    //if ( (dim == 3) && (!FEType1.compare("P2-CR")) ) {
+        // if (type == Helper::Std)
+        //    deg = 4; // [JK] Was ist das fuer ein Element, das in einem Tetraeder mit einer P2-Formel Ordnung 4 rausbekommt?!
+        // else if (type == Helper::Grad)
+        //    deg = 3;
+    //}
 
     return deg;
 }
@@ -27,7 +46,7 @@ UN Helper::requiredQuadratureDegreeForGradientOfBasisfunction(UN dim, std::strin
     UN deg;
     if (!FEType.compare("P0"))
         deg = 0;
-    else if (!FEType.compare("P1"))
+    else if ( !FEType.compare("P1") || !FEType.compare("P1-disc") )
         deg = 0;
     else if (!FEType.compare("P2"))
         deg = 1;
@@ -39,8 +58,10 @@ UN Helper::requiredQuadratureDegreeForGradientOfBasisfunction(UN dim, std::strin
         // The same holds for the y direction. Thus, we need degree 1 in each (x and y) direction.
     else if (!FEType.compare("Q2"))
         deg = (dim > 1 ? 2 : 1);
+    else if ( (dim == 3) && (!FEType.compare("Q2-20")) ) // Q2 serendipity
+        deg = 2;
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown finite element type: " + FEType);
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown finite element type: " + FEType + ", dimension: " + std::to_string(dim) + ".");
 
     return deg;
 }
@@ -56,81 +77,14 @@ UN Helper::determineDegree(UN dim, std::string FEType, VarType orderOfDerivative
     return deg;
 }
 
-UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, int type1,int type2){
+UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, VarType orderOfDerivative1, VarType orderOfDerivative2){
 
     UN deg1, deg2;
-    if (!FEType1.compare("P0")) {
-        deg1 = 0;
-    }
-    else if ( !FEType1.compare("P1") || !FEType1.compare("P1-disc") ) {
-        if (type1==Std)
-            deg1 = 1;
-        else if (type1==Grad)
-            deg1 = 0;
-    }
-    else if (!FEType1.compare("P2")) {
-        if (type1==Std)
-            deg1 = 2;
-        else if (type1==Grad)
-            deg1 = 1;
-    }
-    else if (!FEType1.compare("P2-CR")) {
-        if (type1==Std)
-            deg1 = 4; // [JK] Was ist das fuer ein Element, das in einem Tetraeder mit einer P2-Formel Ordnung 4 rausbekommt?!
-        else if (type1==Grad)
-            deg1 = 3;
-    }
+    deg1 = Helper::determineDegree(dim, FEType1, orderOfDerivative1);
+    deg2 = Helper::determineDegree(dim, FEType2, orderOfDerivative2);
 
-    else if (!FEType1.compare("Q2")) {
-        if (type1==Std)
-            deg1 = 2;
-        else if (type1==Grad)
-            deg1 = 2;
-    }
-    else if (!FEType1.compare("Q2-20")) {
-        if (type1==Std)
-            deg1 = 2;
-        else if (type1==Grad)
-            deg1 = 2;
-    }
-   
-    if (!FEType2.compare("P0")) {
-        deg2 = 0;
-    }
-    else if ( !FEType2.compare("P1") || !FEType2.compare("P1-disc") ) {
-        if (type2==Std)
-            deg2 = 1;
-        else if (type2==Grad)
-            deg2 = 0;
-    }
-    else if (!FEType2.compare("P2")) {
-        if (type2==Std)
-            deg2 = 2;
-        else if (type2==Grad)
-            deg2 = 1;
-    }
-    else if (!FEType2.compare("P2-CR")) {
-        if (type2==Std)
-            deg2 = 4;
-        else if (type2==Grad)
-            deg2 = 3;
-    }
+    UN deg = deg1 + deg2;
 
-    else if (!FEType2.compare("Q2")) {
-        if (type2==Std)
-            deg2 = 2;
-        else if (type2==Grad)
-            deg2 = 2;
-    }
-    else if (!FEType2.compare("Q2-20")) {
-        if (type2==Std)
-            deg2 = 2;
-        else if (type2==Grad)
-            deg2 = 2;
-    }
-
-    UN deg = deg1+deg2;
-    
     return deg;
 }
 
