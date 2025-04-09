@@ -114,7 +114,7 @@ public:
     /// @return destination/result of copy
     MultiVector_Type& operator= (const MultiVector_Type& rhs) {
         //*multiVector_ = *rhs.getTpetraMultiVector(); // old version which worked with xpetra
-        FEDDLIB_NOTIFICATION("MultiVector_decl",true, " '=' creating a deep copy of input vector into this.");
+        FEDDLIB_NOTIFICATION("MultiVector_decl",rhs.getMap()->getComm()->getRank() == 0, " '=' creating a deep copy of input vector into this.");
         Tpetra::deep_copy<SC,LO,GO,NO>(*multiVector_,*rhs.getTpetraMultiVector()); // (destination, source)
         return *this;
     }

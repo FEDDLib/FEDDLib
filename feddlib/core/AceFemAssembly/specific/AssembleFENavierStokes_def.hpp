@@ -159,7 +159,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type 
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
     UN deg = Helper::determineDegree(dim,FEType,Grad);
-    //cout << " Degree " << deg << " Grad " << Grad << " FeType " << FEType << endl;
+    // cout << " Degree Laplace " << deg << " Grad " << Grad << " FeType " << FEType << endl;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -238,8 +238,10 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Type 
     vec2D_dbl_ptr_Type  phi;
 	vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-	UN deg = Helper::determineDegree(dim,FEType,Grad); // Not complete
-	//UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
+	UN deg = Helper::determineDegree(dim,FEType,Grad)+1; // Not complete
+    // cout << " Degree N " << deg << " Grad " << Grad << " FeType " << FEType << endl;
+
+    //UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
     //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, extraDeg);
 
 	Helper::getDPhi(dPhi, weights, dim, FEType, deg);
@@ -312,8 +314,10 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Ty
     vec2D_dbl_ptr_Type  phi;
 	vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-	UN deg = Helper::determineDegree(dim,FEType,Grad); // Not complete
-	//UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
+	UN deg = Helper::determineDegree(dim,FEType,Grad)+1; // Not complete
+    // cout << " Degree W " << deg << " Grad " << Grad << " FeType " << FEType << endl;
+
+    //UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
     //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, extraDeg);
 
 	Helper::getDPhi(dPhi, weights, dim, FEType, deg);
