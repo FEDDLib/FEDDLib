@@ -182,8 +182,15 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         Mpressure->scale(-1./kinVisco);
         this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
     }
+
+    if (this->verbose_)
+        std::cout << " Call Reassemble FixedPoint and Newton to allocate the Matrix pattern " << std::endl;
     
-    
+    // This was moved here from 'create_W_op'.
+    // Here it will definetly be called before create_W_op and create_W_prec is called.
+    this->reAssemble("FixedPoint");
+    this->reAssemble("Newton");
+
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
     
@@ -797,9 +804,6 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std::stri
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op() const
 {
-    this->reAssemble("FixedPoint");
-    this->reAssemble("Newton");
-
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     if ( !type.compare("Monolithic"))
         return create_W_op_Monolithic( );
@@ -848,7 +852,6 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op_Bl
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_prec() const
 {
-
     this->initializeSolverBuilder();
 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
