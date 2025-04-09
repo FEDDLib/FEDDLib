@@ -1619,9 +1619,7 @@ void Helper::getDPhiAtCM(vec3D_dbl_ptr_Type &DPhi,
         }
     }
 
-    return 0;  // TODO [JK]: hotfix for strange core dumps. Make function "return" void?
-
-    }
+}
 
 
 

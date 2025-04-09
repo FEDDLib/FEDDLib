@@ -496,9 +496,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::I
 /*!
 	\brief Monolithic Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution.
 		   ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver.
-
-
-
 */
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
@@ -553,8 +550,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
 
         TpetraMatrixPtr_Type W;
         if (fill_W) {
-            cout << " Fill W " << endl;
-
             this->reAssemble("Newton"); // ReAssembling matrices with updated u  in this class
 
             this->setBoundariesSystem(); // setting boundaries to the system
@@ -583,7 +578,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
         }
 
         if (fill_W_prec) {
-            cout << " Fill W prec " << endl;
             this->setupPreconditioner( "Monolithic" );
 
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
