@@ -187,7 +187,7 @@ namespace FEDD
         vec3D_dbl_ptr_Type dPhi;
         vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-        UN deg = Helper::determineDegree(dim, FEType, Grad)+3; //  e.g. for P1 3
+        UN deg = Helper::determineDegree(dim, FEType, Grad); //  e.g. for P1 3
         Helper::getDPhi(dPhi, weights, dim, FEType, deg);    //  e.g. for deg 5 we get weight vector with 7 entries
         // Example Values: dPhi->size() = 7 so number of quadrature points, dPhi->at(0).size() = 3 number of local element points, dPhi->at(0).at(0).size() = 2 as we have dim 2 therefore we have 2 derivatives (xi/eta in natural coordinates)
         // Phi is defined on reference element
@@ -380,7 +380,7 @@ namespace FEDD
         vec3D_dbl_ptr_Type dPhi;
         vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-        UN deg = Helper::determineDegree(dim, FEType, Grad)+3;
+        UN deg = Helper::determineDegree(dim, FEType, Grad);
         Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
         SC detB;

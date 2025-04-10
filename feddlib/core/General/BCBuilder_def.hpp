@@ -622,7 +622,7 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
 
                     // To get the correct domain from vecDomain_ we need to know the index of any (in this case the
                     // first) entry that was done with addBC for this block
-                    // const auto it = std::find(this->vecBlockID_.begin(), this->vecBlockID_.end(), blockRow);
+                    const auto it = std::find(this->vecBlockID_.begin(), this->vecBlockID_.end(), blockRow);
                     cout << " loc " << loc << " it - something " << it - this->vecBlockID_.begin() << endl;
                     auto matrixMap = this->vecDomain_.at(loc)->getMapUnique();
                     // // Use Xpetra::MatrixFactory to build a matrix with known row and column maps
