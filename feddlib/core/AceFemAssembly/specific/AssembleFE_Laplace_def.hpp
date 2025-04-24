@@ -55,14 +55,14 @@ void AssembleFE_Laplace<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type &ele
 
 	int dim = this->getDim();
 	int numNodes= std::get<3>(this->diskTuple_->at(0));//this->getNodesRefConfig().size();
-	UN Grad =2; // Needs to be fixed	
 	string FEType = std::get<1>(this->diskTuple_->at(0));
 	int dofs = std::get<2>(this->diskTuple_->at(0));
 
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = Helper::determineDegree(dim,FEType,Grad);
+    // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -107,15 +107,15 @@ void AssembleFE_Laplace<SC,LO,GO,NO>::assembleRHS() {
 
 
 	int dim = this->getDim();
-	UN Grad =1; // Needs to be fixed	
 	int numNodes= std::get<3>(this->diskTuple_->at(0));//this->getNodesRefConfig().size();
 	string FEType = std::get<1>(this->diskTuple_->at(0));
 	vec_dbl_Type elementVector(numNodes);
 
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-   
-    UN deg = Helper::determineDegree(dim,FEType,Grad);
+
+	UN extraDegree = 1; // TODO: [JK] 2025/04 This should be user defined, based on the irregularity of f(x). Function parameter? Parameter list?
+    UN deg = Helper::determineDegree(dim,FEType,Helper::Std) + extraDegree;
     Helper::getPhi(phi, weights, dim, FEType, deg);
     
     SC detB;

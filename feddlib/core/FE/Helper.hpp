@@ -12,100 +12,124 @@
 
 namespace FEDD {
 
-/*! Helper class that contains rudimental FE components
- * Currently it contains Basisfunctions, Quadrature rules, Transformation, and other stuff.
+/*! Helper class of static functions that contains rudimental finite element components.
+ * It contains basis functions, quadrature rules, transformation functions, and other stuff.
  *
  *
  */
 class Helper {
-  
+
 public:
-    typedef double SC;
+    typedef double SC; // TODO: [JK] Does this not clash with the default definition in DefaultTypeDefs.hpp, which is used elsewhere?
 
-    enum VarType {Std=0,Grad=1};
-
+    /// Order of derivative of a function.
+    enum VarType {
+        Std  = 0, ///< order 0, f(x)
+        Grad = 1  ///< order 1, gradient(f(x))
+    };
 
     /// @brief Compute surface normal of corresponding surface
-    /// @param dim Dimension
-    /// @param pointsRep List of all repeated nodes
-    /// @param nodeList Ids of local surface points
-    /// @param v_E output normale vector
-    /// @param norm_v_E Normal vector length
+    /// @param[in] dim Dimension
+    /// @param[in] pointsRep List of all repeated nodes
+    /// @param[in] nodeList Ids of local surface points
+    /// @param[out] v_E normal vector
+    /// @param[out] norm_v_E Normal vector length
     static void computeSurfaceNormal(int dim,
-                                      vec2D_dbl_ptr_Type pointsRep,
-                                      vec_int_Type nodeList,
-                                      vec_dbl_Type &v_E,
-                                      double &norm_v_E);
+                                     vec2D_dbl_ptr_Type pointsRep,
+                                     vec_int_Type nodeList,
+                                     vec_dbl_Type &v_E,
+                                     double &norm_v_E);
 
-        
+
     /// @brief Build transformation of element to reference element depending on FEType
-    /// @param element Finite element
-    /// @param pointsRep List of repeated points
-    /// @param B Resulting transformation matrix
-    /// @param FEType FE Discretization 
+    /// @param[in] element Finite element
+    /// @param[in] pointsRep List of repeated points
+    /// @param[out] B Resulting transformation matrix
+    /// @param[in] FEType FE Discretization 
     static void buildTransformation(const vec_int_Type& element,
                              vec2D_dbl_ptr_Type pointsRep,
                              SmallMatrix<SC>& B,
                              std::string FEType="P");
-    
+
     /// @brief Build transformation of element to reference element depending on FEType
-     /// @param element Finite element
-    /// @param pointsRep List of repeated points
-    /// @param B Resulting transformation matrix
-    /// @param b Point to transform from
-    /// @param FEType FE Discretization 
+    /// @param[in] element Finite element
+    /// @param[in] pointsRep List of repeated points
+    /// @param[out] B Resulting transformation matrix
+    /// @param[in] b Point to transform from
+    /// @param[in] FEType FE Discretization 
     static void buildTransformation(const vec_int_Type& element,
                              vec2D_dbl_ptr_Type pointsRep,
                              SmallMatrix<SC>& B,
                              vec_dbl_Type& b,
                              std::string FEType="P");
 
-    
+
     /// @brief Transformation of a surface to the reference element
-    /// @param element Finite element
-    /// @param pointsRep List of repeated points
-    /// @param B Resulting transformation matrix
-    /// @param b Point to transform from
-    /// @param FEType FE Discretization 
+    /// @param[in] element Finite element
+    /// @param[in] pointsRep List of repeated points
+    /// @param[out] B Resulting transformation matrix
+    /// @param[in] b Point to transform from
+    /// @param[in] FEType FE Discretization 
     static void buildTransformationSurface(const vec_int_Type& element,
                                     vec2D_dbl_ptr_Type pointsRep,
                                     SmallMatrix<SC>& B,
                                     vec_dbl_Type& b,
                                     std::string FEType="P");
 
-	/// @brief Returning gradient of phi evaluated at the quadrature points
-	/// @param Dimension Dimension
-	/// @param intFE number corresponding to FE disc.
-	/// @param i basisfunction i
-	/// @param QuadPts quadpoints
-	/// @param value vector including values
-	static void gradPhi(	int Dimension,
+    /// @brief Returning gradient of phi evaluated at the quadrature points
+    /// @param[in] Dimension Dimension
+    /// @param[in] intFE number corresponding to FE disc.
+    /// @param[in] i basisfunction i
+    /// @param[in] QuadPts quadpoints
+    /// @param[out] value vector including values
+    static void gradPhi(int Dimension,
                     int intFE,
                     int i,
                     vec_dbl_Type &QuadPts,
                     vec_dbl_ptr_Type &value);
     
-    /*! Most of the quadrature formulas can be found in http://code-aster.org/doc/v11/en/man_r/r3/r3.01.01.pdf 01/2021  */
+    /// @brief Get quadrature formula.
+    ///
+    /// A quadrature formula is used to integrate approximate an integral of f(x) over the domain Omega, i.e., 
+    ///    integral_Omega f(x) dx,
+    /// via the following sum:
+    ///    sum_i f(xi)*wi,
+    /// where xi is a quadrature point, and wi a quadrature weight.
+    ///
+    /// Source of the formulas: Most of the quadrature formulas can be found in http://code-aster.org/doc/v11/en/man_r/r3/r3.01.01.pdf 01/2021
+    ///
+    /// @param[in] Dimension Space dimension d of the domain of f:IR^d-->IR.
+    /// @param[in] Degree Order of polynomial that must be integrated exactly in exact arithmetic with the returned formula.
+    /// @param[out] QuadPts Quadrature points
+    /// @param[out] QuadW Quadrature weights
+    /// @param[in] FEType Finite element type, e.g., "P1", "Q2" etc.
     static void getQuadratureValues(int Dimension,
                             int Degree,
                             vec2D_dbl_ptr_Type &QuadPts,
                             vec_dbl_ptr_Type &QuadW,
                             std::string FEType);
-                            
-    /// @brief Get quadrature values of surface
-    /// @param dim Dimension
-    /// @param FEType Finite element disc.
-    /// @param QuadW return quadrature values
-    /// @param surfaceIDs local suface node ids
-    /// @param points points
-    /// @return quadValues  probably
-    static vec2D_dbl_Type getQuadratureValuesOnSurface(int dim, 	
-    										std::string FEType, 
-    										vec_dbl_Type &QuadW, 
-    										vec_LO_Type surfaceIDs, 
-    										vec2D_dbl_ptr_Type points);
+
+    /*!
+    \brief Returns quadrature formula on surface element.
     
-    /// @brief Full matrix representation of grad phi per quadvalue
+    Is distinguishes between needing Element or Surface information. !! Input can be improved with just delivering the coordinates of the surface nodes to determine the quad points
+    
+    Keep in mind that elementwise quadPoints are defined on reference element whereas surface quadPoints at hand are defined on the input surface, which is typically not the reference Element. 
+    
+    @param[in] dim Space dimension of the underlying domain, e.g., 3 for a triangle in IR^3..
+    @param[in] FEType Finite element type of the underlying element (P1, P2, Q1 etc.), e.g., a "P2" tetrahedron for which a quadrature formula on one of its surface elements (triangles) is required.
+    @param[out] QuadW Vector to be filled with the quadrature weights
+    @param[in] vec_LO_Type surfaceIDs for which you need the quadrature points.
+    @param[in] points The repeated(!) points of current problem to identify the surface node ids. 
+    @returns Quadrature points
+    */
+    static vec2D_dbl_Type getQuadratureValuesOnSurface(int dim,
+                                                       std::string FEType,
+                                                       vec_dbl_Type &QuadW,
+                                                       vec_LO_Type surfaceIDs,
+                                                       vec2D_dbl_ptr_Type points);
+    
+    /// @brief Full matrix representation of gradient of a basis function for each quadrature point
     /// @param DPhi grad Phi per quadpoint dim:(quadpoint,i,j)
     /// @param weightsDPhi Quadrature weights
     /// @param Dimension Dimension
@@ -135,20 +159,24 @@ public:
                     vec3D_dbl_Type& dPhiOut,
                     const SmallMatrix<SC>& Binv);
 
-	static UN determineDegree(UN dim, 
-								std::string FEType1, 		
-								std::string FEType2, 
-								int type1,
-								int type2, 
-								UN extraDeg = 0);
 
+    /*!
+    \brief Determine polynomial degree of a finite element basis function or its gradient that is required to select the correct quadrature formula for exact integration.
+
+    \details
+    This is a wrapper. 
+    See Helper::requiredQuadratureDegreeForBasisfunction for details in case the degree is required for a basis function.
+    See Helper::requiredQuadratureDegreeForGradientOfBasisfunction for details in case the degree is required for the gradient of a basis function.
+
+    \param[in] dim  Dimension of the domain.
+    \param[in] FEType  Finite element type, e.g., "P1", "Q2" etc.
+    \param[in] orderOfDerivative  {Std,Grad} Order of the derivative: order=0 (type=Std) is the original function, order=1 (type=Grad) is the gradient, i.e., the first derivative.
+
+    \return a polynomial degree for a finite element basis function or its gradient
+    */
     static UN determineDegree(UN dim,
-                    std::string FEType,
-                    UN degFunc);
-                       
-    static UN determineDegree(UN dim,
-                       std::string FEType,
-                       int type);               
+                              std::string FEType,
+                              VarType orderOfDerivative);
                        
 
     /// @brief Get basisfunction phi per quadrature point
@@ -188,6 +216,58 @@ public:
 private:
 	
 	Helper(){};
+
+    /*!
+    \brief Determine polynomial degree of a finite element basis function that is required to select the correct quadrature formula for exact integration.
+
+    \details
+    See Helper::requiredQuadratureDegreeForGradientOfBasisfunction for the analogous function to determine the degree for the gradient of a finite element basis function.
+
+    For a finite element basis function: 
+    For edges, triangles, and tetrahedra (i.e., for Pk elements), this function returns the polynomial degree (i.e., the maximum degree in any direction). This can be used to select the correct quadrature formula to integrate the basis function exactly.
+    For edges, rectangles, and cuboids (i.e., for Qk elements), this function returns the polynomial degree on the reference element in x, y, or z direction. This can be used to select the correct tensor-product quadrature formula for exact integration of the basis function.
+
+    Examples in 2D:
+    a) FEType="P1" (triangle): phi_1(x,y) = 1-x-y is linear. 
+       (All other basis functions are similar.)
+       1 is returned.
+    b) FEType="Q1" (quadrilateral): phi_1(x,y) = x*y is quadratic but linear in each coordinate direction.
+       (All other basis functions are similar.)
+       1 is returned.
+
+    \param[in] dim  Dimension of the domain.
+    \param[in] FEType  Finite element type, e.g., "P1", "Q2" etc.
+
+    \return a polynomial degree for a finite element basis function
+    */
+    static UN requiredQuadratureDegreeForBasisfunction(UN dim, std::string FEType);
+
+    /*!
+    \brief Determine polynomial degree of the gradient of a finite element basis function that is required to select the correct quadrature formula for exact integration.
+
+    \details
+    See Helper::requiredQuadratureDegreeForBasisfunction for the analogous function to determine the degree for a finite element basis function.
+
+    For the gradient of a finite element basis function: 
+    For edges, triangles, and tetrahedra (i.e., for Pk elements), this function returns the polynomial degree (i.e., the maximum degree in any direction). This can be used to select the correct quadrature formula to integrate the gradient of a basis function exactly.
+    For edges, rectangles, and cuboids (i.e., for Qk elements), this function returns the polynomial degree on the reference element in x, y, or z direction. This can be used to select the correct tensor-product quadrature formula for exact integration of the gradient of a basis function.
+
+    Examples in 2D:
+    a) FEType="P1" (triangle): phi_1(x,y) = 1-x-y is linear. 
+       grad(phi_1(x,y)) = [-1,-1] is constant.
+       (All other basis functions are similar.)
+       0 is returned.
+    b) FEType="Q1" (quadrilateral): phi_1(x,y) = x*y is quadratic but linear in each coordinate direction.
+       grad(phi_1(x,y)) = [y,x] is also linear in each coordinate direction.
+       (All other basis functions are similar.)
+       1 is returned.
+
+    \param[in] dim  Dimension of the domain.
+    \param[in] FEType  Finite element type, e.g., "P1", "Q2" etc.
+
+    \return a polynomial degree for the gradient of a finite element basis function
+    */
+    static UN requiredQuadratureDegreeForGradientOfBasisfunction(UN dim, std::string FEType);
 
 };
 }

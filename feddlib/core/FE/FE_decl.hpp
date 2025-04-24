@@ -736,21 +736,6 @@ private:
 
     int checkFE(int Dimension,
                 std::string FEType);
-
-    /*UN determineDegree(UN dim,
-                       std::string FEType1,
-                       std::string FEType2,
-                       VarType type1,
-                       VarType type2,
-                       UN extraDeg = 0);
-
-    UN determineDegree(UN dim,
-                       std::string FEType,
-                       VarType type);
-
-    UN determineDegree(UN dim,
-                       std::string FEType,
-                       UN degFunc);*/
     
 
     bool setZeros_;
