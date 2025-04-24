@@ -4323,6 +4323,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
                                      int* parameters,
                                      bool callFillComplete)
 {
+    // TODO: [JK] This function does the same as Natalie's stress assembly, just that she can also use a nonconstant viscosity. We should think about deprecating this function here.
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     int FEloc = this->checkFE(dim,FEType);
 
@@ -4336,6 +4337,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
 
     // double value, value1_j, value2_j , value1_i, value2_i;
 
+    // inner( grad(u) + grad(u)^T , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
     UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi,FEType);
