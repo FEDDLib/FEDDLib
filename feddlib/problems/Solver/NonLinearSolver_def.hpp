@@ -186,11 +186,13 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
 
     Thyra::assign(initialGuess.ptr(), *solMV->col(0));
     //Thyra::V_S(initialGuess.ptr(),Teuchos::ScalarTraits<SC>::zero());
+    Teuchos::RCP<Thyra::LinearOpBase<SC> > W_op = problemPtr->create_W_op();
+    Teuchos::RCP<Thyra::PreconditionerBase<SC> > W_prec = problemPtr->create_W_prec();
     Teuchos::RCP<NOX::Thyra::Group> nox_group(new NOX::Thyra::Group(initialGuess,
                                                                     problemPtr.getConst(),
-                                                                    problemPtr->create_W_op(),
+                                                                    W_op,
                                                                     lowsFactory.getConst(),
-                                                                    problemPtr->create_W_prec(),
+                                                                    W_prec,
                                                                     Teuchos::null,
                                                                     Teuchos::null,
                                                                     Teuchos::null));
