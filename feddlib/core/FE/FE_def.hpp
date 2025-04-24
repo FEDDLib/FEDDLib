@@ -1817,7 +1817,9 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-    
+
+    // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
+    // The diffusion tensor is constant and, thus, does not require a higher-order quadrature rule.
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);//+1;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
