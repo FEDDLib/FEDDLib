@@ -7426,7 +7426,7 @@ void FE<SC,LO,GO,NO>::assemblyRHSDegTest( int dim,
                                           RhsFunc_Type func,
                                           std::vector<SC>& funcParameter,
                                           int degree) {
-    
+    // TODO: [JK] What is the aim of this function? It is not called by any problems, only by a test.    
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     
     TEUCHOS_TEST_FOR_EXCEPTION( a.is_null(), std::runtime_error, "MultiVector in assemblyConstRHS is null." );
@@ -7441,8 +7441,6 @@ void FE<SC,LO,GO,NO>::assemblyRHSDegTest( int dim,
     MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-    UN degFunc = funcParameter[0] + 1.e-14;
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Std) + degFunc;
     Helper::getPhi(phi, weights, dim, FEType, degree);
     
     vec2D_dbl_ptr_Type quadPoints;
