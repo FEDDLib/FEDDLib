@@ -7275,9 +7275,13 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
     // last parameter should alwayss be the degree
-    UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Std);// + degFunc;
+    //UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14; // TODO: [JK] Can we remove this?
+    // inner( f(x), phi(x) ) requires the integration degree of the basis function + some 
+    // extra user-provided degree that accounts for the heterogeneity of f(x).
+    UN degFunc = 2;  // TODO: [JK] Hard coded for now, but needs to be passed by the user. See GitHub issue #66.
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Std) + degFunc;
 
     vec2D_dbl_ptr_Type quadPoints;
     Helper::getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values
