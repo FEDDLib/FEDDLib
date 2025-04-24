@@ -1817,7 +1817,9 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-    
+
+    // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
+    // The diffusion tensor is constant and, thus, does not require a higher-order quadrature rule.
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);//+1;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
@@ -2243,6 +2245,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
+    // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
@@ -2320,6 +2323,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type	weights = Teuchos::rcp(new vec_dbl_Type(0));
 
+    // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
@@ -4319,6 +4323,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
                                      int* parameters,
                                      bool callFillComplete)
 {
+    // TODO: [JK] This function does the same as Natalie's stress assembly, just that she can also use a nonconstant viscosity. We should think about deprecating this function here.
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     int FEloc = this->checkFE(dim,FEType);
 
@@ -4332,6 +4337,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
 
     // double value, value1_j, value2_j , value1_i, value2_i;
 
+    // inner( grad(u) + grad(u)^T , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
     UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi,FEType);
@@ -7269,9 +7275,13 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
     // last parameter should alwayss be the degree
-    UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Std);// + degFunc;
+    //UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14; // TODO: [JK] Can we remove this?
+    // inner( f(x), phi(x) ) requires the integration degree of the basis function + some 
+    // extra user-provided degree that accounts for the heterogeneity of f(x).
+    UN degFunc = 2;  // TODO: [JK] Hard coded for now, but needs to be passed by the user. See GitHub issue #66.
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Std) + degFunc;
 
     vec2D_dbl_ptr_Type quadPoints;
     Helper::getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values
