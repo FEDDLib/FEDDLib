@@ -2243,6 +2243,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
+    // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
@@ -2320,6 +2321,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type	weights = Teuchos::rcp(new vec_dbl_Type(0));
 
+    // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
