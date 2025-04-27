@@ -40,7 +40,7 @@ class AssembleFENonLinLaplace : public AssembleFE<SC, LO, GO, NO> {
     \brief Assemble the element Jacobian matrix.
     @param[in] block ID i
     */
-    void assembleJacobianBlock(LO i) override {};
+    void assembleJacobianBlock(LO i) override {}
 
   protected:
     AssembleFENonLinLaplace(

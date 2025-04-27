@@ -1,5 +1,5 @@
-#ifndef NonLinElasAssFE_decl_hpp
-#define NonLinElasAssFE_decl_hpp
+#ifndef NonLinElasticity_decl_hpp
+#define NonLinElasticity_decl_hpp
 #include "feddlib/problems/abstract/NonLinearProblem.hpp"
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_ModelEvaluatorBase_decl.hpp>
@@ -14,7 +14,7 @@
 
 namespace FEDD{
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
-class NonLinElasAssFE : public NonLinearProblem<SC,LO,GO,NO>  {
+class NonLinElasticity : public NonLinearProblem<SC,LO,GO,NO>  {
     
 public:
     //! @name Public Types
@@ -54,9 +54,9 @@ public:
     
     //! @name Constructor/Destructor
     //@{
-    NonLinElasAssFE( const DomainConstPtr_Type  &domain, std::string FEType, ParameterListPtr_Type parameterList );
+    NonLinElasticity( const DomainConstPtr_Type  &domain, std::string FEType, ParameterListPtr_Type parameterList );
     //@}
-    ~NonLinElasAssFE();
+    ~NonLinElasticity();
 
     virtual void info();
     
@@ -64,7 +64,7 @@ public:
 
     void reAssemble(std::string type) const;
 
-    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{}
+    void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const override{}
     
     virtual void reAssemble( MatrixPtr_Type& massmatrix, std::string type ) const;
     
@@ -72,33 +72,29 @@ public:
     
     virtual void calculateNonLinResidualVec(std::string type, double time=0.) const;
     
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){}
+    void getValuesOfInterest( vec_dbl_Type& values ) override {}
     
-    virtual void computeValuesOfInterestAndExport() {}
-
-    void assembleSourceTermLoadstepping(double time=0.) const;
-
-    void updateTime() const;
-
-    void updateConcentration(MultiVectorConstPtr_Type concentration) {concentration_.reset(new MultiVector_Type (concentration));}
-//    virtual void assembleExternal( std::string type ){}
+    void computeValuesOfInterestAndExport() override {}
+    
+<<<<<<< HEAD
+//    virtual void assembleExternal( std::string type ){};
         
-    mutable Teuchos::RCP<TimeSteppingTools>	timeSteppingTool_;
-
+=======
+//    virtual void assembleExternal( std::string type ){}
+    
+    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
+    
+    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
+    
+>>>>>>> 62e9b78d (Remove redundant semi-colons)
 private:
     
-
     mutable MultiVectorPtr_Type u_rep_;
-    MultiVectorPtr_Type concentration_;
     double E_;
     double mue_;
     double C_;
     double poissonRatio_;
     double lambda_;
-    bool loadStepping_;
-    bool externalForce_;
-    bool nonlinearExternalForce_;
-
     /*####################*/
 
 };

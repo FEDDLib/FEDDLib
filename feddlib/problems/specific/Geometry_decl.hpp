@@ -34,11 +34,11 @@ public:
     // Assemblierung des Fortsetzungsoperators; zunaechst erstmal diskret harmonisch mit heuristischer Skalierung
     virtual void assemble( std::string type = "" ) const;
 
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    virtual void getValuesOfInterest( vec_dbl_Type& values ){}
     
-    virtual void computeValuesOfInterestAndExport() {};
+    virtual void computeValuesOfInterestAndExport() {}
 
-//    virtual void assembleExternal( std::string type ){};
+//    virtual void assembleExternal( std::string type ){}
 private:
 
 };

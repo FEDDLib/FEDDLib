@@ -39,7 +39,7 @@ class AssembleFENavierStokes : public AssembleFE<SC,LO,GO,NO> {
 		\brief Assemble the element Jacobian matrix.
 		@param[in] block ID i
 	*/
-	void assembleJacobianBlock(LO i) override {};
+	void assembleJacobianBlock(LO i) override {}
 	
 	void setCoeff(SmallMatrix_Type coeff);
 
@@ -48,7 +48,7 @@ class AssembleFENavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	*/
 	void assembleFixedPoint();
 
-	SmallMatrixPtr_Type getFixedPointMatrix(){return ANB_;};
+	SmallMatrixPtr_Type getFixedPointMatrix(){return ANB_;}
 
    protected:
 

@@ -40,7 +40,7 @@ class AssembleFE_NonLinElas : public AssembleFE<SC,LO,GO,NO> {
 		\brief Assemble the element Jacobian matrix.
 		@param[in] block ID i
 	*/
-	void assembleJacobianBlock(LO i) override {};
+	void assembleJacobianBlock(LO i) override {}
 	/*!
 		\brief Update the parameter read from the ParameterList.
 		@param[in] Parameter as read from the xml file

@@ -66,8 +66,13 @@ public:
     */
     void solve(TimeProblem_Type& problem, double time=0., vec_dbl_ptr_Type valuesForExport = Teuchos::null );
     
+<<<<<<< HEAD
     /// return the number of nonlinear iterations needed
+	int getNonLinIts() {return nonLinearIts_;};
+
+=======
 	int getNonLinIts() {return nonLinearIts_;}
+>>>>>>> 62e9b78d (Remove redundant semi-colons)
 private:
 #ifdef FEDD_HAVE_NOX
     /*!

@@ -80,9 +80,19 @@ public:
 
     void updateTime() const;
 
+<<<<<<< HEAD
+    void updateConcentration(MultiVectorConstPtr_Type concentration) {concentration_.reset(new MultiVector_Type (concentration));};
+//    virtual void assembleExternal( std::string type ){};
+        
+=======
     void updateConcentration(MultiVectorConstPtr_Type concentration) {concentration_.reset(new MultiVector_Type (concentration));}
 //    virtual void assembleExternal( std::string type ){}
-        
+    
+    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
+    
+    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
+    
+>>>>>>> 62e9b78d (Remove redundant semi-colons)
     mutable Teuchos::RCP<TimeSteppingTools>	timeSteppingTool_;
 
 private:

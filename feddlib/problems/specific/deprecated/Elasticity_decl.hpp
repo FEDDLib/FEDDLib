@@ -46,11 +46,11 @@ public:
     
     virtual void calculateNonLinResidualVec(std::string type)const;
         
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    virtual void getValuesOfInterest( vec_dbl_Type& values ){}
     
-    virtual void computeValuesOfInterestAndExport() {};
+    virtual void computeValuesOfInterestAndExport() {}
     
-//    virtual void assembleExternal( std::string type ){};
+//    virtual void assembleExternal( std::string type ){}
 
     Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
     

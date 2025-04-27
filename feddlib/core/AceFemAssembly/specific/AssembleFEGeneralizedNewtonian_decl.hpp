@@ -52,7 +52,7 @@ namespace FEDD
 		  \brief Assemble the element Jacobian matrix.
 	 	  @param[in] block ID i
 	    */
-		void assembleJacobianBlock(LO i){TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "No implementation");};
+		void assembleJacobianBlock(LO i){TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "No implementation")}
 
 		/*!
 	    \brief Compute the viscosity for an element depending on the knwon velocity solution.
@@ -64,7 +64,7 @@ namespace FEDD
 	     */
 	    void assembleFixedPoint();
 
-	   SmallMatrixPtr_Type getFixedPointMatrix(){return this->ANB_;};
+	   SmallMatrixPtr_Type getFixedPointMatrix(){return this->ANB_;}
 
 	protected:
 		std::string shearThinningModel;
@@ -112,13 +112,13 @@ namespace FEDD
 		}
 		@param[in] &elementMatrix
 		*/
-		void assemblyOutflowNeumannBoundaryTerm(SmallMatrixPtr_Type &elementMatrix){TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Will be added when normal evaluation on the finite element is finished");} ;
+		void assemblyOutflowNeumannBoundaryTerm(SmallMatrixPtr_Type &elementMatrix){TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Will be added when normal evaluation on the finite element is finished")}
 
 		/*!
 		 \brief Assembly function for directional derivative contribution  neumann boundary term
 		@param[in] &elementMatrix
 		*/
-		void assemblyOutflowNeumannBoundaryTermDev(SmallMatrixPtr_Type &elementMatrix){TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Will be added when normal evaluation on the finite element is finished");};
+		void assemblyOutflowNeumannBoundaryTermDev(SmallMatrixPtr_Type &elementMatrix){TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Will be added when normal evaluation on the finite element is finished")}
 
 		/*!
 		\brief Computation of shear rate using the current velocity solution at the nodes and the derivative of the shape function

@@ -101,7 +101,7 @@ public:
     
     BlockMultiVectorPtr_Type getResidualVector() const;
     
-    BlockMultiVectorPtr_Type getPreviousSolution() const{ return previousSolution_; };
+    BlockMultiVectorPtr_Type getPreviousSolution() const{ return previousSolution_; }
 
     virtual Thyra::ModelEvaluatorBase::InArgs<SC> getNominalValues() const;
 

@@ -45,14 +45,14 @@ public:
     // TODO: Baue in Problem_def.hpp sowas wie boolHasTimeDependentSourceTerm ein, mit default auf false.
 //    void assembleSourceTerm(double time);
 
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    virtual void getValuesOfInterest( vec_dbl_Type& values ){}
     
-    virtual void computeValuesOfInterestAndExport() {};
+    virtual void computeValuesOfInterestAndExport() {}
     // Steifigkeitsmatrix des Problems der linearen Elastizitaet gegeben wie in assemble().
     // Moeglicherweise nicht noetig (vgl. Laplace.hpp)
     // Falls es doch irgendwann benutzt wird, denke daran den Konstruktor zu aendern (vgl. Stokes.hpp)
     // Teuchos::RCP<Matrix_Type> 	K_;
-//    virtual void assembleExternal( std::string type ){};
+//    virtual void assembleExternal( std::string type ){}
 
      MultiVectorPtr_Type d_rep_;
 private:

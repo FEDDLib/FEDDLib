@@ -131,7 +131,7 @@ int SmallMatrix<T>::multiply(SmallMatrix<T> &bMat, SmallMatrix &cMat){
         cMat[2][2] = values_[2][0]*bMat[0][2] + values_[2][1]*bMat[1][2] + values_[2][2]*bMat[2][2];
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!");
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!")
     
     return 0;
 }
@@ -165,7 +165,7 @@ int SmallMatrix<T>::add(SmallMatrix<T> &bMat, SmallMatrix &cMat){
         cMat[2][2] = values_[2][2]+bMat[2][2];
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!");*/
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!")*/
     
     return 0;
 }
@@ -184,7 +184,7 @@ int SmallMatrix<T>::innerProduct(SmallMatrix<T> &bMat, T &res){
         values_[2][0]*bMat[2][0] + values_[2][1]*bMat[2][1] + values_[2][2]*bMat[2][2];
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!");
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!")
     
     return 0;
 }
@@ -202,7 +202,7 @@ double SmallMatrix<T>::innerProduct(SmallMatrix<T> &bMat){
         values_[2][0]*bMat[2][0] + values_[2][1]*bMat[2][1] + values_[2][2]*bMat[2][2];
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!");
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!")
     
     return 0.;
 }
@@ -220,7 +220,7 @@ void SmallMatrix<T>::trace(T &res)
         res = values_[0][0] + values_[1][1] + values_[2][2];
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!");
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "SmallMatrix wrong size!")
 
     
 }
@@ -341,7 +341,7 @@ double SmallMatrix<T>::computeInverse(SmallMatrix<T> &inverse){
 
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Matrix size is not 2 or 3.");
+        TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Matrix size is not 2 or 3.")
     return det;
 }
 
@@ -361,7 +361,7 @@ double SmallMatrix<T>::computeDet( ){
                 values_[2][2] * values_[1][0] * values_[0][1] ;
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Matrix size is not 2 or 3.");
+        TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Matrix size is not 2 or 3.")
 
 
     return det;
@@ -382,7 +382,7 @@ double SmallMatrix<T>::computeScaling( ){
         scaling = std::sqrt( c1*c1 + c2*c2 + c3*c3 );
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Matrix size is not 2 or 3.");
+        TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Matrix size is not 2 or 3.")
     
     
     return scaling;

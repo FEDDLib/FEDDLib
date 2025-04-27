@@ -20,7 +20,7 @@ DifferentiableFuncClass<SC,LO,GO,NO>(params)
     shear_rate_limitZero= this->params_->sublist("Material").get("Numerical_ZeroValue_ShearRate",1e-8);  
     
     viscosity_ = 0.;
-    //	TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "No discretisation Information for Velocity in Navier Stokes Element." );
+    //	TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "No discretisation Information for Velocity in Navier Stokes Element." )
 
 	
 }

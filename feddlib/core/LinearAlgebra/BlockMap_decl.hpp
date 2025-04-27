@@ -87,7 +87,7 @@ public:
     
     MapConstPtr_Type getBlock(UN i) const;
     
-    UN size() const { return blockMap_.size(); };
+    UN size() const { return blockMap_.size(); }
 private:
     
     Teuchos::Array<MapPtr_Type> blockMap_;

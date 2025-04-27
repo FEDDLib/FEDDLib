@@ -40,7 +40,7 @@ class AssembleFE_LinElas : public AssembleFE<SC,LO,GO,NO> {
 		\brief Assemble the element Jacobian matrix.
 		@param[in] block ID i
 	*/
-	void assembleJacobianBlock(LO i) override {};
+	void assembleJacobianBlock(LO i) override {}
 
    protected:
 	AssembleFE_LinElas(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); 

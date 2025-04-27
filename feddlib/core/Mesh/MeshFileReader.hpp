@@ -1,5 +1,9 @@
 #ifndef MeshFileReader_hpp
 #define MeshFileReader_hpp
+#include <string>
+#include <vector>
+#include <fstream>
+
 /*!
  Declaration of MeshFileReader
  

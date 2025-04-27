@@ -78,7 +78,7 @@ public:
     
     void reAssemble( std::string type ) const;
     
-    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
+    void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const override{}
     
     void reAssembleFSI(std::string type, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const;
     
@@ -91,11 +91,11 @@ public:
     void calculateNonLinResidualVecWithMeshVelo(std::string type, double time, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const;
     // virtual int ComputeDragLift(vec_dbl_ptr_Type &values);
 
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    void getValuesOfInterest( vec_dbl_Type& values ) override {}
     
-    virtual void computeValuesOfInterestAndExport() {};
+    void computeValuesOfInterestAndExport() override {}
 
-    //  virtual void assembleExternal( std::string type ){};
+//    virtual void assembleExternal( std::string type ){}
     /*####################*/
 
     mutable MatrixPtr_Type 	A_;

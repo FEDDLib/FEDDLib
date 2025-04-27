@@ -42,9 +42,9 @@ public:
     
 //    virtual void assembleExternal( std::string type );
 
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    virtual void getValuesOfInterest( vec_dbl_Type& values ){}
     
-    virtual void computeValuesOfInterestAndExport() {};
+    virtual void computeValuesOfInterestAndExport() {}
     
   private:
     mutable MultiVectorPtr_Type u_repNewton_;

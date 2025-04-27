@@ -182,7 +182,7 @@ public:
 
     DomainConstPtr_vec_Type getDomainVector() const{
         return domainPtr_vec_;
-    };
+    }
     
     std::string getFEType(int i) const;
 
@@ -198,9 +198,9 @@ public:
 
     void initSolutionWithVector(MultiVector_Type& mv);
 
-    LinSolverBuilderPtr_Type getLinearSolverBuilder() const{return linearSolverBuilder_;};
+    LinSolverBuilderPtr_Type getLinearSolverBuilder() const{return linearSolverBuilder_;}
 
-    CommConstPtr_Type getComm() const{return comm_;};
+    CommConstPtr_Type getComm() const{return comm_;}
 
     virtual void getValuesOfInterest( vec_dbl_Type& values ) = 0 ;
 

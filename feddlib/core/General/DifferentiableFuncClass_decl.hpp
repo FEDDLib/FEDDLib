@@ -42,7 +42,7 @@ namespace FEDD {
          @param[in] x input
          @param[in,out] res output
         */
-        virtual void evaluateMapping(ParameterListPtr_Type params, MultiVectorConstPtr_Type input, MultiVectorPtr_Type &output) override { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Not yet implemented for MultiVectorConstPtr_Type"); };
+        virtual void evaluateMapping(ParameterListPtr_Type params, MultiVectorConstPtr_Type input, MultiVectorPtr_Type &output) override { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Not yet implemented for MultiVectorConstPtr_Type") }
 
         /*!
          \brief Computes value of derivative of defined function in evaluateMapping
@@ -50,7 +50,7 @@ namespace FEDD {
          @param[in] x Independent variable
          @param[in,out] res Dependent variable
         */
-        virtual void evaluateDerivative(ParameterListPtr_Type params, MultiVectorConstPtr_Type x, MultiVectorPtr_Type &res) override { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Not yet implemented for MultiVectorConstPtr_Type"); };
+        virtual void evaluateDerivative(ParameterListPtr_Type params, MultiVectorConstPtr_Type x, MultiVectorPtr_Type &res) override { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Not yet implemented for MultiVectorConstPtr_Type") }
 
        
         /*!

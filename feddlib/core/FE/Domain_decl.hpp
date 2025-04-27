@@ -357,13 +357,13 @@ public:
          \brief Get global interface map vector field partial
          \return partialGlobalInterfaceVecFieldMap
     */    
-    MapConstPtr_Type getGlobalInterfaceMapVecFieldPartial() const{ return partialGlobalInterfaceVecFieldMap_; };
+    MapConstPtr_Type getGlobalInterfaceMapVecFieldPartial() const{ return partialGlobalInterfaceVecFieldMap_; }
 
     /*!
          \brief Get other global interface map vec field partial
          \return otherPartialGlobalInterfaceVecFieldMap
     */
-    MapConstPtr_Type getOtherGlobalInterfaceMapVecFieldPartial() const{ return otherPartialGlobalInterfaceVecFieldMap_; };
+    MapConstPtr_Type getOtherGlobalInterfaceMapVecFieldPartial() const{ return otherPartialGlobalInterfaceVecFieldMap_; }
 
     /*!
          \brief Get interface map unique (for fsi coupling block c4)

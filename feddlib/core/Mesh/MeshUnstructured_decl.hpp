@@ -148,7 +148,7 @@ public:
     
     void getTriangles(int vertex1ID, int vertex2ID, vec_int_Type &vertices3ID);
 
-    SurfaceElementsPtr_Type getSurfaceTriangleElements(){return surfaceTriangleElements_;};
+    SurfaceElementsPtr_Type getSurfaceTriangleElements(){return surfaceTriangleElements_;}
     
     void findSurfaces( const vec_int_Type& elementNodeList, vec_int_Type numbering,  vec2D_int_Type& localSurfaceNodeList_vec, vec_int_Type& locSurfaces, bool critical = false );
 
@@ -170,51 +170,51 @@ public:
     void buildMeshInterfaceParallelAndDistance( MeshUnstrPtr_Type mesh, vec_int_Type flag_vec, vec_dbl_ptr_Type &distancesToInterface );
     
     void partitionInterface();
-    
-	/*! 
-		\brief setEdgeElements with external edges
-		@param[in] edgeElements 
-	*/
-    void setEdgeElements( EdgeElementsPtr_Type edgeElements ){ edgeElements_ = edgeElements; };
-    
-	/*! 
-		\brief Get EdgeElements
-		\return edgeElements_
-	*/
-    EdgeElementsPtr_Type getEdgeElements( ){ return edgeElements_; };
-    
-	/*! 
-		\brief Get SurfaceEdgeElements. Edges as only surface elements (i.e. when reading .mesh file). Used in mesh partitioner
-		\return surfaceEdgeElements_
-	*/
-    ElementsPtr_Type getSurfaceEdgeElements(){return surfaceEdgeElements_;};
-    
-	/*! 
-		\brief Reading mesh size
-	*/
+
+    /*!
+            \brief setEdgeElements with external edges
+            @param[in] edgeElements
+    */
+    void setEdgeElements(EdgeElementsPtr_Type edgeElements) { edgeElements_ = edgeElements; }
+
+    /*!
+            \brief Get EdgeElements
+            \return edgeElements_
+    */
+    EdgeElementsPtr_Type getEdgeElements() { return edgeElements_; }
+
+    /*!
+            \brief Get SurfaceEdgeElements. Edges as only surface elements (i.e. when reading .mesh file). Used in mesh
+       partitioner \return surfaceEdgeElements_
+    */
+    ElementsPtr_Type getSurfaceEdgeElements() { return surfaceEdgeElements_; }
+
+    /*!
+            \brief Reading mesh size
+    */
     void readMeshSize();
-    
-	/*! 
-		\brief Reading the .mesh files entities
-		@param[in] entityType i.e. nodes, edges, elements...
-	*/
+
+    /*!
+            \brief Reading the .mesh files entities
+            @param[in] entityType i.e. nodes, edges, elements...
+    */
     void readMeshEntity(std::string entityType);
-    
-	/*! 
-		\brief Set the .mesh file name
-	*/
+
+    /*!
+            \brief Set the .mesh file name
+    */
     void setMeshFileName(std::string meshFileName, std::string delimiter);
-    
-	/*! 
-		\brief Get global number of nodes
-		\return numNodes_
-	*/
-    int getNumGlobalNodes(){return numNodes_;};
-    
-	/*! 
-		\brief Assigning flags to all edges
-	*/
-	void assignEdgeFlags();
+
+    /*!
+            \brief Get global number of nodes
+            \return numNodes_
+    */
+    int getNumGlobalNodes() { return numNodes_; }
+
+    /*!
+            \brief Assigning flags to all edges
+    */
+    void assignEdgeFlags();
 
 	/*! 
 		\brief Building an edgemap from scratch when edges are already distributed parallel

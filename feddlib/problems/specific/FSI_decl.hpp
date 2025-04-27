@@ -109,7 +109,7 @@ public:
     // type = FluidMassmatrixAndRHS, StructureMassmatrixAndRHS
     // In der Funktion wird massmatrix und rhs resetet.
 
-    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
+    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{}
     
     virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions);
 

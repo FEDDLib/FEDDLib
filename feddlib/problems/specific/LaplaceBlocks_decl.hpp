@@ -37,18 +37,18 @@ public:
     
     virtual void assemble( std::string type = "" ) const;
     
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    virtual void getValuesOfInterest( vec_dbl_Type& values ){}
     
-    virtual void computeValuesOfInterestAndExport() {};
+    virtual void computeValuesOfInterestAndExport() {}
 //    virtual int SetupPreconditioner(BMat_ptr_Type systemPrec, ThyraConstLinOpPtr_Type thyraMatrix=Teuchos::null, ThyraPrecPtr_Type thyraPreconditioner = Teuchos::null, LinSolverBuilderPtr_Type linearSolverBuilder = Teuchos::null) const;
 //    
-//    virtual void assembleExternal( std::string type ){};
+//    virtual void assembleExternal( std::string type ){}
     
-    void setPrecLists( ParameterListPtr_Type p1list, ParameterListPtr_Type p2list ){ precList1_ = p1list; precList2_ = p2list;};
+    void setPrecLists( ParameterListPtr_Type p1list, ParameterListPtr_Type p2list ){ precList1_ = p1list; precList2_ = p2list;}
     
-    ParameterListPtr_Type getPrecList1(){return precList1_;};
+    ParameterListPtr_Type getPrecList1(){return precList1_;}
     
-    ParameterListPtr_Type getPrecList2(){return precList2_;};
+    ParameterListPtr_Type getPrecList2(){return precList2_;}
     
 private:
     ParameterListPtr_Type precList1_;

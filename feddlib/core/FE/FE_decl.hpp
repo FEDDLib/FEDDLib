@@ -567,7 +567,7 @@ class FE {
             assemblyFEElements_[T]->advanceInTime(dt);
         }
         
-    };
+    }
 
 	void assemblyLinearElasticity(int dim,
                                 std::string FEType,

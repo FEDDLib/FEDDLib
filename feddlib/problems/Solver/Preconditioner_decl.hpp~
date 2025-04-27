@@ -116,23 +116,29 @@ public:
     ThyraLinOpConstPtr_Type getTekoOp();
 
     void setVelocityMassMatrix(MatrixPtr_Type massMatrix) const;
-    MatrixPtr_Type getVelocityMassMatrix(){return velocityMassMatrixMatrixPtr_;}
+    MatrixPtr_Type getVelocityMassMatrix(){return velocityMassMatrixMatrixPtr_;};
 
     void setPressureLaplaceMatrix(MatrixPtr_Type matrix) const;
-    MatrixPtr_Type getPressureLaplaceMatrix(){return pressureLaplaceMatrixPtr_;}
+    MatrixPtr_Type getPressureLaplaceMatrix(){return pressureLaplaceMatrixPtr_;};
 
     void setPCDOperator(MatrixPtr_Type matrix) const;
-    MatrixPtr_Type getPCDOperatorMatrix(){return pcdOperatorMatrixPtr_;}
+    MatrixPtr_Type getPCDOperatorMatrix(){return pcdOperatorMatrixPtr_;};
 #endif
 
     void setPressureMassMatrix(MatrixPtr_Type massMatrix) const;
-    MatrixPtr_Type getPressureMassMatrix(){return pressureMassMatrixPtr_;}
+    MatrixPtr_Type getPressureMassMatrix(){return pressureMassMatrixPtr_;};
 
     void buildPreconditionerFaCSI( std::string type );
 
     void buildPreconditionerBlock2x2();
 
+<<<<<<< HEAD
+    void setFaCSIBCFactory( BCConstPtr_Type bcFactory ){ faCSIBCFactory_ = bcFactory; };
+=======
+    void setPressureMassMatrix(MatrixPtr_Type massMatrix) const;
+
     void setFaCSIBCFactory( BCConstPtr_Type bcFactory ){ faCSIBCFactory_ = bcFactory; }
+>>>>>>> 62e9b78d (Remove redundant semi-colons)
 
     bool hasFaCSIBCFactory(){ return !faCSIBCFactory_.is_null(); }
 

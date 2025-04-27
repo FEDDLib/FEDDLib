@@ -49,7 +49,7 @@ class AssembleFE_SCI_SMC_MLCK : public AssembleFE<SC,LO,GO,NO> {
 	    \brief Assemble block parts of the element Jacobian matrix.
 	    \return the element Jacobian matrix of block i 
 	    */
-		void assembleJacobianBlock(LO i) override{};
+		void assembleJacobianBlock(LO i) override{}
 
 		void advanceInTime(double dt) override;
 

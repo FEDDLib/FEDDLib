@@ -58,7 +58,7 @@ public:
     ~BlockMultiVector();
 
     BlockMultiVector_Type& operator= (const BlockMultiVector_Type& rhs) {
-        TEUCHOS_TEST_FOR_EXCEPTION( size() != rhs.size(), std::logic_error,"BlockMultiVector sizes are not equal for deep copy.");
+        TEUCHOS_TEST_FOR_EXCEPTION( size() != rhs.size(), std::logic_error,"BlockMultiVector sizes are not equal for deep copy.")
         for (int i=0; i<size(); i++) {
             *blockMultiVector_[i] = *rhs[i];
         }
@@ -66,7 +66,7 @@ public:
     }
 
     MultiVectorPtr_Type operator[] (int i) const{
-        TEUCHOS_TEST_FOR_EXCEPTION( i > size()-1, std::logic_error,"The requested MultiVector does not exist in BlockMultiVector.");
+        TEUCHOS_TEST_FOR_EXCEPTION( i > size()-1, std::logic_error,"The requested MultiVector does not exist in BlockMultiVector.")
         return blockMultiVector_[i];
     }
     

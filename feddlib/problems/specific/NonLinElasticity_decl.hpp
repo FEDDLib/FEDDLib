@@ -64,7 +64,7 @@ public:
 
     void reAssemble(std::string type) const;
 
-    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
+    void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const override{}
     
     virtual void reAssemble( MatrixPtr_Type& massmatrix, std::string type ) const;
     
@@ -72,11 +72,11 @@ public:
     
     virtual void calculateNonLinResidualVec(std::string type, double time=0.) const;
     
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    void getValuesOfInterest( vec_dbl_Type& values ) override {}
     
-    virtual void computeValuesOfInterestAndExport() {};
+    void computeValuesOfInterestAndExport() override {}
     
-//    virtual void assembleExternal( std::string type ){};
+//    virtual void assembleExternal( std::string type ){}
         
 private:
     
