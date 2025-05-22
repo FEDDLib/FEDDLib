@@ -59,6 +59,10 @@ public:
     typedef typename NonLinearProblem_Type::ThyraOp_Type ThyraOp_Type;
     typedef Thyra::BlockedLinearOpBase<SC> ThyraBlockOp_Type;
 
+    typedef BCBuilder<SC,LO,GO,NO> BC_Type;
+    typedef Teuchos::RCP<BC_Type> BCPtr_Type;
+    typedef Teuchos::RCP<const BC_Type> BCConstPtr_Type;
+
     typedef typename NonLinearProblem_Type::TpetraOp_Type TpetraOp_Type;
     //@}
 
@@ -74,6 +78,8 @@ public:
     void assembleConstantMatrices() const;
     
     void assembleDivAndStab() const;
+
+    void updateConvectionDiffusionOperator() const;
     
     void reAssemble( std::string type ) const;
     
@@ -100,8 +106,14 @@ public:
     mutable MatrixPtr_Type 	A_;
     vec_int_ptr_Type pressureIDsLoc;
     MultiVectorPtr_Type u_rep_;
+
+    BCConstPtr_Type bcFactoryPCD_;
+    mutable MatrixPtr_Type 	Mp_;
+    mutable MatrixPtr_Type 	Ap_;
 private:
     mutable bool stokesTekoPrecUsed_; //Help variable to signal that we constructed the initial preconditioner for NOX with the Stokes system and we do not need to compute it if fill_W_prec is called for the first time. However, the preconditioner is only correct if a Stokes system is solved in the first nonlinear iteration. This only affects the block preconditioners of Teko
+    mutable bool stokesMonoPrecUsed_; //Help variable to signal that we constructed the initial preconditioner for NOX with the Stokes system and we do not need to compute it if fill_W_prec is called for the first time. However, the preconditioner is only correct if a Stokes system is solved in the first nonlinear iteration. This only affects the block preconditioners of Teko
+
     /*####################*/
 
 public:

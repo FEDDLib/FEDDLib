@@ -112,6 +112,15 @@ class FE {
     
     void assemblyIdentity(MatrixPtr_Type &A);
     
+    void assemblySurfaceRobinBC(int dim, 
+                                std::string FETypeP, 
+                                std::string FETypeV, 
+                                MultiVectorPtr_Type u, 
+                                MatrixPtr_Type A, 
+                                std::vector<SC> &funcParameter, 
+                                RhsFunc_Type func, 
+                                ParameterListPtr_Type params);
+
     void assemblySurfaceIntegral(int dim,
                                  std::string FEType,
                                  MultiVectorPtr_Type  a,
@@ -304,6 +313,13 @@ class FE {
                                       MultiVectorPtr_Type u,
                                       bool callFillComplete);
 
+    void assemblyAdvectionVecFieldScalar(int dim,
+                                    std::string FEType,
+                                    std::string FETypeV,
+                                    MatrixPtr_Type &A,
+                                    MultiVectorPtr_Type u,
+                                    bool callFillComplete);
+                                    
     void assemblyDivAndDivT( int dim,
                             std::string FEType1,
                             std::string FEType2,

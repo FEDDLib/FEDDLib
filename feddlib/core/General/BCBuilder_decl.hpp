@@ -152,6 +152,19 @@ public:
     /// @param valuesSubstract 
     void setDirichletBoundaryFromExternal(Teuchos::ArrayRCP<SC>& values/*values will be set to this vector*/, LO index, int loc, double time, std::string type, Teuchos::ArrayRCP<SC> valuesSubstract = Teuchos::null ) const;
 
+    /// @brief 
+    /// @param matrix 
+    /// @param loc 
+    /// @param blockRow 
+    /// @param isDiagonalBlock 
+    void setDirichletBCScaled(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock, double eps=1.0) const;
+
+    /// @brief 
+    /// @param matrix 
+    /// @param localNode 
+    /// @param dofsPerNode 
+    /// @param loc 
+    void setLocalRowEntry(const MatrixPtr_Type &matrix, LO localNode, UN dofsPerNode, int loc, double eps) const;
     
     /// @brief 
     /// @param blockMV 
@@ -162,8 +175,10 @@ public:
     /// @param blockMatrix 
     void setSystem(const BlockMatrixPtr_Type &blockMatrix) const;
     
-//    void setSystem(const MatrixPtr_Type &matrix) const;
-    
+    /// @brief Set boundary conditions to system
+    /// @param blockMatrix 
+    void setSystemScaled(const BlockMatrixPtr_Type &blockMatrix,double eps=1.0) const;
+        
     /// @brief 
     /// @param matrix 
     /// @param loc 

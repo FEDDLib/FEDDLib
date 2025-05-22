@@ -3848,7 +3848,8 @@ template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, string FEType){
 
     double tol=1.e-12;
-
+    int numNodesTriangle;
+    bool skip = false;  
     switch (this->dim_) {
         case 2:
             break;
@@ -3860,6 +3861,95 @@ void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, string FEType){
                 case 1:
                     break;
                 case 2:
+                     if(FEType == "P1")
+                        numNodesTriangle=3;
+                    else if(FEType=="P2")
+                        numNodesTriangle=6;
+                    else 
+                        skip = true; //TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"For flag option and discretization no surfaces are available");
+
+                    if(!skip){
+                        for( int T =0; T< this->elementsC_->numberElements(); T++){
+
+                            vec_int_Type nodeList = this->elementsC_->getElement(T).getVectorNodeList();
+
+                            vec2D_LO_Type surfaceElements_vec(4,vec_LO_Type(numNodesTriangle)); // four surfaces per element
+
+
+                            //                Face 1          Face2               Face 3            Face 4
+                            //                    2      2 * * 9 * * 3        3 * * 9 * * 2          	3
+                            //                  * *      *          *          *          * 		  * *
+                            //                *   *      *        *             *        *          *   *
+                            //              5	  6      6      7                8      5         8	    7
+                            //            *       *      *    *                   *    *        *       *
+                            //          *         *      *  *                      *  *       *         *
+                            //        1 * * 4 * * 0       0                         1       1 * * 4 * * 0
+                            if(FEType == "P1"){
+                                surfaceElements_vec[0] = {nodeList[1],nodeList[0],nodeList[2]};
+                                surfaceElements_vec[1] = {nodeList[0],nodeList[3],nodeList[2]};
+                                surfaceElements_vec[2] = {nodeList[1],nodeList[2],nodeList[3]};
+                                surfaceElements_vec[3] = {nodeList[1],nodeList[0],nodeList[3]};
+                            }
+                            else if(FEType=="P2"){
+                                surfaceElements_vec[0] = {nodeList[1],nodeList[0],nodeList[2],nodeList[4],nodeList[6],nodeList[5]};
+                                surfaceElements_vec[1] = {nodeList[0],nodeList[3],nodeList[2],nodeList[7],nodeList[9],nodeList[6]};
+                                surfaceElements_vec[2] = {nodeList[1],nodeList[2],nodeList[3],nodeList[5],nodeList[9],nodeList[8]};
+                                surfaceElements_vec[3] = {nodeList[1],nodeList[0],nodeList[3],nodeList[4],nodeList[7],nodeList[8]};
+                            }
+
+                            for (int i=0; i<4; i++) {
+
+                                vec_dbl_Type p1(3),p2(3),v_E(3);
+                                p1[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(0);
+                                p1[1] =this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(1);
+                                p1[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(2);
+
+                                p2[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(0);
+                                p2[1] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(1);
+                                p2[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(2);
+
+                                v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                                v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                                v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+
+
+                                vec_dbl_Type midpoint(3);
+
+                                // Midpoint of triangle surface
+                                midpoint[0] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(0) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(0) )/3.;
+                                midpoint[1] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(1) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(1) )/3.;
+                                midpoint[2] = (this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) + this->pointsRep_->at(surfaceElements_vec[i][1]).at(2) +this->pointsRep_->at(surfaceElements_vec[i][2]).at(2) )/3.;
+
+                                int flag =10.;
+                                // x=-1 Face  
+                                if (midpoint.at(0) < (coorRec[0] + tol) ) {
+                                    flag = 2;
+                                    if(v_E[0] > 0 )
+                                        flipSurface(surfaceElements_vec[i]);
+                                }
+                                
+                                p1[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(0);
+                                p1[1] =this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(1);
+                                p1[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][1]).at(2);
+
+                                p2[0] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(0) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(0);
+                                p2[1] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(1) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(1);
+                                p2[2] = this->pointsRep_->at(surfaceElements_vec[i][0]).at(2) - this->pointsRep_->at(surfaceElements_vec[i][2]).at(2);
+
+                                v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                                v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                                v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+
+                                if(flag != 10){
+                                    FiniteElement feSurface( surfaceElements_vec[i], flag);
+                                    if ( !this->elementsC_->getElement(T).subElementsInitialized() )
+                                        this->elementsC_->getElement(T).initializeSubElements( "P2", 2 ); // only P1 for now
+                                    
+                                    this->elementsC_->getElement(T).addSubElement( feSurface );
+                                }
+                            }
+                        }
+                    }
                     break;
                 case 3:
                     int numNodesTriangle;

@@ -116,6 +116,16 @@ public:
     ThyraLinOpConstPtr_Type getTekoOp();
 
     void setVelocityMassMatrix(MatrixPtr_Type massMatrix) const;
+    MatrixPtr_Type getVelocityMassMatrix(){return velocityMassMatrixMatrixPtr_;};
+
+    void setPressureLaplaceMatrix(MatrixPtr_Type matrix) const;
+    MatrixPtr_Type getPressureLaplaceMatrix(){return pressureLaplaceMatrixPtr_;};
+
+    void setPressureMass(MatrixPtr_Type matrix) const;
+    MatrixPtr_Type getPressureMassMatrix(){return pressureMassMatrixPtr_;};
+
+    void setPCDOperator(MatrixPtr_Type matrix) const;
+    MatrixPtr_Type getPCDOperatorMatrix(){return pcdOperatorMatrixPtr_;};
 #endif
 
     void buildPreconditionerFaCSI( std::string type );
@@ -136,6 +146,8 @@ public:
 
     bool isPreconditionerComputed() const{return precondtionerIsBuilt_;};
 
+    MatrixPtr_Type buildDiagonalInverse(MatrixPtr_Type massMatrix, string diagonalType);
+
 private:
     ThyraPrecPtr_Type thyraPrec_;
     bool precondtionerIsBuilt_;
@@ -144,7 +156,8 @@ private:
     Teuchos::RCP<Thyra::PreconditionerFactoryBase<SC> > precFactory_;
 #ifdef FEDD_HAVE_TEKO
     ThyraLinOpConstPtr_Type tekoLinOp_;
-    mutable ThyraLinOpConstPtr_Type velocityMassMatrix_;
+    Teuchos::RCP<Teko::RequestHandler> rh_;
+
 #endif
     // For FaCSI precondtioner
     ThyraLinOpConstPtr_Type fsiLinOp_;
@@ -162,6 +175,27 @@ private:
     MinPrecProblemPtr_Type probVelocity_;
     MinPrecProblemPtr_Type probSchur_;
     mutable MatrixPtr_Type pressureMassMatrix_;
+
+    // For LSC and PCD preconditioner
+    mutable ThyraLinOpConstPtr_Type velocityMassMatrix_; // LSC
+    mutable MatrixPtr_Type velocityMassMatrixMatrixPtr_; // LSC
+
+    mutable MatrixPtr_Type pressureLaplaceMatrixPtr_; // PCD
+    mutable ThyraLinOpConstPtr_Type pressureLaplace_; // PCD
+
+    mutable MatrixPtr_Type pressureMassMatrixPtr_; // PCD
+    mutable ThyraLinOpConstPtr_Type pressureMass_; // PCD
+    
+    mutable MatrixPtr_Type pcdOperatorMatrixPtr_; // PCD
+    mutable ThyraLinOpConstPtr_Type pcdOperator_; // PCD
+
+    // For construction in the FEDDLib
+    MinPrecProblemPtr_Type probLaplace_;
+    MinPrecProblemPtr_Type probMass_;
+    MinPrecProblemPtr_Type probVMass_;
+    ThyraLinOpPtr_Type laplaceInverse_;
+    ThyraLinOpPtr_Type massMatrixInverse_;
+    ThyraLinOpPtr_Type massMatrixVInverse_;  
 
     ParameterListPtr_Type pListPhiExport_;
 #define PRECONDITIONER_TIMER

@@ -125,7 +125,11 @@ void inflow3DRichter(double* x, double* res, double t, const double* parameters)
     
     return;
 }
-void dummyFunc(double* x, double* res, double t, const double* parameters){
+void dummyFunc(double* x, double* res, double* parameters){
+    if(parameters[0]==2)
+        res[0]=1;
+    else
+        res[0] = 0.;
 
     return;
 }
@@ -167,10 +171,11 @@ int main(int argc, char *argv[]) {
     myCLP.setOption("precfile",&xmlPrecFile,".xml file with Inputparameters.");
     string xmlSolverFile = "parametersSolver.xml";
     myCLP.setOption("solverfile",&xmlSolverFile,".xml file with Inputparameters.");
-
     string xmlTekoPrecFile = "parametersTeko.xml";
     myCLP.setOption("tekoprecfile",&xmlTekoPrecFile,".xml file with Inputparameters.");
-
+    string xmlBlockPrecFile = "parametersPrecBlock.xml";
+    myCLP.setOption("blockprecfile",&xmlBlockPrecFile,".xml file with Inputparameters.");
+   
     double length = 4.;
     myCLP.setOption("length",&length,"length of domain.");
 
@@ -189,6 +194,8 @@ int main(int argc, char *argv[]) {
         ParameterListPtr_Type parameterListSolver = Teuchos::getParametersFromXmlFile(xmlSolverFile);
 
         ParameterListPtr_Type parameterListPrecTeko = Teuchos::getParametersFromXmlFile(xmlTekoPrecFile);
+
+        ParameterListPtr_Type parameterListPrecBlock = Teuchos::getParametersFromXmlFile(xmlBlockPrecFile);
 
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
 
@@ -209,8 +216,10 @@ int main(int argc, char *argv[]) {
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
         if (!precMethod.compare("Monolithic"))
             parameterListAll->setParameters(*parameterListPrec);
-        else
+        else if(precMethod == "Teko")
             parameterListAll->setParameters(*parameterListPrecTeko);
+        else if(precMethod == "Diagonal" || precMethod == "Triangular" || precMethod == "PCD" || precMethod == "LSC")
+            parameterListAll->setParameters(*parameterListPrecBlock);
 
         parameterListAll->setParameters(*parameterListSolver);    
         
@@ -319,7 +328,7 @@ int main(int argc, char *argv[]) {
                             domainVelocity = domainPressure;
                     }
                 }
-
+                domainVelocity->preProcessMesh(true,false);
                 std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
 
                 // ####################
@@ -392,6 +401,9 @@ int main(int argc, char *argv[]) {
                     Teuchos::TimeMonitor solveTimeMonitor(*solveTime);
 
                     navierStokes.addBoundaries(bcFactory);
+ 
+                    navierStokes.addRhsFunction( dummyFunc );
+
                     navierStokes.initializeProblem();
                     navierStokes.assemble();
 

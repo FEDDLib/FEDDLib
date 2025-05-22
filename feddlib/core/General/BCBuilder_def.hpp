@@ -590,6 +590,38 @@ bool BCBuilder<SC,LO,GO,NO>::findFlag(LO flag, int block, int &loc) const{
     return hasFlag;
 }
 
+
+template<class SC,class LO,class GO,class NO>
+void BCBuilder<SC,LO,GO,NO>::setSystemScaled(const BlockMatrixPtr_Type &blockMatrix,double eps) const{
+
+   UN numBlocks = blockMatrix->size();
+    int loc;
+    for (UN blockRow = 0; blockRow < numBlocks; blockRow++) {
+
+#ifdef BCBuilder_TIMER
+        Teuchos::TimeMonitor SetSystemRowMonitor(*SetSystemRowTimer_);
+#endif
+        bool boolBlockHasDirichlet = false;
+        
+        {
+#ifdef BCBuilder_TIMER
+            Teuchos::TimeMonitor BlockRowHasDirichletMonitor(*BlockRowHasDirichletTimer_);
+#endif
+            boolBlockHasDirichlet = blockHasDirichletBC(blockRow,loc);
+        }
+
+        if (boolBlockHasDirichlet){
+            for (UN blockCol = 0; blockCol < numBlocks ; blockCol++) {
+                if ( blockMatrix->blockExists( blockRow, blockCol ) ) {
+                    MatrixPtr_Type matrix = blockMatrix->getBlock( blockRow, blockCol );
+                    setDirichletBCScaled( matrix, loc, blockRow, blockRow==blockCol,eps );
+                }
+            }
+        }
+    }
+}
+
+
 template<class SC,class LO,class GO,class NO>
 void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) const{
 
@@ -646,6 +678,85 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
         }
     }
 }
+
+
+template<class SC,class LO,class GO,class NO>
+void BCBuilder<SC,LO,GO,NO>::setDirichletBCScaled(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock, double eps) const{
+    
+    matrix->resumeFill();
+    bool isDirichlet;
+    UN dofsPerNode = vecDofs_.at(loc);
+    vec_int_ptr_Type bcFlags = vecDomain_.at(loc)->getBCFlagUnique();
+    MapConstPtr_Type nodeMap = vecDomain_.at(loc)->getMapUnique();
+
+    for (LO i=0; i<bcFlags->size(); i++) { // flags are for nodes.
+        int flag = bcFlags->at(i);
+        isDirichlet = false;
+        int locThisFlag;
+
+        if( findFlag(flag, blockRow, locThisFlag) ){
+
+            if( !vecBCType_.at(locThisFlag).compare("Dirichlet") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_X") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_Y") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_Z") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_X_Y") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_X_Z") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_Y_Z") )
+                isDirichlet = true;
+            if (isDirichlet) {
+
+                if (isDiagonalBlock)
+                    setLocalRowEntry(matrix, i, dofsPerNode, locThisFlag,eps );
+                else
+                    setLocalRowZero(matrix, i, dofsPerNode, locThisFlag );
+            }
+        }
+    }
+    matrix->fillComplete( matrix->getMap("domain"), matrix->getMap("range") );
+}
+
+
+template<class SC,class LO,class GO,class NO>
+void BCBuilder<SC,LO,GO,NO>::setLocalRowEntry(const MatrixPtr_Type &matrix, LO localNode, UN dofsPerNode, int loc,double eps) const{
+    
+    Teuchos::ArrayView<const SC> valuesOld;
+    Teuchos::ArrayView<const LO> indices;
+
+    MapConstPtr_Type colMap = matrix->getMap("col");
+    LO localDof = (LO) (dofsPerNode * localNode);
+    for (UN dof=0; dof<dofsPerNode; dof++) {
+        if ( vecBCType_.at(loc) == "Dirichlet" ||
+            (vecBCType_.at(loc) == "Dirichlet_X" && dof==0 ) ||
+            (vecBCType_.at(loc) == "Dirichlet_Y" && dof==1 ) ||
+            (vecBCType_.at(loc) == "Dirichlet_Z" && dof==2 ) ||
+            (vecBCType_.at(loc) == "Dirichlet_X_Y" && dof!=2 )||
+            (vecBCType_.at(loc) == "Dirichlet_X_Z" && dof!=1 )||
+            (vecBCType_.at(loc) == "Dirichlet_Y_Z" && dof!=0 )
+            ) {
+           // cout << " Setting Dirichlet Row 1 for node " << localDof << " of type " << vecBCType_.at(loc)  <<endl;
+            GO globalDof = matrix->getMap()->getGlobalElement( localDof );
+            matrix->getLocalRowView(localDof, indices, valuesOld);
+            double rowSum = 0.;
+            for (UN j=0; j<indices.size(); j++) {
+               rowSum += abs(valuesOld[j]);
+            }
+            Teuchos::Array<SC> values( valuesOld.size(), Teuchos::ScalarTraits<SC>::zero() );
+            bool setOne = false;
+            for (UN j=0; j<indices.size() && !setOne; j++) {
+                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
+                    values[j] = valuesOld[j]*eps;
+
+                    setOne = true;
+                }
+            }
+            matrix->replaceLocalValues(localDof, indices(), values());
+        }
+        localDof++;
+    }
+    
+}
+
 
 template<class SC,class LO,class GO,class NO>
 void BCBuilder<SC,LO,GO,NO>::setDirichletBC(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock) const{

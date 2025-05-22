@@ -2,6 +2,14 @@
 #define NAVIERSTOKES_def_hpp
 #include "NavierStokes_decl.hpp"
 
+#ifndef NAVIER_STOKES_START
+#define NAVIER_STOKES_START(A,S) Teuchos::RCP<Teuchos::TimeMonitor> A = Teuchos::rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer(std::string("Assemble Navier-Stokes:") + std::string(S))));
+#endif
+
+#ifndef NAVIER_STOKES_STOP
+#define NAVIER_STOKES_STOP(A) A.reset();
+#endif
+
 /*!
  Definition of Navier-Stokes
 
@@ -26,6 +34,13 @@ void syOne2D(double* x, double* res, double t, double* parameter){
     return;
 }
 void sDummyFunc(double* x, double* res, double t, double* parameter){
+
+    return;
+}
+
+void zeroDirichletBC(double* x, double* res, double t, double* parameters){
+
+    res[0] = 0.;
 
     return;
 }
@@ -100,6 +115,12 @@ u_rep_()
         }
     }
 
+    if(!this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD"))
+    { 
+        bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
+        bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, domainPressure, "Dirichlet", 1);
+    }   
+
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -119,6 +140,10 @@ void NavierStokes<SC,LO,GO,NO>::assemble( std::string type ) const{
         
         if (this->verbose_)
             std::cout << "done -- " << std::endl;
+    }
+    else if(type=="UpdateTime"){
+        this->newtonStep_ = 0;
+        // timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
     }
     else
         reAssemble( type );
@@ -158,23 +183,128 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
     assembleDivAndStab();
     
 #ifdef FEDD_HAVE_TEKO
-    if ( !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Teko") ) {
-        if (!this->parameterList_->sublist("General").get("Assemble Velocity Mass",false)) {
+    if ( !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Teko") 
+    || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD")
+    || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")) {
+
+        // ###############################################
+        // LSC Preconditioner
+        // Constructing velocity mass matrix
+        // If the Velocity Mass Matrix is the identity matrix, 
+        // it results in the BFBt preconditioner
+        if (!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","None").compare("LSC")
+         || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","None").compare("LSC-Pressure-Laplace")
+         || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","None").compare("SIMPLE")
+         || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")) {
+                        
             MatrixPtr_Type Mvelocity(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
-            //
-            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true );
-            //
+            // Constructing velocity mass matrix
+            if(this->parameterList_->sublist("Parameter").get("BFBT",false)){
+                if(this->verbose_)
+                    std::cout << "\n Setting M_u to be the identity Matrix to use BFBT preconditioner " << std::endl;
+
+                this->feFactory_->assemblyIdentity( Mvelocity );
+            }
+            else{ 
+                this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true );
+                
+            }
+            // Adding the velocity mass matrix Mu to the preconditioner
             this->getPreconditionerConst()->setVelocityMassMatrix( Mvelocity );
-            if (this->verbose_)
-                std::cout << "\nVelocity mass matrix for LSC block preconditioner is assembled." << std::endl;
-        } else {
-            if (this->verbose_)
-                std::cout << "\nVelocity mass matrix for LSC block preconditioner not assembled." << std::endl;
+
+           if (this->verbose_)
+                std::cout << "\n Velocity mass matrix for LSC block preconditioner is assembled and used for the preconditioner." << std::endl;
+
+            // For LSC-Pressure-Laplace approach we add also the Laplaian on the pressure space to the preconditioner
+            if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("LSC-Pressure-Laplace"))
+            {
+                MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+                this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );
+                
+                BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
+                bcBlockMatrix->addBlock(Lp,0,0);
+
+                this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp);
+            }
+        } 
+        // ###############################################
+        // PCD Preconditioner
+        // For the PCD preconditioner we additionally need 
+        // assemble the pressure mass matrix, the pressure
+        // Laplacian and the pressure convection diffusion
+        // opertor.
+        else if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
+        || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD") ){
+            
+            // ###############################################
+            // Velocity mass matrix: Currently this is set to not have an error in preconditioner. PLEASE FIX
+            MatrixPtr_Type Mvelocity(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true );
+            this->getPreconditionerConst()->setVelocityMassMatrix( Mvelocity );
+            // ###############################################
+
+
+            // Pressure mass matrix
+            MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true,2 ); 
+            Mp_= Mpressure;
+            this->getPreconditionerConst()->setPressureMass( Mpressure );
+            // --------------------------------------------------------------------------------------------
+
+            // --------------------------------------------------------------------------------------------
+            // Pressure Laplace matrix
+            MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+            this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );
+            Ap_.reset(new Matrix_Type(Lp)); // Setting Ap_ as Lp without any BC
+        
+            // Adding boundary information to pressure Laplace operator
+            BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
+            bcBlockMatrix->addBlock(Lp,0,0);
+
+            bcFactoryPCD_->setSystemScaled(bcBlockMatrix); // Setting boundary information where the Diagonal entry is kept 
+            this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp);   // Adding pressure laplacian to preconditioner
+            // --------------------------------------------------------------------------------------------
+
+            // --------------------------------------------------------------------------------------------
+            // Pressure convection diffusion operator 
+            MatrixPtr_Type Kp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+            // --------------------------------------------------------------------------------------------
+            // Advection component
+            MatrixPtr_Type AdvPressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+            this->feFactory_->assemblyAdvectionVecFieldScalar( this->dim_, this->domain_FEType_vec_.at(1), this->domain_FEType_vec_.at(0),AdvPressure, u_rep_, true ); 
+           
+            // Diffusion component: \nu * \Delta
+            MatrixPtr_Type Ap2(new Matrix_Type( Ap_) );
+
+            SC kinVisco = this->parameterList_->sublist("Parameter").get("Viscosity",1.); // Ap need to be scaled with viscosity
+            Ap2->resumeFill();
+            Ap2->scale(kinVisco);
+            Ap2->fillComplete(); 
+            
+            
+            MatrixPtr_Type K_robin(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
+            vec_dbl_Type funcParameter(1,kinVisco);
+            this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,K_robin, funcParameter, this->rhsFuncVec_[0],this->parameterList_);
+            K_robin->addMatrix(-1.,Kp,1.); // adding robin boundary condition to to Kp
+            
+            // Adding laplace and convetion-diffusion operator to Kp
+            Ap2->addMatrix(1.,Kp,1.); // adding advection to diffusion
+            AdvPressure->addMatrix(1.,Kp,1.); // adding advection to diffusion
+            
+            Kp->fillComplete();
+
+            bcBlockMatrix->addBlock(Kp,0,0);
+            bcFactoryPCD_->setSystemScaled(bcBlockMatrix);
+
+            // Adding Kp to the preconditioner
+            this->getPreconditionerConst()->setPCDOperator( Kp );  
+            // --------------------------------------------------------------------------------------------
+
         }
     }
 #endif
     string precType = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-    if ( precType == "Diagonal" || precType == "Triangular" ) {
+    if ( precType == "Diagonal" || precType == "Triangular" || precType == "PCD" || precType == "LSC" ) {
         MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         
         this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true );
@@ -196,6 +326,67 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
     
 };
     
+
+template<class SC,class LO,class GO,class NO>
+void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
+    
+    if ( !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
+                || !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("PCD")) 
+    {
+    
+        NAVIER_STOKES_START(ReassemblePCD," Reassembling Matrix for PCD ");
+      
+        // PCD Operator  
+        MatrixPtr_Type Fp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+        // --------------------------------------------------------------------------------------------
+        // Advection component
+        MatrixPtr_Type AdvPressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+        this->feFactory_->assemblyAdvectionVecFieldScalar( this->dim_, this->domain_FEType_vec_.at(1), this->domain_FEType_vec_.at(0),AdvPressure, u_rep_, true ); 
+        
+        // Diffusion component: \nu * \Delta
+        MatrixPtr_Type Ap2(new Matrix_Type( Ap_ ) ); // We use A_p which we already stored
+        SC kinVisco = this->parameterList_->sublist("Parameter").get("Viscosity",1.);
+        Ap2->resumeFill();
+        Ap2->scale(kinVisco);
+        Ap2->fillComplete();
+
+        // ---------------------
+        MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
+        vec_dbl_Type funcParameter(1,kinVisco);
+        this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,Kext, funcParameter, this->rhsFuncVec_[0],this->parameterList_);
+        Kext->addMatrix(-1.,Fp,1.); // adding advection to diffusion
+        
+        // Adding laplace an convection together
+        Ap2->addMatrix(1.,Fp,1.); // adding advection to diffusion
+        AdvPressure->addMatrix(1.,Fp,1.); // adding advection to diffusion
+
+        // Finally if we deal with a transient problem we additionally add the Mass term 1/delta t M_p
+        if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> -1 ){ // In case we have a timeproblem
+            MatrixPtr_Type Mp2(new Matrix_Type( Mp_ ) );
+            double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.);
+            Mp2->resumeFill();
+            if(this->parameterList_->sublist("Timestepping Parameter").get("BDF",1) == 1) // BDF 1
+                Mp2->scale(1./dt);
+            else if(this->parameterList_->sublist("Timestepping Parameter").get("BDF",1) == 2) // BDF 1
+                Mp2->scale(3./(2.*dt));
+            else
+                TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "PCD operator for transient problems only defined for BDF-1 and BDF-2.");
+
+            Mp2->fillComplete();
+            Mp2->addMatrix(1.,Fp,1.);
+        }
+        Fp->fillComplete();
+
+        // // --------------------------------------------------------------------------------------------
+        BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
+
+        bcBlockMatrix->addBlock(Fp,0,0);   
+        bcFactoryPCD_->setSystemScaled(bcBlockMatrix); 
+
+        this->getPreconditionerConst()->setPCDOperator( Fp );       
+        NAVIER_STOKES_STOP(ReassemblePCD);       
+    }
+}
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
     
@@ -239,12 +430,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
         
         this->system_->addBlock( C, 1, 1 );
     }
-    //else 
-    //    C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-    //    this->feFactory_->assemblyEmptyMatrix(C);
-               
-        //this->system_->addBlock( C, 1, 1 );
-
+   
 };
 
 template<class SC,class LO,class GO,class NO>
@@ -489,7 +675,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::I
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     if ( !type.compare("Monolithic"))
         evalModelImplMonolithic( inArgs, outArgs );
-    else if ( !type.compare("Teko")){
+    else if ( !type.compare("Teko")|| !type.compare("Diagonal") || !type.compare("PCD") || !type.compare("LSC")){
 #ifdef FEDD_HAVE_TEKO
         evalModelImplBlock( inArgs, outArgs );
 #else
@@ -585,7 +771,20 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
         }
 
         if (fill_W_prec) {
-            this->setupPreconditioner( "Monolithic" );
+            
+            if (stokesMonoPrecUsed_){
+                int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
+                if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
+                {
+                    this->setupPreconditioner( "Monolithic" );
+                }
+                else{
+                    if (this->verbose_)
+                        cout << " Navier_Stokes:: Skipping preconditioner reconstruction" << endl;
+                }
+            }
+            else
+                stokesMonoPrecUsed_ = true;
 
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
             // If this is the case, we need to pre apply the coarse level to the residual(f_out).
@@ -604,6 +803,8 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
 //                Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *f_out, vecThyraNonConst.ptr() );
 //                solverPList->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
             }
+
+            this->newtonStep_ ++; 
 
         }
     }
@@ -709,12 +910,20 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
         }
 
         if (fill_W_prec) {
+            std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
             if (stokesTekoPrecUsed_){
-                this->setupPreconditioner( "Teko" );
+                int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
+                if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
+                {
+                    this->setupPreconditioner( type );
+                }
+                else{
+                    if (this->verbose_)
+                        cout << " Navier_Stokes:: Skipping preconditioner reconstruction " << endl;
+                }
             }
             else
                 stokesTekoPrecUsed_ = true;
-
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
             // If this is the case, we need to pre apply the coarse level to the residual(f_out).
 
@@ -736,6 +945,8 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
 
 
             }
+            this->newtonStep_ ++; 
+
         }
     }
 }
@@ -807,7 +1018,7 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op() 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     if ( !type.compare("Monolithic"))
         return create_W_op_Monolithic( );
-    else if ( !type.compare("Teko")){
+     else if ( !type.compare("Teko") || !type.compare("Diagonal") || !type.compare("PCD") || !type.compare("LSC") ){
 #ifdef FEDD_HAVE_TEKO
         return create_W_op_Block( );
 #else
@@ -857,12 +1068,14 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     this->setBoundariesSystem();
 
-    if (!type.compare("Teko")) { //
+    if (!type.compare("Teko") || !type.compare("Diagonal") || !type.compare("Triangular") || !type.compare("PCD") || !type.compare("LSC")) { //
         this->setupPreconditioner( type );
         stokesTekoPrecUsed_ = false;
     }
     else{
         this->setupPreconditioner( type ); // initializePreconditioner( type );
+        stokesMonoPrecUsed_ = false;
+
     }
     
 

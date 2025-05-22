@@ -128,6 +128,8 @@ public:
     mutable BlockMultiVectorPtr_Type    residualVec_;
     SmallMatrix<double> coeff_;// coefficients for a time-dependent problem
 
+    mutable int newtonStep_;
+
 private:
 
     Thyra::ModelEvaluatorBase::InArgs<SC> nominalValues_;
