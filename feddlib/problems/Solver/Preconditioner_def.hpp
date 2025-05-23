@@ -1591,6 +1591,7 @@ typename Preconditioner<SC,LO,GO,NO>::ThyraLinOpConstPtr_Type Preconditioner<SC,
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::setVelocityMassMatrix(MatrixPtr_Type massMatrix) const{
     velocityMassMatrix_ = massMatrix->getThyraLinOp();
+    velocityMassMatrixMatrixPtr_ = massMatrix;
 }
 #endif
 

@@ -115,7 +115,9 @@ u_rep_()
         }
     }
 
-    if(!this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD"))
+    if(!this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD")
+        || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")
+        || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") )
     { 
         bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
         bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, domainPressure, "Dirichlet", 1);
@@ -216,13 +218,15 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
                 std::cout << "\n Velocity mass matrix for LSC block preconditioner is assembled and used for the preconditioner." << std::endl;
 
             // For LSC-Pressure-Laplace approach we add also the Laplaian on the pressure space to the preconditioner
-            if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("LSC-Pressure-Laplace"))
+            if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("LSC-Pressure-Laplace")
+                || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC"))
             {
                 MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
                 this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );
                 
                 BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
                 bcBlockMatrix->addBlock(Lp,0,0);
+                bcFactoryPCD_->setSystemScaled(bcBlockMatrix); // Setting boundary information where the Diagonal entry is kept 
 
                 this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp);
             }
@@ -500,6 +504,7 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         
         A_->addMatrix(1.,ANW,0.);
         N->addMatrix(1.,ANW,1.);
+
     }
     else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
@@ -955,7 +960,7 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBa
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
     this->reAssemble("FixedPoint");
-
+    this->updateConvectionDiffusionOperator();
     // We need to account for different parameters of time discretizations here
     // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
     if (this->coeff_.size() == 0)
