@@ -7250,10 +7250,10 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
     vec2D_dbl_ptr_Type     phi,phiV;
     vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN extraDeg = Helper::determineDegree( dim-1, FEType, Std); //Elementwise assembly of grad u
+    UN extraDeg = Helper::determineDegree( dim-1, FEType2, Std); //Elementwise assembly of grad u
 
-    UN deg = Helper::determineDegree( dim-1, FEType, FEType, Grad, Std, extraDeg);
-
+    UN deg = Helper::determineDegree( dim-1, FEType, FEType, Std, Std, extraDeg);
+    cout << "Degree " << deg << endl;
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
     Helper::getPhi(phiV, weights, dim-1, FEType2, deg);
 

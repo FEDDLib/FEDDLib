@@ -385,7 +385,7 @@ int main(int argc, char *argv[]) {
                     parameter_vec.push_back(.41);//height of inflow region
                 else if(!bcType.compare("Richter3D"))
                     parameter_vec.push_back(.4);
-                 else if(!bcType.compare("LDC")   || !bcType.compare("LDC_2")) // Lid Driven Cavity Test
+                else if(!bcType.compare("LDC")   || !bcType.compare("LDC_2")) // Lid Driven Cavity Test
                     parameter_vec.push_back(0.);//Dummy
                 else
                     TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Select a valid boundary condition.");
@@ -463,6 +463,12 @@ int main(int argc, char *argv[]) {
                         //     bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
 
                         // }
+                         else if( !pcdBC.compare("BC0")){
+                            if(verbose)
+                                cout << " --------- PCD Info (BC-4): Setting outlet of Laplace ----------- " << endl;
+                            bcFactoryPressureFp->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+                            bcFactoryPressureLaplace->addBC(zeroDirichlet3D, 3, 0, domainPressure, "Dirichlet", 1);
+                        }
                         else if( !pcdBC.compare("BC1")){
                             if(verbose)
                                 cout << " --------- PCD Info (BC-1): Setting outlet of Laplace and inlet and outlet of Fp to Dirichlet ----------- " << endl;

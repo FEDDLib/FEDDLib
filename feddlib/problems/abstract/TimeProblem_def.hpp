@@ -1093,6 +1093,8 @@ Thyra::ModelEvaluatorBase::OutArgs<SC> TimeProblem<SC,LO,GO,NO>::createOutArgsIm
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::LinearOpBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_op()
 {
+     if(this->verbose_)
+        cout << " TimeProblem<SC,LO,GO,NO>::create_W_op() " << endl;
 
     this->calculateNonLinResidualVec( "standard", time_ );
     this->assemble("Newton");

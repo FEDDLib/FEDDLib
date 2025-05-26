@@ -1002,10 +1002,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
                 rh_->addRequestCallback( callbackPCD );
 
             }
-
-            
-
-
             Teuchos::RCP< Teko::StratimikosFactory > tekoFactory = Teuchos::rcp_dynamic_cast<Teko::StratimikosFactory>(precFactory_);
             tekoFactory->setRequestHandler( rh_ );
 

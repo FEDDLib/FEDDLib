@@ -108,6 +108,7 @@ template<class SC, class LO, class GO, class NO>
 void PrecBlock2x2<SC,LO,GO,NO>::setPressureInv(ThyraLinOpPtr_Type pressureInv){
     pressureInv_ = pressureInv;
 }
+
 template<class SC, class LO, class GO, class NO>
 void PrecBlock2x2<SC,LO,GO,NO>::setPressureInvs(ThyraLinOpPtr_Type laplaceInverse,
                         ThyraLinOpPtr_Type convectionDiffusionOperator,
