@@ -7253,7 +7253,6 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
     UN extraDeg = Helper::determineDegree( dim-1, FEType2, Std); //Elementwise assembly of grad u
 
     UN deg = Helper::determineDegree( dim-1, FEType, FEType, Std, Std, extraDeg);
-    cout << "Degree " << deg << endl;
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
     Helper::getPhi(phiV, weights, dim-1, FEType2, deg);
 
