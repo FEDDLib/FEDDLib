@@ -32,15 +32,9 @@ SET(problems_specific_HEADERS
     specific/NonLinElasAssFE_decl.hpp
     specific/NonLinElasAssFE_def.hpp
     specific/NonLinElasAssFE.hpp
-    # specific/NonLinTPM_decl.hpp
-    # specific/NonLinTPM_def.hpp
-    # specific/NonLinTPM.hpp
 	specific/Stokes_decl.hpp
 	specific/Stokes_def.hpp
 	specific/Stokes.hpp
-    # specific/TPM_decl.hpp
-    # specific/TPM_def.hpp
-    # specific/TPM.hpp
     specific/FSI_decl.hpp
     specific/FSI_def.hpp
     specific/FSI.hpp
@@ -58,9 +52,7 @@ SET(problems_specific_SOURCES
     specific/NonLinElasticity.cpp
     specific/NonLinElasAssFE.cpp
     specific/NonLinLaplace.cpp
-    # specific/NonLinTPM.cpp
     specific/Stokes.cpp
-    # specific/TPM.cpp
     specific/FSI.cpp
 CACHE INTERNAL "")
 

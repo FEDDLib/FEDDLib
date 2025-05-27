@@ -295,10 +295,6 @@ namespace FEDD
                                                 const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
                                                 ) const
     {
-
-        cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImpl " << endl;
-
-
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
         if ( !type.compare("Monolithic"))
             evalModelImplMonolithic( inArgs, outArgs );
@@ -322,7 +318,6 @@ namespace FEDD
                                                             const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
     {
 
-        cout << " evalModelImplMonolithic " << endl;
         using Teuchos::RCP;
         using Teuchos::rcp;
         using Teuchos::rcp_dynamic_cast;
@@ -435,9 +430,6 @@ namespace FEDD
     void NonLinearProblem<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
                                                     const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
     {
-
-        cout << " evalModelImplBlock " << endl;
-
         using Teuchos::RCP;
         using Teuchos::rcp;
         using Teuchos::rcp_dynamic_cast;
@@ -563,8 +555,6 @@ namespace FEDD
     template<class SC,class LO,class GO,class NO>
     Teuchos::RCP<Thyra::LinearOpBase<SC> > NonLinearProblem<SC,LO,GO,NO>::create_W_op() const
     {
-        cout << " NonLinearProblem<SC,LO,GO,NO>::create_W_op() " << endl;
-
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
         if ( !type.compare("Monolithic"))
             return create_W_op_Monolithic( );
@@ -613,8 +603,6 @@ namespace FEDD
     template<class SC,class LO,class GO,class NO>
     Teuchos::RCP<Thyra::PreconditionerBase<SC> > NonLinearProblem<SC,LO,GO,NO>::create_W_prec() const
     {
-        cout << " NonLinearProblem<SC,LO,GO,NO>::create_W_prec() " << endl;
-        
         this->initializeSolverBuilder();
 
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");

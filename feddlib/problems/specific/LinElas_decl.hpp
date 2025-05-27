@@ -7,7 +7,6 @@ template <class SC = default_sc, class LO = default_lo, class GO = default_go, c
 class LinElas : public Problem<SC,LO,GO,NO>  {
 
 public:
-    
     typedef Problem<SC,LO,GO,NO> Problem_Type;
     
     typedef typename Problem_Type::Matrix_Type Matrix_Type;
