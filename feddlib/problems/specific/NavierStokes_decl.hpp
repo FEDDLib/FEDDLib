@@ -118,27 +118,27 @@ private:
 
 public:
 
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Monolithic() const;
-#ifdef FEDD_HAVE_TEKO
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Block() const;
-#endif
-    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
+//     Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
+//     Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Monolithic() const;
+// #ifdef FEDD_HAVE_TEKO
+//     Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Block() const;
+// #endif
+//     Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
 
 private:
 
-    virtual void evalModelImpl(
-                       const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                       const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
-                       ) const;
+    // virtual void evalModelImpl(
+    //                    const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
+    //                    const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
+    //                    ) const {};
 
-    void evalModelImplMonolithic(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                                 const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
+//     void evalModelImplMonolithic(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
+//                                  const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
 
-#ifdef FEDD_HAVE_TEKO
-    void evalModelImplBlock(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                            const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
-#endif
+// #ifdef FEDD_HAVE_TEKO
+//     void evalModelImplBlock(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
+//                             const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
+// #endif
 
 };
 }
