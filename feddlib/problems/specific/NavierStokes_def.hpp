@@ -483,6 +483,8 @@ void NavierStokes<SC,LO,GO,NO>::reAssembleFSI(std::string type, MultiVectorPtr_T
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
+    cout << " NavierStokes::reAssemble ( " << type << " ) " << endl;
+
     
     if (this->verbose_)
         std::cout << "-- Reassembly Navier-Stokes ("<< type <<") ... " << std::flush;
@@ -507,6 +509,9 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
     }
     else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
+        
+            cout << " NavierStokes::reAssemble (Newton) " << endl;
+
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
         this->feFactory_->assemblyAdvectionInUVecField( this->dim_, this->domain_FEType_vec_.at(0), W, u_rep_, true );
         W->resumeFill();
@@ -518,7 +523,9 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
     ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
     
     this->system_->addBlock( ANW, 0, 0 );
-    
+    // cout << "#################### Merged Matrix after reassemble ##################" << endl;
+    // this->system_->getMergedMatrix()->print();
+
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
 }

@@ -88,7 +88,9 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(NonLinearProblem_Type &problem){
     Teuchos::RCP<Thyra::LinearOpBase<SC> > W_op = problemPtr->create_W_op();
     Teuchos::RCP<Thyra::PreconditionerBase<SC> > W_prec = problemPtr->create_W_prec();
 
-    cout << " NonLinearSolver<SC,LO,GO,NO>::solveNOX " << endl;
+    // cout << " NonLinearSolver<SC,LO,GO,NO>::solveNOX " << endl;
+    
+    // problemPtr->create_W_op();
 
     Teuchos::RCP<NOX::Thyra::Group> nox_group(new NOX::Thyra::Group(initial_guess,
                                                                     problemPtr.getConst(),
@@ -192,6 +194,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
     //Thyra::V_S(initialGuess.ptr(),Teuchos::ScalarTraits<SC>::zero());
     Teuchos::RCP<Thyra::LinearOpBase<SC> > W_op = problemPtr->create_W_op();
     Teuchos::RCP<Thyra::PreconditionerBase<SC> > W_prec = problemPtr->create_W_prec();
+    // problemPtr->create_W_op();
+
     Teuchos::RCP<NOX::Thyra::Group> nox_group(new NOX::Thyra::Group(initialGuess,
                                                                     problemPtr.getConst(),
                                                                     W_op,

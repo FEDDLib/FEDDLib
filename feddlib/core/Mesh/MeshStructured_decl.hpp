@@ -59,17 +59,17 @@ public:
                     int numProcsCoarseSolve=0,
                     std::string underlyingLib="Tpetra");
 
-    /// @brief  Building 2D TPM rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions 
-    /// @param FEType Finite element discretization
-    /// @param N Number of subdomains
-    /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
-    /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
-    void buildMesh2DTPM(std::string FEType,
-                        int N,
-                        int M,
-                        int numProcsCoarseSolve=0,
-                        std::string underlyingLib="Tpetra");
+    // /// @brief  Building 2D TPM rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions 
+    // /// @param FEType Finite element discretization
+    // /// @param N Number of subdomains
+    // /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
+    // /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
+    // /// @param underlyingLib underlying linear algebra library 
+    // void buildMesh2DTPM(std::string FEType,
+    //                     int N,
+    //                     int M,
+    //                     int numProcsCoarseSolve=0,
+    //                     std::string underlyingLib="Tpetra");
     
     /// @brief Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox'. Called by Domain class and different discretizations for 3D mesh are called within this functions.
     /// @param FEType Finite element discretization
@@ -177,21 +177,21 @@ public:
                        int numProcsCoarseSolve,
                        std::string underlyingLib );
     
-    /// @brief  Building 2D mini TPM rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions 
-    /// @param FEType Finite element discretization
-    /// @param N Number of subdomains
-    /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
-    /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
-   void buildMesh2DMiniTPM(std::string FEType,
-                            int N,
-                            int M,
-                            int numProcsCoarseSolve=0,                            
-                            std::string underlyingLib="Tpetra" );
+//     /// @brief  Building 2D mini TPM rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions 
+//     /// @param FEType Finite element discretization
+//     /// @param N Number of subdomains
+//     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
+//     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
+//     /// @param underlyingLib underlying linear algebra library 
+//    void buildMesh2DMiniTPM(std::string FEType,
+//                             int N,
+//                             int M,
+//                             int numProcsCoarseSolve=0,                            
+//                             std::string underlyingLib="Tpetra" );
 
-    /// @brief Building suface lines for TPM square mini. Empty.
-    /// @param feType 
-    void buildSurfaceLinesSquareMiniTPM( string feType );
+    // /// @brief Building suface lines for TPM square mini. Empty.
+    // /// @param feType 
+    // void buildSurfaceLinesSquareMiniTPM( string feType );
     
     void setRankRange( int numProcsCoarseSolve );
     

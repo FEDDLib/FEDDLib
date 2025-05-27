@@ -64,145 +64,145 @@ void MeshStructured<SC,LO,GO,NO>::setRankRange(int numProcsCoarseSolve){
     get<1>(this->rankRange_) = this->comm_->getSize() - 1 - numProcsCoarseSolve;
 }
 
-template <class SC, class LO, class GO, class NO>
-void MeshStructured<SC,LO,GO,NO>::buildMesh2DTPM(std::string FEType,
-                                              int N,
-                                              int M,
-                                              int numProcsCoarseSolve,
-                                              std::string underlyingLib){
+// template <class SC, class LO, class GO, class NO>
+// void MeshStructured<SC,LO,GO,NO>::buildMesh2DTPM(std::string FEType,
+//                                               int N,
+//                                               int M,
+//                                               int numProcsCoarseSolve,
+//                                               std::string underlyingLib){
 
-    buildMesh2D( FEType, N, M, numProcsCoarseSolve, underlyingLib );
+//     buildMesh2D( FEType, N, M, numProcsCoarseSolve, underlyingLib );
 
-    setRankRange( numProcsCoarseSolve );
+//     setRankRange( numProcsCoarseSolve );
 
-    buildSurfaceLinesSquare();
+//     buildSurfaceLinesSquare();
 
-}
+// }
 
-template <class SC, class LO, class GO, class NO>
-void MeshStructured<SC,LO,GO,NO>::buildMesh2DMiniTPM(std::string FEType,
-                                                     int N,
-                                                     int M,
-                                                     int numProcsCoarseSolve,
-                                                     std::string underlyingLib){
+// template <class SC, class LO, class GO, class NO>
+// void MeshStructured<SC,LO,GO,NO>::buildMesh2DMiniTPM(std::string FEType,
+//                                                      int N,
+//                                                      int M,
+//                                                      int numProcsCoarseSolve,
+//                                                      std::string underlyingLib){
 
-    this->FEType_ = FEType;
+//     this->FEType_ = FEType;
 
-    this->numElementsGlob_ = 4;
-    int nmbPoints;
+//     this->numElementsGlob_ = 4;
+//     int nmbPoints;
 
-    vec2D_int_ptr_Type elementsVec;
-    if (FEType=="P2") {
-        nmbPoints = 15;
-        elementsVec.reset(new std::vector<std::vector<int> >(this->numElementsGlob_,std::vector<int>(6,-1)));
-    } else if(FEType=="P1"){
-        nmbPoints = 6;
-        elementsVec.reset(new std::vector<std::vector<int> >(this->numElementsGlob_,std::vector<int>(3,-1)));
-    }
+//     vec2D_int_ptr_Type elementsVec;
+//     if (FEType=="P2") {
+//         nmbPoints = 15;
+//         elementsVec.reset(new std::vector<std::vector<int> >(this->numElementsGlob_,std::vector<int>(6,-1)));
+//     } else if(FEType=="P1"){
+//         nmbPoints = 6;
+//         elementsVec.reset(new std::vector<std::vector<int> >(this->numElementsGlob_,std::vector<int>(3,-1)));
+//     }
 
-    this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
-    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
-    this->pointsUni_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
-    this->bcFlagUni_.reset(new std::vector<int> (nmbPoints,0));
+//     this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
+//     this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
+//     this->pointsUni_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
+//     this->bcFlagUni_.reset(new std::vector<int> (nmbPoints,0));
 
-    Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
-    for (int i=0; i<nmbPoints; i++) {
-        pointsRepGlobMapping[i] = i;
-    }
+//     Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
+//     for (int i=0; i<nmbPoints; i++) {
+//         pointsRepGlobMapping[i] = i;
+//     }
 
-    this->mapRepeated_.reset(new Map<LO,GO,NO>((GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+    // this->mapRepeated_.reset(new Map<LO,GO,NO>((GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
-    this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
+//     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
-    double h = 0.1;
-    int counter = 0;
-    if (FEType=="P2") {
-        for (int i=0; i<3; i++) {
-            for (int j=0; j<5; j++) {
-                (*this->pointsRep_)[counter][0] = j*h/2;
-                (*this->pointsRep_)[counter][1] = i*h/2;
+//     double h = 0.1;
+//     int counter = 0;
+//     if (FEType=="P2") {
+//         for (int i=0; i<3; i++) {
+//             for (int j=0; j<5; j++) {
+//                 (*this->pointsRep_)[counter][0] = j*h/2;
+//                 (*this->pointsRep_)[counter][1] = i*h/2;
 
-                (*this->pointsUni_)[counter][0] = j*h/2;
-                (*this->pointsUni_)[counter][1] = i*h/2;
-                counter++;
-            }
-        }
-    } else if(FEType=="P1"){
-        for (int i=0; i<2; i++) {
-            for (int j=0; j<3; j++) {
-                (*this->pointsRep_)[counter][0] = j*h;
-                (*this->pointsRep_)[counter][1] = i*h;
+//                 (*this->pointsUni_)[counter][0] = j*h/2;
+//                 (*this->pointsUni_)[counter][1] = i*h/2;
+//                 counter++;
+//             }
+//         }
+//     } else if(FEType=="P1"){
+//         for (int i=0; i<2; i++) {
+//             for (int j=0; j<3; j++) {
+//                 (*this->pointsRep_)[counter][0] = j*h;
+//                 (*this->pointsRep_)[counter][1] = i*h;
 
-                (*this->pointsUni_)[counter][0] = j*h;
-                (*this->pointsUni_)[counter][1] = i*h;
-                counter++;
-            }
-        }
-    }
+//                 (*this->pointsUni_)[counter][0] = j*h;
+//                 (*this->pointsUni_)[counter][1] = i*h;
+//                 counter++;
+//             }
+//         }
+//     }
 
-    vec_int_ptr_Type elementFlag = Teuchos::rcp( new vec_int_Type( elementsVec->size(), 0 ) );
+//     vec_int_ptr_Type elementFlag = Teuchos::rcp( new vec_int_Type( elementsVec->size(), 0 ) );
 
-    counter = 0;
-    int S=1;
-    int R=2;
-    int P2M = 2*(R+1)-1;
-    if (FEType=="P2") {
+//     counter = 0;
+//     int S=1;
+//     int R=2;
+//     int P2M = 2*(R+1)-1;
+//     if (FEType=="P2") {
 
-         for (int s=0; s < S; s++) {
-                for (int r=0; r < R; r++) {
+//          for (int s=0; s < S; s++) {
+//                 for (int r=0; r < R; r++) {
 
-                    (*elementsVec)[counter][0] = 2*(r+1)    + 2*P2M * (s) ;
-                    (*elementsVec)[counter][1] = 2*(r)      + 2*P2M * (s) ;
-                    (*elementsVec)[counter][2] = 2*(r+1)    + 2*P2M * (s+1) ;
+//                     (*elementsVec)[counter][0] = 2*(r+1)    + 2*P2M * (s) ;
+//                     (*elementsVec)[counter][1] = 2*(r)      + 2*P2M * (s) ;
+//                     (*elementsVec)[counter][2] = 2*(r+1)    + 2*P2M * (s+1) ;
 
-                    (*elementsVec)[counter][3] = 2*(r) +1    + 2*P2M * (s) ;
-                    (*elementsVec)[counter][4] = 2*(r) +1    + 2*P2M * (s) +P2M ;
-                    (*elementsVec)[counter][5] = 2*(r+1)    + 2*P2M * (s) +P2M ;
+//                     (*elementsVec)[counter][3] = 2*(r) +1    + 2*P2M * (s) ;
+//                     (*elementsVec)[counter][4] = 2*(r) +1    + 2*P2M * (s) +P2M ;
+//                     (*elementsVec)[counter][5] = 2*(r+1)    + 2*P2M * (s) +P2M ;
 
-                    counter++;
+//                     counter++;
 
 
 
-                    (*elementsVec)[counter][0] = 2*(r)     + 2*P2M * (s+1) ;
-                    (*elementsVec)[counter][1] = 2*(r)     + 2*P2M * (s) ;
-                    (*elementsVec)[counter][2] = 2*(r+1)    + 2*P2M * (s+1) ;
+//                     (*elementsVec)[counter][0] = 2*(r)     + 2*P2M * (s+1) ;
+//                     (*elementsVec)[counter][1] = 2*(r)     + 2*P2M * (s) ;
+//                     (*elementsVec)[counter][2] = 2*(r+1)    + 2*P2M * (s+1) ;
 
-                    (*elementsVec)[counter][3] = 2*(r)        + 2*P2M * (s) +P2M ;
-                    (*elementsVec)[counter][4] = 2*(r) +1     + 2*P2M * (s) +P2M ;
-                    (*elementsVec)[counter][5] = 2*(r) +1    + 2*P2M * (s+1) ;
+//                     (*elementsVec)[counter][3] = 2*(r)        + 2*P2M * (s) +P2M ;
+//                     (*elementsVec)[counter][4] = 2*(r) +1     + 2*P2M * (s) +P2M ;
+//                     (*elementsVec)[counter][5] = 2*(r) +1    + 2*P2M * (s+1) ;
 
-                    counter++;
-                }
-         }
+//                     counter++;
+//                 }
+//          }
 
-    } else if(FEType=="P1") {
+//     } else if(FEType=="P1") {
 
-        for (int s=0; s < S; s++) {
-            for (int r=0; r < R; r++) {
+//         for (int s=0; s < S; s++) {
+//             for (int r=0; r < R; r++) {
 
-                (*elementsVec)[counter][0] = r+1 + (R+1)* s;
-                (*elementsVec)[counter][1] = r + (R+1)* s;
-                (*elementsVec)[counter][2] = r+1 + (R+1) * (s+1);
+//                 (*elementsVec)[counter][0] = r+1 + (R+1)* s;
+//                 (*elementsVec)[counter][1] = r + (R+1)* s;
+//                 (*elementsVec)[counter][2] = r+1 + (R+1) * (s+1);
 
-                counter++;
+//                 counter++;
 
-                (*elementsVec)[counter][0] = r + (R+1) * (s+1);
-                (*elementsVec)[counter][1] = r + (R+1) * (s);
-                (*elementsVec)[counter][2] = r+1 + (R+1) * (s+1);
+//                 (*elementsVec)[counter][0] = r + (R+1) * (s+1);
+//                 (*elementsVec)[counter][1] = r + (R+1) * (s);
+//                 (*elementsVec)[counter][2] = r+1 + (R+1) * (s+1);
 
-                counter++;
-            }
+//                 counter++;
+//             }
 
-        }
-    }
+//         }
+//     }
 
-    setRankRange( numProcsCoarseSolve );
+//     setRankRange( numProcsCoarseSolve );
 
-    buildElementsClass( elementsVec, elementFlag  );
+//     buildElementsClass( elementsVec, elementFlag  );
 
-    buildSurfaceLinesSquareMiniTPM( FEType );
+//     buildSurfaceLinesSquareMiniTPM( FEType );
 
-}
+// }
 
 
 template <class SC, class LO, class GO, class NO>
@@ -235,49 +235,6 @@ void MeshStructured<SC,LO,GO,NO>::buildSurfaceLinesSquare(){
 
 }
 
-template <class SC, class LO, class GO, class NO>
-void MeshStructured<SC,LO,GO,NO>::buildSurfaceLinesSquareMiniTPM(string feType){
-    ElementsPtr_Type elementsMesh = this->getElementsC();
-    TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Must be implemented for new elements!");
-    if (feType=="P2") {
-//        vec_int_Type tmpSurface(3);
-//        tmpSurface[0] = 0; tmpSurface[1] = 2; tmpSurface[2] = 1;
-//        elementsMesh->getElement(0).setLocalSurface( 0, tmpSurface, 1 );
-//
-//        tmpSurface[0] = 0; tmpSurface[1] = 10; tmpSurface[2] = 5;
-//        elementsMesh->getElement(1).setLocalSurface( 1, tmpSurface, 2 );
-//        tmpSurface[0] = 10; tmpSurface[1] = 12; tmpSurface[2] = 11;
-//        elementsMesh->getElement(1).setLocalSurface( 2, tmpSurface, 1 );
-//
-//
-//        tmpSurface[0] = 2; tmpSurface[1] = 4; tmpSurface[2] = 3;
-//        elementsMesh->getElement(2).setLocalSurface( 3, tmpSurface, 1 );
-//        tmpSurface[0] = 4; tmpSurface[1] = 14; tmpSurface[2] = 9;
-//        elementsMesh->getElement(2).setLocalSurface( 4, tmpSurface, 3 );
-//
-//        tmpSurface[0] = 12; tmpSurface[1] = 14; tmpSurface[2] = 13;
-//        elementsMesh->getElement(3).setLocalSurface( 5, tmpSurface, 1 );
-
-    } else {
-//        vec_int_Type tmpSurface(2);
-//        tmpSurface[0] = 0; tmpSurface[1] = 1;
-//        elementsMesh->getElement(0).setLocalSurface( 0, tmpSurface, 1 );
-//
-//        tmpSurface[0] = 0; tmpSurface[1] = 3;
-//        elementsMesh->getElement(1).setLocalSurface( 1, tmpSurface, 2 );
-//        tmpSurface[0] = 3; tmpSurface[1] = 4;
-//        elementsMesh->getElement(1).setLocalSurface( 2, tmpSurface, 1 );
-//
-//        tmpSurface[0] = 1; tmpSurface[1] = 2;
-//        elementsMesh->getElement(2).setLocalSurface( 3, tmpSurface, 1 );
-//        tmpSurface[0] = 2; tmpSurface[1] = 5;
-//        elementsMesh->getElement(2).setLocalSurface( 4, tmpSurface, 3 );
-//
-//        tmpSurface[0] = 4; tmpSurface[1] = 5;
-//        elementsMesh->getElement(3).setLocalSurface( 5, tmpSurface, 1 );
-    }
-
-}
 
 template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
