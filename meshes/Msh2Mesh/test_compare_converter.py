@@ -20,7 +20,7 @@ differences caused by trailing whitespace and blank lines at the end of the file
 
 def compare_mesh_files(file1, file2):
     # Compare ignoring whitespace and trailing newlines
-    def normalize(file_path):
+    def remove_whitespaces(file_path):
         with open(file_path, 'r') as f:
             lines = f.readlines()
         # Strip trailing whitespace and empty lines at end
@@ -29,15 +29,18 @@ def compare_mesh_files(file1, file2):
             lines.pop()
         return lines
     
-    lines1 = normalize(file1)
-    lines2 = normalize(file2)
+    
+    modified_file1 = remove_whitespaces(file1)
+    modified_file2 = remove_whitespaces(file2)
+    #modified_file1=file1
+    #modified_file2=file2
 
-    if lines1 == lines2:
+    if modified_file1 == modified_file2:
         print(f"[PASS] Files are identical (ignoring trailing whitespace): {file1} and {file2}")
         return True
     else:
         print(f"[FAIL] Files differ: {file1} and {file2}")
-        diff = difflib.unified_diff(lines1, lines2, fromfile=file1, tofile=file2)
+        diff = difflib.unified_diff(modified_file1, modified_file2, fromfile=file1, tofile=file2)
         print(''.join(diff))
         return False
 
