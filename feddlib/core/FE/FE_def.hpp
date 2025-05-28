@@ -6204,7 +6204,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeVelocity(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,,FEType1);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -6726,7 +6726,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
             p2 = pointsRep->at(elements->getElement(T).getNode(1));
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,,FEType1);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -6825,7 +6825,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,,FEType1);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
