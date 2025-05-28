@@ -4,7 +4,6 @@
 #include "HDF5Export_decl.hpp"
 
 
-using namespace std;
 namespace FEDD {
  
 template<class SC,class LO,class GO,class NO>
@@ -38,7 +37,7 @@ commEpetra_()
 }
 
 template<class SC,class LO,class GO,class NO>
-void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(string varName,MultiVectorConstPtr_Type writeVector){
+void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(std::string varName,MultiVectorConstPtr_Type writeVector){
 
     EpetraMVPtr_Type u_export(new Epetra_MultiVector(*(writeMap_),1)); // Epetra export vector
 
@@ -53,7 +52,7 @@ void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(string varName,MultiVectorConst
     hdf5exporter_->Write(varName,*u_export); // Writing u_export as variable 'varName' in file
     
     if(writeVector->getMap()->getComm()->getRank() == 0 )
-        cout << " HDF5_Export:: Exporting to file " << outputFilename_ << " with variable name " << varName << endl;
+        std::cout << " HDF5_Export:: Exporting to file " << outputFilename_ << " with variable name " << varName << std::endl;
 
     hdf5exporter_->Flush();
     

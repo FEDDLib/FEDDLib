@@ -25,8 +25,6 @@ using Teuchos::REDUCE_SUM;
 using Teuchos::REDUCE_MAX;
 using Teuchos::REDUCE_MIN;
 using Teuchos::outArg;
-using std::cout;
-using std::endl;
 
 namespace FEDD {
 template <class SC, class LO, class GO, class NO>
@@ -422,8 +420,8 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	comm_ = domainP1 ->getComm();
 
 	if(this->comm_->getRank() == 0 && currentIter_ < maxIter_){
-			cout << " -- Adaptive Mesh Refinement --" << endl;
-			cout << " " << endl;
+			std::cout << " -- Adaptive Mesh Refinement --" << std::endl;
+			std::cout << " " << std::endl;
 	}
 
 	maxRank_ = std::get<1>(domainP1->getMesh()->rankRange_);
@@ -606,7 +604,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	    exporterError_->closeExporter();
 	} 
 	else
-		cout << " -- done -- " << endl;
+		std::cout << " -- done -- " << std::endl;
 
     domainRefined->setMesh(outputMesh);
 	
@@ -979,6 +977,9 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportError(MeshUnstrPtr_Type mesh, Mu
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 
+    using std::cout;
+    using std::endl;
+
 	vec_GO_Type globalProcs(0);
 	for (int i=0; i<= maxRank_; i++)
 			globalProcs.push_back(i);
@@ -1050,7 +1051,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 				for (int i=1; i<=currentIter_ ; i++){
 					std::cout <<" "<< i << ":\t"<<  std::setprecision(5) << std::fixed << errorH1[i]<< "\t\t||\t" << errorL2[i] ;
 					if( calculatePressure_== true  && exactSolPInput_ == true  ){
-						std::cout << " \t \t||\t" << std::setprecision(5) << fixed <<  errorL2P[i] << std::endl;
+						std::cout << " \t \t||\t" << std::setprecision(5) << std::fixed <<  errorL2P[i] << std::endl;
 					}
 					else
 						cout << endl;

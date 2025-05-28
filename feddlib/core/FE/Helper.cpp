@@ -2,7 +2,6 @@
 
 #include <string>
 
-using namespace std;
 namespace FEDD {
 
 UN Helper::requiredQuadratureDegreeForBasisfunction(UN dim, std::string FEType){
