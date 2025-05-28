@@ -250,7 +250,7 @@ TRIBITS_ADD_TEST(
 TRIBITS_ADD_TEST(
 	mesh_unstructured_writeMesh
     NAME mesh_unstructured_writeMesh_3D_P1
-    ARGS "--dim=3 --file=cube_h_0_1.mesh --fileExport=export_3D_P1.mesh"
+    ARGS "--dim=3 --file=cube_h_1.mesh --fileExport=export_3D_P1.mesh"
     NUM_MPI_PROCS 5
 )
 

@@ -205,7 +205,11 @@ void NavierStokesAssFE<SC,LO,GO,NO>::assembleConstantMatrices() const{
         Mpressure->scale(-1./kinVisco);
         this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
     }
-    
+    if (this->verbose_)
+        std::cout << " Call Reassemble FixedPoint and Newton to allocate the Matrix pattern " << std::endl;
+
+    // this->reAssemble("FixedPoint");
+    this->reAssemble("Newton");
     
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
@@ -391,8 +395,6 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelE
         }
         TpetraMatrixPtr_Type W;
         if (fill_W) {
-            cout << " Fill W " << endl;
-
             this->reAssemble("Newton"); // ReAssembling matrices with updated u  in this class
 
             this->setBoundariesSystem(); // setting boundaries to the system
@@ -418,8 +420,6 @@ void NavierStokesAssFE<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelE
             W_tpetraMat->fillComplete();
         }
         if (fill_W_prec) {
-            cout << " Fill W prec " << endl;
-
             this->setupPreconditioner( "Monolithic" );
 
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
@@ -611,7 +611,7 @@ template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokesAssFE<SC,LO,GO,NO>::create_W_op() const
 {
     //this->reAssemble("FixedPoint");
-    this->reAssemble("Newton");
+    //this->reAssemble("Newton");
 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     if ( !type.compare("Monolithic"))

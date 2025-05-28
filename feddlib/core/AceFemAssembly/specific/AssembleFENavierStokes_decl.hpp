@@ -81,6 +81,7 @@ class AssembleFENavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	
 	/*!
 	 \brief Assembly advection vector field in u  
+    TODO: [JK] What is this? Is this the portion that needs to be added for Newton's method? Basically: A+N+W, A:Laplace, N is assemblyAdvection and W is assemblyAdvectionInU?
 	@param[in] &elementMatrix
 
 	*/

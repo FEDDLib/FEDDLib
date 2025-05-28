@@ -3125,36 +3125,36 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,std::st
                         this->bcFlagRep_->at(5) = 1;
                     }
                     break;
-                case 5: //Square 
+                case 5: // LDC Square
                     for (int i=0; i<this->pointsUni_->size(); i++) {
                         if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) && this->pointsUni_->at(i).at(1) < (coorRec[1] + tol) ) {
-                            this->bcFlagUni_->at(i) = 1;
-                        }
-                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) && this->pointsUni_->at(i).at(1) > (coorRec[1] + height - tol) ) {
-                            this->bcFlagUni_->at(i) = 2;
+                            this->bcFlagUni_->at(i) = 1; // bottom
                         }
                         if (this->pointsUni_->at(i).at(0) > (coorRec[0]+length - tol) && this->pointsUni_->at(i).at(1) > (coorRec[1] + tol) && this->pointsUni_->at(i).at(1) < (coorRec[1] + height - tol)) {
-                            this->bcFlagUni_->at(i) = 1; //outflow
+                            this->bcFlagUni_->at(i) = 1; // right
                         }
                         if (this->pointsUni_->at(i).at(0) < (coorRec[0] +tol)) {
-                            this->bcFlagUni_->at(i) = 1; //inflow
+                            this->bcFlagUni_->at(i) = 1; //Left
+                        }
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) && this->pointsUni_->at(i).at(1) > (coorRec[1] + height - tol) ) {
+                            this->bcFlagUni_->at(i) = 2; // top
                         }
                         if (this->pointsUni_->at(i).at(0) < (coorRec[0] +tol) && this->pointsUni_->at(i).at(1) < (coorRec[1] +tol)) {
-                            this->bcFlagUni_->at(i) = 3; //inflow
+                            this->bcFlagUni_->at(i) = 3; // (0,0) point of ldc
                         }
                     }
                     for (int i=0; i<this->pointsRep_->size(); i++) {
                         if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) && this->pointsRep_->at(i).at(1) < (coorRec[1] + tol) ) {
-                            this->bcFlagRep_->at(i) = 1;
-                        }
-                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) && this->pointsRep_->at(i).at(1) > (coorRec[1] + height - tol) ) {
-                            this->bcFlagRep_->at(i) = 2;
+                            this->bcFlagRep_->at(i) = 1; // bottom 
                         }
                         if (this->pointsRep_->at(i).at(0) > (coorRec[0]+length - tol) && this->pointsRep_->at(i).at(1) > (coorRec[1] + tol) && this->pointsRep_->at(i).at(1) < (coorRec[1] + height - tol)) {
                             this->bcFlagRep_->at(i) = 1;
                         }
                         if (this->pointsRep_->at(i).at(0) < (coorRec[0] +tol)) {
                             this->bcFlagRep_->at(i) = 1;
+                        }
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) && this->pointsRep_->at(i).at(1) > (coorRec[1] + height - tol) ) {
+                            this->bcFlagRep_->at(i) = 2;
                         }
                         if (this->pointsRep_->at(i).at(0) < (coorRec[0] +tol) && this->pointsRep_->at(i).at(1) < (coorRec[1] +tol)) {
                             this->bcFlagRep_->at(i) = 3;
@@ -3395,6 +3395,147 @@ void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,std::st
                             this->pointsRep_->at(i).at(2) < (coorRec[2] + tol)  )
                             this->bcFlagRep_->at(i) = 0;
 
+                    }
+                    break;
+                case 4: // tube flow through z-direction
+                    for (int i=0; i<this->pointsUni_->size(); i++) {
+                        //bottom
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + tol) ) {
+                            this->bcFlagUni_->at(i) = 4;
+                        }
+                        //top
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                            this->bcFlagUni_->at(i) = 5;
+                        }
+                        if (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol) ) {
+                            this->bcFlagUni_->at(i) = 6;
+                        }
+                        //front
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + tol) ) {
+                            this->bcFlagUni_->at(i) = 6;
+                        }
+                        //back
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsUni_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                            this->bcFlagUni_->at(i) = 6;
+                        }
+                        //out
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                            this->pointsUni_->at(i).at(1) > (coorRec[1] + tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                            this->pointsUni_->at(i).at(2) > (coorRec[2] - tol) &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + height + tol)) {
+                            this->bcFlagUni_->at(i) = 6;
+                        }
+                    }
+                    for (int i=0; i<this->pointsUni_->size(); i++) {
+                       
+                        //bottom
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + tol) ) {
+                            this->bcFlagRep_->at(i) = 4;
+                        }
+                        if (this->pointsRep_->at(i).at(0) < (coorRec[0] + tol) ) {
+                            this->bcFlagRep_->at(i) = 6;
+                        }
+                        //front
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + tol) ) {
+                            this->bcFlagRep_->at(i) = 6;
+                        }
+                        //back
+                        if (this->pointsRep_->at(i).at(0) >= (coorRec[0] + tol) &&
+                            this->pointsRep_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                            this->bcFlagRep_->at(i) = 6;
+                        }
+                        //out
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                            this->pointsRep_->at(i).at(1) > (coorRec[1] + tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                            this->pointsRep_->at(i).at(2) > (coorRec[2] - tol) &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + height + tol)) {
+                            this->bcFlagRep_->at(i) = 6;
+                        }
+                        //top
+                        if (this->pointsRep_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                            this->bcFlagRep_->at(i) = 5;
+                        }
+                    }
+                    break;
+                case 5: //LDC
+                    for (int i=0; i<this->pointsUni_->size(); i++) {
+                        if (this->pointsUni_->at(i).at(0) < (coorRec[0] + tol) ) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                        //bottom
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + tol) ) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                        //front
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + tol) ) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                        //back
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsUni_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                        //out
+                        if (this->pointsUni_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                            this->pointsUni_->at(i).at(1) > (coorRec[1] + tol) &&
+                            this->pointsUni_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                            this->pointsUni_->at(i).at(2) > (coorRec[2] + tol) &&
+                            this->pointsUni_->at(i).at(2) < (coorRec[2] + height - tol)) {
+                            this->bcFlagUni_->at(i) = 1;
+                        }
+                                                //top
+                        if (this->pointsUni_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                            this->bcFlagUni_->at(i) = 2;
+                        }
+                        if (this->pointsUni_->at(i).at(0) < (coorRec[0] +tol) && this->pointsUni_->at(i).at(1) < (coorRec[1] +tol) && this->pointsUni_->at(i).at(2) < (coorRec[2] +tol)) {
+                            this->bcFlagUni_->at(i) = 3; // (0,0) point of ldc
+                        }
+                    }
+                    for (int i=0; i<this->pointsUni_->size(); i++) {
+                        if (this->pointsRep_->at(i).at(0) < (coorRec[0] - tol) ) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        //bottom
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + tol) ) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        //top
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsRep_->at(i).at(2) > (coorRec[2] + height - tol) ) {
+                            this->bcFlagRep_->at(i) = 2;
+                        }
+                        //front
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + tol) ) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        //back
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] - tol) &&
+                            this->pointsRep_->at(i).at(1) > (coorRec[1] + width - tol) ) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        //out
+                        if (this->pointsRep_->at(i).at(0) > (coorRec[0] + length - tol) &&
+                            this->pointsRep_->at(i).at(1) > (coorRec[1] + tol) &&
+                            this->pointsRep_->at(i).at(1) < (coorRec[1] + width - tol)&&
+                            this->pointsRep_->at(i).at(2) > (coorRec[2] + tol) &&
+                            this->pointsRep_->at(i).at(2) < (coorRec[2] + height - tol)) {
+                            this->bcFlagRep_->at(i) = 1;
+                        }
+                        if (this->pointsRep_->at(i).at(0) < (coorRec[0] +tol) && this->pointsRep_->at(i).at(1) < (coorRec[1] +tol) && this->pointsRep_->at(i).at(2) < (coorRec[2] +tol)) {
+                            this->bcFlagRep_->at(i) = 3; // (0,0) point of ldc
+                        }
                     }
                     break;
                 default:

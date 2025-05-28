@@ -182,8 +182,15 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         Mpressure->scale(-1./kinVisco);
         this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
     }
+
+    if (this->verbose_)
+        std::cout << " Call Reassemble FixedPoint and Newton to allocate the Matrix pattern " << std::endl;
     
-    
+    // This was moved here from 'create_W_op'.
+    // Here it will definetly be called before create_W_op and create_W_prec is called.
+    this->reAssemble("FixedPoint");
+    this->reAssemble("Newton");
+
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
     
@@ -496,9 +503,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::I
 /*!
 	\brief Monolithic Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution.
 		   ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver.
-
-
-
 */
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
@@ -553,8 +557,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
 
         TpetraMatrixPtr_Type W;
         if (fill_W) {
-            cout << " Fill W " << endl;
-
             this->reAssemble("Newton"); // ReAssembling matrices with updated u  in this class
 
             this->setBoundariesSystem(); // setting boundaries to the system
@@ -583,7 +585,6 @@ void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvalua
         }
 
         if (fill_W_prec) {
-            cout << " Fill W prec " << endl;
             this->setupPreconditioner( "Monolithic" );
 
             // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
@@ -803,9 +804,6 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std::stri
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op() const
 {
-    this->reAssemble("FixedPoint");
-    this->reAssemble("Newton");
-
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     if ( !type.compare("Monolithic"))
         return create_W_op_Monolithic( );
@@ -854,7 +852,6 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op_Bl
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_prec() const
 {
-
     this->initializeSolverBuilder();
 
     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");

@@ -23,7 +23,7 @@
                     <Parameter name="Level ID" type="int" value="1"/>
                     <ParameterList name="Solver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="umfpack"/>
+                        <Parameter name="Solver" type="string" value="klu2"/>
                     </ParameterList>
                 </ParameterList>
                 
@@ -67,7 +67,7 @@
 
                     <ParameterList name="ExtensionSolver">
                         <Parameter name="SolverType"                                type="string"   value="Amesos2"/>
-                        <Parameter name="Solver"                                    type="string"   value="umfpack"/>
+                        <Parameter name="Solver"                                    type="string"   value="klu2"/>
                         <ParameterList name="Amesos">
                             <Parameter name="MatrixProperty"                        type="string"   value="general"/>
                             <Parameter name="DroppingTolerance"                     type="double"   value="1.0e-14"/>
@@ -113,7 +113,7 @@
 
                     <ParameterList name="CoarseSolver">
                         <Parameter name="SolverType"                                type="string"   value="Amesos2"/>
-                        <Parameter name="Solver"                                    type="string"   value="umfpack"/>
+                        <Parameter name="Solver"                                    type="string"   value="klu2"/>
                         <ParameterList name="Amesos">
                             <Parameter name="MatrixProperty"                        type="string"   value="general"/>
                             <Parameter name="DroppingTolerance"                     type="double"   value="1.0e-14"/>
@@ -214,7 +214,7 @@
 
                     <ParameterList name="ExtensionSolver">
                         <Parameter name="SolverType"                                type="string"   value="Amesos2"/>
-                        <Parameter name="Solver"                                    type="string"   value="umfpack"/>
+                        <Parameter name="Solver"                                    type="string"   value="klu2"/>
                         <ParameterList name="Amesos">
                             <Parameter name="MatrixProperty"                        type="string"   value="general"/>
                             <Parameter name="DroppingTolerance"                     type="double"   value="1.0e-14"/>
@@ -259,7 +259,7 @@
 
                     <ParameterList name="CoarseSolver">
                         <Parameter name="SolverType"                                type="string"   value="Amesos2"/>
-                        <Parameter name="Solver"                                    type="string"   value="umfpack"/>
+                        <Parameter name="Solver"                                    type="string"   value="klu2"/>
                         <ParameterList name="Amesos">
                             <Parameter name="MatrixProperty"                        type="string"   value="general"/>
                             <Parameter name="DroppingTolerance"                     type="double"   value="1.0e-14"/>

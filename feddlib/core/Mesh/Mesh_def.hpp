@@ -217,7 +217,7 @@ int Mesh<SC,LO,GO,NO>::getOrderElement(){
             else if( !FEType_.compare("P2-CR") )
                 return 15;
             else if( !FEType_.compare("Q2-20") )
-                return 20;
+                return 20;  // Q2 Serendipity (missing interior volume node and missing interior face nodes gives 20 nodes)
             else if( !FEType_.compare("Q2") )
                 return 27;
             break;
