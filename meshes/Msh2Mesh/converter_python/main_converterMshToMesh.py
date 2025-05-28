@@ -32,6 +32,7 @@ Original implementation:
 This is a Python translation of the MATLAB code by Jascha Knepper (updated by
 Christian Hochmuth, 2019.07.04). The script preserves the same functionality
 and flag assignment logic as the original MATLAB implementation.
+For more detailed information, refer to the original MATLAB code comments.
 
 Python version:
 --------------

@@ -6,7 +6,7 @@ Mesh File Comparison Script
 ===========================
 
 Date: 2025-05-26
-Generated with the helo of GPT-4o-mini (OpenAI)
+Generated with the help of GPT-4o-mini (OpenAI)
 
 Description:
 ------------
