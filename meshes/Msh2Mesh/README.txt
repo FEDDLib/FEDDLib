@@ -1,4 +1,6 @@
-# May 2025
+# May 2025 ################################################
+
+With respect to FAIR principles:
 
 ###########################################################
 Files from GMSH have to be saved in ASCII version 2 format!
