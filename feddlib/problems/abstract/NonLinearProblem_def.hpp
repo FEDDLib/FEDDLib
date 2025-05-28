@@ -319,12 +319,6 @@ namespace FEDD
     void NonLinearProblem<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
                                                             const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
     {
-        bool verbose(this->comm_->getRank() == 0);
-        if (verbose)
-        {
-            cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImplMonolithic with netwon step " << this->newtonStep_ << endl;
-
-        }
         using Teuchos::RCP;
         using Teuchos::rcp;
         using Teuchos::rcp_dynamic_cast;
@@ -409,7 +403,7 @@ namespace FEDD
                     }
                     else{
                         if (this->verbose_)
-                            cout << " Navier_Stokes:: Skipping preconditioner reconstruction" << endl;
+                            cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImplMonolithic:: Skipping preconditioner reconstruction" << endl;
                     }
                 }
                 else
@@ -533,7 +527,7 @@ namespace FEDD
                     }
                     else{
                         if (this->verbose_)
-                            cout << " Navier_Stokes:: Skipping preconditioner reconstruction " << endl;
+                            cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImplBlock:: Skipping preconditioner reconstruction " << endl;
                     }
                 }
                 else
