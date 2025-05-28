@@ -1764,7 +1764,10 @@ void Helper::getQuadratureValues(int dim,
             } // quadrature formulas for tetrahedra
         } // Pk finite elements (P1, P2, ...)
         else if(FEType.at(0)=='Q'){
-            volume_ref_element = 8.0; // volume of unit tetrahedron
+            // volume of unit tetrahedron. 
+            // Because its coordinates are from -1 to 1 on the respective x,y,z-axis
+            // leading to side length 2
+            volume_ref_element = 8.0; 
             if (Degree<=3)
                 Degree=3;
             else if(Degree==4 || Degree==5)

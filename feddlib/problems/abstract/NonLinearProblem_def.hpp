@@ -48,6 +48,8 @@ namespace FEDD
 
         // Init ThyraVectorSpcaes for NOX.
         this->initVectorSpaces();
+
+        this->newtonStep_=0;
     }
 
     template <class SC, class LO, class GO, class NO>
@@ -317,7 +319,12 @@ namespace FEDD
     void NonLinearProblem<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
                                                             const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
     {
+        bool verbose(this->comm_->getRank() == 0);
+        if (verbose)
+        {
+            cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImplMonolithic with netwon step " << this->newtonStep_ << endl;
 
+        }
         using Teuchos::RCP;
         using Teuchos::rcp;
         using Teuchos::rcp_dynamic_cast;
