@@ -424,9 +424,9 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
     this->system_->addBlock( BT, 0, 1 );
     this->system_->addBlock( B, 1, 0 );
     
-    if ( !this->getFEType(0).compare("P1") ) {
+    if ( !this->getFEType(0).compare("P1") ||  !this->getFEType(0).compare("Q1") ) {
         C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-        this->feFactory_->assemblyBDStabilization( this->dim_, "P1", C, true);
+        this->feFactory_->assemblyBDStabilization( this->dim_, this->getFEType(0), C, true);
         C->resumeFill();
         C->scale( -1. / ( viscosity * density ) );
         C->fillComplete( pressureMap, pressureMap );
