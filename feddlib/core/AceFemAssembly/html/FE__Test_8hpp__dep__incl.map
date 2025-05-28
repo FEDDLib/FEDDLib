@@ -1,7 +1,0 @@
-<map id="TestFE/FE_Test.hpp" name="TestFE/FE_Test.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="314,5,457,32"/>
-<area shape="rect" id="node2" href="$fe__test__laplace_8cpp.html" title=" " alt="" coords="5,80,173,107"/>
-<area shape="rect" id="node3" href="$fe__test__linElas_8cpp.html" title=" " alt="" coords="198,80,365,107"/>
-<area shape="rect" id="node4" href="$fe__test__navierstokes_8cpp.html" title=" " alt="" coords="389,80,590,107"/>
-<area shape="rect" id="node5" href="$fe__test__nonLinElas_8cpp.html" title=" " alt="" coords="614,80,805,107"/>
-</map>

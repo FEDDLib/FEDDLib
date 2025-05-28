@@ -679,7 +679,7 @@ namespace FEDD
                     
             }
             else if (!parameterList_->sublist("General").get("Preconditioner Method", "Monolithic").compare("Teko")){
-                        cout << "\t ### Block Preconditioner Type: \t" << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE") << endl;
+                        cout << "\t ### Block Preconditioner Type: " << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE") << endl;
                         cout << "\t ### Velocity Preconditioner: \t" << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Velocity").get("CoarseOperator Type","GDSW#") << endl;
                         cout << "\t ### Pressure Preconditioner: \t" << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Pressure").get("CoarseOperator Type","GDSW#") << endl;
 
