@@ -165,6 +165,15 @@ public:
                           int M,
                           int numProcsCoarseSolve,
                           std::string underlyingLib ); 
+     /// @brief Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox' with Q1 discretization
+    /// @param N Number of subdomains
+    /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
+    /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
+    /// @param underlyingLib underlying linear algebra library 
+    void build3DQ1BFS(int N,
+                 int M,
+                 int numProcsCoarseSolve,
+                 std::string underlyingLib);
 
 
     /// @brief Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization

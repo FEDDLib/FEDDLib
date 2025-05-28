@@ -1631,6 +1631,184 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2_20Cube(int N,
 
 }
 
+
+template <class SC, class LO, class GO, class NO>
+void MeshStructured<SC,LO,GO,NO>::build3DQ1BFS(int N,
+                                                int M,
+                                                int numProcsCoarseSolve,
+                                                std::string underlyingLib){
+
+    using Teuchos::RCP;
+    using Teuchos::rcp;
+    using Teuchos::ScalarTraits;
+
+    typedef ScalarTraits<SC> ST;
+    SC eps = ST::eps();
+
+    bool verbose (this->comm_->getRank() == 0);
+
+    setRankRange( numProcsCoarseSolve );
+
+    int         rank = this->comm_->getRank();
+    int         size = this->comm_->getSize() - numProcsCoarseSolve;
+
+    int         bfs_multiplier = (int) 2*(length)-1;
+
+    int         nmbSubdomainsSquares = size / bfs_multiplier;
+    int         nmbSubdomainsSquares_OneDir = (std::pow(nmbSubdomainsSquares,1./3.) + 100*eps); // same as N
+
+    SC      h = ST::one()/(M*N);
+    SC      H = ST::one()/N;
+
+    LO nmbPoints_oneDir 	= N * (M+1) - (N-1);
+    LO nmbPoints			= (M+1)*(M+1)*(M+1);
+
+
+    //LO nmbPoints_oneDir 	=  N * (2*(M+1)-1) - (N-1);
+    LO nmbPoints_oneDir_allSubdomain = length * nmbPoints_oneDir - (length-1) ;
+    //LO  nmbPoints 			= (2*(M+1)-1)*(2*(M+1)-1)*(2*(M+1)-1);
+
+
+    GO nmbPGlob_oneDir = N * (M+1) - (N-1);
+    this->numElementsGlob_ = (nmbPGlob_oneDir-1)*(nmbPGlob_oneDir-1)*(nmbPGlob_oneDir-1) * bfs_multiplier;
+    LO nmbElements;
+    if (rank>=size) {
+        M = -1; // keine Schleife wird ausgefuehrt
+        nmbElements = 0;
+        nmbPoints = 0;
+    }
+    else{
+        nmbElements = M*M*M;
+    }
+
+    this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
+    this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,10));
+    vec2D_int_ptr_Type elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements, std::vector<int>(27,-1)));
+    Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
+
+    int whichSquareSet = (int)rank / nmbSubdomainsSquares;
+
+    int offset_Squares_x = (int) (whichSquareSet+1) / 2;
+    int offset_Squares_y = 0;
+    int offset_Squares_z = ((whichSquareSet+1) % 2);
+
+    int counter = 0;
+    int offset_x = ((rank - nmbSubdomainsSquares*whichSquareSet) % N);
+    int offset_y = 0;
+    int offset_z = 0;
+    if (((rank - nmbSubdomainsSquares*whichSquareSet) % (N*N))>=N) {
+        offset_y = (int) ((rank - nmbSubdomainsSquares*whichSquareSet) % (N*N))/(N);
+    }
+
+    if (((rank - nmbSubdomainsSquares*whichSquareSet) % (N*N*N))>=N*N ) {
+        offset_z = (int) ((rank - nmbSubdomainsSquares*whichSquareSet) % (N*N*N))/(N*(N));
+    }
+
+    for (int t=0; t < M+1; t++) {
+        for (int s=0; s < M+1; s++) {
+            for (int r=0; r < M+1; r++) {
+
+                (*this->pointsRep_)[counter][0] = coorRec[0] + r*h + offset_x * H + offset_Squares_x * H * nmbSubdomainsSquares_OneDir;
+
+                (*this->pointsRep_)[counter][1] = coorRec[1] + s*h + offset_y * H + offset_Squares_y * H * nmbSubdomainsSquares_OneDir;
+
+                (*this->pointsRep_)[counter][2] = coorRec[2] + t*h + offset_z * H + offset_Squares_z * H * nmbSubdomainsSquares_OneDir;
+
+                pointsRepGlobMapping[counter] = r
+                + s*(nmbPoints_oneDir_allSubdomain);
+                if (offset_Squares_x > 0 && offset_Squares_z == 0 && offset_z+1!=nmbSubdomainsSquares_OneDir) {
+                    pointsRepGlobMapping[counter] -= s*(nmbPoints_oneDir-1);
+                }
+                else if(offset_Squares_x > 0 && offset_Squares_z == 0 && offset_z+1==nmbSubdomainsSquares_OneDir && t!=M){
+                    pointsRepGlobMapping[counter] -= s*(nmbPoints_oneDir-1);
+                }
+
+                pointsRepGlobMapping[counter] += t*nmbPoints_oneDir_allSubdomain*nmbPoints_oneDir;
+                if (offset_Squares_x > 0 && offset_Squares_z == 0 ) {
+                    pointsRepGlobMapping[counter] -= t*(nmbPoints_oneDir-1)*(nmbPoints_oneDir);
+                }
+
+                pointsRepGlobMapping[counter] += offset_x*(M)
+                + offset_y*( nmbPoints_oneDir_allSubdomain * M );
+                if (offset_Squares_x > 0 && offset_Squares_z == 0 && offset_z+1!=nmbSubdomainsSquares_OneDir) {
+                    pointsRepGlobMapping[counter] -= offset_y*M*(nmbPoints_oneDir-1);
+                }
+                else if(offset_Squares_x > 0 && offset_Squares_z == 0 && offset_z+1==nmbSubdomainsSquares_OneDir && t!=M){
+                    pointsRepGlobMapping[counter] -= offset_y*M*(nmbPoints_oneDir-1);
+                }
+
+                pointsRepGlobMapping[counter] += offset_z * M * nmbPoints_oneDir_allSubdomain * nmbPoints_oneDir;
+                if (offset_Squares_x > 0 && offset_Squares_z == 0 ) {
+                    pointsRepGlobMapping[counter] -= offset_z*M*(nmbPoints_oneDir-1)*(nmbPoints_oneDir);
+                }
+
+                pointsRepGlobMapping[counter] += offset_Squares_x * M * nmbSubdomainsSquares_OneDir;
+                if (offset_Squares_z == 0 && offset_z+1!=nmbSubdomainsSquares_OneDir) {
+                    pointsRepGlobMapping[counter] -= M * nmbSubdomainsSquares_OneDir;
+                }
+                else if(offset_Squares_z == 0 && offset_z+1==nmbSubdomainsSquares_OneDir && t!=M){
+                    pointsRepGlobMapping[counter] -= M * nmbSubdomainsSquares_OneDir;
+                }
+
+                pointsRepGlobMapping[counter] += offset_Squares_z * nmbPoints_oneDir_allSubdomain * ((M) * nmbSubdomainsSquares_OneDir+1) * M * nmbSubdomainsSquares_OneDir;
+                if (offset_Squares_z > 0 ) {
+                    pointsRepGlobMapping[counter] -= (nmbPoints_oneDir-1)*(nmbPoints_oneDir-1)*(nmbPoints_oneDir);
+                }
+                counter++;
+            }
+        }
+    }
+
+    this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
+
+    this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
+
+    if (verbose)
+        cout << "-- Building Q2 Unique Points ... " << flush;
+
+    this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
+    this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
+
+    LO index;
+    for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
+
+        index = this->mapRepeated_->getLocalElement( this->mapUnique_->getGlobalElement(i) );
+
+        (*this->pointsUni_)[i][0] = (*this->pointsRep_)[index][0];
+        (*this->pointsUni_)[i][1] = (*this->pointsRep_)[index][1];
+        (*this->pointsUni_)[i][2] = (*this->pointsRep_)[index][2];
+        (*this->bcFlagUni_)[i] = (*this->bcFlagRep_)[index];
+    }
+
+    if (verbose)
+        cout << " done! --" << endl;
+
+    //int    P2M = 2*(M+1)-1;
+
+    counter = 0;
+    for (int t=0; t < M; t++) {
+        for (int s=0; s < M; s++) {
+            for (int r=0; r < M; r++) {
+
+                (*elementsVec)[counter][0] = r      + (M+1) * (s)	+ (M+1)*(M+1) * t ;
+                (*elementsVec)[counter][1] = r + 1  + (M+1) * (s)	+ (M+1)*(M+1) * t ;
+                (*elementsVec)[counter][2] = r + 1  + (M+1) * (s+1)	+ (M+1)*(M+1) * t ;
+                (*elementsVec)[counter][3] = r      + (M+1) * (s+1)	+ (M+1)*(M+1) * t ;
+
+                (*elementsVec)[counter][4] = r      + (M+1) * (s)	+ (M+1)*(M+1) * (t+1) ;
+                (*elementsVec)[counter][5] = r + 1  + (M+1) * (s)	+ (M+1)*(M+1) * (t+1) ;
+                (*elementsVec)[counter][6] = r + 1  + (M+1) * (s+1)	+ (M+1)*(M+1) * (t+1) ;
+                (*elementsVec)[counter][7] = r      + (M+1) * (s+1)	+ (M+1)*(M+1) * (t+1) ;
+
+                counter++;
+
+            }
+        }
+    }
+
+    buildElementsClass(elementsVec);
+}
+
 template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::build3DQ2BFS(int N,
                                                 int M,
@@ -2348,7 +2526,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         nmbPoints_oneDir_allSubdomain = length * nmbPoints_oneDir - (length-1);
         nmbPoints			= (M+1)*(M+1)*(M+1);
     }
+    else if(FEType == "Q1"){
+    
+    }
     else if(FEType == "Q2"){
+
     }
     else
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Wrong FE-Type, only P1,P1-disc, P1-disc-global, P2, or P2-CR.");
@@ -2740,6 +2922,8 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         }
         buildElementsClass(elementsVec);
     }
+    else if(FEType == "Q1")
+        build3DQ1BFS( N, MM, numProcsCoarseSolve, underlyingLib );
     else if(FEType == "Q2")
         build3DQ2BFS( N, MM, numProcsCoarseSolve, underlyingLib );
 
