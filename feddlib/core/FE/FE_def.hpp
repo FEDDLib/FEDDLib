@@ -2364,7 +2364,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
         detB = B.computeDet( );
         absDetB = std::fabs(detB);
 
@@ -2442,7 +2442,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
         detB = B.computeDet( );
         absDetB = std::fabs(detB);
 
@@ -2660,7 +2660,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceVecFieldV2(int dim,
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
         detB = B.computeInverse(Binv);
         absDetB = std::fabs(detB);
 
@@ -2939,7 +2939,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAndStressAceFEM(int dim,
         Teuchos::Array<int> indices(2);
         for (int T=0; T<elements->numberElements(); T++) {
             
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
             
@@ -3134,7 +3134,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAndStressAceFEM(int dim,
         Teuchos::Array<int> indices(3);
         for (int T=0; T<elements->numberElements(); T++) {
             
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
             
@@ -3382,7 +3382,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAceFEM(int dim,
         Teuchos::Array<int> indices(3);
         for (int T=0; T<elements->size(); T++) {
 
-            Helper::buildTransformation(elements->at(T), pointsRep, B);
+            Helper::buildTransformation(elements->at(T), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -3589,7 +3589,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityStressesAceFEM(int dim,
         Teuchos::Array<int> indices(3);
         for (int T=0; T<elements->size(); T++) {
 
-            Helper::buildTransformation(elements->at(T), pointsRep, B);
+            Helper::buildTransformation(elements->at(T), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -4189,13 +4189,14 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivTFast( int dim,
     
 }
 
+/// Bochev- Dohrmann Stabilization
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyBDStabilization(int dim,
                                               std::string FEType,
                                               MatrixPtr_Type &A,
                                               bool callFillComplete){
      
-    TEUCHOS_TEST_FOR_EXCEPTION(FEType != "P1",std::logic_error, "Only implemented for P1. Q1 is equivalent but we need to adjust scaling for the reference element.");
+    TEUCHOS_TEST_FOR_EXCEPTION(FEType != "P1" && FEType != "Q1",std::logic_error, "Only implemented for P1, Q1.");
     UN FEloc = checkFE(dim,FEType);
 
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
@@ -4221,20 +4222,29 @@ void FE<SC,LO,GO,NO>::assemblyBDStabilization(int dim,
 
     SC refElementSize;
     SC refElementScale;
-    if (dim==2) {
-        refElementSize = 0.5;
-        refElementScale = 1./9.;
+    if(FEType=="P1"){
+        if (dim==2) {
+            refElementSize = 0.5;
+            refElementScale = 1./9.;
+        }
+        else if(dim==3){
+            refElementSize = 1./6.;
+            refElementScale = 1./16.;
+        }
     }
-    else if(dim==3){
-        refElementSize = 1./6.;
-        refElementScale = 1./16.;
+    else if(FEType=="Q1"){
+        if(dim==3){
+            refElementScale=1./64;
+            refElementSize=8.;
+        }
+        else{
+            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Q1 Only implemented for 3D.");          
+        }
     }
-    else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Only implemented for 2D and 3D.");
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
         detB = B.computeDet( );
         absDetB = std::fabs(detB);
 
@@ -4319,7 +4329,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceXDim(int dim,
             distance_mean.at(0) = (distance1 + distance2 + distance3)/3.0; // Mittelwert
             double funcvalue = func(&distance_mean.at(0),parameters);
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -4390,7 +4400,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceXDim(int dim,
             distance_mean.at(0) = (distance1 + distance2 + distance3 + distance4)/4.0; //Mittelwert
             double funcvalue = func(&distance_mean.at(0),parameters);
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -4630,7 +4640,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -4841,7 +4851,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
             // Berechne die Transormationsmatrix B fuer das jeweilige Element (2D)
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -4951,7 +4961,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5200,7 +5210,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
             // Berechne die Transormationsmatrix B fuer das jeweilige Element (2D)
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5313,7 +5323,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5500,7 +5510,7 @@ void FE<SC,LO,GO,NO>::assemblyAdditionalConvection(int dim,
             p2 = pointsRep->at(elements->getElement(T).getNode(1));
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5594,7 +5604,7 @@ void FE<SC,LO,GO,NO>::assemblyAdditionalConvection(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5899,7 +5909,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeVelocity(int dim,
             p2 = pointsRep->at(elements->getElement(T).getNode(1));
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -6194,7 +6204,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeVelocity(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -6716,7 +6726,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
             p2 = pointsRep->at(elements->getElement(T).getNode(1));
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -6815,7 +6825,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 

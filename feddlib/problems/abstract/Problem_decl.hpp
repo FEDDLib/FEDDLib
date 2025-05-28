@@ -100,6 +100,8 @@ public:
 
     void infoProblem();
 
+    void infoParameter();
+
     void addVariable(const DomainConstPtr_Type &domain, std::string FEType, std::string name, int dofsPerNode);
 
     /*! Add right hand side function for each block, if you want to skip a block add a dummy function

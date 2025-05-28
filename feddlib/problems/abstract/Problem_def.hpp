@@ -611,5 +611,88 @@ namespace FEDD
         return result;
     }
 
+    template <class SC, class LO, class GO, class NO>
+    void Problem<SC, LO, GO, NO>::infoParameter()
+    {
+        bool verbose(comm_->getRank() == 0);
+        if (verbose)
+        {
+            std::cout << "\t ####################################" << std::endl;
+            std::cout << "\t ### Problem Information ###" << std::endl;
+            std::cout << "\t ### Dimension: " << dim_ << std::endl;
+            std::cout << "\t ### Number of blocks/equations/variables: " << domainPtr_vec_.size() << std::endl;
+            for (int i = 0; i < domainPtr_vec_.size(); i++)
+            {
+                std::cout << "\t \t # Block " << i + 1 << "\t name: " << variableName_vec_.at(i) << "\t d.o.f.s: " << dofsPerNode_vec_.at(i) << "\t FE type: " << domain_FEType_vec_.at(i) << std::endl;
+            }
+            std::cout << "\t ####################################" << std::endl;
+            ParameterListPtr_Type parameterlist = sublist(parameterList_, "Parameter");
+            std::cout << "\t ### Parameter Information ###" << std::endl;
+            std::cout << "\t ### Mesh Type: " << parameterlist->get("Mesh Type", "???") << std::endl;
+            if(parameterlist->get("Mesh Type", "???") == "structured" || parameterlist->get("Mesh Type", "???") == "structured_bfs" )
+                std::cout << "\t ### H/h= " << parameterlist->get("H/h", 0) << std::endl;
+            else
+                std::cout << "\t ### Mesh File Name 1: " << parameterList_->sublist("General").get("Mesh 1 Name", "???") << std::endl;
+
+            std::cout << "\t ### Viscosity: " << parameterlist->get("Viscosity", 0.) 
+                      << "\t ### Density: " << parameterlist->get("Density", 0.) << std::endl;
+
+            if(abs(parameterlist->get("MaxVelocity", 0.)) > 0 )
+                std::cout << "\t ### Maximum Velocity: " << parameterlist->get("MaxVelocity", 0.) << std::endl;   
+            else if(abs(parameterlist->get("Max Velocity", 0.)) > 0 )
+                std::cout << "\t ### or Maximum Velocity: " << parameterlist->get("Max Velocity", 0.) << std::endl;   
+
+            std::cout << "\t ### Rel. Tol.: " << parameterlist->get("relNonLinTol", 0.) 
+                << "\t ### Abs. Tol.: " << parameterlist->get("absNonLinTol", 0.) << std::endl;    
+
+            std::cout << "\t ####################################" << std::endl;
+
+            
+            // ch 15.04.19: Hier ggf. unterscheiden zwischen Monolithic und Teko bzw. anderen Block-Precs.
+            ParameterListPtr_Type pListThyraPrec = sublist(parameterList_, "ThyraPreconditioner");
+            std::cout << "\t ### Preconditioner Information ###" << std::endl;
+            std::cout << "\t ### Type: " << parameterList_->sublist("General").get("Preconditioner Method", "Monolithic") << std::endl;
+            std::cout << "\t ### Prec.: " << pListThyraPrec->get("Preconditioner Type", "FROSch") << std::endl;
+
+            if (!pListThyraPrec->get("Preconditioner Type", "FROSch").compare("FROSch") && parameterList_->sublist("General").get("Preconditioner Method", "Monolithic") == "Monolithic")
+            {
+                std::cout << "\t ### Variant: " << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("FROSch Preconditioner Type", "TwoLevelBlockPreconditioner") << std::endl;
+                std::cout << "\t ### Two Level: "
+                          << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("TwoLevel", false)
+                          << "\t Overlap: "
+                          << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("Overlap", 0)
+                          << "\t Level Combination: "
+                          << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination", "Additive") << std::endl;
+
+                std::cout << "\t OverlappingOperator Type: "
+                          << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("OverlappingOperator Type", "AlgebraicOverlappingOperator") << std::endl;
+
+                std::cout << "\t CoarseOperator Type: "
+                          << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("CoarseOperator Type", "GDSWCoarseOperator") << std::endl;
+
+                if(pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("CoarseOperator Type", "GDSWCoarseOperator") == "IPOUHarmonicCoarseOperator"){
+                    for (int i = 0; i < this->parameterList_->get("Number of blocks", 2); i++)
+                    {
+                        std::cout << " \t \t IPOU Block "<< std::to_string(i + 1) <<": \t" << pListThyraPrec->sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").sublist("IPOUHarmonicCoarseOperator").sublist("Blocks").sublist(std::to_string(i + 1)).sublist("InterfacePartitionOfUnity").get("Type","NOTFOUND") << endl;
+                    }
+                }
+                    
+            }
+            else if (!parameterList_->sublist("General").get("Preconditioner Method", "Monolithic").compare("Teko")){
+                        cout << "\t ### Block Preconditioner Type: \t" << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE") << endl;
+                        cout << "\t ### Velocity Preconditioner: \t" << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Velocity").get("CoarseOperator Type","GDSW#") << endl;
+                        cout << "\t ### Pressure Preconditioner: \t" << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Pressure").get("CoarseOperator Type","GDSW#") << endl;
+
+            }
+            else
+            {
+                std::cout << "\t ### Full preconditioner information only available for Monolithic/Teko preconditioner type ###" << std::endl;
+            }
+            std::cout << "\t ####################################" << std::endl;
+
+        }
+    }
+
+
 }
 #endif

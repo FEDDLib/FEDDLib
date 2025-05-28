@@ -85,6 +85,20 @@ precFactory_()
 {
     timeProblem_.reset( problem, false );
 
+    if(!problem->getUnderlyingProblem()->preconditioner_->getVelocityMassMatrix().is_null()){
+        setVelocityMassMatrix(problem->getUnderlyingProblem()->preconditioner_->getVelocityMassMatrix());
+    }
+
+    if(!problem->getUnderlyingProblem()->preconditioner_->getPressureLaplaceMatrix().is_null()){
+        setPressureLaplaceMatrix(problem->getUnderlyingProblem()->preconditioner_->getPressureLaplaceMatrix());
+    }
+    if(!problem->getUnderlyingProblem()->preconditioner_->getPressureMassMatrix().is_null()){
+        setPressureMass(problem->getUnderlyingProblem()->preconditioner_->getPressureMassMatrix());
+    }
+    if(!problem->getUnderlyingProblem()->preconditioner_->getPCDOperatorMatrix().is_null()){
+        setPCDOperator(problem->getUnderlyingProblem()->preconditioner_->getPCDOperatorMatrix());
+    }
+
 }
 
 template <class SC,class LO,class GO,class NO>
@@ -117,7 +131,7 @@ void Preconditioner<SC,LO,GO,NO>::initializePreconditioner( std::string type )
     if ( type == "Monolithic" || type == "FaCSI" || type == "Diagonal" || type == "Triangular"){
         if (type == "Monolithic")
             initPreconditionerMonolithic( );
-        else if (type == "FaCSI" || type == "Diagonal" || type == "Triangular")
+        else if (type == "FaCSI" || type == "Diagonal" || type == "Triangular" || type == "PCD" || type == "LSC")
             initPreconditionerBlock( );
         
     }
@@ -845,7 +859,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
                 !tekoPList->sublist("Preconditioner Types").sublist("Teko").get("Inverse Type", "SIMPLE").compare("LSC-Pressure-Laplace")  || 
                 !tekoPList->sublist("Preconditioner Types").sublist("Teko").get("Inverse Type", "SIMPLE").compare("SIMPLE")){
                 Teko::LinearOp thyraMass = velocityMassMatrix_;
-
                 Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackMass = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "Velocity Mass Matrix", thyraMass ) );
                 rh_->addRequestCallback( callbackMass );
 
@@ -880,7 +893,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
 
             Teuchos::RCP< Teko::StratimikosFactory > tekoFactory = Teuchos::rcp_dynamic_cast<Teko::StratimikosFactory>(precFactory_);
             tekoFactory->setRequestHandler( rh_ );
-
         }
 
         if ( thyraPrec_.is_null() ){

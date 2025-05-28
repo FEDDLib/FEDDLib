@@ -209,7 +209,6 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             }
             else{ 
                 this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true );
-                
             }
             // Adding the velocity mass matrix Mu to the preconditioner
             this->getPreconditionerConst()->setVelocityMassMatrix( Mvelocity );

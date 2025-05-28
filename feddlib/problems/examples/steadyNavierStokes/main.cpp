@@ -413,6 +413,8 @@ int main(int argc, char *argv[]) {
                     NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
                     nlSolver.solve( navierStokes );
                     comm->barrier();
+
+                    navierStokes.infoParameter();
                 }
     //            if (saveVector>0) {
     //                string outName = "vector_RE_" + to_string(RE) + "_" + to_string(dim) + "D_N_" + to_string(Size) +".h5";
