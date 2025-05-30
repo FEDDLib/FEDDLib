@@ -395,7 +395,7 @@ namespace FEDD
 
             if (fill_W_prec) {
                 
-                if (stokesMonoPrecUsed_){
+                if (precInitOnly_){
                     int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
                     if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
                     {
@@ -407,7 +407,7 @@ namespace FEDD
                     }
                 }
                 else
-                    stokesMonoPrecUsed_ = true;
+                    precInitOnly_ = true;
 
                 // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
                 // If this is the case, we need to pre apply the coarse level to the residual(f_out).
@@ -519,7 +519,7 @@ namespace FEDD
 
             if (fill_W_prec) {
                 std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-                if (stokesTekoPrecUsed_){
+                if (precInitOnly_){
                     int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
                     if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
                     {
@@ -531,7 +531,7 @@ namespace FEDD
                     }
                 }
                 else
-                    stokesTekoPrecUsed_ = true;
+                    precInitOnly_ = true;
                 // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
                 // If this is the case, we need to pre apply the coarse level to the residual(f_out).
 
@@ -611,11 +611,11 @@ namespace FEDD
 
         if (!type.compare("Teko") || !type.compare("Diagonal") || !type.compare("Triangular") || !type.compare("PCD") || !type.compare("LSC")) { //
             this->setupPreconditioner( type );
-            stokesTekoPrecUsed_ = false;
+            precInitOnly_ = false;
         }
         else{
             this->setupPreconditioner( type ); // initializePreconditioner( type );
-            stokesMonoPrecUsed_ = false;
+            precInitOnly_ = false;
 
         }
         
