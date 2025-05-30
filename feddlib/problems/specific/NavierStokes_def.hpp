@@ -119,8 +119,8 @@ u_rep_()
         || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")
         || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") )
     { 
-        bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
-        bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, domainPressure, "Dirichlet", 1);
+        this->bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
+        this->bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, domainPressure, "Dirichlet", 1);
     }   
 
 }
@@ -354,6 +354,7 @@ void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
         Ap2->fillComplete();
 
         // ---------------------
+        // Robin boundary
         MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
         vec_dbl_Type funcParameter(1,kinVisco);
         this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,Kext, funcParameter, this->rhsFuncVec_[0],this->parameterList_);
@@ -380,11 +381,13 @@ void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
         }
         Fp->fillComplete();
 
-        // --------------------------------------------------------------------------------------------
         BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
 
         bcBlockMatrix->addBlock(Fp,0,0);   
-        bcFactoryPCD_->setSystemScaled(bcBlockMatrix); 
+        bcFactoryPCD_->setSystemScaled(bcBlockMatrix); // We set the boundary conditions into Fp. Both Ap and Fp have Dirichlet zero bc on the outlet
+                                                       // Addionally, a robin bc is applied to the inlet bc for Fp. 
+                                                       // Note, if no surfaces are available, the matrix Kext, containg the robin bc is zero,
+                                                       // so no robin bc is applied.
 
         this->getPreconditionerConst()->setPCDOperator( Fp );       
         NAVIER_STOKES_STOP(ReassemblePCD);       

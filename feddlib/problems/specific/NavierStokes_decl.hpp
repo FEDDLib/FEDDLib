@@ -107,7 +107,7 @@ public:
     vec_int_ptr_Type pressureIDsLoc;
     MultiVectorPtr_Type u_rep_;
 
-    BCConstPtr_Type bcFactoryPCD_;
+    BCPtr_Type bcFactoryPCD_;
     mutable MatrixPtr_Type 	Mp_;
     mutable MatrixPtr_Type 	Ap_;
 private:
