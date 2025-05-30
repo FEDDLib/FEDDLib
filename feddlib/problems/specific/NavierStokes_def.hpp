@@ -14,7 +14,7 @@
  Definition of Navier-Stokes
 
  @brief Navier-Stokes
- @author Christian Hochmuth
+ @authors Christian Hochmuth, Lea Saßmannshausen
  @version 1.0
  @copyright CH
  */
@@ -48,6 +48,15 @@ void zeroDirichletBC(double* x, double* res, double t, double* parameters){
 double OneFunction(double* x, int* parameter)
 {
     return 1.0;
+}
+
+void dummyFuncRhs(double* x, double* res, double* parameters){
+    if(parameters[0]==2)
+        res[0]=1;
+    else
+        res[0] = 0.;
+
+    return;
 }
 
 namespace FEDD {
@@ -251,7 +260,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
             this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true,2 ); 
             Mp_= Mpressure;
-            this->getPreconditionerConst()->setPressureMass( Mpressure );
+            this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
             // --------------------------------------------------------------------------------------------
 
             // --------------------------------------------------------------------------------------------
@@ -287,7 +296,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             
             MatrixPtr_Type K_robin(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
             vec_dbl_Type funcParameter(1,kinVisco);
-            this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,K_robin, funcParameter, this->rhsFuncVec_[0],this->parameterList_);
+            this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,K_robin, funcParameter, dummyFuncRhs,this->parameterList_);
             K_robin->addMatrix(-1.,Kp,1.); // adding robin boundary condition to to Kp
             
             // Adding laplace and convetion-diffusion operator to Kp
@@ -357,7 +366,7 @@ void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
         // Robin boundary
         MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
         vec_dbl_Type funcParameter(1,kinVisco);
-        this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,Kext, funcParameter, this->rhsFuncVec_[0],this->parameterList_);
+        this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,Kext, funcParameter, dummyFuncRhs,this->parameterList_);
         Kext->addMatrix(-1.,Fp,1.); // adding advection to diffusion
         
         // Adding laplace an convection together
@@ -399,8 +408,6 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
     double viscosity = this->parameterList_->sublist("Parameter").get("Viscosity",1.);
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
     
-    // Egal welcher Wert, da OneFunction nicht von parameter abhaengt
-
     MatrixPtr_Type BT(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) );
     
     MapConstPtr_Type pressureMap;
@@ -729,9 +736,7 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std::stri
     
     // this might be set again by the TimeProblem after addition of M*u
     this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-    
-//    this->residualVec_->getBlock(0)->writeMM("b_Ax.mm");
-    
+        
 }
 
 }

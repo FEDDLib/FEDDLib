@@ -11,6 +11,9 @@
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
 
+#include <Teuchos_GlobalMPISession.hpp>
+#include <Xpetra_DefaultPlatform.hpp>
+#include <Teuchos_StackedTimer.hpp>
 
 
 /*!
@@ -185,6 +188,9 @@ int main(int argc, char *argv[]) {
     if(parseReturn == Teuchos::CommandLineProcessor::PARSE_HELP_PRINTED) {
         return EXIT_SUCCESS;
     }
+
+    Teuchos::RCP<StackedTimer> stackedTimer =  rcp(new StackedTimer("Steady Navier-Stokes",true));
+    TimeMonitor::setStackedTimer(stackedTimer);
 
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
@@ -453,7 +459,11 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
     Teuchos::TimeMonitor::report(cout);
+    stackedTimer->stop("Steady Navier-Stokes");
+	StackedTimer::OutputOptions options;
+	options.output_fraction = options.output_histogram = options.output_minmax = true;
+	stackedTimer->report((std::cout),comm,options);
+
     return(EXIT_SUCCESS);
 }

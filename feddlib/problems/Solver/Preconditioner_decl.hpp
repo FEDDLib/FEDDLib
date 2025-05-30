@@ -121,18 +121,16 @@ public:
     void setPressureLaplaceMatrix(MatrixPtr_Type matrix) const;
     MatrixPtr_Type getPressureLaplaceMatrix(){return pressureLaplaceMatrixPtr_;};
 
-    void setPressureMass(MatrixPtr_Type matrix) const;
-    MatrixPtr_Type getPressureMassMatrix(){return pressureMassMatrixPtr_;};
-
     void setPCDOperator(MatrixPtr_Type matrix) const;
     MatrixPtr_Type getPCDOperatorMatrix(){return pcdOperatorMatrixPtr_;};
 #endif
 
+    void setPressureMassMatrix(MatrixPtr_Type massMatrix) const;
+    MatrixPtr_Type getPressureMassMatrix(){return pressureMassMatrixPtr_;};
+
     void buildPreconditionerFaCSI( std::string type );
 
     void buildPreconditionerBlock2x2();
-
-    void setPressureMassMatrix(MatrixPtr_Type massMatrix) const;
 
     void setFaCSIBCFactory( BCConstPtr_Type bcFactory ){ faCSIBCFactory_ = bcFactory; };
 
@@ -174,7 +172,7 @@ private:
     ThyraLinOpPtr_Type precSchur_;
     MinPrecProblemPtr_Type probVelocity_;
     MinPrecProblemPtr_Type probSchur_;
-    mutable MatrixPtr_Type pressureMassMatrix_;
+    // mutable MatrixPtr_Type pressureMassMatrix_;
 
     // For LSC and PCD preconditioner
     mutable ThyraLinOpConstPtr_Type velocityMassMatrix_; // LSC

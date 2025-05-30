@@ -632,7 +632,7 @@ namespace FEDD
             if(parameterlist->get("Mesh Type", "???") == "structured" || parameterlist->get("Mesh Type", "???") == "structured_bfs" )
                 std::cout << " ### H/h= " << parameterlist->get("H/h", 0) << std::endl;
             else
-                std::cout << " ### Mesh File Name 1: " << parameterList_->sublist("General").get("Mesh 1 Name", "???") << std::endl;
+                std::cout << " ### Mesh File Name 1: " << parameterList_->sublist("Mesh Partitioner").get("Mesh 1 Name", "???") << std::endl;
 
             std::cout << " ### Viscosity: " << parameterlist->get("Viscosity", 0.) 
                       << " ### Density: " << parameterlist->get("Density", 0.) << std::endl;

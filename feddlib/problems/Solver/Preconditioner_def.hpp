@@ -93,7 +93,8 @@ precFactory_()
         setPressureLaplaceMatrix(problem->getUnderlyingProblem()->preconditioner_->getPressureLaplaceMatrix());
     }
     if(!problem->getUnderlyingProblem()->preconditioner_->getPressureMassMatrix().is_null()){
-        setPressureMass(problem->getUnderlyingProblem()->preconditioner_->getPressureMassMatrix());
+        setPressureMassMatrix(problem->getUnderlyingProblem()->preconditioner_->getPressureMassMatrix());
+    
     }
     if(!problem->getUnderlyingProblem()->preconditioner_->getPCDOperatorMatrix().is_null()){
         setPCDOperator(problem->getUnderlyingProblem()->preconditioner_->getPCDOperatorMatrix());
@@ -1104,7 +1105,8 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerFaCSI( std::string type )
 
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::setPressureMassMatrix(MatrixPtr_Type massMatrix) const{
-    pressureMassMatrix_ = massMatrix;
+    pressureMassMatrixPtr_ = massMatrix;
+    pressureMass_= massMatrix->getThyraLinOp();
 }
 
 template <class SC,class LO,class GO,class NO>
@@ -1113,11 +1115,11 @@ void Preconditioner<SC,LO,GO,NO>::setPressureLaplaceMatrix(MatrixPtr_Type matrix
     pressureLaplaceMatrixPtr_ = matrix; 
 }
 
-template <class SC,class LO,class GO,class NO>
-void Preconditioner<SC,LO,GO,NO>::setPressureMass(MatrixPtr_Type matrix) const{
-    pressureMass_ = matrix->getThyraLinOp();
-    pressureMassMatrixPtr_ = matrix;
-}
+// template <class SC,class LO,class GO,class NO>
+// void Preconditioner<SC,LO,GO,NO>::setPressureMass(MatrixPtr_Type matrix) const{
+//     pressureMass_ = matrix->getThyraLinOp();
+//     pressureMassMatrixPtr_ = matrix;
+// }
 
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::setPCDOperator(MatrixPtr_Type matrix) const{
@@ -1149,7 +1151,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     ProblemPtr_Type steadyProblem;
     if (!timeProblem_.is_null()){
         parameterList = timeProblem_->getParameterList();
-        system = timeProblem_->getSystem();
+        system = timeProblem_->getSystemCombined();
         comm = timeProblem_->getComm();
         steadyProblem = timeProblem_->getUnderlyingProblem();
     }
@@ -1159,6 +1161,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         comm = problem_->getComm();
         steadyProblem = problem_;
     }
+    
     bool verbose( comm->getRank() == 0 );
 
     if(verbose){
@@ -1220,7 +1223,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     
     BlockMatrixPtr_Type system2 = Teuchos::rcp( new BlockMatrix_Type(1) );
         
-    system2->addBlock( pressureMassMatrix_, 0, 0 );
+    system2->addBlock( pressureMassMatrixPtr_, 0, 0 );
     
     probSchur_->initializeSystem( system2 );
     
@@ -1242,11 +1245,20 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         }
 
         if (probLaplace_.is_null()) {
-            probLaplace_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
-            DomainConstPtr_vec_Type domain2(0);
-            domain2.push_back( problem_->getDomain(1) );
-            probLaplace_->initializeDomains( domain2 );
-            probLaplace_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+            if (!timeProblem_.is_null()){
+                probLaplace_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
+                DomainConstPtr_vec_Type domain2(0);
+                domain2.push_back( timeProblem_->getDomain(1) );
+                probLaplace_->initializeDomains( domain2 );
+                probLaplace_->initializeLinSolverBuilder( timeProblem_->getLinearSolverBuilder() );
+            }
+            else{
+                probLaplace_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
+                DomainConstPtr_vec_Type domain2(0);
+                domain2.push_back( problem_->getDomain(1) );
+                probLaplace_->initializeDomains( domain2 );
+                probLaplace_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+            }
         }
 
         BlockMatrixPtr_Type Ap = Teuchos::rcp( new BlockMatrix_Type(1) );
@@ -1258,11 +1270,20 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         laplaceInverse_ = probLaplace_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
 
         if (probMass_.is_null()) {
-            probMass_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
-            DomainConstPtr_vec_Type domain2(0);
-            domain2.push_back( problem_->getDomain(1) );
-            probMass_->initializeDomains( domain2 );
-            probMass_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+            if (!timeProblem_.is_null()){
+                probMass_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
+                DomainConstPtr_vec_Type domain2(0);
+                domain2.push_back( timeProblem_->getDomain(1) );
+                probMass_->initializeDomains( domain2 );
+                probMass_->initializeLinSolverBuilder( timeProblem_->getLinearSolverBuilder() );
+            }
+            else{
+                probMass_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
+                DomainConstPtr_vec_Type domain2(0);
+                domain2.push_back( problem_->getDomain(1) );
+                probMass_->initializeDomains( domain2 );
+                probMass_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+            }
         }
 
         BlockMatrixPtr_Type Qp = Teuchos::rcp( new BlockMatrix_Type(1) );       
@@ -1277,11 +1298,11 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         {
             probMass_->initializeSystem( Qp );
             probMass_->setupPreconditioner( "Monolithic" ); // single matrix
-            massMatrixInverse_ = probVMass_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
+            massMatrixInverse_ = probMass_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
         }
         else
         {
-           massMatrixInverse_ = buildDiagonalInverse(velocityMassMatrixMatrixPtr_, typeDiag)->getThyraLinOp() ;
+           massMatrixInverse_ = buildDiagonalInverse(pressureMassMatrixPtr_, typeDiag)->getThyraLinOp() ;
         }
 
     }
@@ -1294,11 +1315,20 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         }
 
         if (probLaplace_.is_null()) {
-            probLaplace_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
-            DomainConstPtr_vec_Type domain2(0);
-            domain2.push_back( problem_->getDomain(1) );
-            probLaplace_->initializeDomains( domain2 );
-            probLaplace_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+            if (!timeProblem_.is_null()){
+                probLaplace_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
+                DomainConstPtr_vec_Type domain2(0);
+                domain2.push_back( timeProblem_->getDomain(1) );
+                probLaplace_->initializeDomains( domain2 );
+                probLaplace_->initializeLinSolverBuilder( timeProblem_->getLinearSolverBuilder() );
+            }
+            else{
+                probLaplace_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
+                DomainConstPtr_vec_Type domain2(0);
+                domain2.push_back( problem_->getDomain(1) );
+                probLaplace_->initializeDomains( domain2 );
+                probLaplace_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+            }
         }
 
         BlockMatrixPtr_Type Ap = Teuchos::rcp( new BlockMatrix_Type(1) );
@@ -1310,11 +1340,20 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         laplaceInverse_ = probLaplace_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
 
         if (probVMass_.is_null()) {
-            probVMass_ = Teuchos::rcp( new MinPrecProblem_Type( plVelocity, comm ) );
-            DomainConstPtr_vec_Type domain1(0);
-            domain1.push_back( problem_->getDomain(0) );
-            probVMass_->initializeDomains( domain1 );
-            probVMass_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+            if (!timeProblem_.is_null()){
+                probVMass_ = Teuchos::rcp( new MinPrecProblem_Type( plVelocity, comm ) );
+                DomainConstPtr_vec_Type domain1(0);
+                domain1.push_back( timeProblem_->getDomain(0) );
+                probVMass_->initializeDomains( domain1 );
+                probVMass_->initializeLinSolverBuilder( timeProblem_->getLinearSolverBuilder() );
+            }
+            else{
+                probVMass_ = Teuchos::rcp( new MinPrecProblem_Type( plVelocity, comm ) );
+                DomainConstPtr_vec_Type domain1(0);
+                domain1.push_back( problem_->getDomain(0) );
+                probVMass_->initializeDomains( domain1 );
+                probVMass_->initializeLinSolverBuilder( problem_->getLinearSolverBuilder() );
+            }
         }
         BlockMatrixPtr_Type Qv = Teuchos::rcp( new BlockMatrix_Type(1) );       
         Qv->addBlock(velocityMassMatrixMatrixPtr_,0,0);

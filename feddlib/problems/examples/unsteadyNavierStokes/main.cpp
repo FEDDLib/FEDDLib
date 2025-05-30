@@ -121,6 +121,7 @@ void inflow3DRichter(double* x, double* res, double t, const double* parameters)
     return;
 }
 
+
 void dummyFunc(double* x, double* res, double t, const double* parameters){
 
     return;
@@ -160,7 +161,9 @@ int main(int argc, char *argv[]) {
 
     string xmlTekoPrecFile = "parametersTeko.xml";
     myCLP.setOption("tekoprecfile",&xmlTekoPrecFile,".xml file with Inputparameters.");
-
+    string xmlBlockPrecFile = "parametersPrecBlock.xml";
+    myCLP.setOption("blockprecfile",&xmlBlockPrecFile,".xml file with Inputparameters.");
+   
     double length = 4.;
     myCLP.setOption("length",&length,"length of domain.");
 
@@ -179,6 +182,9 @@ int main(int argc, char *argv[]) {
         ParameterListPtr_Type parameterListSolver = Teuchos::getParametersFromXmlFile(xmlSolverFile);
 
         ParameterListPtr_Type parameterListPrecTeko = Teuchos::getParametersFromXmlFile(xmlTekoPrecFile);
+
+        ParameterListPtr_Type parameterListPrecBlock = Teuchos::getParametersFromXmlFile(xmlBlockPrecFile);
+
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
         std::string feTypeV = parameterListProblem->sublist("Parameter").get("Discretization Velocity","P2");
         std::string feTypeP = parameterListProblem->sublist("Parameter").get("Discretization Pressure","P1");
@@ -195,8 +201,10 @@ int main(int argc, char *argv[]) {
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
         if (!precMethod.compare("Monolithic"))
             parameterListAll->setParameters(*parameterListPrec);
-        else
+        else if(precMethod == "Teko")
             parameterListAll->setParameters(*parameterListPrecTeko);
+        else if(precMethod == "Diagonal" || precMethod == "Triangular" || precMethod == "PCD" || precMethod == "LSC")
+            parameterListAll->setParameters(*parameterListPrecBlock);
 
         parameterListAll->setParameters(*parameterListSolver);
 
@@ -372,7 +380,7 @@ int main(int argc, char *argv[]) {
             NavierStokes<SC,LO,GO,NO> navierStokes( domainVelocity, feTypeV, domainPressure, feTypeP, parameterListAll );
 
             navierStokes.addBoundaries(bcFactory);
-            
+
             navierStokes.initializeProblem();
             
             navierStokes.assemble();
@@ -393,6 +401,8 @@ int main(int argc, char *argv[]) {
             daeTimeSolver.setupTimeStepping();
 
             daeTimeSolver.advanceInTime();
+
+            navierStokes.infoParameter();
 
         }
     }

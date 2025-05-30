@@ -13,9 +13,9 @@ TRIBITS_ADD_TEST(
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_unsteadyNavierStokes
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-	SOURCE_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml
+	SOURCE_FILES parametersPrec.xml parametersPrecBlock.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml
+	DEST_FILES parametersPrec.xml parametersPrecBlock.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml
 	EXEDEPS unsteadyNavierStokes
 )
 

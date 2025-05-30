@@ -10,21 +10,13 @@
  Declaration of Navier-Stokes
 
  @brief Navier-Stokes
- @author Christian Hochmuth
+ @authors Christian Hochmuth, Lea Saßmannshausen
  @version 1.0
  @copyright CH
  */
 
 namespace FEDD{
 
-    /*!
-     Declaration of Navier-Stokes
-
-     @brief Navier-Stokes
-     @author Christian Hochmuth
-     @version 1.0
-     @copyright CH
-     */
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class NavierStokes : public NonLinearProblem<SC,LO,GO,NO>  {
@@ -94,13 +86,13 @@ public:
     virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const; //standard or reverse
     
     void calculateNonLinResidualVecWithMeshVelo(std::string type, double time, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const;
-//    virtual int ComputeDragLift(vec_dbl_ptr_Type &values);
+    // virtual int ComputeDragLift(vec_dbl_ptr_Type &values);
 
     virtual void getValuesOfInterest( vec_dbl_Type& values ){};
     
     virtual void computeValuesOfInterestAndExport() {};
 
-//    virtual void assembleExternal( std::string type ){};
+    //  virtual void assembleExternal( std::string type ){};
     /*####################*/
 
     mutable MatrixPtr_Type 	A_;
@@ -111,14 +103,7 @@ public:
     mutable MatrixPtr_Type 	Mp_;
     mutable MatrixPtr_Type 	Ap_;
 private:
-    // mutable bool stokesTekoPrecUsed_; //Help variable to signal that we constructed the initial preconditioner for NOX with the Stokes system and we do not need to compute it if fill_W_prec is called for the first time. However, the preconditioner is only correct if a Stokes system is solved in the first nonlinear iteration. This only affects the block preconditioners of Teko
-    // mutable bool stokesMonoPrecUsed_; //Help variable to signal that we constructed the initial preconditioner for NOX with the Stokes system and we do not need to compute it if fill_W_prec is called for the first time. However, the preconditioner is only correct if a Stokes system is solved in the first nonlinear iteration. This only affects the block preconditioners of Teko
 
-    /*####################*/
-
-public:
-
-private:
 
 };
 }
