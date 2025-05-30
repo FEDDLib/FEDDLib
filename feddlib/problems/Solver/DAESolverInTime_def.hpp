@@ -1309,8 +1309,28 @@ template<class SC,class LO,class GO,class NO>
 void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearMultistep(){
 
     bool print = parameterList_->sublist("General").get("ParaViewExport",false);
+    bool printData = parameterList_->sublist("General").get("Export Data",false);
+
     if (print) {
         exportTimestep();
+    }
+
+    ExporterTxtPtr_Type exporterIterations;
+    ExporterTxtPtr_Type exporterNewtonIterations;
+    ExporterTxtPtr_Type exporterTimeTxt;
+    vec_dbl_ptr_Type its = Teuchos::rcp(new vec_dbl_Type ( 2, 0. ) ); //0:linear iterations, 1: nonlinear iterations
+
+    if (printData) {
+        exporterTimeTxt = Teuchos::rcp(new ExporterTxt());
+        exporterTimeTxt->setup( "time", this->comm_ );
+
+        std::string suffix = parameterList_->sublist("General").get("Export Suffix","");
+        
+        exporterNewtonIterations = Teuchos::rcp(new ExporterTxt());
+        exporterNewtonIterations->setup( "newtonIterations" + suffix, this->comm_ );
+        
+        exporterIterations = Teuchos::rcp(new ExporterTxt());
+        exporterIterations->setup( "linearIterations" + suffix, this->comm_ );
     }
 
     int size = timeStepDef_.size();
@@ -1348,9 +1368,14 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearMultistep(){
         }
     }
     problemTime_->setTimeParameters(massCoeff, problemCoeff);
+
     //#########
     //time loop
     //#########
+    vec_dbl_Type linearIterations(0);
+    vec_dbl_Type newtonIterations(0);
+    NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
+
     while (timeSteppingTool_->continueTimeStepping()) {
 
         // For the first time step we use BDF1
@@ -1411,8 +1436,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearMultistep(){
 //            }
         }
 
-        NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
-        nlSolver.solve(*problemTime_,time);
+        nlSolver.solve(*problemTime_,time,its);
         problemTime_->assemble("UpdateTime");
         // After the first time step we can use the desired BDF Parameters
         if (timeSteppingTool_->currentTime()==0.) {
@@ -1420,12 +1444,39 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearMultistep(){
         }
 
         timeSteppingTool_->advanceTime(true/*output info*/);
+        if (printData) {
+            exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
+            exporterIterations->exportData( (*its)[0] );
+            linearIterations.push_back((*its)[0]);
+            exporterNewtonIterations->exportData( (*its)[1] );
+            newtonIterations.push_back((*its)[1]);
 
+        }
         if (print) {
             exportTimestep();
         }
     }
+    if (printData) {
+        exporterTimeTxt->closeExporter();
+        exporterIterations->closeExporter();
+        exporterNewtonIterations->closeExporter();
 
+        double sumLinear=0., sumNewton=0.;
+        for(int i=0; i < linearIterations.size(); i++){
+            sumLinear += linearIterations[i];
+            sumNewton += newtonIterations[i];
+        }
+        sumLinear = sumLinear / linearIterations.size();
+        sumNewton = sumNewton / newtonIterations.size();
+
+        if (verbose_) {
+            cout << " ######################################################## "<< endl;
+            cout << " Average linear iteration count over all time steps:  " << sumLinear << endl;
+            cout << " Average Newton iteration count over all time steps:  " << sumNewton << endl;
+            cout << " ######################################################## \n"<< endl;
+        }
+    
+    }
     if (print) {
         closeExporter();
     }
