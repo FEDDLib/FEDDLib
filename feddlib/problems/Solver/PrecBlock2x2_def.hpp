@@ -12,6 +12,8 @@
  @copyright CH
  */
 
+
+
 namespace FEDD {
 using namespace Thyra;
         
@@ -174,6 +176,14 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyIt(
 
 }
     
+/// Function called within e.g. GMRES to apply the input vector X_in to the preconditioner
+/// Output is the contents of vector Y_inout
+// Block Preconditioners:
+// - 'Diagonal' Prec: where the Schur complement is replaced by - 1/nu M_p
+// - 'Triangular' Prec: where the Schur complement is replaced by - 1/nu M_p
+// - 'PCD' Prec: where the Schur complement is replaced by -M_p F_p^-1 A_p
+// - 'LSC' Prec: where the Schur complement is replaced by  -A_p^-1 (B (M_v^-1) F (M_v^-1) B^T ) A_p^-1
+
 template<class SC, class LO, class GO, class NO>
 void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
                                    const EOpTransp M_trans,
@@ -200,20 +210,24 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
     Teuchos::RCP< Thyra::ProductMultiVectorBase<SC> > Y
         = Teuchos::rcp_dynamic_cast< Thyra::ProductMultiVectorBase<SC> > ( rcpFromPtr(Y_inout) );
 
-    Teuchos::RCP< const MultiVectorBase< SC > > X_0 = X->getMultiVectorBlock(0);
+    // First component correspondig to velocity block
+    Teuchos::RCP< const MultiVectorBase< SC > > X_0 = X->getMultiVectorBlock(0); 
     Teuchos::RCP< MultiVectorBase< SC > > Y_0 = Y->getNonconstMultiVectorBlock(0);
 
+    // Second component corresponding to pressure block
     Teuchos::RCP< const MultiVectorBase< SC > > X_1 = X->getMultiVectorBlock(1);
     Teuchos::RCP< MultiVectorBase< SC > > Y_1 = Y->getNonconstMultiVectorBlock(1);
     
+    // We distinguish between the different preconditioning types here
     if (type_ == "Diagonal"){
-        velocityInv_->apply(NOTRANS, *X_0, Y_0.ptr(), 1., 0.);
-        
-        pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.);
+        velocityInv_->apply(NOTRANS, *X_0, Y_0.ptr(), 1., 0.); // Apply input vector to fluid inverse approximation
+
+        pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.); // Apply input vector to Schur complement inverse approximation
+                                                               // Here: 1/nu Mp
     }
     else if (type_ == "Triangular"){
 
-        pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.);
+        pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.); // Apply input vector to Schur complement inverse approximation
         
         Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
         
@@ -223,59 +237,43 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
                         
     }
     else if (type_ == "PCD"){
+        // PCD block triangular preconditioner
         TEUCHOS_TEST_FOR_EXCEPTION(laplaceInverse_.is_null(), std::runtime_error,"laplaceInverse_ not set.");
         TEUCHOS_TEST_FOR_EXCEPTION(convectionDiffusionOperator_.is_null(), std::runtime_error,"convectionDiffusionOperator_ not set.");
         TEUCHOS_TEST_FOR_EXCEPTION(massMatrixInverse_.is_null(), std::runtime_error,"massMatrixInverse_ not set.");
         // For PCD we need apply the 'pressure inverse' differently, as it is made up of three components.
-        Teuchos::RCP< MultiVectorBase< SC > > X_res_1 = X_1->clone_mv();
-        Teuchos::RCP< MultiVectorBase< SC > > X_res_2 = X_1->clone_mv();
+        // X_1->describe(*out,Teuchos::VERB_EXTREME); // Examplary print 
 
-        // X_1->describe(*out,Teuchos::VERB_EXTREME);
-        
-        // std::cout << " Apply Mass Matrix " << std::endl;
-        massMatrixInverse_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.); 
-        // Y_1->describe(*out,Teuchos::VERB_EXTREME);
+        // Apply input vector to Schur complement inverse approximation
+        massMatrixInverse_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.);  // 1. pressure mass matrix inverse approximation
 
-        // std::cout << " Apply convectionDiffusionOperator_ " << std::endl;
-        convectionDiffusionOperator_->apply(NOTRANS, *Y_1, Y_1.ptr(), 1., 0.); 
-        // Y_1->describe(*out,Teuchos::VERB_EXTREME);
+        convectionDiffusionOperator_->apply(NOTRANS, *Y_1, Y_1.ptr(), 1., 0.); // 2. pressure convection-diffusion operator
 
-        // std::cout << " Apply laplaceInverse_ " << std::endl;
-        bool useLaplaceInverse=true;
-        if(useLaplaceInverse)
-            laplaceInverse_->apply(NOTRANS, *Y_1, Y_1.ptr(), 1., 0.); 
-        else{ // We operate in different dimensions here
-            Teuchos::RCP< MultiVectorBase< SC > > X_res_0 = X_0->clone_mv();
-            BT_->apply(NOTRANS, *Y_1, X_res_0.ptr(), 1., 0.); //BT*y
-            massMatrixVInverse_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
-            BT_->apply(TRANS, *X_res_0, Y_1.ptr(), 1., 0.);  
-        }
+        laplaceInverse_->apply(NOTRANS, *Y_1, Y_1.ptr(), 1., 0.);  // 3. pressure laplace inverse approximation
 
-        // Y_1->describe(*out,Teuchos::VERB_EXTREME);
+        // Alternative option to use the Laplace constructed via B M_v B^T
+        // else{ // We operate in different dimensions here
+        //     Teuchos::RCP< MultiVectorBase< SC > > X_res_0 = X_0->clone_mv();
+        //     BT_->apply(NOTRANS, *Y_1, X_res_0.ptr(), 1., 0.); //BT*y
+        //     massMatrixVInverse_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
+        //     BT_->apply(TRANS, *X_res_0, Y_1.ptr(), 1., 0.);  
+        // }
 
-        //pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.);
-        
         Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
         
         BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
         
-        velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);
-                    // std::cout << " ################################################## " << std::endl;
+        velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.); // Apply input vector to fluid inverse approximation
             
     }
     else if (type_ == "LSC"){
+        // LSC block triangular preconditioner
         TEUCHOS_TEST_FOR_EXCEPTION(laplaceInverse_.is_null(), std::runtime_error,"laplaceInverse_ not set.");
         TEUCHOS_TEST_FOR_EXCEPTION(massMatrixVInverse_.is_null(), std::runtime_error,"massMatrixVInverse_ not set.");
-        // For PCD we need apply the 'pressure inverse' differently, as it is made up of three components.
-        Teuchos::RCP< MultiVectorBase< SC > > X_res_1 = X_1->clone_mv();
-        Teuchos::RCP< MultiVectorBase< SC > > X_res_2 = X_1->clone_mv();
-
-        // X_1->describe(*out,Teuchos::VERB_EXTREME);
         
-        // std::cout << " Apply Laplace Matrix " << std::endl;
-        laplaceInverse_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.); 
-        // Y_1->describe(*out,Teuchos::VERB_EXTREME);
+        laplaceInverse_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.);   // 1. pressure laplace inverse approximation
 
+        // 2. Component: B (M_v^-1) F (M_v^-1) B^T 
         Teuchos::RCP< MultiVectorBase< SC > > X_res_0 = X_0->clone_mv();
         BT_->apply(NOTRANS, *Y_1, X_res_0.ptr(), 1., 0.);
         massMatrixVInverse_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
@@ -283,18 +281,12 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
         massMatrixVInverse_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
         BT_->apply(TRANS, *X_res_0, Y_1.ptr(), 1., 0.);
 
-        // std::cout << " Apply Laplace Matrix " << std::endl;
-        laplaceInverse_->apply(NOTRANS, *Y_1, Y_1.ptr(), -1., 0.); 
-        
-        // Y_1->describe(*out,Teuchos::VERB_EXTREME);
-
-        //pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.);
-        
+        laplaceInverse_->apply(NOTRANS, *Y_1, Y_1.ptr(), -1., 0.);  // 3. pressure laplace inverse approximation
+ 
         Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
         BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
         
         velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);
-                    // std::cout << " ################################################## " << std::endl;
             
     }
     else{

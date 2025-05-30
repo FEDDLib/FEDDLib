@@ -21,6 +21,35 @@
  @copyright CH
  */
 
+
+/*! 
+	Applying a 2x2 block preconditioner for the (Navier)-Stokes problem
+    | F  B^T |
+    | B -C   |
+    The matrix C corresponds to a stabilzation, if needed. For stable finite element discretizations,
+    the matrix C corresponds to a zero matrix. In PCD there is no special consideration of the 
+    stabiization needed. In LSC it would be considered, but that is not implemented here.
+    
+    Diagonal Preconditioner:
+    | \hat{F}^-1  0        |
+    | 0         \hat{S}^-1 |
+
+    Triangular Preconditioner:
+    | \hat{F}^-1  B^T      |
+    | 0         \hat{S}^-1 |
+
+    The inverse of the fluid system is always approximated the same by a Schwarz method
+
+    The Schur complement is replaced by different approximations depending on the strategy:
+    -> 'Diagonal' Prec:     the Schur complement is replaced by  -1/nu M_p
+    -> 'Triangular' Prec:   the Schur complement is replaced by  -1/nu M_p
+    -> 'PCD' Prec:          the Schur complement is replaced by  -M_p F_p^-1 A_p
+    -> 'LSC' Prec:          the Schur complement is replaced by  -A_p^-1 (B (M_v^-1) F (M_v^-1) B^T ) A_p^-1
+
+    the arising inverses are again approximated by a Schwarz method
+
+*/
+
 namespace FEDD {
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
@@ -38,34 +67,43 @@ public:
     void setDiagonal(ThyraLinOpPtr_Type velocityInv,
                      ThyraLinOpPtr_Type pressureInv);
     
+    // Classig triangular with \hat{S}= -1/nu M_p
     void setTriangular(ThyraLinOpPtr_Type velocityInv,
                        ThyraLinOpPtr_Type pressureInv,
                        ThyraLinOpPtr_Type BT);
 
+    // PCD triangular
     void setTriangular(ThyraLinOpPtr_Type velocityInv,
                         ThyraLinOpPtr_Type laplaceInverse,
                         ThyraLinOpPtr_Type convectionDiffusionOperator,
                         ThyraLinOpPtr_Type massMatrixInverse,
                         ThyraLinOpPtr_Type massMatrixVInverse,
                        ThyraLinOpPtr_Type BT);
-
+    // LSC triangular
     void setTriangular(ThyraLinOpPtr_Type velocityInv,
                     ThyraLinOpPtr_Type laplaceInverse,
                     ThyraLinOpPtr_Type massMatrixVInverse,
                     ThyraLinOpPtr_Type BT);
     
+    /// Setting velocity inverse approximation
     void setVeloctiyInv(ThyraLinOpPtr_Type veloctiyInv);
-    
+
+    /// Setting inverse approximation of Schur complement
     void setPressureInv(ThyraLinOpPtr_Type pressureInv);
 
+    /// Setting inverse approximation of Schur complement by multiple operators. Corresponds to PCD
     void setPressureInvs(ThyraLinOpPtr_Type laplaceInverse, ThyraLinOpPtr_Type convectionDiffusionOperator, ThyraLinOpPtr_Type massMatrixInverse, ThyraLinOpPtr_Type massMatrixVInverse);
 
+    /// Setting inverse approximation of Schur complement by multiple operators. Corresponds to LSC
     void setPressureInvs(ThyraLinOpPtr_Type laplaceInverse, ThyraLinOpPtr_Type massMatrixVInverse);
 
+    /// Setting fluid system matrix B
     void setB(ThyraLinOpPtr_Type B) {B_ = B;};
 
+    /// Setting fluid system matrix F
     void setF(ThyraLinOpPtr_Type F) {F_ = F;};
 
+    /// Setting the preconditioning ype
     void setType(std::string type);
     
     void initialize();
@@ -79,7 +117,7 @@ public:
                            ) const;
 
 protected:
-    
+    /// Apply of preconditioner in e.g. GMRES
     virtual void applyImpl(
                            const Thyra::EOpTransp M_trans,
                            const Thyra::MultiVectorBase<SC> &X,

@@ -1314,21 +1314,21 @@ void FSI<SC,LO,GO,NO>::addInterfaceBlockRHS() const
 }
 
 
-template<class SC,class LO,class GO,class NO>
-void FSI<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                                     const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
-                                    ) const
-{
-    TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "implement NOX for steady FSI.");
-    std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-//    if ( !type.compare("Monolithic"))
-//        evalModelImplMonolithic( inArgs, outArgs );
-//    else if ( !type.compare("FaCSI")){
-//        evalModelImplBlock( inArgs, outArgs );
-//    }
-//    else
-//        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Unkown preconditioner/solver type.");
-}
+// template<class SC,class LO,class GO,class NO>
+// void FSI<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
+//                                      const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
+//                                     ) const
+// {
+//     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "implement NOX for steady FSI.");
+//     std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
+// //    if ( !type.compare("Monolithic"))
+// //        evalModelImplMonolithic( inArgs, outArgs );
+// //    else if ( !type.compare("FaCSI")){
+// //        evalModelImplBlock( inArgs, outArgs );
+// //    }
+// //    else
+// //        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Unkown preconditioner/solver type.");
+// }
 
 template<class SC,class LO,class GO,class NO>
 void FSI<SC,LO,GO,NO>::getValuesOfInterest( vec_dbl_Type& values ){

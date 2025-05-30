@@ -82,19 +82,11 @@ public:
 
     void updateConcentration(MultiVectorConstPtr_Type concentration) {concentration_.reset(new MultiVector_Type (concentration));};
 //    virtual void assembleExternal( std::string type ){};
-    
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
-    
-    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
-    
+        
     mutable Teuchos::RCP<TimeSteppingTools>	timeSteppingTool_;
 
 private:
     
-    virtual void evalModelImpl(
-                               const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                               const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
-                               ) const;
 
     mutable MultiVectorPtr_Type u_rep_;
     MultiVectorPtr_Type concentration_;

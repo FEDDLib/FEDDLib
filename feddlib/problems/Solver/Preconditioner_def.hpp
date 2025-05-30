@@ -1131,7 +1131,7 @@ void Preconditioner<SC,LO,GO,NO>::setPCDOperator(MatrixPtr_Type matrix) const{
 // - Diagonal Prec, where the Schur complement is replaced by - 1/nu M_p
 // - Triangular Prec, where the Schur complement is replaced by - 1/nu M_p
 // - PCD Prec, where the Schur complement is replaced by -M_p F_p^-1 A_p
-// - LSC Prec, where the Schur complement is replaced by a lot
+// - LSC Prec, where the Schur complement is replaced by  -A_p^-1 (B (M_v^-1) F (M_v^-1) B^T ) A_p^-1
 
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
@@ -1176,6 +1176,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     Teuchos::RCP< PrecBlock2x2<SC,LO,GO,NO> > blockPrec2x2
         = Teuchos::rcp(new PrecBlock2x2<SC,LO,GO,NO> ( comm ) );
     
+    // The velocity problem is always treated the same
     if (probVelocity_.is_null()){
         probVelocity_ = Teuchos::rcp( new MinPrecProblem_Type( plVelocity, comm ) );
         DomainConstPtr_vec_Type domain1(0);
@@ -1227,11 +1228,13 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     
     precSchur_ = probSchur_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
     
-    
+    // We distinguish for the Schur complement component
     string type = parameterList->sublist("General").get("Preconditioner Method","Diagonal");
     // Setup additional things
     if (type == "PCD") {
-
+        // For PCD we additionally need to setup the monolithic preconditioner for the 
+        // Laplace operator and the pressure mass matrix
+        // We include a diagonal inverse approximation of the mass matrix
         if (verbose) {
             std::cout << "\t --- -------------------------------------------------------- ---"<< std::endl;
             std::cout << "\t --- Building PCD Operator Components " << std::endl;
@@ -1265,10 +1268,21 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         BlockMatrixPtr_Type Qp = Teuchos::rcp( new BlockMatrix_Type(1) );       
         Qp->addBlock(pressureMassMatrixPtr_,0,0);
 
-        probMass_->initializeSystem( Qp );
+        // Approximation of Mp is either done by Monolithic preconditioner or by a diagonal
+        // Approximation with 'Diagonal' or TODO: AbsRowSum
+        bool explicitInverse = parameterList->sublist("General").get("Mu Explicit Inverse",true);
+        string typeDiag = parameterList->sublist("General").get("Diagonal Approximation","Diagonal");
 
-        probMass_->setupPreconditioner( "Monolithic" ); // single matrix
-        massMatrixInverse_ = probMass_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
+        if(explicitInverse)
+        {
+            probMass_->initializeSystem( Qp );
+            probMass_->setupPreconditioner( "Monolithic" ); // single matrix
+            massMatrixInverse_ = probVMass_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
+        }
+        else
+        {
+           massMatrixInverse_ = buildDiagonalInverse(velocityMassMatrixMatrixPtr_, typeDiag)->getThyraLinOp() ;
+        }
 
     }
     else if (type == "LSC") {
@@ -1305,7 +1319,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         BlockMatrixPtr_Type Qv = Teuchos::rcp( new BlockMatrix_Type(1) );       
         Qv->addBlock(velocityMassMatrixMatrixPtr_,0,0);
 
-        bool explicitInverse = parameterList->sublist("General").get("Mu Explicit Inverse",false);
+        // Approximation of Mp is either done by Monolithic preconditioner or by a diagonal
+        // Approximation with 'Diagonal' or TODO: AbsRowSum
+        bool explicitInverse = parameterList->sublist("General").get("Mu Explicit Inverse",true);
         string typeDiag = parameterList->sublist("General").get("Diagonal Approximation","Diagonal");
 
         if(explicitInverse)
@@ -1321,8 +1337,8 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
             
     }
     
-    // Building block Prec
-
+    // Building block Prec and passing along the different operators
+    // that are required to build the respective preconditioners
     if (type == "Diagonal") {
         blockPrec2x2->setDiagonal(precVelocity_,
                                   precSchur_);
@@ -1335,11 +1351,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     }
     else if (type == "PCD") {
         MatrixPtr_Type pcdOperatorScaled = Teuchos::rcp( new Matrix_Type( pcdOperatorMatrixPtr_ ) );
-        //pcdOperatorScaled->print();
         pcdOperatorScaled->resumeFill();
         pcdOperatorScaled->scale(-1.0);
         pcdOperatorScaled->fillComplete();
-        //pcdOperatorScaled->print();
         ThyraLinOpPtr_Type BT = system->getBlock(0,1)->getThyraLinOpNonConst();
         blockPrec2x2->setTriangular(precVelocity_,
                                     laplaceInverse_,
@@ -1351,7 +1365,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         blockPrec2x2->setB(B);        
     }
     else if (type == "LSC") {
-        //pcdOperatorScaled->print();
         ThyraLinOpPtr_Type BT = system->getBlock(0,1)->getThyraLinOpNonConst();
         blockPrec2x2->setTriangular(precVelocity_,
                                     laplaceInverse_,

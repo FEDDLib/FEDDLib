@@ -89,14 +89,8 @@ public:
 
   //    virtual void assembleExternal( std::string type ){};
 
-  Teuchos::RCP<Thyra::LinearOpBase<SC>> create_W_op() const;
-
-  Teuchos::RCP<Thyra::PreconditionerBase<SC>> create_W_prec() const;
-
 private:
-  virtual void
-  evalModelImpl(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
+ 
   mutable MultiVectorPtr_Type u_rep_;
 };
 } // namespace FEDD

@@ -255,10 +255,10 @@ public:
     
 private:
     
-    virtual void evalModelImpl(
-                               const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                               const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
-                               ) const;
+    // virtual void evalModelImpl(
+    //                            const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
+    //                            const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
+    //                            ) const;
     
 //    void evalModelImplMonolithic(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
 //                                 const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
