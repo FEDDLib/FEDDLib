@@ -808,11 +808,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
     else if(!timeProblem_.is_null())
         solverBuilder = timeProblem_->getUnderlyingProblem()->getLinearSolverBuilder();
 
-    ParameterListPtr_Type tekoPList;
+    ParameterListPtr_Type tekoPList= sublist( parameterList, "Teko Parameters" );
     if (precFactory_.is_null()) {
         ParameterListPtr_Type tmpSubList = sublist( sublist( sublist( sublist( parameterList, "Teko Parameters" ) , "Preconditioner Types" ) , "Teko" ) , "Inverse Factory Library" );
-
-        tekoPList = sublist( parameterList, "Teko Parameters" );
 
         //only sets repeated maps in parameterlist if FROSch is used for both block
         if ( !tmpSubList->sublist("FROSch-Pressure").get("Type","FROSch").compare("FROSch") &&
@@ -886,6 +884,12 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
                 rh_->addRequestCallback( callbackPressureMass );
 
                 // PCD
+                if (!timeProblem_.is_null()){
+                    timeProblem_->assemble("UpdateConvectionDiffusionOperator");
+                }
+                else{
+                    problem_->assemble("UpdateConvectionDiffusionOperator");
+                }
                 Teko::LinearOp thyraPCD = pcdOperator_;
                 Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackPCD = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "PCD Operator", thyraPCD ) );
                 rh_->addRequestCallback( callbackPCD );
@@ -895,6 +899,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             Teuchos::RCP< Teko::StratimikosFactory > tekoFactory = Teuchos::rcp_dynamic_cast<Teko::StratimikosFactory>(precFactory_);
             tekoFactory->setRequestHandler( rh_ );
         }
+        
 
         if ( thyraPrec_.is_null() ){
             thyraPrec_ = precFactory_->createPrec();
@@ -907,8 +912,42 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
         precondtionerIsBuilt_ = true;
         
     }
-    
     else{
+        if(!tekoPList->sublist("Preconditioner Types").sublist("Teko").get("Inverse Type", "SIMPLE").compare("PCD")){
+            // PCD: As part of the pcd preconditioner depends on the current velocity, we need to update it in each iteration.
+            //pcdOperatorMatrixPtr_->print();
+                // PCD
+            if (!timeProblem_.is_null()){
+                timeProblem_->assemble("UpdateConvectionDiffusionOperator");
+            }
+            else{
+                problem_->assemble("UpdateConvectionDiffusionOperator");
+            }      
+            Teuchos::RCP<Teko::RequestHandler> rh = Teuchos::rcp(new Teko::RequestHandler());
+
+            // PCD
+            Teko::LinearOp thyraPCD;
+            
+            // When we deal with a time problem only the underlying problem holds the updated pcd matrix. Why: When we assemble the PCD operator it within i.e. the Navier Stokes class. 
+            // The Navier stokes class is derived from a nonlinear problem originally derived from a problem which has a precondidioner object to which the PCD operator is added in each reassembly.
+            // Since the Navier Stokes problem does not know the timeProblem, we need to extract the information from the problem which is added to the time problem / which the timeProblem is based on.
+            if(!timeProblem_.is_null())
+            {
+              // timeProblem_->getUnderlyingProblem()->preconditioner_->getPCDOperatorMatrix()->print(); 
+              pcdOperator_ = timeProblem_->getUnderlyingProblem()->preconditioner_->getPCDOperatorMatrix()->getThyraLinOp();
+              thyraPCD = timeProblem_->getUnderlyingProblem()->preconditioner_->getPCDOperatorMatrix()->getThyraLinOp();     
+            }
+            else
+                thyraPCD= pcdOperator_;
+
+            Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackPCD = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "PCD Operator", thyraPCD ) );
+            //rh->addRequestCallback( callbackPCD );
+
+            // Changing the content of the pointer
+            rh_->updateRequestCallback(callbackPCD,3); // We need to update the pcd operator in the call back pointer. Otherwise it will no reach the correct functions in pcd
+
+         }
+    // else{
 
         Teuchos::RCP< const Thyra::DefaultLinearOpSource< SC > > thyraMatrixSourceOp =  defaultLinearOpSource (tekoLinOp_);
         //    Thyra::initializePrec<SC>(*precFactory, thyraMatrixSourceOp, thyraPrec_.ptr());
@@ -1219,22 +1258,22 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         }
     }
    
-
-    
-    BlockMatrixPtr_Type system2 = Teuchos::rcp( new BlockMatrix_Type(1) );
-        
-    system2->addBlock( pressureMassMatrixPtr_, 0, 0 );
-    
-    probSchur_->initializeSystem( system2 );
-    
-    probSchur_->setupPreconditioner( "Monolithic" ); // single matrix
-    
-    precSchur_ = probSchur_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
-    
-    // We distinguish for the Schur complement component
     string type = parameterList->sublist("General").get("Preconditioner Method","Diagonal");
+
+    // We distinguish for the Schur complement component
     // Setup additional things
-    if (type == "PCD") {
+    if(type == "Diagonal" || type == "Triangular"){
+        BlockMatrixPtr_Type Mp = Teuchos::rcp( new BlockMatrix_Type(1) );
+            
+        Mp->addBlock( pressureMassMatrixPtr_, 0, 0 );
+        
+        probSchur_->initializeSystem( Mp );
+        
+        probSchur_->setupPreconditioner( "Monolithic" ); // single matrix
+        
+        precSchur_ = probSchur_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
+    }
+    else if (type == "PCD") {
         // For PCD we additionally need to setup the monolithic preconditioner for the 
         // Laplace operator and the pressure mass matrix
         // We include a diagonal inverse approximation of the mass matrix
@@ -1261,14 +1300,21 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
             }
         }
 
-        BlockMatrixPtr_Type Ap = Teuchos::rcp( new BlockMatrix_Type(1) );
-        Ap->addBlock(pressureLaplaceMatrixPtr_,0,0);
+        if(laplaceInverse_.is_null()){// The Schwarz approximation of Laplace operator only needs to be build once
+            if (verbose) {
+                std::cout << "\t --- -------------------------------------------------------- ---"<< std::endl;
+                std::cout << "\t --- PCD: Setup A_p Schwarz Approximation " << std::endl;
+                std::cout << "\t --- -------------------------------------------------------- ---"<< std::endl;
+            }
+            BlockMatrixPtr_Type Ap = Teuchos::rcp( new BlockMatrix_Type(1) );
+            Ap->addBlock(pressureLaplaceMatrixPtr_,0,0);
 
-        probLaplace_->initializeSystem( Ap );
-
-        probLaplace_->setupPreconditioner( "Monolithic" ); // single matrix
-        laplaceInverse_ = probLaplace_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
-
+            probLaplace_->initializeSystem( Ap );
+         
+            probLaplace_->setupPreconditioner( "Monolithic" ); // single matrix
+            laplaceInverse_ = probLaplace_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
+        }
+        
         if (probMass_.is_null()) {
             if (!timeProblem_.is_null()){
                 probMass_ = Teuchos::rcp( new MinPrecProblem_Type( plSchur, comm ) );
@@ -1286,23 +1332,30 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
             }
         }
 
-        BlockMatrixPtr_Type Qp = Teuchos::rcp( new BlockMatrix_Type(1) );       
-        Qp->addBlock(pressureMassMatrixPtr_,0,0);
+        if(massMatrixInverse_.is_null()){// The Schwarz approximation of pressure mass matrix only needs to be build once
+            if (verbose) {
+                std::cout << "\t --- -------------------------------------------------------- ---"<< std::endl;
+                std::cout << "\t --- PCD: Setup M_p Schwarz Approximation " << std::endl;
+                std::cout << "\t --- -------------------------------------------------------- ---"<< std::endl;
+            }
+            BlockMatrixPtr_Type Qp = Teuchos::rcp( new BlockMatrix_Type(1) );       
+            Qp->addBlock(pressureMassMatrixPtr_,0,0);
 
-        // Approximation of Mp is either done by Monolithic preconditioner or by a diagonal
-        // Approximation with 'Diagonal' or TODO: AbsRowSum
-        bool explicitInverse = parameterList->sublist("General").get("Mu Explicit Inverse",true);
-        string typeDiag = parameterList->sublist("General").get("Diagonal Approximation","Diagonal");
+            // Approximation of Mp is either done by Monolithic preconditioner or by a diagonal
+            // Approximation with 'Diagonal' or TODO: AbsRowSum
+            bool explicitInverse = parameterList->sublist("General").get("Mu Explicit Inverse",true);
+            string typeDiag = parameterList->sublist("General").get("Diagonal Approximation","Diagonal");
 
-        if(explicitInverse)
-        {
-            probMass_->initializeSystem( Qp );
-            probMass_->setupPreconditioner( "Monolithic" ); // single matrix
-            massMatrixInverse_ = probMass_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
-        }
-        else
-        {
-           massMatrixInverse_ = buildDiagonalInverse(pressureMassMatrixPtr_, typeDiag)->getThyraLinOp() ;
+            if(explicitInverse)
+            {
+                probMass_->initializeSystem( Qp );
+                probMass_->setupPreconditioner( "Monolithic" ); // single matrix
+                massMatrixInverse_ = probMass_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
+            }
+            else
+            {
+                massMatrixInverse_ = buildDiagonalInverse(pressureMassMatrixPtr_, typeDiag)->getThyraLinOp() ;
+            }
         }
 
     }
@@ -1389,6 +1442,12 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
                                     BT);
     }
     else if (type == "PCD") {
+        if (!timeProblem_.is_null()){
+            timeProblem_->assemble("UpdateConvectionDiffusionOperator");
+        }
+        else{
+            problem_->assemble("UpdateConvectionDiffusionOperator");
+        }
         MatrixPtr_Type pcdOperatorScaled = Teuchos::rcp( new Matrix_Type( pcdOperatorMatrixPtr_ ) );
         pcdOperatorScaled->resumeFill();
         pcdOperatorScaled->scale(-1.0);

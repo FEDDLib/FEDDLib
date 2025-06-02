@@ -126,7 +126,8 @@ u_rep_()
 
     if(!this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD")
         || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")
-        || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") )
+        || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
+        || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("LSC-Pressure-Laplace") )
     { 
         this->bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
         this->bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, domainPressure, "Dirichlet", 1);
@@ -156,6 +157,8 @@ void NavierStokes<SC,LO,GO,NO>::assemble( std::string type ) const{
         this->newtonStep_ = 0;
         // timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
     }
+    else if(type =="UpdateConvectionDiffusionOperator")
+        this->updateConvectionDiffusionOperator();
     else
         reAssemble( type );
 
@@ -258,7 +261,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
             // Pressure mass matrix
             MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true,2 ); 
+            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true ); 
             Mp_= Mpressure;
             this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
             // --------------------------------------------------------------------------------------------
@@ -316,7 +319,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
     }
 #endif
     string precType = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-    if ( precType == "Diagonal" || precType == "Triangular" || precType == "PCD" || precType == "LSC" ) {
+    if ( precType == "Diagonal" || precType == "Triangular") {
         MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         
         this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true );
@@ -348,6 +351,9 @@ void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
     
         NAVIER_STOKES_START(ReassemblePCD," Reassembling Matrix for PCD ");
       
+        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+        u_rep_->importFromVector(u, true);
+
         // PCD Operator  
         MatrixPtr_Type Fp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         // --------------------------------------------------------------------------------------------
@@ -398,7 +404,8 @@ void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
                                                        // Note, if no surfaces are available, the matrix Kext, containg the robin bc is zero,
                                                        // so no robin bc is applied.
 
-        this->getPreconditionerConst()->setPCDOperator( Fp );       
+        this->getPreconditionerConst()->setPCDOperator( Fp );      
+
         NAVIER_STOKES_STOP(ReassemblePCD);       
     }
 }
@@ -684,8 +691,13 @@ void NavierStokes<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray
 
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
+    
+    if (this->verbose_)
+        std::cout << "-- NavierStokes::calculateNonLinResidualVec ("<< type <<") ... " << std::flush;
+
+    // this->updateConvectionDiffusionOperator();
+    
     this->reAssemble("FixedPoint");
-    this->updateConvectionDiffusionOperator();
     // We need to account for different parameters of time discretizations here
     // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
     if (this->coeff_.size() == 0)
