@@ -527,7 +527,7 @@ namespace FEDD
                     }
                     else{
                         if (this->verbose_)
-                            cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImplBlock:: Skipping preconditioner reconstruction " << endl;
+                            cout << " \n NonLinearProblem<SC,LO,GO,NO>::evalModelImplBlock:: Skipping preconditioner reconstruction \n " << endl;
                     }
                 }
                 else
@@ -616,7 +616,6 @@ namespace FEDD
         else{
             this->setupPreconditioner( type ); // initializePreconditioner( type );
             precInitOnly_ = false;
-
         }
         
 

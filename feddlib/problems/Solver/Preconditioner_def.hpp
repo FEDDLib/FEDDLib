@@ -1,3 +1,11 @@
+#ifndef PRECONDITIONER_START
+#define PRECONDITIONER_START(A,S) Teuchos::RCP<Teuchos::TimeMonitor> A = Teuchos::rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer(std::string("Preconditioner: ") + std::string(S))));
+#endif
+
+#ifndef PRECONDITIONER_STOP
+#define PRECONDITIONER_STOP(A) A.reset();
+#endif
+
 #ifndef Preconditioner_DEF_hpp
 #define Preconditioner_DEF_hpp
 #include "Preconditioner_decl.hpp"
@@ -1177,6 +1185,7 @@ void Preconditioner<SC,LO,GO,NO>::setPCDOperator(MatrixPtr_Type matrix) const{
 template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
 {
+    PRECONDITIONER_START(buildPreconditionerBlock2x2, " buildPreconditionerBlock2x2");
    
     typedef Domain<SC,LO,GO,NO> Domain_Type;
     typedef Teuchos::RCP<const Domain_Type> DomainConstPtr_Type;
@@ -1204,9 +1213,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     bool verbose( comm->getRank() == 0 );
 
     if(verbose){
-        cout << " ############## " << endl;
-        cout << " Build Preconditioner " << endl;
-        cout << " ############## " << endl;
+        cout << " ######################## " << endl;
+        cout << " Build 2x2 Preconditioner " << endl;
+        cout << " ######################## " << endl;
     }
     ParameterListPtr_Type plVelocity( new Teuchos::ParameterList( parameterList->sublist("Velocity preconditioner") ) );
     ParameterListPtr_Type plSchur( new Teuchos::ParameterList( parameterList->sublist("Schur complement preconditioner") ) );
@@ -1235,8 +1244,10 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     
     probVelocity_->initializeSystem( system1 );
     
+    PRECONDITIONER_START(setupFInv, " Setup Preconditioner for F");
     probVelocity_->setupPreconditioner( "Monolithic" ); // single matrix
-    
+    PRECONDITIONER_STOP(setupFInv);
+
     precVelocity_ = probVelocity_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
     
     if (probSchur_.is_null()) {
@@ -1262,6 +1273,8 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
 
     // We distinguish for the Schur complement component
     // Setup additional things
+    PRECONDITIONER_START(setupSInv, " Setup Preconditioner for S");
+
     if(type == "Diagonal" || type == "Triangular"){
         BlockMatrixPtr_Type Mp = Teuchos::rcp( new BlockMatrix_Type(1) );
             
@@ -1428,7 +1441,8 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         }
             
     }
-    
+    PRECONDITIONER_STOP(setupSInv);
+
     // Building block Prec and passing along the different operators
     // that are required to build the respective preconditioners
     if (type == "Diagonal") {
@@ -1499,6 +1513,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     defaultPrec->initializeUnspecified( linOp );
     
     precondtionerIsBuilt_ = true;
+
+    PRECONDITIONER_STOP(buildPreconditionerBlock2x2);
+
     
 }
 
