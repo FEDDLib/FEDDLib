@@ -12,6 +12,10 @@
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
 
+#include <Teuchos_GlobalMPISession.hpp>
+#include <Xpetra_DefaultPlatform.hpp>
+#include <Teuchos_StackedTimer.hpp>
+
 /*!
  main of time-dependent Navier-Stokes problem
  
@@ -132,6 +136,7 @@ typedef default_sc SC;
 typedef default_lo LO;
 typedef default_go GO;
 typedef default_no NO;
+using namespace Teuchos;
 
 using namespace FEDD;
 int main(int argc, char *argv[]) {
@@ -173,6 +178,9 @@ int main(int argc, char *argv[]) {
     if(parseReturn == Teuchos::CommandLineProcessor::PARSE_HELP_PRINTED) {
         return EXIT_SUCCESS;
     }
+
+    Teuchos::RCP<StackedTimer> stackedTimer =  rcp(new StackedTimer("Unsteady Navier-Stokes",true));
+    TimeMonitor::setStackedTimer(stackedTimer);
 
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
@@ -408,5 +416,10 @@ int main(int argc, char *argv[]) {
     }
 
     Teuchos::TimeMonitor::report(cout);
+    stackedTimer->stop("Unsteady Navier-Stokes");
+	StackedTimer::OutputOptions options;
+	options.output_fraction = options.output_histogram = options.output_minmax = true;
+	stackedTimer->report((std::cout),comm,options);
+
     return EXIT_SUCCESS;
 }
