@@ -1907,9 +1907,9 @@ int RefinementFactory<SC,LO,GO,NO>::determineLongestEdge( EdgeElementsPtr_Type e
 		P2 = points->at(p2ID);
 		double sum=0;
 		for(int j=0; j< P1.size();j++)
-			sum += pow(P1[j]-P2[j],2);
+			sum += std::pow(P1[j]-P2[j],2);
 
-		length[i] = sqrt(sum);
+		length[i] = std::sqrt(sum);
 	
 		vec2D_dbl_Type tmpN(0,vec_dbl_Type(this->dim_+1));
 		vec_dbl_Type tagged(1,2);
@@ -1980,13 +1980,13 @@ void RefinementFactory<SC,LO,GO,NO>::refineBlue(EdgeElementsPtr_Type edgeElement
 		LO p2ID =edgeElements->getElement(taggedEdge[0]).getNode(1);
 		P1 = this->pointsRep_->at(p1ID);
 		P2 = this->pointsRep_->at(p2ID);
-		length1 = sqrt(pow(P1[0]-P2[0],2)+pow(P1[1]-P2[1],2));
+		length1 = std::sqrt(std::pow(P1[0]-P2[0],2)+std::pow(P1[1]-P2[1],2));
 
 		p1ID =edgeElements->getElement(taggedEdge[1]).getNode(0);
 		p2ID =edgeElements->getElement(taggedEdge[1]).getNode(1);
 		P1 = this->pointsRep_->at(p1ID);
 		P2 = this->pointsRep_->at(p2ID);
-		length2 = sqrt(pow(P1[0]-P2[0],2)+pow(P1[1]-P2[1],2));
+		length2 = std::sqrt(std::pow(P1[0]-P2[0],2)+std::pow(P1[1]-P2[1],2));
 
 		if(length1 <= length2){
 			edgeIndexL=1;
@@ -3029,7 +3029,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 			p2ID =leftOverNodes[i];
 			P1 = this->pointsRep_->at(p1ID);
 			P2 = this->pointsRep_->at(p2ID);
-			length[i] = sqrt(pow(P1[0]-P2[0],2)+pow(P1[1]-P2[1],2)+pow(P1[2]-P2[2],2));
+			length[i] = std::sqrt(std::pow(P1[0]-P2[0],2)+std::pow(P1[1]-P2[1],2)+std::pow(P1[2]-P2[2],2));
 			if(length[i] > maxLength){
 				maxLength = length[i];
 				maxEntry= i;
@@ -4718,11 +4718,11 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 		int diaInd=0;
 
-		lengthDia[0] = sqrt(pow(pointsRep->at(midPointInd[1]).at(0) - pointsRep->at(midPointInd[4]).at(0),2) + pow(pointsRep->at(midPointInd[1]).at(1) - pointsRep->at(midPointInd[4]).at(1),2) +pow(pointsRep->at(midPointInd[1]).at(2) - pointsRep->at(midPointInd[4]).at(2),2) );
+		lengthDia[0] = std::sqrt(std::pow(pointsRep->at(midPointInd[1]).at(0) - pointsRep->at(midPointInd[4]).at(0),2) + std::pow(pointsRep->at(midPointInd[1]).at(1) - pointsRep->at(midPointInd[4]).at(1),2) +std::pow(pointsRep->at(midPointInd[1]).at(2) - pointsRep->at(midPointInd[4]).at(2),2) );
 
-		lengthDia[1] = sqrt(pow(pointsRep->at(midPointInd[0]).at(0) - pointsRep->at(midPointInd[5]).at(0),2) + pow(pointsRep->at(midPointInd[0]).at(1) - pointsRep->at(midPointInd[5]).at(1),2) +pow(pointsRep->at(midPointInd[0]).at(2) - pointsRep->at(midPointInd[5]).at(2),2) );
+		lengthDia[1] = std::sqrt(std::pow(pointsRep->at(midPointInd[0]).at(0) - pointsRep->at(midPointInd[5]).at(0),2) + std::pow(pointsRep->at(midPointInd[0]).at(1) - pointsRep->at(midPointInd[5]).at(1),2) +std::pow(pointsRep->at(midPointInd[0]).at(2) - pointsRep->at(midPointInd[5]).at(2),2) );
 
-		lengthDia[2] = sqrt(pow(pointsRep->at(midPointInd[2]).at(0) - pointsRep->at(midPointInd[3]).at(0),2) + pow(pointsRep->at(midPointInd[2]).at(1) - pointsRep->at(midPointInd[3]).at(1),2) +pow(pointsRep->at(midPointInd[2]).at(2) - pointsRep->at(midPointInd[3]).at(2),2) );
+		lengthDia[2] = std::sqrt(std::pow(pointsRep->at(midPointInd[2]).at(0) - pointsRep->at(midPointInd[3]).at(0),2) + std::pow(pointsRep->at(midPointInd[2]).at(1) - pointsRep->at(midPointInd[3]).at(1),2) +std::pow(pointsRep->at(midPointInd[2]).at(2) - pointsRep->at(midPointInd[3]).at(2),2) );
 
 
 		vec2D_dbl_Type dia(3,vec_dbl_Type(2));

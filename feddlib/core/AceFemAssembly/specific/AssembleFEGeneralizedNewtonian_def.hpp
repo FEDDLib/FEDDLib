@@ -432,7 +432,7 @@ namespace FEDD
                     u21[w] += (*this->solution_)[index2] * dPhiTrans[w][i][0];
                     u22[w] += (*this->solution_)[index2] * dPhiTrans[w][i][1];
                 }
-                gammaDot->at(w) = sqrt(2.0 * u11[w] * u11[w] + 2.0 * u22[w] * u22[w] + (u12[w] + u21[w]) * (u12[w] + u21[w]));
+                gammaDot->at(w) = std::sqrt(2.0 * u11[w] * u11[w] + 2.0 * u22[w] * u22[w] + (u12[w] + u21[w]) * (u12[w] + u21[w]));
                 mixed_term_xy->at(w) = 0.5 * (u12[w] + u21[w]);
             }
             //*******************************
@@ -554,7 +554,7 @@ namespace FEDD
                     u32[w] += (*this->solution_)[index3] * dPhiTrans[w][i][1];
                     u33[w] += (*this->solution_)[index3] * dPhiTrans[w][i][2];
                 }
-                gammaDot->at(w) = sqrt(2.0 * u11[w] * u11[w] + 2.0 * u22[w] * u22[w] + 2.0 * u33[w] * u33[w] + (u12[w] + u21[w]) * (u12[w] + u21[w]) + (u13[w] + u31[w]) * (u13[w] + u31[w]) + (u23[w] + u32[w]) * (u23[w] + u32[w]));
+                gammaDot->at(w) = std::sqrt(2.0 * u11[w] * u11[w] + 2.0 * u22[w] * u22[w] + 2.0 * u33[w] * u33[w] + (u12[w] + u21[w]) * (u12[w] + u21[w]) + (u13[w] + u31[w]) * (u13[w] + u31[w]) + (u23[w] + u32[w]) * (u23[w] + u32[w]));
 
                 mixed_term_xy->at(w) = 0.5 * (u12[w] + u21[w]);
                 mixed_term_xz->at(w) = 0.5 * (u31[w] + u13[w]);
@@ -748,7 +748,7 @@ namespace FEDD
                     u21[w] += (*this->solution_)[index2] * dPhiTrans[w][i][0];
                     u22[w] += (*this->solution_)[index2] * dPhiTrans[w][i][1];
                 }
-                gammaDot->at(w) = sqrt(2.0 * u11[w] * u11[w] + 2.0 * u22[w] * u22[w] + (u12[w] + u21[w]) * (u12[w] + u21[w])); 
+                gammaDot->at(w) = std::sqrt(2.0 * u11[w] * u11[w] + 2.0 * u22[w] * u22[w] + (u12[w] + u21[w]) * (u12[w] + u21[w])); 
             }
         } // end if dim == 2
         //****************** THREE DIMENSIONAL *********************************
@@ -796,7 +796,7 @@ namespace FEDD
                     u32[w] += (*this->solution_)[index3] * dPhiTrans[w][i][1];
                     u33[w] += (*this->solution_)[index3] * dPhiTrans[w][i][2];
                 }
-                gammaDot->at(w) = sqrt(2.0 * u11[w] * u11[w] + 2.0 * u22[w] * u22[w] + 2.0 * u33[w] * u33[w] + (u12[w] + u21[w]) * (u12[w] + u21[w]) + (u13[w] + u31[w]) * (u13[w] + u31[w]) + (u23[w] + u32[w]) * (u23[w] + u32[w]));
+                gammaDot->at(w) = std::sqrt(2.0 * u11[w] * u11[w] + 2.0 * u22[w] * u22[w] + 2.0 * u33[w] * u33[w] + (u12[w] + u21[w]) * (u12[w] + u21[w]) + (u13[w] + u31[w]) * (u13[w] + u31[w]) + (u23[w] + u32[w]) * (u23[w] + u32[w]));
             }
         } // end if dim == 3
     }

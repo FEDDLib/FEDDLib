@@ -184,7 +184,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type 
                 }
             }
             value[j] *= absDetB;
-			 /*if (std::fabs(value[j]) < pow(10,-14)) {
+			 /*if (std::fabs(value[j]) < std::pow(10,-14)) {
 		            value[j] = 0.;
 		        }*/
 			for (UN d=0; d<dofs; d++) {

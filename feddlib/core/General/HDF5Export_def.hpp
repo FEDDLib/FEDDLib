@@ -41,7 +41,7 @@ void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(std::string varName,MultiVector
 
     EpetraMVPtr_Type u_export(new Epetra_MultiVector(*(writeMap_),1)); // Epetra export vector
 
-    TEUCHOS_TEST_FOR_EXCEPTION( abs(writeMap_->NumMyElements() - writeVector->getLocalLength()) > 1e-12, std::logic_error, " The local length of map does not match the local mv length. Map and MultiVector are not compatible");
+    TEUCHOS_TEST_FOR_EXCEPTION( std::abs(writeMap_->NumMyElements() - writeVector->getLocalLength()) > 1e-12, std::logic_error, " The local length of map does not match the local mv length. Map and MultiVector are not compatible");
 
     // We need to write the contents of the writeVector into the Epetra export vector: Convert Xpetra -> Epetra
     Teuchos::ArrayRCP<const SC> tmpData = writeVector->getData(0);

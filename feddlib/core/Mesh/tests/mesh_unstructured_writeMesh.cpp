@@ -140,9 +140,9 @@ int main(int argc, char *argv[]) {
                 TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error ,"Different Flag for two points..");
 
             for (int j=0; j< dim; j++){
-                double errorTmp = abs(points1->at(i).at(j) - points2->at(i).at(j));
+                double errorTmp = std::abs(points1->at(i).at(j) - points2->at(i).at(j));
                 if(errorTmp > error){
-                    error = errorTmp/abs(points1->at(i).at(j));
+                    error = errorTmp/std::abs(points1->at(i).at(j));
                 }
             }
         }

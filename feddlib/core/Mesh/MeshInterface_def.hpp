@@ -480,11 +480,11 @@ void MeshInterface<SC,LO,GO,NO>::calculateDistancesToInterfaceParallel( vec_dbl_
         {
             for(int k = 0; k < dim; k++)
             {
-                distance = distance + pow( sourceNodesRep->at(i).at(k) - endNodesRep->at(j).at(k), 2.0 );
+                distance = distance + std::pow( sourceNodesRep->at(i).at(k) - endNodesRep->at(j).at(k), 2.0 );
             }
             
             // Noch die Wurzel ziehen
-            distance = sqrt(distance);
+            distance = std::sqrt(distance);
             
             if(distancesToInterface->at(i) > distance)
                 distancesToInterface->at(i) = distance;

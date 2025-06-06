@@ -6883,7 +6883,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                     SmallMatrix_Type elementMatrixPrint(18,0.);
                     for(int i=0; i< 18 ; i++){
                         for(int j=0; j< 18; j++){
-                           if(fabs(stiffMat[i][j]) >1e-13)
+                           if(std::fabs(stiffMat[i][j]) >1e-13)
                                 elementMatrixPrint[i][j] = stiffMat[i][j];
 
                         }
@@ -6946,7 +6946,7 @@ void FE<SC,LO,GO,NO>::computeSurfaceNormal(int dim,
     if(dim==2){
         v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
         v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
-        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+        norm_v_E = std::sqrt(std::pow(v_E[0],2)+std::pow(v_E[1],2));	
         
     }
     else if(dim==3){
@@ -6963,7 +6963,7 @@ void FE<SC,LO,GO,NO>::computeSurfaceNormal(int dim,
         v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
         v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
         
-        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+        norm_v_E = std::sqrt(std::pow(v_E[0],2)+std::pow(v_E[1],2)+std::pow(v_E[2],2));
         
     }
 
@@ -8479,16 +8479,16 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
             case 2:
                 QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
                 QuadW->resize(2);
-                QuadPts->at(0).at(0) = - 0.5/sqrt(3.)+0.5;
-                QuadPts->at(1).at(0) = 0.5/sqrt(3.)+0.5;
+                QuadPts->at(0).at(0) = - 0.5/std::sqrt(3.)+0.5;
+                QuadPts->at(1).at(0) = 0.5/std::sqrt(3.)+0.5;
                 QuadW->at(0) = .5;
                 QuadW->at(1) = .5;
                 break;
             case 3:
                 QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
                 QuadW->resize(2);
-                QuadPts->at(0).at(0) = - 0.5/sqrt(3.)+0.5;
-                QuadPts->at(1).at(0) = 0.5/sqrt(3.)+0.5;
+                QuadPts->at(0).at(0) = - 0.5/std::sqrt(3.)+0.5;
+                QuadPts->at(1).at(0) = 0.5/std::sqrt(3.)+0.5;
                 QuadW->at(0) = .5;
                 QuadW->at(1) = .5;
                 break;
@@ -8799,12 +8799,12 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                     QuadPts.reset(new vec2D_dbl_Type(15,vec_dbl_Type(3,0.0)));
                     QuadW->resize(15);
                     a 	= 0.25;
-                    b1 	= (7.+sqrt(15.))/34.;
-                    b2 	= (7.-sqrt(15.))/34.;
-                    c1 	= (13.-3.*sqrt(15.))/34.;
-                    c2 	= (13.+3.*sqrt(15.))/34.;
-                    d 	= (5.-sqrt(15.))/20.;
-                    e 	= (5.+sqrt(15.))/20.;
+                    b1 	= (7.+std::sqrt(15.))/34.;
+                    b2 	= (7.-std::sqrt(15.))/34.;
+                    c1 	= (13.-3.*std::sqrt(15.))/34.;
+                    c2 	= (13.+3.*std::sqrt(15.))/34.;
+                    d 	= (5.-std::sqrt(15.))/20.;
+                    e 	= (5.+std::sqrt(15.))/20.;
                     
                     QuadPts->at(0).at(0) 	= a;
                     QuadPts->at(0).at(1)    = a;
@@ -8867,8 +8867,8 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                     QuadPts->at(14).at(2)	= d;
                     
                     
-                    P1 	= (2665.-14.*sqrt(15.))/226800.;
-                    P2 	= (2665.+14.*sqrt(15.))/226800.;
+                    P1 	= (2665.-14.*std::sqrt(15.))/226800.;
+                    P2 	= (2665.+14.*std::sqrt(15.))/226800.;
                     b	= 5./567.;
                     
                     QuadW->at(0) 			= 8./405.;
@@ -9050,7 +9050,7 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                 }
                 case 3: // 2 points in each direction; order 3
                 {
-                    double d = 1./sqrt(3);
+                    double d = 1./std::sqrt(3);
                     QuadPts.reset(new vec2D_dbl_Type(8,vec_dbl_Type(3,0.0)));
                     QuadW->resize(8);
                     QuadPts->at(0).at(0) 	= -d;
@@ -9096,7 +9096,7 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                 }
                 case 5: // 3 points in each direction; order 5
                 {
-                    double a=sqrt(3./5);
+                    double a=std::sqrt(3./5);
                     double b=5./9;
                     double c=8./9;
                     std::vector<double> p(3);
@@ -9121,14 +9121,14 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                 }
                 case 7: // 4 points in each direction; order 7
                 {
-                    double aa = 2./7 * sqrt(6./5) ;
+                    double aa = 2./7 * std::sqrt(6./5) ;
                     std::vector<double> p(4);
-                    p[0] = - sqrt(3./7 + aa);
-                    p[1] = - sqrt(3./7 - aa);
+                    p[0] = - std::sqrt(3./7 + aa);
+                    p[1] = - std::sqrt(3./7 - aa);
                     p[2] = -p[1];
                     p[3] = -p[0];
                     
-                    double bb = sqrt(30.);
+                    double bb = std::sqrt(30.);
                     std::vector<double> w(4);
                     w[0] = ( 18. - bb ) / 36;
                     w[1] = ( 18. + bb ) / 36;
@@ -9470,7 +9470,7 @@ void FE<SC,LO,GO,NO>::nh3d(double* v, double (*E), double (*Nu), double** F , do
     v[148]=v[15]*v[26]+v[38];
     v[29]=v[148]*v[20]+2e0*v[22]*v[325]-v[15]*v[334]-v[26]*v[335];
     v[336]=1e0/Power(v[29],2);
-    v[32]=-v[5]+v[3]*log(sqrt(v[29]));
+    v[32]=-v[5]+v[3]*std::log(std::sqrt(v[29]));
     v[337]=(v[3]/4e0-v[32]/2e0)*v[336];
     v[137]=v[337]*(F[2][1]*v[326]+F[2][0]*v[327]-v[335]*v[88]+v[15]*v[94]);
     v[147]=v[137]*v[138];
@@ -9770,7 +9770,7 @@ void FE<SC,LO,GO,NO>::mr3d(double* v,double (*E),double (*Nu),double (*C)
     v[151]=v[15]*v[26]+v[38];
     v[29]=v[151]*v[20]+2e0*v[22]*v[335]-v[15]*v[344]-v[26]*v[345];
     v[346]=1e0/Power(v[29],2);
-    v[33]=-2e0*v[139]-v[4]+v[5]*log(sqrt(v[29]));
+    v[33]=-2e0*v[139]-v[4]+v[5]*std::log(std::sqrt(v[29]));
     v[347]=v[346]*(-v[33]/2e0+v[5]/4e0);
     v[138]=v[347]*(F[2][1]*v[336]+F[2][0]*v[337]-v[345]*v[89]+v[15]*v[95]);
     v[149]=v[138]*v[140];
@@ -10905,7 +10905,7 @@ void FE<SC,LO,GO,NO>::SKR_Biot(double* v,ElementSpec *es,ElementData *ed,NodeSpe
         v[266]=v[141]*v[503];
         v[263]=v[146]*v[502];
         v[262]=v[144]*v[503];
-        v[148]=es->IntPoints[3+i109]*fabs(v[155]);
+        v[148]=es->IntPoints[3+i109]*std::fabs(v[155]);
         v[176]=(v[146]*v[149]-v[144]*v[151])/v[155];
         v[179]=(-(v[143]*v[152])+v[141]*v[154])/v[155];
         v[195]=v[176]+v[179];
@@ -11364,7 +11364,7 @@ void FE<SC,LO,GO,NO>::SKR_Biot_StVK(double* v,ElementSpec *es,ElementData *ed,No
      v[291]=v[148]*v[589];
      v[288]=v[153]*v[588];
      v[287]=v[151]*v[589];
-     v[155]=es->IntPoints[3+i116]*fabs(v[162]);
+     v[155]=es->IntPoints[3+i116]*std::fabs(v[162]);
      v[163]=(v[153]*v[156]-v[151]*v[158])/v[162];
      v[164]=(-(v[150]*v[156])+v[148]*v[158])/v[162];
      v[165]=(v[153]*v[159]-v[151]*v[161])/v[162];
@@ -12461,7 +12461,7 @@ void FE<SC,LO,GO,NO>::SKR_Biot3D(double* v, ElementSpec *es, ElementData *ed, No
      v[1681]=0e0;
      v[1682]=0e0;
      v[1683]=0e0;
-     v[314]=es->IntPoints[3+i256]*fabs(v[336]);
+     v[314]=es->IntPoints[3+i256]*std::fabs(v[336]);
      v[393]=(v[315]*v[340]+v[318]*v[341]+v[321]*v[342])/v[336];
      v[396]=(v[322]*v[344]+v[325]*v[345]+v[328]*v[346])/v[336];
      v[398]=(v[329]*v[348]+v[332]*v[349]+v[335]*v[350])/v[336];

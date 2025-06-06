@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
 		if(comm->getRank() ==0)
 			cout << " Relative error Norm of solutions linear elasticity assemFE " << infNormError/res << endl;
 	
-        TEUCHOS_TEST_FOR_EXCEPTION( abs(infNormError/res) > 1e-11 , std::logic_error, "Relative error between calculated solutions is too great. Exceeded 1e-11. ");
+        TEUCHOS_TEST_FOR_EXCEPTION( std::abs(infNormError/res) > 1e-11 , std::logic_error, "Relative error between calculated solutions is too great. Exceeded 1e-11. ");
 
     }
 

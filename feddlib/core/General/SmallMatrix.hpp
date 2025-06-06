@@ -372,14 +372,14 @@ double SmallMatrix<T>::computeScaling( ){
     
     double scaling;
     if (size_==2)
-        scaling = sqrt( values_[0][0] * values_[0][0] + values_[1][0] * values_[1][0] );
+        scaling = std::sqrt( values_[0][0] * values_[0][0] + values_[1][0] * values_[1][0] );
     else if(size_==3){
         
         double c1 = ( values_[1][0] * values_[2][1] - values_[2][0] * values_[1][1] );
         double c2 = ( values_[2][0] * values_[0][1] - values_[0][0] * values_[2][1] );
         double c3 = ( values_[0][0] * values_[1][1] - values_[1][0] * values_[0][1] );
         
-        scaling = sqrt( c1*c1 + c2*c2 + c3*c3 );
+        scaling = std::sqrt( c1*c1 + c2*c2 + c3*c3 );
     }
     else
         TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Matrix size is not 2 or 3.");

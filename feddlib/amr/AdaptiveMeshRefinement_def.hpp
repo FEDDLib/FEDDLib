@@ -689,7 +689,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 
 	// ---------------------------
 	// Calculating H1 Norm
-	errorH1.push_back(sqrt(problem_->calculateH1Norm(errorValues)));
+	errorH1.push_back(std::sqrt(problem_->calculateH1Norm(errorValues)));
 
 	// ---------------------------
 	// L2 Norm 
@@ -724,12 +724,12 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 
 	}
 
-	errorL2.push_back(sqrt(errorL2Tmp));
+	errorL2.push_back(std::sqrt(errorL2Tmp));
 
 	// -------------------------------
 	// Calculating Error bound epsilon
 	if(exactSolInput_ == true){
-		relError.push_back(sqrt(problem_->calculateH1Norm(errorValues)) / sqrt(problem_->calculateH1Norm(exactSolution)));
+		relError.push_back(std::sqrt(problem_->calculateH1Norm(errorValues)) / std::sqrt(problem_->calculateH1Norm(exactSolution)));
 	}
 
 	if(exactSolInput_ == true){
@@ -741,10 +741,10 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 				eta=errorElement[i];		
 		}
 		reduceAll<int, double> (*comm_, REDUCE_MAX, eta, outArg (eta));
-		//eta = pow(eta,2);
+		//eta = std::pow(eta,2);
 
 
-		eRelError.push_back(sqrt(eta)/ sqrt(problem_->calculateH1Norm(solutionP12)));
+		eRelError.push_back(std::sqrt(eta)/ std::sqrt(problem_->calculateH1Norm(solutionP12)));
 	}
 
 	// -------------------------------
@@ -822,7 +822,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 			double valueH1 = problem_->calculateH1Norm(mvValuesErrorUnique);
 			double valueL2 = 0; // problem_->calculateL2Norm(mvValuesErrorUnique);
 			if(elementMap->getLocalElement(k) != -1){
-				errorH1ElementsA[elementMap->getLocalElement(k)]= sqrt(valueH1 + valueL2);
+				errorH1ElementsA[elementMap->getLocalElement(k)]= std::sqrt(valueH1 + valueL2);
 			}
 		
 		}
