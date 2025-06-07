@@ -40,7 +40,7 @@ PROBLEM SETUP (USER):
 1. Mesh:
 -As starting point, a discretization of the physical domain is needed. FEDDLib provides functionalities to read meshes that are written in the
 MEDIT Inria mesh format (.mesh). For mesh generation, one can use for example Gmsh and an additional .msh to .mesh converter script (see inside
-FEDDLib/meshes/Msh2Mesh/ for a runnable MATLAB script). Various meshes are also already included in the directory FEDDLib/meshes/
+FEDDLib/meshes/Msh2Mesh/ for a runnable MATLAB script and python script). Various meshes are also already included in the directory FEDDLib/meshes/
 
 2. Simulation:
 - The FEDDLib contains assembly routines for specific model problems such as the Poisson equation, linear and nonlinear elasticity, Stokes problem,
