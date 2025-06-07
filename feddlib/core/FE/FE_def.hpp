@@ -1513,9 +1513,9 @@ void FE<SC,LO,GO,NO>::assemblyIdentity(MatrixPtr_Type &A){
 
 //     // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
     
-// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-//              Helper::determineDegree( dim, FEType, Helper::Std) + 
+// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of grad u
+// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1) + 
+//              Helper::determineDegree( dim, FEType, Helper::Deriv0) + 
 //              extraDeg;
 
 // 	Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -1600,9 +1600,9 @@ void FE<SC,LO,GO,NO>::assemblyIdentity(MatrixPtr_Type &A){
 // 	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
 //     // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
-// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-//              Helper::determineDegree( dim, FEType, Helper::Std) + 
+// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of grad u
+// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1) + 
+//              Helper::determineDegree( dim, FEType, Helper::Deriv0) + 
 //              extraDeg;
 
 // 	Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -1676,9 +1676,9 @@ void FE<SC,LO,GO,NO>::assemblyIdentity(MatrixPtr_Type &A){
 // 	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
 //     // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
-// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-//              Helper::determineDegree( dim, FEType, Helper::Std) + 
+// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of grad u
+// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1) + 
+//              Helper::determineDegree( dim, FEType, Helper::Deriv0) + 
 //              extraDeg;
 
 // 	Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -1819,7 +1819,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 
     // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
     // The diffusion tensor is constant and, thus, does not require a higher-order quadrature rule.
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);//+1;
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);//+1;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -2245,7 +2245,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
     // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv0);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
 
@@ -2323,7 +2323,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec_dbl_ptr_Type	weights = Teuchos::rcp(new vec_dbl_Type(0));
 
     // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv0);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
 
@@ -2400,7 +2400,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplace(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -2462,7 +2462,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceVecField(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
@@ -2529,7 +2529,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceVecFieldV2(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
@@ -2759,7 +2759,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAndStressAceFEM(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
     
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
@@ -3218,7 +3218,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAceFEM(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
@@ -3423,7 +3423,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityStressesAceFEM(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
@@ -3609,10 +3609,10 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecField(int dim,
     vec2D_dbl_ptr_Type     phi;
     vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
+    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of grad u
 
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Grad ) + 
-             Helper::determineDegree( dim, FEType, Helper::Std) + 
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1 ) + 
+             Helper::determineDegree( dim, FEType, Helper::Deriv0) + 
              extraDeg;
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
@@ -3702,9 +3702,9 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionInUVecField(int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Grad); //Elementwise assembly of u
+    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv1); //Elementwise assembly of u
 
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Std) + extraDeg;
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv0) + extraDeg;
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -3804,8 +3804,8 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivT( int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = Helper::determineDegree( dim, FEType1, Helper::Grad) + 
-             Helper::determineDegree( dim, FEType2, Helper::Std);
+    UN deg = Helper::determineDegree( dim, FEType1, Helper::Deriv1) + 
+             Helper::determineDegree( dim, FEType2, Helper::Deriv0);
 
     Helper::getDPhi(dPhi, weights, dim, FEType1, deg);
 
@@ -3934,8 +3934,8 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivTFast( int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = Helper::determineDegree( dim, FEType1, Helper::Grad) + 
-             Helper::determineDegree( dim, FEType2, Helper::Std);
+    UN deg = Helper::determineDegree( dim, FEType1, Helper::Deriv1) + 
+             Helper::determineDegree( dim, FEType2, Helper::Deriv0);
     
     Helper::getDPhi(dPhi, weights, dim, FEType1, deg);
     
@@ -4014,7 +4014,7 @@ void FE<SC,LO,GO,NO>::assemblyBDStabilization(int dim,
 
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv0);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
 
@@ -4091,7 +4091,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceXDim(int dim,
 
     // double val, value1_j, value2_j , value1_i, value2_i;
 
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi, FEType);
@@ -4274,7 +4274,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
     // double value, value1_j, value2_j , value1_i, value2_i;
 
     // inner( grad(u) + grad(u)^T , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi,FEType);
 
@@ -4605,7 +4605,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
     vec_dbl_ptr_Type			weightsDPhi = Teuchos::rcp(new vec_dbl_Type(0));
     vec2D_dbl_ptr_Type			quadPts;
 
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
 
     // Hole die grad_phi, hier DPhi
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
@@ -4960,7 +4960,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
     vec_dbl_ptr_Type			weightsDPhi = Teuchos::rcp(new vec_dbl_Type(0));
     vec2D_dbl_ptr_Type			quadPts;
 
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
 
     // Hole die grad_phi, hier DPhi
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
@@ -5274,8 +5274,8 @@ void FE<SC,LO,GO,NO>::assemblyAdditionalConvection(int dim,
     vec_dbl_ptr_Type			weights = Teuchos::rcp(new vec_dbl_Type(0));
     vec2D_dbl_ptr_Type			quadPts;
 
-    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Grad); // Fuer diskretes (\grad \cdot w) in den Gausspuntken
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Std) + extraDeg;
+    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv1); // Fuer diskretes (\grad \cdot w) in den Gausspuntken
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv0) + extraDeg;
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -5647,8 +5647,8 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeVelocity(int dim,
     vec2D_dbl_ptr_Type			quadPts;
 
     // Hoechste Quadraturordnung angeben (= Zusaetzlicher Term wg. non-conservativ); bei P2/P1 hier Ordnung 6
-    UN extraDeg = 2*Helper::determineDegree( dim, FEType1, Helper::Grad);
-    UN deg = 2*Helper::determineDegree( dim, FEType1, Helper::Std) + extraDeg;
+    UN extraDeg = 2*Helper::determineDegree( dim, FEType1, Helper::Deriv1);
+    UN deg = 2*Helper::determineDegree( dim, FEType1, Helper::Deriv0) + extraDeg;
 
     Helper::getDPhi(dPhiU, weights, dim, FEType1, deg);
     Helper::getPhi(phiU, weights, dim, FEType1, deg);
@@ -6483,8 +6483,8 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
     vec_dbl_ptr_Type			weights = Teuchos::rcp(new vec_dbl_Type(0));
     vec2D_dbl_ptr_Type			quadPts;
 
-    UN extraDeg = Helper::determineDegree( dim, FEType1, Helper::Grad);
-    UN deg = Helper::determineDegree( dim, FEType1, Helper::Std) + 2*extraDeg;
+    UN extraDeg = Helper::determineDegree( dim, FEType1, Helper::Deriv1);
+    UN deg = Helper::determineDegree( dim, FEType1, Helper::Deriv0) + 2*extraDeg;
 
 
     Helper::getDPhi(dPhiU, weights, dim, FEType1, deg);
@@ -6989,7 +6989,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14; // Degree from function set/determined externally
-    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Std) + degFunc;
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0) + degFunc;
 
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
 
@@ -7093,7 +7093,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralFlag(int dim,
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     UN degFunc = funcParameter[0] + 1.e-14;
-    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Std) + degFunc;
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0) + degFunc;
 
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
 
@@ -7195,7 +7195,7 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     // inner( f(x), phi(x) ) requires the integration degree of the basis function + some 
     // extra user-provided degree that accounts for the heterogeneity of f(x).
     UN degFunc = 2;  // TODO: [JK] Hard coded for now, but needs to be passed by the user. See GitHub issue #66.
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Std) + degFunc;
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv0) + degFunc;
 
     vec2D_dbl_ptr_Type quadPoints;
     Helper::getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values

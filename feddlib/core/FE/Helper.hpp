@@ -24,8 +24,8 @@ public:
 
     /// Order of derivative of a function.
     enum VarType {
-        Std  = 0, ///< order 0, f(x)
-        Grad = 1  ///< order 1, gradient(f(x))
+        Deriv0 = 0, ///< order 0, f(x)
+        Deriv1 = 1  ///< order 1, gradient(f(x))
     };
 
     /// @brief Compute surface normal of corresponding surface
@@ -170,7 +170,7 @@ public:
 
     \param[in] dim  Dimension of the domain.
     \param[in] FEType  Finite element type, e.g., "P1", "Q2" etc.
-    \param[in] orderOfDerivative  {Std,Grad} Order of the derivative: order=0 (type=Std) is the original function, order=1 (type=Grad) is the gradient, i.e., the first derivative.
+    \param[in] orderOfDerivative  {Deriv0,Deriv1} Order of the derivative: order=0 (type=Deriv0) is the original function, order=1 (type=Deriv1) is the gradient, i.e., the first derivative.
 
     \return a polynomial degree for a finite element basis function or its gradient
     */
