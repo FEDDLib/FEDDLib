@@ -737,9 +737,9 @@ void Domain<SC,LO,GO,NO>::buildUniqueInterfaceMaps()
     GO numberInterfaceNodes = localInterfaceID; // long long wg. 64
     
     // Baue nun die InterfaceMap (node)
-    std::string ulib = this->getMapUnique()->getUnderlyingLib();
+    //std::string ulib = this->getMapUnique()->getUnderlyingLib();
     Teuchos::ArrayView<GO> vecInterfaceMapArray =  Teuchos::arrayViewFromVector( vecInterfaceMap );
-    interfaceMapUnique_ = Teuchos::rcp(new Map_Type( ulib, numberInterfaceNodes, vecInterfaceMapArray, 0, comm_ ) ); //maybe numberInterfaceNodes instead of -1
+    interfaceMapUnique_ = Teuchos::rcp(new Map_Type( numberInterfaceNodes, vecInterfaceMapArray, 0, comm_ ) ); //maybe numberInterfaceNodes instead of -1
     // dof-Map bauen
     interfaceMapVecFieldUnique_ = interfaceMapUnique_->buildVecFieldMap(dim_/*dofs*/);
 }
@@ -817,15 +817,14 @@ void Domain<SC,LO,GO,NO>::buildInterfaceMaps()
     }
 //    std::sort( vecGlobalInterfaceID.begin(), vecGlobalInterfaceID.end() );
     // Baue nun die InterfaceMap fuer Fluid oder Struktur
-    std::string ulib = this->getMapUnique()->getUnderlyingLib();
     Teuchos::ArrayView<GO> vecInterfaceGlobalMapArray =  Teuchos::arrayViewFromVector( vecGlobalInterfaceID );
     Teuchos::ArrayView<GO> vecInterfaceMapArray =  Teuchos::arrayViewFromVector( vecInterfaceID );
     Teuchos::ArrayView<GO> vecOtherInterfaceGlobalMapArray =  Teuchos::arrayViewFromVector( vecOtherGlobalInterfaceID );
     
-    globalInterfaceMapUnique_ = Teuchos::rcp(new Map_Type( ulib, -1, vecInterfaceGlobalMapArray, 0, comm_ ) );
-    interfaceMapUnique_ = Teuchos::rcp(new Map_Type( ulib, -1, vecInterfaceMapArray, 0, comm_ ) );
+    globalInterfaceMapUnique_ = Teuchos::rcp(new Map_Type( -1, vecInterfaceGlobalMapArray, 0, comm_ ) );
+    interfaceMapUnique_ = Teuchos::rcp(new Map_Type(-1, vecInterfaceMapArray, 0, comm_ ) );
 
-    otherGlobalInterfaceMapUnique_ = Teuchos::rcp(new Map_Type( ulib, -1, vecOtherInterfaceGlobalMapArray, 0, comm_ ) );
+    otherGlobalInterfaceMapUnique_ = Teuchos::rcp(new Map_Type(-1, vecOtherInterfaceGlobalMapArray, 0, comm_ ) );
 
     
     if ( interface->sizePartialCoupling() == 0 ) {
@@ -878,13 +877,13 @@ void Domain<SC,LO,GO,NO>::buildInterfaceMaps()
                 }
             }
         }
-        globalInterfaceMapVecFieldUnique_ = Teuchos::rcp(new Map_Type( globalInterfaceMapUnique_->getUnderlyingLib(), -1, elementListFieldGlobal(), 0/*index base*/, this->getComm() ) );
-        otherGlobalInterfaceMapVecFieldUnique_ = Teuchos::rcp(new Map_Type( globalInterfaceMapUnique_->getUnderlyingLib(), -1, otherElementListFieldGlobal(), 0/*index base*/, this->getComm() ) );
+        globalInterfaceMapVecFieldUnique_ = Teuchos::rcp(new Map_Type(  -1, elementListFieldGlobal(), 0/*index base*/, this->getComm() ) );
+        otherGlobalInterfaceMapVecFieldUnique_ = Teuchos::rcp(new Map_Type(  -1, otherElementListFieldGlobal(), 0/*index base*/, this->getComm() ) );
         // This is only a temporary map. We need to make sure that the dummy values have a higher GID, as the real coupling values. Otherwise we might get a problem during the assembly of the coupling matrices
-        interfaceMapVecFieldUnique_ = Teuchos::rcp(new Map_Type( globalInterfaceMapUnique_->getUnderlyingLib(), -1, elementListFieldGlobal.size(), 0/*index base*/, this->getComm() ) );
+        interfaceMapVecFieldUnique_ = Teuchos::rcp(new Map_Type(-1, elementListFieldGlobal.size(), 0/*index base*/, this->getComm() ) );
         
-        partialGlobalInterfaceVecFieldMap_ = Teuchos::rcp(new Map_Type( interfaceMapUnique_->getUnderlyingLib(), -1, elListFieldPartial(), 0/*index base*/, this->getComm() ) );
-        otherPartialGlobalInterfaceVecFieldMap_ = Teuchos::rcp(new Map_Type( interfaceMapUnique_->getUnderlyingLib(), -1, otherElListFieldPartial(), 0/*index base*/, this->getComm() ) );
+        partialGlobalInterfaceVecFieldMap_ = Teuchos::rcp(new Map_Type(  -1, elListFieldPartial(), 0/*index base*/, this->getComm() ) );
+        otherPartialGlobalInterfaceVecFieldMap_ = Teuchos::rcp(new Map_Type(-1, otherElListFieldPartial(), 0/*index base*/, this->getComm() ) );
         
     }
 

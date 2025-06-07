@@ -14,6 +14,10 @@
 #include <Xpetra_MatrixMatrix.hpp>
 #include <MatrixMarket_Tpetra.hpp>
 
+#include <Tpetra_CrsMatrix.hpp>
+//#include <Tpetra_MatrixMatrix.hpp>
+#include <MatrixMarket_Tpetra.hpp>
+
 /*!
  Declaration of Matrix
 
@@ -33,18 +37,13 @@ public:
     typedef Matrix<SC,LO,GO,NO> Matrix_Type;
     typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
 
-    typedef Xpetra::Map<LO,GO,NO> XpetraMap_Type;
-    typedef Teuchos::RCP<XpetraMap_Type> XpetraMapPtr_Type;
-    typedef Teuchos::RCP<const XpetraMap_Type> XpetraMapConstPtr_Type;
-    typedef const Teuchos::RCP<const XpetraMap_Type> XpetraMapConstPtrConst_Type;
-
-    typedef Xpetra::Matrix<SC,LO,GO,NO> XpetraMatrix_Type;
+    /*typedef Xpetra::Matrix<SC,LO,GO,NO> XpetraMatrix_Type;
     typedef Teuchos::RCP<XpetraMatrix_Type> XpetraMatrixPtr_Type;
     typedef Teuchos::RCP<const XpetraMatrix_Type> XpetraMatrixConstPtr_Type;
     typedef const Teuchos::RCP<XpetraMatrixConstPtr_Type> XpetraMatrixConstPtrConst_Type;
 
     typedef Xpetra::MultiVector<SC,LO,GO,NO> XpetraMV_Type;
-    typedef Teuchos::RCP<XpetraMV_Type> XpetraMVPtr_Type;
+    typedef Teuchos::RCP<XpetraMV_Type> XpetraMVPtr_Type;*/
 
     typedef Map<LO,GO,NO> Map_Type;
     typedef Teuchos::RCP<Map_Type> MapPtr_Type;
@@ -61,18 +60,32 @@ public:
     typedef Teuchos::Comm<int> Comm_Type;
     typedef Teuchos::RCP<const Comm_Type> CommConstPtr_Type;
 
-    typedef Xpetra::Import<LO,GO,NO> XpetraImport_Type;
-    typedef Teuchos::RCP<XpetraImport_Type> XpetraImportPtr_Type;
+    typedef Tpetra::Import<LO,GO,NO> TpetraImport_Type;
+    typedef Teuchos::RCP<TpetraImport_Type> TpetraImportPtr_Type;
 
-    typedef Xpetra::Export<LO,GO,NO> XpetraExport_Type;
-    typedef Teuchos::RCP<XpetraExport_Type> XpetraExportPtr_Type;
+    typedef Tpetra::Export<LO,GO,NO> TpetraExport_Type;
+    typedef Teuchos::RCP<TpetraExport_Type> TpetraExportPtr_Type;
+
+
+	// -----------------------
+    typedef Tpetra::Map<LO,GO,NO> TpetraMap_Type;
+    typedef Teuchos::RCP<TpetraMap_Type> TpetraMapPtr_Type;
+    typedef Teuchos::RCP<const TpetraMap_Type> TpetraMapConstPtr_Type;
+    typedef const TpetraMapConstPtr_Type TpetraMapConstPtrConst_Type;
+
+	typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
+    typedef Teuchos::RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
+    typedef Teuchos::RCP<const TpetraMatrix_Type> TpetraMatrixConstPtr_Type;
+    typedef const Teuchos::RCP<TpetraMatrixConstPtr_Type> TpetraMatrixConstPtrConst_Type;
+
+    typedef Tpetra::MultiVector<SC,LO,GO,NO> TpetraMV_Type;
+    typedef Teuchos::RCP<TpetraMV_Type> TpetraMVPtr_Type;
 
     Matrix();
 
-    Matrix( XpetraMatrixPtr_Type& xpetraMatPtrIn );
+    Matrix( TpetraMatrixPtr_Type& tpetraMatPtrIn );
 
     Matrix( MapConstPtr_Type map , LO numEntries);
-//    Matrix(const EpetraMat_Type& epetraMatIn);
 
     Matrix( MatrixPtr_Type matrixIn );
 
@@ -105,17 +118,17 @@ public:
 	/*!
 		\brief Return map in Xpetra Format of type " ".
 	*/
-    XpetraMapConstPtr_Type getMapXpetra(string map_string="");
+    TpetraMapConstPtr_Type getMapTpetra(string map_string="");
 
 	/*!
 		\brief i.e. for NOX
 	*/
-    Teuchos::RCP<const Thyra::LinearOpBase<SC> > getThyraLinOp() const;
+    Teuchos::RCP<const Thyra::LinearOpBase<SC> > getThyraLinOp() const; 
 
 	/*!
 		\brief i.e. for NOX
 	*/
-    Teuchos::RCP<Thyra::LinearOpBase<SC> > getThyraLinOpNonConst();
+    Teuchos::RCP<Thyra::LinearOpBase<SC> > getThyraLinOpNonConst(); 
 
 	/*!
 		\brief printing matrix
@@ -173,7 +186,7 @@ public:
 	/*!
 		\brief Return matrix in Xpetra Format of type " ".
 	*/
-    XpetraMatrixConstPtr_Type getXpetraMatrix() const;
+    TpetraMatrixConstPtr_Type getTpetraMatrix() const;
     
 	/*!
 		\brief Matrix Vector Operation. Applying MultiVector X to this. Y = alpha * (this)^mode * X + beta * Y. Mode being transposed or not. 
@@ -197,7 +210,7 @@ public:
 	/*!
 		\brief B = alpha*this + beta*B.
 	*/
-    void addMatrix(SC alpha, const MatrixPtr_Type &B, SC beta);
+    void addMatrix(SC alpha, const MatrixPtr_Type &B, SC beta);// --------!
     
 	/*!
 		\brief Turning Matrix into MultiVector Format
@@ -224,9 +237,9 @@ public:
 
 private:
 
-    XpetraMatrixPtr_Type matrix_;
-    XpetraImportPtr_Type importer_;    
-	XpetraExportPtr_Type exporter_;
+    TpetraMatrixPtr_Type matrix_;
+    TpetraImportPtr_Type importer_;    
+	TpetraExportPtr_Type exporter_;
 };
 }
 

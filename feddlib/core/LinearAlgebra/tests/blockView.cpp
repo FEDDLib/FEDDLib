@@ -35,8 +35,7 @@ int main(int argc, char *argv[]) {
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
+
     GO numGlobalElements = 2;
     myCLP.setOption("nge",&numGlobalElements,"numGlobalElements.");
 
@@ -48,12 +47,12 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    typedef Xpetra::Map<LO,GO,NO> XpetraMap_Type;
-    typedef RCP<XpetraMap_Type> XpetraMapPtr_Type;
-    typedef RCP<const XpetraMap_Type> XpetraMapConstPtr_Type;
+    typedef Tpetra::Map<LO,GO,NO> TpetraMap_Type;
+    typedef RCP<TpetraMap_Type> TpetraMapPtr_Type;
+    typedef RCP<const TpetraMap_Type> TpetraMapConstPtr_Type;
 
-    typedef Xpetra::Matrix<SC,LO,GO,NO> XpetraMatrix_Type;
-    typedef RCP<XpetraMatrix_Type> XpetraMatrixPtr_Type;
+    typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
+    typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
 
     typedef Matrix<SC,LO,GO,NO> Matrix_Type;
     typedef RCP<Matrix_Type> MatrixPtr_Type;
@@ -65,18 +64,13 @@ int main(int argc, char *argv[]) {
     typedef RCP<Map_Type> MapPtr_Type;
     typedef RCP<const Map_Type> MapConstPtr_Type;
 
-    Xpetra::UnderlyingLib ulib;
-    if (!ulib_str.compare("Tpetra"))
-        ulib = Xpetra::UseTpetra;
-    else if (!ulib_str.compare("Epetra"))
-        ulib = Xpetra::UseEpetra;
+    TpetraMapConstPtr_Type tmap = RCP(new TpetraMap_Type(numGlobalElements, 0, comm));
+    TpetraMatrixPtr_Type tmatrix = RCP( new TpetraMatrix_Type(tmap, 1));
+    TpetraMatrixPtr_Type tmatrix2 = RCP( new TpetraMatrix_Type(tmap, 1));
 
 
-    XpetraMapConstPtr_Type xmap = Xpetra::MapFactory<LO,GO,NO>::Build(ulib, numGlobalElements, 0, comm);
-    XpetraMatrixPtr_Type xmatrix = Xpetra::MatrixFactory<SC,LO,GO,NO>::Build(xmap, 1);
-
-    MatrixPtr_Type matrix1 = rcp( new Matrix_Type( xmatrix ) );
-    MatrixPtr_Type matrix2 = rcp( new Matrix_Type( xmatrix ) );
+    MatrixPtr_Type matrix1 = rcp( new Matrix_Type( tmatrix ) );
+    MatrixPtr_Type matrix2 = rcp( new Matrix_Type( tmatrix2 ) );
     MapConstPtr_Type map = matrix1->getMap();
     for (UN i=0 ; i<matrix1->getNodeNumRows(); i++) {
         Array<GO> indices(1);
@@ -107,13 +101,13 @@ int main(int argc, char *argv[]) {
         Array<LO> indices(1);
         Array<SC> values1(1,2.);
         indices[0] = colMap->getLocalElement( map->getGlobalElement( i ) );
-//        matrix1->insertLocalValues( i, indices(), values1() );
+        matrix1->insertLocalValues( i, indices(), values1() );
     }
 
     matrix1->fillComplete();
     system->print(VERB_EXTREME);
     system->printMerge(VERB_EXTREME);
-
+    cout << " Done " << endl;
 
     return(EXIT_SUCCESS);
 }

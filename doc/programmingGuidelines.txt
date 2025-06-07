@@ -1,0 +1,18 @@
+* no tab characters:
+  - Use spaces for indenting in comments.
+  - Use \t in strings.
+* We use clang-format (currently in version 14.0.0) to auto-indent code consistently.
+  - The config file ".clang-format" is in the repository root folder.
+  - A script to recursively convert files with clang-format can be found TODO: Where?
+  - clang-format does not touch explicit tab characters in strings.
+  - clang-format does not touch explicit tab characters in comments.
+* If you add a new class, e.g., for elasticity problems, a test (like a unit test) must be included.
+  - For a diffusion problem, this test could compute a finite element solution for a Dirichlet problem.
+    For a diffusion problem, it also makes sense to include another test for Neumann boundary conditions.
+    There may be a number of tests that are helpful.
+    At least one test is mandatory. If you think more are useful but cannot implement them currently, please add a GitHub issue.
+  - A test should include a verified solution such that a modified code can be verified.
+  - If you add code that should be tested individually, please also add a test. 
+    An example is the implementation of quadrature rules that could be implemented in a function. 
+    You could, for example, include a test that checks whether the rules integrate "exactly" for the appropriate polynomial degree. 
+  - Idea: We do sample testing and don't require a unit test for every function.

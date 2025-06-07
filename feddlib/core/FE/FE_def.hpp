@@ -1487,265 +1487,264 @@ void FE<SC,LO,GO,NO>::assemblyIdentity(MatrixPtr_Type &A){
 }
 
 // Assembling the nonlinear reaction part of Reaction-Diffusion equation
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::assemblyReactionTerm(int dim,
-                                           std::string FEType,
-                                           MatrixPtr_Type &A,
-                                           MultiVectorPtr_Type u,
-                                           bool callFillComplete,
-                     					   std::vector<SC>& funcParameter,
-										   RhsFunc_Type reactionFunc){
+// Gerneral function in case of nonlinear reaction function 
+// template <class SC, class LO, class GO, class NO>
+// void FE<SC,LO,GO,NO>::assemblyReactionTerm(int dim,
+//                                            std::string FEType,
+//                                            MatrixPtr_Type &A,
+//                                            MultiVectorPtr_Type u,
+//                                            bool callFillComplete,
+//                      					   std::vector<SC>& funcParameter,
+// 										   RhsFunc_Type reactionFunc){
 
-    //TEUCHOS_TEST_FOR_EXCEPTION( u->getNumVectors()>1, std::logic_error, "Implement for numberMV > 1 ." );
-    TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
+//     //TEUCHOS_TEST_FOR_EXCEPTION( u->getNumVectors()>1, std::logic_error, "Implement for numberMV > 1 ." );
+//     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     
-    UN FEloc = checkFE(dim,FEType);
+//     UN FEloc = checkFE(dim,FEType);
     
-	ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+// 	ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
-	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+// 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
 
-	MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
+// 	MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
 
-	vec2D_dbl_ptr_Type     phi;
-	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
+// 	vec2D_dbl_ptr_Type     phi;
+// 	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
-	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-             Helper::determineDegree( dim, FEType, Helper::Std) + 
-             extraDeg;
+//     // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
+    
+// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
+// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
+//              Helper::determineDegree( dim, FEType, Helper::Std) + 
+//              extraDeg;
 
-	Helper::getPhi(phi, weights, dim, FEType, deg);
+// 	Helper::getPhi(phi, weights, dim, FEType, deg);
 	
-    // We have a scalar value of concentration in each point
-	vec_dbl_Type uLoc( weights->size() , -1. );
-	Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
+//     // We have a scalar value of concentration in each point
+// 	vec_dbl_Type uLoc( weights->size() , -1. );
+// 	Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
 
-    std::vector<double> valueFunc(1);
+//     std::vector<double> valueFunc(1);
 
-    SC* paras = &(funcParameter[0]);
+//     SC* paras = &(funcParameter[0]);
 
-    SC detB;
-    SC absDetB;
-    SmallMatrix<SC> B(dim);
-    SmallMatrix<SC> Binv(dim);
+//     SC detB;
+//     SC absDetB;
+//     SmallMatrix<SC> B(dim);
+//     SmallMatrix<SC> Binv(dim);
 
-	for (UN T=0; T<elements->numberElements(); T++) {
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
-        detB = B.computeInverse(Binv);
-        absDetB = std::fabs(detB);
+// 	for (UN T=0; T<elements->numberElements(); T++) {
+//         Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
+//         detB = B.computeInverse(Binv);
+//         absDetB = std::fabs(detB);
 
-        // Building u
-        for (int w=0; w<phi->size(); w++){ //quadpoints
-            uLoc[w] = 0.;
-            for (int i=0; i < phi->at(0).size(); i++) { // points of element
-                LO index = elements->getElement(T).getNode(i);
-                uLoc[w] += uArray[index] * phi->at(w).at(i);
-            }            
-        }
+//         // Building u
+//         for (int w=0; w<phi->size(); w++){ //quadpoints
+//             uLoc[w] = 0.;
+//             for (int i=0; i < phi->at(0).size(); i++) { // points of element
+//                 LO index = elements->getElement(T).getNode(i);
+//                 uLoc[w] += uArray[index] * phi->at(w).at(i);
+//             }            
+//         }
 
-        for (UN i=0; i < phi->at(0).size(); i++) {
-            Teuchos::Array<SC> value( phi->at(0).size(), 0. );
-            Teuchos::Array<GO> indices( phi->at(0).size(), 0 );
-            for (UN j=0; j < value.size(); j++) {
-                for (UN w=0; w<phi->size(); w++) {
-                    value[j] += weights->at(w) * uLoc[w] * (*phi)[w][i] ;                                         
-                }
-                reactionFunc(&value[j], &valueFunc[0] ,paras);
+//         for (UN i=0; i < phi->at(0).size(); i++) {
+//             Teuchos::Array<SC> value( phi->at(0).size(), 0. );
+//             Teuchos::Array<GO> indices( phi->at(0).size(), 0 );
+//             for (UN j=0; j < value.size(); j++) {
+//                 for (UN w=0; w<phi->size(); w++) {
+//                     value[j] += weights->at(w) * uLoc[w] * (*phi)[w][i] ;                                         
+//                 }
+//                 reactionFunc(&value[j], &valueFunc[0] ,paras);
 
-                value[j] *= valueFunc[0] * absDetB;
-                if (setZeros_ && std::fabs(value[j]) < myeps_) {
-                    value[j] = 0.;
-                }
-                indices[j] = GO( map->getGlobalElement( elements->getElement(T).getNode(j) ));
+//                 value[j] *= valueFunc[0] * absDetB;
+//                 if (setZeros_ && std::fabs(value[j]) < myeps_) {
+//                     value[j] = 0.;
+//                 }
+//                 indices[j] = GO( map->getGlobalElement( elements->getElement(T).getNode(j) ));
 
-            }
-            GO row = GO ( map->getGlobalElement( elements->getElement(T).getNode(i) ) );
-            /*if( domainVec_.at(FEloc)->getComm()->getRank() == 1){
-                cout << " Inserting in Row " << row ;
-                for(int j=0 ; j< indices.size() ; j++)
-                    cout << " with indices " << indices[j] << " " ;
-                cout << "on rank " <<domainVec_.at(FEloc)->getComm()->getRank() << endl;
-            }*/
+//             }
+//             GO row = GO ( map->getGlobalElement( elements->getElement(T).getNode(i) ) );
 
-            A->insertGlobalValues( row, indices(), value() );     
-            if( domainVec_.at(FEloc)->getComm()->getRank() == 1)
-                cout << " Inserted " << row << endl;      
-        }
-    }
+
+//             A->insertGlobalValues( row, indices(), value() );     
+     
+//         }
+//     }
     
-    if (callFillComplete)
-        A->fillComplete();
-}
+//     if (callFillComplete)
+//         A->fillComplete();
+// }
 
 
-// Assembling the nonlinear reaction part of Reaction-Diffusion equation
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::assemblyLinearReactionTerm(int dim,
-                                           std::string FEType,
-                                           MatrixPtr_Type &A,
-                                           bool callFillComplete,
-                     					   std::vector<SC>& funcParameter,
-										   RhsFunc_Type reactionFunc){
+// // Assembling the nonlinear reaction part of Reaction-Diffusion equation
+// template <class SC, class LO, class GO, class NO>
+// void FE<SC,LO,GO,NO>::assemblyLinearReactionTerm(int dim,
+//                                            std::string FEType,
+//                                            MatrixPtr_Type &A,
+//                                            bool callFillComplete,
+//                      					   std::vector<SC>& funcParameter,
+// 										   RhsFunc_Type reactionFunc){
 
-    //TEUCHOS_TEST_FOR_EXCEPTION( u->getNumVectors()>1, std::logic_error, "Implement for numberMV > 1 ." );
-    TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
+//     //TEUCHOS_TEST_FOR_EXCEPTION( u->getNumVectors()>1, std::logic_error, "Implement for numberMV > 1 ." );
+//     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     
-    UN FEloc = checkFE(dim,FEType);
+//     UN FEloc = checkFE(dim,FEType);
     
-	ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+// 	ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
-	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+// 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
 
-	MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
+// 	MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
 
-	vec2D_dbl_ptr_Type     phi;
-	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
+// 	vec2D_dbl_ptr_Type     phi;
+// 	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
-	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-             Helper::determineDegree( dim, FEType, Helper::Std) + 
-             extraDeg;
+//     // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
+// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
+// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
+//              Helper::determineDegree( dim, FEType, Helper::Std) + 
+//              extraDeg;
 
-	Helper::getPhi(phi, weights, dim, FEType, deg);
+// 	Helper::getPhi(phi, weights, dim, FEType, deg);
 	
-    std::vector<double> valueFunc(1);
+//     std::vector<double> valueFunc(1);
 
-    SC* paras = &(funcParameter[0]);
+//     SC* paras = &(funcParameter[0]);
 
-    SC detB;
-    SC absDetB;
-    SmallMatrix<SC> B(dim);
-    SmallMatrix<SC> Binv(dim);
+//     SC detB;
+//     SC absDetB;
+//     SmallMatrix<SC> B(dim);
+//     SmallMatrix<SC> Binv(dim);
 
-	for (UN T=0; T<elements->numberElements(); T++) {
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
-        detB = B.computeInverse(Binv);
-        absDetB = std::fabs(detB);
+// 	for (UN T=0; T<elements->numberElements(); T++) {
+//         Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
+//         detB = B.computeInverse(Binv);
+//         absDetB = std::fabs(detB);
 
-        for (UN i=0; i < phi->at(0).size(); i++) {
-            Teuchos::Array<SC> value( phi->at(0).size(), 0. );
-            Teuchos::Array<GO> indices( phi->at(0).size(), 0 );
-            for (UN j=0; j < value.size(); j++) {
-                for (UN w=0; w<phi->size(); w++) {
-                    value[j] += weights->at(w) * (*phi)[w][j] * (*phi)[w][i] ;                                         
-                }
-                reactionFunc(&value[j], &valueFunc[0] ,paras);
+//         for (UN i=0; i < phi->at(0).size(); i++) {
+//             Teuchos::Array<SC> value( phi->at(0).size(), 0. );
+//             Teuchos::Array<GO> indices( phi->at(0).size(), 0 );
+//             for (UN j=0; j < value.size(); j++) {
+//                 for (UN w=0; w<phi->size(); w++) {
+//                     value[j] += weights->at(w) * (*phi)[w][j] * (*phi)[w][i] ;                                         
+//                 }
+//                 reactionFunc(&value[j], &valueFunc[0] ,paras);
 
-                value[j] *= valueFunc[0] * absDetB;
-                if (setZeros_ && std::fabs(value[j]) < myeps_) {
-                    value[j] = 0.;
-                }
-                indices[j] = GO( map->getGlobalElement( elements->getElement(T).getNode(j) ));
+//                 value[j] *= valueFunc[0] * absDetB;
+//                 if (setZeros_ && std::fabs(value[j]) < myeps_) {
+//                     value[j] = 0.;
+//                 }
+//                 indices[j] = GO( map->getGlobalElement( elements->getElement(T).getNode(j) ));
 
-            }
-            GO row = GO ( map->getGlobalElement( elements->getElement(T).getNode(i) ) );
+//             }
+//             GO row = GO ( map->getGlobalElement( elements->getElement(T).getNode(i) ) );
           
-            A->insertGlobalValues( row, indices(), value() );     
+//             A->insertGlobalValues( row, indices(), value() );     
             
-        }
-    }
-    
-    if (callFillComplete)
-        A->fillComplete();
-}
+//         }
+//     }
+//     if (callFillComplete)
+//         A->fillComplete();
+
+//     A->print();
+
+// }
 
 // Assembling the nonlinear reaction part of Reaction-Diffusion equation
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::assemblyDReactionTerm(int dim,
-                                           std::string FEType,
-                                           MatrixPtr_Type &A,
-                                           MultiVectorPtr_Type u,
-                                           bool callFillComplete,
-                     					   std::vector<SC>& funcParameter,
-										   RhsFunc_Type reactionFunc){
+// template <class SC, class LO, class GO, class NO>
+// void FE<SC,LO,GO,NO>::assemblyDReactionTerm(int dim,
+//                                            std::string FEType,
+//                                            MatrixPtr_Type &A,
+//                                            MultiVectorPtr_Type u,
+//                                            bool callFillComplete,
+//                      					   std::vector<SC>& funcParameter,
+// 										   RhsFunc_Type reactionFunc){
 
-    //TEUCHOS_TEST_FOR_EXCEPTION( u->getNumVectors()>1, std::logic_error, "Implement for numberMV > 1 ." );
-    TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
+//     //TEUCHOS_TEST_FOR_EXCEPTION( u->getNumVectors()>1, std::logic_error, "Implement for numberMV > 1 ." );
+//     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     
-    UN FEloc = checkFE(dim,FEType);
+//     UN FEloc = checkFE(dim,FEType);
     
-	ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+// 	ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
-	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+// 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
 
-	MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
+// 	MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
 
-	vec2D_dbl_ptr_Type     phi;
-    vec3D_dbl_ptr_Type 	dPhi;
-	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
+// 	vec2D_dbl_ptr_Type     phi;
+//     vec3D_dbl_ptr_Type 	dPhi;
+// 	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
-	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-             Helper::determineDegree( dim, FEType, Helper::Std) + 
-             extraDeg;
+//     // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
+// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
+// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
+//              Helper::determineDegree( dim, FEType, Helper::Std) + 
+//              extraDeg;
 
-	Helper::getPhi(phi, weights, dim, FEType, deg);
+// 	Helper::getPhi(phi, weights, dim, FEType, deg);
 	
-    Helper::getDPhi(dPhi, weights, dim, FEType, deg);
+//     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
-    // We have a scalar value of concentration in each point
-	vec2D_dbl_Type duLoc( weights->size() ,vec_dbl_Type(dim ,-1. ));
-	Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
+//     // We have a scalar value of concentration in each point
+// 	vec2D_dbl_Type duLoc( weights->size() ,vec_dbl_Type(dim ,-1. ));
+// 	Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
 
-    std::vector<double> valueFunc(1);
+//     std::vector<double> valueFunc(1);
 
-    SC* paras = &(funcParameter[0]);
+//     SC* paras = &(funcParameter[0]);
 
-    SC detB;
-    SC absDetB;
-    SmallMatrix<SC> B(dim);
-    SmallMatrix<SC> Binv(dim);
+//     SC detB;
+//     SC absDetB;
+//     SmallMatrix<SC> B(dim);
+//     SmallMatrix<SC> Binv(dim);
 
-	for (UN T=0; T<elements->numberElements(); T++) {
+// 	for (UN T=0; T<elements->numberElements(); T++) {
 
         
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
-        detB = B.computeInverse(Binv);
-        absDetB = std::fabs(detB);
+//         Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
+//         detB = B.computeInverse(Binv);
+//         absDetB = std::fabs(detB);
 
-        vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
-        applyBTinv( dPhi, dPhiTrans, Binv );
+//         vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
+//         applyBTinv( dPhi, dPhiTrans, Binv );
 
-        for (int w=0; w<dPhiTrans.size(); w++){ //quads points
-            for (int i=0; i < dPhiTrans[0].size(); i++) {
-                LO index = elements->getElement(T).getNode(i) ;
-                for (int d2=0; d2<dim; d2++)
-                    duLoc[w][d2] += uArray[index] * dPhiTrans[w][i][d2];
-            }
+//         for (int w=0; w<dPhiTrans.size(); w++){ //quads points
+//             for (int i=0; i < dPhiTrans[0].size(); i++) {
+//                 LO index = elements->getElement(T).getNode(i) ;
+//                 for (int d2=0; d2<dim; d2++)
+//                     duLoc[w][d2] += uArray[index] * dPhiTrans[w][i][d2];
+//             }
             
-        }
+//         }
 
         
-        for (UN i=0; i < phi->at(0).size(); i++) {
-            Teuchos::Array<SC> value( phi->at(0).size(), 0. );
-            Teuchos::Array<GO> indices( phi->at(0).size(), 0 );
-            for (UN j=0; j < value.size(); j++) {
-                for (UN d2=0; d2<dim; d2++){
-                    for (UN w=0; w<phi->size(); w++) {
-                        value[j] += weights->at(w) * duLoc[w][d2] * (*phi)[w][i] ;                                         
-                    }
-                }
-                reactionFunc(&value[j], &valueFunc[0] ,paras);
+//         for (UN i=0; i < phi->at(0).size(); i++) {
+//             Teuchos::Array<SC> value( phi->at(0).size(), 0. );
+//             Teuchos::Array<GO> indices( phi->at(0).size(), 0 );
+//             for (UN j=0; j < value.size(); j++) {
+//                 for (UN d2=0; d2<dim; d2++){
+//                     for (UN w=0; w<phi->size(); w++) {
+//                         value[j] += weights->at(w) * duLoc[w][d2] * (*phi)[w][i] ;                                         
+//                     }
+//                 }
+//                 reactionFunc(&value[j], &valueFunc[0] ,paras);
 
-                value[j] *= valueFunc[0] * absDetB;
-                if (setZeros_ && std::fabs(value[j]) < myeps_) {
-                    value[j] = 0.;
-                }
-                indices[j] = GO( map->getGlobalElement( elements->getElement(T).getNode(j) ));
+//                 value[j] *= valueFunc[0] * absDetB;
+//                 if (setZeros_ && std::fabs(value[j]) < myeps_) {
+//                     value[j] = 0.;
+//                 }
+//                 indices[j] = GO( map->getGlobalElement( elements->getElement(T).getNode(j) ));
 
-            }
-            GO row = GO ( map->getGlobalElement( elements->getElement(T).getNode(i) ) );
-            A->insertGlobalValues( row, indices(), value() );           
-        }
-    }
+//             }
+//             GO row = GO ( map->getGlobalElement( elements->getElement(T).getNode(i) ) );
+//             A->insertGlobalValues( row, indices(), value() );           
+//         }
+//     }
     
-    if (callFillComplete)
-        A->fillComplete();
-}
+//     if (callFillComplete)
+//         A->fillComplete();
+// }
+
 /*!
  \brief Assembly of constant stiffness matix for laplacian operator \f$ \Delta \f$
 @param[in] dim Dimension
@@ -1817,7 +1816,9 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-    
+
+    // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
+    // The diffusion tensor is constant and, thus, does not require a higher-order quadrature rule.
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);//+1;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
@@ -2243,6 +2244,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
+    // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
@@ -2320,6 +2322,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type	weights = Teuchos::rcp(new vec_dbl_Type(0));
 
+    // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
@@ -3583,7 +3586,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityStressesAceFEM(int dim,
     }
 }
 
-
+/// Assembly of operator \int ((u_h \cdot \nabla ) v_h)v_h dx 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyAdvectionVecField(int dim,
                                                   std::string FEType,
@@ -3595,153 +3598,89 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecField(int dim,
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     
     UN FEloc = checkFE(dim,FEType);
-    
-    if (saveAssembly_) {
-//        ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsNew();
-//        vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
-//        MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
-//
-//        vec3D_dbl_ptr_Type     dPhi;
-//        vec2D_dbl_ptr_Type     phi;
-//        vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
-//
-//        UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-//
-//        UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-//                 Helper::determineDegree( dim, FEType, Helper::Std) + extraDeg;
-//
-//        getDPhi(dPhi, weights, dim, FEType, deg);
-//        getPhi(phi, weights, dim, FEType, deg);
-//        GO glob_i, glob_j;
-//        vec_dbl_Type v_i(dim);
-//        vec_dbl_Type v_j(dim);
-//
-//        vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
-//        Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
-//
-//        for (UN T=0; T<elements->numberElements(); T++) {
-//
-//            vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
-//            applyBTinv( dPhi, dPhiTrans, elements->getBTinv( T ) );
-//
-//            for (int w=0; w<phi->size(); w++){ //quads points
-//                for (int d=0; d<dim; d++) {
-//                    uLoc[d][w] = 0.;
-//                    for (int i=0; i < phi->at(0).size(); i++) {
-//                        LO index = dim * elements->getElement( T ).getNode( i ) + d;
-//                        uLoc[d][w] += uArray[index] * phi->at(w).at(i);
-//                    }
-//                }
-//
-//            }
-//
-//            for (UN i=0; i < phi->at(0).size(); i++) {
-//                Teuchos::Array<SC> value( dPhiTrans[0].size(), 0. );
-//                Teuchos::Array<GO> indices( dPhiTrans[0].size(), 0 );
-//                for (UN j=0; j < value.size(); j++) {
-//                    for (UN w=0; w<dPhiTrans.size(); w++) {
-//                        for (UN d=0; d<dim; d++)
-//                            value[j] += weights->at(w) * uLoc[d][w] * (*phi)[w][i] * dPhiTrans[w][j][d];
-//                    }
-//                    value[j] *= elements->getDetBTinv(T);
-//                    if (setZeros_ && std::fabs(value[j]) < myeps_) {
-//                        value[j] = 0.;
-//                    }
-//
-//                    GO row = GO ( dim * map->getGlobalElement( elements->at(T).at(i) )  );
-//                    GO glob_j = GO ( dim * map->getGlobalElement( elements->at(T).at(j) )  );
-//                }
-//                for (UN d=0; d<dim; d++) {
-//                    for (UN j=0; j < indices.size(); j++)
-//                        indices[j] = GO ( dim * map->getGlobalElement( elements->at(T).at(j) ) + d );
-//
-//                    GO row = GO ( dim * map->getGlobalElement( elements->at(T).at(i) ) + d );
-//                    A->insertGlobalValues( row, indices(), value() );
-//                }
-//            }
-//        }
-    } else {
-        ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
-        vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
-        MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
 
-        vec3D_dbl_ptr_Type     dPhi;
-        vec2D_dbl_ptr_Type     phi;
-        vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
+    MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
 
-        UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
+    vec3D_dbl_ptr_Type     dPhi;
+    vec2D_dbl_ptr_Type     phi;
+    vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-        UN deg = Helper::determineDegree( dim, FEType, Helper::Grad ) + 
-                 Helper::determineDegree( dim, FEType, Helper::Std) + 
-                 extraDeg;
+    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
 
-        Helper::getDPhi(dPhi, weights, dim, FEType, deg);
-        Helper::getPhi(phi, weights, dim, FEType, deg);
-        SC detB;
-        SC absDetB;
-        SmallMatrix<SC> B(dim);
-        SmallMatrix<SC> Binv(dim);
-        GO glob_i, glob_j;
-        vec_dbl_Type v_i(dim);
-        vec_dbl_Type v_j(dim);
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Grad ) + 
+             Helper::determineDegree( dim, FEType, Helper::Std) + 
+             extraDeg;
 
-        vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
-        Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
+    Helper::getDPhi(dPhi, weights, dim, FEType, deg);
+    Helper::getPhi(phi, weights, dim, FEType, deg);
+    SC detB;
+    SC absDetB;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    GO glob_i, glob_j;
+    vec_dbl_Type v_i(dim);
+    vec_dbl_Type v_j(dim);
 
-        for (UN T=0; T<elements->numberElements(); T++) {
+    vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
+    Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
-            detB = B.computeInverse(Binv);
-            absDetB = std::fabs(detB);
+    for (UN T=0; T<elements->numberElements(); T++) {
 
-            vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
-            applyBTinv( dPhi, dPhiTrans, Binv );
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
+        detB = B.computeInverse(Binv);
+        absDetB = std::fabs(detB);
 
-            for (int w=0; w<phi->size(); w++){ //quads points
-                for (int d=0; d<dim; d++) {
-                    uLoc[d][w] = 0.;
-                    for (int i=0; i < phi->at(0).size(); i++) {
-                        LO index = dim * elements->getElement(T).getNode(i) + d;
-                        uLoc[d][w] += uArray[index] * phi->at(w).at(i);
-                    }
-                }
-            }
+        vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
+        applyBTinv( dPhi, dPhiTrans, Binv );
 
-            for (UN i=0; i < phi->at(0).size(); i++) {
-                Teuchos::Array<SC> value( dPhiTrans[0].size(), 0. );
-                Teuchos::Array<GO> indices( dPhiTrans[0].size(), 0 );
-                for (UN j=0; j < value.size(); j++) {
-                    for (UN w=0; w<dPhiTrans.size(); w++) {
-                        for (UN d=0; d<dim; d++){
-                            value[j] += weights->at(w) * uLoc[d][w] * (*phi)[w][i] * dPhiTrans[w][j][d];
-                           } 
-                           
-                    }
-                    value[j] *= absDetB;
-                    if (setZeros_ && std::fabs(value[j]) < myeps_) {
-                        value[j] = 0.;
-                    }
-
-                    GO row = GO ( dim * map->getGlobalElement( elements->getElement(T).getNode(i) )  );
-                    GO glob_j = GO ( dim * map->getGlobalElement( elements->getElement(T).getNode(j) )  );
-                }
-                for (UN d=0; d<dim; d++) {
-                    for (UN j=0; j < indices.size(); j++)
-                        indices[j] = GO ( dim * map->getGlobalElement( elements->getElement(T).getNode(j) ) + d );
-
-                    GO row = GO ( dim * map->getGlobalElement( elements->getElement(T).getNode(i) ) + d );
-                    A->insertGlobalValues( row, indices(), value() );
+        for (int w=0; w<phi->size(); w++){ //quads points
+            for (int d=0; d<dim; d++) {
+                uLoc[d][w] = 0.;
+                for (int i=0; i < phi->at(0).size(); i++) {
+                    LO index = dim * elements->getElement(T).getNode(i) + d;
+                    uLoc[d][w] += uArray[index] * phi->at(w).at(i);
                 }
             }
         }
+
+        for (UN i=0; i < phi->at(0).size(); i++) {
+            Teuchos::Array<SC> value( dPhiTrans[0].size(), 0. );
+            Teuchos::Array<GO> indices( dPhiTrans[0].size(), 0 );
+            for (UN j=0; j < value.size(); j++) {
+                for (UN w=0; w<dPhiTrans.size(); w++) {
+                    for (UN d=0; d<dim; d++){
+                        value[j] += weights->at(w) * uLoc[d][w] * (*phi)[w][i] * dPhiTrans[w][j][d];
+                        } 
+                        
+                }
+                value[j] *= absDetB;
+                if (setZeros_ && std::fabs(value[j]) < myeps_) {
+                    value[j] = 0.;
+                }
+
+                GO row = GO ( dim * map->getGlobalElement( elements->getElement(T).getNode(i) )  );
+                GO glob_j = GO ( dim * map->getGlobalElement( elements->getElement(T).getNode(j) )  );
+            }
+            for (UN d=0; d<dim; d++) {
+                for (UN j=0; j < indices.size(); j++)
+                    indices[j] = GO ( dim * map->getGlobalElement( elements->getElement(T).getNode(j) ) + d );
+
+                GO row = GO ( dim * map->getGlobalElement( elements->getElement(T).getNode(i) ) + d );
+                A->insertGlobalValues( row, indices(), value() );
+            }
+        }
     }
+
     
     if (callFillComplete)
         A->fillComplete();
 }
 
+/// Assembly of operator \int ((v_h \cdot \nabla ) u_h)v_h dx 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyAdvectionInUVecField(int dim,
                                                   std::string FEType,
@@ -3832,6 +3771,7 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionInUVecField(int dim,
         A->fillComplete();
 }
 
+/// Assembly of \int q_h (nabla \cdot v_h) dx 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyDivAndDivT( int dim,
                                             std::string FEType1,
@@ -3961,7 +3901,7 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivT( int dim,
 
 }
 
-    
+/// Assembly of \int q_h (nabla \cdot v_h) dx     
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyDivAndDivTFast( int dim,
                                              std::string FEType1,
@@ -4319,6 +4259,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
                                      int* parameters,
                                      bool callFillComplete)
 {
+    // TODO: [JK] This function does the same as Natalie's stress assembly, just that she can also use a nonconstant viscosity. We should think about deprecating this function here.
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     int FEloc = this->checkFE(dim,FEType);
 
@@ -4332,6 +4273,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
 
     // double value, value1_j, value2_j , value1_i, value2_i;
 
+    // inner( grad(u) + grad(u)^T , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
     UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi,FEType);
@@ -4959,19 +4901,6 @@ void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solu
 
     //MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
 
-    vec2D_dbl_ptr_Type 	phi;
-    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
-
-    Helper::getPhi( phi, weights, dim, FEType, deg );
-
-    SC detB;
-    SC absDetB;
-    SmallMatrix<SC> B(dim);
-    SmallMatrix<SC> Binv(dim);
-
-    
     Teuchos::ArrayRCP< const SC > uArray = solution->getData(0);
     Teuchos::ArrayRCP< SC > eModVecA = eModVec->getDataNonConst(0);
 
@@ -4989,17 +4918,12 @@ void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solu
         absDetB = std::fabs(detB);*/
         
         double uLoc = 0.;
-
-       //for (int w=0; w<phi->size(); w++){ //quads points
-       //     for (int i=0; i < phi->at(0).size(); i++) {
-            for(int i=0; i< nodesElement;i++){
-                LO index = elements->getElement(T).getNode(i) ;
-                uLoc += 1./nodesElement*uArray[index];
-            }
-       //     } 
-       // }
-        //uLoc = uLoc*absDetB;           
-
+      
+        for(int i=0; i< nodesElement;i++){
+            LO index = elements->getElement(T).getNode(i) ;
+            uLoc += 1./nodesElement*uArray[index];
+        }
+          
         eModVecA[T] = E0-(E0-E1)*(uLoc/(uLoc+c1));
         if(eModVecA[T] > eModMax )
             eModMax = eModVecA[T];
@@ -5042,10 +4966,6 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi,FEType);
 
-    // Definiere die Basisfunktion \phi_i bzw. \phi_j
-    // vec_dbl_Type basisValues_i(dim,0.), basisValues_j(dim,0.);
-
-    // SC = double, GO = long, UN = int
     SC detB;
     SC absDetB;
     SmallMatrix<SC> B(dim);
@@ -5062,7 +4982,6 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
     double lambda;
     double mu ;
 
-  
     if (dim == 2)
     {
 
@@ -5333,7 +5252,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
     }
 }
 
-
+/// Addional Matrix due to ALE derivation: \int \rho_f div(w) u_h \cdot v_f dx, with mesh velocity w
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyAdditionalConvection(int dim,
                                   std::string FEType,
@@ -7068,8 +6987,10 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
     MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-    UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
-    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Std);// + 1.0;
+
+
+    UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14; // Degree from function set/determined externally
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Std) + degFunc;
 
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
 
@@ -7173,7 +7094,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralFlag(int dim,
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     UN degFunc = funcParameter[0] + 1.e-14;
-    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Std);// + degFunc;
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Std) + degFunc;
 
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
 
@@ -7269,9 +7190,13 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
     // last parameter should alwayss be the degree
-    UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Std);// + degFunc;
+    //UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14; // TODO: [JK] Can we remove this?
+    // inner( f(x), phi(x) ) requires the integration degree of the basis function + some 
+    // extra user-provided degree that accounts for the heterogeneity of f(x).
+    UN degFunc = 2;  // TODO: [JK] Hard coded for now, but needs to be passed by the user. See GitHub issue #66.
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Std) + degFunc;
 
     vec2D_dbl_ptr_Type quadPoints;
     Helper::getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values
@@ -7416,7 +7341,7 @@ void FE<SC,LO,GO,NO>::assemblyRHSDegTest( int dim,
                                           RhsFunc_Type func,
                                           std::vector<SC>& funcParameter,
                                           int degree) {
-    
+    // TODO: [JK] What is the aim of this function? It is not called by any problems, only by a test.    
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     
     TEUCHOS_TEST_FOR_EXCEPTION( a.is_null(), std::runtime_error, "MultiVector in assemblyConstRHS is null." );
@@ -7431,8 +7356,6 @@ void FE<SC,LO,GO,NO>::assemblyRHSDegTest( int dim,
     MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-    UN degFunc = funcParameter[0] + 1.e-14;
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Std) + degFunc;
     Helper::getPhi(phi, weights, dim, FEType, degree);
     
     vec2D_dbl_ptr_Type quadPoints;

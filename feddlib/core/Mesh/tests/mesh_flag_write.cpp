@@ -47,8 +47,7 @@ int main(int argc, char *argv[]) {
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra"; //this does nothing atm
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
+
     string filename = "fluidBenchmark2.mesh";
     myCLP.setOption("file",&filename,"Mesh filename");
     string exportfilename = "export.mesh";

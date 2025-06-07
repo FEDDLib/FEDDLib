@@ -62,27 +62,20 @@ void NonLinElasAssFE<SC,LO,GO,NO>::assemble(std::string type) const{
         double density = this->parameterList_->sublist("Parameter").get("Density",1000.);
         string sourceType = 	this->parameterList_->sublist("Parameter").get("Source Type","volume");
 
+        this->assembleSourceTerm( 0. );
+        if(sourceType == "volume")
+            this->sourceTerm_->scale(density);
+        
+        this->addToRhs( this->sourceTerm_ );
+
+        this->setBoundariesRHS();           
 
         this->solution_->putScalar(0.);
         
         u_rep_ = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);              
-       // this->assembleSourceTerm( 0. );
-        /*if(loadStepping_==true)
-            assembleSourceTermLoadstepping(0.);
-        else*/
-            this->assembleSourceTerm(0.);
-
-        if(sourceType == "volume")
-            this->sourceTerm_->scale(density);
-
-        this->addToRhs( this->sourceTerm_ );
-        
-        this->setBoundariesRHS();
-                
-        
-        
+        u_rep_->importFromVector(u, true);                         
+               
         if (this->verbose_)
             std::cout << "done -- " << std::endl;
         
@@ -136,16 +129,14 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         fUnique->exportFromVector( fRep, true, "Add" );
 
         this->residualVec_->addBlock( fUnique, 0 );
-            
-        assembleSourceTermLoadstepping();
+
+        if(loadStepping_) 
+            assembleSourceTermLoadstepping();
 
 
     }
     else if(type=="Newton"){ //we already assemble the new tangent when we calculate the stresses above
         
-//        MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 10 ) );
-//        this->feFactory_->assemblyElasticityJacobianAceFEM(this->dim_, this->getDomain(0)->getFEType(), W, u_rep_, material_model, E_, nu_, C_);
-//        this->system_->addBlock( W, 0, 0 );
     }
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
@@ -164,7 +155,6 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrAr
     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Only Newton/NOX implemented for nonlinear material models!");
 
 }
-
 template<class SC,class LO,class GO,class NO>
 void NonLinElasAssFE<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
                                             const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
@@ -193,10 +183,10 @@ void NonLinElasAssFE<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase
     const RCP<Thyra::PreconditionerBase<SC> > W_prec_out = outArgs.get_W_prec();
     
     typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> tpetra_extract;
-    typedef Xpetra::Matrix<SC,LO,GO,NO> XpetraMatrix_Type;
-    typedef RCP<XpetraMatrix_Type> XpetraMatrixPtr_Type;
-    typedef RCP<const XpetraMatrix_Type> XpetraMatrixConstPtr_Type;
-    
+    typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
+    typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
+    typedef RCP<const TpetraMatrix_Type> TpetraMatrixConstPtr_Type;
+ 
     const bool fill_f = nonnull(f_out);
     const bool fill_W = nonnull(W_out);
     const bool fill_W_prec = nonnull(W_prec_out);
@@ -214,29 +204,30 @@ void NonLinElasAssFE<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase
             f_out->assign(*f_thyra);
         }
         
-        XpetraMatrixPtr_Type W;
+        TpetraMatrixPtr_Type W;
         if (fill_W) {
             
             this->reAssemble("Newton");
-            
             this->setBoundariesSystem();
             
-            RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
-            RCP<TpetraMatrix_Type> W_tpetraMat = rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
+            Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
+            Teuchos::RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
             
-            XpetraMatrixConstPtr_Type W_systemXpetra = this->getSystem()->getBlock( 0, 0 )->getXpetraMatrix();
+            TpetraMatrixConstPtr_Type W_systemTpetra = this->getSystem()->getBlock( 0, 0 )->getTpetraMatrix();
+            TpetraMatrixPtr_Type W_systemTpetraNonConst = rcp_const_cast<TpetraMatrix_Type>(W_systemTpetra);
+
+            //Tpetra::CrsMatrixWrap<SC,LO,GO,NO>& crsOp = dynamic_cast<Xpetra::CrsMatrixWrap<SC,LO,GO,NO>&>(*W_systemXpetraNonConst);
+            //Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>& xTpetraMat = dynamic_cast<Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>&>(*crsOp.getCrsMatrix());
             
-            XpetraMatrixPtr_Type W_systemXpetraNonConst = rcp_const_cast<XpetraMatrix_Type>(W_systemXpetra);
-            Xpetra::CrsMatrixWrap<SC,LO,GO,NO>& crsOp = dynamic_cast<Xpetra::CrsMatrixWrap<SC,LO,GO,NO>&>(*W_systemXpetraNonConst);
-            Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>& xTpetraMat = dynamic_cast<Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>&>(*crsOp.getCrsMatrix());
-            Teuchos::RCP<TpetraMatrix_Type> tpetraMatXpetra = xTpetraMat.getTpetra_CrsMatrixNonConst();
-            
+            Teuchos::RCP<TpetraMatrix_Type> tpetraMatTpetra = W_systemTpetraNonConst; //xTpetraMat.getTpetra_CrsMatrixNonConst();
+        
+           
             W_tpetraMat->resumeFill();
             
-            for (auto i=0; i<tpetraMatXpetra->getMap()->getLocalNumElements(); i++) {
+          for (auto i=0; i<tpetraMatTpetra->getMap()->getLocalNumElements(); i++) {
                 typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
                 typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;
-                tpetraMatXpetra->getLocalRowView( i, indices, values);
+                tpetraMatTpetra->getLocalRowView( i, indices, values);
                 W_tpetraMat->replaceLocalValues( i, indices, values);
             }
             W_tpetraMat->fillComplete();

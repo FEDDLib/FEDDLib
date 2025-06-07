@@ -186,14 +186,12 @@ namespace FEDD
         vec3D_dbl_ptr_Type dPhi;
         vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-        // essential ingredients: nabla(phi) * g(phi) * nabla(phi) (nonmathematical notation)
-        // nabla(phi): degGradPhi, g(phi): degPhi + extraDegree
-        UN degGradPhi = Helper::determineDegree(dim, FEType, Helper::Grad);
-        UN degPhi = Helper::determineDegree(dim, FEType, Helper::Std);
-        UN extraDeg = 2;
-        UN deg = degGradPhi + (degPhi + extraDeg) + degGradPhi; //  e.g. for P1 3 TODO: [JK] Check correctness and update comments.
-        Helper::getDPhi(dPhi, weights, dim, FEType, deg);    //  e.g. for deg 5 we get weight vector with 7 entries
-        // Example Values: dPhi->size() = 7 so number of quadrature points, dPhi->at(0).size() = 3 number of local element points, dPhi->at(0).at(0).size() = 2 as we have dim 2 therefore we have 2 derivatives (xi/eta in natural coordinates)
+        // essential ingredients: eta(nabla(phi) ) * nabla(phi) *  nabla(phi) (nonmathematical notation)
+        UN degGradPhi = Helper::determineDegree(dim, FEType, Helper::Grad);  
+        UN extraDeg = 2;  // As eta is a unknown nonlinear function of the velocity gradient we add some extra degree
+        UN deg = (degGradPhi + extraDeg) + degGradPhi  + degGradPhi; 
+        Helper::getDPhi(dPhi, weights, dim, FEType, deg);              
+        // Example Values: dPhi->size() = 7 if number of quadrature points 7, dPhi->at(0).size() = 3 number of local element points, dPhi->at(0).at(0).size() = 2 as we have dim 2 therefore we have 2 derivatives (xi/eta in natural coordinates)
         // Phi is defined on reference element
 
         SC detB;
@@ -383,9 +381,12 @@ namespace FEDD
         vec3D_dbl_ptr_Type dPhi;
         vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-        UN extraDegree = 2; // TODO: [JK] Needs to be fixed!
-        UN deg = 2*Helper::determineDegree(dim, FEType, Helper::Std) + extraDegree; // TODO: [JK] Fix me!
+        // essential ingredients:  deta/dgamma(nabla(phi)) * nabla(phi) * nabla(phi) * nabla(phi) (nonmathematical notation)
+        UN extraDegree = 2;  // As deta/dgamma is a unknown nonlinear function of the velocity gradient we add some extra degree
+        UN degGradPhi = Helper::determineDegree(dim, FEType, Helper::Grad);
+        UN deg = 3*degGradPhi + (degGradPhi + extraDegree); 
         Helper::getDPhi(dPhi, weights, dim, FEType, deg);
+
 
         SC detB;
         SC absDetB;

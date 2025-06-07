@@ -238,6 +238,7 @@ int main(int argc, char *argv[])
 
     // MPI boilerplate
     Tpetra::ScopeGuard tpetraScope (&argc, &argv); // initializes MPI
+    {
     Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
 
     bool verbose(comm->getRank() == 0);
@@ -419,6 +420,7 @@ int main(int argc, char *argv[])
                 exParaViscsoity->setup("viscosity", domV->getMesh(), "P0"); // Viscosity averaged therefore P0 value
                 exParaViscsoity->addVariable(exportSolutionViscosityAssFE, "viscosityAssFE", "Scalar", 1, domV->getElementMap());
                 exParaViscsoity->save(0.0);
+		exParaViscsoity->closeExporter();
             }
 
             //****************************************************************************************
@@ -441,6 +443,9 @@ int main(int argc, char *argv[])
             exParaVelocity->save(0.0);
             exParaPressure->save(0.0);
 
+	    exParaVelocity->closeExporter();
+	    exParaPressure->closeExporter();
+
             //*************************** FLAGS *************************************
             Teuchos::RCP<ExporterParaView<SC, LO, GO, NO>> exParaF(new ExporterParaView<SC, LO, GO, NO>());
             Teuchos::RCP<MultiVector<SC, LO, GO, NO>> exportSolution(new MultiVector<SC, LO, GO, NO>(domainVelocity->getMapUnique()));
@@ -454,6 +459,7 @@ int main(int argc, char *argv[])
             exParaF->setup("Flags", domainVelocity->getMesh(), domainVelocity->getFEType());
             exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1, domainVelocity->getMapUnique());
             exParaF->save(0.0);
+	    exParaF->closeExporter();
 
             //**************************** Plot Subdomains without overlap ****************************************
             if (parameterListAll->sublist("General").get("ParaView export subdomains", false))
@@ -500,6 +506,7 @@ int main(int argc, char *argv[])
                     cout << "##################### Start Navier-Stokes Newtonian Solver ####################" << endl;
                     cout << "###############################################################" << endl;
                 }
+
 
                 NavierStokesAssFE<SC, LO, GO, NO> navierStokesAssFEModel2(domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll);
                 {
@@ -553,6 +560,9 @@ int main(int argc, char *argv[])
 
                 exParaVelocityModel2->save(0.0);
                 exParaPressureModel2->save(0.0);
+
+		exParaVelocityModel2->closeExporter();
+		exParaPressureModel2->closeExporter();
 
                 // Error comparison
                 Teuchos::Array<SC> norm(1);
@@ -619,5 +629,7 @@ int main(int argc, char *argv[])
         }
     }
     Teuchos::TimeMonitor::report(cout);
+    }
+    
     return EXIT_SUCCESS;
 }

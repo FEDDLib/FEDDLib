@@ -1,0 +1,35 @@
+@2024
+
+Add in this file small, simple ToDo tasks, which require a maximum work time of 1-2 days
+@IMPORTANT Open:           Add date, your name and small description 
+@IMPORTANT In preparation: If you work one one issue remove and paste it to this section with your name and date
+@IMPRORTANT Finished: If you finish a task move text to this section and set a Pull Request on Github (!)
+
+
+Open: ---------------------------------------------------------------------------------------------------- 
+
+*********************************************
+* Task1 - August 2024: Nonlinear Criteria In feddlib/problems/Solver/NonLinearSolver_def.hpp 
+  - Inside solveNewton/ solveFixedPoint (internal nonlinear solver routines) there are currently only two options for the stopping criteria available 
+    i) Residuum (relative) ||F(x_k+1)||/||F(x_0)|| 
+    ii) Update (absolute)  || x_k+1 - x_k|| 
+    TODO: Add other options (equivalent to Options in NOX) like Residuum (absolute) ||F(x_k+1) - F(x_k)|| or Update (relative) and combinations
+*********************************************
+*
+
+
+In preparation: -------------------------------------------------------------------------------------------
+
+*
+
+*
+
+
+
+Finished: -------------------------------------------------------------------------------------------------
+
+*
+
+*
+
+*

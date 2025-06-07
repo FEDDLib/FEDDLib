@@ -34,9 +34,8 @@ int main(int argc, char *argv[]) {
     int rank = commWorld->getRank();
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
-    GO numGlobalElements = 3;
+
+    GO numGlobalElements = 4;
     myCLP.setOption("nge",&numGlobalElements,"numGlobalElements.");
 
     myCLP.recogniseAllOptions(true);
@@ -55,14 +54,12 @@ int main(int argc, char *argv[]) {
     typedef MultiVector<SC,LO,GO,NO> MV_Type;
     typedef RCP<MV_Type> MVPtr_Type;
 
-    TEUCHOS_TEST_FOR_EXCEPTION(!(!ulib_str.compare("Tpetra") || !ulib_str.compare("Epetra") ) , std::runtime_error, "Unknown algebra type");
-
     Array<GO> indices(numGlobalElements);
     for (UN i=0; i<indices.size(); i++) {
         indices[i] = i;
     }
 
-    MapConstPtr_Type mapRepeated = rcp( new Map_Type(ulib_str, commWorld->getSize()*numGlobalElements, indices(), 0, commWorld) );
+    MapConstPtr_Type mapRepeated = rcp( new Map_Type( commWorld->getSize()*numGlobalElements, indices(), 0, commWorld) );
 
     MapConstPtr_Type mapUnique = mapRepeated->buildUniqueMap();
 

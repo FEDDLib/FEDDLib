@@ -1,9 +1,9 @@
+#include <Tpetra_Core.hpp>
+
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
-#include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/problems/Solver/PrecOpFaCSI.hpp"
 
 using namespace std;
@@ -18,15 +18,13 @@ typedef default_no NO;
 
 int main(int argc, char *argv[]) {
 
-    oblackholestream blackhole;
-    GlobalMPISession mpiSession(&argc,&argv,&blackhole);
-
-    RCP<const Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
+    // MPI boilerplate
+    Tpetra::ScopeGuard tpetraScope (&argc, &argv); // initializes MPI
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
+   
     int option = 1;
     myCLP.setOption("option",&option,"option");
     
@@ -34,8 +32,7 @@ int main(int argc, char *argv[]) {
     myCLP.throwExceptions(false);
     Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = myCLP.parse(argc,argv);
     if(parseReturn == Teuchos::CommandLineProcessor::PARSE_HELP_PRINTED) {
-        mpiSession.~GlobalMPISession();
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     TEUCHOS_TEST_FOR_EXCEPTION( option>3 || option<1, std::logic_error, "Chooes option beteween 1 and 3 for FaCSI test.");
@@ -68,8 +65,8 @@ int main(int argc, char *argv[]) {
         elementList2.push_back(0);
 
     
-    MapConstPtr_Type map1 = Teuchos::rcp( new Map_Type(ulib_str, -1, elementList1(), 0, comm) );
-    MapConstPtr_Type map2 = Teuchos::rcp( new Map_Type(ulib_str, -1, elementList2(), 0, comm) );
+    MapConstPtr_Type map1 = Teuchos::rcp( new Map_Type( -1, elementList1(), 0, comm) );
+    MapConstPtr_Type map2 = Teuchos::rcp( new Map_Type( -1, elementList2(), 0, comm) );
     
     MatrixPtr_Type mm1 = Teuchos::rcp( new Matrix_Type( map1, 1 )  );
     Array<GO> col;

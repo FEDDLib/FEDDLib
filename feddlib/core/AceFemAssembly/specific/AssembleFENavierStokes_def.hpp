@@ -156,9 +156,10 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type 
 
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-    
+
     // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
     UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    // std::cout << " Degree Laplace " << deg << " Grad " << Grad << " FeType " << FEType << std::endl;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
