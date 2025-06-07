@@ -6988,7 +6988,6 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14; // Degree from function set/determined externally
     UN deg = Helper::determineDegree( dim-1, FEType, Helper::Std) + degFunc;
 
