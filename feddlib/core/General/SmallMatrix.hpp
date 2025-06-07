@@ -79,7 +79,7 @@ private:
 
 
 
-#include "SmallMatrix.hpp"
+
 
 template<class T>
 SmallMatrix<T>::SmallMatrix():
