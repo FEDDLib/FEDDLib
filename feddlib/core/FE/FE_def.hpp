@@ -2,7 +2,7 @@
 #define FE_DEF_hpp
 
 #ifdef FEDD_HAVE_ACEGENINTERFACE
-#include "aceinterface.hpp"
+#include <aceinterface.hpp>
 #endif
 
 #include "FE_decl.hpp"

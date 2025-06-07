@@ -9,7 +9,7 @@
 #include "BlockMultiVector.hpp"
 
 #include <Xpetra_MatrixFactory.hpp>
-#include "Xpetra_ThyraUtils.hpp"
+#include <Xpetra_ThyraUtils.hpp>
 #include <Teuchos_VerboseObject.hpp>
 #include <Xpetra_MatrixMatrix.hpp>
 #include <MatrixMarket_Tpetra.hpp>

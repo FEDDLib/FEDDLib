@@ -10,7 +10,7 @@
 #include <Xpetra_ExportFactory.hpp>
 #include <Xpetra_ImportFactory.hpp>
 #include <Teuchos_VerboseObject.hpp>
-#include "Xpetra_ThyraUtils.hpp"
+#include <Xpetra_ThyraUtils.hpp>
 #include <Thyra_VectorSpaceBase_decl.hpp>
 
 /*!

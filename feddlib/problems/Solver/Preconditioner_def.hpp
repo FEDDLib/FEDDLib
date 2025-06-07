@@ -3,7 +3,7 @@
 #include "Preconditioner_decl.hpp"
 #include <Thyra_DefaultZeroLinearOp_decl.hpp>
 #ifdef FEDD_HAVE_IFPACK2
-#include "Thyra_Ifpack2PreconditionerFactory_def.hpp"
+#include <Thyra_Ifpack2PreconditionerFactory_def.hpp>
 #endif
 
 /*!

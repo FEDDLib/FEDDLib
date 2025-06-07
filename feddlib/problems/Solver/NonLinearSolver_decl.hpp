@@ -4,8 +4,8 @@
 #include "feddlib/problems/abstract/NonLinearProblem.hpp"
 #include "feddlib/problems/abstract/TimeProblem.hpp"
 #ifdef FEDD_HAVE_NOX
-#include "NOX.H"
-#include "NOX_Thyra.H"
+#include <NOX.H>
+#include <NOX_Thyra.H>
 #include <NOX_SolverStats.hpp>
 #endif
 /*!
