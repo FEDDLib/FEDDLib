@@ -1,139 +1,82 @@
 #include "Helper.hpp"
 
+#include <string>
+
 using namespace std;
 namespace FEDD {
 
-
-UN Helper::determineDegree(UN dim, std::string FEType, UN degFunc){
-   
-	UN deg;
+UN Helper::requiredQuadratureDegreeForBasisfunction(UN dim, std::string FEType){
+    UN deg;
     if (!FEType.compare("P0"))
         deg = 0;
-    else if (!FEType.compare("P1"))
+    else if ( !FEType.compare("P1") || !FEType.compare("P1-disc") )
         deg = 1;
     else if (!FEType.compare("P2"))
         deg = 2;
+    else if (!FEType.compare("Q1"))
+        deg = 1;
     else if (!FEType.compare("Q2"))
         deg = 2;
-    
-    deg += degFunc;
+    else if ( (dim == 3) && (!FEType.compare("Q2-20")) ) // Q2 serendipity
+        deg = 2;
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown finite element type: " + FEType + ", dimension: " + std::to_string(dim) + ".");
 
-    if (deg==0)
-        deg = 1;
+    // TODO: [JK] 2025/04 Removed P2-CR element, since it is unclear what type of element it really is.
+    //                    P2-CR sounds like polynomial 2 Crouzeix-Raviart. 
+    //                    3D: I assume that this should have a degree of freedom on each edge of the tetrahedron and on each face, 10 in total.
+    //                    This fits to the 10 DOFs mentioned in the Mesh class.
+    //                    But this would use standard P2 basis functions on the element itself. 
+    //                    It spans the standard P2 space and only uses different nodes, where the basis functions assume the value 1 and 0, respectively.
+    //                    Thus, I don't understand why a polynomial degree of 4 is returned below.
+    //                    With a little more investigation, we can re-add this element. Probably, the degree below should be 2 for the 
+    //                    basis function and 1 for the gradient.
+    //if ( (dim == 3) && (!FEType1.compare("P2-CR")) ) {
+        // if (type == Helper::Std)
+        //    deg = 4; // [JK] Was ist das fuer ein Element, das in einem Tetraeder mit einer P2-Formel Ordnung 4 rausbekommt?!
+        // else if (type == Helper::Grad)
+        //    deg = 3;
+    //}
 
     return deg;
 }
 
-UN Helper::determineDegree(UN dim, std::string FEType, int type){
+UN Helper::requiredQuadratureDegreeForGradientOfBasisfunction(UN dim, std::string FEType){
+    // In 1D, Qk finite elements are the same as Pk finite elements.
     UN deg;
-    if (!FEType.compare("P0")) {
+    if (!FEType.compare("P0"))
         deg = 0;
-    }
-    else if (!FEType.compare("P1")) {
-        if (type==Std)
-            deg = 1;
-        else if (type==Grad)
-            deg = 0;
-    }
-    else if (!FEType.compare("P2")) {
-        if (type==Std)
-            deg = 2;
-        else if (type==Grad)
-            deg = 1;
-    }
-    else if (!FEType.compare("Q2")) {
-        if (type==Std)
-            deg = 2;
-        else if (type==Grad)
-            deg = 2;
-    }
-    
-    if (deg==0)
+    else if ( !FEType.compare("P1") || !FEType.compare("P1-disc") )
+        deg = 0;
+    else if (!FEType.compare("P2"))
         deg = 1;
+    else if (!FEType.compare("Q1"))
+        deg = (dim > 1 ? 1 : 0);
+        // Example: f(x,y) = x*y.
+        // Gradient(f(x,y)) = [y,x]
+        // The required degree in x direction of the first argument is 0 but 1 for the second argument. 
+        // The same holds for the y direction. Thus, we need degree 1 in each (x and y) direction.
+    else if (!FEType.compare("Q2"))
+        deg = (dim > 1 ? 2 : 1);
+    else if ( (dim == 3) && (!FEType.compare("Q2-20")) ) // Q2 serendipity
+        deg = 2;
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown finite element type: " + FEType + ", dimension: " + std::to_string(dim) + ".");
 
     return deg;
 }
 
-UN Helper::determineDegree(UN dim, std::string FEType1, std::string FEType2, int type1,int type2, UN extraDeg){
-
-    TEUCHOS_TEST_FOR_EXCEPTION( dim==2 && ( FEType1=="P2-CR" || FEType2=="P2-CR"), std::runtime_error, "P2-CR should be only available in 3D.");
-    UN deg1, deg2;
-    if (!FEType1.compare("P0")) {
-        deg1 = 0;
-    }
-    else if ( !FEType1.compare("P1") || !FEType1.compare("P1-disc") ) {
-        if (type1==Std)
-            deg1 = 1;
-        else if (type1==Grad)
-            deg1 = 0;
-    }
-    else if (!FEType1.compare("P2")) {
-        if (type1==Std)
-            deg1 = 2;
-        else if (type1==Grad)
-            deg1 = 1;
-    }
-    else if (!FEType1.compare("P2-CR")) {
-        if (type1==Std)
-            deg1 = 4;
-        else if (type1==Grad)
-            deg1 = 3;
-    }
-
-    else if (!FEType1.compare("Q2")) {
-        if (type1==Std)
-            deg1 = 2;
-        else if (type1==Grad)
-            deg1 = 2;
-    }
-    else if (!FEType1.compare("Q2-20")) {
-        if (type1==Std)
-            deg1 = 2;
-        else if (type1==Grad)
-            deg1 = 2;
-    }
-   
-    if (!FEType2.compare("P0")) {
-        deg2 = 0;
-    }
-    else if ( !FEType2.compare("P1") || !FEType2.compare("P1-disc") ) {
-        if (type2==Std)
-            deg2 = 1;
-        else if (type2==Grad)
-            deg2 = 0;
-    }
-    else if (!FEType2.compare("P2")) {
-        if (type2==Std)
-            deg2 = 2;
-        else if (type2==Grad)
-            deg2 = 1;
-    }
-    else if (!FEType2.compare("P2-CR")) {
-        if (type2==Std)
-            deg2 = 4;
-        else if (type2==Grad)
-            deg2 = 3;
-    }
-
-    else if (!FEType2.compare("Q2")) {
-        if (type2==Std)
-            deg2 = 2;
-        else if (type2==Grad)
-            deg2 = 2;
-    }
-    else if (!FEType2.compare("Q2-20")) {
-        if (type2==Std)
-            deg2 = 2;
-        else if (type2==Grad)
-            deg2 = 2;
-    }
-
-    UN deg = deg1+deg2+extraDeg;
-    if (deg==0)
-        deg = 1;
-    
+UN Helper::determineDegree(UN dim, std::string FEType, VarType orderOfDerivative){
+    UN deg;
+    if (orderOfDerivative == Std)        // Std  = 0 = no derivative
+        deg = requiredQuadratureDegreeForBasisfunction(dim,FEType);
+    else if (orderOfDerivative == Grad)  // Grad = 1 = first derivative = gradient
+        deg = requiredQuadratureDegreeForGradientOfBasisfunction(dim,FEType);
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown order of derivative: " + orderOfDerivative);
     return deg;
 }
+
 void Helper::buildTransformationSurface(const vec_int_Type& element,
                                                  vec2D_dbl_ptr_Type pointsRep,
                                                  SmallMatrix<SC>& B,
@@ -801,23 +744,6 @@ int Helper::getFuncAtQuadNodes(vec_dbl_ptr_Type &funcVals,
     }
     return intFE;
 }
-
-/*!
-
-\brief Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information. !! Input can be improved with just delivering the coordinates of the surface nodes to determine the quad points
-
-@param[in] dim Dimension for which the quadrature points are needed.
-@param[in] FEType Finite element type for which the quadrature points are needed.
-@param[in] QuadW Vector to be filled with the quadrature weights accordingly
-@param[in] vec_LO_Type surfaceIDs for which you need the quadrature points.
-@param[in] points The repeated(!) points of current problem to identify the surface node ids. 
-
-@param[out] QuadPts Quadrature points
-@param[out] QuadW Quadrature weights
-
-\brief Keep in mind that elementwise quadPoints are defined on reference element whereas surface quadPoints at hand are defined on the input surface, which is typically not the reference Element. 
-
-*/
 
 vec2D_dbl_Type Helper::getQuadratureValuesOnSurface(int dim, std::string FEType, vec_dbl_Type &QuadW, vec_LO_Type surfaceIDs, vec2D_dbl_ptr_Type points){
 
@@ -1618,6 +1544,7 @@ void Helper::getDPhiAtCM(vec3D_dbl_ptr_Type &DPhi,
             }
         }
     }
+
 }
 
 

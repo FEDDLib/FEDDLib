@@ -60,7 +60,7 @@ void inflowChem(double* x, double* res, double t, const double* parameters)
 
 void reactionFunc(double* x, double* res, double* parameters){
 	
-    double m = 0.;	
+    double m = 1.;	
     res[0] = m * x[0];
 
 }
@@ -163,32 +163,22 @@ int main(int argc, char *argv[]) {
 
         // ####################
         Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
-        
+
         if(dim==3){
-       // bcFactory->addBC(threeBC, 1, 0, domain, "Dirichlet", 1);
-      // bcFactory->addBC(zeroBC, 4, 0, domain, "Dirichlet", 1);
-      //  bcFactory->addBC(zeroBC, 2, 0, domain, "Dirichlet", 1);
-        //bcFactory->addBC(zeroBC, 3, 0, domain, "Dirichlet", 1);
-		bcFactory->addBC(inflowChem, 0, 0, domain, "Dirichlet", 1); // inflow of Chem
-		bcFactory->addBC(inflowChem, 1, 0, domain, "Dirichlet", 1); // inflow of Chem
-		bcFactory->addBC(inflowChem, 7, 0, domain, "Dirichlet", 1);            		
-		//bcFactory->addBC(zeroDirichlet, 8, 1, domainChem, "Dirichlet", 1);
-		bcFactory->addBC(inflowChem, 9, 0, domain, "Dirichlet", 1);
-		/*bcFactory->addBC(zeroDirichlet, 2, 1, domainChem, "Dirichlet", 1);
-		bcFactory->addBC(zeroDirichlet, 3, 1, domainChem, "Dirichlet", 1);            
-		bcFactory->addBC(zeroDirichlet, 4, 1, domainChem, "Dirichlet", 1);            
-		bcFactory->addBC(zeroDirichlet, 5, 1, domainChem, "Dirichlet", 1);            
-		// bcFactory->addBC(zeroDirichlet, 6, 1, domainChem, "Dirichlet", 1);            
-		*/
+            // Inflow through one surface. Some flags represent edge components.
+            bcFactory->addBC(inflowChem, 0, 0, domain, "Dirichlet", 1); // inflow of Chem
+            bcFactory->addBC(inflowChem, 1, 0, domain, "Dirichlet", 1); // inflow of Chem
+            bcFactory->addBC(inflowChem, 7, 0, domain, "Dirichlet", 1);            		
+            bcFactory->addBC(inflowChem, 9, 0, domain, "Dirichlet", 1);
+           
 		}
 		else if(dim==2){
-		bcFactory->addBC(inflowChem, 2, 0, domain, "Dirichlet", 1); // inflow of Chem
-		  		
-		
+            // Inflow on one side / edge
+		    bcFactory->addBC(inflowChem, 2, 0, domain, "Dirichlet", 1); // inflow of Chem
 		}
 	
         
-
+        // We construct the diffusion tensor. In general it is a scale unit matrix. 
 	    vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(dim));
         double D0 = parameterListAll->sublist("Parameter").get("D0",1.);
         for(int i=0; i<dim; i++){
@@ -211,8 +201,9 @@ int main(int argc, char *argv[]) {
 
                 diffusionReaction.addBoundaries( bcFactory );
 
-                //diffusionReaction.addRhsFunction( zeroFunc );
-     
+                // diffusionReaction.addRhsFunction( zeroFunc );
+                // diffusionReaction.addParemeterRhs( parameterListProblem->sublist("Parameter").get("Metabolic Rate",0.0) );
+
                 diffusionReaction.initializeProblem();
                 diffusionReaction.assemble();
                                     

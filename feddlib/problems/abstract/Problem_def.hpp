@@ -303,7 +303,6 @@ namespace FEDD
     template <class SC, class LO, class GO, class NO>
     int Problem<SC, LO, GO, NO>::solve(BlockMultiVectorPtr_Type rhs)
     {
-
         int its;
         if (verbose_)
             std::cout << "-- Solve System ..." << std::endl;

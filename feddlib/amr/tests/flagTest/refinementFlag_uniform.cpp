@@ -50,8 +50,6 @@ int main(int argc, char *argv[]) {
 
  	// Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
      string exportfilename = "export.mesh";
     myCLP.setOption("fileExport",&exportfilename,"Export Mesh filename");
     string filename = "square.mesh";

@@ -1,0 +1,116 @@
+<!-- This File should give an overview and short explanation to all possible set parameters in the FEDDLib -->
+<!-- In each specific test folder there should be also a self-explanatory parametersProblem file but maybe not all parameters are visible there because e.g. for simple Navier-Stokes equation we do not need Material specific parameters (used for Generalized-Newtonian fluids)-->
+
+<!-- Problem specific parameters like e.g. dimension, FE type -->
+<ParameterList name="Problem">
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="2"/> 			<!-- {2, 3}   					-  2 for two-dimensional grids, 3 for three-dimensional grids, (1D in almost all cases not defined) --> 				 <!-- Read in main of specific problem e.g. feddlib/problem/tests/steadyNavierStokesAssFE/main.cpp-->
+        <Parameter name="Discretization Velocity" type="string" value="P2"/> <!-- {P1, P2} 					- P1, P2; velocity (Type of Finite Element)-->																	 <!-- Read in main of specific problem-->
+        <Parameter name="Discretization Pressure" type="string" value="P1"/> <!-- {P1, P2} 					- P1, P2; pressure (Type of Finite Element)-->    <!-- CAUTION: P1-P1 stabilization for Generalized-Newtonian Fluids not implemented -->							 <!-- Read in main of specific problem-->
+        <Parameter name="Mesh Type" type="string" value="unstructured"/>     <!-- {structured, unstructured} 		- depending on grid discretization -->																		 <!-- Read in main of specific problem-->
+        <Parameter name="Mesh Delimiter" type="string" value=" "/>           <!-- ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????-->								 <!-- Read in main of specific problem -->
+        
+        <!-- Physical Parameters -->
+        <Parameter name="Viscosity" type="double" value="0.0000035"/>	<!-- {double value} 				- kinematic viscosity (=dynamic viscosity/density)--> <!-- Read in main of specific problem or specific Assembly Routines specific/AssembleFENavierStokes_def.hpp:s  -->
+        <Parameter name="Density" type="double" value="1000.0"/>		<!-- {double value} 				- density			 -->  <!-- Read in main of specific problem or specific Assembly Routines specific/AssembleFENavierStokes_def.hpp:s  -->
+        
+        <!-- Boundary Condition specific parameters -->
+        <Parameter name="BC Type" type="string"   value="partialCFD"/> 	<!-- {parabolic, parabolic_benchmark, ....}--> <!-- Look in specific .main file of problem to see implementation of these boundary condition types-->   <!-- Read in main of specific problem -->
+        <Parameter name="H/h" type="int" value="3"/>				     <!-- {int value} 				- Used for scalability tests on structered grids (e.g. Backwardfacing-Step) where each structured subdomain block of size H is discretized with the factor h  -> larger values of H/h equal to finer discretization -->  <!-- Read in main of specific problem -->
+        <Parameter name="MaxVelocity" type="double" value="0.01"/>		     <!-- {double value} 			- Used in Boundary Condition set up --> <!-- Look in specific main file of problem to see implementation-->
+        <Parameter name="MeanVelocity"  type="double" value="1.0"/>		     <!-- {double value} 			- Used in Boundary Condition set up --> <!-- Look in specific main file of problem to see implementation-->	
+        <Parameter name="Height Inflow"  type="double" value="0.1"/>		     <!-- {double value} 			- Used in Boundary Condition set up corresponds to e.g. Height or Diameter of Inflow --> <!-- Look in specific main file of problem to see implementation-->
+        <Parameter name="Constant Pressure Gradient" type="double" value="10.0"/> <!-- {double value} 			- Used in Boundary Condition set up --> <!-- Look in specific main file of problem to see implementation-->
+        
+        <!-- Nonlinear Solver Stopping Criteria-->
+        <!-- Inside the FEDDLib one can choose either NOX (Trilinos package) or FixedPoint/ Newton for the nonlinear solver - All relevant implementations are inside feddlib/problems/Solver/NonLinearSolver_def.hpp-->
+        <!-- - Internal FEDDLib Nonlinear Solver - If one choose either FixedPoint or Newton the routine is defined inside NonLinearSolver_def.hpp and one can set following parameters -->
+        <Parameter name="Criterion" type="string" value="Update"/>		<!-- {Residium (Default), Update} --> <!-- Residium computes ||F(x_k+1)||/||F(x_0)|| (here relative residuum per Default) whereas Update computes the differences between current and old step solution ||x_k - x_k+1||--> <!-- Read inside feddlib/problems/Solver/NonLinearSolver_def.hpp-->
+        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/> 	<!-- {double value}  If we choose Residium as Criterion -> relative Residium for Newton-Update set here -> to be achieved relative tolerance -->
+        <Parameter name="updateTol" type="double" value="1.0e-4"/>		<!-- {double value}  If we choose Update as Criterion ->   update Residium for Newton-Update set here -> to be achieved update tolerance -->
+        
+        <!-- Options of NOX Solver -->
+        <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>	<!-- {double value}  absolute Residium for Newton-Update set here -> to be achieved absolte tolerance -->
+        <Parameter name="Use update tol" type="bool" value="false"/>    <!-- {true, false} NOX::StatusTest::NormUpdate is called and value from Parameter above updateTol is used -> Based on ||x_k - x_k+1|| so the solution update-->
+        <Parameter name="Use rel tol" type="bool" value="true"/>		<!-- {true, false} NOX::StatusTest::RelativeNormF is called and value from Parameter above relNonLinTol is used -> Based on ||F(x_k+1)||/||F(x_0)|| -->
+        <Parameter name="Use abs tol" type="bool" value="false"/>       <!-- {true, false} NOX::StatusTest::NormF is called and value from Parameter absNonLinTol is used -> Based on ||F(x_k)|| -->
+        <Parameter name="Use WRMS" type="bool" value="false"/>          <!-- {true, false} NOX::StatusTest::NormWRMS is called and value from Parameter relNonLinTol and absNonLinTol are used -> Based on weighted root mean square norm for ||x_k - x_k+1|| -->
+        <Parameter name="Combo" type="string" value="OR"/>              <!-- {AND,  OR}  See https://docs.trilinos.org/dev/packages/nox/doc/html/classNOX_1_1StatusTest_1_1Combo.html but basically above tests can be either the AND of all the component tests, or the OR of all the component tests e.g. In the OR combination, the result is Unconverged if all of the tests are Unconverged. Otherwise, it is the result of the first test in the list that is either Converged or Failed. -->
+
+        
+        <Parameter name="Cancel MaxNonLinIts" type="bool" value="false"/>    <!-- {true, false}		- If set to true the nonlinear solver will stop reaching the defined maximum number of nonlinear iterations even if the specified tolerance is not reached --> <!-- Read inside feddlib/problems/Solver/NonLinearSolver_def.hpp-->
+        <Parameter name="MaxNonLinIts" type="int" value="20"/>		<!-- {int value} 		- Maximum number of Newton iterations (nonlinear Solver) performed --> <!-- Read inside feddlib/problems/Solver/NonLinearSolver_def.hpp-->
+    </ParameterList>
+
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>        <!-- {true, false} Path to Mesh name for simulation -->
+	<Parameter name="Mesh 1 Name" type="string" value="rectangle_200.mesh"/> <!-- {string} Path to Mesh name for simulation -->
+    </ParameterList>
+
+
+    <!-- Material specific parameters for using Generalized-Newtonian fluid models (viscosity function dependent on shear rate) like e.g. Carreau-Yasuda model and set up of corresponding parameters -->
+    <ParameterList name="Material">    
+        <Parameter name="Newtonian" type="bool" value="false"/> <!-- {true (Default), false} - If false than User has to set below one of the ShearThinning Models and define parameters -->
+        <Parameter name="ShearThinningModel" type="string" value="Power-Law"/> <!-- {Power-Law, Carreau-Yasuda, Dimless-Carreau} If Newtonian is set to false one has to choose which kind of viscosity function eta(shear_rate) should be used and define the necessary parameter below - Read inside feddlib/core/AceFemAssembly/specific/AssembleFEGeneralizedNewtonian_def.hpp -->
+        <Parameter name="WriteOutViscosity" type="bool" value="false"/> <!-- {true, false (Default)} - If material is non-newtonian and this variable is set true the viscosity is computed using chosen law in one element in the center of mass and written out in paraview format - Read inside specific main file in the bottom-->  
+        <Parameter name="Numerical_ZeroValue_ShearRate" type="double" value="1.0e-14"/> <!-- {double value} Independent of the model we have to ensure that If the shear rate is in the denominator of an term (for example in the Gateaux-derivatives) than we should not divide by zero but instead set shear rate to a really small value -->
+        
+	    <!--********************FOR CHOSEN MODEL USER HAS TO SET MATERIAL PARAMETERS BELOW**************************-->
+        <!-- ALL VARIABLES ARE IN SI UNITS WHICH ARE WRITTEN AS COMMENT BEYOND THE PHSICAL QUANTITY -->	
+
+	    <!-- Power Law assumes for the (dynamic) viscosity eta the functional form \eta(\gamma) = K \gamma^(n-1) --> <!-- See feddlib/core/AceFemAssembly/specific/GeneralizedNewtonianModels/PowerLaw_def.hpp-->
+        <!-- For n=1 we have Newtonian Fluid with constant viscosity corresponding to the value of K--> 
+        <Parameter name="PowerLawParameter K" type="double" value="0.035"/>  <!-- {double value} Define for Power-Law model value of K --> 
+        <Parameter name="PowerLaw index n" type="double" value="0.7"/> <!--{double value} for n<1 we have shear thinning behaviour, n=1 is Newtonian fluid, n>1 shear thickening fluid--> 
+        <!-- In Power-Law model the viscosity could be unphysically zero or infinity for high or low shear rates therefore we have to catch these cases by defining max and min values for viscosity which we will name as Numerical_xxx value-->
+        <Parameter name="Numerical_InftyShearRateViscosity" type="double" value="0.0000001"/> <!-- {double value} For high shear rates the model tends to zero values therefore set here lower bound for viscosity-->
+	    <Parameter name="Numerical_ZeroShearRateViscosity" type="double" value="0.35"/> <!-- {double value} For low shear rates the model tends to infinity  therefore set here upper bound for viscosity-->
+
+	    <!-- Carreau Yasuda assumes for the viscosity eta the functional form \eta(\gamma) = \eta_{\infty} + (\eta_0 - \eta_{\infty})*( (  1+(\lambda*\gamma)^a  )^((n-1)/a)   ) -->
+        <!-- For a=2 we have Carreau Model-->
+        <!-- For a=1-n we have Cross Model-->
+        <!-- For a=1 and n=0 we have Simplified Cross Model-->
+        <Parameter name="InftyShearRateViscosity_etaInfty" type="double" value="0.00345"/> <!-- [Pa s] --> <!-- Blood: [Ref. Cardiovascular Mathematics p.237] 0.00345 -->  <!-- {double value} -->
+        <Parameter name="ZeroShearRateViscosity_eta0" type="double" value="0.056"/> <!-- [Pa s] --> <!--  Blood: [Ref. Cardiovascular Mathematics p.237] 0.056 --> <!-- {double value} -->
+        <Parameter name="InflectionPoint_a" type="double" value="1.25 "/> <!-- [] --> <!--  Blood: [Ref. Cardiovascular Mathematics p.237] 1.25 --> <!-- {double value} -->
+        <Parameter name="FluidIndex_n" type="double" value="0.22"/> <!-- [] --> <!--  Blood: [Ref. Cardiovascular Mathematics p.237] 0.22 --> <!-- {double value} -->
+        <Parameter name="CharacteristicTime_Lambda" type="double" value="1.902"/> <!-- [s] --> <!--  Blood: [Ref. Cardiovascular Mathematics p.237] 1.902 --> <!-- {double value} -->
+
+	    <!-- Dimensionless Carreau Model - assumes for the viscosity eta the functional form \eta(\gamma) = \eta_{\infty} + (\eta_0 - \eta_{\infty})*( (  1+(\lambda*\gamma)^2  )^((n-1)/2)   ) but \eta(\gamma)= (\eta(\gamma)_actual/ \eta(\gamma)_ref so we have to multiply the value with the reference viscosity ) -->
+	    <!-- THE PARAMETERS IN EQUATION ARE DIMENSIONLESS THEREFORE WE HAVE TO MULTIPLY BY THE REFERENCE VISCOSITY TO OBTAIN THE ACTUAL VISCOSITY-->
+        <!-- feddlib/core/AceFemAssembly/specific/GeneralizedNewtonianModels/Dimless_Carreau_decl.hpp-->
+        <Parameter name="Dimless_InftyShearRateViscosity_etaInfty" type="double" value="3.3707"/> <!-- [] --> <!-- {double value} -->
+        <Parameter name="Dimless_ZeroShearRateViscosity_eta0" type="double" value="230.6330"/> <!--[]  --> <!-- {double value} -->
+        <Parameter name="Reference_Viscosity" type="double" value="0.0012"/> <!--[Pa s]  --> <!-- {double value} -->
+        <Parameter name="Carreau_FluidIndex_n" type="double" value="0.45"/> <!-- [] -->   <!-- {double value} -->
+        <Parameter name="Dimless_CharacteristicTime_Lambda" type="double" value="-300"/> <!-- [] --> <!-- {double value} -->
+        
+      
+</ParameterList>
+
+
+    <!-- Exporter for Paraview -->
+    <ParameterList name="Exporter">
+        <Parameter name="Export coarse functions" type="bool" value="false"/>
+        <Parameter name="Name coarse functions block1" type="string" value="phiU"/>
+        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
+        <Parameter name="Name coarse functions block1" type="string" value="phiP"/>
+        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
+    </ParameterList>
+    
+    <!-- Nonlinear Solution method as well as Preconditioner as well as Parallelization specific parameters like e.g. Newton -->
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="Linearization" type="string" value="Newton"/> <!-- {FixedPoint, Newton, NOX} - Choose linearization approach if one chooses NOX one can set additional options e.g. for globalization strategy inside parametersSolver.xml -->
+        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>
+        <Parameter name="ParaView export subdomains" type="bool" value="false"/>
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- {Monolithic, Teko} -->
+        <Parameter name="Assemble Velocity Mass" type="bool" value="false"/>
+        <Parameter name="Delete P1 Data" type="bool" value="false"/><!-- only for Monolithic and Newton -->
+
+    
+
+    </ParameterList>
+</ParameterList>

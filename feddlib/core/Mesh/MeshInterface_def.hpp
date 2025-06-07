@@ -245,9 +245,9 @@ void MeshInterface<SC,LO,GO,NO>::determineInterfaceParallelAndDistance( vec2D_db
 
         Teuchos::reduceAll( *this->comm_, Teuchos::REDUCE_SUM, (GO) indexGlobalCommOther.size(), Teuchos::ptrFromRef( numInterfaceGlobalOther ) );
         
-        MapPtr_Type mapThis = Teuchos::rcp( new Map_Type( mapUniThis->getUnderlyingLib(), -1, Teuchos::arrayViewFromVector( indexGlobalCommThis ), 0, this->comm_ ) );
+        MapPtr_Type mapThis = Teuchos::rcp( new Map_Type( -1, Teuchos::arrayViewFromVector( indexGlobalCommThis ), 0, this->comm_ ) );
 
-        MapPtr_Type mapOther = Teuchos::rcp( new Map_Type( mapUniThis->getUnderlyingLib(), -1, Teuchos::arrayViewFromVector( indexGlobalCommOther ), 0, this->comm_ ) );
+        MapPtr_Type mapOther = Teuchos::rcp( new Map_Type(  -1, Teuchos::arrayViewFromVector( indexGlobalCommOther ), 0, this->comm_ ) );
         
        std::cout << "numInterfaceGlobalThis:" << numInterfaceGlobalThis << std::endl;
        std::cout << "numInterfaceGlobalOther:" << numInterfaceGlobalOther << std::endl;
@@ -256,9 +256,9 @@ void MeshInterface<SC,LO,GO,NO>::determineInterfaceParallelAndDistance( vec2D_db
         std::vector<GO> gatherAllIndices(numInterfaceGlobalThis);
         std::iota ( std::begin( gatherAllIndices ), std::end( gatherAllIndices ), 0 );
 
-        MapPtr_Type linearMapThis = Teuchos::rcp( new Map_Type( mapUniThis->getUnderlyingLib(), numInterfaceGlobalThis, indexGlobalCommThis.size(), 0, this->comm_ ) );
-        MapPtr_Type linearMapOther = Teuchos::rcp( new Map_Type( mapUniThis->getUnderlyingLib(), numInterfaceGlobalThis, indexGlobalCommOther.size(), 0, this->comm_ ) );
-        MapPtr_Type gatherAllMap = Teuchos::rcp( new Map_Type( mapUniThis->getUnderlyingLib(), invalid, Teuchos::arrayViewFromVector( gatherAllIndices ), 0, this->comm_ ) );
+        MapPtr_Type linearMapThis = Teuchos::rcp( new Map_Type(  numInterfaceGlobalThis, indexGlobalCommThis.size(), 0, this->comm_ ) );
+        MapPtr_Type linearMapOther = Teuchos::rcp( new Map_Type(numInterfaceGlobalThis, indexGlobalCommOther.size(), 0, this->comm_ ) );
+        MapPtr_Type gatherAllMap = Teuchos::rcp( new Map_Type(  invalid, Teuchos::arrayViewFromVector( gatherAllIndices ), 0, this->comm_ ) );
 
         // We would like to use the Teuchos version of MPI_Allgatherv, which does not exist. Therefore we gatherv on a root and broadcast afterwards
         // Gather local lengths first
@@ -302,8 +302,8 @@ void MeshInterface<SC,LO,GO,NO>::determineInterfaceParallelAndDistance( vec2D_db
         Teuchos::broadcast<int,GO>( *this->comm_, root, Teuchos::arrayViewFromVector( gatheredThis ) );
         Teuchos::broadcast<int,GO>( *this->comm_, root, Teuchos::arrayViewFromVector( gatheredOther ) );
 
-        MapPtr_Type mapAllThis = Teuchos::rcp( new Map_Type( mapUniThis->getUnderlyingLib(), invalid, Teuchos::arrayViewFromVector( gatheredThis ), 0, this->comm_ ) );
-        MapPtr_Type mapAllOther = Teuchos::rcp( new Map_Type( mapUniThis->getUnderlyingLib(), invalid, Teuchos::arrayViewFromVector( gatheredOther ), 0, this->comm_ ) );
+        MapPtr_Type mapAllThis = Teuchos::rcp( new Map_Type(invalid, Teuchos::arrayViewFromVector( gatheredThis ), 0, this->comm_ ) );
+        MapPtr_Type mapAllOther = Teuchos::rcp( new Map_Type( invalid, Teuchos::arrayViewFromVector( gatheredOther ), 0, this->comm_ ) );
 
         bool meshOnRank = false;
         if (pointsUniThis->size() > 0)

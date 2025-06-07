@@ -51,11 +51,10 @@ public:
     //
     Mesh();
 
-    Mesh(CommConstPtrConst_Type& comm);
-    
-    ~Mesh();
-    
-    
+    Mesh(CommConstPtrConst_Type &comm);
+
+    virtual ~Mesh() = default;
+
     /*!
      Delete all member variables
      */
@@ -104,9 +103,7 @@ public:
     /// @brief Getter for flags corresponting to unique points
     /// @return bcFlagUni_
     vec_int_ptr_Type getBCFlagUnique() const;
-        
-    virtual void dummy() = 0;
-    
+
     /// @brief Returns element list as c-object
     /// @return elementsC_
     ElementsPtr_Type getElementsC();

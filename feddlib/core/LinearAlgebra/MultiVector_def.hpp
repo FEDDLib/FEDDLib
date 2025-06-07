@@ -26,18 +26,6 @@ exporter_()
 
 }
 
-//template <class SC, class LO, class GO, class NO>
-//MultiVector<SC,LO,GO,NO>::MultiVector(const EpetraMat_Type& epetraMatIn):
-//    MultiVector_()
-//{
-//#ifdef FEDD_UseTpetra
-//    Xpetra::UnderlyingLib lib = Xpetra::UseTpetra;
-//#else
-//    Xpetra::UnderlyingLib lib = Xpetra::UseEpetra;
-//#endif
-//    CommConstPtr_Type teuchosComm = rcp( new Teuchos::MpiComm<int> ( epetraMatIn.Map().Comm() ) );
-//    XpetraMultiVectorPtr_Type MultiVector_ = FROSch::ConvertToXpetra( lib, epetraMatIn, teuchosComm );
-//}
 
 template <class SC, class LO, class GO, class NO>
 MultiVector<SC,LO,GO,NO>::MultiVector( MapConstPtr_Type map, UN nmbVectors ):
@@ -46,17 +34,21 @@ map_(map),
 importer_(),
 exporter_()
 {
-    multiVector_ = Xpetra::MultiVectorFactory<SC,LO,GO,NO>::Build( map->getXpetraMap(), nmbVectors );
+    multiVector_ = Teuchos::RCP( new TpetraMultiVector_Type( map->getTpetraMap(), nmbVectors ));
 }
 
 template <class SC, class LO, class GO, class NO>
-MultiVector<SC,LO,GO,NO>::MultiVector( XpetraMultiVectorPtr_Type& xpetraMVPtrIn ):
-multiVector_( xpetraMVPtrIn ),
+MultiVector<SC,LO,GO,NO>::MultiVector( TpetraMultiVectorPtr_Type& tpetraMVPtrIn ):
+multiVector_( tpetraMVPtrIn ),
 map_(),
 importer_(),
 exporter_()
 {
-    map_.reset( new Map_Type( xpetraMVPtrIn->getMap() ) );
+    
+    map_.reset( new Map_Type( tpetraMVPtrIn->getMap() ) );
+
+    FEDDLIB_WARNING("MultiVector_def", this->getMap()->getComm()->getRank() == 0, " MultiVector(TpetraMultiVectorPtr_Type& tpetraMVPtrIn) -- this is not a deep copy of the contents of the MV.");
+
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -66,7 +58,9 @@ map_(),
 importer_(),
 exporter_()
 {
-    multiVector_ = Xpetra::MultiVectorFactory<SC,LO,GO,NO>::Build( mvIn->getMap()->getXpetraMap(), mvIn->getNumVectors() );
+    //FEDDLIB_NOTIFICATION("MultiVector_def", mvIn->getMap()->getComm()->getRank() == 0, " MultiVector(MultiVectorConstPtr_Type mvIn) new multivector is created based on the input mv data");
+
+    multiVector_ =Teuchos::RCP( new TpetraMultiVector_Type(  mvIn->getMap()->getTpetraMap(), mvIn->getNumVectors() ));
     map_.reset( new Map_Type( *mvIn->getMap() ) );
     for (UN j=0; j<this->getNumVectors(); j++) {
         Teuchos::ArrayRCP< const SC > valuesIn = mvIn->getData(j);
@@ -81,6 +75,7 @@ template <class SC, class LO, class GO, class NO>
 MultiVector<SC,LO,GO,NO>::~MultiVector(){
 
 }
+
 template <class SC, class LO, class GO, class NO>
 typename MultiVector<SC,LO,GO,NO>::MapConstPtr_Type MultiVector<SC,LO,GO,NO>::getMap() const{
     return map_;
@@ -92,7 +87,7 @@ typename MultiVector<SC,LO,GO,NO>::MapPtr_Type MultiVector<SC,LO,GO,NO>::getMapN
 }
     
 template <class SC, class LO, class GO, class NO>
-typename MultiVector<SC,LO,GO,NO>::XpetraMapConstPtr_Type MultiVector<SC,LO,GO,NO>::getMapXpetra() const{
+typename MultiVector<SC,LO,GO,NO>::TpetraMapConstPtr_Type MultiVector<SC,LO,GO,NO>::getMapTpetra() const{
     TEUCHOS_TEST_FOR_EXCEPTION(multiVector_.is_null(),std::runtime_error,"RCP<MultiVector> is null.");
 
     return multiVector_->getMap();
@@ -107,6 +102,11 @@ bool MultiVector<SC,LO,GO,NO>::is_null() const{
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::replaceGlobalValue (GO globalRow, UN vectorIndex, const SC &value){
     multiVector_->replaceGlobalValue( globalRow, vectorIndex, value );
+}
+
+template <class SC, class LO, class GO, class NO>
+void MultiVector<SC,LO,GO,NO>::replaceLocalValue (LO localRow, UN vectorIndex, const SC &value){
+    multiVector_->replaceLocalValue( localRow, vectorIndex, value );
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -136,12 +136,12 @@ UN MultiVector<SC,LO,GO,NO>::getNumVectors() const{
 }
 
 template <class SC, class LO, class GO, class NO>
-typename MultiVector<SC,LO,GO,NO>::XpetraMultiVectorConstPtr_Type MultiVector<SC,LO,GO,NO>::getXpetraMultiVector() const{
+typename MultiVector<SC,LO,GO,NO>::TpetraMultiVectorConstPtr_Type MultiVector<SC,LO,GO,NO>::getTpetraMultiVector() const{
     return multiVector_;
 }
 
 template <class SC, class LO, class GO, class NO>
-typename MultiVector<SC,LO,GO,NO>::XpetraMultiVectorPtr_Type MultiVector<SC,LO,GO,NO>::getXpetraMultiVectorNonConst() {
+typename MultiVector<SC,LO,GO,NO>::TpetraMultiVectorPtr_Type MultiVector<SC,LO,GO,NO>::getTpetraMultiVectorNonConst() {
     return multiVector_;
 }
 
@@ -154,39 +154,42 @@ void MultiVector<SC,LO,GO,NO>::print(Teuchos::EVerbosityLevel verbLevel) const{
 
 template <class SC, class LO, class GO, class NO>
 Teuchos::RCP<Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThyraMultiVector( ) {
-    Teuchos::RCP<Thyra::MultiVectorBase<SC> > mv = Teuchos::rcp_const_cast<Thyra::MultiVectorBase<SC> >(Xpetra::ThyraUtils<SC,LO,GO,NO>::toThyraMultiVector(multiVector_));
-    return mv;
+   // Teuchos::RCP<Thyra::MultiVectorBase<SC> > mv = Teuchos::rcp_const_cast<Thyra::MultiVectorBase<SC> >(Xpetra::ThyraUtils<SC,LO,GO,NO>::toThyraMultiVector(multiVector_));
+
+    auto thyTpMap = Thyra::tpetraVectorSpace<SC,LO,GO,NO>(multiVector_->getMap()); //Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Teuchos::rcp_dynamic_cast<const TpetraMap_Type>(multiVector_->getMap())->getTpetraMap());
+    Teuchos::RCP<Tpetra::MultiVector<SC,LO,GO,NO>> tpMV = multiVector_;
+    auto thyDomMap =Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Tpetra::createLocalMapWithNode<LO,GO,NO>(multiVector_->getNumVectors(), multiVector_->getMap()->getComm()));
+    auto thyMV = rcp(new Thyra::TpetraMultiVector<SC,LO,GO,NO>());
+    thyMV->initialize(thyTpMap, thyDomMap, tpMV);
+
+    return thyMV;
 }
 
 
 template <class SC, class LO, class GO, class NO>
 Teuchos::RCP<const Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThyraMultiVectorConst( ) const{
 
-     return Xpetra::ThyraUtils<SC,LO,GO,NO>::toThyraMultiVector( multiVector_ );
+    //Teuchos::RCP<Thyra::MultiVectorBase<SC> > mv;
+    //return Xpetra::ThyraUtils<SC,LO,GO,NO>::toThyraMultiVector( multiVector_ );
+    auto thyTpMap = Thyra::tpetraVectorSpace<SC,LO,GO,NO>(multiVector_->getMap()); //Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Teuchos::rcp_dynamic_cast<const TpetraMap_Type>(multiVector_->getMap())->getTpetraMap());
+    Teuchos::RCP<Tpetra::MultiVector<SC,LO,GO,NO>> tpMV = multiVector_;
+    auto thyDomMap =Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Tpetra::createLocalMapWithNode<LO,GO,NO>(multiVector_->getNumVectors(), multiVector_->getMap()->getComm()));
+    auto thyMV = rcp(new Thyra::TpetraMultiVector<SC,LO,GO,NO>());
+    thyMV->initialize(thyTpMap, thyDomMap, tpMV);
+    
+    return thyMV;
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::fromThyraMultiVector( Teuchos::RCP< Thyra::MultiVectorBase<SC> > thyraMV){
-    Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
 
     TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector is null but we need to know the underlying lib for function fromThyraMultiVector().");
 
-    using Teuchos::RCP;
-    using Teuchos::rcp;
-    using Teuchos::rcp_dynamic_cast;
-    using Teuchos::rcp_const_cast;
-
     typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> TOVE_Type;
-    typedef Tpetra::MultiVector<SC,LO,GO,NO> TpetraMultiVector_Type;
-    typedef Xpetra::TpetraMultiVector<SC,LO,GO,NO> XTpetraMultiVector_Type;
+    
+    Teuchos::RCP<TpetraMultiVector_Type> tMV = TOVE_Type::getTpetraMultiVector( thyraMV );
+    multiVector_ = tMV;
 
-    if (!this->getMap()->getUnderlyingLib().compare("Tpetra") ) {
-        Teuchos::RCP<TpetraMultiVector_Type> tMV = TOVE_Type::getTpetraMultiVector( thyraMV );
-        Teuchos::RCP<XTpetraMultiVector_Type> xTMV = Teuchos::rcp( new XTpetraMultiVector_Type( tMV ) );
-        multiVector_ = xTMV;
-    }
-    else
-        TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error,"we must implement fromThyraMultiVector() for other underlying libs.");
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -200,25 +203,25 @@ template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::normInf(const Teuchos::ArrayView< typename Teuchos::ScalarTraits<SC>::magnitudeType> &normsInf) const {
     TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in normInf is null.");
     multiVector_->normInf(normsInf);
+
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::abs(MultiVectorConstPtr_Type a) {
     TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in abs is null.");
-    multiVector_->abs( *a->getXpetraMultiVector());
+    multiVector_->abs( *a->getTpetraMultiVector());
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::dot(MultiVectorConstPtr_Type a, const Teuchos::ArrayView< typename Teuchos::ScalarTraits<SC>::magnitudeType> &dots) const {
     TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in dot is null.");
-    multiVector_->dot( *a->getXpetraMultiVector(), dots );
+    multiVector_->dot( *a->getTpetraMultiVector(), dots );
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::update( const SC& alpha, const MultiVector_Type& A, const SC& beta) {
     TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != A.getNumVectors(), std::logic_error,"MultiVectors for update have different number of vectors.");
-
-    multiVector_->update( alpha, *A.getXpetraMultiVector(), beta );
+    multiVector_->update( alpha, *A.getTpetraMultiVector(), beta );
 
 }
 
@@ -226,7 +229,7 @@ template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::update( const SC& alpha, const MultiVector_Type& A, const SC& beta , const MultiVector_Type& B, const SC& gamma) {
     TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != A.getNumVectors(), std::logic_error,"MultiVectors for update have different number of vectors.");
 
-    multiVector_->update( alpha, *A.getXpetraMultiVector(), beta, *B.getXpetraMultiVector(), gamma );
+    multiVector_->update( alpha, *A.getTpetraMultiVector(), beta, *B.getTpetraMultiVector(), gamma );
 
 }
 
@@ -242,7 +245,7 @@ void MultiVector<SC,LO,GO,NO>::scale( const SC& alpha ){
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, const SC &alpha, MultiVectorConstPtr_Type &A, MultiVectorConstPtr_Type &B, const SC &beta){
-    multiVector_->multiply( transA, transB, alpha, *A->getXpetraMultiVector(), *B->getXpetraMultiVector(), beta );
+    multiVector_->multiply( transA, transB, alpha, *A->getTpetraMultiVector(), *B->getTpetraMultiVector(), beta );
 }
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, const SC &alpha, BlockMultiVectorConstPtr_Type &A, BlockMultiVectorConstPtr_Type &B, const SC &beta){
@@ -267,31 +270,31 @@ void MultiVector<SC,LO,GO,NO>::importFromVector( MultiVectorConstPtr_Type mvIn, 
 
     if ( importer_.is_null() || !reuseImport) {
         if (type=="Forward")
-            importer_ = Xpetra::ImportFactory<LO,GO,NO>::Build ( mvIn->getMapXpetra(), this->getMapXpetra() );
+            importer_ = Teuchos::RCP(new Tpetra::Import<LO, GO, NO>(mvIn->getMapTpetra(), this->getMapTpetra() ));
         else if(type=="Reverse")
-            importer_ = Xpetra::ImportFactory<LO,GO,NO>::Build ( this->getMapXpetra(), mvIn->getMapXpetra() );
+            importer_ = Teuchos::RCP(new Tpetra::Import<LO, GO, NO>(this->getMapTpetra(), mvIn->getMapTpetra() ));
         else
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse");
     }
     else{
-        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getSourceMap()->isSameAs( *mvIn->getMap()->getXpetraMap() ), std::logic_error,"Source maps of Importer and Multivector are not the same.");
-        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getTargetMap()->isSameAs( *this->getMap()->getXpetraMap() ), std::logic_error,"Target maps of Importer and Multivector are not the same.");
+        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getSourceMap()->isSameAs( *mvIn->getMap()->getTpetraMap() ), std::logic_error,"Source maps of Importer and Multivector are not the same.");
+        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getTargetMap()->isSameAs( *this->getMap()->getTpetraMap() ), std::logic_error,"Target maps of Importer and Multivector are not the same.");
     }
 
         
     if (type=="Forward") {
         if ( !combineMode.compare("Insert") )
-            multiVector_->doImport ( *mvIn->getXpetraMultiVector(), *importer_, Xpetra::INSERT);
+            multiVector_->doImport ( *mvIn->getTpetraMultiVector(), *importer_, Tpetra::INSERT);
         else if ( !combineMode.compare("Add") )
-            multiVector_->doImport ( *mvIn->getXpetraMultiVector(), *importer_, Xpetra::ADD);
+            multiVector_->doImport ( *mvIn->getTpetraMultiVector(), *importer_, Tpetra::ADD);
         else
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
     }
     else if(type=="Reverse"){
         if ( !combineMode.compare("Insert") )
-            multiVector_->doExport ( *mvIn->getXpetraMultiVector(), *importer_, Xpetra::INSERT);
+            multiVector_->doExport ( *mvIn->getTpetraMultiVector(), *importer_, Tpetra::INSERT);
         else if ( !combineMode.compare("Add") )
-            multiVector_->doExport ( *mvIn->getXpetraMultiVector(), *importer_, Xpetra::ADD);
+            multiVector_->doExport ( *mvIn->getTpetraMultiVector(), *importer_, Tpetra::ADD);
         else
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
     }
@@ -305,29 +308,29 @@ void MultiVector<SC,LO,GO,NO>::exportFromVector( MultiVectorConstPtr_Type mvIn, 
 
     if ( exporter_.is_null() || !reuseExport) {
         if (type=="Forward")
-            exporter_ = Xpetra::ExportFactory<LO,GO,NO>::Build ( mvIn->getMapXpetra(), this->getMapXpetra() );
+            exporter_ =  Teuchos::RCP(new Tpetra::Export<LO, GO, NO>(mvIn->getMapTpetra(), this->getMapTpetra() ));
         else if(type=="Reverse")
-            exporter_ = Xpetra::ExportFactory<LO,GO,NO>::Build ( this->getMapXpetra(), mvIn->getMapXpetra() );
+            exporter_ =  Teuchos::RCP(new Tpetra::Export<LO, GO, NO>(this->getMapTpetra(), mvIn->getMapTpetra() ));
         else
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for export. Choose Forward or Reverse");
     }
     else{
-        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getSourceMap()->isSameAs( *this->getMap()->getXpetraMap() ), std::logic_error,"Source maps of Exporter and Multivector are not the same.");
-        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getTargetMap()->isSameAs( *mvIn->getMap()->getXpetraMap() ), std::logic_error,"Target maps of Exporter and Multivector are not the same.");
+        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getSourceMap()->isSameAs( *this->getMap()->getTpetraMap() ), std::logic_error,"Source maps of Exporter and Multivector are not the same.");
+        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getTargetMap()->isSameAs( *mvIn->getMap()->getTpetraMap() ), std::logic_error,"Target maps of Exporter and Multivector are not the same.");
     }
     if (type=="Forward") {
         if ( !combineMode.compare("Insert") )
-            multiVector_->doExport ( *mvIn->getXpetraMultiVector(), *exporter_, Xpetra::INSERT);
+            multiVector_->doExport ( *mvIn->getTpetraMultiVector(), *exporter_, Tpetra::INSERT);
         else if ( !combineMode.compare("Add") )
-            multiVector_->doExport ( *mvIn->getXpetraMultiVector(), *exporter_, Xpetra::ADD);
+            multiVector_->doExport ( *mvIn->getTpetraMultiVector(), *exporter_, Tpetra::ADD);
         else
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
     }
     else if (type=="Reverse") {
         if ( !combineMode.compare("Insert") )
-            multiVector_->doImport ( *mvIn->getXpetraMultiVector(), *exporter_, Xpetra::INSERT);
+            multiVector_->doImport ( *mvIn->getTpetraMultiVector(), *exporter_, Tpetra::INSERT);
         else if ( !combineMode.compare("Add") )
-            multiVector_->doImport ( *mvIn->getXpetraMultiVector(), *exporter_, Xpetra::ADD);
+            multiVector_->doImport ( *mvIn->getTpetraMultiVector(), *exporter_, Tpetra::ADD);
         else
             TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
     }
@@ -338,28 +341,25 @@ void MultiVector<SC,LO,GO,NO>::exportFromVector( MultiVectorConstPtr_Type mvIn, 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::writeMM(std::string fileName) const{
     TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in writeMM is null.");
-    TEUCHOS_TEST_FOR_EXCEPTION( !(multiVector_->getMap()->lib()==Xpetra::UseTpetra), std::logic_error,"Only available for Tpetra underlying lib.");
 
     typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
-    typedef Teuchos::RCP<TpetraCrsMatrix> TpetraCrsMatrixPtr;
 
-    typedef Tpetra::MultiVector<SC,LO,GO,NO> TpetraMultiVector;
+    /*typedef Tpetra::MultiVector<SC,LO,GO,NO> TpetraMultiVector;
     typedef Teuchos::RCP<TpetraMultiVector> TpetraMultiVectorPtr;
 
     const Xpetra::TpetraMultiVector<SC,LO,GO,NO>& xTpetraMultiVector = dynamic_cast<const Xpetra::TpetraMultiVector<SC,LO,GO,NO> &>(*multiVector_);
 
-    TpetraMultiVectorPtr tpetraMultiVector = xTpetraMultiVector.getTpetra_MultiVector();
+    TpetraMultiVectorPtr tpetraMultiVector = xTpetraMultiVector.getTpetra_MultiVector();*/
 
     Tpetra::MatrixMarket::Writer< TpetraCrsMatrix > tpetraWriter;
 
-    tpetraWriter.writeDenseFile(fileName, tpetraMultiVector, "multivector", "");
+    tpetraWriter.writeDenseFile(fileName, multiVector_, "multivector", "");
 }
     
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::readMM(std::string fileName) const{
     TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in writeMM is null.");
-    TEUCHOS_TEST_FOR_EXCEPTION( !(multiVector_->getMap()->lib()==Xpetra::UseTpetra), std::logic_error,"Only available for Tpetra underlying lib.");
 
     typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
     typedef Teuchos::RCP<TpetraCrsMatrix> TpetraCrsMatrixPtr;
@@ -372,9 +372,8 @@ void MultiVector<SC,LO,GO,NO>::readMM(std::string fileName) const{
 
     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
 
-
-    Xpetra::TpetraMultiVector<SC,LO,GO,NO>& xTpetraMultiVector = dynamic_cast<Xpetra::TpetraMultiVector<SC,LO,GO,NO> &>(*multiVector_);
-    TpetraMultiVectorPtr tpetraMultiVector = xTpetraMultiVector.getTpetra_MultiVector();
+   // Xpetra::TpetraMultiVector<SC,LO,GO,NO>& xTpetraMultiVector = dynamic_cast<Xpetra::TpetraMultiVector<SC,LO,GO,NO> &>(*multiVector_);
+    TpetraMultiVectorPtr tpetraMultiVector = multiVector_; //xTpetraMultiVector.getTpetra_MultiVector();
 
     Teuchos::RCP<const Tpetra::Map<LO,GO,NO> > tpetraMap = tpetraMultiVector->getMap();
 
@@ -396,9 +395,9 @@ void MultiVector<SC,LO,GO,NO>::readMM(std::string fileName) const{
 template <class SC, class LO, class GO, class NO>
 typename MultiVector<SC,LO,GO,NO>::MultiVectorConstPtr_Type MultiVector<SC,LO,GO,NO>::getVector( int i ) const{
 
-    XpetraMultiVectorConstPtr_Type xpetraMV = multiVector_->getVector( i );
-    XpetraMultiVectorPtr_Type xpetraMVNonConst = Teuchos::rcp_const_cast<XpetraMultiVector_Type>( xpetraMV );
-    MultiVectorConstPtr_Type singleMV = Teuchos::rcp( new const MultiVector_Type ( xpetraMVNonConst ) );
+    TpetraMultiVectorConstPtr_Type tpetraMV = multiVector_->getVector( i );
+    TpetraMultiVectorPtr_Type tpetraMVNonConst = Teuchos::rcp_const_cast<TpetraMultiVector_Type>( tpetraMV );
+    MultiVectorConstPtr_Type singleMV = Teuchos::rcp( new const MultiVector_Type ( tpetraMVNonConst ) );
     return singleMV;
     
 }
@@ -409,7 +408,7 @@ typename MultiVector<SC,LO,GO,NO>::MultiVectorPtr_Type MultiVector<SC,LO,GO,NO>:
     MultiVectorPtr_Type sumMV = Teuchos::rcp( new MultiVector_Type ( map_, 1 ) );
     sumMV->putScalar(0.);
     for (int i=0; i<this->getNumVectors(); i++)
-        sumMV->getXpetraMultiVectorNonConst()->getVectorNonConst(0)->update( 1., *multiVector_->getVector(i), 1. );
+        sumMV->getTpetraMultiVectorNonConst()->getVectorNonConst(0)->update( 1., *multiVector_->getVector(i), 1. );
 
     return sumMV;
 }

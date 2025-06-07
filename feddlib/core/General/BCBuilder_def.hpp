@@ -623,11 +623,12 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
                     // To get the correct domain from vecDomain_ we need to know the index of any (in this case the
                     // first) entry that was done with addBC for this block
                     const auto it = std::find(this->vecBlockID_.begin(), this->vecBlockID_.end(), blockRow);
-                    const auto matrixMap = this->vecDomain_.at(it - this->vecBlockID_.begin())->getMapUnique();
-                    // Use Xpetra::MatrixFactory to build a matrix with known row and column maps
-                    auto xpetraMatrix = Xpetra::MatrixFactory<SC, LO, GO, NO>::Build(matrixMap->getXpetraMap(),
-                                                                                     matrixMap->getXpetraMap(), 1);
-                    MatrixPtr_Type matrix = Teuchos::rcp(new Matrix_Type(xpetraMatrix));
+                    cout << " loc " << loc << " it - something " << it - this->vecBlockID_.begin() << endl;
+                    auto matrixMap = this->vecDomain_.at(loc)->getMapUnique();
+                    // // Use Xpetra::MatrixFactory to build a matrix with known row and column maps
+                    auto tpetraMatrix = Teuchos::rcp(new Tpetra::CrsMatrix<SC,LO,GO,NO>(matrixMap->getTpetraMap(), matrixMap->getTpetraMap(), 1)); // Tpetra::MatrixFactory<SC, LO, GO, NO>::Build(matrixMap->getTpetraMap(), matrixMap->getTpetraMap(), 1);
+
+                    MatrixPtr_Type matrix = Teuchos::rcp(new Matrix_Type(tpetraMatrix));
 
                     // Fill the matrix with zeros on the diagonal
                     Teuchos::Array<LO> colIndex(1, 0);

@@ -1,3 +1,5 @@
+set(MPIEXEC_EXECTUABLE "mpirun")
+
 TRIBITS_ADD_EXECUTABLE(
 	steadyNavierStokesAssFE
 	SOURCES main.cpp
@@ -54,9 +56,9 @@ TRIBITS_ADD_TEST(
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNavierStokesAssFE
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-	SOURCE_FILES parametersPrec.xml parametersPrec_3D.xml parametersProblem.xml parametersProblem_3D.xml parametersProblemP1_structured.xml parametersProblemP1_structured_3D.xml parametersProblemP2_structured_3D.xml parametersProblemP2_structured.xml parametersProblemP2_structured_Newton.xml    parametersProblemP2_structured_3D_Newton.xml parametersSolver.xml parametersTeko.xml
+	SOURCE_FILES parametersPrec.xml parametersPrec_3D.xml parametersProblem.xml parametersProblem_3D.xml parametersProblemP1_structured.xml parametersProblemP1_structured_3D.xml parametersProblemP2_structured_3D.xml parametersProblemP2_structured.xml parametersProblemP2_structured_Newton.xml parametersProblemP2_structured_3D_Newton.xml parametersSolver.xml parametersTeko.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES parametersPrec.xml parametersPrec_3D.xml parametersProblem.xml parametersProblem_3D.xml parametersProblemP1_structured.xml parametersProblemP1_structured_3D.xml parametersProblemP2_structured_3D.xml parametersProblemP2_structured.xml parametersProblemP2_structured_Newton.xml    parametersProblemP2_structured_3D_Newton.xml parametersSolver.xml parametersTeko.xml
+	DEST_FILES parametersPrec.xml parametersPrec_3D.xml parametersProblem.xml parametersProblem_3D.xml parametersProblemP1_structured.xml parametersProblemP1_structured_3D.xml parametersProblemP2_structured_3D.xml parametersProblemP2_structured.xml parametersProblemP2_structured_Newton.xml parametersProblemP2_structured_3D_Newton.xml parametersSolver.xml parametersTeko.xml
 	EXEDEPS steadyNavierStokesAssFE
 )
 

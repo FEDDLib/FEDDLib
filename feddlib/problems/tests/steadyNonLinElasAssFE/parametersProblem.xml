@@ -11,7 +11,7 @@
         <Parameter name="MaxNonLinIts" type="int" value="5"/>
         <Parameter name="Criterion" type="string" value="Residual"/>     
  	<Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
-        <Parameter name="Neo-Hooke Modell" type="int" value="2"/><!--different energy functions -->
+        <Parameter name="Neo-Hooke Modell" type="int" value="1"/><!--different energy functions -->
         <Parameter name="Density" type="double"   value="1."/>
 	 <Parameter name="Poisson Ratio"					        type="double"   value="0.49e-0"/>        
          <Parameter name="Mu" type="double" value="2.0e+6"/>

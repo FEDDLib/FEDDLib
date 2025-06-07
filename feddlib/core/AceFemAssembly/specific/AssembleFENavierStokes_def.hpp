@@ -151,15 +151,15 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type 
 
 	int dim = this->getDim();
 	int numNodes= numNodesVelocity_;
-	UN Grad =2; // Needs to be fixed	
 	string FEType = FETypeVelocity_;
 	int dofs = dofsVelocity_;
 
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
-    
-    UN deg = Helper::determineDegree(dim,FEType,Grad);
-    //cout << " Degree " << deg << " Grad " << Grad << " FeType " << FEType << endl;
+
+    // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    // cout << " Degree Laplace " << deg << " Grad " << Grad << " FeType " << FEType << endl;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -229,18 +229,18 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Type 
 
 	int dim = this->getDim();
 	int numNodes= numNodesVelocity_;
-	UN Grad =2; // Needs to be fixed	
 	string FEType = FETypeVelocity_;
 	int dofs = dofsVelocity_;
-
 
 	vec3D_dbl_ptr_Type 	dPhi;
     vec2D_dbl_ptr_Type  phi;
 	vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-	UN deg = Helper::determineDegree(dim,FEType,Grad); // Not complete
-	//UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
-    //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, extraDeg);
+    // inner( inner( uh , nabla )phi_j , phi_i )
+    // For uh: degPhi, for nabla phi_j: degGradPhi, for phi_i: degPhi.
+	UN degPhi = Helper::determineDegree(dim,FEType,Helper::Std);
+	UN degGradPhi = Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = degPhi + degGradPhi + degPhi;
 
 	Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -303,7 +303,6 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Ty
 
 	int dim = this->getDim();
 	int numNodes= numNodesVelocity_;
-	UN Grad =2; // Needs to be fixed	
 	string FEType = FETypeVelocity_;
 	int dofs = dofsVelocity_;
 
@@ -312,9 +311,11 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Ty
     vec2D_dbl_ptr_Type  phi;
 	vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-	UN deg = Helper::determineDegree(dim,FEType,Grad); // Not complete
-	//UN extraDeg = determineDegree( dim, FEType, Std); //Elementwise assembly of grad u
-    //UN deg = determineDegree( dim, FEType, FEType, Grad, Std, extraDeg);
+    // inner( inner( phi_j , nabla )uh , phi_i )
+    // For phi_j: degPhi, for nabla uh: degGradPhi, for phi_i: degPhi.
+	UN degPhi = Helper::determineDegree(dim,FEType,Helper::Std);
+	UN degGradPhi = Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = degPhi + degGradPhi + degPhi;
 
 	Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -378,7 +379,11 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyDivAndDivT(SmallMatrixPtr_Type
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 	int dim = this->dim_;
 
-    UN deg =2; // Helper::determineDegree2( dim, FETypeVelocity_, FETypePressure_, Grad, Std);
+    // psi_k * div(phi_j)
+    // for pressure function psi_k: degPhi_pres, for velocity term div(phi_j): degGradPhi_vel
+	UN degGradPhi_vel = Helper::determineDegree(dim,FETypeVelocity_,Helper::Grad);
+    UN degPhi_pres = Helper::determineDegree(dim,FETypePressure_,Helper::Std);
+    UN deg = degGradPhi_vel + degPhi_pres;
 
     Helper::getDPhi(dPhi, weights, dim, FETypeVelocity_, deg);
 

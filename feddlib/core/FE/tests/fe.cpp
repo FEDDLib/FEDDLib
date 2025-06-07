@@ -31,8 +31,6 @@ int main(int argc, char *argv[]) {
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
     int dim = 2;
     myCLP.setOption("dim",&dim,"dim");
     int m = 2;
@@ -46,12 +44,6 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     
-//    Xpetra::UnderlyingLib ulib;
-//    if (!ulib_str.compare("UseTpetra"))
-//        ulib = Xpetra::UseTpetra;
-//    else if (!ulib_str.compare("UseEpetra"))
-//        ulib = Xpetra::UseEpetra;
-
     // Mesh
     std::string FEType="P1";
     int numProcsCoarseSolve = 0;

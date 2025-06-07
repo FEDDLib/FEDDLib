@@ -139,6 +139,7 @@ namespace FEDD
 
         // solution COPY!
         *previousSolution_ = *this->solution_;
+       
         int its = this->solve(residualVec_);
 
         return its;
@@ -156,7 +157,6 @@ namespace FEDD
             this->solution_->norm2(updateNorm());
             criterionValue = updateNorm[0];
         }
-
         this->solution_->update(1., *previousSolution_, 1.);
 
         return its;
@@ -247,32 +247,13 @@ namespace FEDD
     {
 
         BlockMapPtr_Type map = Teuchos::rcp_const_cast<BlockMap_Type>(this->solution_->getMap());
-        std::string ulib = map->getUnderlyingLib();
-        if (!ulib.compare("Tpetra"))
-        {
-            typedef Xpetra::TpetraMap<LO, GO, NO> XTpetra_Type;
-            Teuchos::RCP<const XTpetra_Type> xTpetraMap = Teuchos::rcp_dynamic_cast<const XTpetra_Type>(map->getMergedMap()->getXpetraMap()->getMap());
 
-            typedef Tpetra::Map<LO, GO, NO> tpetra_map;
-            Teuchos::RCP<const tpetra_map> tpetraMap = xTpetraMap->getTpetra_Map();
+       // Teuchos::RCP<const XTpetra_Type> xTpetraMap = Teuchos::rcp_dynamic_cast<const XTpetra_Type>(map->getMergedMap()->getXpetraMap()->getMap());
 
-            this->xSpace_ = Thyra::createVectorSpace<SC, LO, GO, NO>(tpetraMap);
-            this->fSpace_ = Thyra::createVectorSpace<SC, LO, GO, NO>(tpetraMap);
-        }
-        else if (!ulib.compare("Epetra"))
-        {
-#ifdef XPETRA_HAVE_EPETRA
-            typedef Xpetra::EpetraMapT<GO, NO> XEpetra_Type;
-            Teuchos::RCP<const XEpetra_Type> xEpetraMap = Teuchos::rcp_dynamic_cast<const XEpetra_Type>(map->getMergedMap()->getXpetraMap());
-            Teuchos::RCP<const Epetra_Map> epetraMap = Teuchos::rcpFromRef(xEpetraMap->getEpetra_Map());
-            this->xSpace_ = Thyra::create_VectorSpace(epetraMap);
-            this->fSpace_ = Thyra::create_VectorSpace(epetraMap);
-#else
-            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "XPETRA_HAVE_EPETRA is false.");
-#endif
-        }
-        else
-            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown algebra for initVectorSpaces().");
+        TpetraMapConstPtr_Type tpetraMap = map->getMergedMap()->getTpetraMap();
+
+        this->xSpace_ = Thyra::createVectorSpace<SC, LO, GO, NO>(tpetraMap);
+        this->fSpace_ = Thyra::createVectorSpace<SC, LO, GO, NO>(tpetraMap);
 
         typedef Teuchos::ScalarTraits<SC> ST;
         x0_ = ::Thyra::createMember(this->xSpace_);
@@ -286,31 +267,21 @@ namespace FEDD
     {
 
         BlockMapPtr_Type map = Teuchos::rcp_const_cast<BlockMap_Type>(this->solution_->getMap());
-        std::string ulib = map->getUnderlyingLib();
-        if (!ulib.compare("Tpetra"))
-        {
-            typedef Xpetra::TpetraMap<LO, GO, NO> XTpetra_Type;
-            typedef Tpetra::Map<LO, GO, NO> tpetra_map;
+    
+        TpetraMap_Type tpetra_map;
 
-            Teuchos::Array<ThyraVecSpaceConstPtr_Type> vecSpaceArray(map->size());
-            for (int i = 0; i < map->size(); i++)
-            {
-                Teuchos::RCP<const XTpetra_Type> xTpetraMap =
-                    Teuchos::rcp_dynamic_cast<const XTpetra_Type>(map->getBlock(i)->getXpetraMap()->getMap());
-                Teuchos::RCP<const tpetra_map> tpetraMap = xTpetraMap->getTpetra_Map();
-                ThyraVecSpaceConstPtr_Type vecSpace = Thyra::createVectorSpace<SC, LO, GO, NO>(tpetraMap);
-                vecSpaceArray[i] = vecSpace;
-            }
-            this->xSpace_ = Teuchos::rcp(new Thyra::DefaultProductVectorSpace<SC>(vecSpaceArray()));
-            this->fSpace_ = Teuchos::rcp(new Thyra::DefaultProductVectorSpace<SC>(vecSpaceArray()));
-        }
-        else if (!ulib.compare("Epetra"))
+        Teuchos::Array<ThyraVecSpaceConstPtr_Type> vecSpaceArray(map->size());
+        for (int i = 0; i < map->size(); i++)
         {
-            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "No implementation for initVectorSpaces() and Epetra.");
+            //Teuchos::RCP<const XTpetra_Type> xTpetraMap =
+            //    Teuchos::rcp_dynamic_cast<const XTpetra_Type>(map->getBlock(i)->getXpetraMap()->getMap());
+            TpetraMapConstPtr_Type tpetraMap =map->getBlock(i)->getTpetraMap();
+            ThyraVecSpaceConstPtr_Type vecSpace = Thyra::createVectorSpace<SC, LO, GO, NO>(tpetraMap);
+            vecSpaceArray[i] = vecSpace;
         }
-        else
-            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown algebra for initVectorSpaces().");
-
+        this->xSpace_ = Teuchos::rcp(new Thyra::DefaultProductVectorSpace<SC>(vecSpaceArray()));
+        this->fSpace_ = Teuchos::rcp(new Thyra::DefaultProductVectorSpace<SC>(vecSpaceArray()));
+    
         typedef Teuchos::ScalarTraits<SC> ST;
         x0_ = ::Thyra::createMember(this->xSpace_);
         V_S(x0_.ptr(), ST::zero());

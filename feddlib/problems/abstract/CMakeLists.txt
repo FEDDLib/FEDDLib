@@ -7,6 +7,8 @@ SET(problems_abstract_HEADERS
 	abstract/MinPrecProblem.hpp
 	abstract/NonLinearProblem_decl.hpp
 	abstract/NonLinearProblem_def.hpp
+	abstract/NonLinearProblem_def.hpp
+	abstract/NonLinearProblem_def.hpp
 	abstract/NonLinearProblem.hpp
 	abstract/Problem_decl.hpp
 	abstract/Problem_def.hpp

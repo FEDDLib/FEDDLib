@@ -282,20 +282,20 @@ int main(int argc, char *argv[]) {
 		AdaptiveMeshRefinement<SC,LO,GO,NO> meshRefiner("NavierStokes",parameterListAll, dummyFuncSol, dummyFuncSol);
 
 	    int j=0;
-		MAIN_TIMER_START(Total," Step 4:	 Total RefinementAlgorithm");
+		MAIN_TIMER_START(Total," Step 4:\t Total RefinementAlgorithm");
 		while(j<maxIter+1 ){
-			MAIN_TIMER_START(buildP2," Step 0:	 buildP2Mesh");
+			MAIN_TIMER_START(buildP2," Step 0:\t buildP2Mesh");
 			if (feTypeV=="P2" ) {
 				domainVelocity.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
 			    domainVelocity->buildP2ofP1Domain( domainPressure );
 				}
 			else
 			    domainVelocity = domainPressure;
-			MAIN_TIMER_STOP(buildP2);		
+			MAIN_TIMER_STOP(buildP2);
 			// ############################################################
 			// Genereating Vector for inlet 
 			// ############################################################
-			MAIN_TIMER_START(LaplaceInlet," Step 1:	 laplaceVector for Inlet");
+			MAIN_TIMER_START(LaplaceInlet," Step 1:\t laplaceVector for Inlet");
 			Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryL(new BCBuilder<SC,LO,GO,NO>( ));
 
 			// Apply Boundary conditions - laplace at inlet
@@ -325,13 +325,13 @@ int main(int argc, char *argv[]) {
 		    exPara->addVariable(exportSolution, "u", "Scalar", 1, domainVelocity->getMapUnique());
 		    exPara->save(0.0);
 	        
-			MAIN_TIMER_STOP(LaplaceInlet);	
+			MAIN_TIMER_STOP(LaplaceInlet);
 
 			// #################################################
 			// Setting up and solving steady Navier-Stokes Problem 
 			// #################################################		    
 						
-			MAIN_TIMER_START(Bounds," Step 2:	 bcFactory");
+			MAIN_TIMER_START(Bounds," Step 2:\t bcFactory");
 			
 			SC maxValue = exportSolution->getMax();
 	            
@@ -347,8 +347,8 @@ int main(int argc, char *argv[]) {
 	        bcFactory->addBC(parabolicInflow3DStokes, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec, inletSol);
 	        //bcFactory->addBC(inflowParabolic3D, 2, 0, domainVelocity, "Dirichlet", dim, parameter_vec);
 	        
-			MAIN_TIMER_STOP(Bounds);	
-			MAIN_TIMER_START(Solver," Step 3:	 solving PDE");
+			MAIN_TIMER_STOP(Bounds);
+			MAIN_TIMER_START(Solver," Step 3:\t solving PDE");
 
 			Teuchos::RCP<NavierStokes<SC,LO,GO,NO>> navierStokes( new NavierStokes<SC,LO,GO,NO> (domainVelocity, feTypeV, domainPressure, feTypeP, parameterListAll ));
 
@@ -368,10 +368,10 @@ int main(int argc, char *argv[]) {
 		        comm->barrier();
 		    }
 
-			MAIN_TIMER_STOP(Solver);	
+			MAIN_TIMER_STOP(Solver);
 
 
-			MAIN_TIMER_START(Refinement," Step 3:	 meshRefinement");
+			MAIN_TIMER_START(Refinement," Step 3:\t meshRefinement");
 
 			/// #################################################
 			// Mesh Refinement 
@@ -387,7 +387,7 @@ int main(int argc, char *argv[]) {
 			domainVelocity = domainPressure;
 			
 			j++;
-			MAIN_TIMER_STOP(Refinement);	
+			MAIN_TIMER_STOP(Refinement);
 	    
 
 	   

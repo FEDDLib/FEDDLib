@@ -29,7 +29,7 @@
                     <Parameter name="Level ID" type="int" value="1"/>
                     <ParameterList name="Solver">
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="umfpack"/>
+                        <Parameter name="Solver" type="string" value="klu2"/>
                     </ParameterList>
                 </ParameterList>
                 <ParameterList name="GDSWCoarseOperator">
@@ -53,7 +53,7 @@
                     <ParameterList name="ExtensionSolver">
                         <Parameter name="Reuse Symbolic Factorization" type="bool" value="false"/>
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="umfpack"/>
+                        <Parameter name="Solver" type="string" value="klu2"/>
                         <ParameterList name="Amesos2">
                             <!-- <ParameterList name="MUMPS">
                                 <Parameter name="Reuse SymbolicFactorization" type="bool" value="true"/>
@@ -79,7 +79,7 @@
                     <ParameterList name="CoarseSolver">
                         <Parameter name="Reuse Symbolic Factorization" type="bool" value="false"/>
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="umfpack"/>
+                        <Parameter name="Solver" type="string" value="klu2"/>
                         <ParameterList name="Amesos2">
                             <!-- <ParameterList name="MUMPS">
                                 <Parameter name="Reuse SymbolicFactorization" type="bool" value="true"/>
@@ -113,7 +113,7 @@
                         <Parameter name="Check for empty columns" type="bool" value="true"/>
                         <Parameter name="Reuse Symbolic Factorization" type="bool" value="false"/>
                         <Parameter name="SolverType" type="string"   value="Amesos2"/>
-                        <Parameter name="Solver" type="string"   value="umfpack"/>
+                        <Parameter name="Solver" type="string"   value="klu2"/>
                         <ParameterList name="Amesos2">
                             <!-- <ParameterList name="MUMPS">
                                 <Parameter name="Reuse SymbolicFactorization" type="bool" value="true"/>
@@ -148,7 +148,7 @@
                     <ParameterList name="CoarseSolver">
                         <Parameter name="Reuse Symbolic Factorization" type="bool" value="false"/>
                         <Parameter name="SolverType" type="string" value="Amesos2"/>
-                        <Parameter name="Solver" type="string" value="umfpack"/>
+                        <Parameter name="Solver" type="string" value="klu2"/>
                         <ParameterList name="Amesos2">
                             <!-- <ParameterList name="MUMPS">
                                 <Parameter name="Reuse SymbolicFactorization" type="bool" value="true"/>

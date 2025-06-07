@@ -239,8 +239,6 @@ int main(int argc, char *argv[]) {
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
 
     std::string vectorLaplace = "false";
     myCLP.setOption("vectorLaplace",&vectorLaplace,"vectorLaplace");
@@ -368,10 +366,10 @@ int main(int argc, char *argv[]) {
 
 		int maxRank = std::get<1>(domain->getMesh()->rankRange_);
 		int j=0;
-		MAIN_TIMER_START(Total," Step 4:	 Total RefinementAlgorithm");
+		MAIN_TIMER_START(Total," Step 4:\t Total RefinementAlgorithm");
 		while(j<maxIter+1 ){
 
-			MAIN_TIMER_START(buildP2," Step 0:	 buildP2Mesh");
+			MAIN_TIMER_START(buildP2," Step 0:\t buildP2Mesh");
 			if (FEType=="P2" ) {
 				domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
 				domainP2->buildP2ofP1Domain( domainP1 );
@@ -381,14 +379,14 @@ int main(int argc, char *argv[]) {
 					domain = domainP1; 	
 			MAIN_TIMER_STOP(buildP2);		
 
-			MAIN_TIMER_START(Bounds," Step 1:	 bcFactory");
+			MAIN_TIMER_START(Bounds," Step 1:\t bcFactory");
 
 
 			bcFactory.reset( new BCBuilder<SC,LO,GO,NO>( ) );
 	   		bcFactory->addBC(flag1Func, 1, 0, domain, "Dirichlet", 1); // bcLShape
 
 			MAIN_TIMER_STOP(Bounds);	
-			MAIN_TIMER_START(Solver," Step 2:	 solving PDE");
+			MAIN_TIMER_START(Solver," Step 2:\t solving PDE");
 
 		   
 			Teuchos::RCP<Laplace<SC,LO,GO,NO> > laplace(new Laplace<SC,LO,GO,NO>( domain,FEType,parameterListAll,vL));
@@ -402,7 +400,7 @@ int main(int argc, char *argv[]) {
 			}
 			MAIN_TIMER_STOP(Solver);	
 	
-			MAIN_TIMER_START(Refinement," Step 3:	 meshRefinement");
+			MAIN_TIMER_START(Refinement," Step 3:\t meshRefinement");
 
 			// Refinement
 			domainRefined.reset( new Domain<SC,LO,GO,NO>( comm, dim ) );

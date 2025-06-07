@@ -34,68 +34,10 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
     return;
 }
 
-void zeroDirichletX(double* x, double* res, double t, const double* parameters)
-{
-    res[0] = 0.;
-    res[1] = x[1];
-    res[2] = x[2];
-
-    return;
-}
-
-void zeroDirichletY(double* x, double* res, double t, const double* parameters)
-{
-    res[0] = x[0];
-    res[1] = 0.;
-    res[2] = x[2];
-
-
-    return;
-}
-
-void zeroDirichletZ(double* x, double* res, double t, const double* parameters)
-{
-    res[0] = x[0];
-    res[1] = x[1];
-    res[2] = 0.;
-
-    return;
-}
-
-void dummyFunc(double* x, double* res, double t, const double* parameters)
-{
-    return;
-}
-
-void rhs2D(double* x, double* res, double* parameters){
-    // parameters[0] is the time, not needed here
-    res[0] = 0.;
-    res[1] = parameters[1];
-    
-    return;
-}
-
-void rhsY(double* x, double* res, double* parameters){
-    // parameters[0] is the time, not needed here
-    res[0] = 0.;
-    res[1] = parameters[1];
-    res[2] = 0.;
-    return;
-}
-
-void rhsX(double* x, double* res, double* parameters){
-    // parameters[0] is the time, not needed here
-    res[0] = parameters[1];
-    res[1] = 0.;
-    res[2] = 0.;
-    return;
-}
-
 void rhsYZ(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here
     res[0] = 0.;
     double force = parameters[1];
-
     if(parameters[2] == 5)
         res[1] = force;
     else
@@ -144,10 +86,7 @@ int main(int argc, char *argv[])
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
-    // int dim = 2;
-    // myCLP.setOption("dim",&dim,"dim");
+
     string xmlProblemFile = "parametersProblem.xml";
     myCLP.setOption("problemfile",&xmlProblemFile,".xml file with Inputparameters.");
     string xmlPrecFile = "parametersPrec.xml";
@@ -179,13 +118,14 @@ int main(int argc, char *argv[])
         parameterListAll->setParameters(*parameterListPrec);
         parameterListAll->setParameters(*parameterListSolver);
 
-        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
-        string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","structured");
+        int 		dim				= 3;
+        parameterListAll->sublist("Parameter").set("Dimension",3); // Here, we always have a surface force
+
         string		meshName    	= parameterListProblem->sublist("Parameter").get("Mesh Name","dfg_fsi_solid.mesh");
-        string		meshDelimiter   = parameterListProblem->sublist("Parameter").get("Mesh Delimiter"," ");
+        string		meshDelimiter   = " ";
         int         n;
         int 		m				= parameterListProblem->sublist("Parameter").get("H/h",5);
-        string      FEType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");
+        string      FEType        = "P2";
 
         int numProcsCoarseSolve = parameterListProblem->sublist("General").get("Mpi Ranks Coarse",0);
         int size = comm->getSize() - numProcsCoarseSolve;
@@ -216,86 +156,71 @@ int main(int argc, char *argv[])
         }
 
        // ########################
-        // Flags setzen
-        // ########################
+       // Setting boundary condition of cube problem. For explanation see 
+       //'A computational framework for pharmaco-mechanical interactions 
+       // in arterial walls using parallel monolithic domain decomposition methods' section 6.2
+       // ########################
 
-		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaF(new ExporterParaView<SC,LO,GO,NO>());
-
-		Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domain->getMapUnique()));
-		vec_int_ptr_Type BCFlags = domain->getBCFlagUnique();
-
-		Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
-		for(int i=0; i< entries.size(); i++){
-			entries[i] = BCFlags->at(i);
-		}
-
-		Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
-
-		exParaF->setup("Flags", domain->getMesh(), FEType);
-
-		exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domain->getMapUnique());
-
-		exParaF->save(0.0);
 
 		Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
-        if (dim == 2)
-            bcFactory->addBC(zeroDirichlet2D, 1, 0, domain, "Dirichlet", dim);
-        else if (dim == 3){
-           bcFactory->addBC(zeroDirichlet, 1, 0, domain, "Dirichlet_X", dim);
-            bcFactory->addBC(zeroDirichlet, 2, 0, domain, "Dirichlet_Y", dim);
-            bcFactory->addBC(zeroDirichlet, 3, 0, domain, "Dirichlet_Z", dim);
-            bcFactory->addBC(zeroDirichlet3D, 0, 0, domain, "Dirichlet", dim);
-            bcFactory->addBC(zeroDirichlet2D, 7, 0, domain, "Dirichlet_X_Y", dim);
-            bcFactory->addBC(zeroDirichlet2D, 8, 0, domain, "Dirichlet_Y_Z", dim);
-            bcFactory->addBC(zeroDirichlet2D, 9, 0, domain, "Dirichlet_X_Z", dim);
 
-		}
+        bcFactory->addBC(zeroDirichlet, 1, 0, domain, "Dirichlet_X", dim);
+        bcFactory->addBC(zeroDirichlet, 2, 0, domain, "Dirichlet_Y", dim);
+        bcFactory->addBC(zeroDirichlet, 3, 0, domain, "Dirichlet_Z", dim);
+        bcFactory->addBC(zeroDirichlet3D, 0, 0, domain, "Dirichlet", dim);
+        bcFactory->addBC(zeroDirichlet2D, 7, 0, domain, "Dirichlet_X_Y", dim);
+        bcFactory->addBC(zeroDirichlet2D, 8, 0, domain, "Dirichlet_Y_Z", dim);
+        bcFactory->addBC(zeroDirichlet2D, 9, 0, domain, "Dirichlet_X_Z", dim);
             
+        // ----------------------------------------
+        // Building object of original linear elasticity class
+        parameterListAll->sublist("Parameter").set("Source Type","surface"); // Here, we always have a surface force
 
-        // LinElas Objekt erstellen
         LinElas<SC,LO,GO,NO> LinElas( domain, FEType, parameterListAll );
       
-        LinElas.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
+        LinElas.addBoundaries(bcFactory); 
 
-        if (dim==2)
-            LinElas.addRhsFunction( rhs2D );
-        else if(dim==3)
-            LinElas.addRhsFunction( rhsYZ );
+        LinElas.addRhsFunction( rhsYZ ); // 3D Surface function
 
-        double force = parameterListAll->sublist("Parameter").get("Volume force",0.);
-        double degree = 0;
+        double force = parameterListAll->sublist("Parameter").get("Surface force",0.);
         
         LinElas.addParemeterRhs( force );
-        LinElas.addParemeterRhs( degree );
         // ######################
-        // Matrix assemblieren, RW setzen und System loesen
+        // Assembly + BC
         // ######################
         LinElas.initializeProblem();
         LinElas.assemble();                
         LinElas.setBoundaries(); // In der Klasse Problem
-
+        if (verbose) {
+            cout << "###############################################################" <<endl;
+            cout << "############ Solving original Linear Elasticity ...############" <<endl;
+            cout << "###############################################################" <<endl;
+        }
+        // Solve
         int its = LinElas.solve();
+        // ----------------------------------------
 
         
-
-        // LinElas Objekt erstellen
+        // ----------------------------------------
+        // Building linear elasticity from AceGen Interface
         LinElasAssFE<SC,LO,GO,NO> LinElasAssFE( domain, FEType, parameterListAll );
 
         LinElasAssFE.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
-
-        if (dim==2)
-            LinElasAssFE.addRhsFunction( rhs2D );
-        else if(dim==3)
-            LinElasAssFE.addRhsFunction( rhsYZ);
+    
+        LinElasAssFE.addRhsFunction( rhsYZ);
         
         LinElasAssFE.addParemeterRhs( force );
-        LinElasAssFE.addParemeterRhs( degree );
         // ######################
-        // Matrix assemblieren, RW setzen und System loesen
+        // Assembly + BC
         // ######################
         LinElasAssFE.initializeProblem();
         LinElasAssFE.assemble();                
         LinElasAssFE.setBoundaries(); // In der Klasse Problem
+        if (verbose) {
+            cout << "###############################################################" <<endl;
+            cout << "############ Solving AceGen Linear Elasticity ... ############" <<endl;
+            cout << "###############################################################" <<endl;
+        }
         int itsAssFE = LinElasAssFE.solve();
 
         
@@ -307,25 +232,6 @@ int main(int argc, char *argv[])
 
 		}
 		
-
-		// ######################
-        // Mesh-Bewegung testen
-        // ######################
-        // Setze die aktuelle (nicht-deformierte) Konfiguration als Referenzkonfiguration
-        /*domain->setReferenceConfiguration();
-
-        typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
-        typedef RCP<MultiVector_Type> MultiVectorPtr_Type;
-        typedef RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
-
-        MultiVectorConstPtr_Type displacementUniqueConst = LinElas.getSolution()->getBlock(0);
-        MultiVectorPtr_Type displacementRepeated = rcp( new MultiVector_Type( LinElas.getDomain(0)->getMapVecFieldRepeated() ) );
-
-        displacementRepeated->importFromVector( displacementUniqueConst );
-        MultiVectorPtr_Type displacementUnique = rcp_const_cast<MultiVector_Type>(displacementUniqueConst);
-        // Verschiebe das Gitter
-        domain->moveMesh(displacementUnique, displacementRepeated);*/
-
 		Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
 		exPara->setup( "displacements", domain->getMesh(), FEType );
@@ -366,9 +272,7 @@ int main(int argc, char *argv[])
 		if(comm->getRank() ==0)
 			cout << " Relative error Norm of solutions linear elasticity assemFE " << infNormError/res << endl;
 	
-
-
-      // TEUCHOS_TEST_FOR_EXCEPTION( infNormError > 1e-11 , std::logic_error, "Inf Norm of Error between calculated solutions is too great. Exceeded 1e-11. ");
+        TEUCHOS_TEST_FOR_EXCEPTION( abs(infNormError/res) > 1e-11 , std::logic_error, "Relative error between calculated solutions is too great. Exceeded 1e-11. ");
 
     }
 

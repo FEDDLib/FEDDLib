@@ -215,31 +215,31 @@ class FE {
         ParameterListPtr_Type params, string assembleMode,
         bool callFillComplete = true, int FELocExternal = -1);
 
-    // Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
-	void assemblyLinearReactionTerm(int dim,
-    							std::string FEType,
-                                MatrixPtr_Type &A,
-                                bool callFillComplete,
-                     			std::vector<SC>& funcParameter,
-								RhsFunc_Type reactionFunc);	
+    // // Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
+	// void assemblyLinearReactionTerm(int dim,
+    // 							std::string FEType,
+    //                             MatrixPtr_Type &A,
+    //                             bool callFillComplete,
+    //                  			std::vector<SC>& funcParameter,
+	// 							RhsFunc_Type reactionFunc);	
 
-	// Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
-	void assemblyReactionTerm(int dim,
-    							std::string FEType,
-                                MatrixPtr_Type &A,
-                                MultiVectorPtr_Type u,
-                                bool callFillComplete,
-                     			std::vector<SC>& funcParameter,
-								RhsFunc_Type reactionFunc);	
+	// // Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
+	// void assemblyReactionTerm(int dim,
+    // 							std::string FEType,
+    //                             MatrixPtr_Type &A,
+    //                             MultiVectorPtr_Type u,
+    //                             bool callFillComplete,
+    //                  			std::vector<SC>& funcParameter,
+	// 							RhsFunc_Type reactionFunc);	
 
-                                // Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
-	void assemblyDReactionTerm(int dim,
-    							std::string FEType,
-                                MatrixPtr_Type &A,
-                                MultiVectorPtr_Type u,
-                                bool callFillComplete,
-                     			std::vector<SC>& funcParameter,
-								RhsFunc_Type reactionFunc);
+    //                             // Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
+	// void assemblyDReactionTerm(int dim,
+    // 							std::string FEType,
+    //                             MatrixPtr_Type &A,
+    //                             MultiVectorPtr_Type u,
+    //                             bool callFillComplete,
+    //                  			std::vector<SC>& funcParameter,
+	// 							RhsFunc_Type reactionFunc);
 
     void assemblyLinElasXDimE(int dim,
                                 std::string FEType,
@@ -734,21 +734,6 @@ private:
 
     int checkFE(int Dimension,
                 std::string FEType);
-
-    /*UN determineDegree(UN dim,
-                       std::string FEType1,
-                       std::string FEType2,
-                       VarType type1,
-                       VarType type2,
-                       UN extraDeg = 0);
-
-    UN determineDegree(UN dim,
-                       std::string FEType,
-                       VarType type);
-
-    UN determineDegree(UN dim,
-                       std::string FEType,
-                       UN degFunc);*/
     
 
     bool setZeros_;

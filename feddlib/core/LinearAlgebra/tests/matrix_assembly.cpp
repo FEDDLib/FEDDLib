@@ -35,8 +35,7 @@ int main(int argc, char *argv[]) {
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
+    
     GO numGlobalElements1 = 10;
     myCLP.setOption("nge1",&numGlobalElements1,"numGlobalElements1.");
     GO numGlobalElements2 = 20;
@@ -50,12 +49,12 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    typedef Xpetra::Map<LO,GO,NO> XpetraMap_Type;
-    typedef RCP<XpetraMap_Type> XpetraMapPtr_Type;
-    typedef RCP<const XpetraMap_Type> XpetraMapConstPtr_Type;
+    typedef Tpetra::Map<LO,GO,NO> TpetraMap_Type;
+    typedef RCP<TpetraMap_Type> TpetraMapPtr_Type;
+    typedef RCP<const TpetraMap_Type> TpetraMapConstPtr_Type;
 
-    typedef Xpetra::Matrix<SC,LO,GO,NO> XpetraMatrix_Type;
-    typedef RCP<XpetraMatrix_Type> XpetraMatrixPtr_Type;
+    typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
+    typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
 
     typedef Matrix<SC,LO,GO,NO> Matrix_Type;
     typedef RCP<Matrix_Type> MatrixPtr_Type;
@@ -63,22 +62,19 @@ int main(int argc, char *argv[]) {
     typedef Map<LO,GO,NO> Map_Type;
     typedef RCP<Map_Type> MapPtr_Type;
 
-    TEUCHOS_TEST_FOR_EXCEPTION(!(!ulib_str.compare("Tpetra") || !ulib_str.compare("Epetra") ) , std::runtime_error,"Unknown algebra type");
-
-
     Teuchos::Array<GO> indices(2);
     for (int i=0; i<indices.size(); i++) {
         indices[i] = i + commWorld->getRank();
     }
 
-    MapPtr_Type map1rep = rcp( new Map_Type( ulib_str, (GO) -1, indices(), 0, commWorld ) );
+    MapPtr_Type map1rep = rcp( new Map_Type( (GO) -1, indices(), 0, commWorld ) );
     MapPtr_Type map1unique = map1rep->buildUniqueMap();
 
     Teuchos::Array<GO> indices2(3);
     for (int i=0; i<indices2.size(); i++) {
         indices2[i] = i + commWorld->getRank();
     }
-    MapPtr_Type map2rep = rcp( new Map_Type( ulib_str, (GO) -1, indices2(), 0, commWorld ) );
+    MapPtr_Type map2rep = rcp( new Map_Type( (GO) -1, indices2(), 0, commWorld ) );
     MapPtr_Type map2unique = map2rep->buildUniqueMap();
 
     MatrixPtr_Type matrix = rcp( new Matrix_Type( map2unique, 3 ) );
