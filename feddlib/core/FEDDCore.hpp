@@ -17,7 +17,6 @@
 #include <chrono> 
 
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "feddlib/core/General/SmallMatrix.hpp"
 
 #include <Teuchos_RCPDecl.hpp>
 #include <Teuchos_RCPBoostSharedPtrConversions.hpp>

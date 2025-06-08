@@ -1,8 +1,6 @@
 #ifndef SMALLMATRIX_hpp
 #define SMALLMATRIX_hpp
 
-#include "feddlib/core/FEDDCore.hpp"
-
 /*!
  Declaration of SmallMatrix
  
