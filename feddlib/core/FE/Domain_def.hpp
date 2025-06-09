@@ -1,6 +1,6 @@
 #ifndef Domain_def_hpp
 #define Domain_def_hpp
-#include "Domain_decl.hpp"
+//#include "Domain_decl.hpp"
 
 /*!
  Definition of Domain
