@@ -1,6 +1,5 @@
 #ifndef MAP_DEF_hpp
 #define MAP_DEF_hpp
-#include "Map_decl.hpp"
 
 /*!
  Declaration of Map
