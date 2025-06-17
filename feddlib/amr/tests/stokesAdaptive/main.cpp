@@ -32,6 +32,12 @@
  @copyright CH
  */
 
+using std::pow;
+using std::cos;
+using std::sin;
+using std::atan2;
+using std::sqrt;
+using std::exp;
 
 
 // ######################
@@ -42,7 +48,7 @@ void rhsPaper1( double* p, double* res, const double* parameters){
 	double x = p[0];
 	double y = p[1];
 	res[0] =-(-4*y*pow((1-x),2)+16*x*y*(1-x)-4*pow(x,2)*y)*(1-3*y+2*pow(y,2))-(-4*pow(x,2)*(-3+4*y)-8*pow(x,2)*y)*pow((1-x),2)+1;
-   	 res[1] =-(4*pow(y,2)*(-3+4*x)+8*pow(y,2)*x)*pow((1-y),2)-(4*x*pow((1-y),2)-16*x*y*(1-y)+4*pow(y,2)*x)*(1-3*x+2*pow(x,2))+1;
+   	res[1] =-(4*pow(y,2)*(-3+4*x)+8*pow(y,2)*x)*pow((1-y),2)-(4*x*pow((1-y),2)-16*x*y*(1-y)+4*pow(y,2)*x)*(1-3*x+2*pow(x,2))+1;
 
 	//cout << " res[0] " << res[0] << " res[1] " << res[1] << endl;
 }
@@ -448,6 +454,7 @@ typedef default_go GO;
 typedef default_no NO;
 
 using namespace FEDD;
+using namespace std;
 
 int main(int argc, char *argv[]) {
     

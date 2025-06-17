@@ -22,7 +22,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
 template < class LO = default_lo, class GO = default_go, class NO = default_no>
 class Map_Xpetra {

@@ -146,7 +146,7 @@ void inflowPowerLaw2D(double *x, double *res, double t, const double *parameters
     double dp = parameters[3]; // dp/dx constant pressure gradient along channel
 
     // This corresponds to the analytical solution of a Poiseuille like Plug-flow of a Power-Law fluid
-    res[0] = (n / (n + 1.0)) * pow(dp / (K), 1.0 / n) * (pow(H / (2.0), (n + 1.0) / n) - pow(abs((H / 2.0) - x[1]), (n + 1.0) / n));
+    res[0] = (n / (n + 1.0)) * std::pow(dp / (K), 1.0 / n) * (std::pow(H / (2.0), (n + 1.0) / n) - std::pow(std::abs((H / 2.0) - x[1]), (n + 1.0) / n));
     res[1] = 0.;
 
     return;
@@ -161,7 +161,7 @@ void inflowPowerLaw2D_y(double *x, double *res, double t, const double *paramete
     double H = parameters[2];
     double dp = parameters[3];
 
-    res[1] = (n / (n + 1.0)) * pow(dp / (K), 1.0 / n) * (pow(H / (2.0), (n + 1.0) / n) - pow(abs((H / 2.0) - x[0]), (n + 1.0) / n));
+    res[1] = (n / (n + 1.0)) * std::pow(dp / (K), 1.0 / n) * (std::pow(H / (2.0), (n + 1.0) / n) - std::pow(std::abs((H / 2.0) - x[0]), (n + 1.0) / n));
     res[0] = 0.;
 
     return;
@@ -597,12 +597,12 @@ int main(int argc, char *argv[])
 
                         for (int j = 0; j < values.size(); j++)
                         {
-                            if (fabs(values[j]) > res)
-                                res = fabs(values[j]);
+                            if (std::fabs(values[j]) > res)
+                                res = std::fabs(values[j]);
                         }
                     }
                 }
-                res = fabs(res);
+                res = std::fabs(res);
                 reduceAll<int, double>(*comm, REDUCE_MAX, res, outArg(res));
                 if (comm->getRank() == 0)
                     cout << "Inf Norm of Difference between Block A: " << res << endl;
@@ -618,10 +618,10 @@ int main(int argc, char *argv[])
                     Sum1->getGlobalRowView(row, indices, values);
                     for (int j = 0; j < values.size(); j++)
                     {
-                        res += fabs(values[j]);
+                        res += std::fabs(values[j]);
                     }
                 }
-                res = fabs(res);
+                res = std::fabs(res);
                 reduceAll<int, double>(*comm, REDUCE_SUM, res, outArg(res));
                 if (comm->getRank() == 0)
                     cout << " Norm of Difference between Block B: " << res << endl;

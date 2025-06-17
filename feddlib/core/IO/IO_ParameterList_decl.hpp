@@ -66,14 +66,12 @@ namespace FEDD {
             */
             std::ostream& print(std::ostream &os, int indent=0, bool showTypes=false, bool showFlags=true, bool showDefault=true)
             {
-                using namespace std;
-
-                os << name_ << endl;
+                os << name_ << std::endl;
                 for (size_t i = 0; i < name_.length(); i++)
                 {
                     os << "=";
                 }
-                os << endl;
+                os << std::endl;
                 return parameterList_->print(os,indent,showTypes,showFlags,showDefault);
             };
 

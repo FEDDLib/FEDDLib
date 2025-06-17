@@ -10,7 +10,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
 
 extern template class MultiVector<default_sc, default_lo, default_go, default_no>;

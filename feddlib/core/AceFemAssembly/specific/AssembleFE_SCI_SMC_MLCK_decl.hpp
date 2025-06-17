@@ -63,7 +63,7 @@ class AssembleFE_SCI_SMC_MLCK : public AssembleFE<SC,LO,GO,NO> {
 
         friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 	    
-	    string FEType_ ; // FEType of Disk
+	    std::string FEType_ ; // FEType of Disk
 
 	    int dofsSolid_ ; // Degrees of freedom per node
 		int dofsChem_;

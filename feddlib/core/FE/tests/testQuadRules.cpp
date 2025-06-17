@@ -10,6 +10,7 @@
 #include "feddlib/core/FE/Helper.hpp"
 
 using namespace FEDD;
+using std::pow;
 
 typedef unsigned UN;
 typedef default_sc SC;
@@ -36,7 +37,7 @@ template <std::size_t dim, typename Lambda> int check_integration(const int degr
         }
     }
 
-    SC error_result = fabs(integral - expected_result);
+    SC error_result = std::fabs(integral - expected_result);
     if (error_result > std::numeric_limits<double>::epsilon() * 200.0) {
         std::ostringstream oss;
         oss << std::scientific << std::setprecision(2) << error_result;

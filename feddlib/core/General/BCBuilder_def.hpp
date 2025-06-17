@@ -623,7 +623,7 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
                     // To get the correct domain from vecDomain_ we need to know the index of any (in this case the
                     // first) entry that was done with addBC for this block
                     const auto it = std::find(this->vecBlockID_.begin(), this->vecBlockID_.end(), blockRow);
-                    cout << " loc " << loc << " it - something " << it - this->vecBlockID_.begin() << endl;
+                    std::cout << " loc " << loc << " it - something " << it - this->vecBlockID_.begin() << std::endl;
                     auto matrixMap = this->vecDomain_.at(loc)->getMapUnique();
                     // // Use Xpetra::MatrixFactory to build a matrix with known row and column maps
                     auto tpetraMatrix = Teuchos::rcp(new Tpetra::CrsMatrix<SC,LO,GO,NO>(matrixMap->getTpetraMap(), matrixMap->getTpetraMap(), 1)); // Tpetra::MatrixFactory<SC, LO, GO, NO>::Build(matrixMap->getTpetraMap(), matrixMap->getTpetraMap(), 1);
@@ -699,7 +699,7 @@ void BCBuilder<SC,LO,GO,NO>::setLocalRowOne(const MatrixPtr_Type &matrix, LO loc
             (vecBCType_.at(loc) == "Dirichlet_X_Z" && dof!=1 )||
             (vecBCType_.at(loc) == "Dirichlet_Y_Z" && dof!=0 )
             ) {
-           // cout << " Setting Dirichlet Row 1 for node " << localDof << " of type " << vecBCType_.at(loc)  <<endl;
+           // std::cout << " Setting Dirichlet Row 1 for node " << localDof << " of type " << vecBCType_.at(loc)  <<endl;
             GO globalDof = matrix->getMap()->getGlobalElement( localDof );
             matrix->getLocalRowView(localDof, indices, valuesOld);
             Teuchos::Array<SC> values( valuesOld.size(), Teuchos::ScalarTraits<SC>::zero() );

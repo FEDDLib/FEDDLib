@@ -125,9 +125,9 @@ int main(int argc, char *argv[]) {
 					v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
 					v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
 		            
-				    norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+				    norm_v_E = std::sqrt(std::pow(v_E[0],2)+std::pow(v_E[1],2)+std::pow(v_E[2],2));
 
-                    norm_v_E = sqrt(pow(v_E[0],2) + pow(v_E[1],2) + pow(v_E[2],2));
+                    norm_v_E = std::sqrt(std::pow(v_E[0],2) + std::pow(v_E[1],2) + std::pow(v_E[2],2));
                     sum_v_E = v_E[0] + v_E[1] + v_E[2]; // as we are looking at a cube, all surface normals have on entry, either positive or negative
                    
                     value[T] = sum_v_E/norm_v_E; 

@@ -87,14 +87,13 @@ int main(int argc, char *argv[]) {
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
 
-
     std::string vectorLaplace = "false";
     myCLP.setOption("vectorLaplace",&vectorLaplace,"vectorLaplace");
-    string xmlProblemFile = "parametersProblem.xml";
+    std::string xmlProblemFile = "parametersProblem.xml";
     myCLP.setOption("problemfile",&xmlProblemFile,".xml file with Inputparameters.");
-    string xmlPrecFile = "parametersPrec.xml";
+    std::string xmlPrecFile = "parametersPrec.xml";
     myCLP.setOption("precfile",&xmlPrecFile,".xml file with Inputparameters.");
-    string xmlSolverFile = "parametersSolver.xml";
+    std::string xmlSolverFile = "parametersSolver.xml";
     myCLP.setOption("solverfile",&xmlSolverFile,".xml file with Inputparameters.");
     double length = 4.;
     myCLP.setOption("length",&length,"length of domain.");

@@ -432,7 +432,7 @@ template <class SC, class LO, class GO, class NO>
 void BlockMultiVector<SC,LO,GO,NO>::writeMM(std::string fN) const{
     for (int i=0; i<size(); i++) {
         if (!blockMultiVector_[i].is_null() ){
-            std::string fileName = fN + to_string(i) + ".mm" ;
+            std::string fileName = fN + std::to_string(i) + ".mm" ;
             blockMultiVector_[i]->writeMM(fileName);
         }
     }

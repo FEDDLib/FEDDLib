@@ -198,12 +198,12 @@ public:
 		\brief Reading the .mesh files entities
 		@param[in] entityType i.e. nodes, edges, elements...
 	*/
-    void readMeshEntity(string entityType);
+    void readMeshEntity(std::string entityType);
     
 	/*! 
 		\brief Set the .mesh file name
 	*/
-    void setMeshFileName(string meshFileName, string delimiter);
+    void setMeshFileName(std::string meshFileName, std::string delimiter);
     
 	/*! 
 		\brief Get global number of nodes
@@ -228,7 +228,7 @@ public:
 		@param[in] exportSurfaces whether to export surfaces or not
 
 	*/
-	void exportMesh(MapConstPtr_Type mapUnique, MapConstPtr_Type mapRep, bool exportEdges=false, bool exportSurface=false ,string meshName="export.mesh");
+	void exportMesh(MapConstPtr_Type mapUnique, MapConstPtr_Type mapRep, bool exportEdges=false, bool exportSurface=false, std::string meshName="export.mesh");
 
 	/*!
 	
@@ -258,8 +258,8 @@ public:
     ElementsPtr_Type surfaceEdgeElements_;
 	SurfaceElementsPtr_Type surfaceTriangleElements_;
 
- 	string meshFileName_;
-    string delimiter_;
+ 	std::string meshFileName_;
+    std::string delimiter_;
 
     int numSurfaces_;
     int numEdges_;
