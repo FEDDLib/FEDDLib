@@ -67,32 +67,32 @@ public:
   
     ErrorEstimation();
     
-    ErrorEstimation(int dim, string problemType, bool writeMeshQuality_);
+    ErrorEstimation(int dim, std::string problemType, bool writeMeshQuality_);
     
     ~ErrorEstimation();
     
-	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, string FEType);
+	MultiVectorPtr_Type estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, std::string FEType);
 
 	void identifyProblem(BlockMultiVectorConstPtr_Type valuesSolution);
 
 	void makeRepeatedSolution(BlockMultiVectorConstPtr_Type valuesSolution);
 
-	vec3D_dbl_Type calcNPhi(string phiDerivative, int dofsSol, string FEType);
+	vec3D_dbl_Type calcNPhi(std::string phiDerivative, int dofsSol, std::string FEType);
 
 	vec_dbl_Type calculateJump();
 
 	vec2D_dbl_Type gradPhi(int dim,int intFE,vec_dbl_Type &p);
 	vec_dbl_Type phi(int dim,int intFE,vec_dbl_Type &p);
 
-	MultiVectorPtr_Type determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta); 
+	MultiVectorPtr_Type determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  std::string distribution, std::string markingStrategy, double theta); 
 
 	double determineResElement(FiniteElement element, RhsFunc_Type rhsFunc);
 
 	double determineDivU(FiniteElement element);
 
-	vec2D_dbl_Type getQuadValues(int dim, string FEType, string Type, vec_dbl_Type &QuadW, FiniteElement surface);
+	vec2D_dbl_Type getQuadValues(int dim, std::string FEType, std::string Type, vec_dbl_Type &QuadW, FiniteElement surface);
 
-	void markElements(MultiVectorPtr_Type errorElementMv, double theta, string strategy,  MeshUnstrPtr_Type meshUnstr);
+	void markElements(MultiVectorPtr_Type errorElementMv, double theta, std::string strategy,  MeshUnstrPtr_Type meshUnstr);
 	
 	vec_dbl_Type determineVolTet(ElementsPtr_Type elements,vec2D_dbl_ptr_Type points);
 
@@ -118,8 +118,9 @@ public:
 	void tagAll(MeshUnstrPtr_Type meshUnstr);
 
 	void tagFlag( MeshUnstrPtr_Type inputMeshP1,int flag);
-	string refinementRestriction_ = "none";
-	string markingStrategy_ = "Maximum";
+
+	std::string refinementRestriction_ = "none";
+	std::string markingStrategy_ = "Maximum";
 	double theta_ = 0.5;
 
 	bool writeMeshQuality_ = "false";
@@ -127,7 +128,7 @@ public:
 	int refinement3DDiagonal_ = 0; // 0 beeing the shortest interior Diagonal, 1 the second shortest and 2 the longest interior Diagonal 
 
 	int dim_;
-	string problemType_;
+	std::string problemType_;
 
 protected: 
 	MultiVectorPtr_Type errorEstimation_; // error estimated according to A-posteriori Error Estimator. Sorted according to loca Element IDs
@@ -146,8 +147,8 @@ protected:
 private:
 	MeshUnstrPtr_Type inputMesh_;
 	MeshUnstrPtr_Type inputMeshP1_;
-	string FEType1_;
-	string FEType2_;
+	std::string FEType1_;
+	std::string FEType2_;
 
     
  

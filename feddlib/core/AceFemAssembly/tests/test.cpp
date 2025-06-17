@@ -1,9 +1,9 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef FEDD_HAVE_ACEGENINTERFACE
-#include "aceinterface.h"
+#include <aceinterface.h>
 #endif
 
 int main()

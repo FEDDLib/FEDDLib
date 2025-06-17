@@ -20,7 +20,6 @@
 
  */
 
-using namespace std;
 using Teuchos::reduceAll;
 using Teuchos::REDUCE_SUM;
 using Teuchos::REDUCE_MAX;
@@ -98,7 +97,7 @@ domainsP1_(0)
 @param[in] parameterListAll Parameterlist as used as input parametersProblem.xml.
 */
 template <class SC, class LO, class GO, class NO>
-AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll ):
+AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(std::string problemType, ParameterListPtr_Type parameterListAll ):
 inputMeshP1_(),
 inputMeshP12_(),
 outputMesh_(),
@@ -142,7 +141,7 @@ domainsP1_(0)
 @param[in] exactSolFun Exact solution function.
 */
 template <class SC, class LO, class GO, class NO>
-AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFunc ):
+AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(std::string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFunc ):
 inputMeshP1_(),
 inputMeshP12_(),
 outputMesh_(),
@@ -188,7 +187,7 @@ domainsP1_(0)
 @param[in] exactSolFunP Exact solution for velocity p.
 */
 template <class SC, class LO, class GO, class NO>
-AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFuncU ,Func_Type exactSolFuncP ):
+AdaptiveMeshRefinement<SC,LO,GO,NO>::AdaptiveMeshRefinement(std::string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFuncU ,Func_Type exactSolFuncP ):
 inputMeshP1_(),
 inputMeshP12_(),
 outputMesh_(),
@@ -421,8 +420,8 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	comm_ = domainP1 ->getComm();
 
 	if(this->comm_->getRank() == 0 && currentIter_ < maxIter_){
-			cout << " -- Adaptive Mesh Refinement --" << endl;
-			cout << " " << endl;
+			std::cout << " -- Adaptive Mesh Refinement --" << std::endl;
+			std::cout << " " << std::endl;
 	}
 
 	maxRank_ = std::get<1>(domainP1->getMesh()->rankRange_);
@@ -605,7 +604,7 @@ typename AdaptiveMeshRefinement<SC,LO,GO,NO>::DomainPtr_Type AdaptiveMeshRefinem
 	    exporterError_->closeExporter();
 	} 
 	else
-		cout << " -- done -- " << endl;
+		std::cout << " -- done -- " << std::endl;
 
     domainRefined->setMesh(outputMesh);
 	
@@ -690,7 +689,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 
 	// ---------------------------
 	// Calculating H1 Norm
-	errorH1.push_back(sqrt(problem_->calculateH1Norm(errorValues)));
+	errorH1.push_back(std::sqrt(problem_->calculateH1Norm(errorValues)));
 
 	// ---------------------------
 	// L2 Norm 
@@ -725,12 +724,12 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 
 	}
 
-	errorL2.push_back(sqrt(errorL2Tmp));
+	errorL2.push_back(std::sqrt(errorL2Tmp));
 
 	// -------------------------------
 	// Calculating Error bound epsilon
 	if(exactSolInput_ == true){
-		relError.push_back(sqrt(problem_->calculateH1Norm(errorValues)) / sqrt(problem_->calculateH1Norm(exactSolution)));
+		relError.push_back(std::sqrt(problem_->calculateH1Norm(errorValues)) / std::sqrt(problem_->calculateH1Norm(exactSolution)));
 	}
 
 	if(exactSolInput_ == true){
@@ -742,10 +741,10 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 				eta=errorElement[i];		
 		}
 		reduceAll<int, double> (*comm_, REDUCE_MAX, eta, outArg (eta));
-		//eta = pow(eta,2);
+		//eta = std::pow(eta,2);
 
 
-		eRelError.push_back(sqrt(eta)/ sqrt(problem_->calculateH1Norm(solutionP12)));
+		eRelError.push_back(std::sqrt(eta)/ std::sqrt(problem_->calculateH1Norm(solutionP12)));
 	}
 
 	// -------------------------------
@@ -823,7 +822,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::calcErrorNorms(MultiVectorConstPtr_Typ
 			double valueH1 = problem_->calculateH1Norm(mvValuesErrorUnique);
 			double valueL2 = 0; // problem_->calculateL2Norm(mvValuesErrorUnique);
 			if(elementMap->getLocalElement(k) != -1){
-				errorH1ElementsA[elementMap->getLocalElement(k)]= sqrt(valueH1 + valueL2);
+				errorH1ElementsA[elementMap->getLocalElement(k)]= std::sqrt(valueH1 + valueL2);
 			}
 		
 		}
@@ -896,7 +895,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::initExporter( ParameterListPtr_Type pa
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportSolution(MeshUnstrPtr_Type mesh, MultiVectorConstPtr_Type exportSolutionMv, MultiVectorConstPtr_Type errorValues, MultiVectorConstPtr_Type exactSolutionMv,MultiVectorConstPtr_Type exportSolutionPMv,MultiVectorConstPtr_Type exactSolutionPMv){
 
-	string exporterType = "Scalar";
+	std::string exporterType = "Scalar";
 	if(dofs_ >1 )
 		exporterType = "Vector";
 
@@ -978,6 +977,9 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::exportError(MeshUnstrPtr_Type mesh, Mu
 template <class SC, class LO, class GO, class NO>
 void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 
+    using std::cout;
+    using std::endl;
+
 	vec_GO_Type globalProcs(0);
 	for (int i=0; i<= maxRank_; i++)
 			globalProcs.push_back(i);
@@ -1047,9 +1049,9 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 					cout << endl;
 				cout << "__________________________________________________________________________________________________________ " << endl;
 				for (int i=1; i<=currentIter_ ; i++){
-					cout <<" "<< i << ":\t"<<  setprecision(5) << fixed << errorH1[i]<< "\t\t||\t" << errorL2[i] ;
+					std::cout <<" "<< i << ":\t"<<  std::setprecision(5) << std::fixed << errorH1[i]<< "\t\t||\t" << errorL2[i] ;
 					if( calculatePressure_== true  && exactSolPInput_ == true  ){
-						cout << " \t \t||\t" << setprecision(5) << fixed <<  errorL2P[i] << endl;
+						std::cout << " \t \t||\t" << std::setprecision(5) << std::fixed <<  errorL2P[i] << std::endl;
 					}
 					else
 						cout << endl;
@@ -1066,7 +1068,7 @@ void AdaptiveMeshRefinement<SC,LO,GO,NO>::writeRefinementInfo(){
 			cout << " " << endl;
 			cout << "Distribution of elements on .. " << endl;
 			//for(int l=0; l< maxRank_ +1 ; l++)
-			cout <<" Max Number of Elements on Processors " << setprecision(0) << fixed <<   maxNumElementsOnProcs << endl; 
+			cout <<" Max Number of Elements on Processors " << std::setprecision(0) << std::fixed <<   maxNumElementsOnProcs << endl; 
 			cout <<" Min Number of Elements on Processors " <<  minNumElementsOnProcs << endl; 
 			cout << "__________________________________________________________________________________________________________ " << endl;
 			cout << "__________________________________________________________________________________________________________ " << endl;

@@ -144,12 +144,12 @@ int main(int argc, char *argv[]) {
         HDF5Import<SC,LO,GO,NO> importer(domain->getMapUnique(),"exportVector"); // Import Map and  file name to read
         MultiVectorPtr_Type aImported = importer.readVariablesHDF5("Test"); // VariableName 
         
-        TEUCHOS_TEST_FOR_EXCEPTION(fabs(aUniqueConst->getLocalLength() - aImported->getLocalLength())>1e-13  , std::runtime_error, "Local length of written and read vector is differnt"); // Checking of vectors have the same length
+        TEUCHOS_TEST_FOR_EXCEPTION(std::fabs(aUniqueConst->getLocalLength() - aImported->getLocalLength())>1e-13  , std::runtime_error, "Local length of written and read vector is differnt"); // Checking of vectors have the same length
 
         // Testing difference
         double error= 0.;
         for(int i=0; i<aUniqueConst->getLocalLength(); i++)
-            error += abs((aUniqueConst->getData(0))[i] - (aImported->getData(0))[i]);
+            error += std::abs((aUniqueConst->getData(0))[i] - (aImported->getData(0))[i]);
         
         TEUCHOS_TEST_FOR_EXCEPTION( error>1e-13, std::runtime_error, "Error between written and read vector is to great: " << error); // Checking if error between solutions is to great
 

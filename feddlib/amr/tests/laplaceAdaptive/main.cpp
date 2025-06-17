@@ -39,6 +39,14 @@
  @copyright CH
  */
 
+using std::pow;
+using std::cos;
+using std::sin;
+using std::atan2;
+using std::sqrt;
+using std::exp;
+
+
 // ##################################################################################
 // Rhs, ExactSolution and zeroBC for first Modellproblem lShape
 // ##################################################################################
@@ -206,6 +214,8 @@ using Teuchos::reduceAll;
 using Teuchos::REDUCE_SUM;
 using Teuchos::REDUCE_MAX;
 using Teuchos::outArg;
+
+using namespace std;
 
 using namespace FEDD;
 

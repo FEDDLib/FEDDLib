@@ -10,7 +10,7 @@
  @version 1.0
  @copyright CH
  */
-using namespace std;
+
 namespace FEDD {
 template<class SC,class LO,class GO,class NO>
 LinearProblem<SC,LO,GO,NO>::LinearProblem(CommConstPtr_Type comm):

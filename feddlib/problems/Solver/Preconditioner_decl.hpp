@@ -11,13 +11,13 @@
 #include "feddlib/problems/Solver/PrecBlock2x2.hpp"
 #include "feddlib/problems/specific/LaplaceBlocks.hpp"
 #include "feddlib/problems/specific/FSI.hpp"
-#include "Xpetra_ThyraUtils.hpp"
+#include <Xpetra_ThyraUtils.hpp>
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_DefaultPreconditioner_decl.hpp>
 #include <Stratimikos_FROSch_def.hpp>
 //#include <Stratimikos_FROSch_def.hpp> // hier werden schon alle FROSch VK eingebunden
 #ifdef FEDD_HAVE_TEKO
-#include "Teko_StratimikosFactory.hpp"
+#include <Teko_StratimikosFactory.hpp>
 #include <Teko_StaticRequestCallback.hpp>
 #endif
 

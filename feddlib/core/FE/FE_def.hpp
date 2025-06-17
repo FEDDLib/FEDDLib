@@ -2,7 +2,7 @@
 #define FE_DEF_hpp
 
 #ifdef FEDD_HAVE_ACEGENINTERFACE
-#include "aceinterface.hpp"
+#include <aceinterface.hpp>
 #endif
 
 #include "FE_decl.hpp"
@@ -118,14 +118,14 @@ void FE<SC,LO,GO,NO>::applyBTinv( vec3D_dbl_ptr_Type& dPhiIn,
 
 // Check the order of chemistry and solid in system matrix
 /*template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::globalAssembly(string ProblemType,
+void FE<SC,LO,GO,NO>::globalAssembly(std::string ProblemType,
                         int dim,                    
                         int degree,                       
                         MultiVectorPtr_Type sol_rep,
                         BlockMatrixPtr_Type &A,
                         BlockMultiVectorPtr_Type &resVec,
                         ParameterListPtr_Type params,
-                        string assembleMode,
+                        std::string assembleMode,
                         bool callFillComplete,
                         int FELocExternal){
 
@@ -134,7 +134,7 @@ void FE<SC,LO,GO,NO>::globalAssembly(string ProblemType,
     // Depending on problem size we extract necessary information 
 
 	/// Tupel construction follows follwing pattern:
-	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	/// std::string: Physical Entity (i.e. Velocity) , std::string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int numChem=3;
     if(FETypeChem == "P2"){
         numChem=6;
@@ -360,7 +360,7 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Ty
 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyLinearElasticity(int dim,
-	                                    string FEType,
+	                                    std::string FEType,
 	                                    int degree,
 										int dofs,
 										MultiVectorPtr_Type d_rep,
@@ -368,7 +368,7 @@ void FE<SC,LO,GO,NO>::assemblyLinearElasticity(int dim,
 										BlockMultiVectorPtr_Type &resVec,
  										ParameterListPtr_Type params,
  										bool reAssemble,
- 										string assembleMode,
+ 										std::string assembleMode,
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
 	
@@ -386,7 +386,7 @@ void FE<SC,LO,GO,NO>::assemblyLinearElasticity(int dim,
 	vec_dbl_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
-	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	/// std::string: Physical Entity (i.e. Velocity) , std::string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int numNodes=6;
 	if(dim==3){
 		numNodes=10;
@@ -447,7 +447,7 @@ void FE<SC,LO,GO,NO>::assemblyLinearElasticity(int dim,
 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
-	                                    string FEType,
+	                                    std::string FEType,
 	                                    int degree,
 										int dofs,
 										MultiVectorPtr_Type d_rep,
@@ -471,7 +471,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
-	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	/// std::string: Physical Entity (i.e. Velocity) , std::string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int numNodes=6;
 	if(dim==3){
 		numNodes=10;
@@ -482,11 +482,11 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 
     int neoHookeNum = params->sublist("Parameter").get("Neo-Hooke Modell",1);
 
-    string nonLinElasModell = "NonLinearElasticity2";
+    std::string nonLinElasModell = "NonLinearElasticity2";
     if(neoHookeNum == 1)
         nonLinElasModell = "NonLinearElasticity";
 
-    //cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  endl;
+    //std::cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  std::endl;
 
 
 	if(assemblyFEElements_.size()== 0)
@@ -536,7 +536,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
-	                                    string FEType,
+	                                    std::string FEType,
 	                                    int degree,
 										int dofs,
 										MultiVectorPtr_Type d_rep,
@@ -562,7 +562,7 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
-	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	/// std::string: Physical Entity (i.e. Velocity) , std::string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int numNodes=6;
 	if(dim==3){
 		numNodes=10;
@@ -573,11 +573,11 @@ void FE<SC,LO,GO,NO>::assemblyNonLinearElasticity(int dim,
 
     int neoHookeNum = params->sublist("Parameter").get("Neo-Hooke Modell",1);
 
-    string nonLinElasModell = "NonLinearElasticity2";
+    std::string nonLinElasModell = "NonLinearElasticity2";
     if(neoHookeNum == 1)
         nonLinElasModell = "NonLinearElasticity";
 
-    //cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  endl;
+    //std::cout << " ######## Assembly Modell: " << nonLinElasModell << " ############ " <<  std::endl;
 
 	if(assemblyFEElements_.size()== 0)
 	 	initAssembleFEElements(nonLinElasModell,problemDisk,elements, params,pointsRep,domain->getElementMap());
@@ -642,8 +642,8 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Ty
 // Check the order of chemistry and solid in system matrix
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
-                        string FETypeChem,
-                        string FETypeSolid,
+                        std::string FETypeChem,
+                        std::string FETypeSolid,
                         int degree,
                         int dofsChem,
                         int dofsSolid,
@@ -652,7 +652,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
                         BlockMatrixPtr_Type &A,
                         BlockMultiVectorPtr_Type &resVec,
                         ParameterListPtr_Type params,
-                        string assembleMode,
+                        std::string assembleMode,
                         bool callFillComplete,
                         int FELocExternal){
 
@@ -683,7 +683,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
-	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	/// std::string: Physical Entity (i.e. Velocity) , std::string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int numChem=3;
     if(FETypeChem == "P2"){
         numChem=6;
@@ -711,7 +711,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	tuple_disk_vec_ptr_Type problemDiskChem = Teuchos::rcp(new tuple_disk_vec_Type(0));
     problemDiskChem->push_back(chem);
 
-	string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
+	std::string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
 
 	if(assemblyFEElements_.size()== 0){
        	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep,domainVec_.at(FElocSolid)->getElementMap());
@@ -752,7 +752,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
         /*buildTransformation(elementsSolid->getElement(T).getVectorNodeList(), pointsRep, B, FETypeSolid);
         detB = B.computeInverse(Binv);
         absDetB = std::fabs(detB);
-        cout << " Determinante " << detB << endl;*/
+        std::cout << " Determinante " << detB << std::endl;*/
         // ------------------------
 
 
@@ -820,8 +820,8 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 // Check the order of chemistry and solid in system matrix
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyAceDeformDiffuBlock(int dim,
-                        string FETypeChem,
-                        string FETypeSolid,
+                        std::string FETypeChem,
+                        std::string FETypeSolid,
                         int degree,
                         int dofsChem,
                         int dofsSolid,
@@ -833,7 +833,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffuBlock(int dim,
                         BlockMultiVectorPtr_Type &resVec,
                         int block,
                         ParameterListPtr_Type params,
-                        string assembleMode,
+                        std::string assembleMode,
                         bool callFillComplete,
                         int FELocExternal){
 
@@ -865,7 +865,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffuBlock(int dim,
 	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
-	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	/// std::string: Physical Entity (i.e. Velocity) , std::string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int numChem=3;
     if(FETypeChem == "P2"){
         numChem=6;
@@ -890,7 +890,7 @@ void FE<SC,LO,GO,NO>::assemblyAceDeformDiffuBlock(int dim,
 	problemDisk->push_back(solid);
 	problemDisk->push_back(chem);
 	
-	string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
+	std::string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
 
 	if(assemblyFEElements_.size()== 0){
        	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep,domainVec_.at(FElocSolid)->getElementMap());
@@ -1076,8 +1076,8 @@ void FE<SC,LO,GO,NO>::addFeBlockMatrix(BlockMatrixPtr_Type &A, SmallMatrixPtr_Ty
 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
-	                                    string FETypeVelocity,
-	                                    string FETypePressure,
+	                                    std::string FETypeVelocity,
+	                                    std::string FETypePressure,
 	                                    int degree,
 										int dofsVelocity,
 										int dofsPressure,
@@ -1088,7 +1088,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 										SmallMatrix_Type coeff,
  										ParameterListPtr_Type params,
  										bool reAssemble,
- 										string assembleMode,
+ 										std::string assembleMode,
 	                                    bool callFillComplete,
 	                                    int FELocExternal){
 	
@@ -1115,7 +1115,7 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 	vec_dbl_ptr_Type rhsVec;
 
 	/// Tupel construction follows follwing pattern:
-	/// string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
+	/// std::string: Physical Entity (i.e. Velocity) , std::string: Discretisation (i.e. "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per element)
 	int numVelo=3;
     if(FETypeVelocity == "P2")
         numVelo=6;
@@ -1251,8 +1251,8 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::computeSteadyViscosityFE_CM(int dim,
-	                                    string FETypeVelocity,
-	                                    string FETypePressure,
+	                                    std::string FETypeVelocity,
+	                                    std::string FETypePressure,
 										int dofsVelocity,
 										int dofsPressure,
 										MultiVectorPtr_Type u_rep,
@@ -1389,7 +1389,7 @@ void FE<SC,LO,GO,NO>::addFeBlock(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type ele
 
 */
 template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::initAssembleFEElements(string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep, MapConstPtr_Type elementMap){
+void FE<SC,LO,GO,NO>::initAssembleFEElements(std::string elementType,tuple_disk_vec_ptr_Type problemDisk,ElementsPtr_Type elements, ParameterListPtr_Type params,vec2D_dbl_ptr_Type pointsRep, MapConstPtr_Type elementMap){
     
 	vec2D_dbl_Type nodes;
 	for (UN T=0; T<elements->numberElements(); T++) {
@@ -1513,9 +1513,9 @@ void FE<SC,LO,GO,NO>::assemblyIdentity(MatrixPtr_Type &A){
 
 //     // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
     
-// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-//              Helper::determineDegree( dim, FEType, Helper::Std) + 
+// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of grad u
+// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1) + 
+//              Helper::determineDegree( dim, FEType, Helper::Deriv0) + 
 //              extraDeg;
 
 // 	Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -1600,9 +1600,9 @@ void FE<SC,LO,GO,NO>::assemblyIdentity(MatrixPtr_Type &A){
 // 	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
 //     // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
-// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-//              Helper::determineDegree( dim, FEType, Helper::Std) + 
+// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of grad u
+// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1) + 
+//              Helper::determineDegree( dim, FEType, Helper::Deriv0) + 
 //              extraDeg;
 
 // 	Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -1676,9 +1676,9 @@ void FE<SC,LO,GO,NO>::assemblyIdentity(MatrixPtr_Type &A){
 // 	vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
 //     // TODO: [JK] 2025/04 What is the getting integrated; i.e., what motivates the choice of polynomial degree?
-// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
-// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + 
-//              Helper::determineDegree( dim, FEType, Helper::Std) + 
+// 	UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of grad u
+// 	UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1) + 
+//              Helper::determineDegree( dim, FEType, Helper::Deriv0) + 
 //              extraDeg;
 
 // 	Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -1756,7 +1756,7 @@ void FE<SC,LO,GO,NO>::assemblyIdentity(MatrixPtr_Type &A){
 */
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyLaplaceAssFE(int dim,
-                                        string FEType,
+                                        std::string FEType,
                                         int degree,
                                         int dofs,
                                         BlockMatrixPtr_Type &A,
@@ -1819,7 +1819,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 
     // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
     // The diffusion tensor is constant and, thus, does not require a higher-order quadrature rule.
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);//+1;
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);//+1;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -1846,7 +1846,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 		}
 	}
 	//Teuchos::ArrayRCP< SC >  linearDiff = diffusionTensor->getDataNonConst( 0 );
-	//cout << "Assembly Info " << "num Elements " <<  elements->numberElements() << " num Nodes " << pointsRep->size()  << endl;
+	//std::cout << "Assembly Info " << "num Elements " <<  elements->numberElements() << " num Nodes " << pointsRep->size()  << std::endl;
     for (UN T=0; T<elements->numberElements(); T++) {
 
         Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
@@ -2245,7 +2245,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
     // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv0);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
 
@@ -2323,7 +2323,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
     vec_dbl_ptr_Type	weights = Teuchos::rcp(new vec_dbl_Type(0));
 
     // inner( phi_i , phi_j ) has twice the polyonimial degree than phi_i and phi_j, respectively.
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv0);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
 
@@ -2400,7 +2400,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplace(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -2462,7 +2462,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceVecField(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
@@ -2529,7 +2529,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceVecFieldV2(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
@@ -2630,7 +2630,7 @@ template <class SC, class LO, class GO, class NO>
 void FE<SC, LO, GO, NO>::assemblyNonlinearLaplace(
     int dim, std::string FEType, int degree, MultiVectorPtr_Type u_rep,
     BlockMatrixPtr_Type &A, BlockMultiVectorPtr_Type &resVec,
-    ParameterListPtr_Type params, string assembleMode, bool callFillComplete,
+    ParameterListPtr_Type params, std::string assembleMode, bool callFillComplete,
     int FELocExternal) {
 
     ElementsPtr_Type elements = this->domainVec_.at(0)->getElementsC();
@@ -2656,7 +2656,7 @@ void FE<SC, LO, GO, NO>::assemblyNonlinearLaplace(
     }
 
     // Tupel construction follows follwing pattern:
-    // string: Physical Entity (i.e. Velocity) , string: Discretisation (i.e.
+    // std::string: Physical Entity (i.e. Velocity) , std::string: Discretisation (i.e.
     // "P2"), int: Degrees of Freedom per Node, int: Number of Nodes per
     // element)
     tuple_disk_vec_ptr_Type problemDisk =
@@ -2759,7 +2759,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAndStressAceFEM(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
     
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
@@ -3218,7 +3218,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAceFEM(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
@@ -3423,7 +3423,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityStressesAceFEM(int dim,
     vec3D_dbl_ptr_Type 	dPhi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 
@@ -3598,7 +3598,6 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecField(int dim,
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     
     UN FEloc = checkFE(dim,FEType);
-    
 
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
 
@@ -3610,11 +3609,11 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecField(int dim,
     vec2D_dbl_ptr_Type     phi;
     vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of grad u
+    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of grad u
 
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Grad ) + 
-                Helper::determineDegree( dim, FEType, Helper::Std) + 
-                extraDeg;
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1 ) + 
+             Helper::determineDegree( dim, FEType, Helper::Deriv0) + 
+             extraDeg;
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -3703,9 +3702,9 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionInUVecField(int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Grad); //Elementwise assembly of u
+    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv1); //Elementwise assembly of u
 
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Std) + extraDeg;
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv0) + extraDeg;
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -3805,8 +3804,8 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivT( int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN deg = Helper::determineDegree( dim, FEType1, Helper::Grad) + 
-             Helper::determineDegree( dim, FEType2, Helper::Std);
+    UN deg = Helper::determineDegree( dim, FEType1, Helper::Deriv1) + 
+             Helper::determineDegree( dim, FEType2, Helper::Deriv0);
 
     Helper::getDPhi(dPhi, weights, dim, FEType1, deg);
 
@@ -3935,8 +3934,8 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivTFast( int dim,
     vec2D_dbl_ptr_Type 	phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = Helper::determineDegree( dim, FEType1, Helper::Grad) + 
-             Helper::determineDegree( dim, FEType2, Helper::Std);
+    UN deg = Helper::determineDegree( dim, FEType1, Helper::Deriv1) + 
+             Helper::determineDegree( dim, FEType2, Helper::Deriv0);
     
     Helper::getDPhi(dPhi, weights, dim, FEType1, deg);
     
@@ -4015,7 +4014,7 @@ void FE<SC,LO,GO,NO>::assemblyBDStabilization(int dim,
 
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Std);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv0);
 
     Helper::getPhi( phi, weights, dim, FEType, deg );
 
@@ -4092,7 +4091,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceXDim(int dim,
 
     // double val, value1_j, value2_j , value1_i, value2_i;
 
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
 
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi, FEType);
@@ -4275,7 +4274,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
     // double value, value1_j, value2_j , value1_i, value2_i;
 
     // inner( grad(u) + grad(u)^T , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi,FEType);
 
@@ -4606,7 +4605,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
     vec_dbl_ptr_Type			weightsDPhi = Teuchos::rcp(new vec_dbl_Type(0));
     vec2D_dbl_ptr_Type			quadPts;
 
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
 
     // Hole die grad_phi, hier DPhi
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
@@ -4935,7 +4934,7 @@ void FE<SC,LO,GO,NO>::determineEMod(std::string FEType, MultiVectorPtr_Type solu
     Teuchos::reduceAll<int, double> (*(domain->getComm()), Teuchos::REDUCE_MAX, eModMax, Teuchos::outArg (eModMax));
 
     if(domain->getComm()->getRank()==0)
-        cout << " #################  eMOD Min: " << eModMin << " \t eModMax: " << eModMax<< " ############# " <<endl;
+        std::cout << " #################  eMOD Min: " << eModMin << " \t eModMax: " << eModMax<< " ############# " << std::endl;
 
 
 }
@@ -4961,7 +4960,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
     vec_dbl_ptr_Type			weightsDPhi = Teuchos::rcp(new vec_dbl_Type(0));
     vec2D_dbl_ptr_Type			quadPts;
 
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Grad);
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
 
     // Hole die grad_phi, hier DPhi
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
@@ -5275,8 +5274,8 @@ void FE<SC,LO,GO,NO>::assemblyAdditionalConvection(int dim,
     vec_dbl_ptr_Type			weights = Teuchos::rcp(new vec_dbl_Type(0));
     vec2D_dbl_ptr_Type			quadPts;
 
-    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Grad); // Fuer diskretes (\grad \cdot w) in den Gausspuntken
-    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Std) + extraDeg;
+    UN extraDeg = Helper::determineDegree( dim, FEType, Helper::Deriv1); // Fuer diskretes (\grad \cdot w) in den Gausspuntken
+    UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv0) + extraDeg;
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim, FEType, deg);
@@ -5648,8 +5647,8 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeVelocity(int dim,
     vec2D_dbl_ptr_Type			quadPts;
 
     // Hoechste Quadraturordnung angeben (= Zusaetzlicher Term wg. non-conservativ); bei P2/P1 hier Ordnung 6
-    UN extraDeg = 2*Helper::determineDegree( dim, FEType1, Helper::Grad);
-    UN deg = 2*Helper::determineDegree( dim, FEType1, Helper::Std) + extraDeg;
+    UN extraDeg = 2*Helper::determineDegree( dim, FEType1, Helper::Deriv1);
+    UN deg = 2*Helper::determineDegree( dim, FEType1, Helper::Deriv0) + extraDeg;
 
     Helper::getDPhi(dPhiU, weights, dim, FEType1, deg);
     Helper::getPhi(phiU, weights, dim, FEType1, deg);
@@ -6484,8 +6483,8 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
     vec_dbl_ptr_Type			weights = Teuchos::rcp(new vec_dbl_Type(0));
     vec2D_dbl_ptr_Type			quadPts;
 
-    UN extraDeg = Helper::determineDegree( dim, FEType1, Helper::Grad);
-    UN deg = Helper::determineDegree( dim, FEType1, Helper::Std) + 2*extraDeg;
+    UN extraDeg = Helper::determineDegree( dim, FEType1, Helper::Deriv1);
+    UN deg = Helper::determineDegree( dim, FEType1, Helper::Deriv0) + 2*extraDeg;
 
 
     Helper::getDPhi(dPhiU, weights, dim, FEType1, deg);
@@ -6883,7 +6882,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                     SmallMatrix_Type elementMatrixPrint(18,0.);
                     for(int i=0; i< 18 ; i++){
                         for(int j=0; j< 18; j++){
-                           if(fabs(stiffMat[i][j]) >1e-13)
+                           if(std::fabs(stiffMat[i][j]) >1e-13)
                                 elementMatrixPrint[i][j] = stiffMat[i][j];
 
                         }
@@ -6946,7 +6945,7 @@ void FE<SC,LO,GO,NO>::computeSurfaceNormal(int dim,
     if(dim==2){
         v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
         v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
-        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+        norm_v_E = std::sqrt(std::pow(v_E[0],2)+std::pow(v_E[1],2));	
         
     }
     else if(dim==3){
@@ -6963,7 +6962,7 @@ void FE<SC,LO,GO,NO>::computeSurfaceNormal(int dim,
         v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
         v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
         
-        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+        norm_v_E = std::sqrt(std::pow(v_E[0],2)+std::pow(v_E[1],2)+std::pow(v_E[2],2));
         
     }
 
@@ -6990,7 +6989,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegral(int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
     UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14; // Degree from function set/determined externally
-    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Std) + degFunc;
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0) + degFunc;
 
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
 
@@ -7094,7 +7093,7 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralFlag(int dim,
     vec2D_dbl_ptr_Type phi;
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     UN degFunc = funcParameter[0] + 1.e-14;
-    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Std) + degFunc;
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0) + degFunc;
 
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
 
@@ -7196,7 +7195,7 @@ void FE<SC,LO,GO,NO>::assemblyRHS( int dim,
     // inner( f(x), phi(x) ) requires the integration degree of the basis function + some 
     // extra user-provided degree that accounts for the heterogeneity of f(x).
     UN degFunc = 2;  // TODO: [JK] Hard coded for now, but needs to be passed by the user. See GitHub issue #66.
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Std) + degFunc;
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv0) + degFunc;
 
     vec2D_dbl_ptr_Type quadPoints;
     Helper::getQuadratureValues(dim, deg, quadPoints, weights, FEType); // quad points for rhs values
@@ -8479,16 +8478,16 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
             case 2:
                 QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
                 QuadW->resize(2);
-                QuadPts->at(0).at(0) = - 0.5/sqrt(3.)+0.5;
-                QuadPts->at(1).at(0) = 0.5/sqrt(3.)+0.5;
+                QuadPts->at(0).at(0) = - 0.5/std::sqrt(3.)+0.5;
+                QuadPts->at(1).at(0) = 0.5/std::sqrt(3.)+0.5;
                 QuadW->at(0) = .5;
                 QuadW->at(1) = .5;
                 break;
             case 3:
                 QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
                 QuadW->resize(2);
-                QuadPts->at(0).at(0) = - 0.5/sqrt(3.)+0.5;
-                QuadPts->at(1).at(0) = 0.5/sqrt(3.)+0.5;
+                QuadPts->at(0).at(0) = - 0.5/std::sqrt(3.)+0.5;
+                QuadPts->at(1).at(0) = 0.5/std::sqrt(3.)+0.5;
                 QuadW->at(0) = .5;
                 QuadW->at(1) = .5;
                 break;
@@ -8799,12 +8798,12 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                     QuadPts.reset(new vec2D_dbl_Type(15,vec_dbl_Type(3,0.0)));
                     QuadW->resize(15);
                     a 	= 0.25;
-                    b1 	= (7.+sqrt(15.))/34.;
-                    b2 	= (7.-sqrt(15.))/34.;
-                    c1 	= (13.-3.*sqrt(15.))/34.;
-                    c2 	= (13.+3.*sqrt(15.))/34.;
-                    d 	= (5.-sqrt(15.))/20.;
-                    e 	= (5.+sqrt(15.))/20.;
+                    b1 	= (7.+std::sqrt(15.))/34.;
+                    b2 	= (7.-std::sqrt(15.))/34.;
+                    c1 	= (13.-3.*std::sqrt(15.))/34.;
+                    c2 	= (13.+3.*std::sqrt(15.))/34.;
+                    d 	= (5.-std::sqrt(15.))/20.;
+                    e 	= (5.+std::sqrt(15.))/20.;
                     
                     QuadPts->at(0).at(0) 	= a;
                     QuadPts->at(0).at(1)    = a;
@@ -8867,8 +8866,8 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                     QuadPts->at(14).at(2)	= d;
                     
                     
-                    P1 	= (2665.-14.*sqrt(15.))/226800.;
-                    P2 	= (2665.+14.*sqrt(15.))/226800.;
+                    P1 	= (2665.-14.*std::sqrt(15.))/226800.;
+                    P2 	= (2665.+14.*std::sqrt(15.))/226800.;
                     b	= 5./567.;
                     
                     QuadW->at(0) 			= 8./405.;
@@ -9050,7 +9049,7 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                 }
                 case 3: // 2 points in each direction; order 3
                 {
-                    double d = 1./sqrt(3);
+                    double d = 1./std::sqrt(3);
                     QuadPts.reset(new vec2D_dbl_Type(8,vec_dbl_Type(3,0.0)));
                     QuadW->resize(8);
                     QuadPts->at(0).at(0) 	= -d;
@@ -9096,7 +9095,7 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                 }
                 case 5: // 3 points in each direction; order 5
                 {
-                    double a=sqrt(3./5);
+                    double a=std::sqrt(3./5);
                     double b=5./9;
                     double c=8./9;
                     std::vector<double> p(3);
@@ -9121,14 +9120,14 @@ void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
                 }
                 case 7: // 4 points in each direction; order 7
                 {
-                    double aa = 2./7 * sqrt(6./5) ;
+                    double aa = 2./7 * std::sqrt(6./5) ;
                     std::vector<double> p(4);
-                    p[0] = - sqrt(3./7 + aa);
-                    p[1] = - sqrt(3./7 - aa);
+                    p[0] = - std::sqrt(3./7 + aa);
+                    p[1] = - std::sqrt(3./7 - aa);
                     p[2] = -p[1];
                     p[3] = -p[0];
                     
-                    double bb = sqrt(30.);
+                    double bb = std::sqrt(30.);
                     std::vector<double> w(4);
                     w[0] = ( 18. - bb ) / 36;
                     w[1] = ( 18. + bb ) / 36;
@@ -9470,7 +9469,7 @@ void FE<SC,LO,GO,NO>::nh3d(double* v, double (*E), double (*Nu), double** F , do
     v[148]=v[15]*v[26]+v[38];
     v[29]=v[148]*v[20]+2e0*v[22]*v[325]-v[15]*v[334]-v[26]*v[335];
     v[336]=1e0/Power(v[29],2);
-    v[32]=-v[5]+v[3]*log(sqrt(v[29]));
+    v[32]=-v[5]+v[3]*std::log(std::sqrt(v[29]));
     v[337]=(v[3]/4e0-v[32]/2e0)*v[336];
     v[137]=v[337]*(F[2][1]*v[326]+F[2][0]*v[327]-v[335]*v[88]+v[15]*v[94]);
     v[147]=v[137]*v[138];
@@ -9770,7 +9769,7 @@ void FE<SC,LO,GO,NO>::mr3d(double* v,double (*E),double (*Nu),double (*C)
     v[151]=v[15]*v[26]+v[38];
     v[29]=v[151]*v[20]+2e0*v[22]*v[335]-v[15]*v[344]-v[26]*v[345];
     v[346]=1e0/Power(v[29],2);
-    v[33]=-2e0*v[139]-v[4]+v[5]*log(sqrt(v[29]));
+    v[33]=-2e0*v[139]-v[4]+v[5]*std::log(std::sqrt(v[29]));
     v[347]=v[346]*(-v[33]/2e0+v[5]/4e0);
     v[138]=v[347]*(F[2][1]*v[336]+F[2][0]*v[337]-v[345]*v[89]+v[15]*v[95]);
     v[149]=v[138]*v[140];
@@ -10905,7 +10904,7 @@ void FE<SC,LO,GO,NO>::SKR_Biot(double* v,ElementSpec *es,ElementData *ed,NodeSpe
         v[266]=v[141]*v[503];
         v[263]=v[146]*v[502];
         v[262]=v[144]*v[503];
-        v[148]=es->IntPoints[3+i109]*fabs(v[155]);
+        v[148]=es->IntPoints[3+i109]*std::fabs(v[155]);
         v[176]=(v[146]*v[149]-v[144]*v[151])/v[155];
         v[179]=(-(v[143]*v[152])+v[141]*v[154])/v[155];
         v[195]=v[176]+v[179];
@@ -11364,7 +11363,7 @@ void FE<SC,LO,GO,NO>::SKR_Biot_StVK(double* v,ElementSpec *es,ElementData *ed,No
      v[291]=v[148]*v[589];
      v[288]=v[153]*v[588];
      v[287]=v[151]*v[589];
-     v[155]=es->IntPoints[3+i116]*fabs(v[162]);
+     v[155]=es->IntPoints[3+i116]*std::fabs(v[162]);
      v[163]=(v[153]*v[156]-v[151]*v[158])/v[162];
      v[164]=(-(v[150]*v[156])+v[148]*v[158])/v[162];
      v[165]=(v[153]*v[159]-v[151]*v[161])/v[162];
@@ -12461,7 +12460,7 @@ void FE<SC,LO,GO,NO>::SKR_Biot3D(double* v, ElementSpec *es, ElementData *ed, No
      v[1681]=0e0;
      v[1682]=0e0;
      v[1683]=0e0;
-     v[314]=es->IntPoints[3+i256]*fabs(v[336]);
+     v[314]=es->IntPoints[3+i256]*std::fabs(v[336]);
      v[393]=(v[315]*v[340]+v[318]*v[341]+v[321]*v[342])/v[336];
      v[396]=(v[322]*v[344]+v[325]*v[345]+v[328]*v[346])/v[336];
      v[398]=(v[329]*v[348]+v[332]*v[349]+v[335]*v[350])/v[336];

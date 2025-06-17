@@ -6,13 +6,13 @@
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 //#ifdef FEDD_HAVE_ACEGENINTERFACE
-//#include "aceinterface.h"
-//#include "ace2.h"
+//#include <aceinterface.h>
+//#include <ace2.h>
 //#endif
 
 /*!
@@ -70,7 +70,7 @@ class AssembleFE_SCI_SMC_Active_Growth_Reorientation : public AssembleFE<SC,LO,G
 
         friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 	    
-		string FEType_ ; // FEType of Disk
+		std::string FEType_ ; // FEType of Disk
 
 		SmallMatrixPtr_Type massMatrix_;
 

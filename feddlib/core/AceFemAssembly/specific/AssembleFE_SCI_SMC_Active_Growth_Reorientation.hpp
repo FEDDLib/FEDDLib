@@ -1,6 +1,6 @@
 #ifndef ASSEMBLEFE_SCI_SMC_Active_Growth_Reorientation_hpp
 #define ASSEMBLEFE_SCI_SMC_Active_Growth_Reorientation_hpp
-#include "AssembleFE_SCI_SMC_Active_Growtth_Reorientation_decl.hpp"
+#include "AssembleFE_SCI_SMC_Active_Growth_Reorientation_decl.hpp"
 
 
 #endif 

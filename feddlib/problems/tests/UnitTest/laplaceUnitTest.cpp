@@ -50,11 +50,11 @@ int main(int argc, char *argv[]) {
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
 
-    // string xmlProblemFile = "parametersProblem.xml";
+    // std::string xmlProblemFile = "parametersProblem.xml";
     // myCLP.setOption("problemfile",&xmlProblemFile,".xml file with Inputparameters.");
-    string xmlPrecFile = "parametersPrec_Laplace.xml";
+    std::string xmlPrecFile = "parametersPrec_Laplace.xml";
     myCLP.setOption("precfile",&xmlPrecFile,".xml file with Inputparameters.");
-    string xmlSolverFile = "parametersSolver.xml";
+    std::string xmlSolverFile = "parametersSolver.xml";
     myCLP.setOption("solverfile",&xmlSolverFile,".xml file with Inputparameters.");
 
     int boolExportSolution = 0;
@@ -160,10 +160,10 @@ int main(int argc, char *argv[]) {
                     
         // Output of error
         if(comm->getRank() ==0){
-            cout << " --------------------------------------------------" << endl;
-            cout << "  Error Report " << endl;
-            cout << "   || solution_current - solution_stored||_inf = " << normError << endl;
-            cout << " --------------------------------------------------" << endl;
+            std::cout << " --------------------------------------------------" << std::endl;
+            std::cout << "  Error Report " << std::endl;
+            std::cout << "   || solution_current - solution_stored||_inf = " << normError << std::endl;
+            std::cout << " --------------------------------------------------" << std::endl;
         }
         // Throwing exception, if error is too great.
 

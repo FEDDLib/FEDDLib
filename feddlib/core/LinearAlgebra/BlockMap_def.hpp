@@ -80,7 +80,7 @@ void BlockMap<LO,GO,NO>::merge( ){
 template <class LO, class GO, class NO>
 void BlockMap<LO,GO,NO>::print( ){
     TEUCHOS_TEST_FOR_EXCEPTION( blockMap_.size()==0, std::logic_error,"BlockMap has no maps - nothing to print.");
-    cout << " --- Blockmap size: " << blockMap_.size() << " --- " << endl;
+    std::cout << " --- Blockmap size: " << blockMap_.size() << " --- " << std::endl;
     for (UN i=0; i<blockMap_.size(); i++) {
         TEUCHOS_TEST_FOR_EXCEPTION( blockMap_[i].is_null(), std::runtime_error,"Map in BlockMap is null. This should not happen.");
         blockMap_[i]->print();
@@ -92,18 +92,18 @@ template <class LO, class GO, class NO>
 void BlockMap<LO,GO,NO>::info( ){
     TEUCHOS_TEST_FOR_EXCEPTION( blockMap_.size()==0, std::logic_error,"BlockMap has no maps - nothing to inform.");
     if(blockMap_[0]->getComm()->getRank() == 0){
-        cout << " ------------------------------------------------- " << endl;
-        cout << " --- Blockmap size: " << blockMap_.size() << " --- " << endl;
+        std::cout << " ------------------------------------------------- " << std::endl;
+        std::cout << " --- Blockmap size: " << blockMap_.size() << " --- " << std::endl;
             for (UN i=0; i<blockMap_.size(); i++) {
-                cout << " ------------------------------------------------- " << endl;
+                std::cout << " ------------------------------------------------- " << std::endl;
                 TEUCHOS_TEST_FOR_EXCEPTION( blockMap_[i].is_null(), std::runtime_error,"Map in BlockMap is null. This should not happen.");
-                cout << " Block Map i=" << i << endl;
-                cout << " Global number of elements " << blockMap_[i]->getGlobalNumElements() << endl;
-                cout << " Maximum index " << blockMap_[i]->getMaxAllGlobalIndex() << endl;
-                cout << " ------------------------------------------------- " << endl;
+                std::cout << " Block Map i=" << i << std::endl;
+                std::cout << " Global number of elements " << blockMap_[i]->getGlobalNumElements() << std::endl;
+                std::cout << " Maximum index " << blockMap_[i]->getMaxAllGlobalIndex() << std::endl;
+                std::cout << " ------------------------------------------------- " << std::endl;
 
             }
-        cout << " ------------------------------------------------- " << endl;
+        std::cout << " ------------------------------------------------- " << std::endl;
 
     }
     

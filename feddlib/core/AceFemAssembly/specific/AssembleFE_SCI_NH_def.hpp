@@ -3,7 +3,7 @@
 
 #include "AssembleFE_SCI_NH_decl.hpp"
 #ifdef FEDD_HAVE_ACEGENINTERFACE
-#include "aceinterface.hpp"
+#include <aceinterface.hpp>
 #endif
 
 #include <vector>

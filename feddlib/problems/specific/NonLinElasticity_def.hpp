@@ -59,7 +59,7 @@ void NonLinElasticity<SC,LO,GO,NO>::assemble(std::string type) const{
         this->system_->addBlock( A, 0, 0 );
                 
         double density = this->parameterList_->sublist("Parameter").get("Density",1000.);
-        string sourceType = 	this->parameterList_->sublist("Parameter").get("Source Type","volume");
+        std::string sourceType = 	this->parameterList_->sublist("Parameter").get("Source Type","volume");
 
         this->assembleSourceTerm( 0. );
         if(sourceType == "volume")

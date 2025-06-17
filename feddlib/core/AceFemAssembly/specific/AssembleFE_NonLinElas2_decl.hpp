@@ -45,7 +45,7 @@ class  AssembleFE_NonLinElas2 : public AssembleFE<SC,LO,GO,NO> {
 		\brief Update the parameter read from the ParameterList.
 		@param[in] Parameter as read from the xml file
 	*/
-    void updateParameter(string type, double value) override;
+    void updateParameter(std::string type, double value) override;
 
    protected:
 	 AssembleFE_NonLinElas2(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); 
@@ -58,7 +58,7 @@ class  AssembleFE_NonLinElas2 : public AssembleFE<SC,LO,GO,NO> {
 	double E_ ; 
    	double lambda_;
 	double poissonRatio_;
-	string FEType_ ; // FEType of Disk
+	std::string FEType_ ; // FEType of Disk
 
 	int dofs_ ; // Degrees of freedom per node
 

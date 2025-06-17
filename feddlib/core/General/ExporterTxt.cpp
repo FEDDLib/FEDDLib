@@ -8,7 +8,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
 ExporterTxt::ExporterTxt():
     verbose_(false),
@@ -24,7 +23,7 @@ void ExporterTxt::setup(std::string filename, CommConstPtr_Type comm, int target
         verbose_ = true;
 
     if (verbose_)
-        txt_out_.open((filename + ".txt").c_str(),ios_base::out);
+        txt_out_.open((filename + ".txt").c_str(),std::ios_base::out);
 }
     
 void ExporterTxt::exportData(double data){

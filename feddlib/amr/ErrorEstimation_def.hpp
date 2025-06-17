@@ -20,12 +20,14 @@
 
 */
 
-using namespace std;
 using Teuchos::reduceAll;
 using Teuchos::REDUCE_SUM;
 using Teuchos::REDUCE_MAX;
 using Teuchos::REDUCE_MIN;
 using Teuchos::outArg;
+using std::cout;
+using std::endl;
+using std::setprecision;
 
 namespace FEDD {
 
@@ -38,7 +40,7 @@ namespace FEDD {
 
 */
 template <class SC, class LO, class GO, class NO>
-ErrorEstimation<SC,LO,GO,NO>:: ErrorEstimation(int dim, string problemType, bool writeMeshQuality)
+ErrorEstimation<SC,LO,GO,NO>:: ErrorEstimation(int dim, std::string problemType, bool writeMeshQuality)
 {
 	this->dim_ = dim;
 	this->problemType_ = problemType;	
@@ -152,7 +154,7 @@ void ErrorEstimation<SC,LO,GO,NO>::makeRepeatedSolution(BlockMultiVectorConstPtr
 @param[in] FETypeV Finite element type as the maximum FEType for the Velocity, pressure is assumed to be P1 always.
 */ 
 template <class SC, class LO, class GO, class NO>
-typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, string FETypeV){
+typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::estimateError(MeshUnstrPtr_Type inputMeshP12, MeshUnstrPtr_Type inputMeshP1, BlockMultiVectorConstPtr_Type valuesSolution, RhsFunc_Type rhsFunc, std::string FETypeV){
 	
 	// Setting the InputMeshes
 	inputMesh_ = inputMeshP12;
@@ -228,7 +230,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 				divUElement = determineDivU(elements->getElement(k));
 			}
 
-			errorElement[k] = sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+divUElement+ h_T[k]*h_T[k]*resElement ); //divUElement ; 
+			errorElement[k] = std::sqrt(1./2*(u_Jump[edgeNumbers[0]]+u_Jump[edgeNumbers[1]]+u_Jump[edgeNumbers[2]])+divUElement+ h_T[k]*h_T[k]*resElement ); //divUElement ; 
 
 			if(maxErrorElLoc < errorElement[k] )
 					maxErrorElLoc = errorElement[k];
@@ -342,7 +344,7 @@ typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO
 			resElement = determineResElement(elements->getElement(k), rhsFunc); // calculating the residual of element k
 			if(problemType_ == "Stokes" || problemType_ == "NavierStokes") // If the Problem is a (Navier)Stokes Problem we calculate divU (maybe start a hierarchy
 				divUElement = determineDivU(elements->getElement(k));
-			errorElement[k] = sqrt(1./2*(u_Jump[surfaceNumbers[0]]+u_Jump[surfaceNumbers[1]]+u_Jump[surfaceNumbers[2]]+u_Jump[surfaceNumbers[3]])+divUElement +h_T[k]*h_T[k]*resElement );
+			errorElement[k] = std::sqrt(1./2*(u_Jump[surfaceNumbers[0]]+u_Jump[surfaceNumbers[1]]+u_Jump[surfaceNumbers[2]]+u_Jump[surfaceNumbers[3]])+divUElement +h_T[k]*h_T[k]*resElement );
 			if(maxErrorElLoc < errorElement[k] )
 					maxErrorElLoc = errorElement[k];			
 		}	
@@ -710,14 +712,14 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 			for(int j=0; j<dofs_ ; j++){
 				for(int i=0; i<u_El[k].size();i++){
 					if(	calculatePressure_ == false)
-						jumpQuad += pow(u_El[k][i][j],2);
+						jumpQuad += std::pow(u_El[k][i][j],2);
 					if(calculatePressure_ == true){
-						jumpQuad += pow( u_El[k][i][j] ,2) ; //u_El[k][i][j] - p_El[k][i][0],2)
+						jumpQuad += std::pow( u_El[k][i][j] ,2) ; //u_El[k][i][j] - p_El[k][i][0],2)
 					}
 				}
 			}
 
-			h_E =  sqrt(pow(p1_2[0],2)+pow(p1_2[1],2));
+			h_E =  std::sqrt(std::pow(p1_2[0],2)+std::pow(p1_2[1],2));
 
 			if(this->FEType2_ =="P2")
 				quadWeightConst = h_E /6.;
@@ -750,9 +752,9 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
 			for(int j=0; j<dofs_ ; j++){
 				for(int i=0; i<u_El[k].size();i++){
 					if(	calculatePressure_ == false)
-						jumpQuad += pow(u_El[k][i][j],2);
+						jumpQuad += std::pow(u_El[k][i][j],2);
 					if(calculatePressure_ == true)
-						jumpQuad += pow(u_El[k][i][j],2); // -p_El[k][i][0]
+						jumpQuad += std::pow(u_El[k][i][j],2); // -p_El[k][i][0]
 				}
 			}
 			if(this->FEType2_ =="P2")
@@ -778,7 +780,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calculateJump(){
  
 */
 template <class SC, class LO, class GO, class NO>
-vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int dofsSol, string FEType){
+vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(std::string phiDerivative, int dofsSol, std::string FEType){
 
 	int surfaceNumbers = dim_+1 ; // Number of (dim-1) - dimensional surfaces of Element (triangle has 3 edges)		
 
@@ -880,7 +882,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 				quadPoints = getQuadValues(dim_, FEType2_ , "Surface", quadWeights, edgeElements->getElement(k));
 				v_E.at(0) = points->at(edgeElements->getElement(k).getNode(0)).at(1) - points->at(edgeElements->getElement(k).getNode(1)).at(1);
 				v_E.at(1) = -(points->at(edgeElements->getElement(k).getNode(0)).at(0) - points->at(edgeElements->getElement(k).getNode(1)).at(0));
-				norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+				norm_v_E = std::sqrt(std::pow(v_E[0],2)+std::pow(v_E[1],2));	
 			}
 			else if(dim_ == 3){
 				quadPoints = getQuadValues(dim_, FEType2_ , "Surface", quadWeights, surfaceTriangleElements->getElement(k));
@@ -898,7 +900,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 				v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
 				v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
 
-				norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));	  
+				norm_v_E = std::sqrt(std::pow(v_E[0],2)+std::pow(v_E[1],2)+std::pow(v_E[2],2));	  
 			}
 	
 			vec_LO_Type elementsIDs(0);
@@ -964,7 +966,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 								for(int s=0; s<dim_; s++){
 									vec_El1[k][l][d] += (u1_Tmp[d][s])*(v_E[s]/norm_v_E);
 								}
-								vec_El1[k][l][d] = sqrt(quadWeights[l])* vec_El1[k][l][d];
+								vec_El1[k][l][d] = std::sqrt(quadWeights[l])* vec_El1[k][l][d];
 							}
 						}
 						else {
@@ -972,7 +974,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 								for(int s=0; s<dim_; s++){
 									vec_El2[k][l][d] += (u1_Tmp[d][s])*(v_E[s]/norm_v_E);
 								}
-								vec_El2[k][l][d] = sqrt(quadWeights[l])* vec_El2[k][l][d];
+								vec_El2[k][l][d] = std::sqrt(quadWeights[l])* vec_El2[k][l][d];
 							}
 						}	
 
@@ -994,7 +996,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 								for(int s=0; s<dim_; s++){
 									vec_El1[k][l][d] += (vec_Tmp[d])*(v_E[s]/norm_v_E);
 								}
-								vec_El1[k][l][d] = sqrt(quadWeights[l])* vec_El1[k][l][d];
+								vec_El1[k][l][d] = std::sqrt(quadWeights[l])* vec_El1[k][l][d];
 							}
 						}
 						else {
@@ -1002,7 +1004,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 								for(int s=0; s<dim_; s++){
 									vec_El2[k][l][d] += (vec_Tmp[d])*(v_E[s]/norm_v_E);
 								}
-								vec_El2[k][l][d] = sqrt(quadWeights[l])* vec_El2[k][l][d];
+								vec_El2[k][l][d] = std::sqrt(quadWeights[l])* vec_El2[k][l][d];
 							}
 						}	
 
@@ -1110,7 +1112,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 	for(int i=0; i< numberSurfaceElements ; i++){
 		for(int j=0; j<quadPSize; j++){
 			for(int k=0; k< dofsSol ; k++){
-				vec_El[i][j][k] = fabs(vec_El1[i][j][k]) - fabs(vec_El2[i][j][k]); 
+				vec_El[i][j][k] = std::fabs(vec_El1[i][j][k]) - std::fabs(vec_El2[i][j][k]); 
 			
 			}
 		}
@@ -1133,7 +1135,7 @@ vec3D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcNPhi(string phiDerivative, int 
 */
 
 template <class SC, class LO, class GO, class NO>
-void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElementMv, double theta, string strategy,  MeshUnstrPtr_Type meshP1){
+void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElementMv, double theta, std::string strategy,  MeshUnstrPtr_Type meshP1){
 
 
 	Teuchos::ArrayRCP<SC> errorEstimation = errorElementMv->getDataNonConst(0);
@@ -1144,8 +1146,8 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
 
 	theta_ = theta;
 	// As we decide which element to tag based on the maximum error in the elements globally, we need to communicated this maxErrorEl
-	auto it = max_element(errorEstimation.begin(), errorEstimation.end()); // c++11
-	double maxErrorEl= errorEstimation[distance(errorEstimation.begin(), it)];
+	auto it = std::max_element(errorEstimation.begin(), errorEstimation.end()); // c++11
+	double maxErrorEl= errorEstimation[std::distance(errorEstimation.begin(), it)];
 
 	// Maximum-strategy for marking the elements as proposed by Verfürth in "A posterio error estimation"
     reduceAll<int, double> (*meshP1->getComm(), REDUCE_MAX, maxErrorEl, outArg (maxErrorEl));
@@ -1166,7 +1168,7 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
 		double sigmaT=0.;
 		vec_bool_Type flagged(elements->numberElements());
 		for(int k=0; k< elements->numberElements(); k++){
-			thetaSumTmp = thetaSumTmp + pow(errorEstimation[k],2);
+			thetaSumTmp = thetaSumTmp + std::pow(errorEstimation[k],2);
 			flagged[k]=false;
 		}
     	reduceAll<int, double> (*meshP1->getComm(), REDUCE_SUM, thetaSumTmp, outArg (thetaSum));
@@ -1181,7 +1183,7 @@ void ErrorEstimation<SC,LO,GO,NO>::markElements(MultiVectorPtr_Type errorElement
 			for(int k=0; k< elements->numberElements(); k++){
 				if(muMax == errorEstimation[k] && flagged[k]==false ){
 					flagged[k]=true;
-					sigmaT = sigmaT + pow(errorEstimation[k],2);
+					sigmaT = sigmaT + std::pow(errorEstimation[k],2);
 					}
 			}
     	reduceAll<int, double> (*meshP1->getComm(), REDUCE_MAX, sigmaT, outArg (sigmaT));
@@ -1291,7 +1293,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineDivU(FiniteElement element){
 		for(int i=0; i< nodeList.size(); i++){
 			divElementTmp += uTmp[i];
 		}
-		divElementTmp = pow(divElementTmp,2);
+		divElementTmp = std::pow(divElementTmp,2);
 		divElementTmp *= QuadW[w];
 
 		divElement += divElementTmp;
@@ -1454,7 +1456,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	for (UN w=0; w< QuadW.size(); w++){
 			rhsFunc(&quadPointsTrans[w][0], &valueFunc[0] ,paras);
 			for(int j=0 ; j< dofs_; j++){
-		   		resElement[j] += QuadW[w] * pow(valueFunc[j] + deltaU[j] - nablaU[j][w] - nablaP[j] ,2); 
+		   		resElement[j] += QuadW[w] * std::pow(valueFunc[j] + deltaU[j] - nablaU[j][w] - nablaP[j] ,2); 
 		}
 	}
 	double resElementValue =0.;
@@ -1481,7 +1483,7 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 
 */
 template <class SC, class LO, class GO, class NO>
-vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::getQuadValues(int dim, string FEType, string Type, vec_dbl_Type &QuadW, FiniteElement surface){
+vec2D_dbl_Type ErrorEstimation<SC,LO,GO,NO>::getQuadValues(int dim, std::string FEType, std::string Type, vec_dbl_Type &QuadW, FiniteElement surface){
 
 	vec2D_dbl_Type QuadPts(QuadW.size(), vec_dbl_Type(dim));
 	vec2D_dbl_ptr_Type points = inputMesh_->pointsRep_;
@@ -1653,7 +1655,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineVolTet(ElementsPtr_Type elem
 		v_K[2] = p1[0]*p2[1] - p1[1]*p2[0];
 
 		
-		volumeTetrahedra[k] = fabs(p3[0] * v_K[0] + p3[1] * v_K[1] +p3[2] * v_K[2]) / 6. ;
+		volumeTetrahedra[k] = std::fabs(p3[0] * v_K[0] + p3[1] * v_K[1] +p3[2] * v_K[2]) / 6. ;
 	}
 
 		
@@ -1689,16 +1691,16 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamTetraeder(ElementsPtr_Type el
 			p[i] = points->at(nodeList[i]);
 		}
 
-		a = sqrt(pow(p[0][0] - p[1][0],2)+ pow(p[0][1] - p[1][1],2) +pow(p[0][2] - p[1][2],2));
-		b = sqrt(pow(p[0][0] - p[2][0],2)+ pow(p[0][1] - p[2][1],2) +pow(p[0][2] - p[2][2],2));
-		c = sqrt(pow(p[0][0] - p[3][0],2)+ pow(p[0][1] - p[3][1],2) +pow(p[0][2] - p[3][2],2));
+		a = std::sqrt(std::pow(p[0][0] - p[1][0],2)+ std::pow(p[0][1] - p[1][1],2) +std::pow(p[0][2] - p[1][2],2));
+		b = std::sqrt(std::pow(p[0][0] - p[2][0],2)+ std::pow(p[0][1] - p[2][1],2) +std::pow(p[0][2] - p[2][2],2));
+		c = std::sqrt(std::pow(p[0][0] - p[3][0],2)+ std::pow(p[0][1] - p[3][1],2) +std::pow(p[0][2] - p[3][2],2));
 
-		A = sqrt(pow(p[3][0] - p[2][0],2)+ pow(p[3][1] - p[2][1],2) +pow(p[3][2] - p[2][2],2));
-		B = sqrt(pow(p[1][0] - p[3][0],2)+ pow(p[1][1] - p[3][1],2) +pow(p[1][2] - p[3][2],2));
-		C = sqrt(pow(p[1][0] - p[2][0],2)+ pow(p[1][1] - p[2][1],2) +pow(p[1][2] - p[2][2],2));		
+		A = std::sqrt(std::pow(p[3][0] - p[2][0],2)+ std::pow(p[3][1] - p[2][1],2) +std::pow(p[3][2] - p[2][2],2));
+		B = std::sqrt(std::pow(p[1][0] - p[3][0],2)+ std::pow(p[1][1] - p[3][1],2) +std::pow(p[1][2] - p[3][2],2));
+		C = std::sqrt(std::pow(p[1][0] - p[2][0],2)+ std::pow(p[1][1] - p[2][1],2) +std::pow(p[1][2] - p[2][2],2));		
 
 
-		diamElements[k] = sqrt(((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C))) / (12*volTet[k]) ;	
+		diamElements[k] = std::sqrt(((a*A+b*B+c*C)*(-a*A+b*B+c*C)*(a*A-b*B+c*C)*(a*A+b*B-c*C))) / (12*volTet[k]) ;	
 
 	}
 
@@ -1762,20 +1764,20 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::calcDiamTriangles3D(SurfaceElementsPt
 		vecTmp[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(1)).at(0);
 		vecTmp[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(1)).at(1);
 		vecTmp[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(1)).at(2);
-		lengthA = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2)+pow(vecTmp[2],2));
+		lengthA = std::sqrt(std::pow(vecTmp[0],2)+std::pow(vecTmp[1],2)+std::pow(vecTmp[2],2));
 	
 		vecTmp1[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(2)).at(0);
 		vecTmp1[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(2)).at(1);
 		vecTmp1[2] = points->at(elementTmp.getNode(0)).at(2) - points->at(elementTmp.getNode(2)).at(2);
-		lengthB = sqrt(pow(vecTmp1[0],2)+pow(vecTmp1[1],2)+pow(vecTmp1[2],2));
+		lengthB = std::sqrt(std::pow(vecTmp1[0],2)+std::pow(vecTmp1[1],2)+std::pow(vecTmp1[2],2));
 
 		vecTmp2[0] = points->at(elementTmp.getNode(1)).at(0) - points->at(elementTmp.getNode(2)).at(0);
 		vecTmp2[1] = points->at(elementTmp.getNode(1)).at(1) - points->at(elementTmp.getNode(2)).at(1);
 		vecTmp2[2] = points->at(elementTmp.getNode(1)).at(2) - points->at(elementTmp.getNode(2)).at(2);
-		lengthC = sqrt(pow(vecTmp2[0],2)+pow(vecTmp2[1],2)+pow(vecTmp2[2],2));
+		lengthC = std::sqrt(std::pow(vecTmp2[0],2)+std::pow(vecTmp2[1],2)+std::pow(vecTmp2[2],2));
 
 		s1 = (lengthA+lengthB+lengthC)/2.;
-		areaTriangles[k] = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));	
+		areaTriangles[k] = std::sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));	
 
 		diamElements[k] = 2*(lengthA *lengthB *lengthC)/(4*areaTriangles[k]);
 
@@ -1813,21 +1815,21 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>::determineAreaTriangles(ElementsPtr_Ty
 		vecTmp[0] = points->at(surfaceTmp.getNode(0)).at(0) - points->at(surfaceTmp.getNode(1)).at(0);
 		vecTmp[1] = points->at(surfaceTmp.getNode(0)).at(1) - points->at(surfaceTmp.getNode(1)).at(1);
 		vecTmp[2] = points->at(surfaceTmp.getNode(0)).at(2) - points->at(surfaceTmp.getNode(1)).at(2);
-		lengthA = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2)+pow(vecTmp[2],2));
+		lengthA = std::sqrt(std::pow(vecTmp[0],2)+std::pow(vecTmp[1],2)+std::pow(vecTmp[2],2));
 	
 
 		vecTmp1[0] = points->at(surfaceTmp.getNode(0)).at(0) - points->at(surfaceTmp.getNode(2)).at(0);
 		vecTmp1[1] = points->at(surfaceTmp.getNode(0)).at(1) - points->at(surfaceTmp.getNode(2)).at(1);
 		vecTmp1[2] = points->at(surfaceTmp.getNode(0)).at(2) - points->at(surfaceTmp.getNode(2)).at(2);
-		lengthB = sqrt(pow(vecTmp1[0],2)+pow(vecTmp1[1],2)+pow(vecTmp1[2],2));
+		lengthB = std::sqrt(std::pow(vecTmp1[0],2)+std::pow(vecTmp1[1],2)+std::pow(vecTmp1[2],2));
 
 		vecTmp2[0] = points->at(surfaceTmp.getNode(1)).at(0) - points->at(surfaceTmp.getNode(2)).at(0);
 		vecTmp2[1] = points->at(surfaceTmp.getNode(1)).at(1) - points->at(surfaceTmp.getNode(2)).at(1);
 		vecTmp2[2] = points->at(surfaceTmp.getNode(1)).at(2) - points->at(surfaceTmp.getNode(2)).at(2);
-		lengthC = sqrt(pow(vecTmp2[0],2)+pow(vecTmp2[1],2)+pow(vecTmp2[2],2));
+		lengthC = std::sqrt(std::pow(vecTmp2[0],2)+std::pow(vecTmp2[1],2)+std::pow(vecTmp2[2],2));
 
 		s1 = (lengthA+lengthB+lengthC)/2.;
-		areaTriangles[k] = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));	
+		areaTriangles[k] = std::sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));	
 	}
 	return areaTriangles;
 }
@@ -1859,19 +1861,19 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>:: calcDiamTriangles(ElementsPtr_Type e
 		elementTmp = elements->getElement(k);
 		vecTmp[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(1)).at(0);
 		vecTmp[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(1)).at(1);
-		lengthA = sqrt(pow(vecTmp[0],2)+pow(vecTmp[1],2));
+		lengthA = std::sqrt(std::pow(vecTmp[0],2)+std::pow(vecTmp[1],2));
 	
 
 		vecTmp1[0] = points->at(elementTmp.getNode(0)).at(0) - points->at(elementTmp.getNode(2)).at(0);
 		vecTmp1[1] = points->at(elementTmp.getNode(0)).at(1) - points->at(elementTmp.getNode(2)).at(1);
-		lengthB = sqrt(pow(vecTmp1[0],2)+pow(vecTmp1[1],2));
+		lengthB = std::sqrt(std::pow(vecTmp1[0],2)+std::pow(vecTmp1[1],2));
 
 		vecTmp2[0] = points->at(elementTmp.getNode(1)).at(0) - points->at(elementTmp.getNode(2)).at(0);
 		vecTmp2[1] = points->at(elementTmp.getNode(1)).at(1) - points->at(elementTmp.getNode(2)).at(1);
-		lengthC = sqrt(pow(vecTmp2[0],2)+pow(vecTmp2[1],2));
+		lengthC = std::sqrt(std::pow(vecTmp2[0],2)+std::pow(vecTmp2[1],2));
 
 		s1 = (lengthA+lengthB+lengthC)/2.;
-		double area = sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));	
+		double area = std::sqrt(s1*(s1-lengthA)*(s1-lengthB)*(s1-lengthC));	
 
 		areaTriangles[k] = area;
 
@@ -1903,7 +1905,7 @@ vec_dbl_Type ErrorEstimation<SC,LO,GO,NO>:: calcDiamTriangles(ElementsPtr_Type e
 
 */
 template <class SC, class LO, class GO, class NO>
-typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  string distribution, string markingStrategy, double theta){
+typename ErrorEstimation<SC,LO,GO,NO>::MultiVectorPtr_Type ErrorEstimation<SC,LO,GO,NO>::determineCoarseningError(MeshUnstrPtr_Type mesh_k, MeshUnstrPtr_Type mesh_k_m, MultiVectorPtr_Type errorElementMv_k,  std::string distribution, std::string markingStrategy, double theta){
 
 	theta_ =theta;
 	markingStrategy_ = markingStrategy;
@@ -2247,7 +2249,7 @@ void ErrorEstimation<SC,LO,GO,NO>::buildTriangleMap(){
 		 }
 
 
-		Teuchos::RCP<std::vector<GO>> surfacesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsSurfaces ) );
+		Teuchos::RCP<std::vector<GO>> surfacesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsSurfaces ) );
 		Teuchos::ArrayView<GO> surfacesGlobMappingArray = Teuchos::arrayViewFromVector( *surfacesGlobMapping);
 
 		this->surfaceTriangleMap_.reset(new Map<LO,GO,NO>(Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingArray, 0, inputMesh_->getComm()) );

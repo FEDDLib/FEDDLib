@@ -11,13 +11,13 @@
 // Trilinos
 #include <Teuchos_Array.hpp>
 
-#include "Epetra_ConfigDefs.h"
+#include <Epetra_ConfigDefs.h>
 #ifdef HAVE_MPI
-#include "mpi.h"
-#include "Epetra_MpiComm.h"
-#include "Epetra_SerialComm.h"
+#include <mpi.h>
+#include <Epetra_MpiComm.h>
+#include <Epetra_SerialComm.h>
 #else
-#include "Epetra_SerialComm.h"
+#include <Epetra_SerialComm.h>
 #endif
 
 #include <Epetra_Map.h>

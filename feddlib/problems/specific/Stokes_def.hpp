@@ -121,7 +121,7 @@ void Stokes<SC,LO,GO,NO>::assemble( std::string type ) const{
         }
     }
 #endif
-    string precType = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
+    std::string precType = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
     if ( precType == "Diagonal" || precType == "Triangular" ) {
         MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         

@@ -126,7 +126,7 @@ namespace FEDD {
          \brief Update the parameter read from the ParameterList.
          @param[in] Parameter as read from the xml file
         */
-        virtual void updateParameter(string type, double value) {};
+        virtual void updateParameter(std::string type, double value) {};
         /*!
          \brief This function is called every time the FEDDLib proceeds from one to the next time step. The size of the time step will always be provided as input.
          @param[in] dt Timestepping length

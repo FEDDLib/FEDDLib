@@ -49,7 +49,7 @@ void inflowPowerLaw2D(double *x, double *res, double t, const double *parameters
     double dp = parameters[3]; // dp/dx constant pressure gradient along channel
 
     // This corresponds to the analytical solution of a Poiseuille like Plug-flow of a Power-Law fluid
-    res[0] = (n / (n + 1.0)) * pow(dp / (K), 1.0 / n) * (pow(H / (2.0), (n + 1.0) / n) - pow(abs((H / 2.0) - x[1]), (n + 1.0) / n));
+    res[0] = (n / (n + 1.0)) * std::pow(dp / (K), 1.0 / n) * (std::pow(H / (2.0), (n + 1.0) / n) - std::pow(std::abs((H / 2.0) - x[1]), (n + 1.0) / n));
     res[1] = 0.;
 
     return;
@@ -87,10 +87,10 @@ int main(int argc, char *argv[]) {
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
 
-    string xmlPrecFile;
-    string xmlProblemFile;
+    std::string xmlPrecFile;
+    std::string xmlProblemFile;
 
-    string xmlSolverFile = "parametersSolver.xml";
+    std::string xmlSolverFile = "parametersSolver.xml";
     xmlPrecFile = "parametersPrec_GNF_2D.xml";
     xmlProblemFile = "parametersProblem_GNF_2D.xml";
     
@@ -115,11 +115,11 @@ int main(int argc, char *argv[]) {
         int dim = parameterListProblem->sublist("Parameter").get("Dimension", 2);
         std::string discVelocity = parameterListProblem->sublist("Parameter").get("Discretization Velocity", "P2");
         std::string discPressure = parameterListProblem->sublist("Parameter").get("Discretization Pressure", "P1");
-        string meshType = parameterListProblem->sublist("Parameter").get("Mesh Type", "unstructured");
-        string meshName = parameterListProblem->sublist("Mesh Partitioner").get("Mesh 1 Name", "Meshes/rectangle_200.mesh");
-        string meshDelimiter = parameterListProblem->sublist("Parameter").get("Mesh Delimiter", " ");
-        string linearization = parameterListProblem->sublist("General").get("Linearization", "Newton");
-        string precMethod = parameterListProblem->sublist("General").get("Preconditioner Method", "Monolithic");
+        std::string meshType = parameterListProblem->sublist("Parameter").get("Mesh Type", "unstructured");
+        std::string meshName = parameterListProblem->sublist("Mesh Partitioner").get("Mesh 1 Name", "Meshes/rectangle_200.mesh");
+        std::string meshDelimiter = parameterListProblem->sublist("Parameter").get("Mesh Delimiter", " ");
+        std::string linearization = parameterListProblem->sublist("General").get("Linearization", "Newton");
+        std::string precMethod = parameterListProblem->sublist("General").get("Preconditioner Method", "Monolithic");
         std::string FEType = "P2P1";
 
 
@@ -227,11 +227,11 @@ int main(int argc, char *argv[]) {
 
         // Output of error
         if (comm->getRank() == 0) {
-            cout << " --------------------------------------------------" << endl;
-            cout << "  Error Report " << endl;
-            cout << "   || velocity_current - velocity_stored||_inf = " << normError_velocity << endl;
-            cout << "   || pressure_current - pressure_stored||_inf = " << normError_pressure << endl;
-            cout << " --------------------------------------------------" << endl;
+            std::cout << " --------------------------------------------------" << std::endl;
+            std::cout << "  Error Report " << std::endl;
+            std::cout << "   || velocity_current - velocity_stored||_inf = " << normError_velocity << std::endl;
+            std::cout << "   || pressure_current - pressure_stored||_inf = " << normError_pressure << std::endl;
+            std::cout << " --------------------------------------------------" << std::endl;
         }
 
         // Throwing exception, if error is too great.

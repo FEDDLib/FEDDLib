@@ -110,8 +110,8 @@ class AssembleFENavierStokes : public AssembleFE<SC,LO,GO,NO> {
     int dofsVelocity_;
     int dofsPressure_;
 
-	string FETypeVelocity_;
-	string FETypePressure_;
+	std::string FETypeVelocity_;
+	std::string FETypePressure_;
 
 	int numNodesVelocity_;
 	int numNodesPressure_;
@@ -132,7 +132,7 @@ class AssembleFENavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	double viscosity_ ;
    	double density_ ;
 
-	string linearization_;
+	std::string linearization_;
 
    private:
 

@@ -12,7 +12,6 @@
  @copyright CH
  */
 
-using namespace std;
 using Teuchos::reduceAll;
 using Teuchos::REDUCE_SUM;
 using Teuchos::outArg;
@@ -139,10 +138,10 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     ElementsPtr_Type elements = meshP1->getElementsC();
     
     if (verbose)
-        cout << "-- --  Start building P2 mesh -- -- " << endl;
+        std::cout << "-- --  Start building P2 mesh -- -- " << std::endl;
     
     if (verbose)
-        cout << "-- Building edge mid points with edges and setting P2 elements ... " << flush;
+        std::cout << "-- Building edge mid points with edges and setting P2 elements ... " << std::flush;
 
     vec2D_dbl_Type newPoints( edgeElements->numberElements(), vec_dbl_Type( this->dim_ ) );
     vec_int_Type newFlags( edgeElements->numberElements(), -1 );
@@ -209,18 +208,18 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
     }
     
     if (verbose)
-        cout << "done --" << endl;
+        std::cout << "done --" << std::endl;
     
     if (verbose)
-        cout << "-- Setting global point IDs and building repeated P2 map and repeated points ... " << flush;
+        std::cout << "-- Setting global point IDs and building repeated P2 map and repeated points ... " << std::flush;
     
 	// Now the corresponding maps for nodes and flags are updated.
 	// Generally the P2 points are added after the P1 points in the node lists. Thus the new IDs just need to be added at the 
 	// end of the maps
 
-    this->pointsRep_.reset(new std::vector<std::vector<double> >(meshP1->pointsRep_->size(),vector<double>(this->dim_,-1.)));
+    this->pointsRep_.reset(new std::vector<std::vector<double> >(meshP1->pointsRep_->size(),std::vector<double>(this->dim_,-1.)));
     *this->pointsRep_ = *meshP1->pointsRep_;
-    this->bcFlagRep_.reset(new vector<int>(meshP1->bcFlagRep_->size()));
+    this->bcFlagRep_.reset(new std::vector<int>(meshP1->bcFlagRep_->size()));
     *this->bcFlagRep_ = *meshP1->bcFlagRep_;
 
     this->pointsRep_->insert( this->pointsRep_->end(), newPoints.begin(), newPoints.end() );
@@ -236,20 +235,20 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
         vecGlobalIDs.push_back( edgeElements->getGlobalID( (LO) i ) + P1Offset );
         edgeElements->setMidpoint( i, edgeElements->getGlobalID( (LO) i ) + P1Offset);
     }
-    Teuchos::RCP<std::vector<GO> > pointsRepGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDs ) );
+    Teuchos::RCP<std::vector<GO> > pointsRepGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDs ) );
     Teuchos::ArrayView<GO> pointsRepGlobMappingArray = Teuchos::arrayViewFromVector( *pointsRepGlobMapping );
     
     this->mapRepeated_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
     
     if (verbose)
-        cout << "done --" << endl;
+        std::cout << "done --" << std::endl;
     
     if (verbose)
-        cout << "-- Building unique P2 map, setting unique points and setting P2 elements ... " << flush;
+        std::cout << "-- Building unique P2 map, setting unique points and setting P2 elements ... " << std::flush;
 
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( this->rankRange_ );
     
-    this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), vector<double>(this->dim_,-1. ) ) );
+    this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), std::vector<double>(this->dim_,-1. ) ) );
     this->bcFlagUni_.reset( new std::vector<int> ( this->mapUnique_->getNodeNumElements(), 0 ) );
     for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
         GO gid = this->mapUnique_->getGlobalElement( i );
@@ -268,15 +267,15 @@ void MeshUnstructured<SC,LO,GO,NO>::buildP2ofP1MeshEdge( MeshUnstrPtr_Type meshP
 
     
     if (verbose)
-        cout << "done --" << endl;
+        std::cout << "done --" << std::endl;
     
     if (verbose)
-        cout << "-- Building P2 surface elements ... " << flush;
+        std::cout << "-- Building P2 surface elements ... " << std::flush;
     
     setP2SurfaceElements( meshP1 );
     
     if (verbose)
-        cout << "done --" << endl;
+        std::cout << "done --" << std::endl;
     
 }
 
@@ -948,7 +947,7 @@ void MeshUnstructured<SC,LO,GO,NO>::partitionInterface(){
 
 }
 template <class SC, class LO, class GO, class NO>
-void MeshUnstructured<SC,LO,GO,NO>::setMeshFileName(string meshFileName, string delimiter){
+void MeshUnstructured<SC,LO,GO,NO>::setMeshFileName(std::string meshFileName, std::string delimiter){
 
     meshFileName_ = meshFileName;
     delimiter_ = delimiter;
@@ -1293,7 +1292,7 @@ void MeshUnstructured<SC,LO,GO,NO>::buildEdgeMap(){
 		 }
 
 
-		Teuchos::RCP<std::vector<GO>> edgesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsEdges ) );
+		Teuchos::RCP<std::vector<GO>> edgesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsEdges ) );
 		Teuchos::ArrayView<GO> edgesGlobMappingArray = Teuchos::arrayViewFromVector( *edgesGlobMapping);
 
 		this->edgeMap_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
@@ -1315,27 +1314,27 @@ void MeshUnstructured<SC,LO,GO,NO>::readMeshSize(){
     bool verbose ( this->comm_->getRank() == 0 );
 
     if (verbose) {
-        cout << "\n";
-        cout << "  Read data of mesh " << meshFileName_<< ":\n";
+        std::cout << "\n";
+        std::cout << "  Read data of mesh " << meshFileName_<< ":\n";
     }
 
     meshReadSize ( meshFileName_, numNode, dim, numElement, orderElement, numSurface, orderSurface, numEdges, orderEdges );
     
     if (verbose) {
-        cout << "\n";
-        cout << "\n";
-        cout << "  Number of nodes = " << numNode << "\n";
-        cout << "  Spatial dimension = " << dim << "\n";
-        cout << "  Number of elements = " << numElement << "\n";
-        cout << "  Element order = " << orderElement << "\n";
-        cout << "  Number of surface elements = " << numSurface << "\n";
-        cout << "  Surface element order = " << orderSurface << "\n";
-        cout << "  Number of edge elements (for 3D) = " << numEdges << "\n";
-        cout << "  Edges element order (for 3D) = " << orderEdges << "\n";
+        std::cout << "\n";
+        std::cout << "\n";
+        std::cout << "  Number of nodes = " << numNode << "\n";
+        std::cout << "  Spatial dimension = " << dim << "\n";
+        std::cout << "  Number of elements = " << numElement << "\n";
+        std::cout << "  Element order = " << orderElement << "\n";
+        std::cout << "  Number of surface elements = " << numSurface << "\n";
+        std::cout << "  Surface element order = " << orderSurface << "\n";
+        std::cout << "  Number of edge elements (for 3D) = " << numEdges << "\n";
+        std::cout << "  Edges element order (for 3D) = " << orderEdges << "\n";
         
-        cout << "\n";
-        cout << "\n";
-        cout << " Starting to read the data. \n";
+        std::cout << "\n";
+        std::cout << "\n";
+        std::cout << " Starting to read the data. \n";
     }
 
     
@@ -1350,7 +1349,7 @@ void MeshUnstructured<SC,LO,GO,NO>::readMeshSize(){
 }
 
 template <class SC, class LO, class GO, class NO>
-void MeshUnstructured<SC,LO,GO,NO>::readMeshEntity(string entityType){
+void MeshUnstructured<SC,LO,GO,NO>::readMeshEntity(std::string entityType){
     
     if (entityType == "element")
         this->readElements( );
@@ -1368,7 +1367,7 @@ void MeshUnstructured<SC,LO,GO,NO>::readMeshEntity(string entityType){
 //void MeshUnstructured<SC,LO,GO,NO>::readSurfaces(){
 //    bool verbose ( this->comm_->getRank() == 0 );
 //    if (verbose)
-//        cout << "### Starting to read surface data ... " << flush;
+//        std::cout << "### Starting to read surface data ... " << std::flush;
 //
 //    vec_int_Type    surfaceFlags( numSurfaces_, 0 );
 //    vec_int_Type    surfacesCont( numSurfaces_* surfaceElementOrder_, 0 );
@@ -1377,8 +1376,8 @@ void MeshUnstructured<SC,LO,GO,NO>::readMeshEntity(string entityType){
 //    meshReadData ( meshFileName_, "surface", delimiter_, this->getDimension(), numSurfaces_, surfaceElementOrder_, surfacesCont, surfaceFlags );
 //
 //    if (verbose){
-//        cout << "done." << endl;
-//        cout << "### Setting surface data ... " << flush;
+//        std::cout << "done." << std::endl;
+//        std::cout << "### Setting surface data ... " << std::flush;
 //    }
 //    ElementsPtr_Type surfaceElementsMesh = this->getSurfaceElements();
 //
@@ -1394,14 +1393,14 @@ void MeshUnstructured<SC,LO,GO,NO>::readMeshEntity(string entityType){
 //
 //
 //    if (verbose)
-//        cout << "done." << endl;
+//        std::cout << "done." << std::endl;
 //}
 
 //template <class SC, class LO, class GO, class NO>
 //void MeshUnstructured<SC,LO,GO,NO>::readLines(){
 //    bool verbose ( this->comm_->getRank() == 0 );
 //    if (verbose)
-//        cout << "### Starting to read line data ... " << flush;
+//        std::cout << "### Starting to read line data ... " << std::flush;
 //
 //    vec_int_Type    edgeFlags( numEdges_, 0 );
 //    vec_int_Type    edgesCont( numEdges_* edgesElementOrder_, 0 );
@@ -1411,8 +1410,8 @@ void MeshUnstructured<SC,LO,GO,NO>::readMeshEntity(string entityType){
 //
 //
 //    if (verbose){
-//        cout << "done." << endl;
-//        cout << "### Setting line data ... " << flush;
+//        std::cout << "done." << std::endl;
+//        std::cout << "### Setting line data ... " << std::flush;
 //    }
 //
 //    ElementsPtr_Type edgeElementsMesh = this->getSurfaceEdgeElements();
@@ -1429,22 +1428,22 @@ void MeshUnstructured<SC,LO,GO,NO>::readMeshEntity(string entityType){
 //    }
 //
 //    if (verbose)
-//        cout << "done." << endl;
+//        std::cout << "done." << std::endl;
 //}
 
 template <class SC, class LO, class GO, class NO>
 void MeshUnstructured<SC,LO,GO,NO>::readNodes(){
     bool verbose ( this->comm_->getRank() == 0 );
     if (verbose)
-        cout << "### Starting to read node data ... " << flush;
+        std::cout << "### Starting to read node data ... " << std::flush;
 
     vec_dbl_Type nodes(numNodes_ * this->getDimension(), 0.);
     vec_int_Type nodeFlags(numNodes_,0);
     meshReadData ( meshFileName_, "node", delimiter_, this->getDimension(), numNodes_, 3/*order of nodes is always 3*/, nodes, nodeFlags );
     
     if (verbose){
-        cout << "done." << endl;
-        cout << "### Setting node data ... " << flush;
+        std::cout << "done." << std::endl;
+        std::cout << "### Setting node data ... " << std::flush;
     }
     //Here, all points are saved on every proc
     this->pointsRep_.reset(new std::vector<std::vector<double> >(numNodes_,std::vector<double>(this->getDimension(),-1.)));
@@ -1460,14 +1459,14 @@ void MeshUnstructured<SC,LO,GO,NO>::readNodes(){
     }
 
     if (verbose)
-        cout << "done." << endl;
+        std::cout << "done." << std::endl;
 }
 
 template <class SC, class LO, class GO, class NO>
 void MeshUnstructured<SC,LO,GO,NO>::readElements(){
     bool verbose ( this->comm_->getRank() == 0 );
     if (verbose)
-        cout << "### Starting to read element data ... " << flush;
+        std::cout << "### Starting to read element data ... " << std::flush;
 
     vec_int_Type    elementFlags( this->numElementsGlob_, 0 );
     vec_int_Type    elementsCont( this->numElementsGlob_* this->elementOrder_, 0 );
@@ -1476,8 +1475,8 @@ void MeshUnstructured<SC,LO,GO,NO>::readElements(){
     meshReadData ( meshFileName_, "element", delimiter_, this->getDimension(), this->numElementsGlob_, this->elementOrder_, elementsCont, elementFlags );
 
     if (verbose){
-        cout << "done." << endl;
-        cout << "### Setting element data ... " << flush;
+        std::cout << "done." << std::endl;
+        std::cout << "### Setting element data ... " << std::flush;
     }
     ElementsPtr_Type elementsMesh = this->getElementsC();
     elementsMesh->setFiniteElementType("P1");
@@ -1496,7 +1495,7 @@ void MeshUnstructured<SC,LO,GO,NO>::readElements(){
     }
     
     if (verbose)
-        cout << "done." << endl;
+        std::cout << "done." << std::endl;
 }
 
 
@@ -1504,7 +1503,7 @@ template <class SC, class LO, class GO, class NO>
 void MeshUnstructured<SC,LO,GO,NO>::readSurfaces(){
     bool verbose ( this->comm_->getRank() == 0 );
     if (verbose)
-        cout << "### Starting to read surface data ... " << flush;
+        std::cout << "### Starting to read surface data ... " << std::flush;
     
     vec_int_Type    surfaceFlags( numSurfaces_, 0 );
     vec_int_Type    surfacesCont( numSurfaces_* this->surfaceElementOrder_, 0 );
@@ -1513,8 +1512,8 @@ void MeshUnstructured<SC,LO,GO,NO>::readSurfaces(){
     meshReadData ( meshFileName_, "surface", delimiter_, this->getDimension(), numSurfaces_, this->surfaceElementOrder_, surfacesCont, surfaceFlags );
         
     if (verbose){
-        cout << "done." << endl;
-        cout << "### Setting surface data ... " << flush;
+        std::cout << "done." << std::endl;
+        std::cout << "### Setting surface data ... " << std::flush;
     }
     ElementsPtr_Type surfaceElementsMesh = this->getSurfaceElements();
     
@@ -1523,7 +1522,7 @@ void MeshUnstructured<SC,LO,GO,NO>::readSurfaces(){
         for (int j=0; j<this->surfaceElementOrder_; j++)
             tmp.at(j) = surfacesCont.at( i * this->surfaceElementOrder_ + j ) - 1;// -1 to have start index 0
         
-        //cout << " Reading surfaces " << tmp[0] << " " << tmp[1] << " " << tmp[2] << endl;
+        //cout << " Reading surfaces " << tmp[0] << " " << tmp[1] << " " << tmp[2] << std::endl;
         //sort( tmp.begin(), tmp.end() ); // we sort here in order to identify the corresponding element faster! !!! We refrain from that so the numbering of surface element nodes remains the consisten with respct to normals.
         FiniteElement feSurface( tmp , surfaceFlags[i] );
         surfaceElementsMesh->addElement( feSurface );
@@ -1531,7 +1530,7 @@ void MeshUnstructured<SC,LO,GO,NO>::readSurfaces(){
     
     
     if (verbose)
-        cout << "done." << endl;
+        std::cout << "done." << std::endl;
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -1539,7 +1538,7 @@ void MeshUnstructured<SC,LO,GO,NO>::readLines(){
     bool verbose ( this->comm_->getRank() == 0 );
 
     if (verbose)
-        cout << "### Starting to read line data ... " << flush;
+        std::cout << "### Starting to read line data ... " << std::flush;
 
     vec_int_Type    edgeFlags( numEdges_, 0 );
     vec_int_Type    edgesCont( numEdges_* this->edgesElementOrder_, 0 );
@@ -1549,8 +1548,8 @@ void MeshUnstructured<SC,LO,GO,NO>::readLines(){
 
     
     if (verbose){
-        cout << "done." << endl;
-        cout << "### Setting line data ... " << flush;
+        std::cout << "done." << std::endl;
+        std::cout << "### Setting line data ... " << std::flush;
     }
     
     ElementsPtr_Type edgeElementsMesh = this->getSurfaceEdgeElements();
@@ -1567,21 +1566,21 @@ void MeshUnstructured<SC,LO,GO,NO>::readLines(){
     }
     
     if (verbose)
-        cout << "done." << endl;
+        std::cout << "done." << std::endl;
 }
 template <class SC, class LO, class GO, class NO>
-void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapConstPtr_Type mapRep, bool exportEdges, bool exportSurface, string meshName){
+void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapConstPtr_Type mapRep, bool exportEdges, bool exportSurface, std::string meshName){
 
     
-    ofstream myFile;
+    std::ofstream myFile;
     if(this->comm_->getRank() ==0)
         myFile.open (meshName);
 
     bool verbose = (this->comm_->getRank() == 0);
     if(verbose){
-        cout << " --------------------------------------" << endl;
-        cout << " ------------ Exporting Mesh ----------" << endl;
-        cout << " --------------------------------------" << endl;
+        std::cout << " --------------------------------------" << std::endl;
+        std::cout << " ------------ Exporting Mesh ----------" << std::endl;
+        std::cout << " --------------------------------------" << std::endl;
 
     }
     // ################ Vertices #################
@@ -1636,13 +1635,13 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
         if(verbose)
             std::cout << " ----- Write Nodes .....";
 
-        myFile << "MeshVersionFormatted 2" << endl;
-        myFile << "Dimension" << " " << this->dim_ << endl;
-        myFile << endl;
+        myFile << "MeshVersionFormatted 2" << std::endl;
+        myFile << "Dimension" << " " << this->dim_ << std::endl;
+        myFile << std::endl;
         myFile << "Vertices";
-        myFile << endl;
+        myFile << std::endl;
         myFile << numberNodes;
-        myFile << endl;
+        myFile << std::endl;
         for(int i = 0; i < mapUnique->getGlobalNumElements(); i++)
         {
 
@@ -1658,7 +1657,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                     myFile << " ";
                 }
                 myFile << this->bcFlagUni_->at(id);
-                myFile << endl;
+                myFile << std::endl;
             }
             else{
                 LO id = mapNodesImport->getLocalElement(i);
@@ -1672,13 +1671,13 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                     myFile << " ";
                 }
                 myFile << missingNodes[id][this->dim_]; 
-                myFile << endl;
+                myFile << std::endl;
             }
 
 
 
         }
-        myFile << endl;
+        myFile << std::endl;
         if(verbose)
             std::cout << ".... done ----- " << '\n';
 
@@ -1751,7 +1750,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                 vecGlobalIDsElements.push_back( i +  procOffsetElements);
             }
 
-            Teuchos::RCP<std::vector<GO> > edgesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsElements ) );
+            Teuchos::RCP<std::vector<GO> > edgesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsElements ) );
             Teuchos::ArrayView<GO> edgesGlobMappingArray = Teuchos::arrayViewFromVector( *edgesGlobMapping);
             MapPtr_Type mapEdgesExport =
                 Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->getComm()) );
@@ -1762,7 +1761,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                 for(int i=numSubEl; i<maxIndex+1 ; i++)
                     vecGlobalIDsEdgesImport.push_back(i);
             }
-            Teuchos::RCP<std::vector<GO> > edgesGlobMappingImport = Teuchos::rcp( new vector<GO>( vecGlobalIDsEdgesImport ) );
+            Teuchos::RCP<std::vector<GO> > edgesGlobMappingImport = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsEdgesImport ) );
             Teuchos::ArrayView<GO> edgesGlobMappingImportArray = Teuchos::arrayViewFromVector( *edgesGlobMappingImport);
             MapPtr_Type mapEdgesImport =
                 Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingImportArray, 0, this->getComm()) );
@@ -1796,9 +1795,9 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
             if(this->comm_->getRank() == 0){
 
                 myFile << "Edges";
-                myFile << endl;
+                myFile << std::endl;
                 myFile << numberEdges;
-                myFile << endl;
+                myFile << std::endl;
                 for(int i = 0; i < mapEdgesExport->getGlobalNumElements(); i++)
                 {
                     if(mapEdgesExport->getLocalElement(i) != -1){
@@ -1811,7 +1810,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                         }
                         
                         myFile << edgesSubelements[i][dofsEdges]; // Flag
-                        myFile << endl;
+                        myFile << std::endl;
                         
                         
                     }
@@ -1823,12 +1822,12 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                             myFile << " ";
                         }
                         myFile << missingEdges[id][dofsEdges]; // Flag
-                        myFile << endl;
+                        myFile << std::endl;
                         
                     }
 
                 }
-                myFile << endl;
+                myFile << std::endl;
             }
 
             if(verbose)
@@ -1951,9 +1950,9 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
 
 
                 myFile << "Edges";
-                myFile << endl;
+                myFile << std::endl;
                 myFile << edges.size();
-                myFile << endl;
+                myFile << std::endl;
 
                 for(int i = 0; i < edges.size(); i++)
                 {
@@ -1967,12 +1966,12 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                         myFile << edges[i][2]; //mapRep->getGlobalElement(this->edgeElements_->getMidpoint(id))+1 << " ";
 
                     myFile << edges[i][edges[i].size()-1]; // this->edgeElements_->getElement(id).getFlag(); last entry
-                    myFile << endl;                    
+                    myFile << std::endl;                    
 
                 }
 
             }
-            myFile << endl;
+            myFile << std::endl;
             if(verbose)
                 std::cout << ".... done ----- " << '\n';    
         }
@@ -2046,7 +2045,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                 vecGlobalIDsElements.push_back( i +  procOffsetElements);
             }
 
-            Teuchos::RCP<std::vector<GO> > surfacesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsElements ) );
+            Teuchos::RCP<std::vector<GO> > surfacesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsElements ) );
             Teuchos::ArrayView<GO> surfacesGlobMappingArray = Teuchos::arrayViewFromVector( *surfacesGlobMapping);
             MapPtr_Type mapSurfacesExport =
                 Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingArray, 0, this->getComm()) );
@@ -2058,7 +2057,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                 for(int i=numSubEl; i<maxIndex+1 ; i++)
                     vecGlobalIDsSurfacesImport.push_back(i);
             }
-            Teuchos::RCP<std::vector<GO> > surfacesGlobMappingImport = Teuchos::rcp( new vector<GO>( vecGlobalIDsSurfacesImport ) );
+            Teuchos::RCP<std::vector<GO> > surfacesGlobMappingImport = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsSurfacesImport ) );
             Teuchos::ArrayView<GO> surfacesGlobMappingImportArray = Teuchos::arrayViewFromVector( *surfacesGlobMappingImport);
             MapPtr_Type mapSurfacesImport =
                 Teuchos::rcp( new Map_Type( Teuchos::OrdinalTraits<GO>::invalid(), surfacesGlobMappingImportArray, 0, this->getComm()) );
@@ -2091,9 +2090,9 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
             if(this->comm_->getRank() == 0){
 
                 myFile << "Triangles";
-                myFile << endl;
+                myFile << std::endl;
                 myFile << numberSurfaces;
-                myFile << endl;
+                myFile << std::endl;
                 for(int i = 0; i < mapSurfacesExport->getGlobalNumElements(); i++)
                 {
                     if(mapSurfacesExport->getLocalElement(i) != -1){
@@ -2106,7 +2105,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                         
 
                         myFile << surfacesSubelements[i][dofsSurfaces];
-                        myFile << endl;
+                        myFile << std::endl;
                         
                         
                     }
@@ -2118,12 +2117,12 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                             myFile << " ";
                         }
                         myFile << missingSurfaces[id][dofsSurfaces]; 
-                        myFile << endl;
+                        myFile << std::endl;
                         
                     }
 
                 }
-                myFile << endl;
+                myFile << std::endl;
             }
 
          
@@ -2186,12 +2185,12 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
         else if(this->dim_ ==3)
             myFile << "Tetrahedra";
 
-        myFile << endl;
+        myFile << std::endl;
 
         int numberElements = this->elementMap_->getGlobalNumElements();
 
         myFile << numberElements;
-        myFile << endl;
+        myFile << std::endl;
 
         for(int i = 0; i < this->elementMap_->getGlobalNumElements(); i++)
         {
@@ -2204,7 +2203,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                     myFile << " ";
                 }
                 myFile << this->getElementsC()->getElement(id).getFlag(); 
-                myFile << endl;
+                myFile << std::endl;
                 
             }
             else{
@@ -2215,7 +2214,7 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
                     myFile << " ";
                 }
                 myFile << missingElements[id][dofsElement]; 
-                myFile << endl;
+                myFile << std::endl;
             }
 
         }
@@ -2226,13 +2225,13 @@ void MeshUnstructured<SC,LO,GO,NO>::exportMesh(MapConstPtr_Type mapUnique, MapCo
     if(this->comm_->getRank() ==0)
        myFile.close();
     if(verbose){
-        cout << " --------------------------------------" << endl;
-        cout << " ------- Finished exporting Mesh ------" << endl;
-        cout << " ------- File Name: " << meshName << " -------" << endl;
+        std::cout << " --------------------------------------" << std::endl;
+        std::cout << " ------- Finished exporting Mesh ------" << std::endl;
+        std::cout << " ------- File Name: " << meshName << " -------" << std::endl;
         if(this->dim_ == 3)
-             cout << " - Info: In 3D all edges are exported -" << endl;
+             std::cout << " - Info: In 3D all edges are exported -" << std::endl;
 
-        cout << " --------------------------------------" << endl;
+        std::cout << " --------------------------------------" << std::endl;
 
     }
     this->comm_->barrier();

@@ -7,13 +7,13 @@
 // Trilinos
 #include <Teuchos_Array.hpp>
 
-#include "Epetra_ConfigDefs.h"
+#include <Epetra_ConfigDefs.h>
 #ifdef HAVE_MPI
-#include "mpi.h"
-#include "Epetra_MpiComm.h"
-#include "Epetra_SerialComm.h"
+#include <mpi.h>
+#include <Epetra_MpiComm.h>
+#include <Epetra_SerialComm.h>
 #else
-#include "Epetra_SerialComm.h"
+#include <Epetra_SerialComm.h>
 #endif
 
 #include <Epetra_Map.h>
@@ -68,7 +68,7 @@ public:
     /// @brief Exporting MultiVector writeVector as HDF5 File with the variable name varName
     /// @param varName Variable name of MultiVector
     /// @param writeVector Vector to be exported, corresponding to writeMap_ 
-    void writeVariablesHDF5(string varName,MultiVectorConstPtr_Type writeVector);
+    void writeVariablesHDF5(std::string varName,MultiVectorConstPtr_Type writeVector);
 
      /// @brief Closing Exporter
     void closeExporter();

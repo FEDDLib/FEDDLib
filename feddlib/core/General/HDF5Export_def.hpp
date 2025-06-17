@@ -4,7 +4,6 @@
 #include "HDF5Export_decl.hpp"
 
 
-using namespace std;
 namespace FEDD {
  
 template<class SC,class LO,class GO,class NO>
@@ -38,11 +37,11 @@ commEpetra_()
 }
 
 template<class SC,class LO,class GO,class NO>
-void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(string varName,MultiVectorConstPtr_Type writeVector){
+void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(std::string varName,MultiVectorConstPtr_Type writeVector){
 
     EpetraMVPtr_Type u_export(new Epetra_MultiVector(*(writeMap_),1)); // Epetra export vector
 
-    TEUCHOS_TEST_FOR_EXCEPTION( abs(writeMap_->NumMyElements() - writeVector->getLocalLength()) > 1e-12, std::logic_error, " The local length of map does not match the local mv length. Map and MultiVector are not compatible");
+    TEUCHOS_TEST_FOR_EXCEPTION( std::abs(writeMap_->NumMyElements() - writeVector->getLocalLength()) > 1e-12, std::logic_error, " The local length of map does not match the local mv length. Map and MultiVector are not compatible");
 
     // We need to write the contents of the writeVector into the Epetra export vector: Convert Xpetra -> Epetra
     Teuchos::ArrayRCP<const SC> tmpData = writeVector->getData(0);
@@ -53,7 +52,7 @@ void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(string varName,MultiVectorConst
     hdf5exporter_->Write(varName,*u_export); // Writing u_export as variable 'varName' in file
     
     if(writeVector->getMap()->getComm()->getRank() == 0 )
-        cout << " HDF5_Export:: Exporting to file " << outputFilename_ << " with variable name " << varName << endl;
+        std::cout << " HDF5_Export:: Exporting to file " << outputFilename_ << " with variable name " << varName << std::endl;
 
     hdf5exporter_->Flush();
     

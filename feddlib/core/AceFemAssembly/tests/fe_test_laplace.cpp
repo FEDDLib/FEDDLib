@@ -148,11 +148,11 @@ int main(int argc, char *argv[]) {
 			Sum->getGlobalRowView(row, indices,values);
 			
 			for(int j=0; j< values.size() ; j++){
-				res += fabs(values[j]);			
+				res += std::fabs(values[j]);			
 			}	
 		}	
 	}
-	res = fabs(res);
+	res = std::fabs(res);
 	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 
 	if(comm->getRank() == 0)

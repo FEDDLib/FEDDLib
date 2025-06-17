@@ -10,7 +10,7 @@
 #include <Xpetra_ExportFactory.hpp>
 #include <Xpetra_ImportFactory.hpp>
 #include <Teuchos_VerboseObject.hpp>
-#include "Xpetra_ThyraUtils.hpp"
+#include <Xpetra_ThyraUtils.hpp>
 #include <Thyra_VectorSpaceBase_decl.hpp>
 
 /*!
@@ -22,7 +22,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
 template < class LO = default_lo, class GO = default_go, class NO = default_no>
 class Map_Xpetra {
