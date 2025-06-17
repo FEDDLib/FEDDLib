@@ -87,14 +87,14 @@ int main(int argc, char *argv[]) {
     std::string FEType = "P2";
     myCLP.setOption("FEType", &FEType, "Discretization");
 
-    string xmlPrecFile;
+    std::string xmlPrecFile;
     if(dim==2)
         xmlPrecFile = "parametersPrecNonLinElasticity.xml"; // We can use the stokes preconditioner list for now. Maybe we can use a more general name
     else if(dim==3)
         xmlPrecFile = "parametersPrecNonLinElasticity.xml";
     
     myCLP.setOption("precfile", &xmlPrecFile, ".xml file with Inputparameters.");
-    string xmlSolverFile = "parametersSolver.xml";
+    std::string xmlSolverFile = "parametersSolver.xml";
     myCLP.setOption("solverfile", &xmlSolverFile, ".xml file with Inputparameters.");
 
     myCLP.recogniseAllOptions(true);
@@ -210,10 +210,10 @@ int main(int argc, char *argv[]) {
 
         // Output of error
         if (comm->getRank() == 0) {
-            cout << " --------------------------------------------------" << endl;
-            cout << "  Error Report " << endl;
-            cout << "   || solution_current - solution_stored||_inf = " << normError << endl;
-            cout << " --------------------------------------------------" << endl;
+            std::cout << " --------------------------------------------------" << std::endl;
+            std::cout << "  Error Report " << std::endl;
+            std::cout << "   || solution_current - solution_stored||_inf = " << normError << std::endl;
+            std::cout << " --------------------------------------------------" << std::endl;
         }
         // Throwing exception, if error is too great.
         TEUCHOS_TEST_FOR_EXCEPTION(normError > 1.e-11, std::logic_error,

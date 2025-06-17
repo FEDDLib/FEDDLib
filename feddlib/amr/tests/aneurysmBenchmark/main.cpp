@@ -79,8 +79,8 @@ void zeroDirichlet3D(double* x, double* res, double t, const double* parameters)
 void inflowParabolic3D(double* x, double* res, double t, const double* parameters){
 
     double H = parameters[1];
-	double r = sqrt(pow(x[1],2)+pow(x[2],2));
-    res[0] = fabs(parameters[0]*cos(M_PI*r/H)); 
+	double r = std::sqrt(std::pow(x[1],2)+std::pow(x[2],2));
+    res[0] = std::fabs(parameters[0]*std::cos(M_PI*r/H)); 
 
     res[1] = 0.;
     res[2] = 0.;

@@ -11,12 +11,9 @@ Definition of Mesh
 @version 1.0
 @copyright CH
 */
-using Teuchos::reduceAll;
-using Teuchos::REDUCE_SUM;
-using Teuchos::outArg;
 
-using namespace std;
 namespace FEDD {
+
 template <class SC, class LO, class GO, class NO>
 Mesh<SC,LO,GO,NO>::Mesh():
 numElementsGlob_(0),
@@ -343,16 +340,16 @@ vec_int_ptr_Type Mesh<SC,LO,GO,NO>::findElemsForPoints(
     }
 
     // Query the AABBTree
-    map<int, list<int> > treeToItem;
-    map<int, list<int> > itemToTree;
+    std::map<int, std::list<int> > treeToItem;
+    std::map<int, std::list<int> > itemToTree;
     tie(treeToItem, itemToTree) = AABBTree_->scanTree(queryPoints, false);
 
     // FIXME: put this in a function of AABBTree?
     // unnest the returned answer for each query_point
     int point = -1;
     bool found = false;
-    list<int> rectangles;
-    list<int> elements;
+    std::list<int> rectangles;
+    std::list<int> elements;
     for (auto keyValue: itemToTree){
         // FIXME: put this in a function of AABBTree?
         // rectangles is a list<int> of all rectangles point is in
@@ -495,15 +492,15 @@ void Mesh<SC,LO,GO,NO>::correctNormalDirections(){
             }
         }
     }
-    reduceAll<int, int> (*this->getComm(), REDUCE_SUM, inwardNormals, outArg (inwardNormals));
-    reduceAll<int, int> (*this->getComm(), REDUCE_SUM, outwardNormals, outArg (outwardNormals));
+    Teuchos::reduceAll<int, int> (*this->getComm(), Teuchos::REDUCE_SUM, inwardNormals, Teuchos::outArg (inwardNormals));
+    Teuchos::reduceAll<int, int> (*this->getComm(), Teuchos::REDUCE_SUM, outwardNormals, Teuchos::outArg (outwardNormals));
 
     if(this->getComm()->getRank() == 0){
-        cout << " ############################################ " << endl;
-        cout << " Mesh Orientation Statistic " << endl;
-        cout << " Number of outward normals " << outwardNormals << endl;
-        cout << " Number of inward normals " << inwardNormals << endl;
-        cout << " ############################################ " << endl;
+        std::cout << " ############################################ " << std::endl;
+        std::cout << " Mesh Orientation Statistic " << std::endl;
+        std::cout << " Number of outward normals " << outwardNormals << std::endl;
+        std::cout << " Number of inward normals " << inwardNormals << std::endl;
+        std::cout << " ############################################ " << std::endl;
     }
 
 }
@@ -531,16 +528,16 @@ void Mesh<SC,LO,GO,NO>::correctElementOrientation(){
             flipElement(elementsC_,T); 
 
     }
-    cout << " Finished " << endl;
-    reduceAll<int, int> (*this->getComm(), REDUCE_SUM, negDet, outArg (negDet));
-    reduceAll<int, int> (*this->getComm(), REDUCE_SUM, posDet, outArg (posDet));
+    std::cout << " Finished " << std::endl;
+    Teuchos::reduceAll<int, int> (*this->getComm(), Teuchos::REDUCE_SUM, negDet, Teuchos::outArg (negDet));
+    Teuchos::reduceAll<int, int> (*this->getComm(), Teuchos::REDUCE_SUM, posDet, Teuchos::outArg (posDet));
 
     if(this->getComm()->getRank() == 0){
-        cout << " ############################################ " << endl;
-        cout << " Mesh Orientation Statistic " << endl;
-        cout << " Number of positive dets " << posDet << endl;
-        cout << " Number of negative dets " << negDet << endl;
-        cout << " ############################################ " << endl;
+        std::cout << " ############################################ " << std::endl;
+        std::cout << " Mesh Orientation Statistic " << std::endl;
+        std::cout << " Number of positive dets " << posDet << std::endl;
+        std::cout << " Number of negative dets " << negDet << std::endl;
+        std::cout << " ############################################ " << std::endl;
     }
 
 }

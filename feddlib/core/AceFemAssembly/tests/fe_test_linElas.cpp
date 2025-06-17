@@ -178,12 +178,12 @@ int main(int argc, char *argv[]) {
 					res = std::abs(values3[j]);	
 					cout << "Values1 " << values[j] << " Value2 " << values2[j] << endl;
 				}
-				if(!(fabs(values[j] - values2[j]) <= ( (fabs(values[j]) > fabs(values2[j]) ? fabs(values2[j]) : fabs(values[j])) * epsilon))){
+				if(!(std::fabs(values[j] - values2[j]) <= ( (std::fabs(values[j]) > std::fabs(values2[j]) ? std::fabs(values2[j]) : std::fabs(values[j])) * epsilon))){
 					if(std::abs(values[j] - values2[j]) >= 1e-12) // Ignore differences smaller than 1e-12
 						essentEqual=0;
 						
 				}
-				if(!(fabs(values[j] - values2[j]) <= ( (fabs(values[j]) < fabs(values2[j]) ? fabs(values2[j]) : fabs(values[j])) * epsilon))){
+				if(!(std::fabs(values[j] - values2[j]) <= ( (std::fabs(values[j]) < std::fabs(values2[j]) ? std::fabs(values2[j]) : std::fabs(values[j])) * epsilon))){
 					if(std::abs(values[j] - values2[j]) >= 1e-12)
 						approxEqual=0;
 				}

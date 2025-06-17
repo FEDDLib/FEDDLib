@@ -274,7 +274,7 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::initializeUnstructuredMesh(int dimension, string feType, int volumeID){
+void Domain<SC,LO,GO,NO>::initializeUnstructuredMesh(int dimension, std::string feType, int volumeID){
     
     MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp(new MeshUnstr_Type(comm_, volumeID));
     mesh_ = meshUnstructured;
@@ -288,7 +288,7 @@ void Domain<SC,LO,GO,NO>::initializeUnstructuredMesh(int dimension, string feTyp
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::readMeshSize(string filename, string delimiter){
+void Domain<SC,LO,GO,NO>::readMeshSize(std::string filename, std::string delimiter){
     
     MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( mesh_ );
     TEUCHOS_TEST_FOR_EXCEPTION( meshUnstructured.is_null(), std::runtime_error, "Unstructured Mesh is null." );
@@ -407,7 +407,7 @@ void Domain<SC, LO, GO, NO>::initDummyMesh(MapPtr_Type map)
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::exportMesh(bool exportEdges, bool exportSurfaces, string exportMesh){ 
+void Domain<SC,LO,GO,NO>::exportMesh(bool exportEdges, bool exportSurfaces, std::string exportMesh){ 
 
     MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( mesh_ );
 
@@ -644,11 +644,11 @@ void Domain<SC,LO,GO,NO>::calculateDistancesToInterface()
         {
             for(int k = 0; k < dim_; k++)
             {
-                distance = distance + pow( sourceNodesRep->at(i).at(k) - endNodesRep->at(j).at(k), 2.0 );
+                distance = distance + std::pow( sourceNodesRep->at(i).at(k) - endNodesRep->at(j).at(k), 2.0 );
             }
 
             // Noch die Wurzel ziehen
-            distance = sqrt(distance);
+            distance = std::sqrt(distance);
 
             if(distancesToInterface_->at(i) > distance)
             {
@@ -948,7 +948,7 @@ int Domain<SC,LO,GO,NO>::findInPointsUnique(const vec_dbl_Type& x) const{
     
     if (this->getDimension()==2) {
         auto iterator = std::find_if( points->begin(), points->end(),
-                                     [&] (const vector<double>& a){
+                                     [&] (const std::vector<double>& a){
                                          if (a[0] >= x[0]-eps && a[0] <= x[0]+eps
                                              && a[1] >= x[1]-eps && a[1] <= x[1]+eps)
                                              return true;
@@ -963,7 +963,7 @@ int Domain<SC,LO,GO,NO>::findInPointsUnique(const vec_dbl_Type& x) const{
     }
     else if(this->getDimension()==3) {
         auto iterator = std::find_if(points->begin(),points->end(),
-                                     [&] (const vector<double>& a){
+                                     [&] (const std::vector<double>& a){
                                          if (a[0] >= x[0]-eps && a[0] <= x[0]+eps
                                              && a[1] >= x[1]-eps && a[1] <= x[1]+eps
                                              && a[2] >= x[2]-eps && a[2] <= x[2]+eps)
@@ -996,7 +996,7 @@ typename Domain<SC,LO,GO,NO>::MultiVectorPtr_Type Domain<SC,LO,GO,NO>::getNodeLi
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC, LO, GO, NO>::exportNodeFlags(string name)
+void Domain<SC, LO, GO, NO>::exportNodeFlags(std::string name)
 {
         Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
@@ -1019,7 +1019,7 @@ void Domain<SC, LO, GO, NO>::exportNodeFlags(string name)
 } 
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC, LO, GO, NO>::exportSurfaceNormals(string name)
+void Domain<SC, LO, GO, NO>::exportSurfaceNormals(std::string name)
 {
         Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
@@ -1067,7 +1067,7 @@ void Domain<SC, LO, GO, NO>::exportSurfaceNormals(string name)
 } 
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC, LO, GO, NO>::exportElementOrientation(string name)
+void Domain<SC, LO, GO, NO>::exportElementOrientation(std::string name)
 {
         Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
@@ -1099,7 +1099,7 @@ void Domain<SC, LO, GO, NO>::exportElementOrientation(string name)
 
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC, LO, GO, NO>::exportElementFlags(string name)
+void Domain<SC, LO, GO, NO>::exportElementFlags(std::string name)
 {
         Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 

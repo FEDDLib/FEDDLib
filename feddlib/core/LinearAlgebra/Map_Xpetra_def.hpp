@@ -11,7 +11,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
 template < class LO, class GO, class NO>
 Map_Xpetra<LO,GO,NO>::Map_Xpetra():

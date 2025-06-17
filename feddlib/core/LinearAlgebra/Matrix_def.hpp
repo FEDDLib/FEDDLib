@@ -11,7 +11,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
 //using namespace Teuchos;
 template <class SC, class LO, class GO, class NO>

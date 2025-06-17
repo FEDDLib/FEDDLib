@@ -59,7 +59,7 @@ public:
     /// @brief Reading a variable 'varName' from the inputFile with inputFilename of file type HDF5
     /// @param varName Name of variable contained in file
     /// @return Xpetra formatted multivector distributed as defined with readMap
-    MultiVectorPtr_Type readVariablesHDF5(string varName);
+    MultiVectorPtr_Type readVariablesHDF5(std::string varName);
 
     // Closing Importer
     void closeImporter();

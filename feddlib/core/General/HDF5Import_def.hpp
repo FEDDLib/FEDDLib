@@ -13,7 +13,6 @@
  
  */
 
-using namespace std;
 namespace FEDD {
 
 template<class SC,class LO,class GO,class NO>
@@ -49,7 +48,7 @@ commEpetra_()
 }
 
 template<class SC,class LO,class GO,class NO>
-typename HDF5Import<SC, LO, GO, NO>::MultiVectorPtr_Type HDF5Import<SC,LO,GO,NO>::readVariablesHDF5(string varName){
+typename HDF5Import<SC, LO, GO, NO>::MultiVectorPtr_Type HDF5Import<SC,LO,GO,NO>::readVariablesHDF5(std::string varName){
     // Testing if requested vairable is contained in file
     TEUCHOS_TEST_FOR_EXCEPTION( !hdf5importer_->IsContained(varName), std::logic_error, "Requested varName: " << varName << " not contained in hdf file "<< inputFilename_ << ".h5.");
     hdf5importer_->Read(varName,*readMap_,u_import_Epetra_); // Reading the variable 'varName' from the file and distribute according to readMap_ to u_import_

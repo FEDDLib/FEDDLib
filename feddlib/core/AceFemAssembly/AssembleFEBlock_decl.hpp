@@ -103,7 +103,7 @@ namespace FEDD {
 		
         int dimSystem_;
 
-	    string FEType_ ; // FEType of Disk
+	    std::string FEType_ ; // FEType of Disk
 
 	    int dofsSolid_ ; // Degrees of freedom per node
 		int dofsChem_;

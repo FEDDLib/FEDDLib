@@ -191,7 +191,7 @@ public:
 
     /// @brief Building suface lines for TPM square mini. Empty.
     /// @param feType 
-    void buildSurfaceLinesSquareMiniTPM( string feType );
+    void buildSurfaceLinesSquareMiniTPM( std::string feType );
     
     void setRankRange( int numProcsCoarseSolve );
     
@@ -206,7 +206,7 @@ public:
     /// @brief Setting corresponding flags to structured mesh depending on underlying problem. Rectangles/Cuboids are treated as 'fluid geometrys' with inflow and outflow surface. 
     /// @param flagsOption depending on underlying geometry (Rectangle/Cuboid - BFS - TPM)
     /// @param FEType Discretization
-    void setStructuredMeshFlags(int flagsOption,string FEType="P1");
+    void setStructuredMeshFlags(int flagsOption,std::string FEType="P1");
     
     /// @brief Building element map
     void buildElementMap();
@@ -214,7 +214,7 @@ public:
     /// @brief Building surfaces. This is useful for structural problems. Each surface gets another flag. Corresponds to flag option 3.
     /// @param flagsOption corresponds to flag option from 'setStructureMeshFlags'. Only valid option is 3 for now.
     /// @param FEType 
-    void buildSurfaces(int flagsOption, string FEType);
+    void buildSurfaces(int flagsOption, std::string FEType);
 
     void flipSurface(vec_int_Type &surfaceElements_vec);
 

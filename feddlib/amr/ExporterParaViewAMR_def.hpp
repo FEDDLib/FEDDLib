@@ -11,7 +11,6 @@
 
  */
 
-using namespace std;
 namespace FEDD {
 
 template<class SC,class LO,class GO,class NO>

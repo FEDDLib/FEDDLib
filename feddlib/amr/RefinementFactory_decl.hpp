@@ -81,7 +81,7 @@ public:
     ~RefinementFactory();
     
 
-    void refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh, string refinementMode); // MeshRefinement
+    void refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh, std::string refinementMode); // MeshRefinement
     	
 	void refineRegular(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements,  int i, SurfaceElementsPtr_Type surfaceTriangleElements); // aka red refinement
 	
@@ -121,11 +121,11 @@ public:
 
 	vec_dbl_Type getErrorEstimate() { return errorEstimation_ ; };	
 
-	void bisectEdges(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements, string mode = "default");
+	void bisectEdges(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements, std::string mode = "default");
 
 	void bisectElement3(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElementp);
 
-	string refinementRestriction_ = "none";
+	std::string refinementRestriction_ = "none";
 
 	bool writeRefinementTime_ = "true";
 
@@ -133,7 +133,7 @@ public:
 
 	int currentIter_ = 0;
 
-	string refinementMode_ = "Regular";
+	std::string refinementMode_ = "Regular";
 
 protected: 
 	vec_GO_Type globalInterfaceIDs_;

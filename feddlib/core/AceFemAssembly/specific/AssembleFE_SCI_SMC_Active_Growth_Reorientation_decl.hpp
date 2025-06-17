@@ -70,7 +70,7 @@ class AssembleFE_SCI_SMC_Active_Growth_Reorientation : public AssembleFE<SC,LO,G
 
         friend class AssembleFEFactory<SC,LO,GO,NO>; // Must have for specfic classes
 	    
-		string FEType_ ; // FEType of Disk
+		std::string FEType_ ; // FEType of Disk
 
 		SmallMatrixPtr_Type massMatrix_;
 
