@@ -1,5 +1,6 @@
 #ifndef MeshStructured_decl_hpp
 #define MeshStructured_decl_hpp
+
 #include "feddlib/core/Utils/FEDDUtils.hpp"
 #include "Mesh.hpp"
 

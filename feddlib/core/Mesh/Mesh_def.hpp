@@ -1,8 +1,6 @@
 #ifndef Mesh_def_hpp
 #define Mesh_def_hpp
 
-#include "Mesh_decl.hpp"
-
 /*!
 Definition of Mesh
 

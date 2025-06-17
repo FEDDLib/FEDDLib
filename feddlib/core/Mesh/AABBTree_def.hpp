@@ -1,8 +1,6 @@
 #ifndef AABBTree_def_hpp
 #define AABBTree_def_hpp
 
-#include "AABBTree_decl.hpp"
-
 /*!
 Definition of AABBTree
 

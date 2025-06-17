@@ -1,6 +1,5 @@
 #ifndef MeshStructured_def_hpp
 #define MeshStructured_def_hpp
-#include "MeshStructured_decl.hpp"
 
 /*!
  Definition of MeshStructured

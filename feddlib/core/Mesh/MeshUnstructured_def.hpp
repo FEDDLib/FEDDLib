@@ -1,7 +1,7 @@
 #ifndef MESHUNSTRUCTURED_def_hpp
 #define MESHUNSTRUCTURED_def_hpp
-#include "MeshUnstructured_decl.hpp"
-#include "feddlib/core/LinearAlgebra/MultiVector_def.hpp"
+
+#include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 
 /*!
  Definition of MeshUnstructured
