@@ -1,11 +1,6 @@
 #ifndef MULTIVECTOR_DECL_hpp
 #define MULTIVECTOR_DECL_hpp
 
-#include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "Map.hpp"
-#include "BlockMap.hpp"
-#include "BlockMultiVector.hpp"
 #include <Xpetra_MultiVectorFactory.hpp>
 #include <Xpetra_ImportFactory.hpp>
 #include <Thyra_LinearOpBase_decl.hpp>
@@ -19,6 +14,12 @@
 #include <Tpetra_Vector.hpp>
 #include <Tpetra_Export.hpp>
 #include <Tpetra_Import.hpp>
+
+#include "feddlib/core/FEDDCore.hpp"
+#include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include "Map.hpp"
+#include "BlockMap.hpp"
+#include "BlockMultiVector.hpp"
 
 /*!
  Declaration of MultiVector

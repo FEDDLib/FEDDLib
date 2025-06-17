@@ -1,6 +1,5 @@
 #ifndef BlockMultiVector_DEF_hpp
 #define BlockMultiVector_DEF_hpp
-#include "BlockMultiVector_decl.hpp"
 
 /*!
  Defintion of BlockMultiVector

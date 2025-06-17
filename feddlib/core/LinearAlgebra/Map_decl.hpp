@@ -1,9 +1,6 @@
 #ifndef MAP_DECL_hpp
 #define MAP_DECL_hpp
 
-#include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
-
 #include <Xpetra_MapFactory.hpp>
 #include <Xpetra_MultiVectorFactory.hpp>
 #include <Xpetra_VectorFactory.hpp>
@@ -22,6 +19,11 @@
 #include <Thyra_TpetraVector.hpp>
 #include <Thyra_TpetraMultiVector.hpp>
 #include <Thyra_TpetraVectorSpace.hpp>
+
+#include "feddlib/core/FEDDCore.hpp"
+#include "feddlib/core/General/DefaultTypeDefs.hpp"
+
+
 /*!
  Declaration of Map
  

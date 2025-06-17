@@ -1,12 +1,14 @@
 #ifndef BlockMultiVector_DECL_hpp
 #define BlockMultiVector_DECL_hpp
 
+#include <Thyra_ProductVectorSpaceBase.hpp>
+#include <Thyra_DefaultProductMultiVector_decl.hpp>
+
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "BlockMap.hpp"
 #include "MultiVector.hpp"
-#include <Thyra_ProductVectorSpaceBase.hpp>
-#include <Thyra_DefaultProductMultiVector_decl.hpp>
+
 /*!
  Declaration of BlockMultiVector
  

@@ -1,6 +1,5 @@
 #ifndef MATRIX_DEF_hpp
 #define MATRIX_DEF_hpp
-#include "Matrix_decl.hpp"
 
 /*!
  Defintion of Matrix
