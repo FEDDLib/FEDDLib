@@ -1,6 +1,5 @@
 #ifndef MULTIVECTOR_DEF_hpp
 #define MULTIVECTOR_DEF_hpp
-#include "MultiVector_decl.hpp"
 
 /*!
  Defintion of MultiVector
