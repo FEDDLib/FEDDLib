@@ -7,7 +7,7 @@
 #include "feddlib/problems/Solver/Preconditioner.hpp"
 #include "NonLinearProblem.hpp"
 //#include "LinearProblem.hpp"
-#include "Thyra_StateFuncModelEvaluatorBase.hpp"
+#include <Thyra_StateFuncModelEvaluatorBase.hpp>
 /*!
  Declaration of TimeProblem
 

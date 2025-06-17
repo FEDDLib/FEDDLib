@@ -5,8 +5,8 @@
 #include "PreconditionerOperator.hpp"
 #include <Thyra_DefaultProductMultiVector_decl.hpp>
 #include <Thyra_DefaultMultiVectorProductVectorSpace_decl.hpp>
-#include "Thyra_OperatorVectorTypes.hpp"
-#include "Thyra_MultiVectorStdOps_decl.hpp"
+#include <Thyra_OperatorVectorTypes.hpp>
+#include <Thyra_MultiVectorStdOps_decl.hpp>
 #include <Thyra_MultiVectorBase_decl.hpp>
 #include <Thyra_VectorBase.hpp>
 #include <Thyra_TpetraVector_decl.hpp>

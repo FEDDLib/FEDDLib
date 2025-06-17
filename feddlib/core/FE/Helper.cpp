@@ -31,9 +31,9 @@ UN Helper::requiredQuadratureDegreeForBasisfunction(UN dim, std::string FEType){
     //                    With a little more investigation, we can re-add this element. Probably, the degree below should be 2 for the 
     //                    basis function and 1 for the gradient.
     //if ( (dim == 3) && (!FEType1.compare("P2-CR")) ) {
-        // if (type == Helper::Std)
+        // if (type == Helper::Deriv0)
         //    deg = 4; // [JK] Was ist das fuer ein Element, das in einem Tetraeder mit einer P2-Formel Ordnung 4 rausbekommt?!
-        // else if (type == Helper::Grad)
+        // else if (type == Helper::Deriv1)
         //    deg = 3;
     //}
 
@@ -67,9 +67,9 @@ UN Helper::requiredQuadratureDegreeForGradientOfBasisfunction(UN dim, std::strin
 
 UN Helper::determineDegree(UN dim, std::string FEType, VarType orderOfDerivative){
     UN deg;
-    if (orderOfDerivative == Std)        // Std  = 0 = no derivative
+    if (orderOfDerivative == Deriv0)        // Deriv0  = 0 = no derivative
         deg = requiredQuadratureDegreeForBasisfunction(dim,FEType);
-    else if (orderOfDerivative == Grad)  // Grad = 1 = first derivative = gradient
+    else if (orderOfDerivative == Deriv1)  // Deriv1 = 1 = first derivative = gradient
         deg = requiredQuadratureDegreeForGradientOfBasisfunction(dim,FEType);
     else
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unknown order of derivative: " + orderOfDerivative);

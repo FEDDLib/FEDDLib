@@ -187,7 +187,7 @@ namespace FEDD
         vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
         // essential ingredients: eta(nabla(phi) ) * nabla(phi) *  nabla(phi) (nonmathematical notation)
-        UN degGradPhi = Helper::determineDegree(dim, FEType, Helper::Grad);  
+        UN degGradPhi = Helper::determineDegree(dim, FEType, Helper::Deriv1);  
         UN extraDeg = 2;  // As eta is a unknown nonlinear function of the velocity gradient we add some extra degree
         UN deg = (degGradPhi + extraDeg) + degGradPhi  + degGradPhi; 
         Helper::getDPhi(dPhi, weights, dim, FEType, deg);              
@@ -383,7 +383,7 @@ namespace FEDD
 
         // essential ingredients:  deta/dgamma(nabla(phi)) * nabla(phi) * nabla(phi) * nabla(phi) (nonmathematical notation)
         UN extraDegree = 2;  // As deta/dgamma is a unknown nonlinear function of the velocity gradient we add some extra degree
-        UN degGradPhi = Helper::determineDegree(dim, FEType, Helper::Grad);
+        UN degGradPhi = Helper::determineDegree(dim, FEType, Helper::Deriv1);
         UN deg = 3*degGradPhi + (degGradPhi + extraDegree); 
         Helper::getDPhi(dPhi, weights, dim, FEType, deg);
 

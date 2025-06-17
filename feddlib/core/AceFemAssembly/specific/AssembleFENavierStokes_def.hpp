@@ -158,8 +158,8 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type 
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
     // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
-    // cout << " Degree Laplace " << deg << " Grad " << Grad << " FeType " << FEType << endl;
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
+    // std::cout << " Degree Laplace " << deg << " Grad " << Grad << " FeType " << FEType << std::endl;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -238,8 +238,8 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Type 
 
     // inner( inner( uh , nabla )phi_j , phi_i )
     // For uh: degPhi, for nabla phi_j: degGradPhi, for phi_i: degPhi.
-	UN degPhi = Helper::determineDegree(dim,FEType,Helper::Std);
-	UN degGradPhi = Helper::determineDegree(dim,FEType,Helper::Grad);
+	UN degPhi = Helper::determineDegree(dim,FEType,Helper::Deriv0);
+	UN degGradPhi = Helper::determineDegree(dim,FEType,Helper::Deriv1);
     UN deg = degPhi + degGradPhi + degPhi;
 
 	Helper::getDPhi(dPhi, weights, dim, FEType, deg);
@@ -313,8 +313,8 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Ty
 
     // inner( inner( phi_j , nabla )uh , phi_i )
     // For phi_j: degPhi, for nabla uh: degGradPhi, for phi_i: degPhi.
-	UN degPhi = Helper::determineDegree(dim,FEType,Helper::Std);
-	UN degGradPhi = Helper::determineDegree(dim,FEType,Helper::Grad);
+	UN degPhi = Helper::determineDegree(dim,FEType,Helper::Deriv0);
+	UN degGradPhi = Helper::determineDegree(dim,FEType,Helper::Deriv1);
     UN deg = degPhi + degGradPhi + degPhi;
 
 	Helper::getDPhi(dPhi, weights, dim, FEType, deg);
@@ -381,8 +381,8 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyDivAndDivT(SmallMatrixPtr_Type
 
     // psi_k * div(phi_j)
     // for pressure function psi_k: degPhi_pres, for velocity term div(phi_j): degGradPhi_vel
-	UN degGradPhi_vel = Helper::determineDegree(dim,FETypeVelocity_,Helper::Grad);
-    UN degPhi_pres = Helper::determineDegree(dim,FETypePressure_,Helper::Std);
+	UN degGradPhi_vel = Helper::determineDegree(dim,FETypeVelocity_,Helper::Deriv1);
+    UN degPhi_pres = Helper::determineDegree(dim,FETypePressure_,Helper::Deriv0);
     UN deg = degGradPhi_vel + degPhi_pres;
 
     Helper::getDPhi(dPhi, weights, dim, FETypeVelocity_, deg);

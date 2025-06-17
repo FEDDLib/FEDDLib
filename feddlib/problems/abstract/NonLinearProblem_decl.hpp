@@ -2,7 +2,7 @@
 #define NONLINEARPROBLEM_DECL_hpp
 
 #include "Problem.hpp"
-#include "Thyra_StateFuncModelEvaluatorBase.hpp"
+#include <Thyra_StateFuncModelEvaluatorBase.hpp>
 
 
 /*!

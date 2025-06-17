@@ -9,10 +9,10 @@
 #define FEDD_HAVE_PARMETIS
 
 #ifdef FEDD_HAVE_METIS
-#include "metis.h"
+#include <metis.h>
 #endif
 #ifdef FEDD_HAVE_PARMETIS
-#include "parmetis.h"
+#include <parmetis.h>
 #endif
 
 /*!

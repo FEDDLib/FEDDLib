@@ -62,7 +62,7 @@ void AssembleFE_Laplace<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type &ele
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     
     // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
-    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Grad);
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     
     SC detB;
@@ -115,7 +115,7 @@ void AssembleFE_Laplace<SC,LO,GO,NO>::assembleRHS() {
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
 
 	UN extraDegree = 1; // TODO: [JK] 2025/04 This should be user defined, based on the irregularity of f(x). Function parameter? Parameter list?
-    UN deg = Helper::determineDegree(dim,FEType,Helper::Std) + extraDegree;
+    UN deg = Helper::determineDegree(dim,FEType,Helper::Deriv0) + extraDegree;
     Helper::getPhi(phi, weights, dim, FEType, deg);
     
     SC detB;
