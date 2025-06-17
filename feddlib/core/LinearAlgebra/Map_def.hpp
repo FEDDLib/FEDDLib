@@ -9,7 +9,6 @@
     to the TPetra functions which can be seen in the corresponding XPetra::Factories. 
  */
 
-using namespace std;
 namespace FEDD {
 template < class LO, class GO, class NO>
 Map<LO,GO,NO>::Map():

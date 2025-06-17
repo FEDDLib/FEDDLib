@@ -2,7 +2,6 @@
 
 #include <string>
 
-using namespace std;
 namespace FEDD {
 
 UN Helper::requiredQuadratureDegreeForBasisfunction(UN dim, std::string FEType){
@@ -113,7 +112,7 @@ void Helper::computeSurfaceNormal(int dim,
     if(dim==2){
         v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
         v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
-        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));
+        norm_v_E = std::sqrt(std::pow(v_E[0],2)+std::pow(v_E[1],2));
 
     }
     else if(dim==3){
@@ -130,7 +129,7 @@ void Helper::computeSurfaceNormal(int dim,
         v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
         v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
 
-        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+        norm_v_E = std::sqrt(std::pow(v_E[0],2)+std::pow(v_E[1],2)+std::pow(v_E[2],2));
 
     }
 
@@ -844,30 +843,30 @@ void Helper::getQuadratureValues(int dim,
         } else if (Degree <= 3) {
             QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
             QuadW->resize(2);
-            QuadPts->at(0).at(0) = 0.5 - 0.5/sqrt(3.0);
-            QuadPts->at(1).at(0) = 0.5 + 0.5/sqrt(3.0);
+            QuadPts->at(0).at(0) = 0.5 - 0.5/std::sqrt(3.0);
+            QuadPts->at(1).at(0) = 0.5 + 0.5/std::sqrt(3.0);
             QuadW->at(0) = 0.5;
             QuadW->at(1) = 0.5;
 	} else if (Degree <= 5) {
             QuadPts.reset(new vec2D_dbl_Type(3,vec_dbl_Type(1,0.0)));
             QuadW->resize(3);
-            QuadPts->at(0).at(0) = 0.5 - 0.5*sqrt(3.0/5.0);
+            QuadPts->at(0).at(0) = 0.5 - 0.5*std::sqrt(3.0/5.0);
             QuadPts->at(1).at(0) = 0.5;
-            QuadPts->at(2).at(0) = 0.5 + 0.5*sqrt(3.0/5.0);
+            QuadPts->at(2).at(0) = 0.5 + 0.5*std::sqrt(3.0/5.0);
             QuadW->at(0) = 5.0 / 18.0;
             QuadW->at(1) = 8.0 / 18.0;
             QuadW->at(2) = 5.0 / 18.0;
         } else if (Degree <= 7) {
             QuadPts.reset(new vec2D_dbl_Type(4,vec_dbl_Type(1,0.0)));
             QuadW->resize(4);
-            QuadPts->at(0).at(0) = 0.5 * (1.0 - sqrt( 3.0/7.0 + 2.0/7.0*sqrt(6.0/5.0) ));
-            QuadPts->at(1).at(0) = 0.5 * (1.0 - sqrt( 3.0/7.0 - 2.0/7.0*sqrt(6.0/5.0) ));
-            QuadPts->at(2).at(0) = 0.5 * (1.0 + sqrt( 3.0/7.0 - 2.0/7.0*sqrt(6.0/5.0) ));
-            QuadPts->at(3).at(0) = 0.5 * (1.0 + sqrt( 3.0/7.0 + 2.0/7.0*sqrt(6.0/5.0) ));
-            QuadW->at(0) = 0.5 * (18.0 - sqrt(30.0))/36.0;
-            QuadW->at(1) = 0.5 * (18.0 + sqrt(30.0))/36.0;
-            QuadW->at(2) = 0.5 * (18.0 + sqrt(30.0))/36.0;
-            QuadW->at(3) = 0.5 * (18.0 - sqrt(30.0))/36.0;
+            QuadPts->at(0).at(0) = 0.5 * (1.0 - std::sqrt( 3.0/7.0 + 2.0/7.0*std::sqrt(6.0/5.0) ));
+            QuadPts->at(1).at(0) = 0.5 * (1.0 - std::sqrt( 3.0/7.0 - 2.0/7.0*std::sqrt(6.0/5.0) ));
+            QuadPts->at(2).at(0) = 0.5 * (1.0 + std::sqrt( 3.0/7.0 - 2.0/7.0*std::sqrt(6.0/5.0) ));
+            QuadPts->at(3).at(0) = 0.5 * (1.0 + std::sqrt( 3.0/7.0 + 2.0/7.0*std::sqrt(6.0/5.0) ));
+            QuadW->at(0) = 0.5 * (18.0 - std::sqrt(30.0))/36.0;
+            QuadW->at(1) = 0.5 * (18.0 + std::sqrt(30.0))/36.0;
+            QuadW->at(2) = 0.5 * (18.0 + std::sqrt(30.0))/36.0;
+            QuadW->at(3) = 0.5 * (18.0 - std::sqrt(30.0))/36.0;
         }
     } else if (dim == 2) {
         volume_ref_element = 0.5; // area of unit triangle
@@ -1087,8 +1086,8 @@ void Helper::getQuadratureValues(int dim,
                 QuadPts.reset(new vec2D_dbl_Type(4,vec_dbl_Type(3,0.0)));
                 QuadW->resize(4);
 
-                a = (5.0 + 3.0*sqrt(5.0))/20.0;
-                b = (5.0 - 1.0*sqrt(5.0))/20.0;
+                a = (5.0 + 3.0*std::sqrt(5.0))/20.0;
+                b = (5.0 - 1.0*std::sqrt(5.0))/20.0;
 
                 QuadPts->at(0).at(0) = a;
                 QuadPts->at(0).at(1) = b;
@@ -1216,12 +1215,12 @@ void Helper::getQuadratureValues(int dim,
                 QuadPts.reset(new vec2D_dbl_Type(15,vec_dbl_Type(3,0.0)));
                 QuadW->resize(15);
                 a 	= 0.25;
-                b1 	= (7.+sqrt(15.))/34.;
-                b2 	= (7.-sqrt(15.))/34.;
-                c1 	= (13.-3.*sqrt(15.))/34.;
-                c2 	= (13.+3.*sqrt(15.))/34.;
-                d 	= (5.-sqrt(15.))/20.;
-                e 	= (5.+sqrt(15.))/20.;
+                b1 	= (7.+std::sqrt(15.))/34.;
+                b2 	= (7.-std::sqrt(15.))/34.;
+                c1 	= (13.-3.*std::sqrt(15.))/34.;
+                c2 	= (13.+3.*std::sqrt(15.))/34.;
+                d 	= (5.-std::sqrt(15.))/20.;
+                e 	= (5.+std::sqrt(15.))/20.;
                 
                 QuadPts->at(0).at(0) 	= a;
                 QuadPts->at(0).at(1)    = a;
@@ -1284,8 +1283,8 @@ void Helper::getQuadratureValues(int dim,
                 QuadPts->at(14).at(2)	= d;
                 
                 
-                P1 	= (2665.-14.*sqrt(15.))/226800.;
-                P2 	= (2665.+14.*sqrt(15.))/226800.;
+                P1 	= (2665.-14.*std::sqrt(15.))/226800.;
+                P2 	= (2665.+14.*std::sqrt(15.))/226800.;
                 b	= 5./567.;
                 
                 QuadW->at(0) = 8./405.;
@@ -1455,7 +1454,7 @@ void Helper::getQuadratureValues(int dim,
         for (int i = 0; i < QuadW->size(); i++) {
             volume += QuadW->at(i);
         }
-        double error_volume = fabs(volume - volume_ref_element);
+        double error_volume = std::fabs(volume - volume_ref_element);
         std::ostringstream oss;
         oss << std::scientific << std::setprecision(2) << error_volume;
         std::string str = oss.str();

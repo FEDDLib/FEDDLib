@@ -151,7 +151,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type 
 
 	int dim = this->getDim();
 	int numNodes= numNodesVelocity_;
-	string FEType = FETypeVelocity_;
+	std::string FEType = FETypeVelocity_;
 	int dofs = dofsVelocity_;
 
     vec3D_dbl_ptr_Type 	dPhi;
@@ -184,7 +184,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyLaplacian(SmallMatrixPtr_Type 
                 }
             }
             value[j] *= absDetB;
-			 /*if (std::fabs(value[j]) < pow(10,-14)) {
+			 /*if (std::fabs(value[j]) < std::pow(10,-14)) {
 		            value[j] = 0.;
 		        }*/
 			for (UN d=0; d<dofs; d++) {
@@ -229,7 +229,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvection(SmallMatrixPtr_Type 
 
 	int dim = this->getDim();
 	int numNodes= numNodesVelocity_;
-	string FEType = FETypeVelocity_;
+	std::string FEType = FETypeVelocity_;
 	int dofs = dofsVelocity_;
 
 	vec3D_dbl_ptr_Type 	dPhi;
@@ -303,7 +303,7 @@ void AssembleFENavierStokes<SC,LO,GO,NO>::assemblyAdvectionInU(SmallMatrixPtr_Ty
 
 	int dim = this->getDim();
 	int numNodes= numNodesVelocity_;
-	string FEType = FETypeVelocity_;
+	std::string FEType = FETypeVelocity_;
 	int dofs = dofsVelocity_;
 
 

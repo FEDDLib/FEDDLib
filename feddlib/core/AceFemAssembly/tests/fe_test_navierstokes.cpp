@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
  	FE<SC,LO,GO,NO> fe_test;
     fe.addFE(domain);
     fe.addFE(domainP1);
-	fe.doSetZeros(pow(10,-13));
+	fe.doSetZeros(std::pow(10,-13));
 	// Solution
 	MultiVectorPtr_Type u_rep = Teuchos::rcp(new MultiVector_Type(domain->getMapVecFieldRepeated(),1));
 	MultiVectorPtr_Type p_rep = Teuchos::rcp(new MultiVector_Type(domain->getMapRepeated(),1));
@@ -224,14 +224,14 @@ int main(int argc, char *argv[]) {
 			Sum->getGlobalRowView(row, indices,values);
 			
 			for(int j=0; j< values.size() ; j++){
-				if(fabs(values[j])>res)
-					res = fabs(values[j]);			
+				if(std::fabs(values[j])>res)
+					res = std::fabs(values[j]);			
 			}	
 		}	
 	}
 	Sum->fillComplete();
 	//Sum->print();
-	res = fabs(res);
+	res = std::fabs(res);
 	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 
 	if(comm->getRank() == 0)
@@ -249,11 +249,11 @@ int main(int argc, char *argv[]) {
 			Sum2->getGlobalRowView(row, indices,values);
 			
 			for(int j=0; j< values.size() ; j++){
-				res += fabs(values[j]);			
+				res += std::fabs(values[j]);			
 			}	
 		}	
 	}
-	res = fabs(res);
+	res = std::fabs(res);
 	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 	//Sum2->fillComplete();
 	//Sum2->print();

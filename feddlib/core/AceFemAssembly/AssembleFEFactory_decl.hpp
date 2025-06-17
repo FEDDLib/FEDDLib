@@ -53,7 +53,7 @@ namespace FEDD {
          @param[in] nodesRefConfig Nodes of element in reference configuration
          @param[in] params Parameterlist for current problem
         */
-        AssembleFEPtr_Type build( string problemType, int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);
+        AssembleFEPtr_Type build( std::string problemType, int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);
 
     };
 

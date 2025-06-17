@@ -12,7 +12,6 @@ Definition of AABBTree
 @copyright VG
 */
 
-using namespace std;
 namespace FEDD{
     // Default Constructor
     template <class SC, class LO, class GO, class NO>
@@ -178,7 +177,7 @@ namespace FEDD{
         )
     );
 
-    vector<std::list<int> >  containedElements(
+    std::vector<std::list<int> >  containedElements(
         numberElements,
         std::list<int>()
     );
@@ -265,8 +264,8 @@ namespace FEDD{
     std::list<int> currentElements;
     vec_dbl_Type dd(2, 0.0);
     vec_int_Type ia(2, 0);
-    vector<bool> isLong(numberElements, false);
-    vector<bool> isLeft(numberElements, false);
+    std::vector<bool> isLong(numberElements, false);
+    std::vector<bool> isLeft(numberElements, false);
     if (verbose){
         std::cout << "##### Beginning Main Loop #####" << '\n';
     }
@@ -585,7 +584,7 @@ namespace FEDD{
             this->numNodes_,
             0
         );
-        vector<std::list<int> >  pointsInNode(
+        std::vector<std::list<int> >  pointsInNode(
             this->numNodes_,
             std::list<int>()
         );

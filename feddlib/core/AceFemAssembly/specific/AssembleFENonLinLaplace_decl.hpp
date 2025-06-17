@@ -57,7 +57,7 @@ class AssembleFENonLinLaplace : public AssembleFE<SC, LO, GO, NO> {
                     SmallMatrix<SC> &Binv);
 
     friend class AssembleFEFactory<SC, LO, GO, NO>;
-    string FEType_;
+    std::string FEType_;
     int dofs_;
     int numNodes_;
     int dofsElement_;

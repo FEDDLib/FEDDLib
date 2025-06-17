@@ -7,7 +7,6 @@
  @version 1.0
  @copyright CH
  */
-using namespace std;
 namespace FEDD {
 TimeSteppingTools::TimeSteppingTools():
 comm_(),
@@ -231,10 +230,10 @@ void TimeSteppingTools::calculateNewDt(BlockMultiVectorPtr_Type &solDiff, BlockM
         if (t_==0) {
             error_prev_ = error_;
         }
-        dt_adaptive_ = rho_ * dt_*dt_ / dt_prev_ * pow(tolAdaptive_*(error_prev_)/((error_)*(error_)),1./convOrder_);
+        dt_adaptive_ = rho_ * dt_*dt_ / dt_prev_ * std::pow(tolAdaptive_*(error_prev_)/((error_)*(error_)),1./convOrder_);
     }
     else if ( adaptiveCalculation_ == 1 ) {
-        dt_adaptive_ = rho_ * dt_ * pow(tolAdaptive_/(error_),1./convOrder_);
+        dt_adaptive_ = rho_ * dt_ * std::pow(tolAdaptive_/(error_),1./convOrder_);
     }
 
     dt_prev_ = dt_;
@@ -278,15 +277,15 @@ void TimeSteppingTools::advanceTime(bool printInfo){
 void TimeSteppingTools::printInfo(){
 
     if (verbose_) {
-        cout <<  endl;
-        cout << " --------------------------------------------------------------" << endl;
-        cout << " -------- Time step " << currentTime() << endl;
-        cout << "        - dt     = " << get_dt() << "\t calculated dt = " << dt_adaptive_ << endl;
-        cout << "        - r_m = " << error_ << "  r_m_prev_ = " << error_prev_ << endl;
-//        cout << "        - rho*tm^2/tm_1 = " <<rho * dt*dt / dt_prev_ << endl;
-//        cout << "        - TOL*rm-1 / (rm^2) = "<<TOLRK*(r_m_prev_)/((r_m_)*(r_m_)) << "  (...)^1/p = " << pow(TOLRK*(r_m_prev_)/((r_m_)*(r_m_)),1./p) << endl;
-        cout << " --------------------------------------------------------------" << endl;
-        cout <<  endl;
+        std::cout <<  std::endl;
+        std::cout << " --------------------------------------------------------------" << std::endl;
+        std::cout << " -------- Time step " << currentTime() << std::endl;
+        std::cout << "        - dt     = " << get_dt() << "\t calculated dt = " << dt_adaptive_ << std::endl;
+        std::cout << "        - r_m = " << error_ << "  r_m_prev_ = " << error_prev_ << std::endl;
+//        std::cout << "        - rho*tm^2/tm_1 = " <<rho * dt*dt / dt_prev_ << std::endl;
+//        std::cout << "        - TOL*rm-1 / (rm^2) = "<<TOLRK*(r_m_prev_)/((r_m_)*(r_m_)) << "  (...)^1/p = " << std::pow(TOLRK*(r_m_prev_)/((r_m_)*(r_m_)),1./p) << std::endl;
+        std::cout << " --------------------------------------------------------------" << std::endl;
+        std::cout <<  std::endl;
         }
 }
 
@@ -312,7 +311,7 @@ void TimeSteppingTools::setTableInformationRK(){
     //                      c | A
     //                      --------
     //                        | b^T
-    double Theta = 1. - sqrt(2.) / 2.;
+    double Theta = 1. - std::sqrt(2.) / 2.;
     double Theta_t = 1. - 2.*Theta;
     double alpha = Theta_t / (1. - Theta);
     double beta = 1. - alpha;
@@ -398,7 +397,7 @@ void TimeSteppingTools::setTableInformationRK(){
             break;
         case 3: //DIRK3L; p=2
             
-            alpha = 1.- sqrt(2.)/2.;
+            alpha = 1.- std::sqrt(2.)/2.;
             butcherTable_.reset(new vec2D_dbl_Type(4,vec_dbl_Type(4,0.)));
 
             butcherTable_->at(1).at(0) = 2.*alpha;
@@ -454,7 +453,7 @@ void TimeSteppingTools::setTableInformationRK(){
             break;
 
 //        case 5: //DIRK3; p=3
-//            alpha = 0.5 + sqrt(3)/6.;
+//            alpha = 0.5 + std::sqrt(3)/6.;
 //            butcherTable_.reset(new vec2D_dbl_Type(4,vec_dbl_Type(4,0.)));
 //
 //            butcherTable_->at(1).at(0) = 2.*alpha;

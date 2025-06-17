@@ -94,14 +94,14 @@ int main(int argc, char *argv[]) {
 
     std::string FEType = "P1";
 
-    string xmlPrecFile;
+    std::string xmlPrecFile;
     if(dim==2)
         xmlPrecFile = "parametersPrec_Stokes_2D.xml";
     else if(dim==3)
         xmlPrecFile = "parametersPrec_Stokes_3D.xml";
     
     myCLP.setOption("precfile", &xmlPrecFile, ".xml file with Inputparameters.");
-    string xmlSolverFile = "parametersSolver.xml";
+    std::string xmlSolverFile = "parametersSolver.xml";
     myCLP.setOption("solverfile", &xmlSolverFile, ".xml file with Inputparameters.");
 
     myCLP.recogniseAllOptions(true);
@@ -238,15 +238,15 @@ int main(int argc, char *argv[]) {
         double normPr = normP[0];
         // Output of error
         if (comm->getRank() == 0) {
-            cout << " --------------------------------------------------" << endl;
-            cout << "  Error Report " << endl;
-            cout << "   || velocity_current - velocity_stored||_inf = " << normErrorV << endl;
-            cout << "   || pressure_current - pressure_stored||_inf = " << normErrorP << endl;
-            cout << "   || velocity_current - velocity_stored||_inf/|| velocity_current||_inf = " << normErrorV/normVe << endl;
-            cout << "   || pressure_current - pressure_stored||_inf/|| pressure_current ||_inf = " << normErrorP/normPr << endl;
-            cout << "   || velocity_current||_inf = " << normVe << endl;
-            cout << "   || pressure_current ||_inf = " << normPr << endl;
-            cout << " --------------------------------------------------" << endl;
+            std::cout << " --------------------------------------------------" << std::endl;
+            std::cout << "  Error Report " << std::endl;
+            std::cout << "   || velocity_current - velocity_stored||_inf = " << normErrorV << std::endl;
+            std::cout << "   || pressure_current - pressure_stored||_inf = " << normErrorP << std::endl;
+            std::cout << "   || velocity_current - velocity_stored||_inf/|| velocity_current||_inf = " << normErrorV/normVe << std::endl;
+            std::cout << "   || pressure_current - pressure_stored||_inf/|| pressure_current ||_inf = " << normErrorP/normPr << std::endl;
+            std::cout << "   || velocity_current||_inf = " << normVe << std::endl;
+            std::cout << "   || pressure_current ||_inf = " << normPr << std::endl;
+            std::cout << " --------------------------------------------------" << std::endl;
         }
 
         // Throwing exception, if error is too great.

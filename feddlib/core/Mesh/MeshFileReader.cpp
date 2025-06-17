@@ -11,13 +11,12 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
-void meshReadSize ( string mesh_filename, int &numNode, int &dim, int &numElement, int &orderElement, int &numSurface, int &orderSurface, int &numEdges, int& orderEdges ){
+void meshReadSize ( std::string mesh_filename, int &numNode, int &dim, int &numElement, int &orderElement, int &numSurface, int &orderSurface, int &numEdges, int& orderEdges ){
     
-    ifstream file;
+    std::ifstream file;
     int lineLength;
-    string text;
+    std::string text;
     numNode = 0;
     dim = 0;
     bool allSizesFound = false;
@@ -25,8 +24,8 @@ void meshReadSize ( string mesh_filename, int &numNode, int &dim, int &numElemen
 
     if ( ! file )
     {
-        cerr << "\n";
-        cerr << "  Could not open input file \"" << mesh_filename << "\"\n";
+        std::cerr << "\n";
+        std::cerr << "  Could not open input file \"" << mesh_filename << "\"\n";
         exit ( 1 );
     }
 
@@ -36,7 +35,7 @@ void meshReadSize ( string mesh_filename, int &numNode, int &dim, int &numElemen
         lineLength = text.length();
         if (lineLength>9) {
             if ( !text.compare(0,9,"Dimension")) {
-                dim = stoi(text.substr(10,10));
+                dim = std::stoi(text.substr(10,10));
             }
         }
         if (lineLength>7) {
@@ -44,7 +43,7 @@ void meshReadSize ( string mesh_filename, int &numNode, int &dim, int &numElemen
                 text.erase(0,lineLength);
                 getline ( file, text );
                 lineLength = text.length();
-                numNode = stoi(text);
+                numNode = std::stoi(text);
                 text.erase(0,lineLength);
             }
         }
@@ -54,9 +53,9 @@ void meshReadSize ( string mesh_filename, int &numNode, int &dim, int &numElemen
                 getline ( file, text );
                 lineLength = text.length();
                 if (dim == 2)
-                    numSurface = stoi(text);
+                    numSurface = std::stoi(text);
                 else if(dim == 3)
-                    numEdges = stoi(text);
+                    numEdges = std::stoi(text);
                 
             }
         }
@@ -66,10 +65,10 @@ void meshReadSize ( string mesh_filename, int &numNode, int &dim, int &numElemen
                 getline ( file, text );
                 lineLength = text.length();
                 if (dim == 2) {
-                    numElement = stoi(text);
+                    numElement = std::stoi(text);
                 }
                 else if(dim == 3){
-                    numSurface = stoi(text);
+                    numSurface = std::stoi(text);
                 }
             }
         }
@@ -79,7 +78,7 @@ void meshReadSize ( string mesh_filename, int &numNode, int &dim, int &numElemen
                 getline ( file, text );
                 lineLength = text.length();
                 if (dim == 3) {
-                    numElement = stoi(text);
+                    numElement = std::stoi(text);
                 }
             }
         }

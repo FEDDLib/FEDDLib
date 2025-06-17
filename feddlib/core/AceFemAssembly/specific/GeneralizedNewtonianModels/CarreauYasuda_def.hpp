@@ -26,7 +26,7 @@ namespace FEDD
     void CarreauYasuda<SC, LO, GO, NO>::evaluateMapping(ParameterListPtr_Type params, double shearRate, double &viscosity)
     {
 
-        viscosity = this->nu_infty + (this->nu_0 - this->nu_infty) * (pow(1.0 + pow(this->characteristicTime * shearRate, this->inflectionPoint), (this->fluid_index_n - 1.0) / this->inflectionPoint));
+        viscosity = this->nu_infty + (this->nu_0 - this->nu_infty) * (std::pow(1.0 + std::pow(this->characteristicTime * shearRate, this->inflectionPoint), (this->fluid_index_n - 1.0) / this->inflectionPoint));
         this->viscosity_ = viscosity;
     }
 
@@ -40,18 +40,18 @@ namespace FEDD
     void CarreauYasuda<SC, LO, GO, NO>::evaluateDerivative(ParameterListPtr_Type params, double shearRate, double &res)
     {
 
-        if (abs(this->inflectionPoint - 2.0) < std::numeric_limits<double>::epsilon()) // for a=2.0 we get gammaDot^{-0} which is 1
+        if (std::abs(this->inflectionPoint - 2.0) < std::numeric_limits<double>::epsilon()) // for a=2.0 we get gammaDot^{-0} which is 1
         {
             // So for a Carreau-like Fluid we should jump here because a=2.0
-            res = (-2.0) * (this->nu_0 - this->nu_infty) * (this->fluid_index_n - 1.0) * pow(this->characteristicTime, this->inflectionPoint) * pow(1.0 + pow(this->characteristicTime * shearRate, this->inflectionPoint), ((this->fluid_index_n - 1.0 - this->inflectionPoint) / this->inflectionPoint));
+            res = (-2.0) * (this->nu_0 - this->nu_infty) * (this->fluid_index_n - 1.0) * std::pow(this->characteristicTime, this->inflectionPoint) * std::pow(1.0 + std::pow(this->characteristicTime * shearRate, this->inflectionPoint), ((this->fluid_index_n - 1.0 - this->inflectionPoint) / this->inflectionPoint));
         }
         else // in the other case we have to check that gammaDot is not zero because otherwise we get 1/0
         {
-            if (abs(shearRate) <= shear_rate_limitZero) // How to choose epsilon?
+            if (std::abs(shearRate) <= shear_rate_limitZero) // How to choose epsilon?
             {
                 shearRate = shear_rate_limitZero;
             }
-            res = (-2.0) * (this->nu_0 - this->nu_infty) * (this->fluid_index_n - 1.0) * pow(this->characteristicTime, this->inflectionPoint) * pow(shearRate, this->inflectionPoint - 2.0) * pow(1.0 + pow(this->characteristicTime * shearRate, this->inflectionPoint), ((this->fluid_index_n - 1.0 - this->inflectionPoint) / this->inflectionPoint));
+            res = (-2.0) * (this->nu_0 - this->nu_infty) * (this->fluid_index_n - 1.0) * std::pow(this->characteristicTime, this->inflectionPoint) * std::pow(shearRate, this->inflectionPoint - 2.0) * std::pow(1.0 + std::pow(this->characteristicTime * shearRate, this->inflectionPoint), ((this->fluid_index_n - 1.0 - this->inflectionPoint) / this->inflectionPoint));
         }
     }
 

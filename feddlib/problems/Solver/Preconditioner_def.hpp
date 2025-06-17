@@ -440,10 +440,10 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
                 else if(!timeProblem_.is_null())
                     rankRange = timeProblem_->getDomain(i)->getMesh()->getRankRange();
                 
-                if (get<0>(rankRange) < lowerBound)
-                    lowerBound = get<0>(rankRange);
-                if (get<1>(rankRange) > upperBound)
-                    upperBound = get<1>(rankRange);
+                if (std::get<0>(rankRange) < lowerBound)
+                    lowerBound = std::get<0>(rankRange);
+                if (std::get<1>(rankRange) > upperBound)
+                    upperBound = std::get<1>(rankRange);
             }
             
             int lowerBoundCoarse = lowerBound;
@@ -639,7 +639,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithicFSI( )
                                     XpetraMapConstPtr_Type mapConstX = Xpetra::MapFactory<LO,GO,NO>::Build( Xpetra::UseTpetra, mapConstTmp->getGlobalNumElements(), mapConstTmp->getNodeElementList(), mapConstTmp->getIndexBase(), mapConstTmp->getComm() );
                                     Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapX= Teuchos::rcp_const_cast<Xpetra::Map<LO,GO,NO> > (mapConstX);
                                     
-                                    cout << " +++++++++ Output 3" << endl;
+                                    std::cout << " +++++++++ Output 3" << std::endl;
                                     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
                                     mapX->describe(*out,Teuchos::VERB_EXTREME);
                                     repeatedMaps[i] = mapX;
@@ -703,10 +703,10 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithicFSI( )
                 else if(!timeProblem_.is_null())
                     rankRange = timeProblem_->getDomain(i)->getMesh()->getRankRange();
                 
-                if (get<0>(rankRange) < lowerBound)
-                    lowerBound = get<0>(rankRange);
-                if (get<1>(rankRange) > upperBound)
-                    upperBound = get<1>(rankRange);
+                if (std::get<0>(rankRange) < lowerBound)
+                    lowerBound = std::get<0>(rankRange);
+                if (std::get<1>(rankRange) > upperBound)
+                    upperBound = std::get<1>(rankRange);
             }
             
             int lowerBoundCoarse = lowerBound;
@@ -1091,9 +1091,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     bool verbose( comm->getRank() == 0 );
 
     if(verbose){
-        cout << " ############## " << endl;
-        cout << " Build Preconditioner " << endl;
-        cout << " ############## " << endl;
+        std::cout << " ############## " << std::endl;
+        std::cout << " Build Preconditioner " << std::endl;
+        std::cout << " ############## " << std::endl;
     }
     ParameterListPtr_Type plVelocity( new Teuchos::ParameterList( parameterList->sublist("Velocity preconditioner") ) );
     ParameterListPtr_Type plSchur( new Teuchos::ParameterList( parameterList->sublist("Schur complement preconditioner") ) );
@@ -1157,7 +1157,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
     precSchur_ = probSchur_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
     
     
-    string type = parameterList->sublist("General").get("Preconditioner Method","Diagonal");
+    std::string type = parameterList->sublist("General").get("Preconditioner Method","Diagonal");
     if (type == "Diagonal") {
         blockPrec2x2->setDiagonal(precVelocity_,
                                   precSchur_);
@@ -1258,10 +1258,10 @@ void Preconditioner<SC,LO,GO,NO>::setVelocityParameters( ParameterListPtr_Type p
     else if(!timeProblem_.is_null())
         rankRange = timeProblem_->getDomain(0)->getMesh()->getRankRange();
     
-    if (get<0>(rankRange) < lowerBound)
-        lowerBound = get<0>(rankRange);
-    if (get<1>(rankRange) > upperBound)
-        upperBound = get<1>(rankRange);
+    if (std::get<0>(rankRange) < lowerBound)
+        lowerBound = std::get<0>(rankRange);
+    if (std::get<1>(rankRange) > upperBound)
+        upperBound = std::get<1>(rankRange);
     
     int lowerBoundCoarse = lowerBound;
     int upperBoundCoarse = upperBound;
@@ -1368,10 +1368,10 @@ void Preconditioner<SC,LO,GO,NO>::setPressureParameters( ParameterListPtr_Type p
     else if(!timeProblem_.is_null())
         rankRange = timeProblem_->getDomain(1)->getMesh()->getRankRange();
     
-    if (get<0>(rankRange) < lowerBound)
-        lowerBound = get<0>(rankRange);
-    if (get<1>(rankRange) > upperBound)
-        upperBound = get<1>(rankRange);
+    if (std::get<0>(rankRange) < lowerBound)
+        lowerBound = std::get<0>(rankRange);
+    if (std::get<1>(rankRange) > upperBound)
+        upperBound = std::get<1>(rankRange);
     
     int lowerBoundCoarse = lowerBound;
     int upperBoundCoarse = upperBound;

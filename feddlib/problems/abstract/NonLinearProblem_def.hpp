@@ -11,7 +11,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD
 {
 

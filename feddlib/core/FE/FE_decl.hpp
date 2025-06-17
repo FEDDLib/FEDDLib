@@ -212,7 +212,7 @@ class FE {
     void assemblyNonlinearLaplace(
         int dim, std::string FEType, int degree, MultiVectorPtr_Type u_rep,
         BlockMatrixPtr_Type &A, BlockMultiVectorPtr_Type &resVec,
-        ParameterListPtr_Type params, string assembleMode,
+        ParameterListPtr_Type params, std::string assembleMode,
         bool callFillComplete = true, int FELocExternal = -1);
 
     // // Assembling the reaction term of the reaction diffusion equation. Maybe add default function.
@@ -469,8 +469,8 @@ class FE {
     void epsilonTensor(vec_dbl_Type &basisValues, SmallMatrix<SC> &epsilonValues, int activeDof);
 
     void assemblyNavierStokes(int dim,
-								string FETypeVelocity,
-								string FETypePressure,
+								std::string FETypeVelocity,
+								std::string FETypePressure,
 								int degree,
 								int dofsVelocity,
 								int dofsPressure,
@@ -481,12 +481,12 @@ class FE {
 								SmallMatrix_Type coeff,
 								ParameterListPtr_Type params,
 								bool reAssemble,
-							    string assembleMode,
+							        std::string assembleMode,
 								bool callFillComplete = true,
 								int FELocExternal=-1);
 
     void assemblyLaplaceAssFE(int dim,
-                            string FEType,
+                            std::string FEType,
                             int degree,
                             int dofs,
                             BlockMatrixPtr_Type &A,
@@ -494,8 +494,8 @@ class FE {
                             int FELocExternal=-1);
 
     void assemblyAceDeformDiffu(int dim,
-								string FETypeChem,
-								string FETypeSolid,
+								std::string FETypeChem,
+								std::string FETypeSolid,
 								int degree,
 								int dofsChem,
 								int dofsSolid,
@@ -504,13 +504,13 @@ class FE {
 								BlockMatrixPtr_Type &A,
 								BlockMultiVectorPtr_Type &resVec,
 								ParameterListPtr_Type params,
-							    string assembleMode,
+							        std::string assembleMode,
 								bool callFillComplete = true,
 								int FELocExternal=-1);
 
     void assemblyAceDeformDiffuBlock(int dim,
-                                string FETypeChem,
-                                string FETypeSolid,
+                                std::string FETypeChem,
+                                std::string FETypeSolid,
                                 int degree,
                                 int dofsChem,
                                 int dofsSolid,
@@ -522,7 +522,7 @@ class FE {
                                 BlockMultiVectorPtr_Type &resVec,
                                 int block,
                                 ParameterListPtr_Type params,
-                                string assembleMode,
+                                std::string assembleMode,
                                 bool callFillComplete = true,
                                 int FELocExternal=-1);
 
@@ -554,7 +554,7 @@ class FE {
     };
 
 	void assemblyLinearElasticity(int dim,
-                                string FEType,
+                                std::string FEType,
                                 int degree,
                                 int dofs,
                                 MultiVectorPtr_Type d_rep,
@@ -562,12 +562,12 @@ class FE {
                                 BlockMultiVectorPtr_Type &resVec,
                                 ParameterListPtr_Type params,
                                 bool reAssemble,
-                                string assembleMode,
+                                std::string assembleMode,
                                 bool callFillComplete=true,
                                 int FELocExternal=-1);
 
     void assemblyNonLinearElasticity(int dim,
-                                    string FEType,
+                                    std::string FEType,
                                     int degree,
                                     int dofs,
                                     MultiVectorPtr_Type d_rep,
@@ -578,7 +578,7 @@ class FE {
                                     int FELocExternal=-1);
                                     
     void assemblyNonLinearElasticity(int dim,
-                                    string FEType,
+                                    std::string FEType,
                                     int degree,
                                     int dofs,
                                     MultiVectorPtr_Type d_rep,
@@ -590,15 +590,15 @@ class FE {
                                     bool callFillComplete = true,
                                     int FELocExternal=-1);
                                     
-    void checkMeshOrientation(int dim,string FEType);
+    void checkMeshOrientation(int dim, std::string FEType);
 
     /* Given a converged velocity solution this function 
        computes the averaged viscosity estimate in each cell at the center of mass 
        - CM stands for center of mass so the values at the node are averaged to obtain one value
     */
     void computeSteadyViscosityFE_CM(int dim,
-	                                    string FETypeVelocity,
-	                                    string FETypePressure,
+	                                    std::string FETypeVelocity,
+	                                    std::string FETypePressure,
 										int dofsVelocity,
 										int dofsPressure,
 										MultiVectorPtr_Type u_rep,
@@ -616,7 +616,7 @@ private:
 
 	void addFeBlock(BlockMatrixPtr_Type &A, SmallMatrixPtr_Type elementMatrix, FiniteElement element, MapConstPtr_Type mapFirstRow, int row, int column, tuple_disk_vec_ptr_Type problemDisk);
 
-    void initAssembleFEElements(string elementType, tuple_disk_vec_ptr_Type problemDisk, ElementsPtr_Type elements, ParameterListPtr_Type params, vec2D_dbl_ptr_Type pointsRep, MapConstPtr_Type elementMap);
+    void initAssembleFEElements(std::string elementType, tuple_disk_vec_ptr_Type problemDisk, ElementsPtr_Type elements, ParameterListPtr_Type params, vec2D_dbl_ptr_Type pointsRep, MapConstPtr_Type elementMap);
 
     void addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Type rhsVec, FiniteElement elementBlock1,FiniteElement elementBlock2, int dofs1, int dofs2 );
 

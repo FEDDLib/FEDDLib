@@ -28,7 +28,7 @@ DifferentiableFuncClass<SC,LO,GO,NO>(params)
 template <class SC, class LO, class GO, class NO>
 void Dimless_Carreau<SC,LO,GO,NO>::evaluateMapping(ParameterListPtr_Type params, double shearRate, double &viscosity) {
 	
-    viscosity = this->reference_viscosity*( this->nu_infty +(this->nu_0-this->nu_infty)*(pow(1.0+pow(this->characteristicTime*shearRate,2.0)    , (this->fluid_index_n-1.0)/2.0 )));
+    viscosity = this->reference_viscosity*( this->nu_infty +(this->nu_0-this->nu_infty)*(std::pow(1.0+std::pow(this->characteristicTime*shearRate,2.0)    , (this->fluid_index_n-1.0)/2.0 )));
     this->viscosity_ = viscosity; // Multiply with reference viscosity to obtain actual viscosity with dimension of reference viscosity [Pa s]
 }
 
@@ -39,7 +39,7 @@ void Dimless_Carreau<SC,LO,GO,NO>::evaluateDerivative(ParameterListPtr_Type para
 	
 // The function is composed of d_eta/ d_GammaDot * d_GammaDot/ D_Tau with d_GammaDot * d_GammaDot/ D_Tau= - 2/GammaDot
 // So for a Carreau-like Fluid we do not get the problem that the shear rate is in denominator
-res = (-2.0)*(this->nu_0-this->nu_infty)*(this->fluid_index_n-1.0)*pow(this->characteristicTime, 2)*pow(1.0+pow(this->characteristicTime*shearRate,2.0)    , ((this->fluid_index_n-3.0)/2.0) );
+res = (-2.0)*(this->nu_0-this->nu_infty)*(this->fluid_index_n-1.0)*std::pow(this->characteristicTime, 2)*std::pow(1.0+std::pow(this->characteristicTime*shearRate,2.0)    , ((this->fluid_index_n-3.0)/2.0) );
 res = this->reference_viscosity*res;
 
 }

@@ -436,7 +436,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 
 	for(int i=0; i< 30; i++){
 		for(int j=0; j<30; j++){
-			//if(fabs(stiffnessMatrixKuu[i][j]) > 1e7)
+			//if(std::fabs(stiffnessMatrixKuu[i][j]) > 1e7)
 			//	cout << " !!! Sus entry Kuu [" << i << "][" << j << "] " << stiffnessMatrixKuu[i][j] << endl; 
 			
 			(*elementMatrix)[i][j]=stiffnessMatrixKuu[i][j];		
@@ -446,7 +446,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 
 	for(int i=0; i< 30; i++){
 		for(int j=0; j<10; j++){
-			//if(fabs(stiffnessMatrixKuc[i][j]) > 1e7)
+			//if(std::fabs(stiffnessMatrixKuc[i][j]) > 1e7)
 			//	cout << " !!! Sus entry Kuc [" << i << "][" << j << "] " << stiffnessMatrixKuc[i][j] << endl; 
 			
 			(*elementMatrix)[i][j+30]=stiffnessMatrixKuc[i][j];
@@ -454,7 +454,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 	}
 	for(int i=0; i< 10; i++){
 		for(int j=0; j<30; j++){
-			//if(fabs(stiffnessMatrixKcu[i][j]) > 1e7)
+			//if(std::fabs(stiffnessMatrixKcu[i][j]) > 1e7)
 			//	cout << " !!! Sus entry Kcu [" << i << "][" << j << "] " << stiffnessMatrixKcu[i][j] << endl; 
 			
 			(*elementMatrix)[i+30][j]=stiffnessMatrixKcu[i][j];
@@ -462,7 +462,7 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_S
 	}
 	for(int i=0; i< 10; i++){
 		for(int j=0; j<10; j++){
-			//if(fabs(massMatrixMc[i][j]) > 1e5 || fabs(stiffnessMatrixKcc[i][j]) > 1e5 )
+			//if(std::fabs(massMatrixMc[i][j]) > 1e5 || std::fabs(stiffnessMatrixKcc[i][j]) > 1e5 )
 			//	cout << " !!! Sus entry Mass [" << i << "][" << j << "] " << massMatrixMc[i][j] << " or stiff Kcc " << stiffnessMatrixKcc[i][j] << endl; 
 			 
 			(*elementMatrix)[i+30][j+30] =stiffnessMatrixKcc[i][j] +(1./deltaT)*massMatrixMc[i][j]; //

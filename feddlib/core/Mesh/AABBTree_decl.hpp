@@ -44,7 +44,7 @@ namespace FEDD{
 
         // List-Vector with numNodes rows and one column,
         // containing the Elements stored in each node.
-        vector<list<int> > containedElements_;
+        std::vector<std::list<int> > containedElements_;
 
         // int-Vector with numNodes rows and two columns
         // containing parent/child pointers associated  with each node
