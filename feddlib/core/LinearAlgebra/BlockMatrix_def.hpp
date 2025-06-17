@@ -1,6 +1,6 @@
 #ifndef BLOCKMATRIX_DEF_hpp
 #define BLOCKMATRIX_DEF_hpp
-#include "BlockMatrix_decl.hpp"
+
 /*!
  Definition of BlockMatrix
 

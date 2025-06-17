@@ -1,14 +1,16 @@
 #ifndef BLOCKMATRIX_DECL_hpp
 #define BLOCKMATRIX_DECL_hpp
 
+#include <Teuchos_Tuple.hpp>
+#include <Thyra_BlockedLinearOpBase.hpp>
+#include <Thyra_DefaultBlockedLinearOp_decl.hpp>
+
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/General/SmallMatrix.hpp"
 #include "BlockMap.hpp"
 #include "BlockMultiVector.hpp"
 #include "Matrix.hpp"
-#include <Teuchos_Tuple.hpp>
-#include <Thyra_BlockedLinearOpBase.hpp>
-#include <Thyra_DefaultBlockedLinearOp_decl.hpp>
+
 /*!
  Declaration of BlockMatrix
 
