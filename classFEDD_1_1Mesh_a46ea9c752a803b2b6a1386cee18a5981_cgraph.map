@@ -1,0 +1,4 @@
+<map id="FEDD::Mesh::getBCFlagRepeated" name="FEDD::Mesh::getBCFlagRepeated">
+<area shape="rect" id="Node000001" title="Getter for flags corresponting to repeated points." alt="" coords="5,29,221,55"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="77,31,70,21,74,11,89,5,113,3,139,5,153,12,150,17,138,10,113,8,90,10,78,15,75,20,81,27"/>
+</map>

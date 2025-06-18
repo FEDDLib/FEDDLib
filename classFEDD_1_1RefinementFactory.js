@@ -1,0 +1,25 @@
+var classFEDD_1_1RefinementFactory =
+[
+    [ "RefinementFactory", "classFEDD_1_1RefinementFactory.html#a0815e8208b193e64c26e64d94691a967", null ],
+    [ "RefinementFactory", "classFEDD_1_1RefinementFactory.html#a9b8e1447e7b600ba3816c0171ca0a262", null ],
+    [ "addMidpoint", "classFEDD_1_1RefinementFactory.html#af40b1acc9353be1408fed4d6a61ed2ae", null ],
+    [ "bisectEdges", "classFEDD_1_1RefinementFactory.html#a55bfecb1360bc7c4ad977174c172330a", null ],
+    [ "bisectElement3", "classFEDD_1_1RefinementFactory.html#a092455b08d3903df72c5f58c28bf4b05", null ],
+    [ "buildEdgeMap", "classFEDD_1_1RefinementFactory.html#a4294d0901e6691203b9043bb2f9c6ac6", null ],
+    [ "buildNodeMap", "classFEDD_1_1RefinementFactory.html#abeca9755a1bd393c36c792a78c6779e9", null ],
+    [ "buildSurfaceTriangleElements", "classFEDD_1_1RefinementFactory.html#a0393fc1497f3b0e02380af00b93e96d6", null ],
+    [ "checkInterfaceSurface", "classFEDD_1_1RefinementFactory.html#a97003a4445b40ac91728639de432a449", null ],
+    [ "determineLongestEdge", "classFEDD_1_1RefinementFactory.html#a383adbeffceada793b6805fb02fa5568", null ],
+    [ "refineBlue", "classFEDD_1_1RefinementFactory.html#aeeebbc6bfb22dfb14470cf628400733a", null ],
+    [ "refineGreen", "classFEDD_1_1RefinementFactory.html#a130f21212d5edaad2dc8f809a2628f2a", null ],
+    [ "refinementRestrictions", "classFEDD_1_1RefinementFactory.html#a87af199a3fbc9417096cb6a22bb822d5", null ],
+    [ "refineMesh", "classFEDD_1_1RefinementFactory.html#ae8c68743984067f49935e30705e22876", null ],
+    [ "refineMeshRegIreg", "classFEDD_1_1RefinementFactory.html#a3257c3b9d811445955692f40434aeaaa", null ],
+    [ "refineRed", "classFEDD_1_1RefinementFactory.html#ad8bc07f5d6bfe7f7180bd32d7cc4ea0c", null ],
+    [ "refineRegular", "classFEDD_1_1RefinementFactory.html#a282e75fa4cb2fe0440f3db747b546265", null ],
+    [ "refineType1", "classFEDD_1_1RefinementFactory.html#abe57919c64a24ad38d377e0aef92c1ea", null ],
+    [ "refineType2", "classFEDD_1_1RefinementFactory.html#a75b9a1202fee4ce646456c7d3a1c4243", null ],
+    [ "refineType3", "classFEDD_1_1RefinementFactory.html#a0e64916bd1d39fbfdc8f1746528ce69a", null ],
+    [ "refineType4", "classFEDD_1_1RefinementFactory.html#addf40c0e45ec368e721226356f74b10c", null ],
+    [ "updateElementsOfEdgesLocalAndGlobal", "classFEDD_1_1RefinementFactory.html#a2ebf82a5deb92e26a48805fd470f6840", null ]
+];

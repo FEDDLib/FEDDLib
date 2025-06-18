@@ -1,0 +1,5 @@
+<map id="FEDD::ErrorEstimation::tagArea" name="FEDD::ErrorEstimation::tagArea">
+<area shape="rect" id="Node000001" title="Tags only a certain Area for refinement and is independent of any error estimation." alt="" coords="263,5,412,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1AdaptiveMeshRefinement.html#abbff0752b1d6febdb36194e379e8b876" title="Initializing problem if only a certain area should be refined." alt="" coords="5,5,215,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="247,28,215,28,215,23,247,23"/>
+</map>

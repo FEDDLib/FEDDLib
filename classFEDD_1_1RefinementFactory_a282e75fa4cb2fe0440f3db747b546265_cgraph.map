@@ -1,0 +1,5 @@
+<map id="FEDD::RefinementFactory::refineRegular" name="FEDD::RefinementFactory::refineRegular">
+<area shape="rect" id="Node000001" title="2D and 3D regular refinement. Chosen by error estimator or otherwise elements are refined regular by ..." alt="" coords="5,5,175,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1RefinementFactory.html#af40b1acc9353be1408fed4d6a61ed2ae" title="Adding a Midpoint on an edge." alt="" coords="223,5,392,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="175,23,207,23,207,28,175,28"/>
+</map>

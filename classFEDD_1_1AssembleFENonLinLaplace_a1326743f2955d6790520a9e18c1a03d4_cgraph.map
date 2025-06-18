@@ -1,0 +1,18 @@
+<map id="FEDD::AssembleFENonLinLaplace::assembleRHS" name="FEDD::AssembleFENonLinLaplace::assembleRHS">
+<area shape="rect" id="Node000001" title="Assemble the element right hand side vector." alt="" coords="5,96,229,137"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#a85dd0118ef667862aaa595a41542b2f1" title="Determine polynomial degree of a finite element basis function or its gradient that is required to se..." alt="" coords="277,5,480,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="157,94,212,67,276,41,301,33,303,38,278,46,215,72,159,98"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1AssembleFE.html#a35ada89164c74b433340733c01f30f4b" title=" " alt="" coords="286,56,471,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="229,100,270,95,270,100,229,105"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1Helper.html#aec6f9bc4208c7ce02f2bebad7a98e7d1" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="303,136,454,162"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="229,128,288,135,287,140,229,133"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1Helper.html#ac15451b565dee93fa08b63c7a2957480" title="Get basisfunction phi per quadrature point." alt="" coords="307,185,450,211"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="172,135,277,172,303,179,301,184,276,177,170,140"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="528,152,715,193"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="455,154,513,159,513,165,454,159"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="547,103,696,128"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="454,136,531,125,532,130,455,141"/>
+<area shape="poly" id="edge7_Node000007_Node000005" title=" " alt="" coords="450,188,513,181,513,187,450,193"/>
+<area shape="rect" id="Node000008" href="$classFEDD_1_1Helper.html#aca7380d78c4202232789905290c682a3" title="Get phi i." alt="" coords="560,217,683,243"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="450,205,546,218,545,223,450,210"/>
+</map>

@@ -1,0 +1,14 @@
+<map id="FEDD::ErrorEstimation::phi" name="FEDD::ErrorEstimation::phi">
+<area shape="rect" id="Node000001" title="Calcutlating phi depending on quad points p." alt="" coords="860,46,1032,72"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1ErrorEstimation.html#ab431a0581511b573822f153900e54ec8" title="Function that calculates the jump part for nabla u or p." alt="" coords="662,8,812,49"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="844,47,812,42,812,37,845,41"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1ErrorEstimation.html#ac709ef81edfeb0d91b175ea480570fd2" title="Function that that determines ||\Delta u_h + f ||_(L2(T)), || \Delta u_h + f &#45; \nabla p_h ||_T or || ..." alt="" coords="460,71,614,111"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="844,70,615,88,615,82,844,64"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1ErrorEstimation.html#a2d5d3da2a6589350e8c158363d876cdc" title="Part of the error estimator that calculates the jump part of the estimation. What kind of jump is cal..." alt="" coords="462,5,612,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="647,30,612,29,612,24,647,24"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1ErrorEstimation.html#af2493a256a95b90eeaea64628421d13f" title="Main Function for a posteriori error estimation." alt="" coords="263,39,412,79"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="447,43,413,49,412,44,446,38"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1AdaptiveMeshRefinement.html#a10f773edf498ea2bcc21c5b1dc36a32e" title="Global Algorithm of Mesh Refinement." alt="" coords="5,39,215,79"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="247,62,215,62,215,56,247,56"/>
+<area shape="poly" id="edge6_Node000006_Node000004" title=" " alt="" coords="444,79,412,74,413,68,445,74"/>
+</map>

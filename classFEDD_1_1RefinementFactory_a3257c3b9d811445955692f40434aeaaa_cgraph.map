@@ -1,0 +1,23 @@
+<map id="FEDD::RefinementFactory::refineMeshRegIreg" name="FEDD::RefinementFactory::refineMeshRegIreg">
+<area shape="rect" id="Node000001" title="Refinement performed according to the set of rules determined by Bey or Verfürth." alt="" coords="5,235,175,275"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1RefinementFactory.html#a092455b08d3903df72c5f58c28bf4b05" title="2D refinement by bisection of tagged Elements with three tagged Edges." alt="" coords="223,5,392,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,233,116,196,143,149,178,100,221,57,227,52,230,56,224,61,182,104,147,152,120,199,103,235"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1RefinementFactory.html#aeeebbc6bfb22dfb14470cf628400733a" title="2D blue refinement: refining element according to blue refinement scheme &#45; connecting nodes of shorte..." alt="" coords="223,71,392,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="106,233,154,179,186,149,221,122,231,116,233,121,224,127,190,153,158,182,110,236"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1RefinementFactory.html#a130f21212d5edaad2dc8f809a2628f2a" title="2D green refinement: refining the element according to green scheme &#45; connecting node on refined edge..." alt="" coords="223,136,392,177"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="130,232,222,187,237,181,239,185,224,192,132,237"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1RefinementFactory.html#a282e75fa4cb2fe0440f3db747b546265" title="2D and 3D regular refinement. Chosen by error estimator or otherwise elements are refined regular by ..." alt="" coords="223,201,392,242"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="175,239,207,234,208,240,175,245"/>
+<area shape="rect" id="Node000008" href="$classFEDD_1_1RefinementFactory.html#abe57919c64a24ad38d377e0aef92c1ea" title="3D Type(1) refinement as defined in &quot;Tetrahedral Grid Refinement&quot; by J. Bey &#39;Algorithm Regular Refine..." alt="" coords="223,267,392,307"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="175,265,208,270,207,275,175,270"/>
+<area shape="rect" id="Node000009" href="$classFEDD_1_1RefinementFactory.html#a75b9a1202fee4ce646456c7d3a1c4243" title="3D Type(2) refinement as defined in &quot;Tetrahedral Grid Refinement&quot; by J. Bey &#39;Algorithm Regular Refine..." alt="" coords="223,332,392,373"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="134,274,224,317,239,323,237,328,222,321,131,278"/>
+<area shape="rect" id="Node000010" href="$classFEDD_1_1RefinementFactory.html#a0e64916bd1d39fbfdc8f1746528ce69a" title="3D Type(3) refinement as defined in &quot;Tetrahedral Grid Refinement&quot; by J. Bey &#39;Algorithm Regular Refine..." alt="" coords="223,397,392,438"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="110,274,158,327,190,356,224,382,233,388,231,392,221,387,186,360,154,331,106,278"/>
+<area shape="rect" id="Node000011" href="$classFEDD_1_1RefinementFactory.html#addf40c0e45ec368e721226356f74b10c" title="3D Type(4) refinement as defined in &quot;Tetrahedral Grid Refinement&quot; by J. Bey &#39;Algorithm Regular Refine..." alt="" coords="223,463,392,503"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="103,274,121,311,147,357,182,405,224,448,231,452,227,456,221,452,178,409,143,360,116,314,98,277"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1RefinementFactory.html#a383adbeffceada793b6805fb02fa5568" title="Eetermine longest edge in triangle." alt="" coords="440,5,609,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="392,23,424,23,424,28,392,28"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1RefinementFactory.html#af40b1acc9353be1408fed4d6a61ed2ae" title="Adding a Midpoint on an edge." alt="" coords="440,201,609,242"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="392,219,424,219,424,224,392,224"/>
+</map>

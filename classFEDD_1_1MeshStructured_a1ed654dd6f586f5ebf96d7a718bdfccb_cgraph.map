@@ -1,0 +1,6 @@
+<map id="FEDD::MeshStructured::buildSurfaceLinesSquareMiniTPM" name="FEDD::MeshStructured::buildSurfaceLinesSquareMiniTPM">
+<area shape="rect" id="Node000001" title="Building suface lines for TPM square mini. Empty." alt="" coords="5,29,230,70"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="68,29,66,19,74,10,91,5,118,3,146,5,163,11,161,16,145,10,117,8,92,10,77,15,71,21,73,28"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Mesh.html#a122ff9466425ab05bccce9a8c2c554f3" title=" " alt="" coords="278,22,485,78"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="230,47,262,47,262,52,230,52"/>
+</map>

@@ -1,0 +1,22 @@
+<map id="FEDD::RefinementFactory::determineLongestEdge" name="FEDD::RefinementFactory::determineLongestEdge">
+<area shape="rect" id="Node000001" title="Eetermine longest edge in triangle." alt="" coords="915,68,1084,109"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1RefinementFactory.html#a55bfecb1360bc7c4ad977174c172330a" title="2D and 3D that bisects the edges of tagged Elements. Chosen by error estimator or otherwise elements ..." alt="" coords="697,68,867,109"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="899,91,867,91,867,86,899,86"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1RefinementFactory.html#a87af199a3fbc9417096cb6a22bb822d5" title="Refinement Restrictions." alt="" coords="480,13,649,54"/>
+<area shape="poly" id="edge11_Node000001_Node000003" title=" " alt="" coords="906,67,866,59,753,46,649,39,650,34,754,40,867,54,907,61"/>
+<area shape="rect" id="Node000008" href="$classFEDD_1_1RefinementFactory.html#a092455b08d3903df72c5f58c28bf4b05" title="2D refinement by bisection of tagged Elements with three tagged Edges." alt="" coords="697,133,867,174"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="916,116,853,135,852,130,915,111"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="683,66,648,57,649,52,684,61"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1RefinementFactory.html#ae8c68743984067f49935e30705e22876" title="Main function of RefinementFactory, performs one complete mesh refinement, according to red&#45;green ref..." alt="" coords="263,71,432,111"/>
+<area shape="poly" id="edge7_Node000002_Node000004" title=" " alt="" coords="682,92,433,93,433,88,682,86"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="472,61,428,73,426,67,470,56"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1AdaptiveMeshRefinement.html#a10f773edf498ea2bcc21c5b1dc36a32e" title="Global Algorithm of Mesh Refinement." alt="" coords="5,5,215,46"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="256,69,186,49,187,44,258,64"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1AdaptiveMeshRefinement.html#abbff0752b1d6febdb36194e379e8b876" title="Initializing problem if only a certain area should be refined." alt="" coords="5,71,215,111"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="248,94,215,94,215,88,248,88"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1AdaptiveMeshRefinement.html#a4ceb419a2cc35a7c3bc3dc17e58b96d8" title="Initializing problem if uniform refinement is requested." alt="" coords="5,136,215,177"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="258,118,187,138,186,133,256,113"/>
+<area shape="rect" id="Node000009" href="$classFEDD_1_1RefinementFactory.html#a3257c3b9d811445955692f40434aeaaa" title="Refinement performed according to the set of rules determined by Bey or Verfürth." alt="" coords="480,129,649,170"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="682,154,650,154,650,149,682,149"/>
+<area shape="poly" id="edge10_Node000009_Node000004" title=" " alt="" coords="472,127,425,115,426,109,473,122"/>
+</map>

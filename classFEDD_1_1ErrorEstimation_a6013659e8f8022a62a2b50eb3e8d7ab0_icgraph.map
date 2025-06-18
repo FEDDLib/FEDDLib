@@ -1,0 +1,10 @@
+<map id="FEDD::ErrorEstimation::calcDiamTriangles3D" name="FEDD::ErrorEstimation::calcDiamTriangles3D">
+<area shape="rect" id="Node000001" title="Calculating the diameter of triangles." alt="" coords="657,35,808,75"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1ErrorEstimation.html#a2d5d3da2a6589350e8c158363d876cdc" title="Part of the error estimator that calculates the jump part of the estimation. What kind of jump is cal..." alt="" coords="460,5,609,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="641,44,609,39,610,34,642,39"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1ErrorEstimation.html#af2493a256a95b90eeaea64628421d13f" title="Main Function for a posteriori error estimation." alt="" coords="263,35,412,75"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="642,60,609,60,460,60,412,60,412,54,460,55,609,55,642,55"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="445,42,413,47,412,41,444,36"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1AdaptiveMeshRefinement.html#a10f773edf498ea2bcc21c5b1dc36a32e" title="Global Algorithm of Mesh Refinement." alt="" coords="5,35,215,75"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="247,58,215,58,215,52,247,52"/>
+</map>

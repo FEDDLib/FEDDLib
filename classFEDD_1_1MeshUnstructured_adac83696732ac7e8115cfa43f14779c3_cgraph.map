@@ -1,0 +1,15 @@
+<map id="FEDD::MeshUnstructured::assignEdgeFlags" name="FEDD::MeshUnstructured::assignEdgeFlags">
+<area shape="rect" id="Node000001" title="Assigning flags to all edges." alt="" coords="5,167,174,207"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="44,167,41,157,49,148,65,142,90,140,116,142,131,149,129,154,115,148,89,145,66,147,52,152,47,158,49,165"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshUnstructured.html#a59217225e99feb51b0d4fe8258580866" title="Essentially determine flag of an edge. Thus determine P2 Flag for building P2 mesh." alt="" coords="250,29,418,70"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="110,164,158,122,220,81,235,74,237,79,223,85,161,126,113,168"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1MeshUnstructured.html#a9b5701851212381883f798ca5473fe9b" title="Get EdgeElements." alt="" coords="250,95,418,135"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="158,163,221,144,245,137,246,143,222,150,159,169"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1Mesh.html#a41bf3115dc7c63f3f19c1080fa42757a" title=" " alt="" coords="235,159,433,215"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="174,184,219,184,219,190,174,190"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1Mesh.html#a122ff9466425ab05bccce9a8c2c554f3" title=" " alt="" coords="230,239,438,295"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="155,205,233,231,232,236,153,210"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1Mesh.html#aa95e1c2059f6ce69dc266cb35fe8fbef" title=" " alt="" coords="222,319,446,375"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="111,206,159,255,190,281,223,305,232,310,229,314,220,309,186,286,155,259,107,210"/>
+<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="288,29,286,19,293,10,309,5,334,3,360,5,376,11,374,16,359,10,334,8,310,10,296,15,291,21,293,28"/>
+</map>

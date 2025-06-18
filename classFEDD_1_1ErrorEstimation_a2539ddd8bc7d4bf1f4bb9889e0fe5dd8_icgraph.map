@@ -1,0 +1,17 @@
+<map id="FEDD::ErrorEstimation::getQuadValues" name="FEDD::ErrorEstimation::getQuadValues">
+<area shape="rect" id="Node000001" title="Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information." alt="" coords="860,71,1009,111"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1ErrorEstimation.html#ab431a0581511b573822f153900e54ec8" title="Function that calculates the jump part for nabla u or p." alt="" coords="662,5,812,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="856,68,800,49,802,44,857,63"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1ErrorEstimation.html#a2ab423f274ba3b7d8c248e57f791f42a" title="Function that that determines || div(u) ||_T for a Element T." alt="" coords="662,71,812,111"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="844,94,812,94,812,88,844,88"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1ErrorEstimation.html#ac709ef81edfeb0d91b175ea480570fd2" title="Function that that determines ||\Delta u_h + f ||_(L2(T)), || \Delta u_h + f &#45; \nabla p_h ||_T or || ..." alt="" coords="460,128,614,169"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="847,118,812,126,709,140,615,147,615,142,709,134,811,120,846,113"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1ErrorEstimation.html#a2d5d3da2a6589350e8c158363d876cdc" title="Part of the error estimator that calculates the jump part of the estimation. What kind of jump is cal..." alt="" coords="462,9,612,50"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="647,30,612,31,612,26,647,25"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1ErrorEstimation.html#af2493a256a95b90eeaea64628421d13f" title="Main Function for a posteriori error estimation." alt="" coords="263,71,412,111"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="455,58,407,73,405,68,453,53"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1AdaptiveMeshRefinement.html#a10f773edf498ea2bcc21c5b1dc36a32e" title="Global Algorithm of Mesh Refinement." alt="" coords="5,71,215,111"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="247,94,215,94,215,88,247,88"/>
+<area shape="poly" id="edge6_Node000006_Node000004" title=" " alt="" coords="647,94,412,94,412,88,647,88"/>
+<area shape="poly" id="edge8_Node000007_Node000004" title=" " alt="" coords="449,126,410,115,411,109,450,121"/>
+</map>

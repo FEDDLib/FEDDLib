@@ -1,0 +1,6 @@
+<map id="FEDD::BCBuilder::blockHasDirichletBC" name="FEDD::BCBuilder::blockHasDirichletBC">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,29,186,70"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1BCBuilder.html#aaf5b29a7c5663fe235385da3941707ea" title=" " alt="" coords="234,29,414,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,47,218,47,218,52,186,52"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="281,29,279,19,286,10,301,5,324,3,349,5,363,11,361,16,347,10,324,8,302,10,289,15,284,21,286,28"/>
+</map>

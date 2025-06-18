@@ -1,0 +1,4 @@
+<map id="FEDD::MeshStructured::setStructuredMeshFlags" name="FEDD::MeshStructured::setStructuredMeshFlags">
+<area shape="rect" id="Node000001" title="Setting corresponding flags to structured mesh depending on underlying problem. Rectangles/Cuboids ar..." alt="" coords="5,29,175,70"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="117,16,107,10,90,8,74,10,65,14,61,20,63,28,57,29,56,19,61,11,73,5,90,3,109,5,120,11"/>
+</map>

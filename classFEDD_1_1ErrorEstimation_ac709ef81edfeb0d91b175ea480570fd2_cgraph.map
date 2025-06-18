@@ -1,0 +1,9 @@
+<map id="FEDD::ErrorEstimation::determineResElement" name="FEDD::ErrorEstimation::determineResElement">
+<area shape="rect" id="Node000001" title="Function that that determines ||\Delta u_h + f ||_(L2(T)), || \Delta u_h + f &#45; \nabla p_h ||_T or || ..." alt="" coords="5,71,160,111"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1ErrorEstimation.html#a2539ddd8bc7d4bf1f4bb9889e0fe5dd8" title="Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information." alt="" coords="219,5,368,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="150,68,210,49,212,54,151,73"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1ErrorEstimation.html#a74e71e6f93d83fba059694630b01fc49" title="Calcutlating the gradient of phi depending on quad points p." alt="" coords="219,71,368,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="160,88,204,88,204,94,160,94"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1ErrorEstimation.html#a54af187cc5c349977b9881507f2c7067" title="Calcutlating phi depending on quad points p." alt="" coords="208,136,380,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="160,109,230,128,228,133,159,114"/>
+</map>

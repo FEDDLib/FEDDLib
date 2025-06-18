@@ -1,0 +1,24 @@
+<map id="FEDD::AssembleFENavierStokes::assembleRHS" name="FEDD::AssembleFENavierStokes::assembleRHS">
+<area shape="rect" id="Node000001" title="Assemble the element right hand side vector." alt="" coords="5,146,220,186"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1AssembleFENavierStokes.html#a95445082e9e700036a2aedbd1fc257c4" title="Assembly advection vector field ." alt="" coords="268,146,482,186"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="220,164,252,164,252,169,220,169"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Helper.html#a98540dc14b095b21d9adc79ee7fd1809" title="Applying the transformation matriX B to the gradient of phi, as is done in when transforming the grad..." alt="" coords="552,5,722,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="394,143,451,92,489,64,529,41,546,34,548,39,531,46,492,69,455,96,398,147"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1AssembleFENavierStokes.html#a267514037c5191c0253a5ecc3e84168c" title="Building Transformation." alt="" coords="530,55,744,96"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="427,143,529,105,549,98,551,103,531,110,429,148"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1Helper.html#a85dd0118ef667862aaa595a41542b2f1" title="Determine polynomial degree of a finite element basis function or its gradient that is required to se..." alt="" coords="536,120,739,146"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="482,150,520,145,520,150,483,155"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1AssembleFE.html#a35ada89164c74b433340733c01f30f4b" title=" " alt="" coords="544,170,730,226"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="483,177,529,182,529,188,482,182"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1Helper.html#aec6f9bc4208c7ce02f2bebad7a98e7d1" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="562,251,713,276"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="416,185,470,211,531,236,556,244,555,249,529,241,468,216,414,189"/>
+<area shape="rect" id="Node000010" href="$classFEDD_1_1Helper.html#ac15451b565dee93fa08b63c7a2957480" title="Get basisfunction phi per quadrature point." alt="" coords="566,300,708,326"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="398,185,455,236,492,264,531,286,552,295,550,300,529,291,489,268,451,241,394,189"/>
+<area shape="rect" id="Node000008" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="792,267,980,308"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="714,268,777,274,777,280,713,273"/>
+<area shape="rect" id="Node000009" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="811,217,961,243"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="713,251,795,240,796,245,714,256"/>
+<area shape="poly" id="edge10_Node000010_Node000008" title=" " alt="" coords="708,303,777,296,777,301,709,308"/>
+<area shape="rect" id="Node000011" href="$classFEDD_1_1Helper.html#aca7380d78c4202232789905290c682a3" title="Get phi i." alt="" coords="825,332,947,358"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="709,319,810,332,809,338,708,325"/>
+</map>

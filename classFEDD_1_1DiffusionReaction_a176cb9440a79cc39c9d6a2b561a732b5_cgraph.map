@@ -1,0 +1,7 @@
+<map id="FEDD::DiffusionReaction::assemble" name="FEDD::DiffusionReaction::assemble">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,29,168,70"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="45,29,43,19,49,10,64,5,87,3,111,5,125,11,123,16,109,10,86,8,65,10,53,15,48,21,50,28"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1DiffusionReaction.html#a5410d01e512cf91472d68d79d99519ed" title="assemble constant matrices, that remain the same" alt="" coords="216,29,401,70"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="168,47,200,47,200,52,168,52"/>
+<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="266,29,264,19,271,10,286,5,308,3,332,5,347,11,344,16,331,10,308,8,287,10,274,15,270,21,272,28"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="FEDD::RefinementFactory::bisectEdges" name="FEDD::RefinementFactory::bisectEdges">
+<area shape="rect" id="Node000001" title="2D and 3D that bisects the edges of tagged Elements. Chosen by error estimator or otherwise elements ..." alt="" coords="5,39,175,79"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1RefinementFactory.html#af40b1acc9353be1408fed4d6a61ed2ae" title="Adding a Midpoint on an edge." alt="" coords="223,5,392,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="175,43,207,38,208,44,175,49"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1RefinementFactory.html#a383adbeffceada793b6805fb02fa5568" title="Eetermine longest edge in triangle." alt="" coords="223,71,392,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="175,69,208,74,207,79,175,74"/>
+</map>

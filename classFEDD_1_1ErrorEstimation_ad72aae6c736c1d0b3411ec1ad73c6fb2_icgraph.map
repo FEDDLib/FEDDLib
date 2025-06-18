@@ -1,0 +1,5 @@
+<map id="FEDD::ErrorEstimation::determineCoarseningError" name="FEDD::ErrorEstimation::determineCoarseningError">
+<area shape="rect" id="Node000001" title="DetermineCoarseningError is the essential part of the mesh coarsening process." alt="" coords="263,5,439,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1AdaptiveMeshRefinement.html#a10f773edf498ea2bcc21c5b1dc36a32e" title="Global Algorithm of Mesh Refinement." alt="" coords="5,5,215,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="247,28,215,28,215,23,247,23"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="FEDD::RefinementFactory::bisectElement3" name="FEDD::RefinementFactory::bisectElement3">
+<area shape="rect" id="Node000001" title="2D refinement by bisection of tagged Elements with three tagged Edges." alt="" coords="5,5,175,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1RefinementFactory.html#a383adbeffceada793b6805fb02fa5568" title="Eetermine longest edge in triangle." alt="" coords="223,5,392,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="175,23,207,23,207,28,175,28"/>
+</map>

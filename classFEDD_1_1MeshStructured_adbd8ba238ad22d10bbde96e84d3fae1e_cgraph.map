@@ -1,0 +1,4 @@
+<map id="FEDD::MeshStructured::build3DQ2Cube" name="FEDD::MeshStructured::build3DQ2Cube">
+<area shape="rect" id="Node000001" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2 dis..." alt="" coords="5,29,159,70"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="52,29,51,19,56,11,66,5,82,3,99,5,109,11,106,16,97,10,82,8,68,10,59,14,56,20,57,28"/>
+</map>

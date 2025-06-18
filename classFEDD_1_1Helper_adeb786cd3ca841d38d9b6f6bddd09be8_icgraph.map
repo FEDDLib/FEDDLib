@@ -1,0 +1,8 @@
+<map id="FEDD::Helper::computeSurfaceNormal" name="FEDD::Helper::computeSurfaceNormal">
+<area shape="rect" id="Node000001" title="Compute surface normal of corresponding surface." alt="" coords="245,63,445,103"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Mesh.html#a519ba1769fe40daccda7c91bc924b564" title="Correcting the normal direction of all surface normals set as subelements of volume elements to be ou..." alt="" coords="10,29,192,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="229,70,192,65,193,59,229,65"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5" title="Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not ab..." alt="" coords="5,95,197,135"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="229,101,198,105,197,100,229,96"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="141,16,126,10,101,8,78,10,63,15,58,21,60,28,55,29,53,19,60,10,77,5,101,3,127,5,143,11"/>
+</map>

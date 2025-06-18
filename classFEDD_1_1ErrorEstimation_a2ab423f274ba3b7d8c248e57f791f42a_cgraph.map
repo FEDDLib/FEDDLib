@@ -1,0 +1,7 @@
+<map id="FEDD::ErrorEstimation::determineDivU" name="FEDD::ErrorEstimation::determineDivU">
+<area shape="rect" id="Node000001" title="Function that that determines || div(u) ||_T for a Element T." alt="" coords="5,39,155,79"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1ErrorEstimation.html#a2539ddd8bc7d4bf1f4bb9889e0fe5dd8" title="Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information." alt="" coords="203,5,352,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="154,44,187,38,188,44,155,49"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1ErrorEstimation.html#a74e71e6f93d83fba059694630b01fc49" title="Calcutlating the gradient of phi depending on quad points p." alt="" coords="203,71,352,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="155,68,188,74,187,79,154,74"/>
+</map>

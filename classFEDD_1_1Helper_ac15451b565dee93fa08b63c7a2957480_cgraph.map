@@ -1,0 +1,7 @@
+<map id="FEDD::Helper::getPhi" name="FEDD::Helper::getPhi">
+<area shape="rect" id="Node000001" title="Get basisfunction phi per quadrature point." alt="" coords="5,42,148,68"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="196,5,383,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="147,43,180,38,181,43,148,48"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Helper.html#aca7380d78c4202232789905290c682a3" title="Get phi i." alt="" coords="228,70,350,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="148,62,213,70,212,76,147,67"/>
+</map>

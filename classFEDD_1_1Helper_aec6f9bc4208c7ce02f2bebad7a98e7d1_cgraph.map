@@ -1,0 +1,7 @@
+<map id="FEDD::Helper::getDPhi" name="FEDD::Helper::getDPhi">
+<area shape="rect" id="Node000001" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="5,42,157,68"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="205,5,392,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="156,42,189,38,190,43,157,47"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="224,70,373,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="157,62,209,69,208,74,156,67"/>
+</map>

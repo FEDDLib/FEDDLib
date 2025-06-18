@@ -1,0 +1,26 @@
+var classFEDD_1_1ErrorEstimation =
+[
+    [ "ErrorEstimation", "classFEDD_1_1ErrorEstimation.html#a5eb9baa7433df312c3120ea85b6450bf", null ],
+    [ "buildTriangleMap", "classFEDD_1_1ErrorEstimation.html#a7bf02e0d688631bb71d3263841dd59e0", null ],
+    [ "calcDiamTetraeder", "classFEDD_1_1ErrorEstimation.html#a277840a530fa04ab53753080bb44967f", null ],
+    [ "calcDiamTriangles", "classFEDD_1_1ErrorEstimation.html#ae4b342270a0aa7fc8f5f989ac7e6a48c", null ],
+    [ "calcDiamTriangles3D", "classFEDD_1_1ErrorEstimation.html#a6013659e8f8022a62a2b50eb3e8d7ab0", null ],
+    [ "calcNPhi", "classFEDD_1_1ErrorEstimation.html#ab431a0581511b573822f153900e54ec8", null ],
+    [ "calcRhoTetraeder", "classFEDD_1_1ErrorEstimation.html#aa58fdeea9d9e98fde8310cc59f84559c", null ],
+    [ "calculateJump", "classFEDD_1_1ErrorEstimation.html#a2d5d3da2a6589350e8c158363d876cdc", null ],
+    [ "determineAreaTriangles", "classFEDD_1_1ErrorEstimation.html#a1623aca9e03e8e2dba9ea82ce60152cf", null ],
+    [ "determineCoarseningError", "classFEDD_1_1ErrorEstimation.html#ad72aae6c736c1d0b3411ec1ad73c6fb2", null ],
+    [ "determineDivU", "classFEDD_1_1ErrorEstimation.html#a2ab423f274ba3b7d8c248e57f791f42a", null ],
+    [ "determineResElement", "classFEDD_1_1ErrorEstimation.html#ac709ef81edfeb0d91b175ea480570fd2", null ],
+    [ "determineVolTet", "classFEDD_1_1ErrorEstimation.html#afabddae3e6bfcd0717df321dca593686", null ],
+    [ "estimateError", "classFEDD_1_1ErrorEstimation.html#af2493a256a95b90eeaea64628421d13f", null ],
+    [ "getQuadValues", "classFEDD_1_1ErrorEstimation.html#a2539ddd8bc7d4bf1f4bb9889e0fe5dd8", null ],
+    [ "gradPhi", "classFEDD_1_1ErrorEstimation.html#a74e71e6f93d83fba059694630b01fc49", null ],
+    [ "identifyProblem", "classFEDD_1_1ErrorEstimation.html#a590f7b920955acbc096854c5de775c58", null ],
+    [ "makeRepeatedSolution", "classFEDD_1_1ErrorEstimation.html#afda1d9f1ed233fd231cd68e74a3dfb56", null ],
+    [ "markElements", "classFEDD_1_1ErrorEstimation.html#ab31ee40368ae3337862b9dd5f9150012", null ],
+    [ "phi", "classFEDD_1_1ErrorEstimation.html#a54af187cc5c349977b9881507f2c7067", null ],
+    [ "tagAll", "classFEDD_1_1ErrorEstimation.html#a89371a12ce5d49770ce366a8c4c51fd7", null ],
+    [ "tagArea", "classFEDD_1_1ErrorEstimation.html#a49f28452f08ee5a75220089b1d9c4b61", null ],
+    [ "updateElementsOfSurfaceLocalAndGlobal", "classFEDD_1_1ErrorEstimation.html#ab4e45f837a9605396828ff330ac53630", null ]
+];

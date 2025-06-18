@@ -1,0 +1,5 @@
+<map id="FEDD::Domain::setPartialCoupling" name="FEDD::Domain::setPartialCoupling">
+<area shape="rect" id="Node000001" title="Set partial coupling." alt="" coords="5,5,172,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f" title="Get mesh." alt="" coords="220,13,381,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="172,23,204,23,204,28,172,28"/>
+</map>

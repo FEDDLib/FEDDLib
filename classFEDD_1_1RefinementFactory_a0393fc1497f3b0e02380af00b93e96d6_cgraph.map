@@ -1,0 +1,5 @@
+<map id="FEDD::RefinementFactory::buildSurfaceTriangleElements" name="FEDD::RefinementFactory::buildSurfaceTriangleElements">
+<area shape="rect" id="Node000001" title="Building surface triangle elements, as they are not originally part of the mesh information provided ..." alt="" coords="5,5,205,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1RefinementFactory.html#a97003a4445b40ac91728639de432a449" title="Checking if surfaces are part of the interface. Done by checking if all edges of a triangle are part ..." alt="" coords="253,5,422,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="205,23,237,23,237,28,205,28"/>
+</map>

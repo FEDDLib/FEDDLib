@@ -1,0 +1,18 @@
+<map id="FEDD::MeshUnstructured::setP2SurfaceElements" name="FEDD::MeshUnstructured::setP2SurfaceElements">
+<area shape="rect" id="Node000001" title="Adding the correct surface subelement to the new P2 Elements based on the P1 subelements." alt="" coords="5,149,174,190"/>
+<area shape="poly" id="edge6_Node000001_Node000001" title=" " alt="" coords="45,149,43,139,50,130,66,125,90,123,115,125,130,131,128,136,114,130,89,128,67,130,53,135,48,141,50,148"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshUnstructured.html#a214aa582fa3b9e589c70766954f708a0" title="Helper function for setP2SurfaceElements. Adds the correct nodes to the meshP1 subelements...." alt="" coords="241,29,410,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="115,147,163,113,220,79,233,74,235,78,223,84,166,117,119,151"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Mesh.html#a122ff9466425ab05bccce9a8c2c554f3" title=" " alt="" coords="222,94,429,150"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="173,150,206,143,207,149,174,155"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1MeshUnstructured.html#ab09dea26fd8e9d3ca3b23ddcb31e56d6" title="Get local Surface Indices." alt="" coords="241,197,410,238"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="174,184,226,195,225,200,173,189"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1MeshUnstructured.html#a082c41772236065b0cc4c2bc20fa0cde" title="Helper function for setP2SurfaceElements. Adds the correct nodes to the meshP1 subelements...." alt="" coords="241,287,410,327"/>
+<area shape="poly" id="edge7_Node000001_Node000005" title=" " alt="" coords="125,188,223,247,274,276,271,281,220,252,123,193"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="281,29,279,19,286,10,302,5,325,3,351,5,366,11,364,16,350,10,325,8,303,10,289,15,284,21,286,28"/>
+<area shape="poly" id="edge5_Node000004_Node000004" title=" " alt="" coords="281,197,279,187,286,178,302,173,325,171,351,173,366,179,364,184,350,178,325,176,303,178,289,183,284,189,286,196"/>
+<area shape="poly" id="edge10_Node000005_Node000005" title=" " alt="" coords="281,287,279,277,286,268,302,262,325,260,351,262,366,269,364,274,350,268,325,265,303,267,289,272,284,278,286,285"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1MeshUnstructured.html#aa6819a39978d03238b34f865112ed713" title="Depending on the sorting of P1 surface nodes we have to adjust the new ordering of P2 edge midpoints ..." alt="" coords="477,287,647,327"/>
+<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="410,304,462,304,462,310,410,310"/>
+<area shape="poly" id="edge9_Node000006_Node000006" title=" " alt="" coords="518,287,515,277,523,268,538,262,562,260,588,262,603,269,601,274,586,268,562,265,540,267,526,272,521,278,523,285"/>
+</map>

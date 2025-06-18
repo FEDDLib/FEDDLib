@@ -1,0 +1,13 @@
+<map id="FEDD::BCBuilder::setBCMinusVector" name="FEDD::BCBuilder::setBCMinusVector">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,111,202,151"/>
+<area shape="poly" id="edge5_Node000001_Node000001" title=" " alt="" coords="58,111,56,101,63,92,79,86,104,84,130,86,145,93,143,98,128,92,103,89,80,91,66,96,61,102,63,109"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1BCBuilder.html#aaf5b29a7c5663fe235385da3941707ea" title=" " alt="" coords="255,29,435,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,108,267,73,269,78,167,113"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1BCBuilder.html#aed3efb55b048d3ff75763fb0726c69f9" title=" " alt="" coords="260,118,430,144"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="202,128,244,128,244,134,202,134"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1BCBuilder.html#a85f4fe085c295973bd70331d6022e095" title=" " alt="" coords="250,192,440,233"/>
+<area shape="poly" id="edge6_Node000001_Node000004" title=" " alt="" coords="167,149,269,184,267,189,165,154"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="299,29,297,19,305,10,321,5,345,3,371,5,386,11,384,16,370,10,345,8,322,10,308,15,302,21,305,28"/>
+<area shape="poly" id="edge4_Node000003_Node000003" title=" " alt="" coords="305,120,297,110,302,100,318,94,345,92,375,94,390,101,387,106,373,99,345,97,319,99,305,104,302,109,309,116"/>
+<area shape="poly" id="edge7_Node000004_Node000004" title=" " alt="" coords="299,192,297,182,305,173,321,167,345,165,371,168,386,174,384,179,370,173,345,171,322,173,308,177,302,183,305,191"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="FEDD::Domain::getMapVecFieldUnique" name="FEDD::Domain::getMapVecFieldUnique">
+<area shape="rect" id="Node000001" title="Get map of all unique (not uniquely distributed) nodes of processors in a vector field point of view...." alt="" coords="245,5,450,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5" title="Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not ab..." alt="" coords="5,5,197,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="229,28,197,28,197,23,229,23"/>
+</map>

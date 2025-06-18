@@ -1,0 +1,18 @@
+<map id="FEDD::Domain::exportSurfaceNormals" name="FEDD::Domain::exportSurfaceNormals">
+<area shape="rect" id="Node000001" title="Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not ab..." alt="" coords="5,163,197,203"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#adeb786cd3ca841d38d9b6f6bddd09be8" title="Compute surface normal of corresponding surface." alt="" coords="255,5,456,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,160,171,108,206,80,243,55,254,50,256,55,246,60,209,84,175,112,122,164"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Domain.html#a686e1e8615c2420f272e525bf7385839" title="Get the elements (on your processor) as Elements_Type." alt="" coords="259,70,452,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="134,160,184,131,244,105,264,98,266,103,246,109,187,136,136,164"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1Domain.html#a1f26cb8a8a58a75e8c0ccace63788221" title="Get map of all repeated (not uniquely distributed) nodes of processors." alt="" coords="251,120,460,145"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="197,161,272,146,273,151,198,167"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067" title="Get map of all uniquely distributed nodes of the processors." alt="" coords="514,200,709,225"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="197,186,499,203,498,209,197,191"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1Domain.html#afb00ea000097e92d7cf19ebd477f1115" title="Get map of all unique (not uniquely distributed) nodes of processors in a vector field point of view...." alt="" coords="253,220,458,261"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="195,201,248,213,247,219,194,207"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f" title="Get mesh." alt="" coords="275,285,436,310"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="131,201,182,237,246,270,267,278,265,283,244,275,180,241,128,206"/>
+<area shape="rect" id="Node000008" href="$classFEDD_1_1Domain.html#a707f2f5b832dbb22439db6720258db1d" title="Get vector of repeated points (on your processor). 2D Vector with size: numPoints x dim." alt="" coords="245,334,466,360"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="119,202,171,262,206,294,246,321,257,326,255,331,243,325,203,298,167,266,115,206"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="458,226,498,222,499,227,459,232"/>
+</map>

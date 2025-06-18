@@ -1,0 +1,11 @@
+<map id="FEDD::RefinementFactory::refinementRestrictions" name="FEDD::RefinementFactory::refinementRestrictions">
+<area shape="rect" id="Node000001" title="Refinement Restrictions." alt="" coords="5,49,175,90"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1RefinementFactory.html#af40b1acc9353be1408fed4d6a61ed2ae" title="Adding a Midpoint on an edge." alt="" coords="440,5,609,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,46,222,35,326,25,424,22,424,27,326,31,223,40,167,51"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1RefinementFactory.html#a55bfecb1360bc7c4ad977174c172330a" title="2D and 3D that bisects the edges of tagged Elements. Chosen by error estimator or otherwise elements ..." alt="" coords="223,49,392,90"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="175,67,207,67,207,72,175,72"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1RefinementFactory.html#a383adbeffceada793b6805fb02fa5568" title="Eetermine longest edge in triangle." alt="" coords="440,83,609,123"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="165,88,223,99,326,106,424,106,424,111,326,111,222,104,164,93"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="392,50,424,43,425,48,393,55"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="393,80,425,85,424,90,392,85"/>
+</map>
