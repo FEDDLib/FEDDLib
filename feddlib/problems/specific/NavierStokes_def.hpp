@@ -477,12 +477,12 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
         Mp->fillComplete();
 
 
-        MatrixPtr_Type BT_M(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+        MatrixPtr_Type BT_M(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 5*this->getDomain(0)->getApproxEntriesPerRow() ) );
         BT_M->Multiply(BT,false,Mp,false);
 
         BT_Mp_ = BT_M;
 
-        MatrixPtr_Type BT_M_B(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+        MatrixPtr_Type BT_M_B(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 5*this->getDomain(0)->getApproxEntriesPerRow() ) );
         BT_M_B->Multiply(BT_M,false,B,false);
 
         BT_Mp_B_ = BT_M_B;
