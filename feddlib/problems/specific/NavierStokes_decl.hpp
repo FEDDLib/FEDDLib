@@ -25,8 +25,9 @@ public:
     //! @name Public Types
     //@{
     typedef Problem<SC,LO,GO,NO> Problem_Type;
-    typedef typename Problem_Type::Matrix_Type Matrix_Type;
-    typedef typename Problem_Type::MatrixPtr_Type MatrixPtr_Type;
+    typedef Matrix<SC,LO,GO,NO> Matrix_Type;
+    typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
+    typedef Teuchos::RCP<const MatrixPtr_Type> MatrixConstPtr_Type;
 
     typedef typename Problem_Type::MapConstPtr_Type MapConstPtr_Type;
 
@@ -101,7 +102,10 @@ public:
 
     BCPtr_Type bcFactoryPCD_;
     mutable MatrixPtr_Type 	Mp_;
+    mutable MatrixPtr_Type 	BT_Mp_;
+    mutable MatrixPtr_Type BT_Mp_B_;
     mutable MatrixPtr_Type 	Ap_;
+    
 private:
 
 

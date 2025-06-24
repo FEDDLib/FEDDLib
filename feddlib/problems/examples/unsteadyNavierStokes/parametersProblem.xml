@@ -21,7 +21,10 @@
         <Parameter name="Use rel tol" type="bool" value="true"/>
         <Parameter name="Use abs tol" type="bool" value="false"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
-        
+        <!-- BUILDING PRECONDITIONER ONLY THE FIRST X NEWTON STEP(S) -->
+        <Parameter name="Rebuild Preconditioner every Newton Iteration" type="bool" value="true"/> <!-- true: Preconditioner is rebuilt each Newton step. false: only up till iteration < 'newtonLimit'  -->
+        <Parameter name="newtonLimit" type="int" value="3"/> <!-- if 'Rebuild ... ' false: only up till iteration < 'newtonLimit' the Preconditioner is rebuilt -->
+        <!--  -->
         <Parameter name="MaxNonLinIts" type="int" value="10"/>
         <Parameter name="Cancel MaxNonLinIts" type="bool" value="true"/>
         <Parameter name="Symmetric gradient" type="bool" value="false"/>
@@ -41,7 +44,7 @@
         <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko-->
     </ParameterList>
     <ParameterList name="Timestepping Parameter">
-        <Parameter name="Class"                                 type="string"		value="Singlestep"/> <!--Multistep, Singlestep-->
+        <Parameter name="Class"                                 type="string"		value="Multistep"/> <!--Multistep, Singlestep-->
         <Parameter name="BDF"		                    		type="int"		   	value="2"/>
         <Parameter name="Butcher table"                    		type="int"		   	value="1"/>
         <Parameter name="Full implicit pressure"                type="bool"		   	value="true"/>

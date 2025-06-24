@@ -13,6 +13,8 @@
 #include <Teuchos_VerboseObject.hpp>
 #include <Xpetra_MatrixMatrix.hpp>
 #include <MatrixMarket_Tpetra.hpp>
+#include <TpetraExt_MatrixMatrix.hpp>
+
 
 #include <Tpetra_CrsMatrix.hpp>
 //#include <Tpetra_MatrixMatrix.hpp>
@@ -188,6 +190,11 @@ public:
 	*/
     TpetraMatrixConstPtr_Type getTpetraMatrix() const;
     
+	/*!
+		Tpetra Matrix Matrix Multiply
+	*/
+	void Multiply( const MatrixPtr_Type &tpA, bool transposeA , const MatrixPtr_Type  &tpB, bool transposeB, bool fillComplete=true);
+
 	/*!
 		\brief Matrix Vector Operation. Applying MultiVector X to this. Y = alpha * (this)^mode * X + beta * Y. Mode being transposed or not. 
 	*/

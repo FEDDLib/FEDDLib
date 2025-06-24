@@ -21,8 +21,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_unsteadyNonLinElasticity
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_unsteadyNonLinElasticity
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES testFoam2.mesh
+    SOURCE_FILES square_solid.mesh
     DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    DEST_FILES testFoam2.mesh
+    DEST_FILES square_solid.mesh
     EXEDEPS unsteadyNonLinElasticity
 )

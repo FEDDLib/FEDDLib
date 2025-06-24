@@ -217,6 +217,17 @@ bool Matrix<SC,LO,GO,NO>::isLocallyIndexed(){
     return matrix_->isLocallyIndexed();
 }
 
+template <class SC, class LO, class GO, class NO>
+void Matrix<SC,LO,GO,NO>::Multiply( const MatrixPtr_Type &tpA, bool transposeA , const MatrixPtr_Type  &tpB, bool transposeB,bool fillComplete){
+
+    // Tpetra::CrsMatrix<SC,LO,GO,NO>& tpA = A;
+
+    // Tpetra::CrsMatrix<SC,LO,GO,NO>& tpB = B;
+
+    // Tpetra::CrsMatrix<SC,LO,GO,NO>& C; 
+
+    Tpetra::MatrixMatrix::Multiply( *tpA->matrix_, transposeA , *tpB->matrix_, transposeB, *matrix_, fillComplete, std::string(), Teuchos::null);
+}
 //typename Matrix<SC,LO,GO,NO>::ThyraLinOpPtr_Type Matrix<SC,LO,GO,NO>::getThyraLinOp(){
 //
 //    return ;

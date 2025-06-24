@@ -176,7 +176,7 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyIt(
 
 }
     
-/// Function called within e.g. GMRES to apply the input vector X_in to the preconditioner
+/// Function called within e.g. GMRES to apply the input vector X_in (corresponding to the RHS = (f_u,f_p)) to the preconditioner
 /// Output is the contents of vector Y_inout
 // Block Preconditioners:
 // - 'Diagonal' Prec: where the Schur complement is replaced by - 1/nu M_p
@@ -261,7 +261,7 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
 
         Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
         
-        BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
+        BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= - BT*Y1 + X0
         
         velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.); // Apply input vector to fluid inverse approximation
             
@@ -288,6 +288,23 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
         
         velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);
             
+    }
+    // Theoretically, this works the same as a triangular block preconditioner, since the 'augmented' components are hidden in the System and RHS
+    else if(type_ == "Augmented Lagrange"){
+        // Assumption 1: \gamma = 1
+
+        // Step 1: Solve Schur Complement Component
+        // Apply input vector to Schur complement inverse approximation
+        // S^{-1} = - ( \nu + \gamma) M_p^{-1}) -> we assume the scaling is already included in M_p
+        pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.); 
+
+        // Step 2: Apply BT
+        Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
+        BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
+
+        // Step 3: Apply inverse of F. 
+        velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);
+       
     }
     else{
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,"Unknow 2x2 block preconditioner type. Select Diagonal or Triangular.");

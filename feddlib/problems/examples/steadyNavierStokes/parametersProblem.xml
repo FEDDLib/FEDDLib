@@ -14,6 +14,10 @@
         <Parameter name="MeanVelocity" type="double"   value="0.2"/>
         <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
         <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>
+        <!-- BUILDING PRECONDITIONER ONLY THE FIRST X NEWTON STEP(S) -->
+        <Parameter name="Rebuild Preconditioner every Newton Iteration" type="bool" value="true"/> <!-- true: Preconditioner is rebuilt each Newton step. false: only up till iteration < 'newtonLimit'  -->
+        <Parameter name="newtonLimit" type="int" value="3"/> <!-- if 'Rebuild ... ' false: only up till iteration < 'newtonLimit' the Preconditioner is rebuilt -->
+        <!--  -->
         <Parameter name="MaxNonLinIts" type="int" value="10"/>
         <Parameter name="Set Zeros" type="bool" value="false"/>
         <Parameter name="Myeps" type="double" value="1.0e-14"/>

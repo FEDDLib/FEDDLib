@@ -423,10 +423,6 @@ int main(int argc, char *argv[]) {
 
                     navierStokes.infoParameter();
                 }
-    //            if (saveVector>0) {
-    //                string outName = "vector_RE_" + to_string(RE) + "_" + to_string(dim) + "D_N_" + to_string(Size) +".h5";
-    //                navierStokes.GetSystem()->WriteMultiVectorHDF5(*navierStokes.GetSolution(), outName, "vector");
-    //            }
 
 
                 if ( parameterListAll->sublist("General").get("ParaViewExport",false) ) {
@@ -435,10 +431,6 @@ int main(int argc, char *argv[]) {
 
                     Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = navierStokes.getSolution()->getBlock(0);
                     Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = navierStokes.getSolution()->getBlock(1);
-
-
-//                    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = navierStokes.getRhs()->getBlock(0);
-//                    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = navierStokes.getRhs()->getBlock(1);
 
                     DomainPtr_Type dom = domainVelocity;
 
