@@ -105,7 +105,9 @@ public:
     mutable MatrixPtr_Type 	BT_Mp_;
     mutable MatrixPtr_Type BT_Mp_B_;
     mutable MatrixPtr_Type 	Ap_;
-    
+
+    bool augmentedLagrange_=false;
+
 private:
 
 

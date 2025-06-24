@@ -131,7 +131,10 @@ u_rep_()
     { 
         this->bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
         this->bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, domainPressure, "Dirichlet", 1);
-    }   
+    } 
+
+    if(this->parameterList_->sublist("General").get("Augmented Lagrange",false))  
+        augmentedLagrange_ = true;
 
 }
 
@@ -462,27 +465,31 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
     // MatrixPtr_Type Mp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
     // this->feFactory_->assemblyIdentity( Mp );
 
-    NAVIER_STOKES_START(AssembleAugmentedLagrangianComponent,"AssembleDivAndStab: AL - Assemble BT Mp B");
+    if(augmentedLagrange_){
+        NAVIER_STOKES_START(AssembleAugmentedLagrangianComponent,"AssembleDivAndStab: AL - Assemble BT Mp B");
 
-    MatrixPtr_Type Mp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-    this->feFactory_->assemblyIdentity( Mp );
-    Mp->resumeFill();
-    Mp->scale(2.0);
-    Mp->fillComplete();
+        double gamma = this->parameterList_->sublist("General").get("Gamma",1.0);
 
-    MatrixPtr_Type BT_M(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
-    BT_M->Multiply(BT,false,Mp,false);
+        MatrixPtr_Type Mp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+        this->feFactory_->assemblyIdentity( Mp );
+        Mp->resumeFill();
+        Mp->scale(gamma);
+        Mp->fillComplete();
 
-    BT_Mp_ = BT_M;
 
-    MatrixPtr_Type BT_M_B(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
-    BT_M_B->Multiply(BT_M,false,B,false);
+        MatrixPtr_Type BT_M(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+        BT_M->Multiply(BT,false,Mp,false);
 
-    BT_Mp_B_ = BT_M_B;
+        BT_Mp_ = BT_M;
 
-    BT_Mp_B_->writeMM("BT_Mp_B_");
+        MatrixPtr_Type BT_M_B(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+        BT_M_B->Multiply(BT_M,false,B,false);
 
-    NAVIER_STOKES_STOP(AssembleAugmentedLagrangianComponent);
+        BT_Mp_B_ = BT_M_B;
+        // BT_Mp_B_->writeMM("BT_Mp_B_");
+
+        NAVIER_STOKES_STOP(AssembleAugmentedLagrangianComponent);
+    }
 
     //k0 = MatrixMatrix<SC,LO,GO,NO>::Multiply(*B_T,false,*tmp,false,*fancy); //k0->describe(*fancy,VERB_EXTREME);
    
@@ -566,11 +573,14 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         W->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
         this->system_->getBlock( 0, 0 )->addMatrix(1.,ANW,0.);
         W->addMatrix(1.,ANW,1.);
+        
     }
-    BT_Mp_B_->addMatrix(1.,ANW,1.);
+    
+    if(augmentedLagrange_)
+        BT_Mp_B_->addMatrix(1.,ANW,1.);
 
     ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
-    // ANW->writeMM("ANW");
+
     this->system_->addBlock( ANW, 0, 0 );
  
     if (this->verbose_)
@@ -742,6 +752,12 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
     else
         this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
     
+    if(augmentedLagrange_){
+        MultiVectorPtr_Type rhsAL = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(0) ) );
+        BT_Mp_->apply( *this->residualVec_->getBlock(1), *rhsAL );
+        this->residualVec_->getBlockNonConst(0)->update(1.,*rhsAL,1.);
+
+    }
     if (!type.compare("standard")){
         this->residualVec_->update(-1.,*this->rhs_,1.);
 //        if ( !this->sourceTerm_.is_null() )
