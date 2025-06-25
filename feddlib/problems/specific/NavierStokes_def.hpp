@@ -471,14 +471,17 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
         double gamma = this->parameterList_->sublist("General").get("Gamma",1.0);
 
         MatrixPtr_Type Mp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-        this->feFactory_->assemblyIdentity( Mp );
-        Mp->resumeFill();
-        Mp->scale(gamma);
-        Mp->fillComplete();
+        this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mp, true ); 
+
+        MatrixPtr_Type MpInv = this->getPreconditionerConst()->buildDiagonalInverse(Mp, "Diagonal");
+
+        MpInv->resumeFill();
+        MpInv->scale(gamma);
+        MpInv->fillComplete();
 
 
         MatrixPtr_Type BT_M(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension()*this->getDomain(0)->getApproxEntriesPerRow() ) );
-        BT_M->Multiply(BT,false,Mp,false);
+        BT_M->Multiply(BT,false,MpInv,false);
 
         BT_Mp_ = BT_M;
 
