@@ -477,12 +477,12 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
         Mp->fillComplete();
 
 
-        MatrixPtr_Type BT_M(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 5*this->getDomain(0)->getApproxEntriesPerRow() ) );
+        MatrixPtr_Type BT_M(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension()*this->getDomain(0)->getApproxEntriesPerRow() ) );
         BT_M->Multiply(BT,false,Mp,false);
 
         BT_Mp_ = BT_M;
 
-        MatrixPtr_Type BT_M_B(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 5*this->getDomain(0)->getApproxEntriesPerRow() ) );
+        MatrixPtr_Type BT_M_B(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension()*this->getDomain(0)->getApproxEntriesPerRow() ) );
         BT_M_B->Multiply(BT_M,false,B,false);
 
         BT_Mp_B_ = BT_M_B;
@@ -546,8 +546,10 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         std::cout << "-- Reassembly Navier-Stokes ("<< type <<") ... " << std::flush;
     
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
-    
-    MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    int allocationFactor = 1;
+    if(augmentedLagrange_)
+        allocationFactor = 3;
+    MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), allocationFactor*this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     if (type=="FixedPoint") {
         
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
