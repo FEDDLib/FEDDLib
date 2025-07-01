@@ -16,6 +16,8 @@
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_LinearOpBase_decl.hpp>
 
+#include "git_version.h"
+
 #ifdef FEDD_HAVE_TEKO
 #include "Teko_StratimikosFactory.hpp"
 #endif

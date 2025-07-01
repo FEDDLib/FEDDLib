@@ -617,13 +617,13 @@ namespace FEDD
         bool verbose(comm_->getRank() == 0);
         if (verbose)
         {
-            std::cout << " ####################################" << std::endl;
+            std::cout << "#####################################" << std::endl;
             std::cout << " ### Problem Information ###" << std::endl;
             std::cout << " ### Dimension: " << dim_ << std::endl;
             std::cout << " ### Number of blocks/equations/variables: " << domainPtr_vec_.size() << std::endl;
             for (int i = 0; i < domainPtr_vec_.size(); i++)
             {
-                std::cout << "  # Block " << i + 1 << " name: " << variableName_vec_.at(i) << " d.o.f.s: " << dofsPerNode_vec_.at(i) << " FE type: " << domain_FEType_vec_.at(i) << std::endl;
+                std::cout << "  ## Block " << i + 1 << " name: " << variableName_vec_.at(i) << " d.o.f.s: " << dofsPerNode_vec_.at(i) << " FE type: " << domain_FEType_vec_.at(i) << std::endl;
             }
             std::cout << " ####################################" << std::endl;
             ParameterListPtr_Type parameterlist = sublist(parameterList_, "Parameter");
@@ -700,7 +700,12 @@ namespace FEDD
             {
                 std::cout << " ### Full preconditioner information only available for Monolithic/Teko preconditioner type ###" << std::endl;
             }
-            std::cout << "####################################" << std::endl;
+            std::cout << " ####################################" << std::endl;
+
+            std::cout << " ### Git commit hash: " << GIT_COMMIT_HASH << std::endl;
+            std::cout << " ### Git branch name: " << GIT_BRANCH_NAME << std::endl;
+
+            std::cout << "#####################################" << std::endl;
 
         }
     }

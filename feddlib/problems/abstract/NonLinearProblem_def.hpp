@@ -238,7 +238,7 @@ namespace FEDD
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method", "Monolithic");
         if (!type.compare("Monolithic"))
             initVectorSpacesMonolithic();
-        else if (!type.compare("Teko") || type == "FaCSI" || type == "FaCSI-Teko" || type == "Diagonal" || type == "PCD"|| type == "LSC")
+        else if (!type.compare("Teko") || type == "FaCSI" || type == "FaCSI-Teko" || type == "Diagonal" || type == "Triangular" || type == "PCD"|| type == "LSC")
             initVectorSpacesBlock();
         else
             TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unkown preconditioner/solver type.");
@@ -300,7 +300,7 @@ namespace FEDD
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
         if ( !type.compare("Monolithic"))
             evalModelImplMonolithic( inArgs, outArgs );
-        else if ( !type.compare("Teko")|| !type.compare("Diagonal") || !type.compare("PCD") || !type.compare("LSC")){
+        else if ( !type.compare("Teko")|| !type.compare("Diagonal") || type == "Triangular"|| !type.compare("PCD") || !type.compare("LSC")){
     #ifdef FEDD_HAVE_TEKO
             evalModelImplBlock( inArgs, outArgs );
     #else
@@ -559,7 +559,7 @@ namespace FEDD
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
         if ( !type.compare("Monolithic"))
             return create_W_op_Monolithic( );
-        else if ( !type.compare("Teko") || !type.compare("Diagonal") || !type.compare("PCD") || !type.compare("LSC") ){
+        else if ( !type.compare("Teko") || !type.compare("Diagonal") || !type.compare("Triangular") || !type.compare("PCD") || !type.compare("LSC") ){
     #ifdef FEDD_HAVE_TEKO
             return create_W_op_Block( );
     #else

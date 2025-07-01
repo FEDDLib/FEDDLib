@@ -327,7 +327,14 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         
         this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true );
         SC kinVisco = this->parameterList_->sublist("Parameter").get("Viscosity",1.);
-        Mpressure->scale(-1./kinVisco);
+
+        if(augmentedLagrange_){
+            double gamma = this->parameterList_->sublist("General").get("Gamma",1.0);
+            Mpressure->scale(-1./(kinVisco+gamma));
+        }
+        else{
+            Mpressure->scale(-1./kinVisco);
+        }
         this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
     }
 
