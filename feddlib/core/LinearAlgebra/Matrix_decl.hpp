@@ -230,17 +230,22 @@ public:
     LO getGlobalMaxNumRowEntries() const;
 
     void insertLocalValues (LO localRow, const Teuchos::ArrayView< const LO > &cols, const Teuchos::ArrayView< const SC > &vals);
-	/* !
+	/*!
 		Matrix Analogue to MultiVector Import. Based on Row Map of Matrix mvIn. 
 	*/
 
     void importFromVector( MatrixPtr_Type mvIn, bool reuseImport = false, std::string combineMode = "Insert", std::string type="Forward" );
 
-	/* !
+	/*!
 		Matrix Analogue to MultiVector Export. Based on Row Map of Matrix mvIn. 
 	*/
     void exportFromVector( MatrixPtr_Type mvIn, bool reuseExport = false, std::string combineMode = "Insert", std::string type="Forward" );
 	
+	/*! 
+		Build Diagonal Inverse of this matrix and return it
+	*/
+	MatrixPtr_Type buildDiagonalInverse( string diagonalType);
+
 
 private:
 

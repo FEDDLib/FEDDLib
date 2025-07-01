@@ -1367,7 +1367,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
             }
             else
             {
-                massMatrixInverse_ = buildDiagonalInverse(pressureMassMatrixPtr_, typeDiag)->getThyraLinOp() ;
+                massMatrixInverse_ = pressureMassMatrixPtr_->buildDiagonalInverse(typeDiag)->getThyraLinOp() ;
             }
         }
 
@@ -1437,7 +1437,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         }
         else
         {
-           massMatrixVInverse_ = buildDiagonalInverse(velocityMassMatrixMatrixPtr_, typeDiag)->getThyraLinOp() ;
+           massMatrixVInverse_ = velocityMassMatrixMatrixPtr_->buildDiagonalInverse(typeDiag)->getThyraLinOp() ;
         }
             
     }
@@ -1978,72 +1978,6 @@ void Preconditioner<SC,LO,GO,NO>::exportCoarseBasisFSI( ){
 
 }
 
-template <class SC,class LO,class GO,class NO>
-typename Preconditioner<SC,LO,GO,NO>::MatrixPtr_Type Preconditioner<SC,LO,GO,NO>::buildDiagonalInverse(MatrixPtr_Type massMatrix, string diagonalType){
-    MatrixPtr_Type diagInverse(new Matrix_Type( massMatrix->getMap("row"), 1) ); // Diagonal matrix
-    MapConstPtr_Type colMap = massMatrix->getMap("col");
-    MapConstPtr_Type rowMap = massMatrix->getMap("row");
-
-    
-    if(diagonalType == "Diagonal")
-    {
-        for(int i =0; i< rowMap->getNodeNumElements(); i ++){
-            Teuchos::ArrayView<const SC> valuesOld;
-            Teuchos::ArrayView<const LO>  indices;
-            massMatrix->getLocalRowView(i, indices, valuesOld);
-
-            GO globalDof = rowMap->getGlobalElement( i );
-
-            Teuchos::Array<SC> values( 1, 0);
-            Teuchos::Array<GO> indicesGO( 1 , 0 );
-            bool setOne = false;
-
-            for (UN j=0; j<indices.size() && !setOne; j++) {
-                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
-                    values[0] = 1./valuesOld[j]; // Diagonal Value
-                    indicesGO[0] = colMap->getGlobalElement(indices[j]);
-                    setOne=true;
-                }
-            }
-            GO row = GO ( rowMap->getGlobalElement( i) );
-            diagInverse->insertGlobalValues( row, indicesGO(), values() );
-        }
-    }
-    else if(diagonalType == "AbsRowSum") 
-    {
-        for(int i =0; i< rowMap->getNodeNumElements(); i ++){
-            Teuchos::ArrayView<const SC> valuesOld;
-            Teuchos::ArrayView<const LO>  indices;
-            massMatrix->getLocalRowView(i, indices, valuesOld);
-
-            GO globalDof = rowMap->getGlobalElement( i );
-
-            double rowSum = 0.;
-            for (UN j=0; j<indices.size(); j++) {
-               rowSum += abs(valuesOld[j]);
-            }
-
-            Teuchos::Array<SC> values( 1, 0);
-            Teuchos::Array<GO> indicesGO( 1 , 0 );
-            bool setOne = false;
-
-            for (UN j=0; j<indices.size() && !setOne; j++) {
-                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
-                    values[0] = 1./rowSum; // Diagonal Value
-                    indicesGO[0] = colMap->getGlobalElement(indices[j]);
-                    setOne = true;
-
-                }
-            }
-            GO row = GO ( rowMap->getGlobalElement( i) );
-            diagInverse->insertGlobalValues( row, indicesGO(), values() );      
-        }
-    }
-
-    diagInverse->fillComplete();
-    // diagInverse->writeMM("Mu_Inverse_LSC");
-    return diagInverse;
-}
 
 }
 

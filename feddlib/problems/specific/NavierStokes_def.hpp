@@ -480,7 +480,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
         MatrixPtr_Type Mp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mp, true ); 
 
-        MatrixPtr_Type MpInv = this->getPreconditionerConst()->buildDiagonalInverse(Mp, "Diagonal");
+        MatrixPtr_Type MpInv = Mp->buildDiagonalInverse("Diagonal");
 
         MpInv->resumeFill();
         MpInv->scale(gamma);
@@ -765,7 +765,7 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
         this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
     
     if(augmentedLagrange_){
-        MultiVectorPtr_Type rhsAL = Teuchos::rcp( new MultiVector_Type( residualVec_->getBlock(0) ) );
+        MultiVectorPtr_Type rhsAL = Teuchos::rcp( new MultiVector_Type( this->residualVec_->getBlock(0) ) );
         BT_Mp_->apply( *this->residualVec_->getBlock(1), *rhsAL );
         this->residualVec_->getBlockNonConst(0)->update(1.,*rhsAL,1.);
 

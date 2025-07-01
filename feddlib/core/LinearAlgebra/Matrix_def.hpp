@@ -228,6 +228,76 @@ void Matrix<SC,LO,GO,NO>::Multiply( const MatrixPtr_Type &tpA, bool transposeA ,
 
     Tpetra::MatrixMatrix::Multiply( *tpA->matrix_, transposeA , *tpB->matrix_, transposeB, *matrix_, fillComplete, std::string(), Teuchos::null);
 }
+
+
+template <class SC,class LO,class GO,class NO>
+typename Matrix<SC,LO,GO,NO>::MatrixPtr_Type Matrix<SC,LO,GO,NO>::buildDiagonalInverse( string diagonalType){
+    MatrixPtr_Type matrix(new Matrix_Type( matrix_ )); // Diagonal matrix
+    MatrixPtr_Type diagInverse(new Matrix_Type( matrix->getMap("row"), 1) ); // Diagonal matrix
+    MapConstPtr_Type colMap = matrix->getMap("col");
+    MapConstPtr_Type rowMap = matrix->getMap("row");
+
+    
+    if(diagonalType == "Diagonal")
+    {
+        for(int i =0; i< rowMap->getNodeNumElements(); i ++){
+            Teuchos::ArrayView<const SC> valuesOld;
+            Teuchos::ArrayView<const LO>  indices;
+            matrix->getLocalRowView(i, indices, valuesOld);
+
+            GO globalDof = rowMap->getGlobalElement( i );
+
+            Teuchos::Array<SC> values( 1, 0);
+            Teuchos::Array<GO> indicesGO( 1 , 0 );
+            bool setOne = false;
+
+            for (UN j=0; j<indices.size() && !setOne; j++) {
+                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
+                    values[0] = 1./valuesOld[j]; // Diagonal Value
+                    indicesGO[0] = colMap->getGlobalElement(indices[j]);
+                    setOne=true;
+                }
+            }
+            GO row = GO ( rowMap->getGlobalElement( i) );
+            diagInverse->insertGlobalValues( row, indicesGO(), values() );
+        }
+    }
+    else if(diagonalType == "AbsRowSum") 
+    {
+        for(int i =0; i< rowMap->getNodeNumElements(); i ++){
+            Teuchos::ArrayView<const SC> valuesOld;
+            Teuchos::ArrayView<const LO>  indices;
+            matrix->getLocalRowView(i, indices, valuesOld);
+
+            GO globalDof = rowMap->getGlobalElement( i );
+
+            double rowSum = 0.;
+            for (UN j=0; j<indices.size(); j++) {
+               rowSum += abs(valuesOld[j]);
+            }
+
+            Teuchos::Array<SC> values( 1, 0);
+            Teuchos::Array<GO> indicesGO( 1 , 0 );
+            bool setOne = false;
+
+            for (UN j=0; j<indices.size() && !setOne; j++) {
+                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
+                    values[0] = 1./rowSum; // Diagonal Value
+                    indicesGO[0] = colMap->getGlobalElement(indices[j]);
+                    setOne = true;
+
+                }
+            }
+            GO row = GO ( rowMap->getGlobalElement( i) );
+            diagInverse->insertGlobalValues( row, indicesGO(), values() );      
+        }
+    }
+
+    diagInverse->fillComplete();
+    // diagInverse->writeMM("Mu_Inverse_LSC");
+    return diagInverse;
+}
+
 //typename Matrix<SC,LO,GO,NO>::ThyraLinOpPtr_Type Matrix<SC,LO,GO,NO>::getThyraLinOp(){
 //
 //    return ;
