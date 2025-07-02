@@ -1054,7 +1054,7 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
                 }
                 else{
                     if (this->verbose_)
-                        cout << " \t\t TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic: Skipping preconditioner reconstruction" << endl;
+                        std::cout << " \t\t TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic: Skipping preconditioner reconstruction" << std::endl;
                 }
             }
             else
@@ -1185,7 +1185,7 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBa
                 }
                 else{
                     if (this->verbose_)
-                        cout << " \t\t TimeProblem<SC,LO,GO,NO>::evalModelImplBlock Skipping preconditioner reconstruction" << endl;
+                        std::cout << " \t\t TimeProblem<SC,LO,GO,NO>::evalModelImplBlock Skipping preconditioner reconstruction" << std::endl;
                 }
             }
             else

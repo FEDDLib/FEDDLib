@@ -230,7 +230,7 @@ void Matrix<SC,LO,GO,NO>::Multiply( const MatrixPtr_Type &tpA, bool transposeA ,
 
 
 template <class SC,class LO,class GO,class NO>
-typename Matrix<SC,LO,GO,NO>::MatrixPtr_Type Matrix<SC,LO,GO,NO>::buildDiagonalInverse( string diagonalType){
+typename Matrix<SC,LO,GO,NO>::MatrixPtr_Type Matrix<SC,LO,GO,NO>::buildDiagonalInverse( std::string diagonalType){
     MatrixPtr_Type matrix(new Matrix_Type( matrix_ )); // Diagonal matrix
     MatrixPtr_Type diagInverse(new Matrix_Type( matrix->getMap("row"), 1) ); // Diagonal matrix
     MapConstPtr_Type colMap = matrix->getMap("col");

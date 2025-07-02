@@ -662,7 +662,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithicFSI( )
                                     XpetraMapConstPtr_Type mapConstX = Xpetra::MapFactory<LO,GO,NO>::Build( Xpetra::UseTpetra, mapConstTmp->getGlobalNumElements(), mapConstTmp->getNodeElementList(), mapConstTmp->getIndexBase(), mapConstTmp->getComm() );
                                     Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapX= Teuchos::rcp_const_cast<Xpetra::Map<LO,GO,NO> > (mapConstX);
                                     
-                                    std::cout << " +++++++++ Output 3" << std::endl;
                                     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
                                     mapX->describe(*out,Teuchos::VERB_EXTREME);
                                     repeatedMaps[i] = mapX;
@@ -1269,7 +1268,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         }
     }
    
-    string type = parameterList->sublist("General").get("Preconditioner Method","Diagonal");
+    std::string type = parameterList->sublist("General").get("Preconditioner Method","Diagonal");
 
     // We distinguish for the Schur complement component
     // Setup additional things
@@ -1357,7 +1356,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
             // Approximation of Mp is either done by Monolithic preconditioner or by a diagonal
             // Approximation with 'Diagonal' or TODO: AbsRowSum
             bool explicitInverse = parameterList->sublist("General").get("Mu Explicit Inverse",true);
-            string typeDiag = parameterList->sublist("General").get("Diagonal Approximation","Diagonal");
+            std::string typeDiag = parameterList->sublist("General").get("Diagonal Approximation","Diagonal");
 
             if(explicitInverse)
             {
@@ -1427,7 +1426,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         // Approximation of Mp is either done by Monolithic preconditioner or by a diagonal
         // Approximation with 'Diagonal' or TODO: AbsRowSum
         bool explicitInverse = parameterList->sublist("General").get("Mu Explicit Inverse",true);
-        string typeDiag = parameterList->sublist("General").get("Diagonal Approximation","Diagonal");
+        std::string typeDiag = parameterList->sublist("General").get("Diagonal Approximation","Diagonal");
 
         if(explicitInverse)
         {

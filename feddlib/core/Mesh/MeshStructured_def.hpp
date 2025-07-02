@@ -1762,7 +1762,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ1BFS(int N,
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
     if (verbose)
-        cout << "-- Building Q2 Unique Points ... " << flush;
+        std::cout << "-- Building Q2 Unique Points ... " << std::flush;
 
     this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
     this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
@@ -1779,7 +1779,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ1BFS(int N,
     }
 
     if (verbose)
-        cout << " done! --" << endl;
+        std::cout << " done! --" << std::endl;
 
     //int    P2M = 2*(M+1)-1;
 

@@ -243,7 +243,7 @@ public:
 	/*! 
 		Build Diagonal Inverse of this matrix and return it
 	*/
-	MatrixPtr_Type buildDiagonalInverse( string diagonalType);
+	MatrixPtr_Type buildDiagonalInverse( std::string diagonalType);
 
 
 private:

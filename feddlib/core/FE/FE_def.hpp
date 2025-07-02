@@ -1508,8 +1508,8 @@ void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
     vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
    
-    UN extraDeg = Helper::determineDegree( dim-1, FETypeV, Helper::Std);
-    UN deg = Helper::determineDegree( dim-1, FETypeP, Helper::Std)*2 + extraDeg;
+    UN extraDeg = Helper::determineDegree( dim-1, FETypeV, Helper::Deriv0);
+    UN deg = Helper::determineDegree( dim-1, FETypeP, Helper::Deriv0)*2 + extraDeg;
 
 
     Helper::getPhi(phi, weights, dim-1, FETypeP, deg);
@@ -3902,9 +3902,9 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionVecFieldScalar(int dim,
     vec2D_dbl_ptr_Type     phi,phiV;
     vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN degV = Helper::determineDegree( dim, FETypeV, Helper::Std); //Elementwise assembly of u
-    UN degP = Helper::determineDegree( dim, FEType, Helper::Std); //Elementwise assembly of p
-    UN deg = Helper::determineDegree( dim, FEType, Helper::Grad) + degV + degP;
+    UN degV = Helper::determineDegree( dim, FETypeV, Helper::Deriv0); //Elementwise assembly of u
+    UN degP = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of p
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1) + degV + degP;
 
     Helper::getDPhi(dPhi, weights, dim, FEType, deg); // Dphi for \nabla p
     Helper::getPhi(phi, weights, dim, FEType, deg); // phi for u

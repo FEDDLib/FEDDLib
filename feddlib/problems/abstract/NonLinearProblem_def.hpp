@@ -402,7 +402,7 @@ namespace FEDD
                     }
                     else{
                         if (this->verbose_)
-                            cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImplMonolithic:: Skipping preconditioner reconstruction" << endl;
+                            std::cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImplMonolithic:: Skipping preconditioner reconstruction" << std::endl;
                     }
                 }
                 else
@@ -526,7 +526,7 @@ namespace FEDD
                     }
                     else{
                         if (this->verbose_)
-                            cout << " \n NonLinearProblem<SC,LO,GO,NO>::evalModelImplBlock:: Skipping preconditioner reconstruction \n " << endl;
+                            std::cout << " \n NonLinearProblem<SC,LO,GO,NO>::evalModelImplBlock:: Skipping preconditioner reconstruction \n " << std::endl;
                     }
                 }
                 else

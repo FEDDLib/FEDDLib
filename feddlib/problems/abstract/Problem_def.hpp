@@ -667,15 +667,15 @@ namespace FEDD
                 if(pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").get("CoarseOperator Type", "GDSWCoarseOperator") == "IPOUHarmonicCoarseOperator"){
                     for (int i = 0; i < this->parameterList_->get("Number of blocks", 2); i++)
                     {
-                        std::cout << "   # IPOU Block "<< std::to_string(i + 1) <<":  " << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").sublist("IPOUHarmonicCoarseOperator").sublist("Blocks").sublist(std::to_string(i + 1)).sublist("InterfacePartitionOfUnity").get("Type","NOTFOUND") << endl;
+                        std::cout << "   # IPOU Block "<< std::to_string(i + 1) <<":  " << pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").sublist("IPOUHarmonicCoarseOperator").sublist("Blocks").sublist(std::to_string(i + 1)).sublist("InterfacePartitionOfUnity").get("Type","NOTFOUND") << std::endl;
                     }
                 }
                     
             }
             else if (!parameterList_->sublist("General").get("Preconditioner Method", "Monolithic").compare("Teko")){
-                cout << "  ### Block Preconditioner Type: " << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE") << endl;
-                cout << "  ### Velocity Preconditioner:   " << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Velocity").get("CoarseOperator Type","GDSW#") << endl;
-                cout << "  ### Pressure Preconditioner:   " << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Pressure").get("CoarseOperator Type","GDSW#") << endl;
+                std::cout << "  ### Block Preconditioner Type: " << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE") << std::endl;
+                std::cout << "  ### Velocity Preconditioner:   " << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Velocity").get("CoarseOperator Type","GDSW#") << std::endl;
+                std::cout << "  ### Pressure Preconditioner:   " << parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").sublist("Inverse Factory Library").sublist("FROSch-Pressure").get("CoarseOperator Type","GDSW#") << std::endl;
 
             }
             else if (!parameterList_->sublist("General").get("Preconditioner Method", "Monolithic").compare("Diagonal") ||
@@ -685,13 +685,13 @@ namespace FEDD
             {
                 // ParameterListPtr_Type pListThyraPrecBlock = sublist(parameterList_, "Block Preconditioner");
 
-                std::cout << "  ### Block Preconditioner Type: " << parameterList_->sublist("General").get("Preconditioner Method", "Monolithic") << endl;
-                std::cout << "   ## Velocity Preconditioner:   " << parameterList_->sublist("Velocity preconditioner").sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("CoarseOperator Type", "Nada") << endl;
+                std::cout << "  ### Block Preconditioner Type: " << parameterList_->sublist("General").get("Preconditioner Method", "Monolithic") << std::endl;
+                std::cout << "   ## Velocity Preconditioner:   " << parameterList_->sublist("Velocity preconditioner").sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("CoarseOperator Type", "Nada") << std::endl;
                 std::cout << "    # Variant: " << parameterList_->sublist("Velocity preconditioner").sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("FROSch Preconditioner Type", "TwoLevelBlockPreconditioner") << std::endl;
                 std::cout << "    # Overlap: "
                           << parameterList_->sublist("Velocity preconditioner").sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("Overlap", 0) << std::endl;
                
-                std::cout << "   ## Schur Complement Preconditioner: " << parameterList_->sublist("Schur complement preconditioner").sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("CoarseOperator Type", "Nada") << endl;
+                std::cout << "   ## Schur Complement Preconditioner: " << parameterList_->sublist("Schur complement preconditioner").sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("CoarseOperator Type", "Nada") << std::endl;
                 std::cout << "    # Variant: " << parameterList_->sublist("Schur complement preconditioner").sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("FROSch Preconditioner Type", "TwoLevelBlockPreconditioner") << std::endl;
                 std::cout << "    # Overlap: "
                           << parameterList_->sublist("Schur complement preconditioner").sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("Overlap", 0) << std::endl;
