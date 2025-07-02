@@ -3,7 +3,6 @@
 
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/FE/FE.hpp"
-#include "feddlib/core/AceFemAssembly/TestFE/FE_Test.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"

@@ -9,14 +9,14 @@
 #define FEDD_HAVE_PARMETIS
 
 #ifdef FEDD_HAVE_METIS
-#include "metis.h"
+#include <metis.h>
 #endif
 #ifdef FEDD_HAVE_PARMETIS
-#include "parmetis.h"
+#include <parmetis.h>
 #endif
 
 /*!
- Defintion of MeshPartitioner
+ Definition of MeshPartitioner
  
  @brief  MeshPartitioner
  @author Christian Hochmuth
@@ -149,7 +149,7 @@ private:
     CommConstPtr_Type comm_;
     std::string feType_;
     std::vector< tuple_intint_Type > rankRanges_;
-    int dim_;
+    int dim_;  // space dimension of the domain
     };
 }
 

@@ -9,7 +9,6 @@
  @copyright CH
  */
 
-using namespace std;
 namespace FEDD {
 FiniteElement::FiniteElement():
 flag_(0),

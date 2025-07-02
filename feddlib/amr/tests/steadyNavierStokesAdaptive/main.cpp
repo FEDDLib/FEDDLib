@@ -34,6 +34,13 @@
  @copyright CH
  */
 
+using std::pow;
+using std::cos;
+using std::sin;
+using std::atan2;
+using std::sqrt;
+using std::exp;
+
 
 // ######################
 // Verfuerth
@@ -261,6 +268,7 @@ typedef default_go GO;
 typedef default_no NO;
 
 using namespace FEDD;
+using namespace std;
 
 int main(int argc, char *argv[]) {
     

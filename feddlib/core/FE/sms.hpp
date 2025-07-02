@@ -21,7 +21,7 @@
 #include <string.h>
 
 #ifdef SMSWINDOWS
-#include "direct.h"
+#include <direct.h>
 #endif 
 
 #ifdef SMSLINUX

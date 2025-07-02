@@ -5,8 +5,8 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "BlockMap.hpp"
 #include "MultiVector.hpp"
-#include "Thyra_ProductVectorSpaceBase.hpp"
-#include "Thyra_DefaultProductMultiVector_decl.hpp"
+#include <Thyra_ProductVectorSpaceBase.hpp>
+#include <Thyra_DefaultProductMultiVector_decl.hpp>
 /*!
  Declaration of BlockMultiVector
  

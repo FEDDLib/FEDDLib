@@ -89,10 +89,10 @@ public:
 
     AdaptiveMeshRefinement(ParameterListPtr_Type parameterListAll);
     
-    AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll);
+    AdaptiveMeshRefinement(std::string problemType, ParameterListPtr_Type parameterListAll);
 
-	AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFunc );
-	AdaptiveMeshRefinement(string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFuncU,Func_Type exactSolFuncP );
+	AdaptiveMeshRefinement(std::string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFunc );
+	AdaptiveMeshRefinement(std::string problemType, ParameterListPtr_Type parameterListAll , Func_Type exactSolFuncU,Func_Type exactSolFuncP );
     
     ~AdaptiveMeshRefinement();
 
@@ -167,8 +167,8 @@ private:
 
 	ProblemPtr_Type problem_;
 	
-	string refinementRestriction_ = "keepRegularity";
-	string markingStrategy_ = "Maximum";
+	std::string refinementRestriction_ = "keepRegularity";
+	std::string markingStrategy_ = "Maximum";
 
 	double theta_ = 0.5;
 	double tol_= 0.001 ;
@@ -177,15 +177,15 @@ private:
 	bool timeTablePrint_ = "false";
 	int refinement3DDiagonal_ = 0; // 0 beeing the shortest interior Diagonal, 1 the second shortest and 2 the longest interior Diagonal 
 
-	string problemType_;
+	std::string problemType_;
 	int dim_;
 
 	int currentIter_;
 	int maxIter_ = 5;
 	int maxRank_;
 
-	string FEType1_;
-	string FEType2_;
+	std::string FEType1_;
+	std::string FEType2_;
 
 	vec_dbl_Type maxErrorEl;
 	vec_dbl_Type maxErrorKn;
@@ -220,7 +220,7 @@ private:
 	int coarseningM_ =  1;
 	int coarseningN_  = 1;
 		
-	string refinementMode_ = "Regular";
+	std::string refinementMode_ = "Regular";
 
   
     

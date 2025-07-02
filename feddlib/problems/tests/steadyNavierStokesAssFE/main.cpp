@@ -439,12 +439,12 @@ int main(int argc, char *argv[]) {
 					Sum2->getGlobalRowView(row, indices,values);
 					
 					for(int j=0; j< values.size() ; j++){
-						if(fabs(values[j])>res)
-							res = fabs(values[j]);			
+						if(std::fabs(values[j])>res)
+							res = std::fabs(values[j]);			
 					}	
 				}	
 			}
-			res = fabs(res);
+			res = std::fabs(res);
 			reduceAll<int, double> (*comm, REDUCE_MAX, res, outArg (res));
            
 			if(comm->getRank() == 0)
@@ -462,12 +462,12 @@ int main(int argc, char *argv[]) {
                 Sum3->getGlobalRowView(row, indices,values);
                 
                 for(int j=0; j< values.size() ; j++){
-                    if(fabs(values[j])>res)
-                        res = fabs(values[j]);			
+                    if(std::fabs(values[j])>res)
+                        res = std::fabs(values[j]);			
                 }	
             
 			}
-			res = fabs(res);
+			res = std::fabs(res);
 			reduceAll<int, double> (*comm, REDUCE_MAX, res, outArg (res));
            
 			if(comm->getRank() == 0)
@@ -483,11 +483,11 @@ int main(int argc, char *argv[]) {
 				Sum1->getGlobalRowView(row, indices,values);
 				
 				for(int j=0; j< values.size() ; j++){
-					res += fabs(values[j]);			
+					res += std::fabs(values[j]);			
 				}	
 			}	
 			
-			res = fabs(res);
+			res = std::fabs(res);
 			reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 		
 			if(comm->getRank() == 0)
@@ -504,12 +504,12 @@ int main(int argc, char *argv[]) {
 					Sum4->getGlobalRowView(row, indices,values);
 				
                     for(int j=0; j< values.size() ; j++){
-                        res += fabs(values[j]);			
+                        res += std::fabs(values[j]);			
                     }	
                 }
 			}	
 			
-			res = fabs(res);
+			res = std::fabs(res);
 			reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 		
 			if(comm->getRank() == 0)

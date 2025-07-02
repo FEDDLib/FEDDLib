@@ -7,13 +7,13 @@
 // Trilinos
 #include <Teuchos_Array.hpp>
 
-#include "Epetra_ConfigDefs.h"
+#include <Epetra_ConfigDefs.h>
 #ifdef HAVE_MPI
-#include "mpi.h"
-#include "Epetra_MpiComm.h"
-#include "Epetra_SerialComm.h"
+#include <mpi.h>
+#include <Epetra_MpiComm.h>
+#include <Epetra_SerialComm.h>
 #else
-#include "Epetra_SerialComm.h"
+#include <Epetra_SerialComm.h>
 #endif
 
 #include <Epetra_Map.h>
@@ -59,7 +59,7 @@ public:
     /// @brief Reading a variable 'varName' from the inputFile with inputFilename of file type HDF5
     /// @param varName Name of variable contained in file
     /// @return Xpetra formatted multivector distributed as defined with readMap
-    MultiVectorPtr_Type readVariablesHDF5(string varName);
+    MultiVectorPtr_Type readVariablesHDF5(std::string varName);
 
     // Closing Importer
     void closeImporter();

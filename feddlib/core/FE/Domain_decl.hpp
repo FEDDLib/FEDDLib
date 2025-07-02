@@ -28,10 +28,10 @@ class Domain {
     \tparam LO The local ordinal type. The is the index type for local indices
     \tparam GO The global ordinal type. The is the index type for global indices
     @todo This should actually be removed since the class should operate only on element level)
-    \tparam NO The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.
+    \tparam NO The Kokkos Node type. This would allow for performance portability when using Kokkos. Currently, this is not used.
     
-    Example: If you construct a Stokes finite element problem you get a velocity and pressure 'P2-P1' discretisation and ,thus , a domain for the P2 elements and one for the P1 elements with the respective node list etc.
-     
+    Example: If you construct a Stokes finite element problem, you get a velocity and pressure 'P2-P1' discretization and, thus, one domain for the P2 elements and one for the P1 elements, with the respective node list etc.
+    
 	*/
 
 public:
@@ -262,7 +262,7 @@ public:
          @param[in] volumeID element flag 
 
     */
-    void readMesh(string filename, string delimiter, int dim, string FEType, int volumeID=10);
+    void readMesh(std::string filename, std::string delimiter, int dim, std::string FEType, int volumeID=10);
 
     /*!
          \brief Reading mesh size
@@ -270,7 +270,7 @@ public:
          @param[in] delimiter
 
     */
-    void readMeshSize(string filename, string delimiter);
+    void readMeshSize(std::string filename, std::string delimiter);
     
     /*!
          \brief Partition mesh according to number of processors. Partition with parmetis.
@@ -462,7 +462,7 @@ public:
          @param[in] FEType
          @param[in] volumeID       
     */
-    void initializeUnstructuredMesh(int dimension, string feType, int volumeID=10);
+    void initializeUnstructuredMesh(int dimension, std::string feType, int volumeID=10);
 
     /*!
 		 \brief Hilfsfunktion fuer buildLocalInterfaceIDInGlobal().
@@ -511,7 +511,7 @@ public:
          \brief Exporting Mesh
          
     */
-   void exportMesh(bool exportEdges = false, bool exportSurfaces=false, string exportMesh="export.mesh");
+   void exportMesh(bool exportEdges = false, bool exportSurfaces=false, std::string exportMesh="export.mesh");
 
      /*!
          \brief Option of preprocessing mesh by making consistent outward normal and/or consistent element orientation, where we always have positive det of transformation to reference element
@@ -522,19 +522,19 @@ public:
 
    /// @brief Exporting Paraview file displaying element flags of the underlying mesh
    /// @param name
-   void exportElementFlags(string name = "default");
+   void exportElementFlags(std::string name = "default");
 
    /// @brief Exporting Paraview file displaying node flags of the underlying mesh
    /// @param name export suffix to identify flags
-   void exportNodeFlags(string name = "default");
+   void exportNodeFlags(std::string name = "default");
 
    /// @brief Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not able to plot only the surfaces, the normals are displayed in each node. This means, that at corners, the visualization is incorrect (i.e. node belongs to surfaces which are in different directions)
    /// @param name export suffix to identify flags
-   void exportSurfaceNormals(string name = "default");
+   void exportSurfaceNormals(std::string name = "default");
 
    /// @brief Exporting Paraview file displaying element volume of underlying mesh. 
    /// @param name export suffix to identify flags
-   void exportElementOrientation(string name = "default");
+   void exportElementOrientation(std::string name = "default");
 
    /* ----------------------------------------------------------------------------------------*/
 

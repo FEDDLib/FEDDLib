@@ -20,7 +20,6 @@
 
  */
 
-using namespace std;
 using Teuchos::reduceAll;
 using Teuchos::REDUCE_SUM;
 using Teuchos::REDUCE_MAX;
@@ -98,7 +97,7 @@ RefinementFactory<SC,LO,GO,NO>::~RefinementFactory(){
 
 */
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh, string refinementMode){
+void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int iteration, MeshUnstrPtr_Type outputMesh, std::string refinementMode){
 	MESH_TIMER_START(totalTime," Total Time for Mesh Refinement of this Step ");		
 
 
@@ -137,14 +136,14 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
     this->edgeElements_.reset(new EdgeElements()); // Edges
     this->surfaceTriangleElements_.reset(new SurfaceElements()); // Surface
     this->elementsC_.reset(new Elements(*elementsTmp));    // Elements 
-    this->pointsRep_.reset(new std::vector<std::vector<double> >(meshP1->pointsRep_->size(),vector<double>(this->dim_,-1.)));
+    this->pointsRep_.reset(new std::vector<std::vector<double> >(meshP1->pointsRep_->size(),std::vector<double>(this->dim_,-1.)));
     *this->pointsRep_ = *meshP1->pointsRep_; // Points
-	this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), vector<double>(this->dim_,-1. ) ) );
+	this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), std::vector<double>(this->dim_,-1. ) ) );
     *this->pointsUni_ = *meshP1->pointsUni_; 
 	this->bcFlagUni_.reset( new std::vector<int> ( this->mapUnique_->getNodeNumElements(), 0 ) );
     *this->bcFlagUni_ = *meshP1->bcFlagUni_; 
 
-	this->bcFlagRep_.reset(new vector<int>(meshP1->bcFlagRep_->size())); // Flags
+	this->bcFlagRep_.reset(new std::vector<int>(meshP1->bcFlagRep_->size())); // Flags
 	*this->bcFlagRep_ = *meshP1->bcFlagRep_;
 
 
@@ -163,14 +162,14 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 
 
 		if(this->comm_->getRank() == 0){
-			cout << " \t-- Mesh Refinement -- " << endl;
-			cout << "\t__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " \tStart Iteration " << iteration+1 << " of "<< this->dim_ << "D Mesh Refinement " << endl;
-			cout << " \tNumber of Elements:\t" << this->elementMap_->getGlobalNumElements() << endl;
-			cout << " \tNumber of Nodes:\t" << this->mapUnique_->getGlobalNumElements() << endl; 
-			cout << " \tNumber of Edges:\t" << this->edgeMap_->getGlobalNumElements() << endl;
-			cout << "\t__________________________________________________________________________________________________________ " << endl;
+			std::cout << " \t-- Mesh Refinement -- " << std::endl;
+			std::cout << "\t__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " " << std::endl;
+			std::cout << " \tStart Iteration " << iteration+1 << " of "<< this->dim_ << "D Mesh Refinement " << std::endl;
+			std::cout << " \tNumber of Elements:\t" << this->elementMap_->getGlobalNumElements() << std::endl;
+			std::cout << " \tNumber of Nodes:\t" << this->mapUnique_->getGlobalNumElements() << std::endl; 
+			std::cout << " \tNumber of Edges:\t" << this->edgeMap_->getGlobalNumElements() << std::endl;
+			std::cout << "\t__________________________________________________________________________________________________________ " << std::endl;
 		}
 
 
@@ -409,7 +408,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 			vecGlobalIDsElements.push_back( i +  offsetElements + procOffsetElements);
 		}
 
-		Teuchos::RCP<std::vector<GO> > elementsGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsElements ) );
+		Teuchos::RCP<std::vector<GO> > elementsGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsElements ) );
 		Teuchos::ArrayView<GO> elementsGlobMappingArray = Teuchos::arrayViewFromVector( *elementsGlobMapping);
 
 		this->elementMap_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), elementsGlobMappingArray, 0, this->comm_) );
@@ -481,18 +480,18 @@ void RefinementFactory<SC,LO,GO,NO>::refineMesh( MeshUnstrPtr_Type meshP1, int i
 
 		
 		if(this->comm_->getRank() == 0){
-			cout << "\t__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
-			cout << " \t... finished Iteration " << iteration+1 << " of " << this->dim_ << "D Mesh Refinement " << endl;
-			cout << " \tNumber of new Elements:\t" << this->elementMap_->getGlobalNumElements() - meshP1->elementMap_-> getGlobalNumElements() << endl;
-			cout << " \tNumber of new Nodes:\t" << this->mapUnique_->getGlobalNumElements()- meshP1->mapUnique_-> getGlobalNumElements() << endl; 
-			cout << " \tNumber of new Edges:\t" << this->edgeMap_->getGlobalNumElements()- meshP1->edgeMap_-> getGlobalNumElements() << endl;
-			cout << "\t__________________________________________________________________________________________________________ " << endl;
-			cout << " " << endl;
+			std::cout << "\t__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " " << std::endl;
+			std::cout << " \t... finished Iteration " << iteration+1 << " of " << this->dim_ << "D Mesh Refinement " << std::endl;
+			std::cout << " \tNumber of new Elements:\t" << this->elementMap_->getGlobalNumElements() - meshP1->elementMap_-> getGlobalNumElements() << std::endl;
+			std::cout << " \tNumber of new Nodes:\t" << this->mapUnique_->getGlobalNumElements()- meshP1->mapUnique_-> getGlobalNumElements() << std::endl; 
+			std::cout << " \tNumber of new Edges:\t" << this->edgeMap_->getGlobalNumElements()- meshP1->edgeMap_-> getGlobalNumElements() << std::endl;
+			std::cout << "\t__________________________________________________________________________________________________________ " << std::endl;
+			std::cout << " " << std::endl;
 		}
 
 		if(writeRefinementTime_ )
-   			Teuchos::TimeMonitor::report(cout,"Mesh Refinement");
+   			Teuchos::TimeMonitor::report(std::cout,"Mesh Refinement");
 		
 	// Finally we set all changed mesh enteties for outputMesh
 
@@ -774,7 +773,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeEleme
 				}
 			}
 			if(found == false)
-				cout << " Asking for row " << rowMap->getLocalElement(inzidenzIndices[i][0]) << " for Edge [" << inzidenzIndices[i][0] << ",  " << inzidenzIndices[i][1] << "], on Proc " << myRank << " but no Value found " <<endl;
+				std::cout << " Asking for row " << rowMap->getLocalElement(inzidenzIndices[i][0]) << " for Edge [" << inzidenzIndices[i][0] << ",  " << inzidenzIndices[i][1] << "], on Proc " << myRank << " but no Value found " <<std::endl;
 		 }
 	// --------------------------------------------------------------------------------------------------
 	// --------------------------------------------------------------------------------------------------
@@ -789,7 +788,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeEleme
 				count ++;
 			}
 		}
-		Teuchos::RCP<std::vector<GO> > pointsRepGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDs ) );
+		Teuchos::RCP<std::vector<GO> > pointsRepGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDs ) );
 		Teuchos::ArrayView<GO> pointsRepGlobMappingArray = Teuchos::arrayViewFromVector( *pointsRepGlobMapping );
 		
 		this->mapRepeated_.reset(new Map<LO,GO,NO>( Teuchos::OrdinalTraits<GO>::invalid(), pointsRepGlobMappingArray, 0, this->comm_) );
@@ -797,7 +796,7 @@ void RefinementFactory<SC,LO,GO,NO>::buildNodeMap(EdgeElementsPtr_Type edgeEleme
 	
 	
 		// Points and Flags Unique
-		this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), vector<double>(this->dim_,-1. ) ) );
+		this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), std::vector<double>(this->dim_,-1. ) ) );
 		this->bcFlagUni_.reset( new std::vector<int> ( this->mapUnique_->getNodeNumElements(), 0 ) );
 		for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
 			GO gid = this->mapUnique_->getGlobalElement( i );
@@ -1132,11 +1131,11 @@ void RefinementFactory<SC,LO,GO,NO>::buildEdgeMap(MapConstPtr_Type mapGlobalProc
 				}
 			}
 			if(found == false)
-				cout << " Asking for row " << rowMap->getLocalElement(inzidenzIndices[i][0]) << " for Edge [" << inzidenzIndices[i][0] << ",  " << inzidenzIndices[i][1] << "], on Proc " << myRank << " but no Value found " <<endl;
+				std::cout << " Asking for row " << rowMap->getLocalElement(inzidenzIndices[i][0]) << " for Edge [" << inzidenzIndices[i][0] << ",  " << inzidenzIndices[i][1] << "], on Proc " << myRank << " but no Value found " <<std::endl;
 		 }
 
 
-		Teuchos::RCP<std::vector<GO>> edgesGlobMapping = Teuchos::rcp( new vector<GO>( vecGlobalIDsEdges ) );
+		Teuchos::RCP<std::vector<GO>> edgesGlobMapping = Teuchos::rcp( new std::vector<GO>( vecGlobalIDsEdges ) );
 		Teuchos::ArrayView<GO> edgesGlobMappingArray = Teuchos::arrayViewFromVector( *edgesGlobMapping);
 
 		this->edgeMap_.reset(new Map<LO,GO,NO>(Teuchos::OrdinalTraits<GO>::invalid(), edgesGlobMappingArray, 0, this->comm_) );
@@ -1178,7 +1177,7 @@ template <class SC, class LO, class GO, class NO>
 void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type meshP1, ElementsPtr_Type elements ,EdgeElementsPtr_Type edgeElements,SurfaceElementsPtr_Type surfaceTriangleElements,int& newPoints, int& newPointsCommon, vec_GO_Type& globalInterfaceIDsTagged, MapConstPtr_Type mapInterfaceEdges,int& newElements){
 
 	vec2D_dbl_ptr_Type points = meshP1->getPointsRepeated(); // Points
-	string restriction = refinementRestriction_;
+	std::string restriction = refinementRestriction_;
 
 	if(this->dim_ == 2){
 		// We determine whether a element that is tagged for green refinement has been refined green in the previous refinement
@@ -1237,7 +1236,7 @@ void RefinementFactory<SC,LO,GO,NO>::refinementRestrictions(MeshUnstrPtr_Type me
 						if(tagCounter[i]==2){
 							entry = this->determineLongestEdge(edgeElements,edgeElements->getEdgesOfElement(i),points); // we determine the edge, we would choose for blue Refinement
 							if(!edgeElements->getElement(entry).isTaggedForRefinement()){ // If the longestest edge is already the tagged one, we leave the Element alone
-								//cout <<" Change to red in k= " << k << endl;
+								//std::cout <<" Change to red in k= " << k << std::endl;
 								edgeElements->getElement(entry).tagForRefinement(); // we tag the Element for refinement
 								this->addMidpoint(edgeElements,entry);	// we add the necessary midpoint
 								newPoints ++; // add new Points 
@@ -1568,27 +1567,27 @@ void RefinementFactory<SC,LO,GO,NO>::refineMeshRegIreg(ElementsPtr_Type elements
 		
 			if(nodeTag == 3 && edgeTag ==3){
 				//elements->getElement(i).setFiniteElementRefinementType("Type1");
-				//cout << " Requesting Type 1 Refinement on Processor " << this->comm_->getRank()<< endl;
+				//std::cout << " Requesting Type 1 Refinement on Processor " << this->comm_->getRank()<< std::endl;
 				this->refineType1(edgeElements, elements, i,surfaceTriangleElements);
 				newElements = newElements+3;
 			}
 			else if(nodeTag == 2 && edgeTag == 1){
 				//elements->getElement(i).setFiniteElementRefinementType("Type2");
-				//cout << " Requesting Type 2 Refinement on Processor " << this->comm_->getRank() << endl;
+				//std::cout << " Requesting Type 2 Refinement on Processor " << this->comm_->getRank() << std::endl;
 				this->refineType2(edgeElements, elements, i,surfaceTriangleElements);
 				newElements ++;
 
 			}
 			else if(nodeTag == 3 && edgeTag == 2){
 				//elements->getElement(i).setFiniteElementRefinementType("Type3");
-				//cout << " Requesting Type 3 Refinement on Processor " << this->comm_->getRank() << endl;
+				//std::cout << " Requesting Type 3 Refinement on Processor " << this->comm_->getRank() << std::endl;
 				this->refineType3(edgeElements, elements, i,surfaceTriangleElements);
 
 				newElements = newElements+2;
 			}
 			else if(nodeTag == 4 && edgeTag == 2){
 				//elements->getElement(i).setFiniteElementRefinementType("Type4");
-				//cout << " Requesting Type 4 Refinement on Processor " << this->comm_->getRank() << endl;
+				//std::cout << " Requesting Type 4 Refinement on Processor " << this->comm_->getRank() << std::endl;
 				this->refineType4(edgeElements, elements, i,surfaceTriangleElements);
 				newElements = newElements+3;
 			}
@@ -1619,7 +1618,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineMeshRegIreg(ElementsPtr_Type elements
 						
 	for(int j=0;j<this->edgeElements_->numberElements();j++){
 		if(this->edgeElements_->getElement(j).isTaggedForRefinement())
-			cout<< "tagged edge element somehow made it " << endl;
+			std::cout<< "tagged edge element somehow made it " << std::endl;
 	}
 
 }
@@ -1826,7 +1825,7 @@ void RefinementFactory<SC,LO,GO,NO>::updateElementsOfEdgesLocalAndGlobal(int max
 			sort(importElements[i].begin(),importElements[i].end());
 			importElements[i].erase( unique(importElements[i].begin(), importElements[i].end() ), importElements[i].end() );
 			if(importElements[i].size() != missingEntries[i])
-			   cout << " On Processor " << this->comm_->getRank() << " uneven number for edge imported: " << importElements[i].size() << " missing " << missingEntries[i] << " " << edgesInterfaceGlobalID[i] << endl; // " something went wrong while updating elementsOfEdgesGlobal as the imported entries do not match the supposed number of imported entries. Please check." << endl; 	
+			   std::cout << " On Processor " << this->comm_->getRank() << " uneven number for edge imported: " << importElements[i].size() << " missing " << missingEntries[i] << " " << edgesInterfaceGlobalID[i] << std::endl; // " something went wrong while updating elementsOfEdgesGlobal as the imported entries do not match the supposed number of imported entries. Please check." << std::endl; 	
 		}
 
 		for(int i=0; i< interfaceElementsEntries.size() ; i++){
@@ -1908,9 +1907,9 @@ int RefinementFactory<SC,LO,GO,NO>::determineLongestEdge( EdgeElementsPtr_Type e
 		P2 = points->at(p2ID);
 		double sum=0;
 		for(int j=0; j< P1.size();j++)
-			sum += pow(P1[j]-P2[j],2);
+			sum += std::pow(P1[j]-P2[j],2);
 
-		length[i] = sqrt(sum);
+		length[i] = std::sqrt(sum);
 	
 		vec2D_dbl_Type tmpN(0,vec_dbl_Type(this->dim_+1));
 		vec_dbl_Type tagged(1,2);
@@ -1981,13 +1980,13 @@ void RefinementFactory<SC,LO,GO,NO>::refineBlue(EdgeElementsPtr_Type edgeElement
 		LO p2ID =edgeElements->getElement(taggedEdge[0]).getNode(1);
 		P1 = this->pointsRep_->at(p1ID);
 		P2 = this->pointsRep_->at(p2ID);
-		length1 = sqrt(pow(P1[0]-P2[0],2)+pow(P1[1]-P2[1],2));
+		length1 = std::sqrt(std::pow(P1[0]-P2[0],2)+std::pow(P1[1]-P2[1],2));
 
 		p1ID =edgeElements->getElement(taggedEdge[1]).getNode(0);
 		p2ID =edgeElements->getElement(taggedEdge[1]).getNode(1);
 		P1 = this->pointsRep_->at(p1ID);
 		P2 = this->pointsRep_->at(p2ID);
-		length2 = sqrt(pow(P1[0]-P2[0],2)+pow(P1[1]-P2[1],2));
+		length2 = std::sqrt(std::pow(P1[0]-P2[0],2)+std::pow(P1[1]-P2[1],2));
 
 		if(length1 <= length2){
 			edgeIndexL=1;
@@ -3030,7 +3029,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineType3(EdgeElementsPtr_Type edgeElemen
 			p2ID =leftOverNodes[i];
 			P1 = this->pointsRep_->at(p1ID);
 			P2 = this->pointsRep_->at(p2ID);
-			length[i] = sqrt(pow(P1[0]-P2[0],2)+pow(P1[1]-P2[1],2)+pow(P1[2]-P2[2],2));
+			length[i] = std::sqrt(std::pow(P1[0]-P2[0],2)+std::pow(P1[1]-P2[1],2)+std::pow(P1[2]-P2[2],2));
 			if(length[i] > maxLength){
 				maxLength = length[i];
 				maxEntry= i;
@@ -4719,11 +4718,11 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 		int diaInd=0;
 
-		lengthDia[0] = sqrt(pow(pointsRep->at(midPointInd[1]).at(0) - pointsRep->at(midPointInd[4]).at(0),2) + pow(pointsRep->at(midPointInd[1]).at(1) - pointsRep->at(midPointInd[4]).at(1),2) +pow(pointsRep->at(midPointInd[1]).at(2) - pointsRep->at(midPointInd[4]).at(2),2) );
+		lengthDia[0] = std::sqrt(std::pow(pointsRep->at(midPointInd[1]).at(0) - pointsRep->at(midPointInd[4]).at(0),2) + std::pow(pointsRep->at(midPointInd[1]).at(1) - pointsRep->at(midPointInd[4]).at(1),2) +std::pow(pointsRep->at(midPointInd[1]).at(2) - pointsRep->at(midPointInd[4]).at(2),2) );
 
-		lengthDia[1] = sqrt(pow(pointsRep->at(midPointInd[0]).at(0) - pointsRep->at(midPointInd[5]).at(0),2) + pow(pointsRep->at(midPointInd[0]).at(1) - pointsRep->at(midPointInd[5]).at(1),2) +pow(pointsRep->at(midPointInd[0]).at(2) - pointsRep->at(midPointInd[5]).at(2),2) );
+		lengthDia[1] = std::sqrt(std::pow(pointsRep->at(midPointInd[0]).at(0) - pointsRep->at(midPointInd[5]).at(0),2) + std::pow(pointsRep->at(midPointInd[0]).at(1) - pointsRep->at(midPointInd[5]).at(1),2) +std::pow(pointsRep->at(midPointInd[0]).at(2) - pointsRep->at(midPointInd[5]).at(2),2) );
 
-		lengthDia[2] = sqrt(pow(pointsRep->at(midPointInd[2]).at(0) - pointsRep->at(midPointInd[3]).at(0),2) + pow(pointsRep->at(midPointInd[2]).at(1) - pointsRep->at(midPointInd[3]).at(1),2) +pow(pointsRep->at(midPointInd[2]).at(2) - pointsRep->at(midPointInd[3]).at(2),2) );
+		lengthDia[2] = std::sqrt(std::pow(pointsRep->at(midPointInd[2]).at(0) - pointsRep->at(midPointInd[3]).at(0),2) + std::pow(pointsRep->at(midPointInd[2]).at(1) - pointsRep->at(midPointInd[3]).at(1),2) +std::pow(pointsRep->at(midPointInd[2]).at(2) - pointsRep->at(midPointInd[3]).at(2),2) );
 
 
 		vec2D_dbl_Type dia(3,vec_dbl_Type(2));
@@ -5464,7 +5463,7 @@ void RefinementFactory<SC,LO,GO,NO>::refineRegular(EdgeElementsPtr_Type edgeElem
 
 */
 template <class SC, class LO, class GO, class NO>
-void RefinementFactory<SC,LO,GO,NO>::bisectEdges(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements, string mode){
+void RefinementFactory<SC,LO,GO,NO>::bisectEdges(EdgeElementsPtr_Type edgeElements, ElementsPtr_Type elements, int indexElement, SurfaceElementsPtr_Type surfaceTriangleElements, std::string mode){
 	
 	if(refinementMode_ == "Bisection"){
 

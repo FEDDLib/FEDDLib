@@ -1,7 +1,7 @@
 #include "sms.hpp"
-#include "time.h"
-#include "string.h"
-#include "sys/timeb.h"
+#include <time.h>
+#include <string.h>
+#include <sys/timeb.h>
 #include <iostream>
 /*for a given integration code icode function sets
 number ob integration points ngpo and pointer to the  vector of

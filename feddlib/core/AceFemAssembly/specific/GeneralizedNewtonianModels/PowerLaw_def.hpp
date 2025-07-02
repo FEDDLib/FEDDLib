@@ -30,14 +30,14 @@ template <class SC, class LO, class GO, class NO>
 void PowerLaw<SC,LO,GO,NO>::evaluateMapping(ParameterListPtr_Type params, double shearRate, double &viscosity) {
 	
     
-    viscosity = this->powerlaw_constant_K*pow(shearRate, this->powerlaw_index_n-1.0);
+    viscosity = this->powerlaw_constant_K*std::pow(shearRate, this->powerlaw_index_n-1.0);
 
     // Check bounds for viscosity 
     if (viscosity < nu_infty) // If viscosity value is smaller than the infinity shear rate viscosity set viscsoity to limit value nu_infty
     {
     viscosity = nu_infty; 
     }
-    else if (abs(viscosity) > nu_zero)  // If viscosity value is greater than the zero shear rate viscosity set viscsoity to limit value nu_zero
+    else if (std::abs(viscosity) > nu_zero)  // If viscosity value is greater than the zero shear rate viscosity set viscsoity to limit value nu_zero
     {
     viscosity = nu_zero;
     }
@@ -54,12 +54,12 @@ void PowerLaw<SC,LO,GO,NO>::evaluateDerivative(ParameterListPtr_Type params, dou
 // So a problematic case is if shear rate is in the denominator 0 because we may get inf values. 
 // Therefore we have to check these cases and catch them
 // double epsilon = 1e-8;
-if ( abs(shearRate) <= shear_rate_limitZero) //How to choose epsilon?
+if ( std::abs(shearRate) <= shear_rate_limitZero) //How to choose epsilon?
        {
             shearRate =  shear_rate_limitZero;
        }
 
-res = (-2.0)*this->powerlaw_constant_K*(this->powerlaw_index_n-1.0)*pow(shearRate, this->powerlaw_index_n-3.0);
+res = (-2.0)*this->powerlaw_constant_K*(this->powerlaw_index_n-1.0)*std::pow(shearRate, this->powerlaw_index_n-3.0);
 
 
 }

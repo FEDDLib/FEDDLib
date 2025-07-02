@@ -10,6 +10,7 @@
 #include "feddlib/core/FE/Helper.hpp"
 
 using namespace FEDD;
+using std::pow;
 
 typedef unsigned UN;
 typedef default_sc SC;

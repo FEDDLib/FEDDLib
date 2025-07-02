@@ -8,22 +8,22 @@
  @version 1.0
  @copyright CH
 */
-using namespace std;
+
 namespace FEDD {
 
-void meshReadSize ( string mesh_filename, int &numNode, int &dim, int &numElement, int &orderElement, int &numSurface, int &orderSurface, int &numEdges, int& orderEdges );
+void meshReadSize ( std::string mesh_filename, int &numNode, int &dim, int &numElement, int &orderElement, int &numSurface, int &orderSurface, int &numEdges, int& orderEdges );
 
 template <typename T>
-int NextEntry(string text, string delimiter, int fromPos, int &value, T&random){
+int NextEntry(std::string text, std::string delimiter, int fromPos, int &value, T&random){
 
     int pos = text.find(delimiter,fromPos);
-    value = stoi(text.substr(fromPos,pos));
+    value = std::stoi(text.substr(fromPos,pos));
     
     return pos+1;
 }
 
 template <typename T>
-int NextEntry(string text, string delimiter, int fromPos, double &value, T&random){
+int NextEntry(std::string text, std::string delimiter, int fromPos, double &value, T&random){
 
     int pos = text.find(delimiter,fromPos);
     value = stod(text.substr(fromPos,pos));
@@ -32,7 +32,7 @@ int NextEntry(string text, string delimiter, int fromPos, double &value, T&rando
 }
 
 template <typename T>
-void readEntity( ifstream& file, string& text, vector<T>& entity, vector<int>& entityFlags, const int& numEntity, const int& orderEntity, const string& delimiter, bool isNode = false, int dim = 3 ){
+void readEntity( std::ifstream& file, std::string& text, std::vector<T>& entity, std::vector<int>& entityFlags, const int& numEntity, const int& orderEntity, const std::string& delimiter, bool isNode = false, int dim = 3 ){
     
     T random; // we use this so NextEntry can deduce the type T
     double dblValue;
@@ -77,12 +77,12 @@ void readEntity( ifstream& file, string& text, vector<T>& entity, vector<int>& e
 }
 
 template <typename T>
-void meshReadData ( const string& mesh_filename, const string& type, const string& delimiter, const int &dim, const int& numEntity, const int& orderEntity, vector<T>& entity, vector<int>& entityFlag ){
+void meshReadData ( const std::string& mesh_filename, const std::string& type, const std::string& delimiter, const int &dim, const int& numEntity, const int& orderEntity, std::vector<T>& entity, std::vector<int>& entityFlag ){
     
-    ifstream file;
+    std::ifstream file;
     int lineLength;
     int pos;
-    string text;
+    std::string text;
     file.open ( mesh_filename.c_str ( ) );
     for ( ; ; )
     {

@@ -11,8 +11,6 @@
  @copyright CH
  */
 
-using namespace std;
-//using namespace Teuchos;
 namespace FEDD {
 template <class SC, class LO, class GO, class NO>
 MeshStructured<SC,LO,GO,NO>::MeshStructured():
@@ -60,8 +58,8 @@ void MeshStructured<SC,LO,GO,NO>::setGeometry3DBox(std::vector<double> coordinat
 
 template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::setRankRange(int numProcsCoarseSolve){
-    get<0>(this->rankRange_) = 0;
-    get<1>(this->rankRange_) = this->comm_->getSize() - 1 - numProcsCoarseSolve;
+    std::get<0>(this->rankRange_) = 0;
+    std::get<1>(this->rankRange_) = this->comm_->getSize() - 1 - numProcsCoarseSolve;
 }
 
 // template <class SC, class LO, class GO, class NO>
@@ -256,7 +254,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
     setRankRange( numProcsCoarseSolve );
 
     if (verbose) {
-        cout << endl;
+        std::cout << std::endl;
     }
 
     int         rank = this->comm_->getRank();
@@ -304,10 +302,10 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
     // P1 Mesh
     if (FEType == "P1") {
         if (verbose) {
-            cout << "-- H:"<<H << " h:" <<h << " --" << endl;
+            std::cout << "-- H:"<<H << " h:" <<h << " --" << std::endl;
         }
         if (verbose) {
-            cout << "-- Building P1 Points Repeated ... " << endl;
+            std::cout << "-- Building P1 Points Repeated ... " << std::endl;
         }
 
         this->pointsRep_.reset(new vec2D_dbl_Type(nmbPoints,std::vector<double>(2,0.0)));
@@ -340,11 +338,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         if (verbose) {
-            cout << "-- Building P1 Repeated and Unique Map ... " << flush;
+            std::cout << "-- Building P1 Repeated and Unique Map ... " << std::flush;
         }
 
         this->mapRepeated_.reset(new Map<LO,GO,NO>(  (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
@@ -352,11 +350,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         if (verbose) {
-            cout << "-- Building P1 Unique Points ... " << flush;
+            std::cout << "-- Building P1 Unique Points ... " << std::flush;
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(2,0.0)));
@@ -371,12 +369,12 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
             (*this->bcFlagUni_)[i] = (*this->bcFlagRep_)[index];
         }
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
 
         if (verbose) {
-            cout << "-- Building P1 Elements ... " << flush;
+            std::cout << "-- Building P1 Elements ... " << std::flush;
         }
         vec_int_ptr_Type elementFlag = Teuchos::rcp(new vec_int_Type( elementsVec->size(),0 ) );
         counter = 0;
@@ -415,7 +413,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
     }
 
@@ -424,10 +422,10 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
 
     else if(FEType == "P2"){
         if (verbose) {
-            cout << "-- H:"<<H << " h:" <<h << " --" << endl;
+            std::cout << "-- H:"<<H << " h:" <<h << " --" << std::endl;
         }
         if (verbose) {
-            cout << "-- Building P2 Points Repeated ... " << flush;
+            std::cout << "-- Building P2 Points Repeated ... " << std::flush;
         }
 
         this->pointsRep_.reset(new vec2D_dbl_Type(nmbPoints, vec_dbl_Type(2,0.0)));
@@ -470,21 +468,21 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
         }
 
         if (verbose)
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
 
         if (verbose)
-            cout << "-- Building P2 Repeated and Unique Map ... " << flush;
+            std::cout << "-- Building P2 Repeated and Unique Map ... " << std::flush;
 
         this->mapRepeated_.reset(new Map<LO,GO,NO>( (GO) -1, pointsRepGlobMapping(), 0, this->comm_) );
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         if (verbose) {
-            cout << "-- Building P2 Unique Points ... " << flush;
+            std::cout << "-- Building P2 Unique Points ... " << std::flush;
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(2,0.0)));
@@ -501,7 +499,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         // Triangle numbering
@@ -515,7 +513,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
 
 
         if (verbose)
-            cout << "-- Building P2 Elements ... " << flush;
+            std::cout << "-- Building P2 Elements ... " << std::flush;
 
         int    P2M = 2*(M+1)-1;
 
@@ -568,7 +566,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
 
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
     }
     buildElementsClass(elementsVec, elementFlag);
@@ -594,7 +592,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
     setRankRange( numProcsCoarseSolve );
 
     if (verbose) {
-        cout << endl;
+        std::cout << std::endl;
     }
 
     SC eps = ScalarTraits<SC>::eps();
@@ -981,7 +979,7 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DCube(int N,
     setRankRange( numProcsCoarseSolve );
 
     if (verbose)
-        cout << endl;
+        std::cout << std::endl;
 
     SC eps = ScalarTraits<SC>::eps();
 
@@ -1033,7 +1031,7 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DCube(int N,
 
 
     if (verbose)
-        cout << "-- Building P1-disc Points and Elements according to Q2 ... " << flush;
+        std::cout << "-- Building P1-disc Points and Elements according to Q2 ... " << std::flush;
 
     vec2D_int_ptr_Type elementsVec = Teuchos::rcp(new vec2D_int_Type(nmbElements, vec_int_Type(4, -1)));
 
@@ -1142,7 +1140,7 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DCube(int N,
     buildElementsClass(elementsVec);
 
     if (verbose)
-        cout << "done!" << endl;
+        std::cout << "done!" << std::endl;
 
 }
 
@@ -1160,7 +1158,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ1Cube(int N,
     bool verbose (this->comm_->getRank() == 0);
 
     if (verbose)
-        cout << endl;
+        std::cout << std::endl;
 
     setRankRange( numProcsCoarseSolve );
 
@@ -1284,7 +1282,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2Cube(int N,
     bool verbose (this->comm_->getRank() == 0);
 
     if (verbose)
-        cout << endl;
+        std::cout << std::endl;
 
     setRankRange( numProcsCoarseSolve );
 
@@ -1497,7 +1495,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2_20Cube(int N,
     setRankRange( numProcsCoarseSolve );
 
     if (verbose)
-        cout << endl;
+        std::cout << std::endl;
     if (verbose)
         std::cout << "WARNING! Not working properly in parallel - fix global indexing." << std::endl;
 
@@ -1938,7 +1936,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2BFS(int N,
     this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
     if (verbose)
-        cout << "-- Building Q2 Unique Points ... " << flush;
+        std::cout << "-- Building Q2 Unique Points ... " << std::flush;
 
     this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
     this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),0));
@@ -1955,7 +1953,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2BFS(int N,
     }
 
     if (verbose)
-        cout << " done! --" << endl;
+        std::cout << " done! --" << std::endl;
 
     int    P2M = 2*(M+1)-1;
 
@@ -2081,10 +2079,10 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
     // P0 Mesh
     if (FEType == "P0") {
         if (verbose)
-            cout << "-- H:"<<H << " h:" <<h << " --" << endl;
+            std::cout << "-- H:"<<H << " h:" <<h << " --" << std::endl;
 
         if (verbose)
-            cout << "-- Building P0 Points Repeated ... " << endl;
+            std::cout << "-- Building P0 Points Repeated ... " << std::endl;
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
         this->bcFlagRep_.reset(new std::vector<int> (nmbPoints,0));
@@ -2131,11 +2129,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         if (verbose) {
-            cout << "-- Building P0 Repeated and Unique Map ... " << flush;
+            std::cout << "-- Building P0 Repeated and Unique Map ... " << std::flush;
         }
 
 
@@ -2144,11 +2142,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
 
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         if (verbose) {
-            cout << "-- Building P0 Unique Points ... " << flush;
+            std::cout << "-- Building P0 Unique Points ... " << std::flush;
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(), std::vector<double>(2,0.0)));
@@ -2164,12 +2162,12 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
 
         if (verbose) {
-            cout << "-- Building P0 Elements ... " << flush;
+            std::cout << "-- Building P0 Elements ... " << std::flush;
         }
 
         counter = 0;
@@ -2187,17 +2185,17 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
     }
 
     // P1 Mesh
     else if (FEType == "P1") {
         if (verbose) {
-            cout << "-- H:"<<H << " h:" <<h << " --" << endl;
+            std::cout << "-- H:"<<H << " h:" <<h << " --" << std::endl;
         }
         if (verbose) {
-            cout << "-- Building P1 Points Repeated ... " << endl;
+            std::cout << "-- Building P1 Points Repeated ... " << std::endl;
         }
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
@@ -2245,11 +2243,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         if (verbose) {
-            cout << "-- Building P1 Repeated and Unique Map ... " << flush;
+            std::cout << "-- Building P1 Repeated and Unique Map ... " << std::flush;
         }
 
 
@@ -2260,11 +2258,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         if (verbose) {
-            cout << "-- Building P1 Unique Points ... " << flush;
+            std::cout << "-- Building P1 Unique Points ... " << std::flush;
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(), std::vector<double>(2,0.0)));
@@ -2280,12 +2278,12 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
 
         if (verbose) {
-            cout << "-- Building P1 Elements ... " << flush;
+            std::cout << "-- Building P1 Elements ... " << std::flush;
         }
 
         counter = 0;
@@ -2303,17 +2301,17 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
     }
 
     // P2 Mesh
     else if(FEType == "P2"){
         if (verbose) {
-            cout << "-- H:"<<H << " h:" <<h << " --" << endl;
+            std::cout << "-- H:"<<H << " h:" <<h << " --" << std::endl;
         }
         if (verbose) {
-            cout << "-- Building P2 Points Repeated ... " << flush;
+            std::cout << "-- Building P2 Points Repeated ... " << std::flush;
         }
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(2,0.0)));
@@ -2373,13 +2371,13 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
         //        int* globIndex = new int[MappingPointsRepGlob->size()];
         //        globIndex = &(MappingPointsRepGlob->at(0));
 
         if (verbose) {
-            cout << "-- Building P2 Repeated and Unique Map ... " << flush;
+            std::cout << "-- Building P2 Repeated and Unique Map ... " << std::flush;
         }
 
 
@@ -2389,11 +2387,11 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
 
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         if (verbose) {
-            cout << "-- Building P2 Unique Points ... " << flush;
+            std::cout << "-- Building P2 Unique Points ... " << std::flush;
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(2,0.0)));
@@ -2410,7 +2408,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         // Triangle numbering
@@ -2424,7 +2422,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
 
 
         if (verbose) {
-            cout << "-- Building P2 Elements ... " << flush;
+            std::cout << "-- Building P2 Elements ... " << std::flush;
         }
 
         int    P2M = 2*(M+1)-1;
@@ -2458,7 +2456,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
     }
     buildElementsClass(elementsVec);
@@ -2633,7 +2631,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
         if (verbose) {
-            cout << "-- Building P1 Unique Points ... " << flush;
+            std::cout << "-- Building P1 Unique Points ... " << std::flush;
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(), std::vector<double>(3,0.0)));
@@ -2649,12 +2647,12 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
 
         if (verbose) {
-            cout << "-- Building P1 Elements ... " << flush;
+            std::cout << "-- Building P1 Elements ... " << std::flush;
         }
         counter = 0;
         for (int t=0; t < M; t++) {
@@ -2694,7 +2692,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
             }
         }
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
         buildElementsClass(elementsVec);
     }
@@ -2795,7 +2793,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         this->mapUnique_ = this->mapRepeated_->buildUniqueMap( numProcsCoarseSolve );
 
         if (verbose) {
-            cout << "-- Building P2 Unique Points ... " << flush;
+            std::cout << "-- Building P2 Unique Points ... " << std::flush;
         }
 
         this->pointsUni_.reset(new std::vector<std::vector<double> >(this->mapUnique_->getNodeNumElements(),std::vector<double>(3,0.0)));
@@ -2813,7 +2811,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         }
 
         if (verbose) {
-            cout << " done! --" << endl;
+            std::cout << " done! --" << std::endl;
         }
 
         //            Face 1              Face2               Face 3          Face 4
@@ -2948,7 +2946,7 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DBFS(int N,
     setRankRange( numProcsCoarseSolve );
 
     if (verbose)
-        cout << endl;
+        std::cout << std::endl;
 
     SC eps = ScalarTraits<SC>::eps();
 
@@ -3000,7 +2998,7 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DBFS(int N,
     Teuchos::Array<GO> pointsRepGlobMapping(nmbPoints);
 
     if (verbose)
-        cout << "-- Building P1-disc Points and Elements according to Q2 ... " << flush;
+        std::cout << "-- Building P1-disc Points and Elements according to Q2 ... " << std::flush;
 
     vec2D_int_ptr_Type elementsVec = Teuchos::rcp(new std::vector<std::vector<int> >(nmbElements,std::vector<int>(4,-1)));
 
@@ -3110,11 +3108,11 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DBFS(int N,
     buildElementsClass(elementsVec);
 
     if (verbose)
-        cout << "done!" << endl;
+        std::cout << "done!" << std::endl;
 
 }
 template <class SC, class LO, class GO, class NO>
-void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,string FEType){
+void MeshStructured<SC,LO,GO,NO>::setStructuredMeshFlags(int flagsOption,std::string FEType){
 
     double tol=1.e-12;
 
@@ -3708,7 +3706,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
     bool verbose (this->comm_->getRank() == 0);
 
     if (verbose) {
-        cout << "-- Building structured 3D Mesh  --" << endl;
+        std::cout << "-- Building structured 3D Mesh  --" << std::endl;
     }
 
     setRankRange( numProcsCoarseSolve );
@@ -3722,8 +3720,8 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
     SC      H = length/N;
 
     if (verbose) {
-        cout << "-- H:"<<H << " h:" <<h << " --" << endl;
-        cout << "-- N:"<<N << " M:" <<M << " --" << endl;
+        std::cout << "-- H:"<<H << " h:" <<h << " --" << std::endl;
+        std::cout << "-- N:"<<N << " M:" <<M << " --" << std::endl;
     }
 
     LO 	nmbPoints_oneDir;
@@ -3740,7 +3738,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
 
 
     if (verbose) {
-            cout << "-- Number of Points in one direction: " << nmbPoints_oneDir << " ||  Number of Points " << nmbPoints << " --" << endl;
+            std::cout << "-- Number of Points in one direction: " << nmbPoints_oneDir << " ||  Number of Points " << nmbPoints << " --" << std::endl;
     }
     this->FEType_ = FEType;
 
@@ -3780,9 +3778,9 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
     }
 
     if (verbose) {
-        cout << "-- Building P2 Points Repeated ... " << endl;
+        std::cout << "-- Building P2 Points Repeated ... " << std::endl;
     }
-    cout << " Offsets on Rank " << rank << " || x=" << offset_x << " y=" << offset_y << " z=" << offset_z << endl;
+    std::cout << " Offsets on Rank " << rank << " || x=" << offset_x << " y=" << offset_y << " z=" << offset_z << std::endl;
     this->comm_->barrier();
 
     bool p1point;
@@ -3859,16 +3857,16 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
     this->bcFlagUni_.reset(new std::vector<int> (this->mapUnique_->getNodeNumElements(),10));
 
     if (verbose) {
-        cout << "-- Building P2 Points Unique ... " << endl;
+        std::cout << "-- Building P2 Points Unique ... " << std::endl;
     }
     if (verbose) {
-        cout << "-- Number of repeated points per proc: "  << this->mapRepeated_->getNodeNumElements() << " ... " << endl;
+        std::cout << "-- Number of repeated points per proc: "  << this->mapRepeated_->getNodeNumElements() << " ... " << std::endl;
     }
 
     this->comm_->barrier();
 
     // Points and Flags Unique
-    this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), vector<double>(this->dim_,-1. ) ) );
+    this->pointsUni_.reset(new std::vector<std::vector<double> >( this->mapUnique_->getNodeNumElements(), std::vector<double>(this->dim_,-1. ) ) );
     this->bcFlagUni_.reset( new std::vector<int> ( this->mapUnique_->getNodeNumElements(), 0 ) );
     for (int i=0; i<this->mapUnique_->getNodeNumElements(); i++) {
         GO gid = this->mapUnique_->getGlobalElement( i );
@@ -3895,8 +3893,8 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
     //int    P2M = 2*(M+1)-1;
 
     if (verbose) {
-        cout << "-- ElementsList ... " << endl;
-        cout << "-- P2M =" << P2M << endl;
+        std::cout << "-- ElementsList ... " << std::endl;
+        std::cout << "-- P2M =" << P2M << std::endl;
     }
     
 
@@ -3974,19 +3972,19 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
                 }
 
                 
-                //cout << " Subwürfel zu " << " r= " << r << " s=" << s << " t= "  << t << " || "<<n_0 << " " << n_1 << " " << n_2<< " " << n_3<< " " << n_4<< " " << n_5<< " " << n_6<< " " << n_7<< " " << n_8<< " " << n_9<< " " << n_10<< " " << n_11<< " " << n_12<< " " << n_14<< " " << n_15<< " " << n_16<< " " << n_17<< " " << n_18<< " " << n_19 << " " << n_20<< " " << n_21<< " " << n_22<< " " << n_23<< " " << n_24<< " " << n_25 << " " << n_26 << endl;
+                //std::cout << " Subwürfel zu " << " r= " << r << " s=" << s << " t= "  << t << " || "<<n_0 << " " << n_1 << " " << n_2<< " " << n_3<< " " << n_4<< " " << n_5<< " " << n_6<< " " << n_7<< " " << n_8<< " " << n_9<< " " << n_10<< " " << n_11<< " " << n_12<< " " << n_14<< " " << n_15<< " " << n_16<< " " << n_17<< " " << n_18<< " " << n_19 << " " << n_20<< " " << n_21<< " " << n_22<< " " << n_23<< " " << n_24<< " " << n_25 << " " << n_26 << std::endl;
             }
         }
         
     }
     if (verbose) {
-        cout << "... done !" << endl;
+        std::cout << "... done !" << std::endl;
     }
     buildElementsClass(elementsVec, elementFlag);
       
 }    
 template <class SC, class LO, class GO, class NO>
-void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, string FEType){
+void MeshStructured<SC,LO,GO,NO>::buildSurfaces(int flagsOption, std::string FEType){
 
     double tol=1.e-12;
     int numNodesTriangle;

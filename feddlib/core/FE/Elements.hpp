@@ -5,8 +5,8 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/LinearAlgebra/Map.hpp"
 #include "FiniteElement.hpp"
-#include "Teuchos_RCPDecl.hpp"
-#include "Teuchos_RCPBoostSharedPtrConversions.hpp"
+#include <Teuchos_RCPDecl.hpp>
+#include <Teuchos_RCPBoostSharedPtrConversions.hpp>
 
 /*!
  Declaration of Elements

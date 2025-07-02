@@ -7,7 +7,6 @@
  @version 1.0
  @copyright CH
  */
-using namespace std;
 namespace FEDD {
 
 Elements::Elements():
