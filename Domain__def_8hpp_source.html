@@ -960,431 +960,430 @@ $(function(){initNavTree('Domain__def_8hpp_source.html',''); initResizable(true)
 <div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>    GO numberInterfaceNodes = localInterfaceID; <span class="comment">// long long wg. 64</span></div>
 <div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>    </div>
 <div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span>    <span class="comment">// Baue nun die InterfaceMap (node)</span></div>
-<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>    <span class="comment">//std::string ulib = this-&gt;getMapUnique()-&gt;getUnderlyingLib();</span></div>
-<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>    Teuchos::ArrayView&lt;GO&gt; vecInterfaceMapArray =  Teuchos::arrayViewFromVector( vecInterfaceMap );</div>
-<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>    interfaceMapUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type( numberInterfaceNodes, vecInterfaceMapArray, 0, comm_ ) ); <span class="comment">//maybe numberInterfaceNodes instead of -1</span></div>
-<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>    <span class="comment">// dof-Map bauen</span></div>
-<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>    interfaceMapVecFieldUnique_ = interfaceMapUnique_-&gt;buildVecFieldMap(dim_<span class="comment">/*dofs*/</span>);</div>
-<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>}</div>
+<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>    Teuchos::ArrayView&lt;GO&gt; vecInterfaceMapArray =  Teuchos::arrayViewFromVector( vecInterfaceMap );</div>
+<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>    interfaceMapUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type( numberInterfaceNodes, vecInterfaceMapArray, 0, comm_ ) ); <span class="comment">//maybe numberInterfaceNodes instead of -1</span></div>
+<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>    <span class="comment">// dof-Map bauen</span></div>
+<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>    interfaceMapVecFieldUnique_ = interfaceMapUnique_-&gt;buildVecFieldMap(dim_<span class="comment">/*dofs*/</span>);</div>
+<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>}</div>
 </div>
-<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span> </div>
-<div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00748" data-start="{" data-end="}">
-<div class="line"><a id="l00748" name="l00748"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#af0a00dbe4b50cb847206caa5fa5efc72">  748</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#af0a00dbe4b50cb847206caa5fa5efc72">Domain&lt;SC,LO,GO,NO&gt;::getInterfaceMapUnique</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>    <span class="keywordflow">return</span> interfaceMapUnique_;</div>
-<div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span>}</div>
+<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span> </div>
+<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00747" data-start="{" data-end="}">
+<div class="line"><a id="l00747" name="l00747"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#af0a00dbe4b50cb847206caa5fa5efc72">  747</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#af0a00dbe4b50cb847206caa5fa5efc72">Domain&lt;SC,LO,GO,NO&gt;::getInterfaceMapUnique</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span>    <span class="keywordflow">return</span> interfaceMapUnique_;</div>
+<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>}</div>
 </div>
+<div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span> </div>
 <div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span> </div>
-<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span> </div>
-<div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00755" data-start="{" data-end="}">
-<div class="line"><a id="l00755" name="l00755"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#ac5f9c8191033ca78a53aa6a9b8e65579">  755</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#ac5f9c8191033ca78a53aa6a9b8e65579">Domain&lt;SC,LO,GO,NO&gt;::getInterfaceMapVecFieldUnique</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>    <span class="keywordflow">return</span> interfaceMapVecFieldUnique_;</div>
-<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>}</div>
+<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00754" data-start="{" data-end="}">
+<div class="line"><a id="l00754" name="l00754"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#ac5f9c8191033ca78a53aa6a9b8e65579">  754</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#ac5f9c8191033ca78a53aa6a9b8e65579">Domain&lt;SC,LO,GO,NO&gt;::getInterfaceMapVecFieldUnique</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>    <span class="keywordflow">return</span> interfaceMapVecFieldUnique_;</div>
+<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>}</div>
 </div>
+<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span> </div>
 <div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span> </div>
-<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span> </div>
-<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00762" data-start="{" data-end="}">
-<div class="line"><a id="l00762" name="l00762"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#aac9e7584f15a0e702f7ed406390f5613">  762</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#aac9e7584f15a0e702f7ed406390f5613">Domain&lt;SC,LO,GO,NO&gt;::getGlobalInterfaceMapUnique</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>    <span class="keywordflow">return</span> globalInterfaceMapUnique_;</div>
-<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>}</div>
+<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00761" data-start="{" data-end="}">
+<div class="line"><a id="l00761" name="l00761"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#aac9e7584f15a0e702f7ed406390f5613">  761</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#aac9e7584f15a0e702f7ed406390f5613">Domain&lt;SC,LO,GO,NO&gt;::getGlobalInterfaceMapUnique</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>    <span class="keywordflow">return</span> globalInterfaceMapUnique_;</div>
+<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>}</div>
 </div>
+<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span> </div>
 <div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span> </div>
-<div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span> </div>
-<div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00769" data-start="{" data-end="}">
-<div class="line"><a id="l00769" name="l00769"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#ad581de754a27d5338b29bf1cd19d6435">  769</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#ad581de754a27d5338b29bf1cd19d6435">Domain&lt;SC,LO,GO,NO&gt;::getGlobalInterfaceMapVecFieldUnique</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span>    <span class="keywordflow">return</span> globalInterfaceMapVecFieldUnique_;</div>
-<div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span>}</div>
+<div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00768" data-start="{" data-end="}">
+<div class="line"><a id="l00768" name="l00768"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#ad581de754a27d5338b29bf1cd19d6435">  768</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#ad581de754a27d5338b29bf1cd19d6435">Domain&lt;SC,LO,GO,NO&gt;::getGlobalInterfaceMapVecFieldUnique</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00769" name="l00769"></a><span class="lineno">  769</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span>    <span class="keywordflow">return</span> globalInterfaceMapVecFieldUnique_;</div>
+<div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span>}</div>
 </div>
-<div class="line"><a id="l00773" name="l00773"></a><span class="lineno">  773</span> </div>
-<div class="line"><a id="l00774" name="l00774"></a><span class="lineno">  774</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00775" data-start="{" data-end="}">
-<div class="line"><a id="l00775" name="l00775"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a5ff8e292ca5b15cc41dea30577fbe2db">  775</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#a5ff8e292ca5b15cc41dea30577fbe2db">Domain&lt;SC,LO,GO,NO&gt;::getOtherGlobalInterfaceMapVecFieldUnique</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00776" name="l00776"></a><span class="lineno">  776</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00777" name="l00777"></a><span class="lineno">  777</span>    <span class="keywordflow">return</span> otherGlobalInterfaceMapVecFieldUnique_;</div>
-<div class="line"><a id="l00778" name="l00778"></a><span class="lineno">  778</span>}</div>
+<div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span> </div>
+<div class="line"><a id="l00773" name="l00773"></a><span class="lineno">  773</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00774" data-start="{" data-end="}">
+<div class="line"><a id="l00774" name="l00774"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a5ff8e292ca5b15cc41dea30577fbe2db">  774</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#a5ff8e292ca5b15cc41dea30577fbe2db">Domain&lt;SC,LO,GO,NO&gt;::getOtherGlobalInterfaceMapVecFieldUnique</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00775" name="l00775"></a><span class="lineno">  775</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l00776" name="l00776"></a><span class="lineno">  776</span>    <span class="keywordflow">return</span> otherGlobalInterfaceMapVecFieldUnique_;</div>
+<div class="line"><a id="l00777" name="l00777"></a><span class="lineno">  777</span>}</div>
 </div>
-<div class="line"><a id="l00779" name="l00779"></a><span class="lineno">  779</span>    </div>
-<div class="line"><a id="l00780" name="l00780"></a><span class="lineno">  780</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00781" data-start="{" data-end="}">
-<div class="line"><a id="l00781" name="l00781"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a311d61719473745d65f22487764602b1">  781</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a311d61719473745d65f22487764602b1">Domain&lt;SC,LO,GO,NO&gt;::setPartialCoupling</a>(<span class="keywordtype">int</span> flag, std::string type){</div>
-<div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span> </div>
-<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span>    MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp_dynamic_cast&lt;MeshUnstr_Type&gt;( this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>() );</div>
-<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>    meshUnstructured-&gt;getMeshInterface()-&gt;setPartialCoupling(flag, type);</div>
-<div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span>    </div>
-<div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span>}</div>
+<div class="line"><a id="l00778" name="l00778"></a><span class="lineno">  778</span>    </div>
+<div class="line"><a id="l00779" name="l00779"></a><span class="lineno">  779</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00780" data-start="{" data-end="}">
+<div class="line"><a id="l00780" name="l00780"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a311d61719473745d65f22487764602b1">  780</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a311d61719473745d65f22487764602b1">Domain&lt;SC,LO,GO,NO&gt;::setPartialCoupling</a>(<span class="keywordtype">int</span> flag, std::string type){</div>
+<div class="line"><a id="l00781" name="l00781"></a><span class="lineno">  781</span> </div>
+<div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span>    MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp_dynamic_cast&lt;MeshUnstr_Type&gt;( this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>() );</div>
+<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span>    meshUnstructured-&gt;getMeshInterface()-&gt;setPartialCoupling(flag, type);</div>
+<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>    </div>
+<div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span>}</div>
 </div>
-<div class="line"><a id="l00787" name="l00787"></a><span class="lineno">  787</span> </div>
-<div class="line"><a id="l00788" name="l00788"></a><span class="lineno">  788</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00789" data-start="{" data-end="}">
-<div class="line"><a id="l00789" name="l00789"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a36ee94dc00b0b8ff344faa6ed9b64385">  789</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a36ee94dc00b0b8ff344faa6ed9b64385">Domain&lt;SC,LO,GO,NO&gt;::buildInterfaceMaps</a>()</div>
-<div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span>{</div>
-<div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>    MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp_dynamic_cast&lt;MeshUnstr_Type&gt;( this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>() );</div>
-<div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span>    MeshInterfacePtr_Type <span class="keyword">interface </span>= meshUnstructured-&gt;getMeshInterface();</div>
-<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>    vec3D_GO_ptr_Type indicesMatchedUni = interface-&gt;getIndicesGlobalMatchedUnique();</div>
-<div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span>    </div>
-<div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span>    vec3D_GO_ptr_Type indicesMatchedGlobalSerial = interface-&gt;getIndicesGlobalMatchedOrigin();</div>
-<div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span>    </div>
-<div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>    MapConstPtr_Type mapUni = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>();</div>
-<div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>    vec_int_ptr_Type flagPointsUni = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a223fa08dc56db3089ee0cd85657625a8">getBCFlagUnique</a>();</div>
-<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span>    vec_GO_Type vecGlobalInterfaceID(0);</div>
-<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>    vec_GO_Type vecOtherGlobalInterfaceID(0);</div>
-<div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>    vec_GO_Type vecInterfaceID(0);</div>
-<div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span>    vec_int_Type vecInterfaceFlag(0);</div>
-<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span>    LO localID = 0;</div>
-<div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span> </div>
-<div class="line"><a id="l00805" name="l00805"></a><span class="lineno">  805</span>    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; indicesMatchedGlobalSerial-&gt;size(); i++) <span class="comment">// Schleife ueber jede flag</span></div>
-<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>    {</div>
-<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span>        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j = 0; j &lt; indicesMatchedGlobalSerial-&gt;at(i).at(0).size(); j++) {<span class="comment">// GIDs innerhalb der flag (vom Fluid)</span></div>
-<div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span>            LO index = mapUni-&gt;getLocalElement( indicesMatchedGlobalSerial-&gt;at(i).at(0).at(j) );</div>
-<div class="line"><a id="l00809" name="l00809"></a><span class="lineno">  809</span>            <span class="keywordflow">if</span> ( index != Teuchos::OrdinalTraits&lt;LO&gt;::invalid() ){</div>
-<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span>                vecGlobalInterfaceID.push_back( indicesMatchedGlobalSerial-&gt;at(i).at(0).at(j) );</div>
-<div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>                vecOtherGlobalInterfaceID.push_back( indicesMatchedGlobalSerial-&gt;at(i).at(1).at(j) );</div>
-<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>                vecInterfaceID.push_back( (GO) localID );</div>
-<div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>                vecInterfaceFlag.push_back( (*flagPointsUni)[index] );</div>
-<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>            }</div>
-<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>            localID++;</div>
-<div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span>        }</div>
-<div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span>    }</div>
-<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span><span class="comment">//    std::sort( vecGlobalInterfaceID.begin(), vecGlobalInterfaceID.end() );</span></div>
-<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>    <span class="comment">// Baue nun die InterfaceMap fuer Fluid oder Struktur</span></div>
-<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>    Teuchos::ArrayView&lt;GO&gt; vecInterfaceGlobalMapArray =  Teuchos::arrayViewFromVector( vecGlobalInterfaceID );</div>
-<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>    Teuchos::ArrayView&lt;GO&gt; vecInterfaceMapArray =  Teuchos::arrayViewFromVector( vecInterfaceID );</div>
-<div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span>    Teuchos::ArrayView&lt;GO&gt; vecOtherInterfaceGlobalMapArray =  Teuchos::arrayViewFromVector( vecOtherGlobalInterfaceID );</div>
-<div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span>    </div>
-<div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span>    globalInterfaceMapUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type( -1, vecInterfaceGlobalMapArray, 0, comm_ ) );</div>
-<div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span>    interfaceMapUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(-1, vecInterfaceMapArray, 0, comm_ ) );</div>
-<div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span> </div>
-<div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span>    otherGlobalInterfaceMapUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(-1, vecOtherInterfaceGlobalMapArray, 0, comm_ ) );</div>
-<div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span> </div>
-<div class="line"><a id="l00829" name="l00829"></a><span class="lineno">  829</span>    </div>
-<div class="line"><a id="l00830" name="l00830"></a><span class="lineno">  830</span>    <span class="keywordflow">if</span> ( interface-&gt;sizePartialCoupling() == 0 ) {</div>
-<div class="line"><a id="l00831" name="l00831"></a><span class="lineno">  831</span>        globalInterfaceMapVecFieldUnique_ = globalInterfaceMapUnique_-&gt;buildVecFieldMap(dim_);</div>
-<div class="line"><a id="l00832" name="l00832"></a><span class="lineno">  832</span>        interfaceMapVecFieldUnique_ = interfaceMapUnique_-&gt;buildVecFieldMap(dim_);</div>
-<div class="line"><a id="l00833" name="l00833"></a><span class="lineno">  833</span>        otherGlobalInterfaceMapVecFieldUnique_ = otherGlobalInterfaceMapUnique_-&gt;buildVecFieldMap(dim_);</div>
-<div class="line"><a id="l00834" name="l00834"></a><span class="lineno">  834</span>    }</div>
-<div class="line"><a id="l00835" name="l00835"></a><span class="lineno">  835</span>    <span class="comment">// we add the dofs which are not part of the interface as dummy interface dofs, which do nothing (unit matrix in the diagonal coupling block). We need to do this for the monolithic use of FROSch, since we need a constant number of dofs for a node for each block</span></div>
-<div class="line"><a id="l00836" name="l00836"></a><span class="lineno">  836</span>    <span class="keywordflow">else</span>{</div>
-<div class="line"><a id="l00837" name="l00837"></a><span class="lineno">  837</span>        <span class="keywordflow">if</span> (this-&gt;comm_-&gt;getRank() == 0)</div>
-<div class="line"><a id="l00838" name="l00838"></a><span class="lineno">  838</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;-- ### Warning! Unique and unique-vector-field map might not be compatiable due to partial coupling conditions. ### --&quot;</span>  &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00839" name="l00839"></a><span class="lineno">  839</span>        <span class="keywordtype">int</span> numDofs = dim_;</div>
-<div class="line"><a id="l00840" name="l00840"></a><span class="lineno">  840</span>        <span class="comment">// we use nodewise ordering</span></div>
-<div class="line"><a id="l00841" name="l00841"></a><span class="lineno">  841</span>        Teuchos::ArrayView&lt;const GO&gt; elementListGlobal = globalInterfaceMapUnique_-&gt;getNodeElementList();</div>
-<div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>        Teuchos::ArrayView&lt;const GO&gt; otherElementListGlobal = otherGlobalInterfaceMapUnique_-&gt;getNodeElementList();</div>
-<div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>        </div>
-<div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>        Teuchos::Array&lt;GO&gt; elementListFieldGlobal( 0 );</div>
-<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>        Teuchos::Array&lt;GO&gt; elListFieldPartial( 0 );</div>
-<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>    </div>
-<div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>        Teuchos::Array&lt;GO&gt; otherElementListFieldGlobal( 0 );</div>
-<div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>        Teuchos::Array&lt;GO&gt; otherElListFieldPartial( 0 );</div>
-<div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span>        </div>
-<div class="line"><a id="l00850" name="l00850"></a><span class="lineno">  850</span>        <span class="keywordflow">for</span> (UN i=0; i&lt;elementListGlobal.size(); i++) {</div>
-<div class="line"><a id="l00851" name="l00851"></a><span class="lineno">  851</span>            <span class="keywordtype">int</span> loc = interface-&gt;isPartialCouplingFlag( vecInterfaceFlag[i] );</div>
-<div class="line"><a id="l00852" name="l00852"></a><span class="lineno">  852</span>            <span class="keywordflow">if</span> ( loc &gt; -1 ) {</div>
-<div class="line"><a id="l00853" name="l00853"></a><span class="lineno">  853</span>                std::string partialType = interface-&gt;getPartialCouplingType( loc );</div>
-<div class="line"><a id="l00854" name="l00854"></a><span class="lineno">  854</span>                <span class="keywordflow">if</span> (partialType == <span class="stringliteral">&quot;X_Y&quot;</span> &amp;&amp; dim_ == 3) {</div>
-<div class="line"><a id="l00855" name="l00855"></a><span class="lineno">  855</span>                    elementListFieldGlobal.push_back (numDofs * elementListGlobal[i] + 0 );</div>
-<div class="line"><a id="l00856" name="l00856"></a><span class="lineno">  856</span>                    elementListFieldGlobal.push_back (numDofs * elementListGlobal[i] + 1 );</div>
-<div class="line"><a id="l00857" name="l00857"></a><span class="lineno">  857</span>                    elementListFieldGlobal.push_back (numDofs * elementListGlobal[i] + 2 );</div>
-<div class="line"><a id="l00858" name="l00858"></a><span class="lineno">  858</span>                    elListFieldPartial.push_back (numDofs * elementListGlobal[i] + 0 );</div>
-<div class="line"><a id="l00859" name="l00859"></a><span class="lineno">  859</span>                    elListFieldPartial.push_back (numDofs * elementListGlobal[i] + 1 );</div>
-<div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span>                    </div>
-<div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>                    otherElementListFieldGlobal.push_back (numDofs * otherElementListGlobal[i] + 0 );</div>
-<div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span>                    otherElementListFieldGlobal.push_back (numDofs * otherElementListGlobal[i] + 1 );</div>
-<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>                    otherElementListFieldGlobal.push_back (numDofs * otherElementListGlobal[i] + 2 );</div>
-<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>                    otherElListFieldPartial.push_back (numDofs * otherElementListGlobal[i] + 0 );</div>
-<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>                    otherElListFieldPartial.push_back (numDofs * otherElementListGlobal[i] + 1 );</div>
-<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span> </div>
-<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span>                }</div>
-<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span>                <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00869" name="l00869"></a><span class="lineno">  869</span>                    TEUCHOS_TEST_FOR_EXCEPTION(<span class="keyword">true</span>, std::runtime_error, <span class="stringliteral">&quot;Implement other partial coupling types.&quot;</span>);</div>
-<div class="line"><a id="l00870" name="l00870"></a><span class="lineno">  870</span>            }</div>
-<div class="line"><a id="l00871" name="l00871"></a><span class="lineno">  871</span>            <span class="keywordflow">else</span>{</div>
-<div class="line"><a id="l00872" name="l00872"></a><span class="lineno">  872</span>                <span class="keywordflow">for</span> (UN dof=0; dof&lt;numDofs; dof++){</div>
-<div class="line"><a id="l00873" name="l00873"></a><span class="lineno">  873</span>                    elementListFieldGlobal.push_back(  numDofs * elementListGlobal[i] + dof );</div>
-<div class="line"><a id="l00874" name="l00874"></a><span class="lineno">  874</span>                    elListFieldPartial.push_back ( numDofs * elementListGlobal[i] + dof );</div>
-<div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>                    otherElementListFieldGlobal.push_back(  numDofs * otherElementListGlobal[i] + dof );</div>
-<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>                    otherElListFieldPartial.push_back ( numDofs * otherElementListGlobal[i] + dof );</div>
-<div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>                }</div>
-<div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>            }</div>
-<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span>        }</div>
-<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>        globalInterfaceMapVecFieldUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(  -1, elementListFieldGlobal(), 0<span class="comment">/*index base*/</span>, this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479">getComm</a>() ) );</div>
-<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>        otherGlobalInterfaceMapVecFieldUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(  -1, otherElementListFieldGlobal(), 0<span class="comment">/*index base*/</span>, this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479">getComm</a>() ) );</div>
-<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>        <span class="comment">// This is only a temporary map. We need to make sure that the dummy values have a higher GID, as the real coupling values. Otherwise we might get a problem during the assembly of the coupling matrices</span></div>
-<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>        interfaceMapVecFieldUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(-1, elementListFieldGlobal.size(), 0<span class="comment">/*index base*/</span>, this-&gt;getComm() ) );</div>
-<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>        </div>
-<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>        partialGlobalInterfaceVecFieldMap_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(  -1, elListFieldPartial(), 0<span class="comment">/*index base*/</span>, this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479">getComm</a>() ) );</div>
-<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>        otherPartialGlobalInterfaceVecFieldMap_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(-1, otherElListFieldPartial(), 0<span class="comment">/*index base*/</span>, this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479">getComm</a>() ) );</div>
-<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>        </div>
-<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span>    }</div>
-<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span> </div>
-<div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span>}</div>
+<div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span> </div>
+<div class="line"><a id="l00787" name="l00787"></a><span class="lineno">  787</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00788" data-start="{" data-end="}">
+<div class="line"><a id="l00788" name="l00788"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a36ee94dc00b0b8ff344faa6ed9b64385">  788</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a36ee94dc00b0b8ff344faa6ed9b64385">Domain&lt;SC,LO,GO,NO&gt;::buildInterfaceMaps</a>()</div>
+<div class="line"><a id="l00789" name="l00789"></a><span class="lineno">  789</span>{</div>
+<div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span>    MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp_dynamic_cast&lt;MeshUnstr_Type&gt;( this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>() );</div>
+<div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>    MeshInterfacePtr_Type <span class="keyword">interface </span>= meshUnstructured-&gt;getMeshInterface();</div>
+<div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span>    vec3D_GO_ptr_Type indicesMatchedUni = interface-&gt;getIndicesGlobalMatchedUnique();</div>
+<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>    </div>
+<div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span>    vec3D_GO_ptr_Type indicesMatchedGlobalSerial = interface-&gt;getIndicesGlobalMatchedOrigin();</div>
+<div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span>    </div>
+<div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span>    MapConstPtr_Type mapUni = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>();</div>
+<div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>    vec_int_ptr_Type flagPointsUni = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a223fa08dc56db3089ee0cd85657625a8">getBCFlagUnique</a>();</div>
+<div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>    vec_GO_Type vecGlobalInterfaceID(0);</div>
+<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span>    vec_GO_Type vecOtherGlobalInterfaceID(0);</div>
+<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>    vec_GO_Type vecInterfaceID(0);</div>
+<div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>    vec_int_Type vecInterfaceFlag(0);</div>
+<div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span>    LO localID = 0;</div>
+<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span> </div>
+<div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span>    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; indicesMatchedGlobalSerial-&gt;size(); i++) <span class="comment">// Schleife ueber jede flag</span></div>
+<div class="line"><a id="l00805" name="l00805"></a><span class="lineno">  805</span>    {</div>
+<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j = 0; j &lt; indicesMatchedGlobalSerial-&gt;at(i).at(0).size(); j++) {<span class="comment">// GIDs innerhalb der flag (vom Fluid)</span></div>
+<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span>            LO index = mapUni-&gt;getLocalElement( indicesMatchedGlobalSerial-&gt;at(i).at(0).at(j) );</div>
+<div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span>            <span class="keywordflow">if</span> ( index != Teuchos::OrdinalTraits&lt;LO&gt;::invalid() ){</div>
+<div class="line"><a id="l00809" name="l00809"></a><span class="lineno">  809</span>                vecGlobalInterfaceID.push_back( indicesMatchedGlobalSerial-&gt;at(i).at(0).at(j) );</div>
+<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span>                vecOtherGlobalInterfaceID.push_back( indicesMatchedGlobalSerial-&gt;at(i).at(1).at(j) );</div>
+<div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>                vecInterfaceID.push_back( (GO) localID );</div>
+<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>                vecInterfaceFlag.push_back( (*flagPointsUni)[index] );</div>
+<div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>            }</div>
+<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>            localID++;</div>
+<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>        }</div>
+<div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span>    }</div>
+<div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span><span class="comment">//    std::sort( vecGlobalInterfaceID.begin(), vecGlobalInterfaceID.end() );</span></div>
+<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>    <span class="comment">// Baue nun die InterfaceMap fuer Fluid oder Struktur</span></div>
+<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>    Teuchos::ArrayView&lt;GO&gt; vecInterfaceGlobalMapArray =  Teuchos::arrayViewFromVector( vecGlobalInterfaceID );</div>
+<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>    Teuchos::ArrayView&lt;GO&gt; vecInterfaceMapArray =  Teuchos::arrayViewFromVector( vecInterfaceID );</div>
+<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>    Teuchos::ArrayView&lt;GO&gt; vecOtherInterfaceGlobalMapArray =  Teuchos::arrayViewFromVector( vecOtherGlobalInterfaceID );</div>
+<div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span>    </div>
+<div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span>    globalInterfaceMapUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type( -1, vecInterfaceGlobalMapArray, 0, comm_ ) );</div>
+<div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span>    interfaceMapUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(-1, vecInterfaceMapArray, 0, comm_ ) );</div>
+<div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span> </div>
+<div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>    otherGlobalInterfaceMapUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(-1, vecOtherInterfaceGlobalMapArray, 0, comm_ ) );</div>
+<div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span> </div>
+<div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span>    </div>
+<div class="line"><a id="l00829" name="l00829"></a><span class="lineno">  829</span>    <span class="keywordflow">if</span> ( interface-&gt;sizePartialCoupling() == 0 ) {</div>
+<div class="line"><a id="l00830" name="l00830"></a><span class="lineno">  830</span>        globalInterfaceMapVecFieldUnique_ = globalInterfaceMapUnique_-&gt;buildVecFieldMap(dim_);</div>
+<div class="line"><a id="l00831" name="l00831"></a><span class="lineno">  831</span>        interfaceMapVecFieldUnique_ = interfaceMapUnique_-&gt;buildVecFieldMap(dim_);</div>
+<div class="line"><a id="l00832" name="l00832"></a><span class="lineno">  832</span>        otherGlobalInterfaceMapVecFieldUnique_ = otherGlobalInterfaceMapUnique_-&gt;buildVecFieldMap(dim_);</div>
+<div class="line"><a id="l00833" name="l00833"></a><span class="lineno">  833</span>    }</div>
+<div class="line"><a id="l00834" name="l00834"></a><span class="lineno">  834</span>    <span class="comment">// we add the dofs which are not part of the interface as dummy interface dofs, which do nothing (unit matrix in the diagonal coupling block). We need to do this for the monolithic use of FROSch, since we need a constant number of dofs for a node for each block</span></div>
+<div class="line"><a id="l00835" name="l00835"></a><span class="lineno">  835</span>    <span class="keywordflow">else</span>{</div>
+<div class="line"><a id="l00836" name="l00836"></a><span class="lineno">  836</span>        <span class="keywordflow">if</span> (this-&gt;comm_-&gt;getRank() == 0)</div>
+<div class="line"><a id="l00837" name="l00837"></a><span class="lineno">  837</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;-- ### Warning! Unique and unique-vector-field map might not be compatiable due to partial coupling conditions. ### --&quot;</span>  &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00838" name="l00838"></a><span class="lineno">  838</span>        <span class="keywordtype">int</span> numDofs = dim_;</div>
+<div class="line"><a id="l00839" name="l00839"></a><span class="lineno">  839</span>        <span class="comment">// we use nodewise ordering</span></div>
+<div class="line"><a id="l00840" name="l00840"></a><span class="lineno">  840</span>        Teuchos::ArrayView&lt;const GO&gt; elementListGlobal = globalInterfaceMapUnique_-&gt;getNodeElementList();</div>
+<div class="line"><a id="l00841" name="l00841"></a><span class="lineno">  841</span>        Teuchos::ArrayView&lt;const GO&gt; otherElementListGlobal = otherGlobalInterfaceMapUnique_-&gt;getNodeElementList();</div>
+<div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>        </div>
+<div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>        Teuchos::Array&lt;GO&gt; elementListFieldGlobal( 0 );</div>
+<div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>        Teuchos::Array&lt;GO&gt; elListFieldPartial( 0 );</div>
+<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>    </div>
+<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>        Teuchos::Array&lt;GO&gt; otherElementListFieldGlobal( 0 );</div>
+<div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>        Teuchos::Array&lt;GO&gt; otherElListFieldPartial( 0 );</div>
+<div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>        </div>
+<div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span>        <span class="keywordflow">for</span> (UN i=0; i&lt;elementListGlobal.size(); i++) {</div>
+<div class="line"><a id="l00850" name="l00850"></a><span class="lineno">  850</span>            <span class="keywordtype">int</span> loc = interface-&gt;isPartialCouplingFlag( vecInterfaceFlag[i] );</div>
+<div class="line"><a id="l00851" name="l00851"></a><span class="lineno">  851</span>            <span class="keywordflow">if</span> ( loc &gt; -1 ) {</div>
+<div class="line"><a id="l00852" name="l00852"></a><span class="lineno">  852</span>                std::string partialType = interface-&gt;getPartialCouplingType( loc );</div>
+<div class="line"><a id="l00853" name="l00853"></a><span class="lineno">  853</span>                <span class="keywordflow">if</span> (partialType == <span class="stringliteral">&quot;X_Y&quot;</span> &amp;&amp; dim_ == 3) {</div>
+<div class="line"><a id="l00854" name="l00854"></a><span class="lineno">  854</span>                    elementListFieldGlobal.push_back (numDofs * elementListGlobal[i] + 0 );</div>
+<div class="line"><a id="l00855" name="l00855"></a><span class="lineno">  855</span>                    elementListFieldGlobal.push_back (numDofs * elementListGlobal[i] + 1 );</div>
+<div class="line"><a id="l00856" name="l00856"></a><span class="lineno">  856</span>                    elementListFieldGlobal.push_back (numDofs * elementListGlobal[i] + 2 );</div>
+<div class="line"><a id="l00857" name="l00857"></a><span class="lineno">  857</span>                    elListFieldPartial.push_back (numDofs * elementListGlobal[i] + 0 );</div>
+<div class="line"><a id="l00858" name="l00858"></a><span class="lineno">  858</span>                    elListFieldPartial.push_back (numDofs * elementListGlobal[i] + 1 );</div>
+<div class="line"><a id="l00859" name="l00859"></a><span class="lineno">  859</span>                    </div>
+<div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span>                    otherElementListFieldGlobal.push_back (numDofs * otherElementListGlobal[i] + 0 );</div>
+<div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>                    otherElementListFieldGlobal.push_back (numDofs * otherElementListGlobal[i] + 1 );</div>
+<div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span>                    otherElementListFieldGlobal.push_back (numDofs * otherElementListGlobal[i] + 2 );</div>
+<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>                    otherElListFieldPartial.push_back (numDofs * otherElementListGlobal[i] + 0 );</div>
+<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>                    otherElListFieldPartial.push_back (numDofs * otherElementListGlobal[i] + 1 );</div>
+<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span> </div>
+<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span>                }</div>
+<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span>                    TEUCHOS_TEST_FOR_EXCEPTION(<span class="keyword">true</span>, std::runtime_error, <span class="stringliteral">&quot;Implement other partial coupling types.&quot;</span>);</div>
+<div class="line"><a id="l00869" name="l00869"></a><span class="lineno">  869</span>            }</div>
+<div class="line"><a id="l00870" name="l00870"></a><span class="lineno">  870</span>            <span class="keywordflow">else</span>{</div>
+<div class="line"><a id="l00871" name="l00871"></a><span class="lineno">  871</span>                <span class="keywordflow">for</span> (UN dof=0; dof&lt;numDofs; dof++){</div>
+<div class="line"><a id="l00872" name="l00872"></a><span class="lineno">  872</span>                    elementListFieldGlobal.push_back(  numDofs * elementListGlobal[i] + dof );</div>
+<div class="line"><a id="l00873" name="l00873"></a><span class="lineno">  873</span>                    elListFieldPartial.push_back ( numDofs * elementListGlobal[i] + dof );</div>
+<div class="line"><a id="l00874" name="l00874"></a><span class="lineno">  874</span>                    otherElementListFieldGlobal.push_back(  numDofs * otherElementListGlobal[i] + dof );</div>
+<div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>                    otherElListFieldPartial.push_back ( numDofs * otherElementListGlobal[i] + dof );</div>
+<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>                }</div>
+<div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>            }</div>
+<div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>        }</div>
+<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span>        globalInterfaceMapVecFieldUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(  -1, elementListFieldGlobal(), 0<span class="comment">/*index base*/</span>, this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479">getComm</a>() ) );</div>
+<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>        otherGlobalInterfaceMapVecFieldUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(  -1, otherElementListFieldGlobal(), 0<span class="comment">/*index base*/</span>, this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479">getComm</a>() ) );</div>
+<div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>        <span class="comment">// This is only a temporary map. We need to make sure that the dummy values have a higher GID, as the real coupling values. Otherwise we might get a problem during the assembly of the coupling matrices</span></div>
+<div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>        interfaceMapVecFieldUnique_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(-1, elementListFieldGlobal.size(), 0<span class="comment">/*index base*/</span>, this-&gt;getComm() ) );</div>
+<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>        </div>
+<div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>        partialGlobalInterfaceVecFieldMap_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(  -1, elListFieldPartial(), 0<span class="comment">/*index base*/</span>, this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479">getComm</a>() ) );</div>
+<div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>        otherPartialGlobalInterfaceVecFieldMap_ = Teuchos::rcp(<span class="keyword">new</span> Map_Type(-1, otherElListFieldPartial(), 0<span class="comment">/*index base*/</span>, this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479">getComm</a>() ) );</div>
+<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>        </div>
+<div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>    }</div>
+<div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span> </div>
+<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>}</div>
 </div>
-<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span> </div>
-<div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00893" data-start="{" data-end="}">
-<div class="line"><a id="l00893" name="l00893"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a69201fea8c13b3cc350db52ab2367aa8">  893</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a69201fea8c13b3cc350db52ab2367aa8">Domain&lt;SC,LO,GO,NO&gt;::toNodeID</a>(UN dim, GO dofID, GO&amp; nodeID, LO&amp; localDofNumber )</div>
-<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>{</div>
-<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>    nodeID = (GO) (dofID/dim);</div>
-<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>    localDofNumber = (LO) (dofID%dim);</div>
-<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>}</div>
+<div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span> </div>
+<div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00892" data-start="{" data-end="}">
+<div class="line"><a id="l00892" name="l00892"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a69201fea8c13b3cc350db52ab2367aa8">  892</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a69201fea8c13b3cc350db52ab2367aa8">Domain&lt;SC,LO,GO,NO&gt;::toNodeID</a>(UN dim, GO dofID, GO&amp; nodeID, LO&amp; localDofNumber )</div>
+<div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span>{</div>
+<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>    nodeID = (GO) (dofID/dim);</div>
+<div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>    localDofNumber = (LO) (dofID%dim);</div>
+<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>}</div>
 </div>
-<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span> </div>
-<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00900" data-start="{" data-end="}">
-<div class="line"><a id="l00900" name="l00900"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a4029479d0b1e646986397ec3a003921c">  900</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a4029479d0b1e646986397ec3a003921c">Domain&lt;SC,LO,GO,NO&gt;::toDofID</a>(UN dim, GO nodeID, LO localDofNumber, GO&amp; dofID )</div>
-<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>{</div>
-<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>    dofID = (GO) ( dim * nodeID + localDofNumber);</div>
-<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>}</div>
+<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span> </div>
+<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00899" data-start="{" data-end="}">
+<div class="line"><a id="l00899" name="l00899"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a4029479d0b1e646986397ec3a003921c">  899</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a4029479d0b1e646986397ec3a003921c">Domain&lt;SC,LO,GO,NO&gt;::toDofID</a>(UN dim, GO nodeID, LO localDofNumber, GO&amp; dofID )</div>
+<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span>{</div>
+<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>    dofID = (GO) ( dim * nodeID + localDofNumber);</div>
+<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>}</div>
 </div>
-<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span> </div>
-<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00906" data-start="{" data-end="}">
-<div class="line"><a id="l00906" name="l00906"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a4074d5cb1d134b1925f55a3338a51a66">  906</a></span>vec_long_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#a4074d5cb1d134b1925f55a3338a51a66">Domain&lt;SC,LO,GO,NO&gt;::getLocalInterfaceIDInGlobal</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>    <span class="keywordflow">return</span> vecLocalInterfaceIDinGlobal_;</div>
-<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>}</div>
+<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span> </div>
+<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00905" data-start="{" data-end="}">
+<div class="line"><a id="l00905" name="l00905"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a4074d5cb1d134b1925f55a3338a51a66">  905</a></span>vec_long_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#a4074d5cb1d134b1925f55a3338a51a66">Domain&lt;SC,LO,GO,NO&gt;::getLocalInterfaceIDInGlobal</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>    <span class="keywordflow">return</span> vecLocalInterfaceIDinGlobal_;</div>
+<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>}</div>
 </div>
-<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span> </div>
-<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00912" data-start="{" data-end="}">
-<div class="line"><a id="l00912" name="l00912"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#af4fb5ccfaf349f6a0ad60cb19feb6eee">  912</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#af4fb5ccfaf349f6a0ad60cb19feb6eee">Domain&lt;SC,LO,GO,NO&gt;::setDummyInterfaceDomain</a>(DomainPtr_Type domain)</div>
-<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span>{</div>
-<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span>    MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp(<span class="keyword">new</span> MeshUnstr_Type(comm_, 10<span class="comment">/*default volume flag*/</span>));</div>
-<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span>    mesh_ = meshUnstructured;</div>
-<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span>    </div>
-<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span>    this-&gt;dim_ = domain-&gt;getDimension();</div>
-<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>    this-&gt;mesh_-&gt;mapUnique_ = Teuchos::rcp_const_cast&lt;Map_Type&gt;( domain-&gt;getInterfaceMapUnique() );</div>
-<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span>    this-&gt;mesh_-&gt;mapRepeated_ = Teuchos::rcp_const_cast&lt;Map_Type&gt;( domain-&gt;getInterfaceMapUnique() );</div>
-<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>    this-&gt;mapVecFieldRepeated_ = Teuchos::rcp_const_cast&lt;Map_Type&gt;( domain-&gt;getInterfaceMapVecFieldUnique() );</div>
-<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>    this-&gt;mapVecFieldUnique_ = Teuchos::rcp_const_cast&lt;Map_Type&gt;( domain-&gt;getInterfaceMapVecFieldUnique() );</div>
-<div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span>    </div>
-<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>    MapConstPtr_Type mapGI = domain-&gt;getGlobalInterfaceMapUnique();</div>
-<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>    MapConstPtr_Type mapD = domain-&gt;getMapUnique();</div>
-<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span>    this-&gt;mesh_-&gt;pointsRep_.reset(<span class="keyword">new</span> std::vector&lt;std::vector&lt;SC&gt; &gt;(mapGI-&gt;getNodeNumElements(), std::vector&lt;SC&gt;(this-&gt;dim_, 0.0 ) ) );</div>
-<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span>    this-&gt;mesh_-&gt;pointsUni_.reset(<span class="keyword">new</span> std::vector&lt;std::vector&lt;SC&gt; &gt;(mapGI-&gt;getNodeNumElements(), std::vector&lt;SC&gt;(this-&gt;dim_, 0.0 ) ) );</div>
-<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>    vec2D_dbl_ptr_Type pointsUni = domain-&gt;getPointsUnique();</div>
-<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;mapGI-&gt;getNodeNumElements(); i++) {</div>
-<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span>        LO index = mapD-&gt;getLocalElement( mapGI-&gt;getGlobalElement( i ) );</div>
-<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;this-&gt;dim_; j++){</div>
-<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>            (*this-&gt;mesh_-&gt;pointsRep_)[i][j] = (*pointsUni)[index][j];</div>
-<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span>            (*this-&gt;mesh_-&gt;pointsUni_)[i][j] = (*pointsUni)[index][j];</div>
-<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span>        }</div>
-<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span>    }</div>
-<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>    </div>
-<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>}</div>
+<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span> </div>
+<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00911" data-start="{" data-end="}">
+<div class="line"><a id="l00911" name="l00911"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#af4fb5ccfaf349f6a0ad60cb19feb6eee">  911</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#af4fb5ccfaf349f6a0ad60cb19feb6eee">Domain&lt;SC,LO,GO,NO&gt;::setDummyInterfaceDomain</a>(DomainPtr_Type domain)</div>
+<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>{</div>
+<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span>    MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp(<span class="keyword">new</span> MeshUnstr_Type(comm_, 10<span class="comment">/*default volume flag*/</span>));</div>
+<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span>    mesh_ = meshUnstructured;</div>
+<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span>    </div>
+<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span>    this-&gt;dim_ = domain-&gt;getDimension();</div>
+<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span>    this-&gt;mesh_-&gt;mapUnique_ = Teuchos::rcp_const_cast&lt;Map_Type&gt;( domain-&gt;getInterfaceMapUnique() );</div>
+<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>    this-&gt;mesh_-&gt;mapRepeated_ = Teuchos::rcp_const_cast&lt;Map_Type&gt;( domain-&gt;getInterfaceMapUnique() );</div>
+<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span>    this-&gt;mapVecFieldRepeated_ = Teuchos::rcp_const_cast&lt;Map_Type&gt;( domain-&gt;getInterfaceMapVecFieldUnique() );</div>
+<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>    this-&gt;mapVecFieldUnique_ = Teuchos::rcp_const_cast&lt;Map_Type&gt;( domain-&gt;getInterfaceMapVecFieldUnique() );</div>
+<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>    </div>
+<div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span>    MapConstPtr_Type mapGI = domain-&gt;getGlobalInterfaceMapUnique();</div>
+<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>    MapConstPtr_Type mapD = domain-&gt;getMapUnique();</div>
+<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>    this-&gt;mesh_-&gt;pointsRep_.reset(<span class="keyword">new</span> std::vector&lt;std::vector&lt;SC&gt; &gt;(mapGI-&gt;getNodeNumElements(), std::vector&lt;SC&gt;(this-&gt;dim_, 0.0 ) ) );</div>
+<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span>    this-&gt;mesh_-&gt;pointsUni_.reset(<span class="keyword">new</span> std::vector&lt;std::vector&lt;SC&gt; &gt;(mapGI-&gt;getNodeNumElements(), std::vector&lt;SC&gt;(this-&gt;dim_, 0.0 ) ) );</div>
+<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span>    vec2D_dbl_ptr_Type pointsUni = domain-&gt;getPointsUnique();</div>
+<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;mapGI-&gt;getNodeNumElements(); i++) {</div>
+<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span>        LO index = mapD-&gt;getLocalElement( mapGI-&gt;getGlobalElement( i ) );</div>
+<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;this-&gt;dim_; j++){</div>
+<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>            (*this-&gt;mesh_-&gt;pointsRep_)[i][j] = (*pointsUni)[index][j];</div>
+<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>            (*this-&gt;mesh_-&gt;pointsUni_)[i][j] = (*pointsUni)[index][j];</div>
+<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span>        }</div>
+<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span>    }</div>
+<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span>    </div>
+<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>}</div>
 </div>
-<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span><span class="comment">//template &lt;class SC, class LO, class GO, class NO&gt;</span></div>
-<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span><span class="comment">//void Domain&lt;SC,LO,GO,NO&gt;::setDummyInterfaceMesh( MeshPtr_Type mesh )</span></div>
-<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span><span class="comment">//{</span></div>
-<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span><span class="comment">//    this-&gt;mesh_ = mesh;</span></div>
-<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span><span class="comment">//}</span></div>
-<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00943" data-start="{" data-end="}">
-<div class="line"><a id="l00943" name="l00943"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a6980325f1aa4ff35287b4d558913f8f3">  943</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a6980325f1aa4ff35287b4d558913f8f3">Domain&lt;SC,LO,GO,NO&gt;::findInPointsUnique</a>(<span class="keyword">const</span> vec_dbl_Type&amp; x)<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span> </div>
-<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span>    <span class="keywordtype">double</span> eps = 0.0000001;</div>
-<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>    </div>
-<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>    vec2D_dbl_ptr_Type points = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#ab181d5b732589fe1dc8f3a869826e93e">getPointsUnique</a>();</div>
-<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>    </div>
-<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a09100ec205969d8b46fe66957de60379">getDimension</a>()==2) {</div>
-<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>        <span class="keyword">auto</span> iterator = std::find_if( points-&gt;begin(), points-&gt;end(),</div>
-<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>                                     [&amp;] (<span class="keyword">const</span> std::vector&lt;double&gt;&amp; a){</div>
-<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>                                         if (a[0] &gt;= x[0]-eps &amp;&amp; a[0] &lt;= x[0]+eps</div>
-<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>                                             &amp;&amp; a[1] &gt;= x[1]-eps &amp;&amp; a[1] &lt;= x[1]+eps)</div>
-<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>                                             return true;</div>
-<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>                                         else</div>
-<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>                                             return false;</div>
-<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>                                     }</div>
-<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>                                     );</div>
-<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>        <span class="keywordflow">if</span> ( iterator != points-&gt;end() )</div>
-<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>            <span class="keywordflow">return</span> std::distance(points-&gt;begin(),iterator);</div>
-<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>             <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>    }</div>
-<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a09100ec205969d8b46fe66957de60379">getDimension</a>()==3) {</div>
-<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>        <span class="keyword">auto</span> iterator = std::find_if(points-&gt;begin(),points-&gt;end(),</div>
-<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>                                     [&amp;] (<span class="keyword">const</span> std::vector&lt;double&gt;&amp; a){</div>
-<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>                                         if (a[0] &gt;= x[0]-eps &amp;&amp; a[0] &lt;= x[0]+eps</div>
-<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>                                             &amp;&amp; a[1] &gt;= x[1]-eps &amp;&amp; a[1] &lt;= x[1]+eps</div>
-<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span>                                             &amp;&amp; a[2] &gt;= x[2]-eps &amp;&amp; a[2] &lt;= x[2]+eps)</div>
-<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>                                             return true;</div>
-<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>                                         else</div>
-<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span>                                             return false;</div>
-<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span>                                     }</div>
-<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span>                                     );</div>
-<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span>        <span class="keywordflow">if</span> ( iterator != points-&gt;end() )</div>
-<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>            <span class="keywordflow">return</span> std::distance(points-&gt;begin(),iterator);</div>
-<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span>    }</div>
-<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>    <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00981" name="l00981"></a><span class="lineno">  981</span>}</div>
+<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span><span class="comment">//template &lt;class SC, class LO, class GO, class NO&gt;</span></div>
+<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span><span class="comment">//void Domain&lt;SC,LO,GO,NO&gt;::setDummyInterfaceMesh( MeshPtr_Type mesh )</span></div>
+<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span><span class="comment">//{</span></div>
+<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span><span class="comment">//    this-&gt;mesh_ = mesh;</span></div>
+<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span><span class="comment">//}</span></div>
+<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00942" data-start="{" data-end="}">
+<div class="line"><a id="l00942" name="l00942"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a6980325f1aa4ff35287b4d558913f8f3">  942</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a6980325f1aa4ff35287b4d558913f8f3">Domain&lt;SC,LO,GO,NO&gt;::findInPointsUnique</a>(<span class="keyword">const</span> vec_dbl_Type&amp; x)<span class="keyword"> const</span>{</div>
+<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span> </div>
+<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>    <span class="keywordtype">double</span> eps = 0.0000001;</div>
+<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span>    </div>
+<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>    vec2D_dbl_ptr_Type points = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#ab181d5b732589fe1dc8f3a869826e93e">getPointsUnique</a>();</div>
+<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>    </div>
+<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a09100ec205969d8b46fe66957de60379">getDimension</a>()==2) {</div>
+<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>        <span class="keyword">auto</span> iterator = std::find_if( points-&gt;begin(), points-&gt;end(),</div>
+<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>                                     [&amp;] (<span class="keyword">const</span> std::vector&lt;double&gt;&amp; a){</div>
+<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>                                         if (a[0] &gt;= x[0]-eps &amp;&amp; a[0] &lt;= x[0]+eps</div>
+<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>                                             &amp;&amp; a[1] &gt;= x[1]-eps &amp;&amp; a[1] &lt;= x[1]+eps)</div>
+<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>                                             return true;</div>
+<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>                                         else</div>
+<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>                                             return false;</div>
+<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>                                     }</div>
+<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>                                     );</div>
+<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>        <span class="keywordflow">if</span> ( iterator != points-&gt;end() )</div>
+<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>            <span class="keywordflow">return</span> std::distance(points-&gt;begin(),iterator);</div>
+<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>             <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>    }</div>
+<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a09100ec205969d8b46fe66957de60379">getDimension</a>()==3) {</div>
+<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>        <span class="keyword">auto</span> iterator = std::find_if(points-&gt;begin(),points-&gt;end(),</div>
+<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>                                     [&amp;] (<span class="keyword">const</span> std::vector&lt;double&gt;&amp; a){</div>
+<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>                                         if (a[0] &gt;= x[0]-eps &amp;&amp; a[0] &lt;= x[0]+eps</div>
+<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>                                             &amp;&amp; a[1] &gt;= x[1]-eps &amp;&amp; a[1] &lt;= x[1]+eps</div>
+<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>                                             &amp;&amp; a[2] &gt;= x[2]-eps &amp;&amp; a[2] &lt;= x[2]+eps)</div>
+<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span>                                             return true;</div>
+<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>                                         else</div>
+<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>                                             return false;</div>
+<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span>                                     }</div>
+<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span>                                     );</div>
+<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span>        <span class="keywordflow">if</span> ( iterator != points-&gt;end() )</div>
+<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span>            <span class="keywordflow">return</span> std::distance(points-&gt;begin(),iterator);</div>
+<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>            <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>    }</div>
+<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>}</div>
 </div>
-<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span> </div>
-<div class="line"><a id="l00983" name="l00983"></a><span class="lineno">  983</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00984" data-start="{" data-end="}">
-<div class="line"><a id="l00984" name="l00984"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a4d65f9b93a9bdc2349a01387b6a50efa">  984</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MultiVectorPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#a4d65f9b93a9bdc2349a01387b6a50efa">Domain&lt;SC,LO,GO,NO&gt;::getNodeListMV</a>()<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00985" name="l00985"></a><span class="lineno">  985</span>    </div>
-<div class="line"><a id="l00986" name="l00986"></a><span class="lineno">  986</span>    MapConstPtr_Type map = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a1f26cb8a8a58a75e8c0ccace63788221">getMapRepeated</a>();</div>
-<div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span>    MultiVectorPtr_Type nodeList = Teuchos::rcp( <span class="keyword">new</span> MultiVector_Type ( map, dim_ ) );</div>
-<div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>    vec2D_dbl_ptr_Type pointsRepeated = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a707f2f5b832dbb22439db6720258db1d">getPointsRepeated</a>();</div>
-<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;nodeList-&gt;getLocalLength(); i++) {</div>
-<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;dim_; j++) {</div>
-<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>            Teuchos::ArrayRCP&lt; SC &gt; values = nodeList-&gt;getDataNonConst( j );</div>
-<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span>            values[i] = (*pointsRepeated)[i][j];</div>
-<div class="line"><a id="l00993" name="l00993"></a><span class="lineno">  993</span>        }</div>
-<div class="line"><a id="l00994" name="l00994"></a><span class="lineno">  994</span>    }</div>
-<div class="line"><a id="l00995" name="l00995"></a><span class="lineno">  995</span>    <span class="keywordflow">return</span> nodeList;</div>
-<div class="line"><a id="l00996" name="l00996"></a><span class="lineno">  996</span>}</div>
+<div class="line"><a id="l00981" name="l00981"></a><span class="lineno">  981</span> </div>
+<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00983" data-start="{" data-end="}">
+<div class="line"><a id="l00983" name="l00983"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a4d65f9b93a9bdc2349a01387b6a50efa">  983</a></span><span class="keyword">typename</span> Domain&lt;SC,LO,GO,NO&gt;::MultiVectorPtr_Type <a class="code hl_function" href="classFEDD_1_1Domain.html#a4d65f9b93a9bdc2349a01387b6a50efa">Domain&lt;SC,LO,GO,NO&gt;::getNodeListMV</a>()<span class="keyword"> const</span>{</div>
+<div class="line"><a id="l00984" name="l00984"></a><span class="lineno">  984</span>    </div>
+<div class="line"><a id="l00985" name="l00985"></a><span class="lineno">  985</span>    MapConstPtr_Type map = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a1f26cb8a8a58a75e8c0ccace63788221">getMapRepeated</a>();</div>
+<div class="line"><a id="l00986" name="l00986"></a><span class="lineno">  986</span>    MultiVectorPtr_Type nodeList = Teuchos::rcp( <span class="keyword">new</span> MultiVector_Type ( map, dim_ ) );</div>
+<div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span>    vec2D_dbl_ptr_Type pointsRepeated = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a707f2f5b832dbb22439db6720258db1d">getPointsRepeated</a>();</div>
+<div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;nodeList-&gt;getLocalLength(); i++) {</div>
+<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;dim_; j++) {</div>
+<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>            Teuchos::ArrayRCP&lt; SC &gt; values = nodeList-&gt;getDataNonConst( j );</div>
+<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>            values[i] = (*pointsRepeated)[i][j];</div>
+<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span>        }</div>
+<div class="line"><a id="l00993" name="l00993"></a><span class="lineno">  993</span>    }</div>
+<div class="line"><a id="l00994" name="l00994"></a><span class="lineno">  994</span>    <span class="keywordflow">return</span> nodeList;</div>
+<div class="line"><a id="l00995" name="l00995"></a><span class="lineno">  995</span>}</div>
 </div>
-<div class="line"><a id="l00997" name="l00997"></a><span class="lineno">  997</span> </div>
-<div class="line"><a id="l00998" name="l00998"></a><span class="lineno">  998</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00999" data-start="{" data-end="}">
-<div class="line"><a id="l00999" name="l00999"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9">  999</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9">Domain&lt;SC, LO, GO, NO&gt;::exportNodeFlags</a>(std::string name)</div>
-<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>{</div>
-<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span>        Teuchos::RCP&lt;ExporterParaView&lt;SC,LO,GO,NO&gt; &gt; exPara(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1ExporterParaView.html">ExporterParaView&lt;SC,LO,GO,NO&gt;</a>());</div>
-<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span> </div>
-<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span>        Teuchos::RCP&lt;MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolution(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()));</div>
-<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span>        vec_int_ptr_Type BCFlags = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a223fa08dc56db3089ee0cd85657625a8">getBCFlagUnique</a>(); <span class="comment">// Unique flags at points</span></div>
-<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span> </div>
-<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>        Teuchos::ArrayRCP&lt; SC &gt; entries  = exportSolution-&gt;getDataNonConst(0);</div>
-<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span>        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt; entries.size(); i++){</div>
-<div class="line"><a id="l01008" name="l01008"></a><span class="lineno"> 1008</span>            entries[i] = BCFlags-&gt;at(i);</div>
-<div class="line"><a id="l01009" name="l01009"></a><span class="lineno"> 1009</span>        }</div>
-<div class="line"><a id="l01010" name="l01010"></a><span class="lineno"> 1010</span> </div>
-<div class="line"><a id="l01011" name="l01011"></a><span class="lineno"> 1011</span>        Teuchos::RCP&lt;const MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolutionConst = exportSolution;</div>
-<div class="line"><a id="l01012" name="l01012"></a><span class="lineno"> 1012</span> </div>
-<div class="line"><a id="l01013" name="l01013"></a><span class="lineno"> 1013</span>        exPara-&gt;setup(<span class="stringliteral">&quot;Mesh_Node_Flags_&quot;</span>+name,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>(), this-&gt;FEType_);</div>
-<div class="line"><a id="l01014" name="l01014"></a><span class="lineno"> 1014</span> </div>
-<div class="line"><a id="l01015" name="l01015"></a><span class="lineno"> 1015</span>        exPara-&gt;addVariable(exportSolutionConst, <span class="stringliteral">&quot;Flags&quot;</span>, <span class="stringliteral">&quot;Scalar&quot;</span>, 1,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()); </div>
-<div class="line"><a id="l01016" name="l01016"></a><span class="lineno"> 1016</span>        exPara-&gt;save(0.0);</div>
-<div class="line"><a id="l01017" name="l01017"></a><span class="lineno"> 1017</span> </div>
-<div class="line"><a id="l01018" name="l01018"></a><span class="lineno"> 1018</span>        exPara-&gt;closeExporter();</div>
-<div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span>} </div>
+<div class="line"><a id="l00996" name="l00996"></a><span class="lineno">  996</span> </div>
+<div class="line"><a id="l00997" name="l00997"></a><span class="lineno">  997</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00998" data-start="{" data-end="}">
+<div class="line"><a id="l00998" name="l00998"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9">  998</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9">Domain&lt;SC, LO, GO, NO&gt;::exportNodeFlags</a>(std::string name)</div>
+<div class="line"><a id="l00999" name="l00999"></a><span class="lineno">  999</span>{</div>
+<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>        Teuchos::RCP&lt;ExporterParaView&lt;SC,LO,GO,NO&gt; &gt; exPara(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1ExporterParaView.html">ExporterParaView&lt;SC,LO,GO,NO&gt;</a>());</div>
+<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span> </div>
+<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span>        Teuchos::RCP&lt;MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolution(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()));</div>
+<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span>        vec_int_ptr_Type BCFlags = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a223fa08dc56db3089ee0cd85657625a8">getBCFlagUnique</a>(); <span class="comment">// Unique flags at points</span></div>
+<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span> </div>
+<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>        Teuchos::ArrayRCP&lt; SC &gt; entries  = exportSolution-&gt;getDataNonConst(0);</div>
+<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt; entries.size(); i++){</div>
+<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span>            entries[i] = BCFlags-&gt;at(i);</div>
+<div class="line"><a id="l01008" name="l01008"></a><span class="lineno"> 1008</span>        }</div>
+<div class="line"><a id="l01009" name="l01009"></a><span class="lineno"> 1009</span> </div>
+<div class="line"><a id="l01010" name="l01010"></a><span class="lineno"> 1010</span>        Teuchos::RCP&lt;const MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolutionConst = exportSolution;</div>
+<div class="line"><a id="l01011" name="l01011"></a><span class="lineno"> 1011</span> </div>
+<div class="line"><a id="l01012" name="l01012"></a><span class="lineno"> 1012</span>        exPara-&gt;setup(<span class="stringliteral">&quot;Mesh_Node_Flags_&quot;</span>+name,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>(), this-&gt;FEType_);</div>
+<div class="line"><a id="l01013" name="l01013"></a><span class="lineno"> 1013</span> </div>
+<div class="line"><a id="l01014" name="l01014"></a><span class="lineno"> 1014</span>        exPara-&gt;addVariable(exportSolutionConst, <span class="stringliteral">&quot;Flags&quot;</span>, <span class="stringliteral">&quot;Scalar&quot;</span>, 1,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()); </div>
+<div class="line"><a id="l01015" name="l01015"></a><span class="lineno"> 1015</span>        exPara-&gt;save(0.0);</div>
+<div class="line"><a id="l01016" name="l01016"></a><span class="lineno"> 1016</span> </div>
+<div class="line"><a id="l01017" name="l01017"></a><span class="lineno"> 1017</span>        exPara-&gt;closeExporter();</div>
+<div class="line"><a id="l01018" name="l01018"></a><span class="lineno"> 1018</span>} </div>
 </div>
-<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span> </div>
-<div class="line"><a id="l01021" name="l01021"></a><span class="lineno"> 1021</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen01022" data-start="{" data-end="}">
-<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5"> 1022</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5">Domain&lt;SC, LO, GO, NO&gt;::exportSurfaceNormals</a>(std::string name)</div>
-<div class="line"><a id="l01023" name="l01023"></a><span class="lineno"> 1023</span>{</div>
-<div class="line"><a id="l01024" name="l01024"></a><span class="lineno"> 1024</span>        Teuchos::RCP&lt;ExporterParaView&lt;SC,LO,GO,NO&gt; &gt; exPara(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1ExporterParaView.html">ExporterParaView&lt;SC,LO,GO,NO&gt;</a>());</div>
-<div class="line"><a id="l01025" name="l01025"></a><span class="lineno"> 1025</span> </div>
-<div class="line"><a id="l01026" name="l01026"></a><span class="lineno"> 1026</span>        Teuchos::RCP&lt;MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolution(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#afb00ea000097e92d7cf19ebd477f1115">getMapVecFieldUnique</a>()));</div>
-<div class="line"><a id="l01027" name="l01027"></a><span class="lineno"> 1027</span>        exportSolution-&gt;putScalar(0.);</div>
-<div class="line"><a id="l01028" name="l01028"></a><span class="lineno"> 1028</span>        ElementsPtr_Type elementsC = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a686e1e8615c2420f272e525bf7385839">getElementsC</a>(); <span class="comment">// Unique flags at points</span></div>
-<div class="line"><a id="l01029" name="l01029"></a><span class="lineno"> 1029</span> </div>
-<div class="line"><a id="l01030" name="l01030"></a><span class="lineno"> 1030</span>        Teuchos::ArrayRCP&lt; SC &gt; entries  = exportSolution-&gt;getDataNonConst(0);</div>
-<div class="line"><a id="l01031" name="l01031"></a><span class="lineno"> 1031</span> </div>
-<div class="line"><a id="l01032" name="l01032"></a><span class="lineno"> 1032</span>        <span class="comment">// We iterate over all elements and compute the surface normals to export them</span></div>
-<div class="line"><a id="l01033" name="l01033"></a><span class="lineno"> 1033</span>        <span class="keywordflow">for</span> (UN T=0; T&lt;elementsC-&gt;numberElements(); T++) {</div>
-<div class="line"><a id="l01034" name="l01034"></a><span class="lineno"> 1034</span>            <a class="code hl_class" href="classFEDD_1_1FiniteElement.html">FiniteElement</a> fe = elementsC-&gt;getElement( T );</div>
-<div class="line"><a id="l01035" name="l01035"></a><span class="lineno"> 1035</span>            ElementsPtr_Type subEl = fe.getSubElements(); <span class="comment">// might be null</span></div>
-<div class="line"><a id="l01036" name="l01036"></a><span class="lineno"> 1036</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> surface=0; surface&lt;fe.numSubElements(); surface++) {</div>
-<div class="line"><a id="l01037" name="l01037"></a><span class="lineno"> 1037</span>                <a class="code hl_class" href="classFEDD_1_1FiniteElement.html">FiniteElement</a> feSub = subEl-&gt;getElement( surface  );</div>
-<div class="line"><a id="l01038" name="l01038"></a><span class="lineno"> 1038</span>                vec_int_Type nodeListElement = fe.getVectorNodeList();</div>
-<div class="line"><a id="l01039" name="l01039"></a><span class="lineno"> 1039</span>                <span class="keywordflow">if</span>(subEl-&gt;getDimension() == dim_-1 ){</div>
-<div class="line"><a id="l01040" name="l01040"></a><span class="lineno"> 1040</span>                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst();</div>
-<div class="line"><a id="l01041" name="l01041"></a><span class="lineno"> 1041</span>                    </div>
-<div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span>                    vec_dbl_Type v_E(dim_,1.);</div>
-<div class="line"><a id="l01043" name="l01043"></a><span class="lineno"> 1043</span>                    <span class="keywordtype">double</span> norm_v_E=1.;</div>
-<div class="line"><a id="l01044" name="l01044"></a><span class="lineno"> 1044</span> </div>
-<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span>                    <a class="code hl_function" href="classFEDD_1_1Helper.html#adeb786cd3ca841d38d9b6f6bddd09be8">Helper::computeSurfaceNormal</a>(this-&gt;dim_,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a707f2f5b832dbb22439db6720258db1d">getPointsRepeated</a>(),nodeList,v_E,norm_v_E);</div>
-<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span> </div>
-<div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span>                    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0; j&lt; nodeList.size(); j++){</div>
-<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span>                        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt; this-&gt;dim_; i++){</div>
-<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>                            <span class="keywordflow">if</span>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()-&gt;getLocalElement(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a1f26cb8a8a58a75e8c0ccace63788221">getMapRepeated</a>()-&gt;getGlobalElement(nodeList[j])) != -1 ){  <span class="comment">// We only write when we have the node in unique distribution, because we are lazy. Otherwise we would do an import etc. But this will not give us further information.</span></div>
-<div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span>                                LO <span class="keywordtype">id</span> = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()-&gt;getLocalElement(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a1f26cb8a8a58a75e8c0ccace63788221">getMapRepeated</a>()-&gt;getGlobalElement(nodeList[j]));</div>
-<div class="line"><a id="l01051" name="l01051"></a><span class="lineno"> 1051</span>                                entries[<span class="keywordtype">id</span>*this-&gt;dim_+i] = 1./norm_v_E * v_E[i];</div>
-<div class="line"><a id="l01052" name="l01052"></a><span class="lineno"> 1052</span>                            }</div>
-<div class="line"><a id="l01053" name="l01053"></a><span class="lineno"> 1053</span>                        }</div>
-<div class="line"><a id="l01054" name="l01054"></a><span class="lineno"> 1054</span>                    }</div>
-<div class="line"><a id="l01055" name="l01055"></a><span class="lineno"> 1055</span>                }</div>
-<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"> 1056</span>            }</div>
-<div class="line"><a id="l01057" name="l01057"></a><span class="lineno"> 1057</span>        }</div>
-<div class="line"><a id="l01058" name="l01058"></a><span class="lineno"> 1058</span> </div>
-<div class="line"><a id="l01059" name="l01059"></a><span class="lineno"> 1059</span>        Teuchos::RCP&lt;const MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolutionConst = exportSolution;</div>
-<div class="line"><a id="l01060" name="l01060"></a><span class="lineno"> 1060</span> </div>
-<div class="line"><a id="l01061" name="l01061"></a><span class="lineno"> 1061</span>        exPara-&gt;setup(<span class="stringliteral">&quot;Mesh_Surface_Directions_&quot;</span>+name,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>(), this-&gt;FEType_);</div>
-<div class="line"><a id="l01062" name="l01062"></a><span class="lineno"> 1062</span> </div>
-<div class="line"><a id="l01063" name="l01063"></a><span class="lineno"> 1063</span>        exPara-&gt;addVariable(exportSolutionConst, <span class="stringliteral">&quot;SurfaceNormals&quot;</span>, <span class="stringliteral">&quot;Vector&quot;</span>, this-&gt;dim_,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()); </div>
-<div class="line"><a id="l01064" name="l01064"></a><span class="lineno"> 1064</span>        exPara-&gt;save(0.0);</div>
-<div class="line"><a id="l01065" name="l01065"></a><span class="lineno"> 1065</span> </div>
-<div class="line"><a id="l01066" name="l01066"></a><span class="lineno"> 1066</span>        exPara-&gt;closeExporter();</div>
-<div class="line"><a id="l01067" name="l01067"></a><span class="lineno"> 1067</span>} </div>
+<div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span> </div>
+<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen01021" data-start="{" data-end="}">
+<div class="line"><a id="l01021" name="l01021"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5"> 1021</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5">Domain&lt;SC, LO, GO, NO&gt;::exportSurfaceNormals</a>(std::string name)</div>
+<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span>{</div>
+<div class="line"><a id="l01023" name="l01023"></a><span class="lineno"> 1023</span>        Teuchos::RCP&lt;ExporterParaView&lt;SC,LO,GO,NO&gt; &gt; exPara(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1ExporterParaView.html">ExporterParaView&lt;SC,LO,GO,NO&gt;</a>());</div>
+<div class="line"><a id="l01024" name="l01024"></a><span class="lineno"> 1024</span> </div>
+<div class="line"><a id="l01025" name="l01025"></a><span class="lineno"> 1025</span>        Teuchos::RCP&lt;MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolution(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#afb00ea000097e92d7cf19ebd477f1115">getMapVecFieldUnique</a>()));</div>
+<div class="line"><a id="l01026" name="l01026"></a><span class="lineno"> 1026</span>        exportSolution-&gt;putScalar(0.);</div>
+<div class="line"><a id="l01027" name="l01027"></a><span class="lineno"> 1027</span>        ElementsPtr_Type elementsC = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a686e1e8615c2420f272e525bf7385839">getElementsC</a>(); <span class="comment">// Unique flags at points</span></div>
+<div class="line"><a id="l01028" name="l01028"></a><span class="lineno"> 1028</span> </div>
+<div class="line"><a id="l01029" name="l01029"></a><span class="lineno"> 1029</span>        Teuchos::ArrayRCP&lt; SC &gt; entries  = exportSolution-&gt;getDataNonConst(0);</div>
+<div class="line"><a id="l01030" name="l01030"></a><span class="lineno"> 1030</span> </div>
+<div class="line"><a id="l01031" name="l01031"></a><span class="lineno"> 1031</span>        <span class="comment">// We iterate over all elements and compute the surface normals to export them</span></div>
+<div class="line"><a id="l01032" name="l01032"></a><span class="lineno"> 1032</span>        <span class="keywordflow">for</span> (UN T=0; T&lt;elementsC-&gt;numberElements(); T++) {</div>
+<div class="line"><a id="l01033" name="l01033"></a><span class="lineno"> 1033</span>            <a class="code hl_class" href="classFEDD_1_1FiniteElement.html">FiniteElement</a> fe = elementsC-&gt;getElement( T );</div>
+<div class="line"><a id="l01034" name="l01034"></a><span class="lineno"> 1034</span>            ElementsPtr_Type subEl = fe.getSubElements(); <span class="comment">// might be null</span></div>
+<div class="line"><a id="l01035" name="l01035"></a><span class="lineno"> 1035</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> surface=0; surface&lt;fe.numSubElements(); surface++) {</div>
+<div class="line"><a id="l01036" name="l01036"></a><span class="lineno"> 1036</span>                <a class="code hl_class" href="classFEDD_1_1FiniteElement.html">FiniteElement</a> feSub = subEl-&gt;getElement( surface  );</div>
+<div class="line"><a id="l01037" name="l01037"></a><span class="lineno"> 1037</span>                vec_int_Type nodeListElement = fe.getVectorNodeList();</div>
+<div class="line"><a id="l01038" name="l01038"></a><span class="lineno"> 1038</span>                <span class="keywordflow">if</span>(subEl-&gt;getDimension() == dim_-1 ){</div>
+<div class="line"><a id="l01039" name="l01039"></a><span class="lineno"> 1039</span>                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst();</div>
+<div class="line"><a id="l01040" name="l01040"></a><span class="lineno"> 1040</span>                    </div>
+<div class="line"><a id="l01041" name="l01041"></a><span class="lineno"> 1041</span>                    vec_dbl_Type v_E(dim_,1.);</div>
+<div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span>                    <span class="keywordtype">double</span> norm_v_E=1.;</div>
+<div class="line"><a id="l01043" name="l01043"></a><span class="lineno"> 1043</span> </div>
+<div class="line"><a id="l01044" name="l01044"></a><span class="lineno"> 1044</span>                    <a class="code hl_function" href="classFEDD_1_1Helper.html#adeb786cd3ca841d38d9b6f6bddd09be8">Helper::computeSurfaceNormal</a>(this-&gt;dim_,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a707f2f5b832dbb22439db6720258db1d">getPointsRepeated</a>(),nodeList,v_E,norm_v_E);</div>
+<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span> </div>
+<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>                    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> j=0; j&lt; nodeList.size(); j++){</div>
+<div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span>                        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt; this-&gt;dim_; i++){</div>
+<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span>                            <span class="keywordflow">if</span>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()-&gt;getLocalElement(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a1f26cb8a8a58a75e8c0ccace63788221">getMapRepeated</a>()-&gt;getGlobalElement(nodeList[j])) != -1 ){  <span class="comment">// We only write when we have the node in unique distribution, because we are lazy. Otherwise we would do an import etc. But this will not give us further information.</span></div>
+<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>                                LO <span class="keywordtype">id</span> = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()-&gt;getLocalElement(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a1f26cb8a8a58a75e8c0ccace63788221">getMapRepeated</a>()-&gt;getGlobalElement(nodeList[j]));</div>
+<div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span>                                entries[<span class="keywordtype">id</span>*this-&gt;dim_+i] = 1./norm_v_E * v_E[i];</div>
+<div class="line"><a id="l01051" name="l01051"></a><span class="lineno"> 1051</span>                            }</div>
+<div class="line"><a id="l01052" name="l01052"></a><span class="lineno"> 1052</span>                        }</div>
+<div class="line"><a id="l01053" name="l01053"></a><span class="lineno"> 1053</span>                    }</div>
+<div class="line"><a id="l01054" name="l01054"></a><span class="lineno"> 1054</span>                }</div>
+<div class="line"><a id="l01055" name="l01055"></a><span class="lineno"> 1055</span>            }</div>
+<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"> 1056</span>        }</div>
+<div class="line"><a id="l01057" name="l01057"></a><span class="lineno"> 1057</span> </div>
+<div class="line"><a id="l01058" name="l01058"></a><span class="lineno"> 1058</span>        Teuchos::RCP&lt;const MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolutionConst = exportSolution;</div>
+<div class="line"><a id="l01059" name="l01059"></a><span class="lineno"> 1059</span> </div>
+<div class="line"><a id="l01060" name="l01060"></a><span class="lineno"> 1060</span>        exPara-&gt;setup(<span class="stringliteral">&quot;Mesh_Surface_Directions_&quot;</span>+name,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>(), this-&gt;FEType_);</div>
+<div class="line"><a id="l01061" name="l01061"></a><span class="lineno"> 1061</span> </div>
+<div class="line"><a id="l01062" name="l01062"></a><span class="lineno"> 1062</span>        exPara-&gt;addVariable(exportSolutionConst, <span class="stringliteral">&quot;SurfaceNormals&quot;</span>, <span class="stringliteral">&quot;Vector&quot;</span>, this-&gt;dim_,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">getMapUnique</a>()); </div>
+<div class="line"><a id="l01063" name="l01063"></a><span class="lineno"> 1063</span>        exPara-&gt;save(0.0);</div>
+<div class="line"><a id="l01064" name="l01064"></a><span class="lineno"> 1064</span> </div>
+<div class="line"><a id="l01065" name="l01065"></a><span class="lineno"> 1065</span>        exPara-&gt;closeExporter();</div>
+<div class="line"><a id="l01066" name="l01066"></a><span class="lineno"> 1066</span>} </div>
 </div>
-<div class="line"><a id="l01068" name="l01068"></a><span class="lineno"> 1068</span> </div>
-<div class="line"><a id="l01069" name="l01069"></a><span class="lineno"> 1069</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen01070" data-start="{" data-end="}">
-<div class="line"><a id="l01070" name="l01070"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817"> 1070</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817">Domain&lt;SC, LO, GO, NO&gt;::exportElementOrientation</a>(std::string name)</div>
-<div class="line"><a id="l01071" name="l01071"></a><span class="lineno"> 1071</span>{</div>
-<div class="line"><a id="l01072" name="l01072"></a><span class="lineno"> 1072</span>        Teuchos::RCP&lt;ExporterParaView&lt;SC,LO,GO,NO&gt; &gt; exPara(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1ExporterParaView.html">ExporterParaView&lt;SC,LO,GO,NO&gt;</a>());</div>
-<div class="line"><a id="l01073" name="l01073"></a><span class="lineno"> 1073</span> </div>
-<div class="line"><a id="l01074" name="l01074"></a><span class="lineno"> 1074</span>        Teuchos::RCP&lt;MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolution(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e">getElementMap</a>()));</div>
-<div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span>        exportSolution-&gt;putScalar(0.);</div>
-<div class="line"><a id="l01076" name="l01076"></a><span class="lineno"> 1076</span>        ElementsPtr_Type elementsC = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a686e1e8615c2420f272e525bf7385839">getElementsC</a>(); <span class="comment">// Unique flags at points</span></div>
-<div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span> </div>
-<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span>        Teuchos::ArrayRCP&lt; SC &gt; entries  = exportSolution-&gt;getDataNonConst(0);</div>
-<div class="line"><a id="l01079" name="l01079"></a><span class="lineno"> 1079</span> </div>
-<div class="line"><a id="l01080" name="l01080"></a><span class="lineno"> 1080</span>        SC detB;</div>
-<div class="line"><a id="l01081" name="l01081"></a><span class="lineno"> 1081</span>        <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a> B(this-&gt;dim_);</div>
-<div class="line"><a id="l01082" name="l01082"></a><span class="lineno"> 1082</span>        <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a> Binv(this-&gt;dim_);</div>
-<div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span>        <span class="comment">// We iterate over all elements and compute the surface normals to export them</span></div>
-<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span>        <span class="keywordflow">for</span> (UN T=0; T&lt;elementsC-&gt;numberElements(); T++) {</div>
-<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span>           <a class="code hl_function" href="classFEDD_1_1Helper.html#aa39723a79c28706566d5b54a4cde6b4e">Helper::buildTransformation</a>(elementsC-&gt;getElement(T).getVectorNodeList(), this-&gt;getPointsRepeated(), B);</div>
-<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span>           detB = B.computeInverse(Binv);</div>
-<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span>           entries[T] = detB;</div>
-<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span>        }</div>
-<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span> </div>
-<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span>        Teuchos::RCP&lt;const MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolutionConst = exportSolution;</div>
-<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span> </div>
-<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span>        exPara-&gt;setup(<span class="stringliteral">&quot;Mesh_Element_Orientation_&quot;</span>+name,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>(), <span class="stringliteral">&quot;P0&quot;</span>);</div>
-<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span> </div>
-<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>        exPara-&gt;addVariable(exportSolutionConst, <span class="stringliteral">&quot;VolElement&quot;</span>, <span class="stringliteral">&quot;Scalar&quot;</span>, 1,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e">getElementMap</a>()); </div>
-<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span>        exPara-&gt;save(0.0);</div>
-<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span> </div>
-<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>        exPara-&gt;closeExporter();</div>
-<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span>} </div>
+<div class="line"><a id="l01067" name="l01067"></a><span class="lineno"> 1067</span> </div>
+<div class="line"><a id="l01068" name="l01068"></a><span class="lineno"> 1068</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen01069" data-start="{" data-end="}">
+<div class="line"><a id="l01069" name="l01069"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817"> 1069</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817">Domain&lt;SC, LO, GO, NO&gt;::exportElementOrientation</a>(std::string name)</div>
+<div class="line"><a id="l01070" name="l01070"></a><span class="lineno"> 1070</span>{</div>
+<div class="line"><a id="l01071" name="l01071"></a><span class="lineno"> 1071</span>        Teuchos::RCP&lt;ExporterParaView&lt;SC,LO,GO,NO&gt; &gt; exPara(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1ExporterParaView.html">ExporterParaView&lt;SC,LO,GO,NO&gt;</a>());</div>
+<div class="line"><a id="l01072" name="l01072"></a><span class="lineno"> 1072</span> </div>
+<div class="line"><a id="l01073" name="l01073"></a><span class="lineno"> 1073</span>        Teuchos::RCP&lt;MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolution(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e">getElementMap</a>()));</div>
+<div class="line"><a id="l01074" name="l01074"></a><span class="lineno"> 1074</span>        exportSolution-&gt;putScalar(0.);</div>
+<div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span>        ElementsPtr_Type elementsC = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a686e1e8615c2420f272e525bf7385839">getElementsC</a>(); <span class="comment">// Unique flags at points</span></div>
+<div class="line"><a id="l01076" name="l01076"></a><span class="lineno"> 1076</span> </div>
+<div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span>        Teuchos::ArrayRCP&lt; SC &gt; entries  = exportSolution-&gt;getDataNonConst(0);</div>
+<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span> </div>
+<div class="line"><a id="l01079" name="l01079"></a><span class="lineno"> 1079</span>        SC detB;</div>
+<div class="line"><a id="l01080" name="l01080"></a><span class="lineno"> 1080</span>        <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a> B(this-&gt;dim_);</div>
+<div class="line"><a id="l01081" name="l01081"></a><span class="lineno"> 1081</span>        <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a> Binv(this-&gt;dim_);</div>
+<div class="line"><a id="l01082" name="l01082"></a><span class="lineno"> 1082</span>        <span class="comment">// We iterate over all elements and compute the surface normals to export them</span></div>
+<div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span>        <span class="keywordflow">for</span> (UN T=0; T&lt;elementsC-&gt;numberElements(); T++) {</div>
+<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span>           <a class="code hl_function" href="classFEDD_1_1Helper.html#aa39723a79c28706566d5b54a4cde6b4e">Helper::buildTransformation</a>(elementsC-&gt;getElement(T).getVectorNodeList(), this-&gt;getPointsRepeated(), B);</div>
+<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span>           detB = B.computeInverse(Binv);</div>
+<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span>           entries[T] = detB;</div>
+<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span>        }</div>
+<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span> </div>
+<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span>        Teuchos::RCP&lt;const MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolutionConst = exportSolution;</div>
+<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span> </div>
+<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span>        exPara-&gt;setup(<span class="stringliteral">&quot;Mesh_Element_Orientation_&quot;</span>+name,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>(), <span class="stringliteral">&quot;P0&quot;</span>);</div>
+<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span> </div>
+<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span>        exPara-&gt;addVariable(exportSolutionConst, <span class="stringliteral">&quot;VolElement&quot;</span>, <span class="stringliteral">&quot;Scalar&quot;</span>, 1,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e">getElementMap</a>()); </div>
+<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>        exPara-&gt;save(0.0);</div>
+<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span> </div>
+<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span>        exPara-&gt;closeExporter();</div>
+<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>} </div>
 </div>
 </div>
+<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span> </div>
 <div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span> </div>
-<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span> </div>
-<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen01102" data-start="{" data-end="}">
-<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30"> 1102</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30">Domain&lt;SC, LO, GO, NO&gt;::exportElementFlags</a>(std::string name)</div>
-<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span>{</div>
-<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span>        Teuchos::RCP&lt;ExporterParaView&lt;SC,LO,GO,NO&gt; &gt; exPara(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1ExporterParaView.html">ExporterParaView&lt;SC,LO,GO,NO&gt;</a>());</div>
-<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span> </div>
-<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span>        Teuchos::RCP&lt;MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolution(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e">getElementMap</a>()));</div>
-<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span> </div>
-<div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span>        Teuchos::ArrayRCP&lt; SC &gt; entries  = exportSolution-&gt;getDataNonConst(0);</div>
-<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span>        ElementsPtr_Type elements = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a686e1e8615c2420f272e525bf7385839">getElementsC</a>(); <span class="comment">// element list</span></div>
-<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span> </div>
-<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span>        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt; entries.size(); i++){</div>
-<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span>            entries[i] = elements-&gt;getElement(i).getFlag(); <span class="comment">// element flags</span></div>
-<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span>        }</div>
-<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span> </div>
-<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span>        Teuchos::RCP&lt;const MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolutionConst = exportSolution;</div>
-<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span> </div>
-<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span>        exPara-&gt;setup(<span class="stringliteral">&quot;Mesh_Element_Flags_&quot;</span>+name,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>(), <span class="stringliteral">&quot;P0&quot;</span>);</div>
-<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span> </div>
-<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span>        exPara-&gt;addVariable(exportSolutionConst, <span class="stringliteral">&quot;Flags&quot;</span>, <span class="stringliteral">&quot;Scalar&quot;</span>, 1,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e">getElementMap</a>());</div>
-<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span> </div>
-<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>        exPara-&gt;save(0.0);</div>
-<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span> </div>
-<div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span>        exPara-&gt;closeExporter();</div>
-<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span> </div>
-<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>}   </div>
+<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen01101" data-start="{" data-end="}">
+<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"><a class="line" href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30"> 1101</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30">Domain&lt;SC, LO, GO, NO&gt;::exportElementFlags</a>(std::string name)</div>
+<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span>{</div>
+<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span>        Teuchos::RCP&lt;ExporterParaView&lt;SC,LO,GO,NO&gt; &gt; exPara(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1ExporterParaView.html">ExporterParaView&lt;SC,LO,GO,NO&gt;</a>());</div>
+<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span> </div>
+<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span>        Teuchos::RCP&lt;MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolution(<span class="keyword">new</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a>(this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e">getElementMap</a>()));</div>
+<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span> </div>
+<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span>        Teuchos::ArrayRCP&lt; SC &gt; entries  = exportSolution-&gt;getDataNonConst(0);</div>
+<div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span>        ElementsPtr_Type elements = this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a686e1e8615c2420f272e525bf7385839">getElementsC</a>(); <span class="comment">// element list</span></div>
+<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span> </div>
+<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span>        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt; entries.size(); i++){</div>
+<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span>            entries[i] = elements-&gt;getElement(i).getFlag(); <span class="comment">// element flags</span></div>
+<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span>        }</div>
+<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span> </div>
+<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span>        Teuchos::RCP&lt;const MultiVector&lt;SC,LO,GO,NO&gt; &gt; exportSolutionConst = exportSolution;</div>
+<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span> </div>
+<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span>        exPara-&gt;setup(<span class="stringliteral">&quot;Mesh_Element_Flags_&quot;</span>+name,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">getMesh</a>(), <span class="stringliteral">&quot;P0&quot;</span>);</div>
+<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span> </div>
+<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span>        exPara-&gt;addVariable(exportSolutionConst, <span class="stringliteral">&quot;Flags&quot;</span>, <span class="stringliteral">&quot;Scalar&quot;</span>, 1,this-&gt;<a class="code hl_function" href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e">getElementMap</a>());</div>
+<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span> </div>
+<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span>        exPara-&gt;save(0.0);</div>
+<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span> </div>
+<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>        exPara-&gt;closeExporter();</div>
+<div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span> </div>
+<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>}   </div>
 </div>
-<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>    </div>
-<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>}</div>
-<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>    </div>
+<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>}</div>
+<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span><span class="preprocessor">#endif</span></div>
 </div>
 </div>
 </div>
@@ -1465,7 +1464,7 @@ $(function(){initNavTree('Domain__def_8hpp_source.html',''); initResizable(true)
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a08f598ff5e7773eecd10a46b1d7d0fe2"><div class="ttname"><a href="classFEDD_1_1Domain.html#a08f598ff5e7773eecd10a46b1d7d0fe2">FEDD::Domain::getElementsFlag</a></div><div class="ttdeci">vec_int_ptr_Type getElementsFlag() const</div><div class="ttdoc">Returns flags of elements as vector of type int.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:171</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a09100ec205969d8b46fe66957de60379"><div class="ttname"><a href="classFEDD_1_1Domain.html#a09100ec205969d8b46fe66957de60379">FEDD::Domain::getDimension</a></div><div class="ttdeci">UN getDimension() const</div><div class="ttdoc">Get dimension.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:431</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a1443248fa4db9ce49bd994a8171f6987"><div class="ttname"><a href="classFEDD_1_1Domain.html#a1443248fa4db9ce49bd994a8171f6987">FEDD::Domain::initDummyMesh</a></div><div class="ttdeci">void initDummyMesh(MapPtr_Type map)</div><div class="ttdoc">Initialize dummy mesh for i.e. lagrange multiplier that only represents on &#39;point&#39; in that sense....</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:396</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_a182837ea70fa396919b9c6dde6d771d5"><div class="ttname"><a href="classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5">FEDD::Domain::exportSurfaceNormals</a></div><div class="ttdeci">void exportSurfaceNormals(std::string name=&quot;default&quot;)</div><div class="ttdoc">Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not ab...</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:1022</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_a182837ea70fa396919b9c6dde6d771d5"><div class="ttname"><a href="classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5">FEDD::Domain::exportSurfaceNormals</a></div><div class="ttdeci">void exportSurfaceNormals(std::string name=&quot;default&quot;)</div><div class="ttdoc">Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not ab...</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:1021</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a1f26cb8a8a58a75e8c0ccace63788221"><div class="ttname"><a href="classFEDD_1_1Domain.html#a1f26cb8a8a58a75e8c0ccace63788221">FEDD::Domain&lt; SC, LO, GO, NO &gt;::getMapRepeated</a></div><div class="ttdeci">MapConstPtr_Type getMapRepeated() const</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a21389c495b75fd3a7189d6b16d3bafd9"><div class="ttname"><a href="classFEDD_1_1Domain.html#a21389c495b75fd3a7189d6b16d3bafd9">FEDD::Domain::preProcessMesh</a></div><div class="ttdeci">void preProcessMesh(bool correctSurfaceNormals, bool correctElementDirection)</div><div class="ttdoc">Option of preprocessing mesh by making consistent outward normal and/or consistent element orientatio...</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:418</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a21b36bac11162ab2d87c3ea50617e479"><div class="ttname"><a href="classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479">FEDD::Domain::getComm</a></div><div class="ttdeci">CommConstPtr_Type getComm() const</div><div class="ttdoc">Communicator.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:443</div></div>
@@ -1474,23 +1473,23 @@ $(function(){initNavTree('Domain__def_8hpp_source.html',''); initResizable(true)
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a2bb51fe7a4dcd1c1733e74ef98e5c7e4"><div class="ttname"><a href="classFEDD_1_1Domain.html#a2bb51fe7a4dcd1c1733e74ef98e5c7e4">FEDD::Domain&lt; SC, LO, GO, NO &gt;::partitionDistanceToInterface</a></div><div class="ttdeci">void partitionDistanceToInterface()</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a2f3fe2ee8778eea865302570501432dc"><div class="ttname"><a href="classFEDD_1_1Domain.html#a2f3fe2ee8778eea865302570501432dc">FEDD::Domain::buildMesh</a></div><div class="ttdeci">void buildMesh(int flags, std::string meshType, int dim, std::string FEType, int N, int M, int numProcsCoarseSolve=0)</div><div class="ttdoc">Build structured mesh in FEDDLib.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:204</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a2f998fd3981926350b7e3fc6ececa58d"><div class="ttname"><a href="classFEDD_1_1Domain.html#a2f998fd3981926350b7e3fc6ececa58d">FEDD::Domain::getElements</a></div><div class="ttdeci">vec2D_int_ptr_Type getElements() const</div><div class="ttdoc">Get the elements (on your processor) as vector data type.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:496</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_a311d61719473745d65f22487764602b1"><div class="ttname"><a href="classFEDD_1_1Domain.html#a311d61719473745d65f22487764602b1">FEDD::Domain::setPartialCoupling</a></div><div class="ttdeci">void setPartialCoupling(int flag, std::string type)</div><div class="ttdoc">Set partial coupling.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:781</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_a311d61719473745d65f22487764602b1"><div class="ttname"><a href="classFEDD_1_1Domain.html#a311d61719473745d65f22487764602b1">FEDD::Domain::setPartialCoupling</a></div><div class="ttdeci">void setPartialCoupling(int flag, std::string type)</div><div class="ttdoc">Set partial coupling.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:780</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a336eb1045c6e65bdb90013f97109358f"><div class="ttname"><a href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f">FEDD::Domain::getMesh</a></div><div class="ttdeci">MeshPtr_Type getMesh()</div><div class="ttdoc">Get mesh.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:677</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_a36ee94dc00b0b8ff344faa6ed9b64385"><div class="ttname"><a href="classFEDD_1_1Domain.html#a36ee94dc00b0b8ff344faa6ed9b64385">FEDD::Domain::buildInterfaceMaps</a></div><div class="ttdeci">void buildInterfaceMaps()</div><div class="ttdoc">Build interface maps.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:789</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_a36ee94dc00b0b8ff344faa6ed9b64385"><div class="ttname"><a href="classFEDD_1_1Domain.html#a36ee94dc00b0b8ff344faa6ed9b64385">FEDD::Domain::buildInterfaceMaps</a></div><div class="ttdeci">void buildInterfaceMaps()</div><div class="ttdoc">Build interface maps.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:788</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a38d5195fb9f1cff9587327f8c56a10e7"><div class="ttname"><a href="classFEDD_1_1Domain.html#a38d5195fb9f1cff9587327f8c56a10e7">FEDD::Domain::identifyInterfaceParallelAndDistance</a></div><div class="ttdeci">void identifyInterfaceParallelAndDistance(DomainPtr_Type domainOther, vec_int_Type interfaceID_vec)</div><div class="ttdoc">Itentify interface parallal and distance.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:573</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_a4029479d0b1e646986397ec3a003921c"><div class="ttname"><a href="classFEDD_1_1Domain.html#a4029479d0b1e646986397ec3a003921c">FEDD::Domain::toDofID</a></div><div class="ttdeci">void toDofID(UN dim, GO nodeID, LO localDofNumber, GO &amp;dofID)</div><div class="ttdoc">Hilfsfunktion fuer buildLocalInterfaceIDInGlobal(). Gibt fuer eine gegebene nodeID die entsprechende ...</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:900</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_a4074d5cb1d134b1925f55a3338a51a66"><div class="ttname"><a href="classFEDD_1_1Domain.html#a4074d5cb1d134b1925f55a3338a51a66">FEDD::Domain::getLocalInterfaceIDInGlobal</a></div><div class="ttdeci">vec_long_Type getLocalInterfaceIDInGlobal() const</div><div class="ttdoc">Get local interface id in global.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:906</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_a4029479d0b1e646986397ec3a003921c"><div class="ttname"><a href="classFEDD_1_1Domain.html#a4029479d0b1e646986397ec3a003921c">FEDD::Domain::toDofID</a></div><div class="ttdeci">void toDofID(UN dim, GO nodeID, LO localDofNumber, GO &amp;dofID)</div><div class="ttdoc">Hilfsfunktion fuer buildLocalInterfaceIDInGlobal(). Gibt fuer eine gegebene nodeID die entsprechende ...</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:899</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_a4074d5cb1d134b1925f55a3338a51a66"><div class="ttname"><a href="classFEDD_1_1Domain.html#a4074d5cb1d134b1925f55a3338a51a66">FEDD::Domain::getLocalInterfaceIDInGlobal</a></div><div class="ttdeci">vec_long_Type getLocalInterfaceIDInGlobal() const</div><div class="ttdoc">Get local interface id in global.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:905</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a40c9538ead8277dd85a7102dad6d2d1f"><div class="ttname"><a href="classFEDD_1_1Domain.html#a40c9538ead8277dd85a7102dad6d2d1f">FEDD::Domain::readMeshSize</a></div><div class="ttdeci">void readMeshSize(std::string filename, std::string delimiter)</div><div class="ttdoc">Reading mesh size.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:291</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a41b784cb22cb50300882951b40d9d942"><div class="ttname"><a href="classFEDD_1_1Domain.html#a41b784cb22cb50300882951b40d9d942">FEDD::Domain::buildUniqueInterfaceMaps</a></div><div class="ttdeci">void buildUniqueInterfaceMaps()</div><div class="ttdoc">Build unique node and dof interfaceMap in interface numbering.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:695</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a4589559713581f1b0fce626e350593d9"><div class="ttname"><a href="classFEDD_1_1Domain.html#a4589559713581f1b0fce626e350593d9">FEDD::Domain::partitionMesh</a></div><div class="ttdeci">void partitionMesh(bool partitionDistance=false)</div><div class="ttdoc">Partition mesh according to number of processors. Partition with parmetis.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:302</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a4cc1c354ac82abc376ba0e0e62cd9067"><div class="ttname"><a href="classFEDD_1_1Domain.html#a4cc1c354ac82abc376ba0e0e62cd9067">FEDD::Domain&lt; SC, LO, GO, NO &gt;::getMapUnique</a></div><div class="ttdeci">MapConstPtr_Type getMapUnique() const</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_a4d65f9b93a9bdc2349a01387b6a50efa"><div class="ttname"><a href="classFEDD_1_1Domain.html#a4d65f9b93a9bdc2349a01387b6a50efa">FEDD::Domain::getNodeListMV</a></div><div class="ttdeci">MultiVectorPtr_Type getNodeListMV() const</div><div class="ttdoc">Get node list in multi vector point.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:984</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_a5ff8e292ca5b15cc41dea30577fbe2db"><div class="ttname"><a href="classFEDD_1_1Domain.html#a5ff8e292ca5b15cc41dea30577fbe2db">FEDD::Domain::getOtherGlobalInterfaceMapVecFieldUnique</a></div><div class="ttdeci">MapConstPtr_Type getOtherGlobalInterfaceMapVecFieldUnique() const</div><div class="ttdoc">Get other interface vec field map unique (for fsi coupling block c4)</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:775</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_a4d65f9b93a9bdc2349a01387b6a50efa"><div class="ttname"><a href="classFEDD_1_1Domain.html#a4d65f9b93a9bdc2349a01387b6a50efa">FEDD::Domain::getNodeListMV</a></div><div class="ttdeci">MultiVectorPtr_Type getNodeListMV() const</div><div class="ttdoc">Get node list in multi vector point.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:983</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_a5ff8e292ca5b15cc41dea30577fbe2db"><div class="ttname"><a href="classFEDD_1_1Domain.html#a5ff8e292ca5b15cc41dea30577fbe2db">FEDD::Domain::getOtherGlobalInterfaceMapVecFieldUnique</a></div><div class="ttdeci">MapConstPtr_Type getOtherGlobalInterfaceMapVecFieldUnique() const</div><div class="ttdoc">Get other interface vec field map unique (for fsi coupling block c4)</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:774</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a680e3dba1d80d794e7820e283613230f"><div class="ttname"><a href="classFEDD_1_1Domain.html#a680e3dba1d80d794e7820e283613230f">FEDD::Domain::getNumElements</a></div><div class="ttdeci">LO getNumElements() const</div><div class="ttdoc">Get local number of elements (on your processor)</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:533</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a6840d2c9a6a898877a88d34861c1f530"><div class="ttname"><a href="classFEDD_1_1Domain.html#a6840d2c9a6a898877a88d34861c1f530">FEDD::Domain::setMesh</a></div><div class="ttdeci">void setMesh(MeshUnstrPtr_Type meshUnstr)</div><div class="ttdoc">Settng mesh from domain.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:389</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a686e1e8615c2420f272e525bf7385839"><div class="ttname"><a href="classFEDD_1_1Domain.html#a686e1e8615c2420f272e525bf7385839">FEDD::Domain::getElementsC</a></div><div class="ttdeci">ElementsPtr_Type getElementsC() const</div><div class="ttdoc">Get the elements (on your processor) as Elements_Type.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:502</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_a69201fea8c13b3cc350db52ab2367aa8"><div class="ttname"><a href="classFEDD_1_1Domain.html#a69201fea8c13b3cc350db52ab2367aa8">FEDD::Domain::toNodeID</a></div><div class="ttdeci">void toNodeID(UN dim, GO dofID, GO &amp;nodeID, LO &amp;localDofNumber)</div><div class="ttdoc">Hilfsfunktion fuer buildLocalInterfaceIDInGlobal(). Gibt fuer eine gegebene nodeID die entsprechende ...</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:893</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_a6980325f1aa4ff35287b4d558913f8f3"><div class="ttname"><a href="classFEDD_1_1Domain.html#a6980325f1aa4ff35287b4d558913f8f3">FEDD::Domain::findInPointsUnique</a></div><div class="ttdeci">int findInPointsUnique(const vec_dbl_Type &amp;x) const</div><div class="ttdoc">Find in points unique.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:943</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_a69201fea8c13b3cc350db52ab2367aa8"><div class="ttname"><a href="classFEDD_1_1Domain.html#a69201fea8c13b3cc350db52ab2367aa8">FEDD::Domain::toNodeID</a></div><div class="ttdeci">void toNodeID(UN dim, GO dofID, GO &amp;nodeID, LO &amp;localDofNumber)</div><div class="ttdoc">Hilfsfunktion fuer buildLocalInterfaceIDInGlobal(). Gibt fuer eine gegebene nodeID die entsprechende ...</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:892</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_a6980325f1aa4ff35287b4d558913f8f3"><div class="ttname"><a href="classFEDD_1_1Domain.html#a6980325f1aa4ff35287b4d558913f8f3">FEDD::Domain::findInPointsUnique</a></div><div class="ttdeci">int findInPointsUnique(const vec_dbl_Type &amp;x) const</div><div class="ttdoc">Find in points unique.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:942</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a6a3d4573c6ab89fe689051fc305da3b9"><div class="ttname"><a href="classFEDD_1_1Domain.html#a6a3d4573c6ab89fe689051fc305da3b9">FEDD::Domain&lt; SC, LO, GO, NO &gt;::checkGeomentry</a></div><div class="ttdeci">int checkGeomentry(std::string MeshType, int dim) const</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a6adccae537e53d4fde2b70f875e6b8d0"><div class="ttname"><a href="classFEDD_1_1Domain.html#a6adccae537e53d4fde2b70f875e6b8d0">FEDD::Domain::Domain</a></div><div class="ttdeci">Domain()</div><div class="ttdoc">Constructor.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:16</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a707f2f5b832dbb22439db6720258db1d"><div class="ttname"><a href="classFEDD_1_1Domain.html#a707f2f5b832dbb22439db6720258db1d">FEDD::Domain::getPointsRepeated</a></div><div class="ttdeci">vec2D_dbl_ptr_Type getPointsRepeated() const</div><div class="ttdoc">Get vector of repeated points (on your processor). 2D Vector with size: numPoints x dim.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:472</div></div>
@@ -1502,23 +1501,23 @@ $(function(){initNavTree('Domain__def_8hpp_source.html',''); initResizable(true)
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a95f7353369b0683b7d0ac95e436a9004"><div class="ttname"><a href="classFEDD_1_1Domain.html#a95f7353369b0683b7d0ac95e436a9004">FEDD::Domain::getEdgeMap</a></div><div class="ttdeci">MapConstPtr_Type getEdgeMap() const</div><div class="ttdoc">Get map of edges.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:466</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a99112c9fec7545cb3f6cb0c3d4391c9c"><div class="ttname"><a href="classFEDD_1_1Domain.html#a99112c9fec7545cb3f6cb0c3d4391c9c">FEDD::Domain::getNumElementsGlobal</a></div><div class="ttdeci">GO getNumElementsGlobal() const</div><div class="ttdoc">Get global number of elements.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:527</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_a9d884b00bdbb13f43e06435db5c65ee9"><div class="ttname"><a href="classFEDD_1_1Domain.html#a9d884b00bdbb13f43e06435db5c65ee9">FEDD::Domain::initWithDomain</a></div><div class="ttdeci">void initWithDomain(DomainPtr_Type domainsP1)</div><div class="ttdoc">Initialize domain with already existing domain.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:363</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_aa0640df799ab28838b271f9cecc52e30"><div class="ttname"><a href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30">FEDD::Domain::exportElementFlags</a></div><div class="ttdeci">void exportElementFlags(std::string name=&quot;default&quot;)</div><div class="ttdoc">Exporting Paraview file displaying element flags of the underlying mesh.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:1102</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_aac9e7584f15a0e702f7ed406390f5613"><div class="ttname"><a href="classFEDD_1_1Domain.html#aac9e7584f15a0e702f7ed406390f5613">FEDD::Domain::getGlobalInterfaceMapUnique</a></div><div class="ttdeci">MapConstPtr_Type getGlobalInterfaceMapUnique() const</div><div class="ttdoc">Get interface map unique (for fsi coupling block c4)</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:762</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_aa0640df799ab28838b271f9cecc52e30"><div class="ttname"><a href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30">FEDD::Domain::exportElementFlags</a></div><div class="ttdeci">void exportElementFlags(std::string name=&quot;default&quot;)</div><div class="ttdoc">Exporting Paraview file displaying element flags of the underlying mesh.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:1101</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_aac9e7584f15a0e702f7ed406390f5613"><div class="ttname"><a href="classFEDD_1_1Domain.html#aac9e7584f15a0e702f7ed406390f5613">FEDD::Domain::getGlobalInterfaceMapUnique</a></div><div class="ttdeci">MapConstPtr_Type getGlobalInterfaceMapUnique() const</div><div class="ttdoc">Get interface map unique (for fsi coupling block c4)</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:761</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_aafdd52a2615274d6cbe021dcdd29e3b0"><div class="ttname"><a href="classFEDD_1_1Domain.html#aafdd52a2615274d6cbe021dcdd29e3b0">FEDD::Domain::buildP2ofP1Domain</a></div><div class="ttdeci">void buildP2ofP1Domain(DomainPtr_Type domainP1)</div><div class="ttdoc">Building a P2 mesh from the P1 one mesh. We generally habe P1-input meshes and build the P2 mesh on t...</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:344</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_ab181d5b732589fe1dc8f3a869826e93e"><div class="ttname"><a href="classFEDD_1_1Domain.html#ab181d5b732589fe1dc8f3a869826e93e">FEDD::Domain::getPointsUnique</a></div><div class="ttdeci">vec2D_dbl_ptr_Type getPointsUnique() const</div><div class="ttdoc">Get vector of unique points (on your processor). 2D Vector with size: numPoints x dim.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:478</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_ab3da9cc7d970f2513fdeaa7431fd52f9"><div class="ttname"><a href="classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9">FEDD::Domain::exportNodeFlags</a></div><div class="ttdeci">void exportNodeFlags(std::string name=&quot;default&quot;)</div><div class="ttdoc">Exporting Paraview file displaying node flags of the underlying mesh.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:999</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_ac5f9c8191033ca78a53aa6a9b8e65579"><div class="ttname"><a href="classFEDD_1_1Domain.html#ac5f9c8191033ca78a53aa6a9b8e65579">FEDD::Domain::getInterfaceMapVecFieldUnique</a></div><div class="ttdeci">MapConstPtr_Type getInterfaceMapVecFieldUnique() const</div><div class="ttdoc">Get interface vector field map unique.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:755</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_ac8b967be92ac02d53ee4608023417817"><div class="ttname"><a href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817">FEDD::Domain::exportElementOrientation</a></div><div class="ttdeci">void exportElementOrientation(std::string name=&quot;default&quot;)</div><div class="ttdoc">Exporting Paraview file displaying element volume of underlying mesh.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:1070</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_ab3da9cc7d970f2513fdeaa7431fd52f9"><div class="ttname"><a href="classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9">FEDD::Domain::exportNodeFlags</a></div><div class="ttdeci">void exportNodeFlags(std::string name=&quot;default&quot;)</div><div class="ttdoc">Exporting Paraview file displaying node flags of the underlying mesh.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:998</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_ac5f9c8191033ca78a53aa6a9b8e65579"><div class="ttname"><a href="classFEDD_1_1Domain.html#ac5f9c8191033ca78a53aa6a9b8e65579">FEDD::Domain::getInterfaceMapVecFieldUnique</a></div><div class="ttdeci">MapConstPtr_Type getInterfaceMapVecFieldUnique() const</div><div class="ttdoc">Get interface vector field map unique.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:754</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_ac8b967be92ac02d53ee4608023417817"><div class="ttname"><a href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817">FEDD::Domain::exportElementOrientation</a></div><div class="ttdeci">void exportElementOrientation(std::string name=&quot;default&quot;)</div><div class="ttdoc">Exporting Paraview file displaying element volume of underlying mesh.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:1069</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_acbc5db80541f22d268221c2c09dc4422"><div class="ttname"><a href="classFEDD_1_1Domain.html#acbc5db80541f22d268221c2c09dc4422">FEDD::Domain::info</a></div><div class="ttdeci">void info() const</div><div class="ttdoc">Information about the domain.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:141</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_acc7dc177f778811d110d032a0e3f234e"><div class="ttname"><a href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e">FEDD::Domain::getElementMap</a></div><div class="ttdeci">MapConstPtr_Type getElementMap() const</div><div class="ttdoc">Get map of elements.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:460</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_acde507cac4f63d8da0157c9d4ed9cbb4"><div class="ttname"><a href="classFEDD_1_1Domain.html#acde507cac4f63d8da0157c9d4ed9cbb4">FEDD::Domain::getBCFlagRepeated</a></div><div class="ttdeci">vec_int_ptr_Type getBCFlagRepeated() const</div><div class="ttdoc">Get vector of the flags corrsponding to the repeated points (on your processor)</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:484</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_ace24bea3005ccca1fa4fb56921d053dd"><div class="ttname"><a href="classFEDD_1_1Domain.html#ace24bea3005ccca1fa4fb56921d053dd">FEDD::Domain::setReferenceConfiguration</a></div><div class="ttdeci">void setReferenceConfiguration()</div><div class="ttdoc">Set reference configuration.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:671</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_ad581de754a27d5338b29bf1cd19d6435"><div class="ttname"><a href="classFEDD_1_1Domain.html#ad581de754a27d5338b29bf1cd19d6435">FEDD::Domain::getGlobalInterfaceMapVecFieldUnique</a></div><div class="ttdeci">MapConstPtr_Type getGlobalInterfaceMapVecFieldUnique() const</div><div class="ttdoc">Get interface vec field map unique (for fsi coupling block c4)</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:769</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_ad581de754a27d5338b29bf1cd19d6435"><div class="ttname"><a href="classFEDD_1_1Domain.html#ad581de754a27d5338b29bf1cd19d6435">FEDD::Domain::getGlobalInterfaceMapVecFieldUnique</a></div><div class="ttdeci">MapConstPtr_Type getGlobalInterfaceMapVecFieldUnique() const</div><div class="ttdoc">Get interface vec field map unique (for fsi coupling block c4)</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:768</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_ae1239dc723ffb11482425554ec5f0180"><div class="ttname"><a href="classFEDD_1_1Domain.html#ae1239dc723ffb11482425554ec5f0180">FEDD::Domain::getApproxEntriesPerRow</a></div><div class="ttdeci">LO getApproxEntriesPerRow() const</div><div class="ttdoc">Estimate depending on FEType and dimension for the numer of entries in system matrix,...</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:177</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_ae1c117f958917e8aa18ae022d753dfe7"><div class="ttname"><a href="classFEDD_1_1Domain.html#ae1c117f958917e8aa18ae022d753dfe7">FEDD::Domain::getDistancesToInterface</a></div><div class="ttdeci">vec_dbl_ptr_Type getDistancesToInterface() const</div><div class="ttdoc">Get distances to interface.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:666</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_ae55dcd00227f596970c66171c48ecde5"><div class="ttname"><a href="classFEDD_1_1Domain.html#ae55dcd00227f596970c66171c48ecde5">FEDD::Domain::exportMesh</a></div><div class="ttdeci">void exportMesh(bool exportEdges=false, bool exportSurfaces=false, std::string exportMesh=&quot;export.mesh&quot;)</div><div class="ttdoc">Exporting Mesh.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:410</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_af0a00dbe4b50cb847206caa5fa5efc72"><div class="ttname"><a href="classFEDD_1_1Domain.html#af0a00dbe4b50cb847206caa5fa5efc72">FEDD::Domain::getInterfaceMapUnique</a></div><div class="ttdeci">MapConstPtr_Type getInterfaceMapUnique() const</div><div class="ttdoc">Get interface map unique.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:748</div></div>
-<div class="ttc" id="aclassFEDD_1_1Domain_html_af4fb5ccfaf349f6a0ad60cb19feb6eee"><div class="ttname"><a href="classFEDD_1_1Domain.html#af4fb5ccfaf349f6a0ad60cb19feb6eee">FEDD::Domain::setDummyInterfaceDomain</a></div><div class="ttdeci">void setDummyInterfaceDomain(DomainPtr_Type domain)</div><div class="ttdoc">Set dummy interface domain.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:912</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_af0a00dbe4b50cb847206caa5fa5efc72"><div class="ttname"><a href="classFEDD_1_1Domain.html#af0a00dbe4b50cb847206caa5fa5efc72">FEDD::Domain::getInterfaceMapUnique</a></div><div class="ttdeci">MapConstPtr_Type getInterfaceMapUnique() const</div><div class="ttdoc">Get interface map unique.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:747</div></div>
+<div class="ttc" id="aclassFEDD_1_1Domain_html_af4fb5ccfaf349f6a0ad60cb19feb6eee"><div class="ttname"><a href="classFEDD_1_1Domain.html#af4fb5ccfaf349f6a0ad60cb19feb6eee">FEDD::Domain::setDummyInterfaceDomain</a></div><div class="ttdeci">void setDummyInterfaceDomain(DomainPtr_Type domain)</div><div class="ttdoc">Set dummy interface domain.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:911</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_af91e5257955a8d5c19e66a35c6d8550f"><div class="ttname"><a href="classFEDD_1_1Domain.html#af91e5257955a8d5c19e66a35c6d8550f">FEDD::Domain::calculateDistancesToInterface</a></div><div class="ttdeci">void calculateDistancesToInterface()</div><div class="ttdoc">Calculate distance to interface.</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:583</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_afada1d01cce22b5569b535859cc634c4"><div class="ttname"><a href="classFEDD_1_1Domain.html#afada1d01cce22b5569b535859cc634c4">FEDD::Domain::readAndPartitionMesh</a></div><div class="ttdeci">void readAndPartitionMesh(std::string filename, std::string delimiter, int dim, std::string FEType, int volumeID=10)</div><div class="ttdoc">Function called when mesh is read and paritioned. In turn it calls readMesh(...) and partitionMesh(....</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:327</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html_afb00ea000097e92d7cf19ebd477f1115"><div class="ttname"><a href="classFEDD_1_1Domain.html#afb00ea000097e92d7cf19ebd477f1115">FEDD::Domain::getMapVecFieldUnique</a></div><div class="ttdeci">MapConstPtr_Type getMapVecFieldUnique() const</div><div class="ttdoc">Get map of all unique (not uniquely distributed) nodes of processors in a vector field point of view....</div><div class="ttdef"><b>Definition</b> Domain_def.hpp:509</div></div>

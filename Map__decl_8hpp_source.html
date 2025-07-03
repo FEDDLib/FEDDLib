@@ -187,40 +187,38 @@ $(function(){initNavTree('Map__decl_8hpp_source.html',''); initResizable(true); 
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    GO getIndexBase() <span class="keyword">const</span>; </div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    std::string getUnderlyingLib( ) <span class="keyword">const</span>;       </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    MapPtr_Type buildVecFieldMap(UN numDofs, std::string ordering=<span class="stringliteral">&quot;NodeWise&quot;</span>) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>   </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    TpetraMapConstPtr_Type getTpetraMap() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    MapPtr_Type buildVecFieldMap(UN numDofs, std::string ordering=<span class="stringliteral">&quot;NodeWise&quot;</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>   </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    TpetraMapConstPtr_Type getTpetraMap() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    XpetraMapConstPtr_Type getXpetraMap();</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    XpetraMapConstPtr_Type getXpetraMap();</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    GO getMaxAllGlobalIndex() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    GO getMaxAllGlobalIndex() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    LO getMaxLocalIndex() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    LO getMaxLocalIndex() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    </div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">void</span> print(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">void</span> print(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    ThyraVSBConstPtr_Type getThyraVectorSpaceBase() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    ThyraVSBConstPtr_Type getThyraVectorSpaceBase() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    CommPtr_Type getCommNonConst();</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span></div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classFEDD_1_1Map.html#a6418215dd767a2adbb653471cacab009">  116</a></span>    Teuchos::RCP&lt;Map&lt;LO,GO,NO&gt; &gt; <a class="code hl_function" href="classFEDD_1_1Map.html#a6418215dd767a2adbb653471cacab009">buildUniqueMap</a>( <span class="keywordtype">int</span> numFreeProcs=0 ) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    Teuchos::RCP&lt;Map&lt;LO,GO,NO&gt; &gt; <a class="code hl_function" href="classFEDD_1_1Map.html#a6418215dd767a2adbb653471cacab009">buildUniqueMap</a>( tuple_intint_Type rankRange ) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>   </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    CommPtr_Type getCommNonConst();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classFEDD_1_1Map.html#a6418215dd767a2adbb653471cacab009">  114</a></span>    Teuchos::RCP&lt;Map&lt;LO,GO,NO&gt; &gt; <a class="code hl_function" href="classFEDD_1_1Map.html#a6418215dd767a2adbb653471cacab009">buildUniqueMap</a>( <span class="keywordtype">int</span> numFreeProcs=0 ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    Teuchos::RCP&lt;Map&lt;LO,GO,NO&gt; &gt; <a class="code hl_function" href="classFEDD_1_1Map.html#a6418215dd767a2adbb653471cacab009">buildUniqueMap</a>( tuple_intint_Type rankRange ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>   </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    TpetraMapConstPtr_Type map_;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    XpetraMapConstPtr_Type mapX_;</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>};</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    TpetraMapConstPtr_Type map_;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    XpetraMapConstPtr_Type mapX_;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>};</div>
 </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassFEDD_1_1Map_html_a6418215dd767a2adbb653471cacab009"><div class="ttname"><a href="classFEDD_1_1Map.html#a6418215dd767a2adbb653471cacab009">FEDD::Map::buildUniqueMap</a></div><div class="ttdeci">Teuchos::RCP&lt; Map&lt; LO, GO, NO &gt; &gt; buildUniqueMap(int numFreeProcs=0) const</div><div class="ttdef"><b>Definition</b> Map_def.hpp:180</div></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>}</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassFEDD_1_1Map_html_a6418215dd767a2adbb653471cacab009"><div class="ttname"><a href="classFEDD_1_1Map.html#a6418215dd767a2adbb653471cacab009">FEDD::Map::buildUniqueMap</a></div><div class="ttdeci">Teuchos::RCP&lt; Map&lt; LO, GO, NO &gt; &gt; buildUniqueMap(int numFreeProcs=0) const</div><div class="ttdef"><b>Definition</b> Map_def.hpp:169</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement.cpp:5</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

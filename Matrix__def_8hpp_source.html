@@ -433,158 +433,157 @@ $(function(){initNavTree('Matrix__def_8hpp_source.html',''); initResizable(true)
 <div class="foldopen" id="foldopen00289" data-start="{" data-end="}">
 <div class="line"><a id="l00289" name="l00289"></a><span class="lineno"><a class="line" href="classFEDD_1_1Matrix.html#aa55f99367fe4a2fe17abee2a331fcfb5">  289</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Matrix.html#aa55f99367fe4a2fe17abee2a331fcfb5">Matrix&lt;SC,LO,GO,NO&gt;::writeMM</a>(std::string fileName)<span class="keyword"> const</span>{</div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    TEUCHOS_TEST_FOR_EXCEPTION( matrix_.is_null(), std::runtime_error,<span class="stringliteral">&quot;Matrix in writeMM is null.&quot;</span>);</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>   <span class="comment">// TEUCHOS_TEST_FOR_EXCEPTION( !(matrix_-&gt;getMap()-&gt;lib()==Xpetra::UseTpetra), std::logic_error,&quot;Only available for Tpetra underlying lib.&quot;);</span></div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <span class="comment">//typedef Tpetra::CrsMatrix&lt;SC,LO,GO,NO&gt; TpetraCrsMatrix;</span></div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    <span class="comment">//typedef Teuchos::RCP&lt;TpetraCrsMatrix&gt; TpetraCrsMatrixPtr;</span></div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="comment">//Xpetra::CrsMatrixWrap&lt;SC,LO,GO,NO&gt;&amp; crsOp = dynamic_cast&lt;Xpetra::CrsMatrixWrap&lt;SC,LO,GO,NO&gt;&amp;&gt;(*matrix_);</span></div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="comment">//Xpetra::TpetraCrsMatrix&lt;SC,LO,GO,NO&gt;&amp; xTpetraMat = dynamic_cast&lt;Xpetra::TpetraCrsMatrix&lt;SC,LO,GO,NO&gt;&amp;&gt;(*crsOp.getCrsMatrix());</span></div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span> </div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    TpetraMatrixPtr_Type tpetraMat = matrix_;</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span> </div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    Tpetra::MatrixMarket::Writer&lt; TpetraMatrix_Type &gt; tpetraWriter;</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    tpetraWriter.writeSparseFile(fileName, tpetraMat, <span class="stringliteral">&quot;matrix&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>}</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <span class="comment">//typedef Tpetra::CrsMatrix&lt;SC,LO,GO,NO&gt; TpetraCrsMatrix;</span></div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <span class="comment">//typedef Teuchos::RCP&lt;TpetraCrsMatrix&gt; TpetraCrsMatrixPtr;</span></div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    <span class="comment">//Xpetra::CrsMatrixWrap&lt;SC,LO,GO,NO&gt;&amp; crsOp = dynamic_cast&lt;Xpetra::CrsMatrixWrap&lt;SC,LO,GO,NO&gt;&amp;&gt;(*matrix_);</span></div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="comment">//Xpetra::TpetraCrsMatrix&lt;SC,LO,GO,NO&gt;&amp; xTpetraMat = dynamic_cast&lt;Xpetra::TpetraCrsMatrix&lt;SC,LO,GO,NO&gt;&amp;&gt;(*crsOp.getCrsMatrix());</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    TpetraMatrixPtr_Type tpetraMat = matrix_;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    Tpetra::MatrixMarket::Writer&lt; TpetraMatrix_Type &gt; tpetraWriter;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    tpetraWriter.writeSparseFile(fileName, tpetraMat, <span class="stringliteral">&quot;matrix&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>}</div>
 </div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span> </div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00306" data-start="{" data-end="}">
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno"><a class="line" href="classFEDD_1_1Matrix.html#ac493dda825b0165bb1e963bfc1039135">  306</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Matrix.html#ac493dda825b0165bb1e963bfc1039135">Matrix&lt;SC,LO,GO,NO&gt;::addMatrix</a>(SC alpha, <span class="keyword">const</span> MatrixPtr_Type &amp;B, SC beta){</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="comment">//B = alpha*A + beta*B.</span></div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <span class="keywordflow">if</span> (B-&gt;isFillComplete())</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        B-&gt;resumeFill();</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    TEUCHOS_TEST_FOR_EXCEPTION( B-&gt;isLocallyIndexed(), std::runtime_error,<span class="stringliteral">&quot;Matrix in is locally index but Trilinos Epetra/Tpetra can not add to a matrix at this stage.&quot;</span>);</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    </div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="comment">//const Tpetra::CrsMatrix&lt;SC,LO,GO,NO&gt;&amp; tpA = Xpetra::Helpers&lt;SC,LO,GO,NO&gt;::Op2TpetraCrs(A);</span></div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <span class="comment">//Tpetra::CrsMatrix&lt;SC,LO,GO,NO&gt;&amp; tpB = Xpetra::Helpers&lt;SC,LO,GO,NO&gt;::Op2NonConstTpetraCrs(B);</span></div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span> </div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    Tpetra::MatrixMatrix::Add(*matrix_, <span class="keyword">false</span>, alpha, *B-&gt;matrix_, beta);</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="comment">//Xpetra::MatrixMatrix&lt;SC,LO,GO,NO&gt;::TwoMatrixAdd( *matrix_, false, alpha, *B-&gt;matrix_, beta );</span></div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>}</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00305" data-start="{" data-end="}">
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno"><a class="line" href="classFEDD_1_1Matrix.html#ac493dda825b0165bb1e963bfc1039135">  305</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Matrix.html#ac493dda825b0165bb1e963bfc1039135">Matrix&lt;SC,LO,GO,NO&gt;::addMatrix</a>(SC alpha, <span class="keyword">const</span> MatrixPtr_Type &amp;B, SC beta){</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="comment">//B = alpha*A + beta*B.</span></div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="keywordflow">if</span> (B-&gt;isFillComplete())</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        B-&gt;resumeFill();</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    TEUCHOS_TEST_FOR_EXCEPTION( B-&gt;isLocallyIndexed(), std::runtime_error,<span class="stringliteral">&quot;Matrix in is locally index but Trilinos Tpetra cannot add to a matrix at this stage.&quot;</span>);</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    </div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="comment">//const Tpetra::CrsMatrix&lt;SC,LO,GO,NO&gt;&amp; tpA = Xpetra::Helpers&lt;SC,LO,GO,NO&gt;::Op2TpetraCrs(A);</span></div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="comment">//Tpetra::CrsMatrix&lt;SC,LO,GO,NO&gt;&amp; tpB = Xpetra::Helpers&lt;SC,LO,GO,NO&gt;::Op2NonConstTpetraCrs(B);</span></div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    Tpetra::MatrixMatrix::Add(*matrix_, <span class="keyword">false</span>, alpha, *B-&gt;matrix_, beta);</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span> </div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    <span class="comment">//Xpetra::MatrixMatrix&lt;SC,LO,GO,NO&gt;::TwoMatrixAdd( *matrix_, false, alpha, *B-&gt;matrix_, beta );</span></div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>}</div>
 </div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00321" data-start="{" data-end="}">
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno"><a class="line" href="classFEDD_1_1Matrix.html#a5ae991c8dead8e6b6d7af34d54aa3a1b">  321</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Matrix.html#a5ae991c8dead8e6b6d7af34d54aa3a1b">Matrix&lt;SC,LO,GO,NO&gt;::toMV</a>( MultiVectorPtr_Type&amp; mv ){</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    </div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    MapConstPtr_Type map = this-&gt;<a class="code hl_function" href="classFEDD_1_1Matrix.html#a785e4f26764db16990cf76a27e4d7bef">getMap</a>(<span class="stringliteral">&quot;row&quot;</span>);</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    MapConstPtr_Type mapCol = this-&gt;<a class="code hl_function" href="classFEDD_1_1Matrix.html#a785e4f26764db16990cf76a27e4d7bef">getMap</a>(<span class="stringliteral">&quot;col&quot;</span>);</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <span class="comment">// number of matrix columns will be the number of multivectors</span></div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <span class="keywordtype">int</span> numMV = mapCol-&gt;getMaxAllGlobalIndex() + 1;</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    </div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    mv = Teuchos::rcp( <span class="keyword">new</span> MultiVector_Type ( map, numMV ) );</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    Teuchos::ArrayView&lt; const LO &gt; indices;</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    Teuchos::ArrayView&lt; const SC &gt; values;</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    Teuchos::ArrayRCP&lt; SC &gt; valuesMV;</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    GO globalCol = -1;</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;this-&gt;<a class="code hl_function" href="classFEDD_1_1Matrix.html#a1d7dc8db7c753b2232f891bbc8d0dfaa">getNodeNumRows</a>(); i++) {</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        this-&gt;<a class="code hl_function" href="classFEDD_1_1Matrix.html#a0b0bc2d6e5243c768613334f4bdce79c">getLocalRowView</a>( i, indices, values );</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;indices.size(); j++) {</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>            globalCol = mapCol-&gt;getGlobalElement( indices[j] );</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>            valuesMV = mv-&gt;getDataNonConst( globalCol );</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>            valuesMV[ i ] = values[ j ];</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        }</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    }</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>}</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span> </div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00320" data-start="{" data-end="}">
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno"><a class="line" href="classFEDD_1_1Matrix.html#a5ae991c8dead8e6b6d7af34d54aa3a1b">  320</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Matrix.html#a5ae991c8dead8e6b6d7af34d54aa3a1b">Matrix&lt;SC,LO,GO,NO&gt;::toMV</a>( MultiVectorPtr_Type&amp; mv ){</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    </div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    MapConstPtr_Type map = this-&gt;<a class="code hl_function" href="classFEDD_1_1Matrix.html#a785e4f26764db16990cf76a27e4d7bef">getMap</a>(<span class="stringliteral">&quot;row&quot;</span>);</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    MapConstPtr_Type mapCol = this-&gt;<a class="code hl_function" href="classFEDD_1_1Matrix.html#a785e4f26764db16990cf76a27e4d7bef">getMap</a>(<span class="stringliteral">&quot;col&quot;</span>);</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    <span class="comment">// number of matrix columns will be the number of multivectors</span></div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <span class="keywordtype">int</span> numMV = mapCol-&gt;getMaxAllGlobalIndex() + 1;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    </div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    mv = Teuchos::rcp( <span class="keyword">new</span> MultiVector_Type ( map, numMV ) );</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    Teuchos::ArrayView&lt; const LO &gt; indices;</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    Teuchos::ArrayView&lt; const SC &gt; values;</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    Teuchos::ArrayRCP&lt; SC &gt; valuesMV;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    GO globalCol = -1;</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;this-&gt;<a class="code hl_function" href="classFEDD_1_1Matrix.html#a1d7dc8db7c753b2232f891bbc8d0dfaa">getNodeNumRows</a>(); i++) {</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        this-&gt;<a class="code hl_function" href="classFEDD_1_1Matrix.html#a0b0bc2d6e5243c768613334f4bdce79c">getLocalRowView</a>( i, indices, values );</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j=0; j&lt;indices.size(); j++) {</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>            globalCol = mapCol-&gt;getGlobalElement( indices[j] );</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>            valuesMV = mv-&gt;getDataNonConst( globalCol );</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>            valuesMV[ i ] = values[ j ];</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        }</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    }</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>}</div>
 </div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00343" data-start="{" data-end="}">
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno"><a class="line" href="classFEDD_1_1Matrix.html#adad7e424dbc2904f993dc94afe3de53c">  343</a></span>LO <a class="code hl_function" href="classFEDD_1_1Matrix.html#adad7e424dbc2904f993dc94afe3de53c">Matrix&lt;SC,LO,GO,NO&gt;::getGlobalMaxNumRowEntries</a>()<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    <span class="keywordflow">return</span> matrix_-&gt;getGlobalMaxNumRowEntries();</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>}</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00342" data-start="{" data-end="}">
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno"><a class="line" href="classFEDD_1_1Matrix.html#adad7e424dbc2904f993dc94afe3de53c">  342</a></span>LO <a class="code hl_function" href="classFEDD_1_1Matrix.html#adad7e424dbc2904f993dc94afe3de53c">Matrix&lt;SC,LO,GO,NO&gt;::getGlobalMaxNumRowEntries</a>()<span class="keyword"> const</span>{</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    <span class="keywordflow">return</span> matrix_-&gt;getGlobalMaxNumRowEntries();</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>}</div>
 </div>
 </div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span><span class="keywordtype">void</span> Matrix&lt;SC,LO,GO,NO&gt;::insertLocalValues(LO localRow, <span class="keyword">const</span> Teuchos::ArrayView&lt; const LO &gt; &amp;cols, <span class="keyword">const</span> Teuchos::ArrayView&lt; const SC &gt; &amp;vals){</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    TEUCHOS_TEST_FOR_EXCEPTION(matrix_.is_null(),std::runtime_error,<span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    matrix_-&gt;insertLocalValues( localRow, cols, vals );</div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>}</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span> </div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span><span class="keywordtype">void</span> Matrix&lt;SC,LO,GO,NO&gt;::insertLocalValues(LO localRow, <span class="keyword">const</span> Teuchos::ArrayView&lt; const LO &gt; &amp;cols, <span class="keyword">const</span> Teuchos::ArrayView&lt; const SC &gt; &amp;vals){</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    TEUCHOS_TEST_FOR_EXCEPTION(matrix_.is_null(),std::runtime_error,<span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    matrix_-&gt;insertLocalValues( localRow, cols, vals );</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>}</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span> </div>
 <div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span> </div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span><span class="keywordtype">void</span> Matrix&lt;SC,LO,GO,NO&gt;::importFromVector( MatrixPtr_Type mvIn, <span class="keywordtype">bool</span> reuseImport, std::string combineMode, std::string type) {</div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    <span class="comment">//TEUCHOS_TEST_FOR_EXCEPTION( getNodeNumCols() != mvIn-&gt;getNodeNumCols(), std::logic_error,&quot;MultiVectors for fillFromVector have different number of vectors.&quot;);</span></div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span> </div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    <span class="keywordflow">if</span> ( importer_.is_null() || !reuseImport) {</div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        <span class="keywordflow">if</span> (type==<span class="stringliteral">&quot;Forward&quot;</span>)</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>            importer_ = Teuchos::RCP(<span class="keyword">new</span> Tpetra::Import&lt;LO, GO, NO&gt;( mvIn-&gt;getMapTpetra(), this-&gt;getMapTpetra() ));</div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;Reverse&quot;</span>)</div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>            importer_ = Teuchos::RCP(<span class="keyword">new</span> Tpetra::Import&lt;LO, GO, NO&gt;( this-&gt;getMapTpetra(), mvIn-&gt;getMapTpetra() ));</div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown type for import. Choose Forward or Reverse&quot;</span>);</div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    }</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    <span class="keywordflow">else</span>{</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>        TEUCHOS_TEST_FOR_EXCEPTION( !importer_-&gt;getSourceMap()-&gt;isSameAs( *mvIn-&gt;getMap()-&gt;getTpetraMap() ), std::logic_error,<span class="stringliteral">&quot;Source maps of Importer and Matrix are not the same.&quot;</span>);</div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        TEUCHOS_TEST_FOR_EXCEPTION( !importer_-&gt;getTargetMap()-&gt;isSameAs( *this-&gt;getMap()-&gt;getTpetraMap() ), std::logic_error,<span class="stringliteral">&quot;Target maps of Importer and Matrix are not the same.&quot;</span>);</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    }</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span> </div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        </div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    <span class="keywordflow">if</span> (type==<span class="stringliteral">&quot;Forward&quot;</span>) {</div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>        <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Insert&quot;</span>) )</div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>            matrix_-&gt;doImport ( *mvIn-&gt;getTpetraMatrix(), *importer_, Tpetra::INSERT);</div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Add&quot;</span>) )</div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>            matrix_-&gt;doImport ( *mvIn-&gt;getTpetraMatrix(), *importer_, Tpetra::ADD);</div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown combine mode.&quot;</span>);</div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    }</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;Reverse&quot;</span>){</div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Insert&quot;</span>) )</div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>            matrix_-&gt;doExport ( *mvIn-&gt;getTpetraMatrix(), *importer_, Tpetra::INSERT);</div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Add&quot;</span>) )</div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>            matrix_-&gt;doExport ( *mvIn-&gt;getTpetraMatrix(), *importer_, Tpetra::ADD);</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown combine mode.&quot;</span>);</div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    }</div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>        TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown type for import. Choose Forward or Reverse&quot;</span>);</div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>}</div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span> </div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span><span class="keywordtype">void</span> Matrix&lt;SC,LO,GO,NO&gt;::exportFromVector( MatrixPtr_Type mvIn, <span class="keywordtype">bool</span> reuseExport, std::string combineMode, std::string type) {</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span> </div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    <span class="comment">//TEUCHOS_TEST_FOR_EXCEPTION( getNodeNumCols() != mvIn-&gt;getNodeNumCols(), std::logic_error,&quot;MultiVectors for fillFromVector have different number of vectors.&quot;);</span></div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span> </div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>    <span class="keywordflow">if</span> ( exporter_.is_null() || !reuseExport) {</div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>        <span class="keywordflow">if</span> (type==<span class="stringliteral">&quot;Forward&quot;</span>)</div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>            exporter_ = Teuchos::RCP(<span class="keyword">new</span> Tpetra::Export&lt;LO, GO, NO&gt;( mvIn-&gt;getMapTpetra(), this-&gt;getMapTpetra() ));</div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;Reverse&quot;</span>)</div>
-<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>            exporter_ = Teuchos::RCP(<span class="keyword">new</span> Tpetra::Export&lt;LO, GO, NO&gt;( this-&gt;getMapTpetra(), mvIn-&gt;getMapTpetra() ));</div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown type for import. Choose Forward or Reverse&quot;</span>);</div>
-<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    }</div>
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>    <span class="keywordflow">else</span>{</div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_-&gt;getSourceMap()-&gt;isSameAs( *this-&gt;getMap()-&gt;getTpetraMap() ), std::logic_error,<span class="stringliteral">&quot;Source maps of Exporter and Multivector are not the same.&quot;</span>);</div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_-&gt;getTargetMap()-&gt;isSameAs( *mvIn-&gt;getMap()-&gt;getTpetraMap() ), std::logic_error,<span class="stringliteral">&quot;Target maps of Exporter and Multivector are not the same.&quot;</span>);</div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    }</div>
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span> </div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>        </div>
-<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>    <span class="keywordflow">if</span> (type==<span class="stringliteral">&quot;Forward&quot;</span>) {</div>
-<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>        <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Insert&quot;</span>) )</div>
-<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>            matrix_-&gt;doExport ( *mvIn-&gt;getTpetraMatrix(), *exporter_, Tpetra::INSERT);</div>
-<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Add&quot;</span>) )</div>
-<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>            matrix_-&gt;doExport ( *mvIn-&gt;getTpetraMatrix(), *exporter_, Tpetra::ADD);</div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown combine mode.&quot;</span>);</div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>    }</div>
-<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;Reverse&quot;</span>){</div>
-<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>        <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Insert&quot;</span>) )</div>
-<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>            matrix_-&gt;doImport ( *mvIn-&gt;getTpetraMatrix(), *exporter_, Tpetra::INSERT);</div>
-<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Add&quot;</span>) )</div>
-<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>            matrix_-&gt;doImport ( *mvIn-&gt;getTpetraMatrix(), *exporter_, Tpetra::ADD);</div>
-<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown combine mode.&quot;</span>);</div>
-<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>    }</div>
-<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>        TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown type for import. Choose Forward or Reverse&quot;</span>);</div>
-<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>}</div>
-<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span> </div>
-<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>}</div>
-<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span><span class="keywordtype">void</span> Matrix&lt;SC,LO,GO,NO&gt;::importFromVector( MatrixPtr_Type mvIn, <span class="keywordtype">bool</span> reuseImport, std::string combineMode, std::string type) {</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span> </div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    <span class="comment">//TEUCHOS_TEST_FOR_EXCEPTION( getNodeNumCols() != mvIn-&gt;getNodeNumCols(), std::logic_error,&quot;MultiVectors for fillFromVector have different number of vectors.&quot;);</span></div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span> </div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    <span class="keywordflow">if</span> ( importer_.is_null() || !reuseImport) {</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>        <span class="keywordflow">if</span> (type==<span class="stringliteral">&quot;Forward&quot;</span>)</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>            importer_ = Teuchos::RCP(<span class="keyword">new</span> Tpetra::Import&lt;LO, GO, NO&gt;( mvIn-&gt;getMapTpetra(), this-&gt;getMapTpetra() ));</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;Reverse&quot;</span>)</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>            importer_ = Teuchos::RCP(<span class="keyword">new</span> Tpetra::Import&lt;LO, GO, NO&gt;( this-&gt;getMapTpetra(), mvIn-&gt;getMapTpetra() ));</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown type for import. Choose Forward or Reverse&quot;</span>);</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    }</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    <span class="keywordflow">else</span>{</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        TEUCHOS_TEST_FOR_EXCEPTION( !importer_-&gt;getSourceMap()-&gt;isSameAs( *mvIn-&gt;getMap()-&gt;getTpetraMap() ), std::logic_error,<span class="stringliteral">&quot;Source maps of Importer and Matrix are not the same.&quot;</span>);</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>        TEUCHOS_TEST_FOR_EXCEPTION( !importer_-&gt;getTargetMap()-&gt;isSameAs( *this-&gt;getMap()-&gt;getTpetraMap() ), std::logic_error,<span class="stringliteral">&quot;Target maps of Importer and Matrix are not the same.&quot;</span>);</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    }</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span> </div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        </div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    <span class="keywordflow">if</span> (type==<span class="stringliteral">&quot;Forward&quot;</span>) {</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Insert&quot;</span>) )</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>            matrix_-&gt;doImport ( *mvIn-&gt;getTpetraMatrix(), *importer_, Tpetra::INSERT);</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Add&quot;</span>) )</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>            matrix_-&gt;doImport ( *mvIn-&gt;getTpetraMatrix(), *importer_, Tpetra::ADD);</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown combine mode.&quot;</span>);</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    }</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;Reverse&quot;</span>){</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>        <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Insert&quot;</span>) )</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>            matrix_-&gt;doExport ( *mvIn-&gt;getTpetraMatrix(), *importer_, Tpetra::INSERT);</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Add&quot;</span>) )</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>            matrix_-&gt;doExport ( *mvIn-&gt;getTpetraMatrix(), *importer_, Tpetra::ADD);</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown combine mode.&quot;</span>);</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>    }</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>        TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown type for import. Choose Forward or Reverse&quot;</span>);</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>}</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span> </div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span><span class="keywordtype">void</span> Matrix&lt;SC,LO,GO,NO&gt;::exportFromVector( MatrixPtr_Type mvIn, <span class="keywordtype">bool</span> reuseExport, std::string combineMode, std::string type) {</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span> </div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>    <span class="comment">//TEUCHOS_TEST_FOR_EXCEPTION( getNodeNumCols() != mvIn-&gt;getNodeNumCols(), std::logic_error,&quot;MultiVectors for fillFromVector have different number of vectors.&quot;);</span></div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span> </div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>    <span class="keywordflow">if</span> ( exporter_.is_null() || !reuseExport) {</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>        <span class="keywordflow">if</span> (type==<span class="stringliteral">&quot;Forward&quot;</span>)</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>            exporter_ = Teuchos::RCP(<span class="keyword">new</span> Tpetra::Export&lt;LO, GO, NO&gt;( mvIn-&gt;getMapTpetra(), this-&gt;getMapTpetra() ));</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;Reverse&quot;</span>)</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>            exporter_ = Teuchos::RCP(<span class="keyword">new</span> Tpetra::Export&lt;LO, GO, NO&gt;( this-&gt;getMapTpetra(), mvIn-&gt;getMapTpetra() ));</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown type for import. Choose Forward or Reverse&quot;</span>);</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    }</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    <span class="keywordflow">else</span>{</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_-&gt;getSourceMap()-&gt;isSameAs( *this-&gt;getMap()-&gt;getTpetraMap() ), std::logic_error,<span class="stringliteral">&quot;Source maps of Exporter and Multivector are not the same.&quot;</span>);</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_-&gt;getTargetMap()-&gt;isSameAs( *mvIn-&gt;getMap()-&gt;getTpetraMap() ), std::logic_error,<span class="stringliteral">&quot;Target maps of Exporter and Multivector are not the same.&quot;</span>);</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    }</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span> </div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>        </div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>    <span class="keywordflow">if</span> (type==<span class="stringliteral">&quot;Forward&quot;</span>) {</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>        <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Insert&quot;</span>) )</div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>            matrix_-&gt;doExport ( *mvIn-&gt;getTpetraMatrix(), *exporter_, Tpetra::INSERT);</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Add&quot;</span>) )</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>            matrix_-&gt;doExport ( *mvIn-&gt;getTpetraMatrix(), *exporter_, Tpetra::ADD);</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown combine mode.&quot;</span>);</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    }</div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(type==<span class="stringliteral">&quot;Reverse&quot;</span>){</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>        <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Insert&quot;</span>) )</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>            matrix_-&gt;doImport ( *mvIn-&gt;getTpetraMatrix(), *exporter_, Tpetra::INSERT);</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !combineMode.compare(<span class="stringliteral">&quot;Add&quot;</span>) )</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>            matrix_-&gt;doImport ( *mvIn-&gt;getTpetraMatrix(), *exporter_, Tpetra::ADD);</div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>            TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown combine mode.&quot;</span>);</div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>    }</div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>        TEUCHOS_TEST_FOR_EXCEPTION( <span class="keyword">true</span>, std::logic_error,<span class="stringliteral">&quot;Unknown type for import. Choose Forward or Reverse&quot;</span>);</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>}</div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span> </div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>}</div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span><span class="preprocessor">#endif</span></div>
 </div>
 </div>
 </div>
@@ -615,7 +614,7 @@ $(function(){initNavTree('Matrix__def_8hpp_source.html',''); initResizable(true)
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_a3544253497eaa0762112537546138fcf"><div class="ttname"><a href="classFEDD_1_1Matrix.html#a3544253497eaa0762112537546138fcf">FEDD::Matrix::replaceLocalValues</a></div><div class="ttdeci">void replaceLocalValues(LO localRow, const Teuchos::ArrayView&lt; const LO &gt; &amp;indices, const Teuchos::ArrayView&lt; const SC &gt; &amp;values)</div><div class="ttdoc">Replacing single rows of Matrix with local row ID. Indices returns local indices of entries stored in...</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:260</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_a38171cf5dc98f2c3c57d08e22d202b7f"><div class="ttname"><a href="classFEDD_1_1Matrix.html#a38171cf5dc98f2c3c57d08e22d202b7f">FEDD::Matrix::replaceGlobalValues</a></div><div class="ttdeci">void replaceGlobalValues(GO globalRow, const Teuchos::ArrayView&lt; const GO &gt; &amp;indices, const Teuchos::ArrayView&lt; const SC &gt; &amp;values)</div><div class="ttdoc">Replacing single rows of Matrix with global row ID. Indices returns global indices of entries stored ...</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:255</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_a51206cdd69f935cbaf424e4d7ab496fc"><div class="ttname"><a href="classFEDD_1_1Matrix.html#a51206cdd69f935cbaf424e4d7ab496fc">FEDD::Matrix::getGlobalRowView</a></div><div class="ttdeci">void getGlobalRowView(GO globalRow, Teuchos::ArrayView&lt; const GO &gt; &amp;indices, Teuchos::ArrayView&lt; const SC &gt; &amp;values) const</div><div class="ttdoc">Extracting single rows of Matrix with global row ID. Indices returns global indices of entries stored...</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:225</div></div>
-<div class="ttc" id="aclassFEDD_1_1Matrix_html_a5ae991c8dead8e6b6d7af34d54aa3a1b"><div class="ttname"><a href="classFEDD_1_1Matrix.html#a5ae991c8dead8e6b6d7af34d54aa3a1b">FEDD::Matrix::toMV</a></div><div class="ttdeci">void toMV(MultiVectorPtr_Type &amp;mv)</div><div class="ttdoc">Turning Matrix into MultiVector Format.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:321</div></div>
+<div class="ttc" id="aclassFEDD_1_1Matrix_html_a5ae991c8dead8e6b6d7af34d54aa3a1b"><div class="ttname"><a href="classFEDD_1_1Matrix.html#a5ae991c8dead8e6b6d7af34d54aa3a1b">FEDD::Matrix::toMV</a></div><div class="ttdeci">void toMV(MultiVectorPtr_Type &amp;mv)</div><div class="ttdoc">Turning Matrix into MultiVector Format.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:320</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_a62f95521fc877430805037d88d501e4d"><div class="ttname"><a href="classFEDD_1_1Matrix.html#a62f95521fc877430805037d88d501e4d">FEDD::Matrix::scale</a></div><div class="ttdeci">void scale(const SC &amp;alpha)</div><div class="ttdoc">Scaling this with constant alpha.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:282</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_a6b292c8ba998d10c1562252279c7a0d5"><div class="ttname"><a href="classFEDD_1_1Matrix.html#a6b292c8ba998d10c1562252279c7a0d5">FEDD::Matrix::getMapTpetra</a></div><div class="ttdeci">TpetraMapConstPtr_Type getMapTpetra(std::string map_string=&quot;&quot;)</div><div class="ttdoc">Return map in Xpetra Format of type &quot; &quot;.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:134</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_a785e4f26764db16990cf76a27e4d7bef"><div class="ttname"><a href="classFEDD_1_1Matrix.html#a785e4f26764db16990cf76a27e4d7bef">FEDD::Matrix::getMap</a></div><div class="ttdeci">MapConstPtr_Type getMap(std::string map_string=&quot;&quot;)</div><div class="ttdoc">Returns map of type &quot; &quot;. i.e. row or column map.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:87</div></div>
@@ -624,10 +623,10 @@ $(function(){initNavTree('Matrix__def_8hpp_source.html',''); initResizable(true)
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_a95c7c48f147c7be5246e02aa362e4766"><div class="ttname"><a href="classFEDD_1_1Matrix.html#a95c7c48f147c7be5246e02aa362e4766">FEDD::Matrix::isFillComplete</a></div><div class="ttdeci">bool isFillComplete()</div><div class="ttdoc">Check if matrix is already filled complete.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:210</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_aa55f99367fe4a2fe17abee2a331fcfb5"><div class="ttname"><a href="classFEDD_1_1Matrix.html#aa55f99367fe4a2fe17abee2a331fcfb5">FEDD::Matrix::writeMM</a></div><div class="ttdeci">void writeMM(std::string fileName=&quot;matrix.mm&quot;) const</div><div class="ttdoc">Writing Matrix in file.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:289</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_ac2f4ffec6b12b2520307f603f59886a3"><div class="ttname"><a href="classFEDD_1_1Matrix.html#ac2f4ffec6b12b2520307f603f59886a3">FEDD::Matrix::resumeFill</a></div><div class="ttdeci">void resumeFill()</div><div class="ttdoc">Resuming filling process. But only limited options i.e. scaling remain.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:195</div></div>
-<div class="ttc" id="aclassFEDD_1_1Matrix_html_ac493dda825b0165bb1e963bfc1039135"><div class="ttname"><a href="classFEDD_1_1Matrix.html#ac493dda825b0165bb1e963bfc1039135">FEDD::Matrix::addMatrix</a></div><div class="ttdeci">void addMatrix(SC alpha, const MatrixPtr_Type &amp;B, SC beta)</div><div class="ttdoc">B = alpha*this + beta*B.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:306</div></div>
+<div class="ttc" id="aclassFEDD_1_1Matrix_html_ac493dda825b0165bb1e963bfc1039135"><div class="ttname"><a href="classFEDD_1_1Matrix.html#ac493dda825b0165bb1e963bfc1039135">FEDD::Matrix::addMatrix</a></div><div class="ttdeci">void addMatrix(SC alpha, const MatrixPtr_Type &amp;B, SC beta)</div><div class="ttdoc">B = alpha*this + beta*B.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:305</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_ac4c09a28b93ff4303027047a96d98cf1"><div class="ttname"><a href="classFEDD_1_1Matrix.html#ac4c09a28b93ff4303027047a96d98cf1">FEDD::Matrix::apply</a></div><div class="ttdeci">void apply(const MultiVector_Type &amp;X, MultiVector_Type &amp;Y, Teuchos::ETransp mode=Teuchos::NO_TRANS, SC alpha=Teuchos::ScalarTraits&lt; SC &gt;::one(), SC beta=Teuchos::ScalarTraits&lt; SC &gt;::zero()) const</div><div class="ttdoc">Matrix Vector Operation. Applying MultiVector X to this. Y = alpha * (this)^mode * X + beta * Y....</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:270</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_ac7a973c3c60225c44317ce16688b2e40"><div class="ttname"><a href="classFEDD_1_1Matrix.html#ac7a973c3c60225c44317ce16688b2e40">FEDD::Matrix::fillComplete</a></div><div class="ttdeci">void fillComplete()</div><div class="ttdoc">after inserting global values into matrix. After this step the column map is fixed....</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:200</div></div>
-<div class="ttc" id="aclassFEDD_1_1Matrix_html_adad7e424dbc2904f993dc94afe3de53c"><div class="ttname"><a href="classFEDD_1_1Matrix.html#adad7e424dbc2904f993dc94afe3de53c">FEDD::Matrix::getGlobalMaxNumRowEntries</a></div><div class="ttdeci">LO getGlobalMaxNumRowEntries() const</div><div class="ttdoc">Maximum number of entries in any row of the matrix, over all processes.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:343</div></div>
+<div class="ttc" id="aclassFEDD_1_1Matrix_html_adad7e424dbc2904f993dc94afe3de53c"><div class="ttname"><a href="classFEDD_1_1Matrix.html#adad7e424dbc2904f993dc94afe3de53c">FEDD::Matrix::getGlobalMaxNumRowEntries</a></div><div class="ttdeci">LO getGlobalMaxNumRowEntries() const</div><div class="ttdoc">Maximum number of entries in any row of the matrix, over all processes.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:342</div></div>
 <div class="ttc" id="aclassFEDD_1_1Matrix_html_aeea2c3601945a03db224838d0a36e2ed"><div class="ttname"><a href="classFEDD_1_1Matrix.html#aeea2c3601945a03db224838d0a36e2ed">FEDD::Matrix::getTpetraMatrix</a></div><div class="ttdeci">TpetraMatrixConstPtr_Type getTpetraMatrix() const</div><div class="ttdoc">Return matrix in Xpetra Format of type &quot; &quot;.</div><div class="ttdef"><b>Definition</b> Matrix_def.hpp:265</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement.cpp:5</div></div>
 </div><!-- fragment --></div><!-- contents -->

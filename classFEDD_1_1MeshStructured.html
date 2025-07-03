@@ -200,45 +200,45 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setGeometry2DRectangl
 <tr class="memitem:a0d8b2c993a871811f787021a6a6a6ef2" id="r_a0d8b2c993a871811f787021a6a6a6ef2"><td class="memItemLeft" align="right" valign="top"><a id="a0d8b2c993a871811f787021a6a6a6ef2" name="a0d8b2c993a871811f787021a6a6a6ef2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setGeometry3DBox</b> (std::vector&lt; double &gt; coordinates, double l, double w, double h)</td></tr>
 <tr class="separator:a0d8b2c993a871811f787021a6a6a6ef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa70bee3c9288241542508d9bc27cf084" id="r_aa70bee3c9288241542508d9bc27cf084"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa70bee3c9288241542508d9bc27cf084">buildMesh2D</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0, std::string underlyingLib=&quot;Tpetra&quot;)</td></tr>
-<tr class="memdesc:aa70bee3c9288241542508d9bc27cf084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building a general 2D rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class and different discretizations for 2D mesh are called within this functions.  <br /></td></tr>
-<tr class="separator:aa70bee3c9288241542508d9bc27cf084"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a432c2729d7b01a85bdf6087221fbe52c" id="r_a432c2729d7b01a85bdf6087221fbe52c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a432c2729d7b01a85bdf6087221fbe52c">buildMesh2DTPM</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0, std::string underlyingLib=&quot;Tpetra&quot;)</td></tr>
-<tr class="memdesc:a432c2729d7b01a85bdf6087221fbe52c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building 2D <a class="el" href="classFEDD_1_1TPM.html">TPM</a> rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions.  <br /></td></tr>
-<tr class="separator:a432c2729d7b01a85bdf6087221fbe52c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a554ce008bd69b6e58af978efa8e143d6" id="r_a554ce008bd69b6e58af978efa8e143d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a554ce008bd69b6e58af978efa8e143d6">buildMesh3D</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0, std::string underlyingLib=&quot;Tpetra&quot;)</td></tr>
-<tr class="memdesc:a554ce008bd69b6e58af978efa8e143d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class and different discretizations for 3D mesh are called within this functions.  <br /></td></tr>
-<tr class="separator:a554ce008bd69b6e58af978efa8e143d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0d494ef6dd0f52043f0db02ce8c3e34" id="r_ad0d494ef6dd0f52043f0db02ce8c3e34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0d494ef6dd0f52043f0db02ce8c3e34">buildMesh3D5Elements</a> (std::string FEType, int N, int M, int numProcsCoarseSolve, std::string underlyingLib=&quot;Tpetra&quot;)</td></tr>
-<tr class="memdesc:ad0d494ef6dd0f52043f0db02ce8c3e34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class. Only P2 discretization available. Subcubes are build with 5 elements.  <br /></td></tr>
-<tr class="separator:ad0d494ef6dd0f52043f0db02ce8c3e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66e899c880a74a6309bdd4cc8f66044d" id="r_a66e899c880a74a6309bdd4cc8f66044d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66e899c880a74a6309bdd4cc8f66044d">buildMesh2DBFS</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0, std::string underlyingLib=&quot;Tpetra&quot;)</td></tr>
-<tr class="memdesc:a66e899c880a74a6309bdd4cc8f66044d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building 2D backward facing step geometry with the lenght and height as defined per 'setGeomerty2DRectangle'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class and different discretizations for 2D mesh are called within this functions.  <br /></td></tr>
-<tr class="separator:a66e899c880a74a6309bdd4cc8f66044d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa296db524faf6376c30a9e1f5218f1b4" id="r_aa296db524faf6376c30a9e1f5218f1b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa296db524faf6376c30a9e1f5218f1b4">buildMesh3DBFS</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0, std::string underlyingLib=&quot;Tpetra&quot;)</td></tr>
-<tr class="memdesc:aa296db524faf6376c30a9e1f5218f1b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class and different discretizations for 3D mesh are called within this functions.  <br /></td></tr>
-<tr class="separator:aa296db524faf6376c30a9e1f5218f1b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a45c4a418a5d1429d8005971dab53e4" id="r_a4a45c4a418a5d1429d8005971dab53e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a45c4a418a5d1429d8005971dab53e4">buildP1_Disc_Q2_3DBFS</a> (int N, int M, int numProcsCoarseSolve, std::string underlyingLib)</td></tr>
-<tr class="memdesc:a4a45c4a418a5d1429d8005971dab53e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox' with Q2-P1 discontinous discretization.  <br /></td></tr>
-<tr class="separator:a4a45c4a418a5d1429d8005971dab53e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e8c1058ba0893b419bf124186f0af47" id="r_a7e8c1058ba0893b419bf124186f0af47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e8c1058ba0893b419bf124186f0af47">buildP1_Disc_Q2_3DCube</a> (int N, int M, int numProcsCoarseSolve, std::string underlyingLib)</td></tr>
-<tr class="memdesc:a7e8c1058ba0893b419bf124186f0af47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q2-P1 discontinous discretization.  <br /></td></tr>
-<tr class="separator:a7e8c1058ba0893b419bf124186f0af47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae849912f99c1bf9e57780bc380734dd8" id="r_ae849912f99c1bf9e57780bc380734dd8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae849912f99c1bf9e57780bc380734dd8">build3DQ1Cube</a> (int N, int M, int numProcsCoarseSolve, std::string underlyingLib)</td></tr>
-<tr class="memdesc:ae849912f99c1bf9e57780bc380734dd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q1 discretization.  <br /></td></tr>
-<tr class="separator:ae849912f99c1bf9e57780bc380734dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbd8ba238ad22d10bbde96e84d3fae1e" id="r_adbd8ba238ad22d10bbde96e84d3fae1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adbd8ba238ad22d10bbde96e84d3fae1e">build3DQ2Cube</a> (int N, int M, int numProcsCoarseSolve, std::string underlyingLib)</td></tr>
-<tr class="memdesc:adbd8ba238ad22d10bbde96e84d3fae1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization.  <br /></td></tr>
-<tr class="separator:adbd8ba238ad22d10bbde96e84d3fae1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6d4f152518a38649ce8d2b77773d72c" id="r_aa6d4f152518a38649ce8d2b77773d72c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6d4f152518a38649ce8d2b77773d72c">build3DQ2_20Cube</a> (int N, int M, int numProcsCoarseSolve, std::string underlyingLib)</td></tr>
-<tr class="memdesc:aa6d4f152518a38649ce8d2b77773d72c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization and 20?  <br /></td></tr>
-<tr class="separator:aa6d4f152518a38649ce8d2b77773d72c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad091d6dfc32ef0d4aa9c7dc4cc170dfd" id="r_ad091d6dfc32ef0d4aa9c7dc4cc170dfd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad091d6dfc32ef0d4aa9c7dc4cc170dfd">build3DQ2BFS</a> (int N, int M, int numProcsCoarseSolve, std::string underlyingLib)</td></tr>
-<tr class="memdesc:ad091d6dfc32ef0d4aa9c7dc4cc170dfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization.  <br /></td></tr>
-<tr class="separator:ad091d6dfc32ef0d4aa9c7dc4cc170dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a845444c889dc0e368196a5f4968d7914" id="r_a845444c889dc0e368196a5f4968d7914"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a845444c889dc0e368196a5f4968d7914">buildMesh2DMiniTPM</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0, std::string underlyingLib=&quot;Tpetra&quot;)</td></tr>
-<tr class="memdesc:a845444c889dc0e368196a5f4968d7914"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building 2D mini <a class="el" href="classFEDD_1_1TPM.html">TPM</a> rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions.  <br /></td></tr>
-<tr class="separator:a845444c889dc0e368196a5f4968d7914"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed88bd4c1621131e9075b5573192fd1d" id="r_aed88bd4c1621131e9075b5573192fd1d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aed88bd4c1621131e9075b5573192fd1d">buildMesh2D</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0)</td></tr>
+<tr class="memdesc:aed88bd4c1621131e9075b5573192fd1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building a general 2D rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class and different discretizations for 2D mesh are called within this functions.  <br /></td></tr>
+<tr class="separator:aed88bd4c1621131e9075b5573192fd1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6e7dbd11c8199eb9ab2edd70e6091c0" id="r_ac6e7dbd11c8199eb9ab2edd70e6091c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6e7dbd11c8199eb9ab2edd70e6091c0">buildMesh2DTPM</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0)</td></tr>
+<tr class="memdesc:ac6e7dbd11c8199eb9ab2edd70e6091c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building 2D <a class="el" href="classFEDD_1_1TPM.html">TPM</a> rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions.  <br /></td></tr>
+<tr class="separator:ac6e7dbd11c8199eb9ab2edd70e6091c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6779a52e8bb7816efab84e46c2d64080" id="r_a6779a52e8bb7816efab84e46c2d64080"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6779a52e8bb7816efab84e46c2d64080">buildMesh3D</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0)</td></tr>
+<tr class="memdesc:a6779a52e8bb7816efab84e46c2d64080"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class and different discretizations for 3D mesh are called within this functions.  <br /></td></tr>
+<tr class="separator:a6779a52e8bb7816efab84e46c2d64080"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8385adf47c33ddf8b227f813824f961b" id="r_a8385adf47c33ddf8b227f813824f961b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8385adf47c33ddf8b227f813824f961b">buildMesh3D5Elements</a> (std::string FEType, int N, int M, int numProcsCoarseSolve)</td></tr>
+<tr class="memdesc:a8385adf47c33ddf8b227f813824f961b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class. Only P2 discretization available. Subcubes are build with 5 elements.  <br /></td></tr>
+<tr class="separator:a8385adf47c33ddf8b227f813824f961b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86283cf0b9b29009b9ec514913a4205a" id="r_a86283cf0b9b29009b9ec514913a4205a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86283cf0b9b29009b9ec514913a4205a">buildMesh2DBFS</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0)</td></tr>
+<tr class="memdesc:a86283cf0b9b29009b9ec514913a4205a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building 2D backward facing step geometry with the lenght and height as defined per 'setGeomerty2DRectangle'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class and different discretizations for 2D mesh are called within this functions.  <br /></td></tr>
+<tr class="separator:a86283cf0b9b29009b9ec514913a4205a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cedb8514e7617671800f411e657a947" id="r_a1cedb8514e7617671800f411e657a947"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1cedb8514e7617671800f411e657a947">buildMesh3DBFS</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0)</td></tr>
+<tr class="memdesc:a1cedb8514e7617671800f411e657a947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox'. Called by <a class="el" href="classFEDD_1_1Domain.html">Domain</a> class and different discretizations for 3D mesh are called within this functions.  <br /></td></tr>
+<tr class="separator:a1cedb8514e7617671800f411e657a947"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3c065fab43a0d3ec8ec88c0be93130a" id="r_ab3c065fab43a0d3ec8ec88c0be93130a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3c065fab43a0d3ec8ec88c0be93130a">buildP1_Disc_Q2_3DBFS</a> (int N, int M, int numProcsCoarseSolve)</td></tr>
+<tr class="memdesc:ab3c065fab43a0d3ec8ec88c0be93130a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox' with Q2-P1 discontinous discretization.  <br /></td></tr>
+<tr class="separator:ab3c065fab43a0d3ec8ec88c0be93130a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ea09221e3395d19a493583a886f6deb" id="r_a6ea09221e3395d19a493583a886f6deb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ea09221e3395d19a493583a886f6deb">buildP1_Disc_Q2_3DCube</a> (int N, int M, int numProcsCoarseSolve)</td></tr>
+<tr class="memdesc:a6ea09221e3395d19a493583a886f6deb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q2-P1 discontinous discretization.  <br /></td></tr>
+<tr class="separator:a6ea09221e3395d19a493583a886f6deb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa569c2d58a8d190e3769b2aefd0dfc5c" id="r_aa569c2d58a8d190e3769b2aefd0dfc5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa569c2d58a8d190e3769b2aefd0dfc5c">build3DQ1Cube</a> (int N, int M, int numProcsCoarseSolve)</td></tr>
+<tr class="memdesc:aa569c2d58a8d190e3769b2aefd0dfc5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q1 discretization.  <br /></td></tr>
+<tr class="separator:aa569c2d58a8d190e3769b2aefd0dfc5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0336ec799947cf82beeae83f0c9fa38" id="r_ac0336ec799947cf82beeae83f0c9fa38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac0336ec799947cf82beeae83f0c9fa38">build3DQ2Cube</a> (int N, int M, int numProcsCoarseSolve)</td></tr>
+<tr class="memdesc:ac0336ec799947cf82beeae83f0c9fa38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization.  <br /></td></tr>
+<tr class="separator:ac0336ec799947cf82beeae83f0c9fa38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2fb607ae63d210c85258185ac896582" id="r_aa2fb607ae63d210c85258185ac896582"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2fb607ae63d210c85258185ac896582">build3DQ2_20Cube</a> (int N, int M, int numProcsCoarseSolve)</td></tr>
+<tr class="memdesc:aa2fb607ae63d210c85258185ac896582"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization and 20?  <br /></td></tr>
+<tr class="separator:aa2fb607ae63d210c85258185ac896582"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae31b52d051d748469929d0f1dee0e971" id="r_ae31b52d051d748469929d0f1dee0e971"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae31b52d051d748469929d0f1dee0e971">build3DQ2BFS</a> (int N, int M, int numProcsCoarseSolve)</td></tr>
+<tr class="memdesc:ae31b52d051d748469929d0f1dee0e971"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization.  <br /></td></tr>
+<tr class="separator:ae31b52d051d748469929d0f1dee0e971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a102f8850e17d6f93f7f3555148eb2050" id="r_a102f8850e17d6f93f7f3555148eb2050"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a102f8850e17d6f93f7f3555148eb2050">buildMesh2DMiniTPM</a> (std::string FEType, int N, int M, int numProcsCoarseSolve=0)</td></tr>
+<tr class="memdesc:a102f8850e17d6f93f7f3555148eb2050"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building 2D mini <a class="el" href="classFEDD_1_1TPM.html">TPM</a> rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions.  <br /></td></tr>
+<tr class="separator:a102f8850e17d6f93f7f3555148eb2050"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ed654dd6f586f5ebf96d7a718bdfccb" id="r_a1ed654dd6f586f5ebf96d7a718bdfccb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ed654dd6f586f5ebf96d7a718bdfccb">buildSurfaceLinesSquareMiniTPM</a> (std::string feType)</td></tr>
 <tr class="memdesc:a1ed654dd6f586f5ebf96d7a718bdfccb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Building suface lines for <a class="el" href="classFEDD_1_1TPM.html">TPM</a> square mini. Empty.  <br /></td></tr>
 <tr class="separator:a1ed654dd6f586f5ebf96d7a718bdfccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -462,8 +462,8 @@ tuple_intint_Type&#160;</td><td class="memItemRight" valign="bottom"><b>rankRang
 <tr class="separator:a0c9120ad24d9af1282112fe73e1b421c inherit pub_attribs_classFEDD_1_1Mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae849912f99c1bf9e57780bc380734dd8" name="ae849912f99c1bf9e57780bc380734dd8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae849912f99c1bf9e57780bc380734dd8">&#9670;&#160;</a></span>build3DQ1Cube()</h2>
+<a id="aa569c2d58a8d190e3769b2aefd0dfc5c" name="aa569c2d58a8d190e3769b2aefd0dfc5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa569c2d58a8d190e3769b2aefd0dfc5c">&#9670;&#160;</a></span>build3DQ1Cube()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -483,12 +483,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -499,15 +494,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_ae849912f99c1bf9e57780bc380734dd8_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ae849912f99c1bf9e57780bc380734dd8_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_ae849912f99c1bf9e57780bc380734dd8_cgraph" id="aclassFEDD_1_1MeshStructured_ae849912f99c1bf9e57780bc380734dd8_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_aa569c2d58a8d190e3769b2aefd0dfc5c_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa569c2d58a8d190e3769b2aefd0dfc5c_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_aa569c2d58a8d190e3769b2aefd0dfc5c_cgraph" id="aclassFEDD_1_1MeshStructured_aa569c2d58a8d190e3769b2aefd0dfc5c_cgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q1 dis..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="52,29,51,19,56,11,66,5,82,3,99,5,109,11,106,16,97,10,82,8,68,10,59,14,56,20,57,28"/>
 </map>
@@ -515,11 +509,11 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_ae849912f99c1bf9e57780bc380734dd8_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ae849912f99c1bf9e57780bc380734dd8_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_ae849912f99c1bf9e57780bc380734dd8_icgraph" id="aclassFEDD_1_1MeshStructured_ae849912f99c1bf9e57780bc380734dd8_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_aa569c2d58a8d190e3769b2aefd0dfc5c_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa569c2d58a8d190e3769b2aefd0dfc5c_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_aa569c2d58a8d190e3769b2aefd0dfc5c_icgraph" id="aclassFEDD_1_1MeshStructured_aa569c2d58a8d190e3769b2aefd0dfc5c_icgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q1 dis..." alt="" coords="207,29,360,70"/>
 <area shape="poly" title=" " alt="" coords="316,16,304,10,283,8,264,10,253,15,248,20,250,28,245,29,243,19,249,10,263,5,283,3,305,5,318,11"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#a554ce008bd69b6e58af978efa8e143d6" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,159,70"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#a6779a52e8bb7816efab84e46c2d64080" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="191,52,159,52,159,47,191,47"/>
 <area shape="poly" title=" " alt="" coords="115,16,102,10,82,8,63,10,51,15,47,20,49,28,44,29,42,19,48,10,62,5,82,3,104,5,117,11"/>
 </map>
@@ -527,8 +521,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aa6d4f152518a38649ce8d2b77773d72c" name="aa6d4f152518a38649ce8d2b77773d72c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa6d4f152518a38649ce8d2b77773d72c">&#9670;&#160;</a></span>build3DQ2_20Cube()</h2>
+<a id="aa2fb607ae63d210c85258185ac896582" name="aa2fb607ae63d210c85258185ac896582"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2fb607ae63d210c85258185ac896582">&#9670;&#160;</a></span>build3DQ2_20Cube()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -548,12 +542,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -564,15 +553,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_aa6d4f152518a38649ce8d2b77773d72c_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa6d4f152518a38649ce8d2b77773d72c_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_aa6d4f152518a38649ce8d2b77773d72c_cgraph" id="aclassFEDD_1_1MeshStructured_aa6d4f152518a38649ce8d2b77773d72c_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_aa2fb607ae63d210c85258185ac896582_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa2fb607ae63d210c85258185ac896582_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_aa2fb607ae63d210c85258185ac896582_cgraph" id="aclassFEDD_1_1MeshStructured_aa2fb607ae63d210c85258185ac896582_cgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2 dis..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="52,29,51,19,56,11,66,5,82,3,99,5,109,11,106,16,97,10,82,8,68,10,59,14,56,20,57,28"/>
 </map>
@@ -580,11 +568,11 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_aa6d4f152518a38649ce8d2b77773d72c_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa6d4f152518a38649ce8d2b77773d72c_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_aa6d4f152518a38649ce8d2b77773d72c_icgraph" id="aclassFEDD_1_1MeshStructured_aa6d4f152518a38649ce8d2b77773d72c_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_aa2fb607ae63d210c85258185ac896582_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa2fb607ae63d210c85258185ac896582_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_aa2fb607ae63d210c85258185ac896582_icgraph" id="aclassFEDD_1_1MeshStructured_aa2fb607ae63d210c85258185ac896582_icgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2 dis..." alt="" coords="207,29,360,70"/>
 <area shape="poly" title=" " alt="" coords="316,16,304,10,283,8,264,10,253,15,248,20,250,28,245,29,243,19,249,10,263,5,283,3,305,5,318,11"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#a554ce008bd69b6e58af978efa8e143d6" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,159,70"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#a6779a52e8bb7816efab84e46c2d64080" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="191,52,159,52,159,47,191,47"/>
 <area shape="poly" title=" " alt="" coords="115,16,102,10,82,8,63,10,51,15,47,20,49,28,44,29,42,19,48,10,62,5,82,3,104,5,117,11"/>
 </map>
@@ -592,8 +580,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ad091d6dfc32ef0d4aa9c7dc4cc170dfd" name="ad091d6dfc32ef0d4aa9c7dc4cc170dfd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad091d6dfc32ef0d4aa9c7dc4cc170dfd">&#9670;&#160;</a></span>build3DQ2BFS()</h2>
+<a id="ae31b52d051d748469929d0f1dee0e971" name="ae31b52d051d748469929d0f1dee0e971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae31b52d051d748469929d0f1dee0e971">&#9670;&#160;</a></span>build3DQ2BFS()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -613,12 +601,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -629,15 +612,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_ad091d6dfc32ef0d4aa9c7dc4cc170dfd_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ad091d6dfc32ef0d4aa9c7dc4cc170dfd_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_ad091d6dfc32ef0d4aa9c7dc4cc170dfd_cgraph" id="aclassFEDD_1_1MeshStructured_ad091d6dfc32ef0d4aa9c7dc4cc170dfd_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_ae31b52d051d748469929d0f1dee0e971_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ae31b52d051d748469929d0f1dee0e971_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_ae31b52d051d748469929d0f1dee0e971_cgraph" id="aclassFEDD_1_1MeshStructured_ae31b52d051d748469929d0f1dee0e971_cgraph">
 <area shape="rect" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="52,29,51,19,56,11,66,5,82,3,99,5,109,11,106,16,97,10,82,8,68,10,59,14,56,20,57,28"/>
 </map>
@@ -645,11 +627,11 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_ad091d6dfc32ef0d4aa9c7dc4cc170dfd_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ad091d6dfc32ef0d4aa9c7dc4cc170dfd_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_ad091d6dfc32ef0d4aa9c7dc4cc170dfd_icgraph" id="aclassFEDD_1_1MeshStructured_ad091d6dfc32ef0d4aa9c7dc4cc170dfd_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_ae31b52d051d748469929d0f1dee0e971_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ae31b52d051d748469929d0f1dee0e971_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_ae31b52d051d748469929d0f1dee0e971_icgraph" id="aclassFEDD_1_1MeshStructured_ae31b52d051d748469929d0f1dee0e971_icgraph">
 <area shape="rect" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="207,29,360,70"/>
 <area shape="poly" title=" " alt="" coords="316,16,304,10,283,8,264,10,253,15,248,20,250,28,245,29,243,19,249,10,263,5,283,3,305,5,318,11"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#aa296db524faf6376c30a9e1f5218f1b4" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="5,29,159,70"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#a1cedb8514e7617671800f411e657a947" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="191,52,159,52,159,47,191,47"/>
 <area shape="poly" title=" " alt="" coords="115,16,102,10,82,8,63,10,51,15,47,20,49,28,44,29,42,19,48,10,62,5,82,3,104,5,117,11"/>
 </map>
@@ -657,8 +639,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="adbd8ba238ad22d10bbde96e84d3fae1e" name="adbd8ba238ad22d10bbde96e84d3fae1e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adbd8ba238ad22d10bbde96e84d3fae1e">&#9670;&#160;</a></span>build3DQ2Cube()</h2>
+<a id="ac0336ec799947cf82beeae83f0c9fa38" name="ac0336ec799947cf82beeae83f0c9fa38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0336ec799947cf82beeae83f0c9fa38">&#9670;&#160;</a></span>build3DQ2Cube()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -678,12 +660,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -694,15 +671,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_adbd8ba238ad22d10bbde96e84d3fae1e_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_adbd8ba238ad22d10bbde96e84d3fae1e_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_adbd8ba238ad22d10bbde96e84d3fae1e_cgraph" id="aclassFEDD_1_1MeshStructured_adbd8ba238ad22d10bbde96e84d3fae1e_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_ac0336ec799947cf82beeae83f0c9fa38_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ac0336ec799947cf82beeae83f0c9fa38_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_ac0336ec799947cf82beeae83f0c9fa38_cgraph" id="aclassFEDD_1_1MeshStructured_ac0336ec799947cf82beeae83f0c9fa38_cgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2 dis..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="52,29,51,19,56,11,66,5,82,3,99,5,109,11,106,16,97,10,82,8,68,10,59,14,56,20,57,28"/>
 </map>
@@ -710,11 +686,11 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_adbd8ba238ad22d10bbde96e84d3fae1e_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_adbd8ba238ad22d10bbde96e84d3fae1e_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_adbd8ba238ad22d10bbde96e84d3fae1e_icgraph" id="aclassFEDD_1_1MeshStructured_adbd8ba238ad22d10bbde96e84d3fae1e_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_ac0336ec799947cf82beeae83f0c9fa38_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ac0336ec799947cf82beeae83f0c9fa38_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_ac0336ec799947cf82beeae83f0c9fa38_icgraph" id="aclassFEDD_1_1MeshStructured_ac0336ec799947cf82beeae83f0c9fa38_icgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2 dis..." alt="" coords="207,29,360,70"/>
 <area shape="poly" title=" " alt="" coords="316,16,304,10,283,8,264,10,253,15,248,20,250,28,245,29,243,19,249,10,263,5,283,3,305,5,318,11"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#a554ce008bd69b6e58af978efa8e143d6" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,159,70"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#a6779a52e8bb7816efab84e46c2d64080" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="191,52,159,52,159,47,191,47"/>
 <area shape="poly" title=" " alt="" coords="115,16,102,10,82,8,63,10,51,15,47,20,49,28,44,29,42,19,48,10,62,5,82,3,104,5,117,11"/>
 </map>
@@ -722,8 +698,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aa70bee3c9288241542508d9bc27cf084" name="aa70bee3c9288241542508d9bc27cf084"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa70bee3c9288241542508d9bc27cf084">&#9670;&#160;</a></span>buildMesh2D()</h2>
+<a id="aed88bd4c1621131e9075b5573192fd1d" name="aed88bd4c1621131e9075b5573192fd1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed88bd4c1621131e9075b5573192fd1d">&#9670;&#160;</a></span>buildMesh2D()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -748,12 +724,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Tpetra&quot;</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -765,15 +736,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_aa70bee3c9288241542508d9bc27cf084_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa70bee3c9288241542508d9bc27cf084_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_aa70bee3c9288241542508d9bc27cf084_cgraph" id="aclassFEDD_1_1MeshStructured_aa70bee3c9288241542508d9bc27cf084_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_aed88bd4c1621131e9075b5573192fd1d_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aed88bd4c1621131e9075b5573192fd1d_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_aed88bd4c1621131e9075b5573192fd1d_cgraph" id="aclassFEDD_1_1MeshStructured_aed88bd4c1621131e9075b5573192fd1d_cgraph">
 <area shape="rect" title="Building a general 2D rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectan..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="52,29,51,19,56,11,66,5,82,3,99,5,109,11,106,16,97,10,82,8,68,10,59,14,56,20,57,28"/>
 </map>
@@ -781,17 +751,20 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_aa70bee3c9288241542508d9bc27cf084_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa70bee3c9288241542508d9bc27cf084_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_aa70bee3c9288241542508d9bc27cf084_icgraph" id="aclassFEDD_1_1MeshStructured_aa70bee3c9288241542508d9bc27cf084_icgraph">
-<area shape="rect" title="Building a general 2D rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectan..." alt="" coords="5,29,159,70"/>
-<area shape="poly" title=" " alt="" coords="106,16,97,10,82,8,68,10,59,14,56,20,57,28,52,29,51,19,56,11,66,5,82,3,99,5,109,11"/>
+<div class="center"><img src="classFEDD_1_1MeshStructured_aed88bd4c1621131e9075b5573192fd1d_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aed88bd4c1621131e9075b5573192fd1d_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_aed88bd4c1621131e9075b5573192fd1d_icgraph" id="aclassFEDD_1_1MeshStructured_aed88bd4c1621131e9075b5573192fd1d_icgraph">
+<area shape="rect" title="Building a general 2D rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectan..." alt="" coords="207,29,360,70"/>
+<area shape="poly" title=" " alt="" coords="316,16,304,10,283,8,264,10,253,15,248,20,250,28,245,29,243,19,249,10,263,5,283,3,305,5,318,11"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#ac6e7dbd11c8199eb9ab2edd70e6091c0" title="Building 2D TPM rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectangle&#39; &#45;..." alt="" coords="5,29,159,70"/>
+<area shape="poly" title=" " alt="" coords="191,52,159,52,159,47,191,47"/>
+<area shape="poly" title=" " alt="" coords="115,16,102,10,82,8,63,10,51,15,47,20,49,28,44,29,42,19,48,10,62,5,82,3,104,5,117,11"/>
 </map>
 </div>
 
 </div>
 </div>
-<a id="a66e899c880a74a6309bdd4cc8f66044d" name="a66e899c880a74a6309bdd4cc8f66044d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a66e899c880a74a6309bdd4cc8f66044d">&#9670;&#160;</a></span>buildMesh2DBFS()</h2>
+<a id="a86283cf0b9b29009b9ec514913a4205a" name="a86283cf0b9b29009b9ec514913a4205a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86283cf0b9b29009b9ec514913a4205a">&#9670;&#160;</a></span>buildMesh2DBFS()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -816,12 +789,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Tpetra&quot;</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -833,15 +801,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a66e899c880a74a6309bdd4cc8f66044d_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a66e899c880a74a6309bdd4cc8f66044d_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a66e899c880a74a6309bdd4cc8f66044d_cgraph" id="aclassFEDD_1_1MeshStructured_a66e899c880a74a6309bdd4cc8f66044d_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a86283cf0b9b29009b9ec514913a4205a_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a86283cf0b9b29009b9ec514913a4205a_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a86283cf0b9b29009b9ec514913a4205a_cgraph" id="aclassFEDD_1_1MeshStructured_a86283cf0b9b29009b9ec514913a4205a_cgraph">
 <area shape="rect" title="Building 2D backward facing step geometry with the lenght and height as defined per &#39;setGeomerty2DRec..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="52,29,51,19,56,11,66,5,82,3,99,5,109,11,106,16,97,10,82,8,68,10,59,14,56,20,57,28"/>
 </map>
@@ -849,8 +816,8 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a66e899c880a74a6309bdd4cc8f66044d_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a66e899c880a74a6309bdd4cc8f66044d_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a66e899c880a74a6309bdd4cc8f66044d_icgraph" id="aclassFEDD_1_1MeshStructured_a66e899c880a74a6309bdd4cc8f66044d_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a86283cf0b9b29009b9ec514913a4205a_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a86283cf0b9b29009b9ec514913a4205a_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a86283cf0b9b29009b9ec514913a4205a_icgraph" id="aclassFEDD_1_1MeshStructured_a86283cf0b9b29009b9ec514913a4205a_icgraph">
 <area shape="rect" title="Building 2D backward facing step geometry with the lenght and height as defined per &#39;setGeomerty2DRec..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="106,16,97,10,82,8,68,10,59,14,56,20,57,28,52,29,51,19,56,11,66,5,82,3,99,5,109,11"/>
 </map>
@@ -858,8 +825,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a845444c889dc0e368196a5f4968d7914" name="a845444c889dc0e368196a5f4968d7914"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a845444c889dc0e368196a5f4968d7914">&#9670;&#160;</a></span>buildMesh2DMiniTPM()</h2>
+<a id="a102f8850e17d6f93f7f3555148eb2050" name="a102f8850e17d6f93f7f3555148eb2050"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a102f8850e17d6f93f7f3555148eb2050">&#9670;&#160;</a></span>buildMesh2DMiniTPM()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -884,12 +851,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Tpetra&quot;</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -901,15 +863,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a845444c889dc0e368196a5f4968d7914_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a845444c889dc0e368196a5f4968d7914_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a845444c889dc0e368196a5f4968d7914_cgraph" id="aclassFEDD_1_1MeshStructured_a845444c889dc0e368196a5f4968d7914_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a102f8850e17d6f93f7f3555148eb2050_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a102f8850e17d6f93f7f3555148eb2050_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a102f8850e17d6f93f7f3555148eb2050_cgraph" id="aclassFEDD_1_1MeshStructured_a102f8850e17d6f93f7f3555148eb2050_cgraph">
 <area shape="rect" title="Building 2D mini TPM rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectang..." alt="" coords="5,29,160,70"/>
 <area shape="poly" title=" " alt="" coords="53,29,51,19,56,11,67,5,83,3,100,5,110,11,107,16,98,10,82,8,68,10,60,14,56,20,58,28"/>
 </map>
@@ -917,8 +878,8 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a845444c889dc0e368196a5f4968d7914_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a845444c889dc0e368196a5f4968d7914_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a845444c889dc0e368196a5f4968d7914_icgraph" id="aclassFEDD_1_1MeshStructured_a845444c889dc0e368196a5f4968d7914_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a102f8850e17d6f93f7f3555148eb2050_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a102f8850e17d6f93f7f3555148eb2050_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a102f8850e17d6f93f7f3555148eb2050_icgraph" id="aclassFEDD_1_1MeshStructured_a102f8850e17d6f93f7f3555148eb2050_icgraph">
 <area shape="rect" title="Building 2D mini TPM rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectang..." alt="" coords="5,29,160,70"/>
 <area shape="poly" title=" " alt="" coords="107,16,98,10,82,8,68,10,60,14,56,20,58,28,53,29,51,19,56,11,67,5,83,3,100,5,110,11"/>
 </map>
@@ -926,8 +887,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a432c2729d7b01a85bdf6087221fbe52c" name="a432c2729d7b01a85bdf6087221fbe52c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a432c2729d7b01a85bdf6087221fbe52c">&#9670;&#160;</a></span>buildMesh2DTPM()</h2>
+<a id="ac6e7dbd11c8199eb9ab2edd70e6091c0" name="ac6e7dbd11c8199eb9ab2edd70e6091c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6e7dbd11c8199eb9ab2edd70e6091c0">&#9670;&#160;</a></span>buildMesh2DTPM()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -952,12 +913,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Tpetra&quot;</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -969,24 +925,26 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a432c2729d7b01a85bdf6087221fbe52c_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a432c2729d7b01a85bdf6087221fbe52c_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a432c2729d7b01a85bdf6087221fbe52c_cgraph" id="aclassFEDD_1_1MeshStructured_a432c2729d7b01a85bdf6087221fbe52c_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_ac6e7dbd11c8199eb9ab2edd70e6091c0_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ac6e7dbd11c8199eb9ab2edd70e6091c0_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_ac6e7dbd11c8199eb9ab2edd70e6091c0_cgraph" id="aclassFEDD_1_1MeshStructured_ac6e7dbd11c8199eb9ab2edd70e6091c0_cgraph">
 <area shape="rect" title="Building 2D TPM rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectangle&#39; &#45;..." alt="" coords="5,29,159,70"/>
-<area shape="poly" title=" " alt="" coords="52,29,51,19,56,11,66,5,82,3,99,5,109,11,106,16,97,10,82,8,68,10,59,14,56,20,57,28"/>
+<area shape="poly" title=" " alt="" coords="44,29,42,19,48,10,62,5,82,3,104,5,117,11,115,16,102,10,82,8,63,10,51,15,47,20,49,28"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#aed88bd4c1621131e9075b5573192fd1d" title="Building a general 2D rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectan..." alt="" coords="207,29,360,70"/>
+<area shape="poly" title=" " alt="" coords="159,47,191,47,191,52,159,52"/>
+<area shape="poly" title=" " alt="" coords="245,29,243,19,249,10,263,5,283,3,305,5,318,11,316,16,304,10,283,8,264,10,253,15,248,20,250,28"/>
 </map>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a432c2729d7b01a85bdf6087221fbe52c_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a432c2729d7b01a85bdf6087221fbe52c_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a432c2729d7b01a85bdf6087221fbe52c_icgraph" id="aclassFEDD_1_1MeshStructured_a432c2729d7b01a85bdf6087221fbe52c_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_ac6e7dbd11c8199eb9ab2edd70e6091c0_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ac6e7dbd11c8199eb9ab2edd70e6091c0_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_ac6e7dbd11c8199eb9ab2edd70e6091c0_icgraph" id="aclassFEDD_1_1MeshStructured_ac6e7dbd11c8199eb9ab2edd70e6091c0_icgraph">
 <area shape="rect" title="Building 2D TPM rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectangle&#39; &#45;..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="106,16,97,10,82,8,68,10,59,14,56,20,57,28,52,29,51,19,56,11,66,5,82,3,99,5,109,11"/>
 </map>
@@ -994,8 +952,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a554ce008bd69b6e58af978efa8e143d6" name="a554ce008bd69b6e58af978efa8e143d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a554ce008bd69b6e58af978efa8e143d6">&#9670;&#160;</a></span>buildMesh3D()</h2>
+<a id="a6779a52e8bb7816efab84e46c2d64080" name="a6779a52e8bb7816efab84e46c2d64080"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6779a52e8bb7816efab84e46c2d64080">&#9670;&#160;</a></span>buildMesh3D()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1020,12 +978,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Tpetra&quot;</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1037,24 +990,23 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a554ce008bd69b6e58af978efa8e143d6_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a554ce008bd69b6e58af978efa8e143d6_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a554ce008bd69b6e58af978efa8e143d6_cgraph" id="aclassFEDD_1_1MeshStructured_a554ce008bd69b6e58af978efa8e143d6_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a6779a52e8bb7816efab84e46c2d64080_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a6779a52e8bb7816efab84e46c2d64080_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a6779a52e8bb7816efab84e46c2d64080_cgraph" id="aclassFEDD_1_1MeshStructured_a6779a52e8bb7816efab84e46c2d64080_cgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,164,159,205"/>
 <area shape="poly" title=" " alt="" coords="41,164,39,154,46,145,60,139,82,137,105,140,119,146,117,151,104,145,82,143,62,145,49,149,45,155,47,163"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#ae849912f99c1bf9e57780bc380734dd8" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q1 dis..." alt="" coords="220,29,374,70"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#aa569c2d58a8d190e3769b2aefd0dfc5c" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q1 dis..." alt="" coords="220,29,374,70"/>
 <area shape="poly" title=" " alt="" coords="102,162,148,121,205,81,217,74,220,79,208,85,151,126,106,166"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#aa6d4f152518a38649ce8d2b77773d72c" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2 dis..." alt="" coords="220,119,374,159"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#aa2fb607ae63d210c85258185ac896582" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2 dis..." alt="" coords="220,119,374,159"/>
 <area shape="poly" title=" " alt="" coords="159,165,204,156,205,161,160,171"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#adbd8ba238ad22d10bbde96e84d3fae1e" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2 dis..." alt="" coords="220,208,374,249"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#ac0336ec799947cf82beeae83f0c9fa38" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2 dis..." alt="" coords="220,208,374,249"/>
 <area shape="poly" title=" " alt="" coords="160,197,205,207,204,212,159,203"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#a7e8c1058ba0893b419bf124186f0af47" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2&#45;P1 ..." alt="" coords="207,297,387,338"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#a6ea09221e3395d19a493583a886f6deb" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2&#45;P1 ..." alt="" coords="207,297,387,338"/>
 <area shape="poly" title=" " alt="" coords="118,203,251,286,248,291,115,207"/>
 <area shape="poly" title=" " alt="" coords="256,29,254,19,261,10,275,5,297,3,320,5,334,11,332,16,319,10,297,8,276,10,264,15,259,20,261,28"/>
 <area shape="poly" title=" " alt="" coords="256,119,254,109,261,100,275,94,297,92,320,94,334,101,332,105,319,100,297,97,276,99,264,104,259,110,261,117"/>
@@ -1065,8 +1017,8 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a554ce008bd69b6e58af978efa8e143d6_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a554ce008bd69b6e58af978efa8e143d6_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a554ce008bd69b6e58af978efa8e143d6_icgraph" id="aclassFEDD_1_1MeshStructured_a554ce008bd69b6e58af978efa8e143d6_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a6779a52e8bb7816efab84e46c2d64080_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a6779a52e8bb7816efab84e46c2d64080_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a6779a52e8bb7816efab84e46c2d64080_icgraph" id="aclassFEDD_1_1MeshStructured_a6779a52e8bb7816efab84e46c2d64080_icgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="106,16,97,10,82,8,68,10,59,14,56,20,57,28,52,29,51,19,56,11,66,5,82,3,99,5,109,11"/>
 </map>
@@ -1074,8 +1026,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ad0d494ef6dd0f52043f0db02ce8c3e34" name="ad0d494ef6dd0f52043f0db02ce8c3e34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0d494ef6dd0f52043f0db02ce8c3e34">&#9670;&#160;</a></span>buildMesh3D5Elements()</h2>
+<a id="a8385adf47c33ddf8b227f813824f961b" name="a8385adf47c33ddf8b227f813824f961b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8385adf47c33ddf8b227f813824f961b">&#9670;&#160;</a></span>buildMesh3D5Elements()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1100,12 +1052,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Tpetra&quot;</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1117,15 +1064,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_ad0d494ef6dd0f52043f0db02ce8c3e34_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ad0d494ef6dd0f52043f0db02ce8c3e34_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_ad0d494ef6dd0f52043f0db02ce8c3e34_cgraph" id="aclassFEDD_1_1MeshStructured_ad0d494ef6dd0f52043f0db02ce8c3e34_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a8385adf47c33ddf8b227f813824f961b_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a8385adf47c33ddf8b227f813824f961b_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a8385adf47c33ddf8b227f813824f961b_cgraph" id="aclassFEDD_1_1MeshStructured_a8385adf47c33ddf8b227f813824f961b_cgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,169,70"/>
 <area shape="poly" title=" " alt="" coords="55,29,54,19,59,11,70,5,87,3,105,5,116,11,113,16,103,10,87,8,72,10,63,14,59,20,61,28"/>
 </map>
@@ -1133,8 +1079,8 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_ad0d494ef6dd0f52043f0db02ce8c3e34_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ad0d494ef6dd0f52043f0db02ce8c3e34_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_ad0d494ef6dd0f52043f0db02ce8c3e34_icgraph" id="aclassFEDD_1_1MeshStructured_ad0d494ef6dd0f52043f0db02ce8c3e34_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a8385adf47c33ddf8b227f813824f961b_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a8385adf47c33ddf8b227f813824f961b_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a8385adf47c33ddf8b227f813824f961b_icgraph" id="aclassFEDD_1_1MeshStructured_a8385adf47c33ddf8b227f813824f961b_icgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,169,70"/>
 <area shape="poly" title=" " alt="" coords="113,16,103,10,87,8,72,10,63,14,59,20,61,28,55,29,54,19,59,11,70,5,87,3,105,5,116,11"/>
 </map>
@@ -1142,8 +1088,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aa296db524faf6376c30a9e1f5218f1b4" name="aa296db524faf6376c30a9e1f5218f1b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa296db524faf6376c30a9e1f5218f1b4">&#9670;&#160;</a></span>buildMesh3DBFS()</h2>
+<a id="a1cedb8514e7617671800f411e657a947" name="a1cedb8514e7617671800f411e657a947"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cedb8514e7617671800f411e657a947">&#9670;&#160;</a></span>buildMesh3DBFS()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1168,12 +1114,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Tpetra&quot;</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1185,20 +1126,19 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_aa296db524faf6376c30a9e1f5218f1b4_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa296db524faf6376c30a9e1f5218f1b4_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_aa296db524faf6376c30a9e1f5218f1b4_cgraph" id="aclassFEDD_1_1MeshStructured_aa296db524faf6376c30a9e1f5218f1b4_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a1cedb8514e7617671800f411e657a947_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a1cedb8514e7617671800f411e657a947_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a1cedb8514e7617671800f411e657a947_cgraph" id="aclassFEDD_1_1MeshStructured_a1cedb8514e7617671800f411e657a947_cgraph">
 <area shape="rect" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="5,75,159,115"/>
 <area shape="poly" title=" " alt="" coords="42,75,40,65,46,56,61,50,82,48,105,50,119,57,117,61,104,56,82,53,62,55,50,60,45,66,47,73"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#ad091d6dfc32ef0d4aa9c7dc4cc170dfd" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="218,29,372,70"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#ae31b52d051d748469929d0f1dee0e971" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="218,29,372,70"/>
 <area shape="poly" title=" " alt="" coords="159,76,202,67,203,72,160,81"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#a4a45c4a418a5d1429d8005971dab53e4" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="207,119,383,159"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#ab3c065fab43a0d3ec8ec88c0be93130a" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="207,119,383,159"/>
 <area shape="poly" title=" " alt="" coords="160,108,192,115,191,120,159,113"/>
 <area shape="poly" title=" " alt="" coords="255,29,253,19,259,10,273,5,295,3,318,5,332,11,329,16,317,10,295,8,275,10,262,15,258,20,260,28"/>
 <area shape="poly" title=" " alt="" coords="255,119,253,109,259,100,273,94,295,92,318,94,332,101,329,105,317,100,295,97,275,99,262,104,258,110,260,117"/>
@@ -1207,8 +1147,8 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_aa296db524faf6376c30a9e1f5218f1b4_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_aa296db524faf6376c30a9e1f5218f1b4_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_aa296db524faf6376c30a9e1f5218f1b4_icgraph" id="aclassFEDD_1_1MeshStructured_aa296db524faf6376c30a9e1f5218f1b4_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a1cedb8514e7617671800f411e657a947_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a1cedb8514e7617671800f411e657a947_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a1cedb8514e7617671800f411e657a947_icgraph" id="aclassFEDD_1_1MeshStructured_a1cedb8514e7617671800f411e657a947_icgraph">
 <area shape="rect" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="106,16,97,10,82,8,68,10,59,14,56,20,57,28,52,29,51,19,56,11,66,5,82,3,99,5,109,11"/>
 </map>
@@ -1216,8 +1156,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a4a45c4a418a5d1429d8005971dab53e4" name="a4a45c4a418a5d1429d8005971dab53e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a45c4a418a5d1429d8005971dab53e4">&#9670;&#160;</a></span>buildP1_Disc_Q2_3DBFS()</h2>
+<a id="ab3c065fab43a0d3ec8ec88c0be93130a" name="ab3c065fab43a0d3ec8ec88c0be93130a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3c065fab43a0d3ec8ec88c0be93130a">&#9670;&#160;</a></span>buildP1_Disc_Q2_3DBFS()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1237,12 +1177,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1253,15 +1188,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a4a45c4a418a5d1429d8005971dab53e4_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a4a45c4a418a5d1429d8005971dab53e4_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a4a45c4a418a5d1429d8005971dab53e4_cgraph" id="aclassFEDD_1_1MeshStructured_a4a45c4a418a5d1429d8005971dab53e4_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_ab3c065fab43a0d3ec8ec88c0be93130a_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ab3c065fab43a0d3ec8ec88c0be93130a_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_ab3c065fab43a0d3ec8ec88c0be93130a_cgraph" id="aclassFEDD_1_1MeshStructured_ab3c065fab43a0d3ec8ec88c0be93130a_cgraph">
 <area shape="rect" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="5,29,182,70"/>
 <area shape="poly" title=" " alt="" coords="60,29,58,19,64,10,76,5,94,3,113,5,124,11,122,16,111,10,93,8,77,10,67,14,63,20,65,28"/>
 </map>
@@ -1269,11 +1203,11 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a4a45c4a418a5d1429d8005971dab53e4_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a4a45c4a418a5d1429d8005971dab53e4_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a4a45c4a418a5d1429d8005971dab53e4_icgraph" id="aclassFEDD_1_1MeshStructured_a4a45c4a418a5d1429d8005971dab53e4_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_ab3c065fab43a0d3ec8ec88c0be93130a_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_ab3c065fab43a0d3ec8ec88c0be93130a_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_ab3c065fab43a0d3ec8ec88c0be93130a_icgraph" id="aclassFEDD_1_1MeshStructured_ab3c065fab43a0d3ec8ec88c0be93130a_icgraph">
 <area shape="rect" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="207,29,383,70"/>
 <area shape="poly" title=" " alt="" coords="329,16,317,10,295,8,275,10,262,15,258,20,260,28,255,29,253,19,259,10,273,5,295,3,318,5,332,11"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#aa296db524faf6376c30a9e1f5218f1b4" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="5,29,159,70"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#a1cedb8514e7617671800f411e657a947" title="Building general 3D backward facing step with length, width and height as defines by &#39;setGeometry3DBo..." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="191,52,159,52,159,47,191,47"/>
 <area shape="poly" title=" " alt="" coords="117,16,104,10,82,8,62,10,50,15,45,20,47,28,42,29,40,19,46,10,61,5,82,3,105,5,119,11"/>
 </map>
@@ -1281,8 +1215,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a7e8c1058ba0893b419bf124186f0af47" name="a7e8c1058ba0893b419bf124186f0af47"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e8c1058ba0893b419bf124186f0af47">&#9670;&#160;</a></span>buildP1_Disc_Q2_3DCube()</h2>
+<a id="a6ea09221e3395d19a493583a886f6deb" name="a6ea09221e3395d19a493583a886f6deb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ea09221e3395d19a493583a886f6deb">&#9670;&#160;</a></span>buildP1_Disc_Q2_3DCube()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1302,12 +1236,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>underlyingLib</em></span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>numProcsCoarseSolve</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1318,15 +1247,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
     <tr><td class="paramname">N</td><td>Number of subdomains </td></tr>
     <tr><td class="paramname">M</td><td>H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N)) </td></tr>
     <tr><td class="paramname">numProcsCoarseSolve</td><td>if we want to reserve certain processors for coarse solve </td></tr>
-    <tr><td class="paramname">underlyingLib</td><td>underlying linear algebra library </td></tr>
   </table>
   </dd>
 </dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a7e8c1058ba0893b419bf124186f0af47_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a7e8c1058ba0893b419bf124186f0af47_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a7e8c1058ba0893b419bf124186f0af47_cgraph" id="aclassFEDD_1_1MeshStructured_a7e8c1058ba0893b419bf124186f0af47_cgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a6ea09221e3395d19a493583a886f6deb_cgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a6ea09221e3395d19a493583a886f6deb_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a6ea09221e3395d19a493583a886f6deb_cgraph" id="aclassFEDD_1_1MeshStructured_a6ea09221e3395d19a493583a886f6deb_cgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2&#45;P1 ..." alt="" coords="5,29,186,70"/>
 <area shape="poly" title=" " alt="" coords="61,29,59,19,65,10,77,5,96,3,115,5,127,11,124,16,114,10,95,8,79,10,68,14,64,20,66,28"/>
 </map>
@@ -1334,11 +1262,11 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1MeshStructured_a7e8c1058ba0893b419bf124186f0af47_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a7e8c1058ba0893b419bf124186f0af47_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1MeshStructured_a7e8c1058ba0893b419bf124186f0af47_icgraph" id="aclassFEDD_1_1MeshStructured_a7e8c1058ba0893b419bf124186f0af47_icgraph">
+<div class="center"><img src="classFEDD_1_1MeshStructured_a6ea09221e3395d19a493583a886f6deb_icgraph.png" border="0" usemap="#aclassFEDD_1_1MeshStructured_a6ea09221e3395d19a493583a886f6deb_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1MeshStructured_a6ea09221e3395d19a493583a886f6deb_icgraph" id="aclassFEDD_1_1MeshStructured_a6ea09221e3395d19a493583a886f6deb_icgraph">
 <area shape="rect" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39; with Q2&#45;P1 ..." alt="" coords="207,29,387,70"/>
 <area shape="poly" title=" " alt="" coords="332,16,319,10,297,8,276,10,264,15,259,20,261,28,256,29,254,19,261,10,275,5,297,3,320,5,334,11"/>
-<area shape="rect" href="classFEDD_1_1MeshStructured.html#a554ce008bd69b6e58af978efa8e143d6" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,159,70"/>
+<area shape="rect" href="classFEDD_1_1MeshStructured.html#a6779a52e8bb7816efab84e46c2d64080" title="Building general 3D cuboid with length, width and height as defines by &#39;setGeometry3DBox&#39;...." alt="" coords="5,29,159,70"/>
 <area shape="poly" title=" " alt="" coords="191,52,159,52,159,47,191,47"/>
 <area shape="poly" title=" " alt="" coords="117,16,104,10,82,8,62,10,49,15,45,20,47,28,41,29,39,19,46,10,60,5,82,3,105,5,119,11"/>
 </map>

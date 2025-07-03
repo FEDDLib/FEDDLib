@@ -177,16 +177,15 @@ $(function(){initNavTree('BlockMap__def_8hpp_source.html',''); initResizable(tru
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        mergedMap_ = Teuchos::rcp( <span class="keyword">new</span> Map_Type( GOOT::invalid(), globalElementList(), GOST::zero(), comm ) );</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMap.html#ab7f7024d65fce2990cbc0b504bee9838">   78</a></span>}</div>
 </div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMap.html#ab7f7024d65fce2990cbc0b504bee9838">   80</a></span><span class="keyword">template</span> &lt;<span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keywordtype">void</span> BlockMap&lt;LO,GO,NO&gt;::print( ){</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_.size()==0, std::logic_error,<span class="stringliteral">&quot;BlockMap has no maps - nothing to print.&quot;</span>);</div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMap.html#a0fe880d4a7b4b9dd1a0dd8d323528144">   82</a></span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_.size()==0, std::logic_error,<span class="stringliteral">&quot;BlockMap has no maps - nothing to print.&quot;</span>);</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    std::cout &lt;&lt; <span class="stringliteral">&quot; --- Blockmap size: &quot;</span> &lt;&lt; blockMap_.size() &lt;&lt; <span class="stringliteral">&quot; --- &quot;</span> &lt;&lt; std::endl;</div>
-<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMap.html#a0fe880d4a7b4b9dd1a0dd8d323528144">   84</a></span>    <span class="keywordflow">for</span> (UN i=0; i&lt;blockMap_.size(); i++) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">for</span> (UN i=0; i&lt;blockMap_.size(); i++) {</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        TEUCHOS_TEST_FOR_EXCEPTION( blockMap_[i].is_null(), std::runtime_error,<span class="stringliteral">&quot;Map in BlockMap is null. This should not happen.&quot;</span>);</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        blockMap_[i]-&gt;print();</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        </div>
@@ -215,62 +214,54 @@ $(function(){initNavTree('BlockMap__def_8hpp_source.html',''); initResizable(tru
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>std::string BlockMap&lt;LO,GO,NO&gt;::getUnderlyingLib( )<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    TEUCHOS_TEST_FOR_EXCEPTION(blockMap_.size()==0,std::runtime_error,<span class="stringliteral">&quot;BlockMap size is 0, there is no underlying Lib.&quot;</span>);</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    TEUCHOS_TEST_FOR_EXCEPTION(blockMap_[0].is_null(),std::runtime_error,<span class="stringliteral">&quot;BlockMap[0] is null.&quot;</span>);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">return</span> blockMap_[0]-&gt;getUnderlyingLib();</div>
+<div class="foldopen" id="foldopen00113" data-start="{" data-end="}">
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMap.html#ab7f7024d65fce2990cbc0b504bee9838">  113</a></span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1BlockMap.html#ab7f7024d65fce2990cbc0b504bee9838">BlockMap&lt;LO,GO,NO&gt;::getMergedMap</a>() {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> ( mergedMap_.is_null() )</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        this-&gt;<a class="code hl_function" href="classFEDD_1_1BlockMap.html#a4db84468375c6001e0cfc005a899b598">merge</a>();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">return</span> mergedMap_;</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}</div>
+</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
 <div class="foldopen" id="foldopen00120" data-start="{" data-end="}">
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMap.html#ab7f7024d65fce2990cbc0b504bee9838">  120</a></span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1BlockMap.html#ab7f7024d65fce2990cbc0b504bee9838">BlockMap&lt;LO,GO,NO&gt;::getMergedMap</a>() {</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">if</span> ( mergedMap_.is_null() )</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        this-&gt;<a class="code hl_function" href="classFEDD_1_1BlockMap.html#a4db84468375c6001e0cfc005a899b598">merge</a>();</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span> mergedMap_;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMap.html#a0fe880d4a7b4b9dd1a0dd8d323528144">  120</a></span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::CommConstPtr_Type <a class="code hl_function" href="classFEDD_1_1BlockMap.html#a0fe880d4a7b4b9dd1a0dd8d323528144">BlockMap&lt;LO,GO,NO&gt;::getComm</a>(){</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_.size()==0, std::logic_error,<span class="stringliteral">&quot;BlockMap has no maps - no Comm available.&quot;</span>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_[0].is_null(), std::logic_error,<span class="stringliteral">&quot;BlockMap[0] is null.&quot;</span>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span> blockMap_[0]-&gt;getComm();</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
+</div>
 </div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00127" data-start="{" data-end="}">
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMap.html#a0fe880d4a7b4b9dd1a0dd8d323528144">  127</a></span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::CommConstPtr_Type <a class="code hl_function" href="classFEDD_1_1BlockMap.html#a0fe880d4a7b4b9dd1a0dd8d323528144">BlockMap&lt;LO,GO,NO&gt;::getComm</a>(){</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::CommPtr_Type BlockMap&lt;LO,GO,NO&gt;::getCommNonConst(){</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_.size()==0, std::logic_error,<span class="stringliteral">&quot;BlockMap has no maps - no Comm available.&quot;</span>);</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_[0].is_null(), std::logic_error,<span class="stringliteral">&quot;BlockMap[0] is null.&quot;</span>);</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordflow">return</span> blockMap_[0]-&gt;getComm();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordflow">return</span> blockMap_[0]-&gt;getCommNonConst();</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}</div>
-</div>
-</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    </div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::CommPtr_Type BlockMap&lt;LO,GO,NO&gt;::getCommNonConst(){</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_.size()==0, std::logic_error,<span class="stringliteral">&quot;BlockMap has no maps - no Comm available.&quot;</span>);</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_[0].is_null(), std::logic_error,<span class="stringliteral">&quot;BlockMap[0] is null.&quot;</span>);</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">return</span> blockMap_[0]-&gt;getCommNonConst();</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::MapPtr_Type BlockMap&lt;LO,GO,NO&gt;::getBlock(UN i){</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    TEUCHOS_TEST_FOR_EXCEPTION( i &gt; blockMap_.size()-1, std::logic_error,<span class="stringliteral">&quot;BlockMap entry does not exist.&quot;</span>);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_[i].is_null(), std::logic_error,<span class="stringliteral">&quot;Map in BlockMap entry is null.&quot;</span>);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">return</span> blockMap_[i];</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>}</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::MapPtr_Type BlockMap&lt;LO,GO,NO&gt;::getBlock(UN i){</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::MapConstPtr_Type BlockMap&lt;LO,GO,NO&gt;::getBlock(UN i)<span class="keyword"> const</span>{</div>
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    TEUCHOS_TEST_FOR_EXCEPTION( i &gt; blockMap_.size()-1, std::logic_error,<span class="stringliteral">&quot;BlockMap entry does not exist.&quot;</span>);</div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_[i].is_null(), std::logic_error,<span class="stringliteral">&quot;Map in BlockMap entry is null.&quot;</span>);</div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">return</span> blockMap_[i];</div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>}</div>
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="keyword">typename</span> BlockMap&lt;LO,GO,NO&gt;::MapConstPtr_Type BlockMap&lt;LO,GO,NO&gt;::getBlock(UN i)<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    TEUCHOS_TEST_FOR_EXCEPTION( i &gt; blockMap_.size()-1, std::logic_error,<span class="stringliteral">&quot;BlockMap entry does not exist.&quot;</span>);</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    TEUCHOS_TEST_FOR_EXCEPTION( blockMap_[i].is_null(), std::logic_error,<span class="stringliteral">&quot;Map in BlockMap entry is null.&quot;</span>);</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">return</span> blockMap_[i];</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>}</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>}</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>}</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="preprocessor">#endif</span></div>
 </div>
 </div>
 </div>
-</div>
-<div class="ttc" id="aclassFEDD_1_1BlockMap_html_a0fe880d4a7b4b9dd1a0dd8d323528144"><div class="ttname"><a href="classFEDD_1_1BlockMap.html#a0fe880d4a7b4b9dd1a0dd8d323528144">FEDD::BlockMap::getComm</a></div><div class="ttdeci">CommConstPtr_Type getComm()</div><div class="ttdoc">Get underlying communicator.</div><div class="ttdef"><b>Definition</b> BlockMap_def.hpp:127</div></div>
+<div class="ttc" id="aclassFEDD_1_1BlockMap_html_a0fe880d4a7b4b9dd1a0dd8d323528144"><div class="ttname"><a href="classFEDD_1_1BlockMap.html#a0fe880d4a7b4b9dd1a0dd8d323528144">FEDD::BlockMap::getComm</a></div><div class="ttdeci">CommConstPtr_Type getComm()</div><div class="ttdoc">Get underlying communicator.</div><div class="ttdef"><b>Definition</b> BlockMap_def.hpp:120</div></div>
 <div class="ttc" id="aclassFEDD_1_1BlockMap_html_a4db84468375c6001e0cfc005a899b598"><div class="ttname"><a href="classFEDD_1_1BlockMap.html#a4db84468375c6001e0cfc005a899b598">FEDD::BlockMap::merge</a></div><div class="ttdeci">void merge()</div><div class="ttdoc">Merging the map of different blocks together. Relevant for monolithic solving/precondtioning.</div><div class="ttdef"><b>Definition</b> BlockMap_def.hpp:55</div></div>
-<div class="ttc" id="aclassFEDD_1_1BlockMap_html_ab7f7024d65fce2990cbc0b504bee9838"><div class="ttname"><a href="classFEDD_1_1BlockMap.html#ab7f7024d65fce2990cbc0b504bee9838">FEDD::BlockMap::getMergedMap</a></div><div class="ttdeci">MapConstPtr_Type getMergedMap()</div><div class="ttdoc">Getting merged map of block maps.</div><div class="ttdef"><b>Definition</b> BlockMap_def.hpp:120</div></div>
+<div class="ttc" id="aclassFEDD_1_1BlockMap_html_ab7f7024d65fce2990cbc0b504bee9838"><div class="ttname"><a href="classFEDD_1_1BlockMap.html#ab7f7024d65fce2990cbc0b504bee9838">FEDD::BlockMap::getMergedMap</a></div><div class="ttdeci">MapConstPtr_Type getMergedMap()</div><div class="ttdoc">Getting merged map of block maps.</div><div class="ttdef"><b>Definition</b> BlockMap_def.hpp:113</div></div>
 <div class="ttc" id="aclassFEDD_1_1BlockMap_html_ac99525f34df721fb1d6a2ac378c15689"><div class="ttname"><a href="classFEDD_1_1BlockMap.html#ac99525f34df721fb1d6a2ac378c15689">FEDD::BlockMap::addBlock</a></div><div class="ttdeci">void addBlock(MapConstPtr_Type map, int i)</div><div class="ttdoc">Adding map to corresponding block i. Block i is row-wise distrubted according to the underlying map.</div><div class="ttdef"><b>Definition</b> BlockMap_def.hpp:42</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement.cpp:5</div></div>
 </div><!-- fragment --></div><!-- contents -->
