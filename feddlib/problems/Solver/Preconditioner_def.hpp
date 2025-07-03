@@ -898,8 +898,8 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
                     problem_->assemble("UpdateConvectionDiffusionOperator");
                 }
                 Teko::LinearOp thyraPCD = pcdOperator_;
-                Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackPCD = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "PCD Operator", thyraPCD ) );
-                rh_->addRequestCallback( callbackPCD );
+                callbackPCD_ = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "PCD Operator", thyraPCD ) );
+                rh_->addRequestCallback( callbackPCD_ );
 
             }
 
@@ -947,12 +947,10 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             else
                 thyraPCD= pcdOperator_;
 
-            Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackPCD = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "PCD Operator", thyraPCD ) );
-            //rh->addRequestCallback( callbackPCD );
-
-            // Changing the content of the pointer
-            rh_->updateRequestCallback(callbackPCD,3); // We need to update the pcd operator in the call back pointer. Otherwise it will no reach the correct functions in pcd
-
+            // Updating matrix in the pointer
+            Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackTmp = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "PCD Operator", thyraPCD ) );
+            *callbackPCD_ = *callbackTmp;
+           
          }
     // else{
 

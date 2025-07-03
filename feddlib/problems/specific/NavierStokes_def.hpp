@@ -496,6 +496,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
         BT_M_B->Multiply(BT_M,false,B,false);
 
         BT_Mp_B_ = BT_M_B;
+        // BT_Mp_B_->print();
         // BT_Mp_B_->writeMM("BT_Mp_B_");
 
         NAVIER_STOKES_STOP(AssembleAugmentedLagrangianComponent);

@@ -154,7 +154,7 @@ private:
 #ifdef FEDD_HAVE_TEKO
     ThyraLinOpConstPtr_Type tekoLinOp_;
     Teuchos::RCP<Teko::RequestHandler> rh_;
-
+    Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackPCD_;
 #endif
     // For FaCSI precondtioner
     ThyraLinOpConstPtr_Type fsiLinOp_;
