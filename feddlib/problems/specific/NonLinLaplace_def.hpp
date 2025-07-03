@@ -137,10 +137,6 @@ void NonLinLaplace<SC, LO, GO, NO>::evalModelImpl(
     using Teuchos::rcp_const_cast;
     using Teuchos::rcp_dynamic_cast;
 
-    TEUCHOS_TEST_FOR_EXCEPTION(
-        this->solution_->getBlock(0)->getMap()->getUnderlyingLib() != "Tpetra",
-        std::runtime_error,
-        "Use of NOX only supports Tpetra. Epetra support must be implemented.");
     RCP<Teuchos::FancyOStream> fancy =
         Teuchos::fancyOStream(Teuchos::rcpFromRef(std::cout));
     TEUCHOS_TEST_FOR_EXCEPTION(inArgs.get_x().is_null(), std::logic_error,

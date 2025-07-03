@@ -65,10 +65,9 @@ template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildMesh2DTPM(std::string FEType,
                                               int N,
                                               int M,
-                                              int numProcsCoarseSolve,
-                                              std::string underlyingLib){
+                                              int numProcsCoarseSolve){
 
-    buildMesh2D( FEType, N, M, numProcsCoarseSolve, underlyingLib );
+    buildMesh2D( FEType, N, M, numProcsCoarseSolve );
 
     setRankRange( numProcsCoarseSolve );
 
@@ -80,8 +79,7 @@ template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildMesh2DMiniTPM(std::string FEType,
                                                      int N,
                                                      int M,
-                                                     int numProcsCoarseSolve,
-                                                     std::string underlyingLib){
+                                                     int numProcsCoarseSolve){
 
     this->FEType_ = FEType;
 
@@ -280,8 +278,7 @@ template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildMesh2D(std::string FEType,
                                                  int N,
                                                  int M,
-                                                 int numProcsCoarseSolve,
-                                                 std::string underlyingLib){
+                                                 int numProcsCoarseSolve){
 
     using Teuchos::RCP;
     using Teuchos::rcp;
@@ -619,8 +616,7 @@ template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
                                                  int N,
                                                  int M,
-                                                 int numProcsCoarseSolve,
-                                                 std::string underlyingLib){
+                                                 int numProcsCoarseSolve){
 
     using Teuchos::RCP;
     using Teuchos::rcp;
@@ -990,15 +986,15 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
         buildElementsClass(elementsVec, elementFlag);
     }
     else if(FEType == "P1-disc" || FEType == "P1-disc-global")
-        buildP1_Disc_Q2_3DCube( N, MM, numProcsCoarseSolve, underlyingLib );
+        buildP1_Disc_Q2_3DCube( N, MM, numProcsCoarseSolve );
     else if(FEType == "Q1"){
-        build3DQ1Cube( N, M, numProcsCoarseSolve, underlyingLib );
+        build3DQ1Cube( N, M, numProcsCoarseSolve );
     }
     else if(FEType == "Q2"){
-        build3DQ2Cube( N, MM, numProcsCoarseSolve, underlyingLib );
+        build3DQ2Cube( N, MM, numProcsCoarseSolve );
     }
     else if(FEType == "Q2-20"){
-        build3DQ2_20Cube( N, MM, numProcsCoarseSolve, underlyingLib );
+        build3DQ2_20Cube( N, MM, numProcsCoarseSolve );
     }
 
 
@@ -1008,8 +1004,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3D(std::string FEType,
 template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DCube(int N,
                                                         int M,
-                                                        int numProcsCoarseSolve,
-                                                        std::string underlyingLib){
+                                                        int numProcsCoarseSolve){
 
     using Teuchos::RCP;
     using Teuchos::rcp;
@@ -1189,8 +1184,7 @@ void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DCube(int N,
 template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::build3DQ1Cube(int N,
                                                 int M,
-                                                int numProcsCoarseSolve,
-                                                std::string underlyingLib)
+                                                int numProcsCoarseSolve)
 {
 
     using Teuchos::RCP;
@@ -1313,8 +1307,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ1Cube(int N,
 template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::build3DQ2Cube(int N,
                                                 int M,
-                                                int numProcsCoarseSolve,
-                                                std::string underlyingLib)
+                                                int numProcsCoarseSolve)
 {
 
     using Teuchos::RCP;
@@ -1524,8 +1517,7 @@ GO MeshStructured<SC,LO,GO,NO>::globalID_Q2_20Cube(int r, int s , int t, int &rr
 template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::build3DQ2_20Cube(int N,
                                                    int M,
-                                                   int numProcsCoarseSolve,
-                                                   std::string underlyingLib)
+                                                   int numProcsCoarseSolve)
 {
 
     using Teuchos::RCP;
@@ -1674,8 +1666,7 @@ void MeshStructured<SC,LO,GO,NO>::build3DQ2_20Cube(int N,
 template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::build3DQ2BFS(int N,
                                                 int M,
-                                                int numProcsCoarseSolve,
-                                                std::string underlyingLib){
+                                                int numProcsCoarseSolve){
 
     using Teuchos::RCP;
     using Teuchos::rcp;
@@ -1872,8 +1863,7 @@ template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildMesh2DBFS(std::string FEType,
                                                     int N,
                                                     int M,
-                                                    int numProcsCoarseSolve,
-                                                    std::string underlyingLib) {
+                                                    int numProcsCoarseSolve) {
 
 
     using Teuchos::RCP;
@@ -2330,8 +2320,7 @@ template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
                                                     int N,
                                                     int M,
-                                                    int numProcsCoarseSolve,
-                                                    std::string underlyingLib){
+                                                    int numProcsCoarseSolve){
 
     using Teuchos::RCP;
     using Teuchos::rcp;
@@ -2557,7 +2546,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         buildElementsClass(elementsVec);
     }
     else if(FEType == "P1-disc" || FEType == "P1-disc-global")
-        buildP1_Disc_Q2_3DBFS( N, MM, numProcsCoarseSolve, underlyingLib );
+        buildP1_Disc_Q2_3DBFS( N, MM, numProcsCoarseSolve );
     else if(FEType == "P2"){
 
         this->pointsRep_.reset(new std::vector<std::vector<double> >(nmbPoints,std::vector<double>(3,0.0)));
@@ -2781,15 +2770,14 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         buildElementsClass(elementsVec);
     }
     else if(FEType == "Q2")
-        build3DQ2BFS( N, MM, numProcsCoarseSolve, underlyingLib );
+        build3DQ2BFS( N, MM, numProcsCoarseSolve);
 
 };
 
 template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildP1_Disc_Q2_3DBFS(int N,
                                                      int M,
-                                                     int numProcsCoarseSolve,
-                                                     std::string underlyingLib){
+                                                     int numProcsCoarseSolve){
 
 
 
@@ -3551,8 +3539,7 @@ template <class SC, class LO, class GO, class NO>
 void MeshStructured<SC,LO,GO,NO>::buildMesh3D5Elements(std::string FEType,
                                                  int N,
                                                  int M,
-                                                 int numProcsCoarseSolve,
-                                                 std::string underlyingLib){
+                                                 int numProcsCoarseSolve){
 
     using Teuchos::RCP;
     using Teuchos::rcp;
@@ -4022,7 +4009,6 @@ void MeshStructured<SC,LO,GO,NO>::buildElementMap(){
     for (int i=0; i<elementsGlobalMapping.size(); i++)
         elementsGlobalMapping[i] = i + offset;
 
-    std::string underlyingLib = this->mapRepeated_->getUnderlyingLib();
     this->elementMap_.reset(new Map<LO,GO,NO>(  (GO) -1, elementsGlobalMapping(), 0, this->comm_) );
 
 }

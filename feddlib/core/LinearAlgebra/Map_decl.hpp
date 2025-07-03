@@ -94,8 +94,6 @@ public:
 
     GO getIndexBase() const; 
 
-    std::string getUnderlyingLib( ) const;       
-    
     MapPtr_Type buildVecFieldMap(UN numDofs, std::string ordering="NodeWise") const;
    
     TpetraMapConstPtr_Type getTpetraMap() const;

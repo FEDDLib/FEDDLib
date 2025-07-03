@@ -27,7 +27,6 @@ template < class LO, class GO, class NO>
 Map<LO,GO,NO>::Map( const Map_Type& mapIn ):
 map_()
 {
-    //mapX_ = Xpetra::MapFactory<LO,GO,NO>::Build( mapIn.getUnderlyingLib(), mapIn.getGlobalNumElements(), mapIn.getNodeElementList(), mapIn.getIndexBase(), mapIn.getComm() );
     map_ = Teuchos::RCP(new TpetraMap_Type(mapIn.getGlobalNumElements(), mapIn.getNodeElementList(),mapIn.getIndexBase(), mapIn.getComm()));
 
 }
@@ -99,16 +98,6 @@ template < class LO, class GO, class NO>
 Teuchos::ArrayView< const GO > Map<LO,GO,NO>::getNodeElementList() const{
     TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"map is null.");
     return map_->getLocalElementList();
-}
-
-template < class LO, class GO, class NO>
-std::string Map<LO,GO,NO>::getUnderlyingLib( ) const{
-    TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"map is null.");
-    std::string uLib;
-
-    uLib = "Tpetra";
-
-    return uLib;
 }
 
 template < class LO, class GO, class NO>
@@ -323,7 +312,7 @@ Teuchos::RCP<Map<LO,GO,NO> > Map<LO,GO,NO>::buildUniqueMap( int numFreeProcs ) c
         Teuchos::RCP<Xpetra::Vector<GO,LO,GO,NO> > myIndices = Xpetra::VectorFactory<GO,LO,GO,NO>::Build(map_);
         myIndices->putScalar(map_->getComm()->getRank()+1);
 
-        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMap = Xpetra::MapFactory<LO,GO,NO>::Build(map_->lib(),map_->getMaxAllGlobalIndex()+1,0,map_->getComm());
+        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMap = Xpetra::MapFactory<LO,GO,NO>::Build(map_->getMaxAllGlobalIndex()+1,0,map_->getComm());
         Teuchos::RCP<Xpetra::Vector<GO,LO,GO,NO> > globalIndices = Xpetra::VectorFactory<GO,LO,GO,NO>::Build(linearMap);
 
         Teuchos::RCP<Xpetra::Import<LO,GO,NO> > importer = Xpetra::ImportFactory<LO,GO,NO>::Build(map_,linearMap);
@@ -338,7 +327,7 @@ Teuchos::RCP<Map<LO,GO,NO> > Map<LO,GO,NO>::buildUniqueMap( int numFreeProcs ) c
                 uniqueVector.push_back(map_->getGlobalElement(i));
             }
         }
-        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(map_->lib(),-1,uniqueVector(),0,map_->getComm());
+        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(-1,uniqueVector(),0,map_->getComm());
         Teuchos::RCP<Map<LO,GO,NO> > map = Teuchos::rcp( new Map<LO,GO,NO>( mapXpetra ) );
         return  map;
     }
@@ -370,7 +359,7 @@ Teuchos::RCP<Map<LO,GO,NO> > Map<LO,GO,NO>::buildUniqueMap( int numFreeProcs ) c
             myElements[i] = i + offset;
         }
 
-        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMapAvailRanks = Xpetra::MapFactory<LO,GO,NO>::Build( map_->lib(),Teuchos::OrdinalTraits<GO>::invalid(), myElements(), 0, map_->getComm() );
+        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMapAvailRanks = Xpetra::MapFactory<LO,GO,NO>::Build( Teuchos::OrdinalTraits<GO>::invalid(), myElements(), 0, map_->getComm() );
         
         Teuchos::RCP<Xpetra::Vector<GO,LO,GO,NO> > globalIndices = Xpetra::VectorFactory<GO,LO,GO,NO>::Build(linearMapAvailRanks);
         
@@ -388,7 +377,7 @@ Teuchos::RCP<Map<LO,GO,NO> > Map<LO,GO,NO>::buildUniqueMap( int numFreeProcs ) c
                 uniqueVector.push_back(map_->getGlobalElement(i));
             }
         }
-        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(map_->lib(),-1,uniqueVector(),0,map_->getComm());
+        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(-1,uniqueVector(),0,map_->getComm());
         Teuchos::RCP<Map<LO,GO,NO> > map = Teuchos::rcp( new Map<LO,GO,NO>( mapXpetra ) );
         return  map;
     }
@@ -429,7 +418,7 @@ Teuchos::RCP<Map<LO,GO,NO> > Map<LO,GO,NO>::buildUniqueMap( tuple_intint_Type ra
         myElements[i] = i + offset;
 
     
-    Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMapAvailRanks = Xpetra::MapFactory<LO,GO,NO>::Build( map_->lib(),Teuchos::OrdinalTraits<GO>::invalid(), myElements(), 0, map_->getComm() );
+    Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMapAvailRanks = Xpetra::MapFactory<LO,GO,NO>::Build( Teuchos::OrdinalTraits<GO>::invalid(), myElements(), 0, map_->getComm() );
     
     Teuchos::RCP<Xpetra::Vector<GO,LO,GO,NO> > globalIndices = Xpetra::VectorFactory<GO,LO,GO,NO>::Build(linearMapAvailRanks);
     
@@ -447,7 +436,7 @@ Teuchos::RCP<Map<LO,GO,NO> > Map<LO,GO,NO>::buildUniqueMap( tuple_intint_Type ra
             uniqueVector.push_back(map_->getGlobalElement(i));
         }
     }
-    Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(map_->lib(),-1,uniqueVector(),0,map_->getComm());
+    Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(-1,uniqueVector(),0,map_->getComm());
     Teuchos::RCP<Map<LO,GO,NO> > map = Teuchos::rcp( new Map<LO,GO,NO>( mapXpetra ) );
 
     return  map;

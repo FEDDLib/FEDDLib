@@ -35,8 +35,6 @@ int main(int argc, char *argv[]) {
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
     GO numGlobalElements = 10;
     myCLP.setOption("nge",&numGlobalElements,"numGlobalElements.");
 
@@ -55,15 +53,12 @@ int main(int argc, char *argv[]) {
     typedef Map_Xpetra<LO,GO,NO> Map_Type;
     typedef RCP<Map_Type> MapPtr_Type;
 
-    TEUCHOS_TEST_FOR_EXCEPTION(!(!ulib_str.compare("Tpetra") || !ulib_str.compare("Epetra") ) , std::runtime_error,"Unknown algebra type");
-
-
     Array<GO> indices(numGlobalElements);
     for (UN i=0; i<indices.size(); i++) {
         indices[i] = i;
     }
 
-    MapPtr_Type map = rcp( new Map_Type(ulib_str, commWorld->getSize()*numGlobalElements, indices(), 0, commWorld) );
+    MapPtr_Type map = rcp( new Map_Type( commWorld->getSize()*numGlobalElements, indices(), 0, commWorld) );
 
     map->print();
 
