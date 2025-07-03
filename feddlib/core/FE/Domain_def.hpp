@@ -737,7 +737,6 @@ void Domain<SC,LO,GO,NO>::buildUniqueInterfaceMaps()
     GO numberInterfaceNodes = localInterfaceID; // long long wg. 64
     
     // Baue nun die InterfaceMap (node)
-    //std::string ulib = this->getMapUnique()->getUnderlyingLib();
     Teuchos::ArrayView<GO> vecInterfaceMapArray =  Teuchos::arrayViewFromVector( vecInterfaceMap );
     interfaceMapUnique_ = Teuchos::rcp(new Map_Type( numberInterfaceNodes, vecInterfaceMapArray, 0, comm_ ) ); //maybe numberInterfaceNodes instead of -1
     // dof-Map bauen

@@ -231,10 +231,6 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
             
     typedef Teuchos::OrdinalTraits<GO> OTGO;
 
-#ifdef UNDERLYING_LIB_TPETRA
-    std::string underlyingLib = "Tpetra";
-#endif
-    
     MeshUnstrPtr_Type meshUnstr = Teuchos::rcp_dynamic_cast<MeshUnstr_Type>( domains_[meshNumber]->getMesh() );
     
 	// Reading nodes

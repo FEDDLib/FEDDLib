@@ -288,7 +288,6 @@ void Matrix<SC,LO,GO,NO>::scale(const SC& alpha) {
 template <class SC, class LO, class GO, class NO>
 void Matrix<SC,LO,GO,NO>::writeMM(std::string fileName) const{
     TEUCHOS_TEST_FOR_EXCEPTION( matrix_.is_null(), std::runtime_error,"Matrix in writeMM is null.");
-   // TEUCHOS_TEST_FOR_EXCEPTION( !(matrix_->getMap()->lib()==Xpetra::UseTpetra), std::logic_error,"Only available for Tpetra underlying lib.");
     //typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
     //typedef Teuchos::RCP<TpetraCrsMatrix> TpetraCrsMatrixPtr;
 
@@ -307,7 +306,7 @@ void Matrix<SC,LO,GO,NO>::addMatrix(SC alpha, const MatrixPtr_Type &B, SC beta){
     //B = alpha*A + beta*B.
     if (B->isFillComplete())
         B->resumeFill();
-    TEUCHOS_TEST_FOR_EXCEPTION( B->isLocallyIndexed(), std::runtime_error,"Matrix in is locally index but Trilinos Epetra/Tpetra can not add to a matrix at this stage.");
+    TEUCHOS_TEST_FOR_EXCEPTION( B->isLocallyIndexed(), std::runtime_error,"Matrix in is locally index but Trilinos Tpetra cannot add to a matrix at this stage.");
     
     //const Tpetra::CrsMatrix<SC,LO,GO,NO>& tpA = Xpetra::Helpers<SC,LO,GO,NO>::Op2TpetraCrs(A);
     //Tpetra::CrsMatrix<SC,LO,GO,NO>& tpB = Xpetra::Helpers<SC,LO,GO,NO>::Op2NonConstTpetraCrs(B);

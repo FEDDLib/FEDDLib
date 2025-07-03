@@ -52,44 +52,37 @@ public:
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
     void buildMesh2D(std::string FEType,
                     int N,
                     int M,
-                    int numProcsCoarseSolve=0,
-                    std::string underlyingLib="Tpetra");
+                    int numProcsCoarseSolve=0);
 
     /// @brief  Building 2D TPM rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions 
     /// @param FEType Finite element discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
     void buildMesh2DTPM(std::string FEType,
                         int N,
                         int M,
-                        int numProcsCoarseSolve=0,
-                        std::string underlyingLib="Tpetra");
+                        int numProcsCoarseSolve=0);
     
     /// @brief Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox'. Called by Domain class and different discretizations for 3D mesh are called within this functions.
     /// @param FEType Finite element discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
     void buildMesh3D(std::string FEType,
                      int N,
                      int M,
-                     int numProcsCoarseSolve=0,
-                     std::string underlyingLib="Tpetra");
+                     int numProcsCoarseSolve=0);
 
     /// @brief Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox'. Called by Domain class. Only P2 discretization available. Subcubes are build with 5 elements
     /// @param FEType Finite element discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
-    void buildMesh3D5Elements(std::string FEType, int N, int M, int numProcsCoarseSolve, std::string underlyingLib="Tpetra");
+    void buildMesh3D5Elements(std::string FEType, int N, int M, int numProcsCoarseSolve);
 
     
     /// @brief Building 2D backward facing step geometry with the lenght and height as defined per 'setGeomerty2DRectangle'. Called by Domain class and different discretizations for 2D mesh are called within this functions.
@@ -97,97 +90,79 @@ public:
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
     void buildMesh2DBFS(std::string FEType,
                      int N,
                      int M,
-                     int numProcsCoarseSolve=0,
-                     std::string underlyingLib="Tpetra");
+                     int numProcsCoarseSolve=0);
 
     /// @brief Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox'. Called by Domain class and different discretizations for 3D mesh are called within this functions.
     /// @param FEType Finite element discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
     void buildMesh3DBFS(std::string FEType,
                         int N,
                         int M,
-                        int numProcsCoarseSolve=0,
-                        std::string underlyingLib="Tpetra");
+                        int numProcsCoarseSolve=0);
     
     /// @brief Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox' with Q2-P1 discontinous discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library  
     void buildP1_Disc_Q2_3DBFS(int N,
                             int M,
-                            int numProcsCoarseSolve,
-                            std::string underlyingLib);
+                            int numProcsCoarseSolve);
 
     /// @brief Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q2-P1 discontinous discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
     void buildP1_Disc_Q2_3DCube(int N,
                                int M,
-                               int numProcsCoarseSolve,
-                               std::string underlyingLib);
+                               int numProcsCoarseSolve);
 
     /// @brief Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q1 discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
     void build3DQ1Cube(int N,
                        int M,
-                       int numProcsCoarseSolve,
-                       std::string underlyingLib );
+                       int numProcsCoarseSolve);
 
     /// @brief Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
    void build3DQ2Cube( int N,
                         int M,
-                        int numProcsCoarseSolve,
-                        std::string underlyingLib );
+                        int numProcsCoarseSolve);
 
     /// @brief Building general 3D cuboid with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization and 20?
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
     void build3DQ2_20Cube(int N,
                           int M,
-                          int numProcsCoarseSolve,
-                          std::string underlyingLib ); 
+                          int numProcsCoarseSolve); 
 
 
     /// @brief Building general 3D backward facing step with length, width and height as defines by 'setGeometry3DBox' with Q2 discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
     void build3DQ2BFS( int N,
                        int M,
-                       int numProcsCoarseSolve,
-                       std::string underlyingLib );
+                       int numProcsCoarseSolve);
     
     /// @brief  Building 2D mini TPM rectangular mesh with the lenght and height as defined per 'setGeomerty2DRectangle' - characterized by building addition line segments for boundary conditions 
     /// @param FEType Finite element discretization
     /// @param N Number of subdomains
     /// @param M H/h with H subdomain diameter (length/H) and h characteristic mesh size (length/(M*N))
     /// @param numProcsCoarseSolve if we want to reserve certain processors for coarse solve
-    /// @param underlyingLib underlying linear algebra library 
    void buildMesh2DMiniTPM(std::string FEType,
                             int N,
                             int M,
-                            int numProcsCoarseSolve=0,                            
-                            std::string underlyingLib="Tpetra" );
+                            int numProcsCoarseSolve=0);
 
     /// @brief Building suface lines for TPM square mini. Empty.
     /// @param feType 

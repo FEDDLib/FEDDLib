@@ -30,64 +30,34 @@ template < class LO, class GO, class NO>
 Map_Xpetra<LO,GO,NO>::Map_Xpetra( const Map_Type& mapIn ):
 map_()
 {
-    Xpetra::UnderlyingLib ulib;
-    if (!mapIn.getUnderlyingLib().compare("Epetra"))
-        ulib = Xpetra::UseEpetra;
-    else if (!mapIn.getUnderlyingLib().compare("Tpetra"))
-        ulib = Xpetra::UseTpetra;
-
-    map_ = Xpetra::MapFactory<LO,GO,NO>::Build( ulib, mapIn.getGlobalNumElements(), mapIn.getNodeElementList(), mapIn.getIndexBase(), mapIn.getComm() );
+    map_ = Xpetra::MapFactory<LO,GO,NO>::Build( Xpetra::UseTpetra, mapIn.getGlobalNumElements(), mapIn.getNodeElementList(), mapIn.getIndexBase(), mapIn.getComm() );
 }
     
 template < class LO, class GO, class NO>
-Map_Xpetra<LO,GO,NO>::Map_Xpetra(std::string lib,
+Map_Xpetra<LO,GO,NO>::Map_Xpetra(
                     GO numGlobalElements,
                     const Teuchos::ArrayView<const GO> &elementList,
                     GO indexBase,
                     const CommConstPtr_Type &comm):
 map_()
 {
-    Xpetra::UnderlyingLib ulib;
-    if (!lib.compare("Epetra"))
-        ulib = Xpetra::UseEpetra;
-    else if (!lib.compare("Tpetra"))
-        ulib = Xpetra::UseTpetra;
-    map_ = Xpetra::MapFactory<LO,GO,NO>::Build( ulib, numGlobalElements, elementList, indexBase, comm);
+    map_ = Xpetra::MapFactory<LO,GO,NO>::Build( Xpetra::UseTpetra, numGlobalElements, elementList, indexBase, comm);
 }
 
 template < class LO, class GO, class NO>
-Map_Xpetra<LO,GO,NO>::Map_Xpetra(std::string lib,
+Map_Xpetra<LO,GO,NO>::Map_Xpetra(
                    GO numGlobalElements,
                    LO numLocalElements,
                    GO indexBase,
                    const CommConstPtr_Type &comm):
 map_()
 {
-    Xpetra::UnderlyingLib ulib;
-    if (!lib.compare("Epetra"))
-        ulib = Xpetra::UseEpetra;
-    else if (!lib.compare("Tpetra"))
-        ulib = Xpetra::UseTpetra;
-    
-    map_ = Xpetra::MapFactory<LO,GO,NO>::Build( ulib, numGlobalElements, numLocalElements, indexBase, comm);
+    map_ = Xpetra::MapFactory<LO,GO,NO>::Build( Xpetra::UseTpetra, numGlobalElements, numLocalElements, indexBase, comm);
 }
     
 template < class LO, class GO, class NO>
 Map_Xpetra<LO,GO,NO>::~Map_Xpetra(){
     
-}
-
-template < class LO, class GO, class NO>
-std::string Map_Xpetra<LO,GO,NO>::getUnderlyingLib( ) const{
-    TEUCHOS_TEST_FOR_EXCEPTION(map_.is_null(),std::runtime_error,"map is null.");
-    std::string uLib;
-    if (map_->lib() == Xpetra::UseEpetra)
-        uLib = "Epetra";
-    else if (map_->lib() == Xpetra::UseTpetra)
-        uLib = "Tpetra";
-    else
-        TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Unknown underlying lib");
-    return uLib;
 }
 
 template < class LO, class GO, class NO>
@@ -102,7 +72,7 @@ typename Map_Xpetra<LO,GO,NO>::MapPtr_Type Map_Xpetra<LO,GO,NO>::buildVecFieldMa
             elementListField[ numDofs * i + dof ] = numDofs * elementList[i] + dof;
     }
     typedef Teuchos::OrdinalTraits<GO> GOOT;
-    return Teuchos::rcp(new Map_Type( this->getUnderlyingLib(), GOOT::invalid(), elementListField(), map_->getIndexBase(), map_->getComm() ) );
+    return Teuchos::rcp(new Map_Type( GOOT::invalid(), elementListField(), map_->getIndexBase(), map_->getComm() ) );
 }
 
 template < class LO, class GO, class NO>
@@ -188,7 +158,7 @@ Teuchos::RCP<Map_Xpetra<LO,GO,NO> > Map_Xpetra<LO,GO,NO>::buildUniqueMap( int nu
         Teuchos::RCP<Xpetra::Vector<GO,LO,GO,NO> > myIndices = Xpetra::VectorFactory<GO,LO,GO,NO>::Build(map_);
         myIndices->putScalar(map_->getComm()->getRank()+1);
 
-        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMap = Xpetra::MapFactory<LO,GO,NO>::Build(map_->lib(),map_->getMaxAllGlobalIndex()+1,0,map_->getComm());
+        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMap = Xpetra::MapFactory<LO,GO,NO>::Build(Xpetra::UseTpetra,map_->getMaxAllGlobalIndex()+1,0,map_->getComm());
         Teuchos::RCP<Xpetra::Vector<GO,LO,GO,NO> > globalIndices = Xpetra::VectorFactory<GO,LO,GO,NO>::Build(linearMap);
 
         Teuchos::RCP<Xpetra::Import<LO,GO,NO> > importer = Xpetra::ImportFactory<LO,GO,NO>::Build(map_,linearMap);
@@ -203,7 +173,7 @@ Teuchos::RCP<Map_Xpetra<LO,GO,NO> > Map_Xpetra<LO,GO,NO>::buildUniqueMap( int nu
                 uniqueVector.push_back(map_->getGlobalElement(i));
             }
         }
-        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(map_->lib(),-1,uniqueVector(),0,map_->getComm());
+        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(Xpetra::UseTpetra,-1,uniqueVector(),0,map_->getComm());
         Teuchos::RCP<Map_Xpetra<LO,GO,NO> > map = Teuchos::rcp( new Map_Xpetra<LO,GO,NO>( mapXpetra ) );
         return  map;
     }
@@ -235,7 +205,7 @@ Teuchos::RCP<Map_Xpetra<LO,GO,NO> > Map_Xpetra<LO,GO,NO>::buildUniqueMap( int nu
             myElements[i] = i + offset;
         }
 
-        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMapAvailRanks = Xpetra::MapFactory<LO,GO,NO>::Build( map_->lib(),Teuchos::OrdinalTraits<GO>::invalid(), myElements(), 0, map_->getComm() );
+        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMapAvailRanks = Xpetra::MapFactory<LO,GO,NO>::Build( Xpetra::UseTpetra,Teuchos::OrdinalTraits<GO>::invalid(), myElements(), 0, map_->getComm() );
         
         Teuchos::RCP<Xpetra::Vector<GO,LO,GO,NO> > globalIndices = Xpetra::VectorFactory<GO,LO,GO,NO>::Build(linearMapAvailRanks);
         
@@ -253,7 +223,7 @@ Teuchos::RCP<Map_Xpetra<LO,GO,NO> > Map_Xpetra<LO,GO,NO>::buildUniqueMap( int nu
                 uniqueVector.push_back(map_->getGlobalElement(i));
             }
         }
-        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(map_->lib(),-1,uniqueVector(),0,map_->getComm());
+        Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(Xpetra::UseTpetra,-1,uniqueVector(),0,map_->getComm());
         Teuchos::RCP<Map_Xpetra<LO,GO,NO> > map = Teuchos::rcp( new Map_Xpetra<LO,GO,NO>( mapXpetra ) );
         return  map;
     }
@@ -294,7 +264,7 @@ Teuchos::RCP<Map_Xpetra<LO,GO,NO> > Map_Xpetra<LO,GO,NO>::buildUniqueMap( tuple_
         myElements[i] = i + offset;
 
     
-    Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMapAvailRanks = Xpetra::MapFactory<LO,GO,NO>::Build( map_->lib(),Teuchos::OrdinalTraits<GO>::invalid(), myElements(), 0, map_->getComm() );
+    Teuchos::RCP<Xpetra::Map<LO,GO,NO> > linearMapAvailRanks = Xpetra::MapFactory<LO,GO,NO>::Build( Xpetra::UseTpetra,Teuchos::OrdinalTraits<GO>::invalid(), myElements(), 0, map_->getComm() );
     
     Teuchos::RCP<Xpetra::Vector<GO,LO,GO,NO> > globalIndices = Xpetra::VectorFactory<GO,LO,GO,NO>::Build(linearMapAvailRanks);
     
@@ -312,7 +282,7 @@ Teuchos::RCP<Map_Xpetra<LO,GO,NO> > Map_Xpetra<LO,GO,NO>::buildUniqueMap( tuple_
             uniqueVector.push_back(map_->getGlobalElement(i));
         }
     }
-    Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(map_->lib(),-1,uniqueVector(),0,map_->getComm());
+    Teuchos::RCP<Xpetra::Map<LO,GO,NO> > mapXpetra = Xpetra::MapFactory<LO,GO,NO>::Build(Xpetra::UseTpetra,-1,uniqueVector(),0,map_->getComm());
     Teuchos::RCP<Map_Xpetra<LO,GO,NO> > map = Teuchos::rcp( new Map_Xpetra<LO,GO,NO>( mapXpetra ) );
 
     return  map;

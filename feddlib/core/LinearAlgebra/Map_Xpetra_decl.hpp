@@ -51,13 +51,13 @@ public:
     
     Map_Xpetra( const Map_Type& mapIn );
     
-    Map_Xpetra(std::string lib,
+    Map_Xpetra(
         GO numGlobalElements,
         const Teuchos::ArrayView<const GO> &elementList,
         GO indexBase,
         const CommConstPtr_Type &comm);
 
-    Map_Xpetra(std::string lib,
+    Map_Xpetra(
         GO numGlobalElements,
         LO numLocalElements,
         GO indexBase,
@@ -66,8 +66,6 @@ public:
     
     ~Map_Xpetra();
     
-    std::string getUnderlyingLib( ) const;
-
     MapPtr_Type buildVecFieldMap(UN numDofs, std::string ordering="NodeWise") const;
     
     XpetraMapConstPtr_Type getXpetraMap() const;

@@ -1,6 +1,5 @@
 #ifndef FEDDCORE_hpp
 #define FEDDCORE_hpp
-#define UNDERLYING_LIB_TPETRA
 
 #define FEDD_TIMER
 #define FEDD_DETAIL_TIMER

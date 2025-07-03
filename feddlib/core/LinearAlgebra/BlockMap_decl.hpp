@@ -73,8 +73,6 @@ public:
 
     void info();
     
-    std::string getUnderlyingLib( ) const;
-        
     /// @brief Getting merged map of block maps
     /// @return mergedMap
     MapConstPtr_Type getMergedMap();
