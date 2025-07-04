@@ -110,13 +110,6 @@ void BlockMap<LO,GO,NO>::info( ){
 }
 
 template <class LO, class GO, class NO>
-std::string BlockMap<LO,GO,NO>::getUnderlyingLib( ) const{
-    TEUCHOS_TEST_FOR_EXCEPTION(blockMap_.size()==0,std::runtime_error,"BlockMap size is 0, there is no underlying Lib.");
-    TEUCHOS_TEST_FOR_EXCEPTION(blockMap_[0].is_null(),std::runtime_error,"BlockMap[0] is null.");
-    return blockMap_[0]->getUnderlyingLib();
-}
-
-template <class LO, class GO, class NO>
 typename BlockMap<LO,GO,NO>::MapConstPtr_Type BlockMap<LO,GO,NO>::getMergedMap() {
     if ( mergedMap_.is_null() )
         this->merge();
