@@ -2911,7 +2911,7 @@ void MeshStructured<SC,LO,GO,NO>::buildMesh3DBFS(std::string FEType,
         buildElementsClass(elementsVec);
     }
     else if(FEType == "Q1")
-        build3DQ1BFS( N, MM, numProcsCoarseSolve, underlyingLib );
+        build3DQ1BFS( N, MM, numProcsCoarseSolve);
     else if(FEType == "Q2")
         build3DQ2BFS( N, MM, numProcsCoarseSolve);
 
