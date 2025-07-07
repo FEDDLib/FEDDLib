@@ -34,6 +34,7 @@ precFactory_()
 #ifdef FEDD_HAVE_TEKO
 ,tekoLinOp_()
 ,velocityMassMatrix_()
+,rh_()
 #endif
 ,fsiLinOp_()
 ,precFluid_()
@@ -79,6 +80,7 @@ precFactory_()
 #ifdef FEDD_HAVE_TEKO
 ,tekoLinOp_()
 ,velocityMassMatrix_()
+,rh_()
 #endif
 ,fsiLinOp_()
 ,precFluid_()
@@ -815,6 +817,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
     else if(!timeProblem_.is_null())
         solverBuilder = timeProblem_->getUnderlyingProblem()->getLinearSolverBuilder();
 
+    std::cout << " hier " << std::endl;
     ParameterListPtr_Type tekoPList= sublist( parameterList, "Teko Parameters" );
     if (precFactory_.is_null()) {
         ParameterListPtr_Type tmpSubList = sublist( sublist( sublist( sublist( parameterList, "Teko Parameters" ) , "Preconditioner Types" ) , "Teko" ) , "Inverse Factory Library" );
@@ -859,7 +862,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             precFactory_ = solverBuilder->createPreconditioningStrategy("");//createPreconditioningStrategy(*solverBuilder);
             
             rh_.reset(new Teko::RequestHandler());
-
             
             if(!tekoPList->sublist("Preconditioner Types").sublist("Teko").get("Inverse Type", "SIMPLE").compare("LSC") || 
                 !tekoPList->sublist("Preconditioner Types").sublist("Teko").get("Inverse Type", "SIMPLE").compare("LSC-Pressure-Laplace")  || 
@@ -902,6 +904,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
                 rh_->addRequestCallback( callbackPCD_ );
 
             }
+            std::cout << " hier " << std::endl;
 
             Teuchos::RCP< Teko::StratimikosFactory > tekoFactory = Teuchos::rcp_dynamic_cast<Teko::StratimikosFactory>(precFactory_);
             tekoFactory->setRequestHandler( rh_ );
@@ -952,7 +955,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
             *callbackPCD_ = *callbackTmp;
            
          }
-    // else{
 
         Teuchos::RCP< const Thyra::DefaultLinearOpSource< SC > > thyraMatrixSourceOp =  defaultLinearOpSource (tekoLinOp_);
         //    Thyra::initializePrec<SC>(*precFactory, thyraMatrixSourceOp, thyraPrec_.ptr());

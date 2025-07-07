@@ -1,0 +1,43 @@
+<ParameterList name="Prec">
+
+    <Parameter name="Number of blocks" type="int" value="2"/>
+    <ParameterList name="ThyraPreconditioner">
+
+        <Parameter name="Preconditioner Type" type="string" value="FROSch"/>
+        <ParameterList name="Preconditioner Types">
+
+            <ParameterList name="FROSch">
+                <Parameter name="FROSch Preconditioner Type" type="string" value="OneLevelPreconditioner"/>
+                <Parameter name="Recycling" type="bool" value="true"/>
+                <Parameter name="DofsPerNode1" type="int" value="2"/>
+                <Parameter name="DofsPerNode2" type="int" value="1"/>
+                <Parameter name="DofOrdering1" type="string" value="NodeWise"/>
+                <Parameter name="DofOrdering2" type="string" value="NodeWise"/>
+                <Parameter name="Overlap" type="int" value="1"/>
+                <Parameter name="TwoLevel" type="bool" value="true"/>
+                
+                <Parameter name="Level Combination" type="string" value="Additive"/><!--Multiplicative,Additive-->
+                <Parameter name="OverlappingOperator Type" type="string" value="AlgebraicOverlappingOperator"/>
+                
+                <Parameter name="CoarseOperator Type" type="string" value="RGDSWCoarseOperator"/><!--GDSWCoarseOperator,IPOUHarmonicCoarseOperator-->
+
+                <ParameterList name="AlgebraicOverlappingOperator">
+                    <Parameter name="Reuse: Symbolic Factorization" type="bool" value="true"/>
+                    <Parameter name="Combine Values in Overlap" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
+                    <Parameter name="Overlapping Operator Combination" type="string" value="Averaging"/><!--Restricted,Averaging,Full-->
+                    <Parameter name="Adding Layers Strategy" type="string" value="CrsGraph"/>
+                    <Parameter name="Level ID" type="int" value="1"/>
+                    
+                    <ParameterList name="Solver">
+                        <Parameter name="SolverType" type="string" value="Amesos2"/>
+                        <Parameter name="Solver" type="string"   value="klu2"/>
+                    </ParameterList>
+
+                </ParameterList>
+                
+               
+            </ParameterList>
+        </ParameterList>
+    </ParameterList>
+</ParameterList>
+

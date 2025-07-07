@@ -40,21 +40,21 @@ public:
     
     ~NonLinearSolver();
     
-    void solve(NonLinearProblem_Type& problem);
+    void solve(NonLinearProblem_Type& problem,vec_dbl_ptr_Type valuesForExport = Teuchos::null );
 
     void solve(TimeProblem_Type& problem, double time=0., vec_dbl_ptr_Type valuesForExport = Teuchos::null );
     
 	int getNonLinIts() {return nonLinearIts_;};
 private:
 #ifdef FEDD_HAVE_NOX
-    void solveNOX(NonLinearProblem_Type& problem);
+    void solveNOX(NonLinearProblem_Type& problem,vec_dbl_ptr_Type valuesForExport = Teuchos::null);
     
     void solveNOX( TimeProblem_Type& problem, vec_dbl_ptr_Type valuesForExport = Teuchos::null );
     
 #endif
-    void solveFixedPoint(NonLinearProblem_Type& problem);
+    void solveFixedPoint(NonLinearProblem_Type& problem,vec_dbl_ptr_Type valuesForExport = Teuchos::null);
 
-    void solveNewton(NonLinearProblem_Type& problem);
+    void solveNewton(NonLinearProblem_Type& problem, vec_dbl_ptr_Type valuesForExport = Teuchos::null );
     
     void solveFixedPoint(TimeProblem_Type& problem, double time);
     

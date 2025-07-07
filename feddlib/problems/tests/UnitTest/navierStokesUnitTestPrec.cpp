@@ -100,19 +100,21 @@ int main(int argc, char *argv[]) {
     std::string FETypeV = "P2";
     myCLP.setOption("FEType", &FETypeV, "Discretization");
 
-    // std::string nonlinearSolver = "Newton";
-    // myCLP.setOption("nonlinearSolver", &nonlinearSolver, "Nonlinear Solver");
+    std::string precMethod = "Monolithic";
+    myCLP.setOption("precMethod", &precMethod, "Preconditioning Method");
     
     std::string FEType = "P1";
 
     std::string xmlPrecFile;
-    if(dim==2)
-        xmlPrecFile = "parametersPrec_Stokes_2D.xml";
-    else if(dim==3)
-        xmlPrecFile = "parametersPrec_Stokes_3D.xml";
-    
+    if(precMethod=="Monolithic")
+        xmlPrecFile = "parametersPrec_NavierStokes_Mono.xml";
+    else if(precMethod=="Diagonal" || precMethod=="Triangular" || precMethod=="PCD" || precMethod=="LSC")
+        xmlPrecFile = "parametersPrec_NavierStokes_Block.xml";
+    else if(precMethod=="Teko")
+        xmlPrecFile = "parametersPrec_NavierStokes_Teko.xml";
+ 
     myCLP.setOption("precfile", &xmlPrecFile, ".xml file with Inputparameters.");
-    std::string xmlSolverFile = "parametersSolver.xml";
+    std::string xmlSolverFile = "parametersSolver_PrecTest.xml";
     myCLP.setOption("solverfile", &xmlSolverFile, ".xml file with Inputparameters.");
 
     myCLP.recogniseAllOptions(true);
@@ -128,7 +130,7 @@ int main(int argc, char *argv[]) {
 
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListPrec));
         parameterListAll->setParameters(*parameterListSolver);
-
+        parameterListAll->setParameters(*parameterListPrec);
         // Mesh
         int m = 3;
         std::string meshType = "structured";
@@ -140,6 +142,10 @@ int main(int argc, char *argv[]) {
 
         int minNumberSubdomains = 1;
 
+        //We exclude any other tests, than the one prescribed
+  
+        // TEUCHOS_TEST_FOR_EXCEPTION(!(size == 9 && m == 3), std::logic_error, "The 2D test solutions are only sensible for 4 processors.");
+       
         Teuchos::RCP<Domain<SC, LO, GO, NO>> domainPressure;
         Teuchos::RCP<Domain<SC, LO, GO, NO>> domainVelocity;
 
@@ -151,16 +157,10 @@ int main(int argc, char *argv[]) {
             x[1] = 0.0;
             domainPressure.reset(new Domain<SC, LO, GO, NO>(x, 1., 1., comm));
             domainVelocity.reset(new Domain<SC, LO, GO, NO>(x, 1., 1., comm));
-        } else if (dim == 3) {
-            TEUCHOS_TEST_FOR_EXCEPTION(std::floor(std::pow(size, 1 / 3)) != std::pow(size, 1 / 3), std::logic_error, "Wrong number of processors for structured squared mesh.");
-            n = (int)(std::pow(size / minNumberSubdomains, 1 / 3.) + 100 * Teuchos::ScalarTraits<double>::eps()); // 1/H
-            std::vector<double> x(3);
-            x[0] = 0.0;
-            x[1] = 0.0;
-            x[2] = 0.0;
-            domainPressure.reset(new Domain<SC, LO, GO, NO>(x, 1., 1., 1., comm));
-            domainVelocity.reset(new Domain<SC, LO, GO, NO>(x, 1., 1., 1., comm));
-        }
+        } 
+        else 
+            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Only 2D Test.");
+            
         domainPressure->buildMesh(1, "Square", dim, FEType, n, m, numProcsCoarseSolve);
         domainVelocity->buildMesh(1, "Square", dim, FETypeV, n, m, numProcsCoarseSolve);
 
@@ -170,17 +170,10 @@ int main(int argc, char *argv[]) {
 
         // Lid Driven Cavity Test 
         Teuchos::RCP<BCBuilder<SC, LO, GO, NO>> bcFactory(new BCBuilder<SC, LO, GO, NO>());
-        if (dim == 2) { 
-            bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim); // wall
-            bcFactory->addBC(ldcFunc2D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec); // lid
-            bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1); // pressure node
+        bcFactory->addBC(zeroDirichlet2D, 1, 0, domainVelocity, "Dirichlet", dim); // wall
+        bcFactory->addBC(ldcFunc2D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec); // lid
+        bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1); // pressure node
 
-        } else if (dim == 3) {
-            bcFactory->addBC(zeroDirichlet3D, 1, 0, domainVelocity, "Dirichlet", dim); // Wall
-            bcFactory->addBC(ldcFunc3D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec); // Lid
-            bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1); // Pressure Node
-  
-        }
 
         // Setting parameters that are needed for stokes 
         // !! This avoids that errors occure when default values are changed along the way.
@@ -188,7 +181,9 @@ int main(int argc, char *argv[]) {
         parameterListAll->sublist("Parameter").set("Viscosity",1.0e-2); // Value 0.01
 
         parameterListAll->sublist("Parameter").set("relNonLinTol",1.0e-8); // Value 1.0e-8
-        parameterListAll->sublist("General").set("Preconditioner Method","Monolithic"); // Value 1.0e-8
+        parameterListAll->sublist("General").set("Preconditioner Method",precMethod); // Value 1.0e-8
+
+        vec_dbl_ptr_Type its = Teuchos::rcp(new vec_dbl_Type ( 2, 0. ) ); //0:linear iterations, 1: nonlinear iterations
 
         NavierStokes<SC,LO,GO,NO> navierStokes( domainVelocity, FETypeV, domainPressure, FEType, parameterListAll );
 
@@ -200,32 +195,34 @@ int main(int argc, char *argv[]) {
 
             std::string nlSolverType = "Newton";
             NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
-            nlSolver.solve( navierStokes );
+            nlSolver.solve( navierStokes,its );
         }
 
-        // stokes.getSystem()->getMergedMatrix()->writeMM("F");
-        // HDF5Export<SC, LO, GO, NO> exporterV(navierStokes.getSolution()->getBlock(0)->getMap(),
-        //     "ReferenceSolutions/solution_navier_stokes_velocity_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
-        // exporterV.writeVariablesHDF5("velocity",
-        //     navierStokes.getSolution()->getBlock(0)); // VariableName and Variable
+        std::cout << " (*its)[0] " << (*its)[0] << std::endl;
+        // if(precMethod=="Monolithic")
+        //     xmlPrecFile = "parametersPrec_NavierStokes_Mono.xml";
+        // else if(precMethod=="Diagonal" || precMethod=="Triangular" || precMethod=="PCD" || precMethod=="LSC")
+        //     xmlPrecFile = "parametersPrec_NavierStokes_Block.xml";
+        // else if(precMethod=="Teko")
+        //     xmlPrecFile = "parametersPrec_NavierStokes_Teko.xml";
 
-        // HDF5Export<SC, LO, GO, NO> exporterP(navierStokes.getSolution()->getBlock(1)->getMap(),
-        //     "ReferenceSolutions/solution_navier_stokes_pressure_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
-        // exporterP.writeVariablesHDF5("pressure",
-        //     navierStokes.getSolution()->getBlock(1)); // VariableName and Variable
+        HDF5Export<SC, LO, GO, NO> exporterV(navierStokes.getSolution()->getBlock(0)->getMap(),
+            "ReferenceSolutions/solution_navier_stokes_velocity_" + precMethod +"_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
+        exporterV.writeVariablesHDF5("velocity",
+            navierStokes.getSolution()->getBlock(0)); // VariableName and Variable
 
-        //We exclude any other tests, than the one prescribed
-        if (dim == 2) {
-            TEUCHOS_TEST_FOR_EXCEPTION(!(size == 4 && m == 3), std::logic_error, "The 2D test solutions are only sensible for 4 processors.");
-        } else if (dim == 3)
-            TEUCHOS_TEST_FOR_EXCEPTION(!(size == 8 && m == 3), std::logic_error, "The 3D test solutions are only sensible for 8 processors.");
+        HDF5Export<SC, LO, GO, NO> exporterP(navierStokes.getSolution()->getBlock(1)->getMap(),
+            "ReferenceSolutions/solution_navier_stokes_pressure_" + precMethod +"_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
+        exporterP.writeVariablesHDF5("pressure",
+            navierStokes.getSolution()->getBlock(1)); // VariableName and Variable
+
 
         HDF5Import<SC, LO, GO, NO> importerV(navierStokes.getSolution()->getBlock(0)->getMap(),
-            "ReferenceSolutions/solution_navier_stokes_velocity_" +  std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
+            "ReferenceSolutions/solution_navier_stokes_velocity_" + precMethod +"_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
         Teuchos::RCP<const MultiVector<SC, LO, GO, NO>> solutionImportedVeloctiy = importerV.readVariablesHDF5("velocity");
 
         HDF5Import<SC, LO, GO, NO> importerP(navierStokes.getSolution()->getBlock(1)->getMap(),
-            "ReferenceSolutions/solution_navier_stokes_pressure_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
+            "ReferenceSolutions/solution_navier_stokes_pressure_" + precMethod +"_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
         Teuchos::RCP<const MultiVector<SC, LO, GO, NO>> solutionImportedPressure = importerP.readVariablesHDF5("pressure");
 
         // We compare the imported solution to the current one

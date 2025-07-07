@@ -321,3 +321,38 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_navierStokesUnitTest
  	DEST_FILES solution_navier_stokes_velocity_2d_P1_4cores.h5 solution_navier_stokes_velocity_2d_P2_4cores.h5 solution_navier_stokes_velocity_3d_P1_8cores.h5 solution_navier_stokes_velocity_3d_P2_8cores.h5 solution_navier_stokes_pressure_2d_P1_4cores.h5 solution_navier_stokes_pressure_2d_P2_4cores.h5 solution_navier_stokes_pressure_3d_P1_8cores.h5 solution_navier_stokes_pressure_3d_P2_8cores.h5
  	EXEDEPS navierStokesUnitTest
 )
+
+# -----------
+# Navier-Stokes
+# -----------
+TRIBITS_ADD_EXECUTABLE(
+	navierStokesUnitTestPrec
+	SOURCES navierStokesUnitTestPrec.cpp
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(param_navierStokesUnitTestPrec
+	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+	SOURCE_FILES parametersPrec_NavierStokes_Block.xml parametersPrec_NavierStokes_Mono.xml parametersPrec_NavierStokes_Teko.xml parametersSolver_PrecTest.xml
+	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+	DEST_FILES parametersPrec_NavierStokes_Block.xml parametersPrec_NavierStokes_Mono.xml parametersPrec_NavierStokes_Teko.xml parametersSolver_PrecTest.xml
+	EXEDEPS navierStokesUnitTestPrec
+)
+
+TRIBITS_ADD_TEST(
+	navierStokesUnitTestPrec
+	NAME navierStokes_2D_P1_Monolithic
+	ARGS "--dim=2 --FEType=P1 --precMethod=Monolithic"
+	NUM_MPI_PROCS 9
+)
+TRIBITS_ADD_TEST(
+	navierStokesUnitTestPrec
+	NAME navierStokes_2D_P2_Block
+	ARGS "--dim=2 --FEType=P1 --precMethod=Diagonal"
+	NUM_MPI_PROCS 9
+)
+TRIBITS_ADD_TEST(
+	navierStokesUnitTestPrec
+	NAME navierStokes_2D_P2_Teko
+	ARGS "--dim=2 --FEType=P1 --precMethod=Teko"
+	NUM_MPI_PROCS 9
+)
