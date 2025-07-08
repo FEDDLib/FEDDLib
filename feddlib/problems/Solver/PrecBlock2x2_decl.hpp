@@ -16,7 +16,7 @@
  Declaration of PrecBlock2x2
  
  @brief  PrecBlock2x2
- @author Christian Hochmuth
+ @author Christian Hochmuth/Lea Saßmannshausen
  @version 1.0
  @copyright CH
  */
@@ -64,22 +64,25 @@ public:
     
     PrecBlock2x2(CommConstPtr_Type comm);
     /*! In the following, we assume that we build a precondtioner for a Stokes-type fluid problem with velocity and pressure variables */
+
+    /// Diagonal preconditioner with \hat{S}= -1/nu M_p schur complement approximation
     void setDiagonal(ThyraLinOpPtr_Type velocityInv,
                      ThyraLinOpPtr_Type pressureInv);
     
-    // Classig triangular with \hat{S}= -1/nu M_p
+    /// Triangular preconditioner with \hat{S}= -1/nu M_p schur complement approximation
     void setTriangular(ThyraLinOpPtr_Type velocityInv,
                        ThyraLinOpPtr_Type pressureInv,
                        ThyraLinOpPtr_Type BT);
 
-    // PCD triangular
+    /// Pressure-Convection-Diffusion (PCD) block triangular preconditioner
     void setTriangular(ThyraLinOpPtr_Type velocityInv,
                         ThyraLinOpPtr_Type laplaceInverse,
                         ThyraLinOpPtr_Type convectionDiffusionOperator,
                         ThyraLinOpPtr_Type massMatrixInverse,
                         ThyraLinOpPtr_Type massMatrixVInverse,
                        ThyraLinOpPtr_Type BT);
-    // LSC triangular
+
+    /// Least-Squares-Commutator (LSC) block triangular preconditioner
     void setTriangular(ThyraLinOpPtr_Type velocityInv,
                     ThyraLinOpPtr_Type laplaceInverse,
                     ThyraLinOpPtr_Type massMatrixVInverse,

@@ -17,6 +17,16 @@
  @copyright CH
  */
 
+/*! 
+	Class to define the nonlinear solver for a nonlinear problem.
+
+    Possible nonlinear solivng methods are:
+        - Newton
+        - Fixed Point
+        - NOX (Newton implementation of Trilinos containing multiple features like forcing term strategies and globalization)
+
+*/
+
 namespace FEDD{
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class NonLinearSolver {
@@ -36,30 +46,81 @@ public:
     
     NonLinearSolver();
     
+    /// Constructor with the corresponding type of nonlinear Solver / Linearization: Newton, FixedPoint, NOX
     NonLinearSolver(std::string type);
     
     ~NonLinearSolver();
     
+    /*!
+        \brief Call for solving a nonlinear problem, depending on linearization solveNOX/solveFixedPoint/solveNewton is called
+		@param[in] problem
+		@param[in] valuesForExport
+    */
     void solve(NonLinearProblem_Type& problem,vec_dbl_ptr_Type valuesForExport = Teuchos::null );
 
+    /*!
+        \brief Call for solving a nonlinear problem which is also a time problem, depending on linearization solveNOX/solveFixedPoint/solveNewton is called
+		@param[in] problem time dependent problem
+		@param[in] current time
+		@param[in] valuesForExport contains nonlinear and average linear iteration count per solve step
+    */
     void solve(TimeProblem_Type& problem, double time=0., vec_dbl_ptr_Type valuesForExport = Teuchos::null );
     
+    /// return the number of nonlinear iterations needed
 	int getNonLinIts() {return nonLinearIts_;};
+
 private:
 #ifdef FEDD_HAVE_NOX
+    /*!
+        \brief Solving nonlinear problem with NOX
+		@param[in] problem
+		@param[in] valuesForExport contains nonlinear and average linear iteration count per solve step
+    */
     void solveNOX(NonLinearProblem_Type& problem,vec_dbl_ptr_Type valuesForExport = Teuchos::null);
-    
+
+        /*!
+        \brief Solving nonlinear time dependent problem with NOX
+		@param[in] problem
+		@param[in] valuesForExport contains nonlinear and average linear iteration count per solve step
+    */
     void solveNOX( TimeProblem_Type& problem, vec_dbl_ptr_Type valuesForExport = Teuchos::null );
     
 #endif
+    /*!
+        \brief Solving nonlinear problem via the fixed point method
+		@param[in] problem
+		@param[in] valuesForExport contains nonlinear and average linear iteration count per solve step
+    */
     void solveFixedPoint(NonLinearProblem_Type& problem,vec_dbl_ptr_Type valuesForExport = Teuchos::null);
 
+    /*!
+        \brief Solving nonlinear problem with Newtons method, implemented in the FEDDLib
+		@param[in] problem
+		@param[in] valuesForExport contains nonlinear and average linear iteration count per solve step
+    */
     void solveNewton(NonLinearProblem_Type& problem, vec_dbl_ptr_Type valuesForExport = Teuchos::null );
     
+    /*!
+        \brief Solving nonlinear time-dependent problem via the fixed point method
+		@param[in] problem
+		@param[in] time
+    */
     void solveFixedPoint(TimeProblem_Type& problem, double time);
     
+    /*!
+        \brief Solving nonlinear time-dependent problem with Newtons method, implemented in the FEDDLib
+		@param[in] problem
+		@param[in] time
+		@param[in] valuesForExport contains nonlinear and average linear iteration count per solve step
+    */
     void solveNewton(TimeProblem_Type& problem, double time, vec_dbl_ptr_Type valuesForExport = Teuchos::null );
 
+    /*!
+        \brief 
+		@param[in] 
+		@param[in] 
+		@param[in] 
+    */
     void solveExtrapolation(TimeProblem_Type& problem, double time);
     
     std::string 	type_;

@@ -139,7 +139,6 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
 
     bool verbose(timeProblem->getVerbose());
     int its=0;
-    // timeProblem->getSystem()->getBlock(0,0)->writeMM("System");
     ProblemPtr_Type problem = timeProblem->getUnderlyingProblem();
 
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
@@ -178,17 +177,8 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
     lowsFactory->setVerbLevel(Teuchos::VERB_HIGH);
 
     Teuchos::RCP<Thyra::LinearOpWithSolveBase<SC> > solver = lowsFactory->createOp();
-    //    solver = linearOpWithSolve(*lowsFactory, problem->getSystem()->getThyraLinOp());
-
-    //timeProblem->combineSystems();
-    // timeProblem->getSystemCombined()->getBlock(0,0)->writeMM("SystemCombined");
 
     ThyraLinOpConstPtr_Type thyraMatrix = timeProblem->getSystemCombined()->getThyraLinOp();
-
-    // Printing the stiffness matrix for the first newton iteration
-    // timeProblem->getSystemCombined()->writeMM("stiffnessMatrixWihtDirichlet");
-    // timeProblem->getSystem()->writeMM("stiffnessMatrixFull");
-    // rhs->writeMM("rhs");
 
     if ( !pListThyraSolver->get("Linear Solver Type","Belos").compare("Belos") ) {
         ThyraPrecPtr_Type thyraPrec = problem->getPreconditioner()->getThyraPrec();
@@ -212,159 +202,6 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
     }
     return its;
 }
-
-#ifdef FEDD_HAVE_TEKO
-template<class SC,class LO,class GO,class NO>
-int LinearSolver<SC,LO,GO,NO>::solveTeko(Problem_Type* problem, BlockMultiVectorPtr_Type rhs ){
-
-    Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
-
-    bool verbose(problem->getVerbose());
-    int its=0;
-    if (problem->getParameterList()->get("Zero Initial Guess",true)) {
-        problem->getSolution()->putScalar(0.);
-    }
-    // typedef Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > 	Teko::BlockedMultiVector
-    // convert them to teko compatible sub vectors
-    Teko::MultiVector x0_th = problem->getSolution()->getBlockNonConst(0)->getThyraMultiVector();
-    Teko::MultiVector x1_th = problem->getSolution()->getBlockNonConst(1)->getThyraMultiVector();
-
-    Teko::MultiVector b0_th;
-    Teko::MultiVector b1_th;
-    if (rhs.is_null()){
-        b0_th = problem->getRhs()->getBlockNonConst(0)->getThyraMultiVector();
-        b1_th = problem->getRhs()->getBlockNonConst(1)->getThyraMultiVector();
-    }
-    else{
-        b0_th = rhs->getBlockNonConst(0)->getThyraMultiVector();
-        b1_th = rhs->getBlockNonConst(1)->getThyraMultiVector();
-    }
-
-    std::vector<Teko::MultiVector> x_vec; x_vec.push_back(x0_th); x_vec.push_back(x1_th);
-    std::vector<Teko::MultiVector> b_vec; b_vec.push_back(b0_th); b_vec.push_back(b1_th);
-
-    Teko::MultiVector x = Teko::buildBlockedMultiVector(x_vec); // these will be used in the Teko solve
-    Teko::MultiVector b = Teko::buildBlockedMultiVector(b_vec);
-
-    ParameterListPtr_Type pListThyraSolver = sublist( problem->getParameterList(), "ThyraSolver" );
-
-//    pListThyraSolver->setParameters( problem->getParameterList()->sublist("ThyraPreconditioner") );
-
-    problem->getLinearSolverBuilder()->setParameterList(pListThyraSolver);
-    Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
-
-    problem->setupPreconditioner( "Teko" );
-
-    //    if (!pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive").compare("Multiplicative")) {
-    //        pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",true);
-    //
-    //        Teuchos::RCP<const Thyra::LinearOpBase<SC> > thyra_linOp = problem->getPreconditioner()->getThyraPrec()->getUnspecifiedPrecOp();
-    //        Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *thyraB, thyraX.ptr() );
-    //        pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
-    //    }
-
-
-    lowsFactory->setOStream(out);
-//    lowsFactory->setVerbLevel(Teuchos::VERB_EXTREME);
-
-    Teuchos::RCP<Thyra::LinearOpWithSolveBase<SC> > solver = lowsFactory->createOp();
-
-    ThyraPrecPtr_Type thyraPrec = problem->getPreconditioner()->getThyraPrec();
-
-    ThyraLinOpConstPtr_Type thyraMatrix = problem->getPreconditioner()->getTekoOp();
-
-    Thyra::initializePreconditionedOp<SC>(*lowsFactory, thyraMatrix, thyraPrec.getConst(), solver.ptr());
-
-    {
-        Thyra::SolveStatus<SC> status = Thyra::solve<SC>(*solver, Thyra::NOTRANS, *b, x.ptr());
-        if (verbose)
-            std::cout << status << std::endl;
-
-        its = status.extraParameters->get("Belos/Iteration Count",0);
-        Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > xBlocked = Teuchos::rcp_dynamic_cast<Thyra::ProductMultiVectorBase< double > >( x );
-        problem->getSolution()->getBlockNonConst(0)->fromThyraMultiVector( xBlocked->getNonconstMultiVectorBlock( 0 ) );
-        problem->getSolution()->getBlockNonConst(1)->fromThyraMultiVector( xBlocked->getNonconstMultiVectorBlock( 1 ) );
-    }
-
-    return its;
-}
-
-template<class SC,class LO,class GO,class NO>
-int LinearSolver<SC,LO,GO,NO>::solveTeko(TimeProblem_Type* timeProblem, BlockMultiVectorPtr_Type rhs ){
-
-    bool verbose(timeProblem->getVerbose());
-    int its=0;
-
-    ProblemPtr_Type problem = timeProblem->getUnderlyingProblem();
-    if (problem->getParameterList()->get("Zero Initial Guess",true)) {
-        problem->getSolution()->putScalar(0.);
-    }
-    // typedef Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > 	Teko::BlockedMultiVector
-    // convert them to teko compatible sub vectors
-    Teko::MultiVector x0_th = problem->getSolution()->getBlockNonConst(0)->getThyraMultiVector();
-    Teko::MultiVector x1_th = problem->getSolution()->getBlockNonConst(1)->getThyraMultiVector();
-
-    Teko::MultiVector b0_th;
-    Teko::MultiVector b1_th;
-    if (rhs.is_null()){
-        b0_th = problem->getRhs()->getBlockNonConst(0)->getThyraMultiVector();
-        b1_th = problem->getRhs()->getBlockNonConst(1)->getThyraMultiVector();
-    }
-    else{
-        b0_th = rhs->getBlockNonConst(0)->getThyraMultiVector();
-        b1_th = rhs->getBlockNonConst(1)->getThyraMultiVector();
-    }
-
-    std::vector<Teko::MultiVector> x_vec; x_vec.push_back(x0_th); x_vec.push_back(x1_th);
-    std::vector<Teko::MultiVector> b_vec; b_vec.push_back(b0_th); b_vec.push_back(b1_th);
-
-    Teko::MultiVector x = Teko::buildBlockedMultiVector(x_vec); // these will be used in the Teko solve
-    Teko::MultiVector b = Teko::buildBlockedMultiVector(b_vec);
-
-    ParameterListPtr_Type pListThyraSolver = sublist( problem->getParameterList(), "ThyraSolver" );
-
-//    pListThyraSolver->setParameters( problem->getParameterList()->sublist("ThyraPreconditioner") );
-
-    problem->getLinearSolverBuilder()->setParameterList(pListThyraSolver);
-    Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
-
-    problem->setupPreconditioner( "Teko" );
-
-//    if (!pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive").compare("Multiplicative")) {
-//        pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",true);
-//
-//        Teuchos::RCP<const Thyra::LinearOpBase<SC> > thyra_linOp = problem->getPreconditioner()->getThyraPrec()->getUnspecifiedPrecOp();
-//        Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *thyraB, thyraX.ptr() );
-//        pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
-//    }
-
-    Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
-
-    lowsFactory->setOStream(out);
-    lowsFactory->setVerbLevel(Teuchos::VERB_HIGH);
-
-    Teuchos::RCP<Thyra::LinearOpWithSolveBase<SC> > solver = lowsFactory->createOp();
-
-    ThyraPrecPtr_Type thyraPrec = problem->getPreconditioner()->getThyraPrec();
-
-    ThyraLinOpConstPtr_Type thyraMatrix = problem->getPreconditioner()->getTekoOp();
-
-    Thyra::initializePreconditionedOp<SC>(*lowsFactory, thyraMatrix, thyraPrec.getConst(), solver.ptr());
-
-    {
-        Thyra::SolveStatus<SC> status = Thyra::solve<SC>(*solver, Thyra::NOTRANS, *b, x.ptr());
-        if (verbose)
-            std::cout << status << std::endl;
-
-        its = status.extraParameters->get("Belos/Iteration Count",0);
-        Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > xBlocked = Teuchos::rcp_dynamic_cast<Thyra::ProductMultiVectorBase< double > >( x );
-        problem->getSolution()->getBlockNonConst(0)->fromThyraMultiVector( xBlocked->getNonconstMultiVectorBlock( 0 ) );
-        problem->getSolution()->getBlockNonConst(1)->fromThyraMultiVector( xBlocked->getNonconstMultiVectorBlock( 1 ) );
-    }
-
-    return its;
-}
-#endif
  
 template<class SC,class LO,class GO,class NO>
 int LinearSolver<SC,LO,GO,NO>::solveBlock(Problem_Type* problem, BlockMultiVectorPtr_Type rhs, std::string type ){
@@ -463,7 +300,6 @@ int LinearSolver<SC,LO,GO,NO>::solveBlock(TimeProblem_Type* timeProblem, BlockMu
     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
         problem->getSolution()->putScalar(0.);
     }
-
     
     Teuchos::RCP< Thyra::ProductMultiVectorBase<SC> > thyraX = problem->getSolution()->getProdThyraMultiVector();
     
@@ -531,5 +367,158 @@ int LinearSolver<SC,LO,GO,NO>::solveBlock(TimeProblem_Type* timeProblem, BlockMu
     
     return its;
 }
+
+// #ifdef FEDD_HAVE_TEKO
+// template<class SC,class LO,class GO,class NO>
+// int LinearSolver<SC,LO,GO,NO>::solveTeko(Problem_Type* problem, BlockMultiVectorPtr_Type rhs ){
+
+//     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
+
+//     bool verbose(problem->getVerbose());
+//     int its=0;
+//     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
+//         problem->getSolution()->putScalar(0.);
+//     }
+//     // typedef Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > 	Teko::BlockedMultiVector
+//     // convert them to teko compatible sub vectors
+//     Teko::MultiVector x0_th = problem->getSolution()->getBlockNonConst(0)->getThyraMultiVector();
+//     Teko::MultiVector x1_th = problem->getSolution()->getBlockNonConst(1)->getThyraMultiVector();
+
+//     Teko::MultiVector b0_th;
+//     Teko::MultiVector b1_th;
+//     if (rhs.is_null()){
+//         b0_th = problem->getRhs()->getBlockNonConst(0)->getThyraMultiVector();
+//         b1_th = problem->getRhs()->getBlockNonConst(1)->getThyraMultiVector();
+//     }
+//     else{
+//         b0_th = rhs->getBlockNonConst(0)->getThyraMultiVector();
+//         b1_th = rhs->getBlockNonConst(1)->getThyraMultiVector();
+//     }
+
+//     std::vector<Teko::MultiVector> x_vec; x_vec.push_back(x0_th); x_vec.push_back(x1_th);
+//     std::vector<Teko::MultiVector> b_vec; b_vec.push_back(b0_th); b_vec.push_back(b1_th);
+
+//     Teko::MultiVector x = Teko::buildBlockedMultiVector(x_vec); // these will be used in the Teko solve
+//     Teko::MultiVector b = Teko::buildBlockedMultiVector(b_vec);
+
+//     ParameterListPtr_Type pListThyraSolver = sublist( problem->getParameterList(), "ThyraSolver" );
+
+// //    pListThyraSolver->setParameters( problem->getParameterList()->sublist("ThyraPreconditioner") );
+
+//     problem->getLinearSolverBuilder()->setParameterList(pListThyraSolver);
+//     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
+
+//     problem->setupPreconditioner( "Teko" );
+
+//     //    if (!pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive").compare("Multiplicative")) {
+//     //        pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",true);
+//     //
+//     //        Teuchos::RCP<const Thyra::LinearOpBase<SC> > thyra_linOp = problem->getPreconditioner()->getThyraPrec()->getUnspecifiedPrecOp();
+//     //        Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *thyraB, thyraX.ptr() );
+//     //        pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
+//     //    }
+
+
+//     lowsFactory->setOStream(out);
+// //    lowsFactory->setVerbLevel(Teuchos::VERB_EXTREME);
+
+//     Teuchos::RCP<Thyra::LinearOpWithSolveBase<SC> > solver = lowsFactory->createOp();
+
+//     ThyraPrecPtr_Type thyraPrec = problem->getPreconditioner()->getThyraPrec();
+
+//     ThyraLinOpConstPtr_Type thyraMatrix = problem->getPreconditioner()->getTekoOp();
+
+//     Thyra::initializePreconditionedOp<SC>(*lowsFactory, thyraMatrix, thyraPrec.getConst(), solver.ptr());
+
+//     {
+//         Thyra::SolveStatus<SC> status = Thyra::solve<SC>(*solver, Thyra::NOTRANS, *b, x.ptr());
+//         if (verbose)
+//             std::cout << status << std::endl;
+
+//         its = status.extraParameters->get("Belos/Iteration Count",0);
+//         Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > xBlocked = Teuchos::rcp_dynamic_cast<Thyra::ProductMultiVectorBase< double > >( x );
+//         problem->getSolution()->getBlockNonConst(0)->fromThyraMultiVector( xBlocked->getNonconstMultiVectorBlock( 0 ) );
+//         problem->getSolution()->getBlockNonConst(1)->fromThyraMultiVector( xBlocked->getNonconstMultiVectorBlock( 1 ) );
+//     }
+
+//     return its;
+// }
+
+// template<class SC,class LO,class GO,class NO>
+// int LinearSolver<SC,LO,GO,NO>::solveTeko(TimeProblem_Type* timeProblem, BlockMultiVectorPtr_Type rhs ){
+
+//     bool verbose(timeProblem->getVerbose());
+//     int its=0;
+
+//     ProblemPtr_Type problem = timeProblem->getUnderlyingProblem();
+//     if (problem->getParameterList()->get("Zero Initial Guess",true)) {
+//         problem->getSolution()->putScalar(0.);
+//     }
+//     // typedef Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > 	Teko::BlockedMultiVector
+//     // convert them to teko compatible sub vectors
+//     Teko::MultiVector x0_th = problem->getSolution()->getBlockNonConst(0)->getThyraMultiVector();
+//     Teko::MultiVector x1_th = problem->getSolution()->getBlockNonConst(1)->getThyraMultiVector();
+
+//     Teko::MultiVector b0_th;
+//     Teko::MultiVector b1_th;
+//     if (rhs.is_null()){
+//         b0_th = problem->getRhs()->getBlockNonConst(0)->getThyraMultiVector();
+//         b1_th = problem->getRhs()->getBlockNonConst(1)->getThyraMultiVector();
+//     }
+//     else{
+//         b0_th = rhs->getBlockNonConst(0)->getThyraMultiVector();
+//         b1_th = rhs->getBlockNonConst(1)->getThyraMultiVector();
+//     }
+
+//     std::vector<Teko::MultiVector> x_vec; x_vec.push_back(x0_th); x_vec.push_back(x1_th);
+//     std::vector<Teko::MultiVector> b_vec; b_vec.push_back(b0_th); b_vec.push_back(b1_th);
+
+//     Teko::MultiVector x = Teko::buildBlockedMultiVector(x_vec); // these will be used in the Teko solve
+//     Teko::MultiVector b = Teko::buildBlockedMultiVector(b_vec);
+
+//     ParameterListPtr_Type pListThyraSolver = sublist( problem->getParameterList(), "ThyraSolver" );
+
+// //    pListThyraSolver->setParameters( problem->getParameterList()->sublist("ThyraPreconditioner") );
+
+//     problem->getLinearSolverBuilder()->setParameterList(pListThyraSolver);
+//     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
+
+//     problem->setupPreconditioner( "Teko" );
+
+// //    if (!pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive").compare("Multiplicative")) {
+// //        pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",true);
+// //
+// //        Teuchos::RCP<const Thyra::LinearOpBase<SC> > thyra_linOp = problem->getPreconditioner()->getThyraPrec()->getUnspecifiedPrecOp();
+// //        Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *thyraB, thyraX.ptr() );
+// //        pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
+// //    }
+
+//     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
+
+//     lowsFactory->setOStream(out);
+//     lowsFactory->setVerbLevel(Teuchos::VERB_HIGH);
+
+//     Teuchos::RCP<Thyra::LinearOpWithSolveBase<SC> > solver = lowsFactory->createOp();
+
+//     ThyraPrecPtr_Type thyraPrec = problem->getPreconditioner()->getThyraPrec();
+
+//     ThyraLinOpConstPtr_Type thyraMatrix = problem->getPreconditioner()->getTekoOp();
+
+//     Thyra::initializePreconditionedOp<SC>(*lowsFactory, thyraMatrix, thyraPrec.getConst(), solver.ptr());
+
+//     {
+//         Thyra::SolveStatus<SC> status = Thyra::solve<SC>(*solver, Thyra::NOTRANS, *b, x.ptr());
+//         if (verbose)
+//             std::cout << status << std::endl;
+
+//         its = status.extraParameters->get("Belos/Iteration Count",0);
+//         Teuchos::RCP< Thyra::ProductMultiVectorBase< double > > xBlocked = Teuchos::rcp_dynamic_cast<Thyra::ProductMultiVectorBase< double > >( x );
+//         problem->getSolution()->getBlockNonConst(0)->fromThyraMultiVector( xBlocked->getNonconstMultiVectorBlock( 0 ) );
+//         problem->getSolution()->getBlockNonConst(1)->fromThyraMultiVector( xBlocked->getNonconstMultiVectorBlock( 1 ) );
+//     }
+
+//     return its;
+// }
+// #endif
 }
 #endif

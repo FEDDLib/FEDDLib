@@ -48,21 +48,55 @@ public:
     
     ~LinearSolver();
     
+    /*!
+        \brief Call to solve a linear/linearized problem with right-hand side rhs. Depending on 'type' solveMonolithic, solveTeko, solveBlock is called
+		@param[in] problem
+		@param[in] rhs
+		@param[in] type
+    */
     int solve(Problem_Type* problem, BlockMultiVectorPtr_Type rhs, std::string type="Monolithic" );
     
+    /*!
+        \brief Call to solve a linear/linearized problem with right-hand side rhs. Depending on 'type' solveMonolithic, solveTeko, solveBlock is called
+		@param[in] timeProblem
+		@param[in] rhs
+		@param[in] type 
+    */
     int solve(TimeProblem_Type* timeProblem, BlockMultiVectorPtr_Type rhs, std::string type="Monolithic" );
     
+    /*!
+        \brief Solve linear/linearized problem monolithicly
+		@param[in] problem
+		@param[in] rhs
+		@param[in] type
+    */
     int solveMonolithic(Problem_Type* problem, BlockMultiVectorPtr_Type rhs, std::string type );
     
+    /*!
+        \brief Solve linear/linearized time dependent problem  monolithicly
+		@param[in] problem
+		@param[in] rhs
+    */
     int solveMonolithic(TimeProblem_Type* problem, BlockMultiVectorPtr_Type rhs );
     
-#ifdef FEDD_HAVE_TEKO
-    int solveTeko(Problem_Type* problem, BlockMultiVectorPtr_Type rhs );
-
-    int solveTeko(TimeProblem_Type* problem, BlockMultiVectorPtr_Type rhs );
-#endif
+// #ifdef FEDD_HAVE_TEKO
+//     int solveTeko(Problem_Type* problem, BlockMultiVectorPtr_Type rhs );
+//     int solveTeko(TimeProblem_Type* problem, BlockMultiVectorPtr_Type rhs );
+// #endif
+    /*!
+        \brief In case of a block system, solve block is called. It works also for teko.
+		@param[in] problem
+		@param[in] rhs
+		@param[in] precType
+    */
     int solveBlock(Problem_Type* problem, BlockMultiVectorPtr_Type rhs, std::string precType );
     
+    /*!
+        \brief In case of a block system, solve block is called. It works also for teko
+		@param[in] problem
+		@param[in] rhs
+		@param[in] precTypes
+    */
     int solveBlock(TimeProblem_Type* problem, BlockMultiVectorPtr_Type rhs, std::string precType );
     
 private:
