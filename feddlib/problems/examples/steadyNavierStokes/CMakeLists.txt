@@ -7,7 +7,6 @@ TRIBITS_ADD_TEST(
 	steadyNavierStokes
 	NAME steadyNavierStokes
 	ARGS
-#--precfile=parametersPrecMumps.xml
 	NUM_MPI_PROCS 4
 )
 
