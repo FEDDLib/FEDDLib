@@ -235,7 +235,6 @@ namespace FEDD
         this->initNOXParameters();
 
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method", "Monolithic");
-        std::cout << "Prec Type " << type << std::endl;
         if (!type.compare("Monolithic"))
             initVectorSpacesMonolithic();
         else if (!type.compare("Teko") || type == "FaCSI" || type == "FaCSI-Teko" || type == "Diagonal" || type == "Triangular" || type == "PCD"|| type == "LSC")

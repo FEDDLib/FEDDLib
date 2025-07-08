@@ -817,8 +817,8 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
     else if(!timeProblem_.is_null())
         solverBuilder = timeProblem_->getUnderlyingProblem()->getLinearSolverBuilder();
 
-    std::cout << " hier " << std::endl;
     ParameterListPtr_Type tekoPList= sublist( parameterList, "Teko Parameters" );
+
     if (precFactory_.is_null()) {
         ParameterListPtr_Type tmpSubList = sublist( sublist( sublist( sublist( parameterList, "Teko Parameters" ) , "Preconditioner Types" ) , "Teko" ) , "Inverse Factory Library" );
 
@@ -874,9 +874,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
 
                 Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackLaplace = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "Pressure Laplace Operator", thyraLaplace ) );
                 rh_->addRequestCallback( callbackLaplace );
-
             }
             else if(!tekoPList->sublist("Preconditioner Types").sublist("Teko").get("Inverse Type", "SIMPLE").compare("PCD")){
+
                 // Velocity Mass Matrix
                 Teko::LinearOp thyraMass = velocityMassMatrix_;
                 Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackMass = Teuchos::rcp(new Teko::StaticRequestCallback<Teko::LinearOp> ( "Velocity Mass Matrix", thyraMass ) );
@@ -904,8 +904,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerTeko( )
                 rh_->addRequestCallback( callbackPCD_ );
 
             }
-            std::cout << " hier " << std::endl;
-
             Teuchos::RCP< Teko::StratimikosFactory > tekoFactory = Teuchos::rcp_dynamic_cast<Teko::StratimikosFactory>(precFactory_);
             tekoFactory->setRequestHandler( rh_ );
         }

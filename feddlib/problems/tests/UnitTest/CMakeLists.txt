@@ -352,7 +352,21 @@ TRIBITS_ADD_TEST(
 )
 TRIBITS_ADD_TEST(
 	navierStokesUnitTestPrec
+	NAME navierStokes_2D_P2_PCD
+	ARGS "--dim=2 --FEType=P1 --precMethod=PCD"
+	NUM_MPI_PROCS 9
+)
+TRIBITS_ADD_TEST(
+	navierStokesUnitTestPrec
 	NAME navierStokes_2D_P2_Teko
 	ARGS "--dim=2 --FEType=P1 --precMethod=Teko"
 	NUM_MPI_PROCS 9
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(data_navierStokesUnitTestPrec
+ 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ReferenceSolutions
+ 	SOURCE_FILES solution_navier_stokes_velocity_Diagonal_2d_P1_9cores.h5 solution_navier_stokes_velocity_Monolithic_2d_P1_9cores.h5 solution_navier_stokes_velocity_Teko_2d_P1_9cores.h5 solution_navier_stokes_velocity_PCD_2d_P1_9cores.h5 solution_navier_stokes_pressure_Diagonal_2d_P1_9cores.h5 solution_navier_stokes_pressure_Monolithic_2d_P1_9cores.h5 solution_navier_stokes_pressure_Teko_2d_P1_9cores.h5 solution_navier_stokes_pressure_PCD_2d_P1_9cores.h5  
+ 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/ReferenceSolutions
+ 	DEST_FILES solution_navier_stokes_velocity_Diagonal_2d_P1_9cores.h5 solution_navier_stokes_velocity_Monolithic_2d_P1_9cores.h5 solution_navier_stokes_velocity_Teko_2d_P1_9cores.h5 solution_navier_stokes_velocity_PCD_2d_P1_9cores.h5 solution_navier_stokes_pressure_Diagonal_2d_P1_9cores.h5 solution_navier_stokes_pressure_Monolithic_2d_P1_9cores.h5 solution_navier_stokes_pressure_Teko_2d_P1_9cores.h5 solution_navier_stokes_pressure_PCD_2d_P1_9cores.h5  
+ 	EXEDEPS navierStokesUnitTestPrec
 )

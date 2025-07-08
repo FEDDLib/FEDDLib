@@ -105,24 +105,25 @@ int main(int argc, char *argv[]) {
     
     std::string FEType = "P1";
 
-    std::string xmlPrecFile;
+    std::string xmlSolverFile = "parametersSolver_PrecTest.xml";
+    myCLP.setOption("solverfile", &xmlSolverFile, ".xml file with Inputparameters.");
+
+    myCLP.recogniseAllOptions(true);
+    myCLP.throwExceptions(false);
+
+    
+    Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = myCLP.parse(argc, argv);
+    if (parseReturn == Teuchos::CommandLineProcessor::PARSE_HELP_PRINTED) {
+        return EXIT_SUCCESS;
+    }
+    
+    std::string xmlPrecFile; 
     if(precMethod=="Monolithic")
         xmlPrecFile = "parametersPrec_NavierStokes_Mono.xml";
     else if(precMethod=="Diagonal" || precMethod=="Triangular" || precMethod=="PCD" || precMethod=="LSC")
         xmlPrecFile = "parametersPrec_NavierStokes_Block.xml";
     else if(precMethod=="Teko")
         xmlPrecFile = "parametersPrec_NavierStokes_Teko.xml";
- 
-    myCLP.setOption("precfile", &xmlPrecFile, ".xml file with Inputparameters.");
-    std::string xmlSolverFile = "parametersSolver_PrecTest.xml";
-    myCLP.setOption("solverfile", &xmlSolverFile, ".xml file with Inputparameters.");
-
-    myCLP.recogniseAllOptions(true);
-    myCLP.throwExceptions(false);
-    Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = myCLP.parse(argc, argv);
-    if (parseReturn == Teuchos::CommandLineProcessor::PARSE_HELP_PRINTED) {
-        return EXIT_SUCCESS;
-    }
 
     {
         ParameterListPtr_Type parameterListPrec = Teuchos::getParametersFromXmlFile(xmlPrecFile);
@@ -143,8 +144,7 @@ int main(int argc, char *argv[]) {
         int minNumberSubdomains = 1;
 
         //We exclude any other tests, than the one prescribed
-  
-        // TEUCHOS_TEST_FOR_EXCEPTION(!(size == 9 && m == 3), std::logic_error, "The 2D test solutions are only sensible for 4 processors.");
+        TEUCHOS_TEST_FOR_EXCEPTION(!(size == 9 && m == 3), std::logic_error, "The 2D test solutions are only sensible for 4 processors.");
        
         Teuchos::RCP<Domain<SC, LO, GO, NO>> domainPressure;
         Teuchos::RCP<Domain<SC, LO, GO, NO>> domainVelocity;
@@ -198,23 +198,17 @@ int main(int argc, char *argv[]) {
             nlSolver.solve( navierStokes,its );
         }
 
-        std::cout << " (*its)[0] " << (*its)[0] << std::endl;
-        // if(precMethod=="Monolithic")
-        //     xmlPrecFile = "parametersPrec_NavierStokes_Mono.xml";
-        // else if(precMethod=="Diagonal" || precMethod=="Triangular" || precMethod=="PCD" || precMethod=="LSC")
-        //     xmlPrecFile = "parametersPrec_NavierStokes_Block.xml";
-        // else if(precMethod=="Teko")
-        //     xmlPrecFile = "parametersPrec_NavierStokes_Teko.xml";
+        // std::cout << " (*its)[0] " << (*its)[0] << std::endl;
+       
+        // HDF5Export<SC, LO, GO, NO> exporterV(navierStokes.getSolution()->getBlock(0)->getMap(),
+        //     "ReferenceSolutions/solution_navier_stokes_velocity_" + precMethod +"_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
+        // exporterV.writeVariablesHDF5("velocity",
+        //     navierStokes.getSolution()->getBlock(0)); // VariableName and Variable
 
-        HDF5Export<SC, LO, GO, NO> exporterV(navierStokes.getSolution()->getBlock(0)->getMap(),
-            "ReferenceSolutions/solution_navier_stokes_velocity_" + precMethod +"_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
-        exporterV.writeVariablesHDF5("velocity",
-            navierStokes.getSolution()->getBlock(0)); // VariableName and Variable
-
-        HDF5Export<SC, LO, GO, NO> exporterP(navierStokes.getSolution()->getBlock(1)->getMap(),
-            "ReferenceSolutions/solution_navier_stokes_pressure_" + precMethod +"_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
-        exporterP.writeVariablesHDF5("pressure",
-            navierStokes.getSolution()->getBlock(1)); // VariableName and Variable
+        // HDF5Export<SC, LO, GO, NO> exporterP(navierStokes.getSolution()->getBlock(1)->getMap(),
+        //     "ReferenceSolutions/solution_navier_stokes_pressure_" + precMethod +"_" + std::to_string(dim) + "d_" + FETypeV + "_" + std::to_string(size) + "cores"); //  Map and file name
+        // exporterP.writeVariablesHDF5("pressure",
+        //     navierStokes.getSolution()->getBlock(1)); // VariableName and Variable
 
 
         HDF5Import<SC, LO, GO, NO> importerV(navierStokes.getSolution()->getBlock(0)->getMap(),
@@ -269,6 +263,23 @@ int main(int argc, char *argv[]) {
         TEUCHOS_TEST_FOR_EXCEPTION(normErrorV/normVe > 1.e-9 || normErrorP/normPr > 1.e-9 , std::logic_error,
                                     "Difference between current solution and "
                                     "stored solution greater than 1e-9.");
+
+        if(precMethod=="Monolithic"){
+            TEUCHOS_TEST_FOR_EXCEPTION((*its)[0] - 18.25 > 1.e-9 , std::logic_error,
+                                    "Itertion count for Monolithic changed compared to initial test.");
+        }                                
+        else if(precMethod=="Diagonal"){
+            TEUCHOS_TEST_FOR_EXCEPTION((*its)[0] - 82.0 > 1.e-9 , std::logic_error,
+                                    "Itertion count for Diagonal changed compared to initial test.");
+        }                                    
+        else if(precMethod=="PCD"){
+            TEUCHOS_TEST_FOR_EXCEPTION((*its)[0] - 73.25 > 1.e-9 , std::logic_error,
+                                    "Itertion count for PCD changed compared to initial test.");
+        }
+        else if(precMethod=="Teko"){
+            TEUCHOS_TEST_FOR_EXCEPTION((*its)[0] - 21.25 > 1.e-9 , std::logic_error,
+                                    "Itertion count for Teko changed compared to initial test.");
+        }
 
         if (boolExportSolution) {
             Teuchos::RCP<ExporterParaView<SC, LO, GO, NO>> exPara(new ExporterParaView<SC, LO, GO, NO>());
