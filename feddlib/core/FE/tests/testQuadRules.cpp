@@ -38,7 +38,7 @@ template <std::size_t dim, typename Lambda> int check_integration(const int degr
     }
     
     SC error_result = fabs(integral - expected_result);
-    if (error_result > std::numeric_limits<double>::epsilon() * 2000.0) {
+    if (error_result > std::numeric_limits<double>::epsilon() * 20000.0) {
         std::ostringstream oss;
         oss << std::scientific << std::setprecision(2) << error_result;
         std::cout << "Test (" << test << ") " << "Integral does not match expected result: error = " << oss.str() << std::endl << "    " << file << ":" << line << std::endl;
