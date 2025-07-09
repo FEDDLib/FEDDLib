@@ -1434,7 +1434,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
         }
         else
         {
-           massMatrixVInverse_ = velocityMassMatrixMatrixPtr_->buildDiagonalInverse(typeDiag)->getThyraLinOp() ;
+           massMatrixVInverse_ = velocityMassMatrixMatrixPtr_->buildDiagonalInverse(typeDiag)->getThyraLinOpNonConst() ;
         }
             
     }
