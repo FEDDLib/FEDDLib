@@ -205,12 +205,12 @@ public:
     /// @param value
     static void phi(int dim, int intFE, int i, vec_dbl_Type &p, double *value);
 
-    static int getPhiGlobal(vec2D_dbl_ptr_Type &Phi,
-                            vec_dbl_ptr_Type &weightsPhi,
-                            int dim,
-                            std::string FEType,
-                            int Degree)
-    { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "getPhiGlobal not implemented yet.");};
+   //  static int getPhiGlobal(vec2D_dbl_ptr_Type &Phi,
+   //                          vec_dbl_ptr_Type &weightsPhi,
+   //                          int dim,
+   //                          std::string FEType,
+   //                          int Degree)
+   //  { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "getPhiGlobal not implemented yet.");};
 
 
 private:

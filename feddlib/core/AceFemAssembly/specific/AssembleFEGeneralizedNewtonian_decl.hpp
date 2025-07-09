@@ -94,7 +94,7 @@ namespace FEDD
 		@param[in] &elementMatrix
 		*/
 		void assemblyStressDev(SmallMatrixPtr_Type &elementMatrix);
-		/*!
+		
 
 		/*!
 
@@ -113,8 +113,6 @@ namespace FEDD
 		@param[in] &elementMatrix
 		*/
 		void assemblyOutflowNeumannBoundaryTerm(SmallMatrixPtr_Type &elementMatrix){TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Will be added when normal evaluation on the finite element is finished");} ;
-
-		/*!
 
 		/*!
 		 \brief Assembly function for directional derivative contribution  neumann boundary term

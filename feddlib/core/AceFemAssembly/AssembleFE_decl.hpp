@@ -211,7 +211,7 @@ namespace FEDD {
         \brief E.g. In case of non-newtonian fluids the viscosity is not constant - Compute the viscosity for an element depending on the known velocity solution
         */
 	    virtual void computeLocalconstOutputField() {TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "computeLocalconstOutputField not yet implemented"); };
-          /*!
+       
 
         /*!
          \brief Obtain value of resulting postprocessing field at nodes/ inside an element
