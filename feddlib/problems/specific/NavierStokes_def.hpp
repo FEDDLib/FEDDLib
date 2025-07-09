@@ -130,7 +130,8 @@ u_rep_()
         || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("LSC-Pressure-Laplace") )
     { 
         this->bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
-        this->bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, domainPressure, "Dirichlet", 1);
+        DomainPtr_Type domainNonConstPtr = domainPressure;
+        this->bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, domainNonConstPtr, "Dirichlet", 1);
     } 
 
     if(this->parameterList_->sublist("General").get("Augmented Lagrange",false))  

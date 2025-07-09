@@ -42,6 +42,7 @@ class Problem {
 public:
 
     typedef Domain<SC,LO,GO,NO> Domain_Type;
+    typedef Teuchos::RCP<Domain_Type> DomainPtr_Type;
     typedef Teuchos::RCP<const Domain_Type> DomainConstPtr_Type;
     typedef std::vector<DomainConstPtr_Type> DomainConstPtr_vec_Type;
 
