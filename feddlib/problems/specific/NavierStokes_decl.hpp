@@ -39,6 +39,7 @@ public:
     typedef typename Problem_Type::MultiVectorConstPtr_Type MultiVectorConstPtr_Type;
     typedef typename Problem_Type::BlockMultiVectorPtr_Type BlockMultiVectorPtr_Type;
 
+    typedef typename Problem_Type::Domain_Type Domain_Type;
     typedef typename Problem_Type::DomainPtr_Type DomainPtr_Type;
     typedef typename Problem_Type::DomainConstPtr_Type DomainConstPtr_Type;
     typedef typename Problem_Type::CommConstPtr_Type CommConstPtr_Type;
