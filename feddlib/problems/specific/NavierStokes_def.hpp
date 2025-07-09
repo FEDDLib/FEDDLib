@@ -38,7 +38,7 @@ void sDummyFunc(double* x, double* res, double t, double* parameter){
     return;
 }
 
-void zeroDirichletBC(double* x, double* res, double t, double* parameters){
+void zeroDirichletBC(double* x, double* res, double t, const double* parameters){
 
     res[0] = 0.;
 
@@ -130,8 +130,7 @@ u_rep_()
         || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("LSC-Pressure-Laplace") )
     { 
         this->bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
-        DomainPtr_Type domainNonConstPtr = domainPressure;
-        this->bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, domainNonConstPtr, "Dirichlet", 1);
+        this->bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
     } 
 
     if(this->parameterList_->sublist("General").get("Augmented Lagrange",false))  
