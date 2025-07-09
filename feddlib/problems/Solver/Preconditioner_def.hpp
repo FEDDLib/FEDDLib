@@ -1364,7 +1364,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerBlock2x2( )
             }
             else
             {
-                massMatrixInverse_ = pressureMassMatrixPtr_->buildDiagonalInverse(typeDiag)->getThyraLinOp() ;
+                massMatrixInverse_ = pressureMassMatrixPtr_->buildDiagonalInverse(typeDiag)->getThyraLinOpNonConst() ;
             }
         }
 

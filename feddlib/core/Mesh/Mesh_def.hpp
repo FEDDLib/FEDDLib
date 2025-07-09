@@ -528,7 +528,6 @@ void Mesh<SC,LO,GO,NO>::correctElementOrientation(){
             flipElement(elementsC_,T); 
 
     }
-    std::cout << " Finished " << std::endl;
     Teuchos::reduceAll<int, int> (*this->getComm(), Teuchos::REDUCE_SUM, negDet, Teuchos::outArg (negDet));
     Teuchos::reduceAll<int, int> (*this->getComm(), Teuchos::REDUCE_SUM, posDet, Teuchos::outArg (posDet));
 
