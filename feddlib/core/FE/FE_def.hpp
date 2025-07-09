@@ -4002,8 +4002,8 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivT( int dim,
 
     Helper::getDPhi(dPhi, weights, dim, FEType1, deg);
 
-    if (FEType2=="P1-disc-global")
-        Helper::getPhiGlobal(phi, weights, dim, FEType2, deg);
+    // if (FEType2=="P1-disc-global")
+    //     Helper::getPhiGlobal(phi, weights, dim, FEType2, deg);
     if (FEType2=="P1-disc" && FEType1=="Q2" )
         Helper::getPhi(phi, weights, dim, FEType2, deg, FEType1);
     else
@@ -4132,8 +4132,8 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivTFast( int dim,
     
     Helper::getDPhi(dPhi, weights, dim, FEType1, deg);
     
-    if (FEType2=="P1-disc-global")
-        Helper::getPhiGlobal(phi, weights, dim, FEType2, deg);
+    // if (FEType2=="P1-disc-global")
+    //     Helper::getPhiGlobal(phi, weights, dim, FEType2, deg);
     if (FEType2=="P1-disc" && FEType1=="Q2" )
         Helper::getPhi(phi, weights, dim, FEType2, deg, FEType1);
     else
