@@ -6,7 +6,7 @@
             <ParameterList name="FROSch">
                 <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
                 <Parameter name="Recycling" type="bool" value="true"/>
-                <Parameter name="DofsPerNode1"                                      type="int"      value="2"/>
+                <Parameter name="DofsPerNode1"                                      type="int"      value="3"/>
                 <Parameter name="DofOrdering1"                                      type="string"   value="NodeWise"/>
                 <Parameter name="Overlap"                                           type="int"      value="1"/>
                 <Parameter name="TwoLevel"                                          type="bool"     value="false"/>

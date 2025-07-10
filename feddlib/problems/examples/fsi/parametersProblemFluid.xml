@@ -1,12 +1,10 @@
 <ParameterList name="Fluid">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension"							    type="int"   	value="2"/>
+        <Parameter name="Dimension"							    type="int"   	value="3"/>
         <Parameter name="Discretization"                        type="int"   	value="P2"/>
-        <Parameter name="Mesh Type"			                    type="string"   value="unstructured"/> <!--structured, unstructured -->
-        <Parameter name="BC Type"							    type="string"   value="partialCFD"/><!-- parabolic, parabolic_benchmark, partialCFD-->
-        <Parameter name="Mesh Name"					            type="string"   value="dfg_fsi_fluid.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh, dfg_fsi_benchmark_fluid.mesh-->
+        <Parameter name="BC Type"							    type="string"   value="Tube3D"/><!-- parabolic, parabolic_benchmark, partialCFD-->
+        <Parameter name="Mesh Name"					            type="string"   value="fsi_fluid_length_0_5_mm.mesh"/><!--Turek3DCylinder_1400.mesh, circle2D.mesh, dfg_fsi_benchmark_fluid.mesh-->
         <Parameter name="Mesh Delimiter"					    type="string"   value=" "/>
-        <Parameter name="H/h"							    	type="int"   	value="6"/>        
         <Parameter name="Viscosity"					            type="double"   value="1.0e-3"/>
         <Parameter name="Density"					            type="double"   value="1000.0"/>
         <Parameter name="MaxVelocity"                           type="double"   value=".3"/>

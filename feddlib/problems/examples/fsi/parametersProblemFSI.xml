@@ -1,10 +1,8 @@
 <ParameterList name="FSI">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension" type="int" value="2"/>
+        <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
-        <Parameter name="BC Type" type="string" value="partialCFD"/><!--partialCFD,Richter3DFull-->
-        
-        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
+        <Parameter name="BC Type" type="string" value="Tube3D"/><!--partialCFD,Richter3DFull-->
         
         <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
         
@@ -45,8 +43,8 @@
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h004.mesh"/>
-        <Parameter name="Mesh 2 Name" type="string" value="dfg_fsi_solid_h004.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="fsi_fluid_length_0_5_mm.mesh"/>
+        <Parameter name="Mesh 2 Name" type="string" value="fsi_solid_length_0_5_mm.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
         

@@ -1,6 +1,6 @@
 <ParameterList name="Structure">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension" type="int" value="2"/>
+        <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P2"/><!--P1, P2-->
         <Parameter name="Mesh Delimiter" type="string" value=" "/>
         <Parameter name="H/h" type="int" value="10"/>        

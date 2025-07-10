@@ -6,12 +6,12 @@
             <ParameterList name="FROSch">
                 <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
                 <Parameter name="Recycling" type="bool" value="true"/>
-                <Parameter name="Dimension"                                         type="int"      value="2"/>
-                <Parameter name="DofsPerNode1"                                      type="int"      value="2"/>
+                <Parameter name="Dimension"                                         type="int"      value="3"/>
+                <Parameter name="DofsPerNode1"                                      type="int"      value="3"/>
                 <Parameter name="DofsPerNode2"                                      type="int"      value="1"/>
-                <Parameter name="DofsPerNode3"                                      type="int"      value="2"/>
-                <Parameter name="DofsPerNode4"                                      type="int"      value="2"/>
-                <Parameter name="DofsPerNode5"                                      type="int"      value="2"/>
+                <Parameter name="DofsPerNode3"                                      type="int"      value="3"/>
+                <Parameter name="DofsPerNode4"                                      type="int"      value="3"/>
+                <Parameter name="DofsPerNode5"                                      type="int"      value="3"/>
                 <Parameter name="DofOrdering1"                                      type="string"   value="NodeWise"/>
                 <Parameter name="DofOrdering2"                                      type="string"   value="NodeWise"/>
                 <Parameter name="DofOrdering3"                                      type="string"   value="NodeWise"/>

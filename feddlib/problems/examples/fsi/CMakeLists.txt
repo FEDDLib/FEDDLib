@@ -20,8 +20,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fsiTest
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_fsiTest
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES dfg_fsi_fluid_h004.mesh dfg_fsi_solid_h004.mesh
+    SOURCE_FILES dfg_fsi_fluid_h004.mesh dfg_fsi_solid_h004.mesh fsi_fluid_length_0_5_mm.mesh fsi_solid_length_0_5_mm.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES dfg_fsi_fluid_h004.mesh dfg_fsi_solid_h004.mesh
+	DEST_FILES dfg_fsi_fluid_h004.mesh dfg_fsi_solid_h004.mesh fsi_fluid_length_0_5_mm.mesh fsi_solid_length_0_5_mm.mesh
 	EXEDEPS fsi
 )

@@ -129,6 +129,31 @@ void inflow3DRichterSuperFast(double* x, double* res, double t, const double* pa
     return;
 }
 
+void parabolicInflow3D(double* x, double* res, double t, const double* parameters)
+{
+    // parameters[0] is the maxium desired velocity
+    // parameters[1] the radius
+
+    // The center point of the inlet is (0,0,0)   
+
+    // Distance from center
+    double r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
+    if(t < 0.2)
+    {
+        res[0] = 0.;
+        res[1] = 0.;
+        res[2] = parameters[0] * (1- r/parameters[1]) * ( 1 - cos( 2.*M_PI*t ));
+    }
+    else
+    {
+        res[0] = 0.;
+        res[1] = 0.;
+        res[2] = parameters[0] * (1- r/parameters[1]) ;
+    }
+
+    return;
+}
+
 void dummyFunc(double* x, double* res, double t, const double* parameters)
 {
     return;
@@ -254,9 +279,7 @@ int main(int argc, char *argv[])
         sublist( parameterListGeometry, "Parameter" )->set( "Poisson Ratio", 0.4 );
         sublist( parameterListGeometry, "Parameter" )->set( "Mu", 2.0e+6 );
             
-        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
-        string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
-        
+        int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);        
         string      discType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");
         string preconditionerMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
         int         n;
@@ -300,52 +323,52 @@ int main(int argc, char *argv[])
                     domainP2fluid.reset( new Domain_Type( comm, dim ) );
                     domainP2struct.reset( new Domain_Type( comm, dim ) );
                     //                    
-                    if (!meshType.compare("unstructured")) {
 
-                        vec_int_Type idsInterface(1,-1);
-                        if (bcType == "partialCFD")
-                            idsInterface[0] = 5;
-                        else if ( bcType == "Richter3D" || bcType == "Richter3DFull" || bcType == "Richter3DFullFaster" || bcType == "Richter3DFullSuperFast"){
-                            idsInterface[0] = 6;
-                        }
-                        else if (bcType == "Tube2D"){
-                            idsInterface[0] = 4;
-                        }
-                        else{
-                            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"Interface ID not known for this problem.");
-                        }
-
-                        
-                        MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(2);
-                        domainP1Array[0] = domainP1fluid;
-                        domainP1Array[1] = domainP1struct;
-                        
-                        ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );
-                        if (!discType.compare("P2")){
-                            pListPartitioner->set("Build Edge List",true);
-                            pListPartitioner->set("Build Surface List",true);
-                        }
-                        else{
-                            pListPartitioner->set("Build Edge List",false);
-                            pListPartitioner->set("Build Surface List",false);
-                        }
-                        MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
-                        
-                        partitionerP1.readAndPartition();
-                        
-                        if (!discType.compare("P2")){
-                            domainP2fluid->buildP2ofP1Domain( domainP1fluid );
-                            domainP2struct->buildP2ofP1Domain( domainP1struct );
-                        }
-                        // Calculate distances is done in: identifyInterfaceParallelAndDistance
-                        domainP1fluid->identifyInterfaceParallelAndDistance(domainP1struct, idsInterface);
-                        if (!discType.compare("P2"))
-                            domainP2fluid->identifyInterfaceParallelAndDistance(domainP2struct, idsInterface);
-                        
+                    // Define interface ID
+                    vec_int_Type idsInterface(1,-1);
+                    if (bcType == "partialCFD")
+                        idsInterface[0] = 5;
+                    else if ( bcType == "Richter3D" || bcType == "Richter3DFull" || bcType == "Richter3DFullFaster" || bcType == "Richter3DFullSuperFast" || bcType == "Tube3D"){
+                        idsInterface[0] = 6;
+                    }
+                    else if (bcType == "Tube2D"){
+                        idsInterface[0] = 6;
+                        idsInterface.push_back(9);
+                        idsInterface.push_back(10);
                     }
                     else{
-                        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Test for unstructured meshes read from .mesh-file. Change mesh type in setup file to 'unstructured'.");
+                        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"Interface ID not known for this problem.");
                     }
+
+                    
+                    MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(2);
+                    domainP1Array[0] = domainP1fluid;
+                    domainP1Array[1] = domainP1struct;
+                    
+                    ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );
+                    if (!discType.compare("P2")){
+                        pListPartitioner->set("Build Edge List",true);
+                        pListPartitioner->set("Build Surface List",true);
+                    }
+                    else{
+                        pListPartitioner->set("Build Edge List",false);
+                        pListPartitioner->set("Build Surface List",false);
+                    }
+                    MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
+                    
+                    partitionerP1.readAndPartition(15);
+                    
+                    if (!discType.compare("P2")){
+                        domainP2fluid->buildP2ofP1Domain( domainP1fluid );
+                        domainP2struct->buildP2ofP1Domain( domainP1struct );
+                    }
+                    
+                    // Calculate distances is done in: identifyInterfaceParallelAndDistance
+                    domainP1fluid->identifyInterfaceParallelAndDistance(domainP1struct, idsInterface);
+                    if (!discType.compare("P2"))
+                        domainP2fluid->identifyInterfaceParallelAndDistance(domainP2struct, idsInterface);
+                    
+
                     if (verbose){
                         cout << "done! -- " << endl;
                     }
@@ -372,6 +395,8 @@ int main(int argc, char *argv[])
 //                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
             }
 
+            domainFluidVelocity->exportNodeFlags("Fluid");
+            domainStructure->exportNodeFlags("Solid"); 
 
             if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
                 
@@ -412,7 +437,7 @@ int main(int argc, char *argv[])
                 }
 
             }
-            
+
             // Baue die Interface-Maps in der Interface-Nummerierung
             domainFluidVelocity->buildInterfaceMaps();
             
@@ -427,8 +452,325 @@ int main(int argc, char *argv[])
 
             domainFluidVelocity->setReferenceConfiguration();
             domainFluidPressure->setReferenceConfiguration();
-
+                           
+            // #####################
+            // Problem definieren
+            // #####################
+            Teuchos::RCP<SmallMatrix<int>> defTS;
+            if(geometryExplicit)
             {
+                // SmallMatrix<int> defTS(4);
+                defTS.reset( new SmallMatrix<int> (4) );
+
+                // Fluid
+                (*defTS)[0][0] = 1;
+                (*defTS)[0][1] = 1;
+
+                // Struktur
+                (*defTS)[2][2] = 1;
+            }
+            else
+            {
+                // SmallMatrix<int> defTS(5);
+                defTS.reset( new SmallMatrix<int> (5) );
+
+                // Fluid
+                (*defTS)[0][0] = 1;
+                (*defTS)[0][1] = 1;
+
+                // TODO: [0][4] und [1][4] bei GI + Newton noetig?
+
+                // Struktur
+                (*defTS)[2][2] = 1;
+            }
+
+            FSI<SC,LO,GO,NO> fsi(domainFluidVelocity, discType,
+                                 domainFluidPressure, "P1",
+                                 domainStructure, discType,
+                                 domainInterface, discType,
+                                 domainGeometry, discType,
+                                 parameterListFluidAll,
+                                 parameterListStructureAll,
+                                 parameterListAll,
+                                 parameterListGeometry,
+                                 defTS);
+
+
+            domainFluidVelocity->info();
+            domainFluidPressure->info();
+            domainStructure->info();
+            domainGeometry->info();
+            
+            fsi.info();
+            
+            // #####################
+            // Randwerte
+            // Zusammenfassung der Flags:
+            // Fluid/ Geometrie: 1 = wall; 2 = inflow; 3 = outflow; 4 = Fluid-obstacle; 5 = Interface in 2d
+            // Struktur: 1 = linke Seite (homogener Dirichletrand); 5 = Interface in 2d
+            // #####################
+            std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MeanVelocity",2.0));
+            
+            if(!bcType.compare("partialCFD"))
+            {
+                parameter_vec.push_back(.41);//height of inflow region
+            }
+            else if( !bcType.compare("Richter3D") || !bcType.compare("Richter3DFull") || !bcType.compare("Richter3DFullFaster") || !bcType.compare("Richter3DFullSuperFast") )
+            {
+                parameter_vec[0] = 1.;
+                parameter_vec.push_back(.4);
+            }
+            else if(!bcType.compare("Tube2D"))
+            {
+                parameter_vec.push_back(1.);
+                parameter_vec[0] = 1.5;
+            }
+            else if(!bcType.compare("Tube3D"))
+            {
+                parameter_vec.push_back(0.09); // Height of inflow region is 0.18 cm! We use Radius here
+            }
+            else
+            {
+                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Select a valid boundary condition.");
+            }
+
+
+            Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
+
+
+            // TODO: Vermutlich braucht man keine bcFactoryFluid und bcFactoryStructure,
+            // da die RW sowieso auf dem FSI-Problem gesetzt werden.
+
+            // Fluid-RW
+            {
+                Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryFluid( new BCBuilder<SC,LO,GO,NO>( ) );
+                
+                if (dim==2)
+                {
+                    if(!bcType.compare("partialCFD"))
+                    {
+                        bcFactory->addBC(zeroDirichlet2D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
+                        bcFactory->addBC(inflow2D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
+
+                        bcFactoryFluid->addBC(zeroDirichlet2D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
+                        bcFactoryFluid->addBC(inflow2D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
+
+                        bcFactory->addBC(zeroDirichlet2D, 4, 0, domainFluidVelocity, "Dirichlet", dim); // obstacle
+                        bcFactoryFluid->addBC(zeroDirichlet2D, 4, 0, domainFluidVelocity, "Dirichlet", dim); // obstacle                        
+                        
+                    }
+                    else if(bcType == "Tube2D"){
+                        bcFactory->addBC(zeroDirichlet2D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
+                        bcFactory->addBC(inflow2D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
+                        bcFactoryFluid->addBC(zeroDirichlet2D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
+                        bcFactoryFluid->addBC(inflow2D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
+                    }
+                    
+                }
+                else if(dim==3)
+                {
+                    if(bcType == "Tube3D"){
+                        
+                        bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow 
+                        bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow 
+                        bcFactory->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
+                        bcFactoryFluid->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
+                        bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
+                        bcFactoryFluid->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
+
+                    }
+                    else{ 
+                        bcFactory->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
+                        if (bcType == "Richter3D" || bcType == "Richter3DFull")
+                            bcFactory->addBC(inflow3DRichter, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
+                        else if (bcType == "Richter3DFullFaster")
+                            bcFactory->addBC(inflow3DRichterFaster, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
+                        else if (bcType == "Richter3DFullSuperFast")
+                            bcFactory->addBC(inflow3DRichterSuperFast, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
+                        
+                        bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
+                        if (bcType == "Richter3D" || bcType == "Richter3DFull")
+                            bcFactoryFluid->addBC(inflow3DRichter, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);
+                        else if (bcType == "Richter3DFullFaster")
+                            bcFactoryFluid->addBC(inflow3DRichterFaster, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);
+                        else if (bcType == "Richter3DFullSuperFast")
+                            bcFactoryFluid->addBC(inflow3DRichterSuperFast, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);
+                    }
+
+                }
+
+                // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
+                // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
+                fsi.problemFluid_->addBoundaries(bcFactoryFluid);
+                
+
+            }
+
+            // Struktur-RW
+            {
+                Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryStructure( new BCBuilder<SC,LO,GO,NO>( ) );
+
+                if(dim == 2)
+                {
+                    bcFactory->addBC(zeroDirichlet2D, 1, 2, domainStructure, "Dirichlet", dim); // linke Seite
+                    bcFactoryStructure->addBC(zeroDirichlet2D, 1, 0, domainStructure, "Dirichlet", dim); // linke Seite
+                }
+                else if(dim == 3)
+                {
+                    if(bcType == "Tube3D"){
+                        bcFactory->addBC(zeroDirichlet3D, 14, 2, domainStructure, "Dirichlet_Y_Z", dim); // inflow/outflow strip fixed in y direction
+                        bcFactory->addBC(zeroDirichlet3D, 13, 2, domainStructure, "Dirichlet_X_Z", dim); // inflow/outflow strip fixed in y direction
+                        bcFactory->addBC(zeroDirichlet3D, 7, 2, domainStructure, "Dirichlet_Z", dim); // inlet fixed in Z direction
+                        bcFactory->addBC(zeroDirichlet3D, 8, 2, domainStructure, "Dirichlet_Z", dim); // outlet fixed in Z direction
+                        bcFactory->addBC(zeroDirichlet3D, 9, 2, domainStructure, "Dirichlet_Z", dim); // inlet ring in Z direction
+                        bcFactory->addBC(zeroDirichlet3D, 1, 2, domainStructure, "Dirichlet_Z", dim); // outer ring of inlet area
+                        bcFactory->addBC(zeroDirichlet3D, 2, 2, domainStructure, "Dirichlet_Z", dim); // outer ring of outlet area
+                        bcFactory->addBC(zeroDirichlet3D, 10, 2, domainStructure, "Dirichlet_Z", dim); // outlet ring in Z direction
+
+                        bcFactoryStructure->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Y_Z", dim); 
+                        bcFactoryStructure->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_X_Z", dim); 
+                        bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_Z", dim);           
+                        bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Z", dim); 
+                        bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Z", dim);  
+                        bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_Z", dim); 
+                        bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Z", dim);           
+                        bcFactoryStructure->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Z", dim); 
+
+                    }
+                    else{
+                        bcFactory->addBC(zeroDirichlet3D, 1, 2, domainStructure, "Dirichlet", dim); // linke Seite
+                        bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet", dim); // linke Seite
+                    }
+                }
+                
+                // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
+                // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
+                if (!fsi.problemStructure_.is_null())
+                    fsi.problemStructure_->addBoundaries(bcFactoryStructure);
+                else
+                    fsi.problemStructureNonLin_->addBoundaries(bcFactoryStructure);
+            }
+            // RHS dummy for structure
+            if (dim==2) {
+                if (!fsi.problemStructure_.is_null())
+                    fsi.problemStructure_->addRhsFunction( rhsDummy2D );
+                else
+                    fsi.problemStructureNonLin_->addRhsFunction( rhsDummy2D );
+                
+            }
+            else if (dim==3) {
+             
+                if (!fsi.problemStructure_.is_null())
+                    fsi.problemStructure_->addRhsFunction( rhsDummy );
+                else
+                    fsi.problemStructureNonLin_->addRhsFunction( rhsDummy );
+                
+            }
+            
+            
+
+            // Geometrie-RW separat, falls geometrisch explizit.
+            // Bei Geometrisch implizit: Keine RW in die factoryFSI fuer das
+            // Geometrie-Teilproblem, da sonst (wg. dem ZeroDirichlet auf dem Interface,
+            // was wir brauchen wegen Kopplung der Struktur) der Kopplungsblock C4
+            // in derselben Zeile, der nur Werte auf dem Interface haelt, mit eliminiert.
+            Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryGeometry( new BCBuilder<SC,LO,GO,NO>( ) );
+            Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryFluidInterface;
+            if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
+                bcFactoryFluidInterface = Teuchos::rcp( new BCBuilder<SC,LO,GO,NO>( ) );
+
+            if(dim == 2)
+            {
+                if(!bcType.compare("partialCFD")) {
+                bcFactoryGeometry->addBC(zeroDirichlet2D, 1, 0, domainGeometry, "Dirichlet", dim); // wall
+                bcFactoryGeometry->addBC(zeroDirichlet2D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow
+                bcFactoryGeometry->addBC(zeroDirichlet2D, 3, 0, domainGeometry, "Dirichlet", dim); // outflow
+                bcFactoryGeometry->addBC(zeroDirichlet2D, 4, 0, domainGeometry, "Dirichlet", dim); // fluid-obstacle
+                bcFactoryGeometry->addBC(zeroDirichlet2D, 5, 0, domainGeometry, "Dirichlet", dim); // 5 ist die Interface-Flag
+                if ( preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko" )
+                    bcFactoryFluidInterface->addBC(zeroDirichlet2D, 5, 0, domainFluidVelocity, "Dirichlet", dim);
+                // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand
+                }
+                else if(!bcType.compare("Tube2D")){
+                    bcFactoryGeometry->addBC(zeroDirichlet2D, 1, 0, domainGeometry, "Dirichlet", dim); // wall
+                    bcFactoryGeometry->addBC(zeroDirichlet2D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow
+                    bcFactoryGeometry->addBC(zeroDirichlet2D, 3, 0, domainGeometry, "Dirichlet", dim); // outflow
+                    bcFactoryGeometry->addBC(zeroDirichlet2D, 4, 0, domainGeometry, "Dirichlet", dim); // interface
+                }
+            }
+            else if(dim == 3)
+            {
+
+                if(bcType=="Tube3D"){
+
+                    bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // Interface
+                    bcFactoryGeometry->addBC(zeroDirichlet3D, 9, 0, domainGeometry, "Dirichlet", dim); // Interface
+                    bcFactoryGeometry->addBC(zeroDirichlet3D, 10, 0, domainGeometry, "Dirichlet", dim); // Interface
+
+                    // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand.
+                    // Hier erstmal Dirichlet Nullrand, wird spaeter von der Sturkturloesung vorgegeben
+                    // bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
+                    if (preconditionerMethod == "FaCSCI" ) //|| preconditionerMethod == "FaCSI-Teko")
+                    {
+                        bcFactoryFluidInterface->addBC(zeroDirichlet3D, 6, 0, domainFluidVelocity, "Dirichlet", dim);
+                        bcFactoryFluidInterface->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet", dim);
+                        bcFactoryFluidInterface->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet", dim);
+                    }
+  
+                }
+                else{
+                    bcFactoryGeometry->addBC(zeroDirichlet3D, 1, 0, domainGeometry, "Dirichlet", dim); // wall
+                    bcFactoryGeometry->addBC(zeroDirichlet3D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow
+                    if (bcType == "Richter3D"){
+                        bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // interface line and symmetry wall
+                        bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // symmetry-wall
+                    }
+                    bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // outflow
+                    bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
+                    if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
+                        bcFactoryFluidInterface->addBC(zeroDirichlet2D, 6, 0, domainFluidVelocity, "Dirichlet", dim);
+                    // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand
+                }
+            }
+
+            fsi.problemGeometry_->addBoundaries(bcFactoryGeometry);
+            if ( preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
+                fsi.getPreconditioner()->setFaCSIBCFactory( bcFactoryFluidInterface );
+
+
+            // #####################
+            // Zeitintegration
+            // #####################
+            fsi.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
+
+            fsi.initializeProblem();
+            fsi.initializeGE();
+            // Matrizen assemblieren
+            fsi.assemble();
+                        
+            DAESolverInTime<SC,LO,GO,NO> daeTimeSolver(parameterListAll, comm);
+
+            // Uebergebe auf welchen Bloecken die Zeitintegration durchgefuehrt werden soll
+            // und Uebergabe der parameterList, wo die Parameter fuer die Zeitintegration drin stehen
+            daeTimeSolver.defineTimeStepping(*defTS);
+
+            // Uebergebe das (nicht) lineare Problem
+            daeTimeSolver.setProblem(fsi);
+
+            // Setup fuer die Zeitintegration, wie z.B. Aufstellen der Massematrizen auf den Zeilen, welche in
+            // defTS definiert worden sind.
+            daeTimeSolver.setupTimeStepping();
+
+            daeTimeSolver.advanceInTime();
+        }
+    }
+
+    TimeMonitor_Type::report(std::cout);
+
+    return EXIT_SUCCESS;
+}
+
+// {
             ///////////////////////////
             // Mesh Export fuer Matlab
             ///////////////////////////
@@ -559,263 +901,4 @@ int main(int argc, char *argv[])
 //            }
 //            myFile.close();
 //            std::cout << "done" << '\n';
-        }
-                            
-            // #####################
-            // Problem definieren
-            // #####################
-            Teuchos::RCP<SmallMatrix<int>> defTS;
-            if(geometryExplicit)
-            {
-                // SmallMatrix<int> defTS(4);
-                defTS.reset( new SmallMatrix<int> (4) );
-
-                // Fluid
-                (*defTS)[0][0] = 1;
-                (*defTS)[0][1] = 1;
-
-                // Struktur
-                (*defTS)[2][2] = 1;
-            }
-            else
-            {
-                // SmallMatrix<int> defTS(5);
-                defTS.reset( new SmallMatrix<int> (5) );
-
-                // Fluid
-                (*defTS)[0][0] = 1;
-                (*defTS)[0][1] = 1;
-
-                // TODO: [0][4] und [1][4] bei GI + Newton noetig?
-
-                // Struktur
-                (*defTS)[2][2] = 1;
-            }
-
-            FSI<SC,LO,GO,NO> fsi(domainFluidVelocity, discType,
-                                 domainFluidPressure, "P1",
-                                 domainStructure, discType,
-                                 domainInterface, discType,
-                                 domainGeometry, discType,
-                                 parameterListFluidAll,
-                                 parameterListStructureAll,
-                                 parameterListAll,
-                                 parameterListGeometry,
-                                 defTS);
-
-
-            domainFluidVelocity->info();
-            domainFluidPressure->info();
-            domainStructure->info();
-            domainGeometry->info();
-            
-            fsi.info();
-            
-            // #####################
-            // Randwerte
-            // Zusammenfassung der Flags:
-            // Fluid/ Geometrie: 1 = wall; 2 = inflow; 3 = outflow; 4 = Fluid-obstacle; 5 = Interface in 2d
-            // Struktur: 1 = linke Seite (homogener Dirichletrand); 5 = Interface in 2d
-            // #####################
-            std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MeanVelocity",2.0));
-            
-            if(!bcType.compare("partialCFD"))
-            {
-                parameter_vec.push_back(.41);//height of inflow region
-            }
-            else if( !bcType.compare("Richter3D") || !bcType.compare("Richter3DFull") || !bcType.compare("Richter3DFullFaster") || !bcType.compare("Richter3DFullSuperFast") )
-            {
-                parameter_vec[0] = 1.;
-                parameter_vec.push_back(.4);
-            }
-            else if(!bcType.compare("Tube2D"))
-            {
-                parameter_vec.push_back(1.);
-                parameter_vec[0] = 1.5;
-            }
-            else
-            {
-                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Select a valid boundary condition. Only partialCFD available.");
-            }
-
-
-            Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
-
-
-            // TODO: Vermutlich braucht man keine bcFactoryFluid und bcFactoryStructure,
-            // da die RW sowieso auf dem FSI-Problem gesetzt werden.
-
-            // Fluid-RW
-            {
-                Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryFluid( new BCBuilder<SC,LO,GO,NO>( ) );
-                
-                if (dim==2)
-                {
-                    if(!bcType.compare("partialCFD"))
-                    {
-                        bcFactory->addBC(zeroDirichlet2D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                        bcFactory->addBC(inflow2D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
-
-                        bcFactoryFluid->addBC(zeroDirichlet2D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                        bcFactoryFluid->addBC(inflow2D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
-
-                        bcFactory->addBC(zeroDirichlet2D, 4, 0, domainFluidVelocity, "Dirichlet", dim); // obstacle
-                        bcFactoryFluid->addBC(zeroDirichlet2D, 4, 0, domainFluidVelocity, "Dirichlet", dim); // obstacle                        
-                        
-                    }
-                    else if(bcType == "Tube2D"){
-                        bcFactory->addBC(zeroDirichlet2D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                        bcFactory->addBC(inflow2D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
-                        bcFactoryFluid->addBC(zeroDirichlet2D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                        bcFactoryFluid->addBC(inflow2D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
-                    }
-                    
-                }
-                else if(dim==3)
-                {
-                    bcFactory->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                    if (bcType == "Richter3D" || bcType == "Richter3DFull")
-                        bcFactory->addBC(inflow3DRichter, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
-                    else if (bcType == "Richter3DFullFaster")
-                        bcFactory->addBC(inflow3DRichterFaster, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
-                    else if (bcType == "Richter3DFullSuperFast")
-                        bcFactory->addBC(inflow3DRichterSuperFast, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow
-                    
-                    bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                    if (bcType == "Richter3D" || bcType == "Richter3DFull")
-                        bcFactoryFluid->addBC(inflow3DRichter, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);
-                    else if (bcType == "Richter3DFullFaster")
-                        bcFactoryFluid->addBC(inflow3DRichterFaster, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);
-                    else if (bcType == "Richter3DFullSuperFast")
-                        bcFactoryFluid->addBC(inflow3DRichterSuperFast, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);
-                }
-
-                // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
-                // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
-                fsi.problemFluid_->addBoundaries(bcFactoryFluid);
-                
-
-            }
-
-            // Struktur-RW
-            {
-                Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryStructure( new BCBuilder<SC,LO,GO,NO>( ) );
-
-                if(dim == 2)
-                {
-                    bcFactory->addBC(zeroDirichlet2D, 1, 2, domainStructure, "Dirichlet", dim); // linke Seite
-                    bcFactoryStructure->addBC(zeroDirichlet2D, 1, 0, domainStructure, "Dirichlet", dim); // linke Seite
-                }
-                else if(dim == 3)
-                {
-                    bcFactory->addBC(zeroDirichlet3D, 1, 2, domainStructure, "Dirichlet", dim); // linke Seite
-                    bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet", dim); // linke Seite
-                }
-                
-                // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
-                // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
-                if (!fsi.problemStructure_.is_null())
-                    fsi.problemStructure_->addBoundaries(bcFactoryStructure);
-                else
-                    fsi.problemStructureNonLin_->addBoundaries(bcFactoryStructure);
-            }
-            // RHS dummy for structure
-            if (dim==2) {
-                if (!fsi.problemStructure_.is_null())
-                    fsi.problemStructure_->addRhsFunction( rhsDummy2D );
-                else
-                    fsi.problemStructureNonLin_->addRhsFunction( rhsDummy2D );
-                
-            }
-            else if (dim==3) {
-             
-                if (!fsi.problemStructure_.is_null())
-                    fsi.problemStructure_->addRhsFunction( rhsDummy );
-                else
-                    fsi.problemStructureNonLin_->addRhsFunction( rhsDummy );
-                
-            }
-            
-            
-
-            // Geometrie-RW separat, falls geometrisch explizit.
-            // Bei Geometrisch implizit: Keine RW in die factoryFSI fuer das
-            // Geometrie-Teilproblem, da sonst (wg. dem ZeroDirichlet auf dem Interface,
-            // was wir brauchen wegen Kopplung der Struktur) der Kopplungsblock C4
-            // in derselben Zeile, der nur Werte auf dem Interface haelt, mit eliminiert.
-            Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryGeometry( new BCBuilder<SC,LO,GO,NO>( ) );
-            Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryFluidInterface;
-            if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
-                bcFactoryFluidInterface = Teuchos::rcp( new BCBuilder<SC,LO,GO,NO>( ) );
-
-            if(dim == 2)
-            {
-                if(!bcType.compare("partialCFD")) {
-                bcFactoryGeometry->addBC(zeroDirichlet2D, 1, 0, domainGeometry, "Dirichlet", dim); // wall
-                bcFactoryGeometry->addBC(zeroDirichlet2D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow
-                bcFactoryGeometry->addBC(zeroDirichlet2D, 3, 0, domainGeometry, "Dirichlet", dim); // outflow
-                bcFactoryGeometry->addBC(zeroDirichlet2D, 4, 0, domainGeometry, "Dirichlet", dim); // fluid-obstacle
-                bcFactoryGeometry->addBC(zeroDirichlet2D, 5, 0, domainGeometry, "Dirichlet", dim); // 5 ist die Interface-Flag
-                if ( preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko" )
-                    bcFactoryFluidInterface->addBC(zeroDirichlet2D, 5, 0, domainFluidVelocity, "Dirichlet", dim);
-                // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand
-                }
-                else if(!bcType.compare("Tube2D")){
-                    bcFactoryGeometry->addBC(zeroDirichlet2D, 1, 0, domainGeometry, "Dirichlet", dim); // wall
-                    bcFactoryGeometry->addBC(zeroDirichlet2D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow
-                    bcFactoryGeometry->addBC(zeroDirichlet2D, 3, 0, domainGeometry, "Dirichlet", dim); // outflow
-                    bcFactoryGeometry->addBC(zeroDirichlet2D, 4, 0, domainGeometry, "Dirichlet", dim); // interface
-                }
-            }
-            else if(dim == 3)
-            {
-//                TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "fix Randwerte für Richter Benchmark");
-                bcFactoryGeometry->addBC(zeroDirichlet3D, 1, 0, domainGeometry, "Dirichlet", dim); // wall
-                bcFactoryGeometry->addBC(zeroDirichlet3D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow
-                if (bcType == "Richter3D"){
-                    bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // interface line and symmetry wall
-                    bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // symmetry-wall
-                }
-                bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // outflow
-                bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
-                if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
-                    bcFactoryFluidInterface->addBC(zeroDirichlet2D, 6, 0, domainFluidVelocity, "Dirichlet", dim);
-                // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand
-            }
-
-            fsi.problemGeometry_->addBoundaries(bcFactoryGeometry);
-            if ( preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
-                fsi.getPreconditioner()->setFaCSIBCFactory( bcFactoryFluidInterface );
-
-
-            // #####################
-            // Zeitintegration
-            // #####################
-            fsi.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
-
-            fsi.initializeProblem();
-            fsi.initializeGE();
-            // Matrizen assemblieren
-            fsi.assemble();
-                        
-            DAESolverInTime<SC,LO,GO,NO> daeTimeSolver(parameterListAll, comm);
-
-            // Uebergebe auf welchen Bloecken die Zeitintegration durchgefuehrt werden soll
-            // und Uebergabe der parameterList, wo die Parameter fuer die Zeitintegration drin stehen
-            daeTimeSolver.defineTimeStepping(*defTS);
-
-            // Uebergebe das (nicht) lineare Problem
-            daeTimeSolver.setProblem(fsi);
-
-            // Setup fuer die Zeitintegration, wie z.B. Aufstellen der Massematrizen auf den Zeilen, welche in
-            // defTS definiert worden sind.
-            daeTimeSolver.setupTimeStepping();
-
-            daeTimeSolver.advanceInTime();
-        }
-    }
-
-    TimeMonitor_Type::report(std::cout);
-
-    return EXIT_SUCCESS;
-}
+        // }
