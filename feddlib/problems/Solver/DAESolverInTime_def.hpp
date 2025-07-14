@@ -1140,6 +1140,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
 #endif
             //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
             this->problemTime_->assemble("UpdateFluidInTime");
+
+            // We add the pressure influence on the boundary condition. This is done in each time step since it depends on the 
+            // current flow rate and area of outlet
+            this->problemTime_->assemble("ComputePressureRHSInTime");
+
         }
         // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
         // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).

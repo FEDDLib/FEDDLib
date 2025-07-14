@@ -147,6 +147,7 @@ public:
 
     void computeSolidRHSInTime() const;
     
+    void computePressureRHSInTime() const;
     // Hier wird timeSteppingTool_->t_ inkrementiert
     void updateTime() const;
 
@@ -234,6 +235,13 @@ private:
     ExporterTxtPtr_Type exporterTxtLift_;
     mutable ExporterPtr_Type exporterGeo_;
     /*####################*/
+    ExporterTxtPtr_Type exporterBoundaryCondition_; // Values for absorbing boundary condition
+    mutable double areaInlet_init_=0.;
+    mutable double areaOutlet_init_ =0.;
+    mutable double areaOutlet_T_ =0.;
+    mutable double flowRateOutlet_n_ =0.; // Current flowrate
+    mutable double flowRateOutlet_n_1_ =0.; // flowrate from previous timestep
+    mutable double pressureOutlet_ =0.;
 
 public:
         // NOX and FSI only implement in combination with TimeProblem

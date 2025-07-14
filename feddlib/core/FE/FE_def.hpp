@@ -5046,6 +5046,8 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundary(int dim,
     double unsteadyStart = params->sublist("Parameter").get("Heart Beat Start",0.2); 
     double flowRateInput = params->sublist("Parameter").get("Flowrate",3.0e-06); 
 
+    double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
+
 
     SC elScaling;
     SmallMatrix<SC> B(dim);
@@ -5076,11 +5078,17 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundary(int dim,
    
     beta = ((wallThickness* E)/(1.-pow(poissonRatio,2))) * (M_PI/areaOutlet_init ) ;
     
+
+    funcParameter.push_back(p_ref_input);
+    funcParameter.push_back(bcRamp); 
+    funcParameter.push_back(flagOutlet); 
     // We determine p_ref via a ramp
     SC* paramsFunc = &(funcParameter[0]);
     vec_dbl_Type x_tmp(dim,0.); //dummy
-    paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
-    paramsFunc[ 1 ]  = p_ref_input;
+      // Adding parameters
+
+    // paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+    // paramsFunc[ 1 ]  = p_ref_input;
     func( &x_tmp[0], &valueFunc[0], paramsFunc);
     double p_ref = valueFunc[0];
     //if(funcParameter[0]+1e-12 >= unsteadyStart){
@@ -5167,14 +5175,9 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundary(int dim,
 
                     }
 
-                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
-                // Step 1: Quadrature Points on physical surface:
-                    // Resulting Quad Points allways (0.5,0,0) (0.5,0.5,0) (0,0.5,0)
                     Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
                     elScaling = B.computeScaling( );
                     
-                    //cout <<std::endl;
-
                     for (UN i=0; i < numNodes_T; i++) {
         
                         // 2.   
@@ -5420,7 +5423,6 @@ double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
     vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
     vec_dbl_ptr_Type weights1 = Teuchos::rcp(new vec_dbl_Type(0));
 
-    UN degFunc = funcParameter[funcParameter.size()-1] + 1.e-14;
     UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0);// + 1.0;
     Helper::getDPhi(dPhi, weights, dim, FEType, deg);
     Helper::getPhi(phi, weights, dim-1, FEType, deg);
@@ -5437,7 +5439,8 @@ double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
 
     double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
     double resistance = params->sublist("Parameter Fluid").get("Resistance",1.0); 
-
+    double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
+  
     SC elScaling;
     SmallMatrix<SC> B(dim);
     SmallMatrix<SC> Binv(dim);
@@ -5448,6 +5451,11 @@ double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
     Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
        
     std::vector<double> valueFunc(dim);
+    
+    // Adding parameters
+    funcParameter.push_back(resistance);
+    funcParameter.push_back(bcRamp); 
+    funcParameter.push_back(flagOutlet); 
 
     SC* paramsFunc = &(funcParameter[0]);
     double flowRateInlet=0.;
@@ -5455,12 +5463,12 @@ double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
     this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
     int isNeg = this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);  
     
-    double resistanceRef = 10666/flowRateInlet;
+    double resistanceRef = 10666/flowRateInlet; // WHY AND WHAT?
 
     double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
 
     vec_dbl_Type x_tmp(dim,0.); //dummy
-    paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+    // paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
 
     func( &x_tmp[0], &valueFunc[0], paramsFunc);
 
@@ -5497,47 +5505,47 @@ double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
             FiniteElement feSub = subEl->getElement( surface  );
             if(subEl->getDimension() == dim-1 ){
                
-                vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
-                vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
-                int numNodes_T = nodeList.size();
-		        vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
-                vec2D_dbl_Type nodes;
-		        nodes = getCoordinates(nodeList, pointsRep);
+               // We only need to compute it on the outlet of the geometry
+                if(feSub.getFlag() == flagOutlet){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
+                    vec2D_dbl_Type nodes;
+                    nodes = getCoordinates(nodeList, pointsRep);
 
-                vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
 
-   				double norm_v_E = 1.;
-   				if(dim==2){
-	   				v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
-					v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
-					norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
-	   				
-   				}
-   				else if(dim==3){
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
 
-		            p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
-					p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
-					p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
 
-					p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
-					p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
-					p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
 
-					v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
-					v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
-					v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
-		            
-				    norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
-                  
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    }
+                    
+                    // vec_dbl_Type x(dim,0.); //dummy
+                    // paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();          
 
-				}
-                vec_dbl_Type x(dim,0.); //dummy
-                paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();          
-
-                func( &x[0], &valueFunc[0], paramsFunc);
-                // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
-               // Step 1: Quadrature Points on physical surface:
-                if(valueFunc[0] > 0.){
+                    // func( &x[0], &valueFunc[0], paramsFunc);
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                    // Step 1: Quadrature Points on physical surface:
                     vec_dbl_Type quadWeights(dim);
                     quadWeights[0] = 1/6.;
                     quadWeights[1] = 1/6.;

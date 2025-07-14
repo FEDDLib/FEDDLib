@@ -1,7 +1,7 @@
 <ParameterList name="FSI">
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="3"/>
-        <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
+        <Parameter name="Discretization" type="string" value="P1"/><!--P2-->
         <Parameter name="BC Type" type="string" value="Tube3D"/><!--partialCFD,Richter3DFull-->
         
         <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
@@ -24,20 +24,33 @@
     </ParameterList>
     <ParameterList name="Parameter Solid">        
         <Parameter name="Material model" type="string" value="linear"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
-        <Parameter name="Density" type="double"   value="1000."/>
+        <Parameter name="Density" type="double"   value="1.3e-3"/><!-- kg/cm³ -->
         <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
-        <Parameter name="Poisson Ratio" type="double" value="0.4"/>
-        <Parameter name="Mu" type="double" value="2.0e+6"/>
-        <!-- Parameter for Neo-Hooke and Mooney-Rivlin, additioanlly poisson ratio is used -->
-        <Parameter name="E" type="double" value="3.0e+6"/>
-        <!-- Parameter for Mooney-Rivlin-->
-        <Parameter name="C" type="double" value="1."/><!-- Mooney-Rivlin parameter -->
+        <Parameter name="Mu" type="double" value="0.1276e2"/><!-- N/cm²-->
+
+        <Parameter name="E" type="double" value="0.3801585e2"/> <!-- 380158.5 N/m² to 0.3801585e2 N/cm² -->
+		<Parameter name="E1" type="double" value="0.3801585e2"/><!-- N/cm²-->
+		<Parameter name="c1" type="double" value="0.25"/>
+		<Parameter name="Poisson Ratio" type="double" value="0.49"/>
     </ParameterList>
     
     <ParameterList name="Parameter Fluid">
-        <Parameter name="Viscosity" type="double" value="1.0e-3"/>
-        <Parameter name="Density" type="double" value="1000.0"/>
+        <Parameter name="Viscosity" type="double" value="3.0e-2"/> <!-- cm^2/s -->
+        <Parameter name="Density" type="double" value="1.06e-3"/><!-- kg/cm³ -->
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
+         <Parameter name="MeanVelocity" type="double" value="118.28"/> <!-- cm/s -->
+
+        <Parameter name="Pressure Boundary Condition" type="string" value="Absorbing"/>         <!-- Resistance , Absorbing , Absorbing Resistance-->
+        <Parameter name="Unsteady Start" type="double" value="1.0"/><!-- Start of 'unsteady' phase -->
+        <Parameter name="Average Flowrate" type="bool" value="true"/>
+        <Parameter name="BC Ramp" type="double" value="0.0"/>
+        <Parameter name="Resistance Ramp" type="double" value="0.0"/>
+        <Parameter name="Reference fluid pressure" type="double" value="1.8664"/> <!-- N/cm^2 translated from 140 mmHg -->
+       	<!-- Resistance boundary condition -->
+        <Parameter name="Resistance" type="double" value="3.6660e-4"/> <!-- ?? CHECK| old: g/cm s² s/cm³ (eigentliche Einheit mPa*s/m³ , 1mPa = 10e6 N/m² -->
+        <Parameter name="Normal Scale" type="double" value="-1.0"/>
+        <Parameter name="Poisson Ratio" type="double" value="0.49"/>
+
     </ParameterList>
     
     <ParameterList name="Mesh Partitioner">
@@ -89,7 +102,7 @@
         <Parameter name="Scale mass matrix" type="bool" value="true"/>
         <Parameter name="Set Zeros" type="bool" value="true"/>
         
-        <Parameter name="Linearization" type="string" value="Newton"/> <!-- FixedPoint, Newton, Extrapolation-->
+        <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, Extrapolation-->
     </ParameterList>
     <ParameterList name="Timestepping Parameter">
         
@@ -97,8 +110,8 @@
         <Parameter name="Class" type="string" value="Multistep"/>
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value="0.002"/>
-        <Parameter name="dt" type="double" value="0.001"/>
+        <Parameter name="Final time" type="double" value="0.5"/>
+        <Parameter name="dt" type="double" value="0.005"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
     </ParameterList>

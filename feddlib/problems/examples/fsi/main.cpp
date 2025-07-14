@@ -351,8 +351,8 @@ int main(int argc, char *argv[])
                         pListPartitioner->set("Build Surface List",true);
                     }
                     else{
-                        pListPartitioner->set("Build Edge List",false);
-                        pListPartitioner->set("Build Surface List",false);
+                        pListPartitioner->set("Build Edge List",true);
+                        pListPartitioner->set("Build Surface List",true);
                     }
                     MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
                     
