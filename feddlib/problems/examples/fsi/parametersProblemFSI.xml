@@ -4,7 +4,7 @@
         <Parameter name="Discretization" type="string" value="P1"/><!--P2-->
         <Parameter name="BC Type" type="string" value="Tube3D"/><!--partialCFD,Richter3DFull-->
         
-        <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
+        <Parameter name="MeanVelocity" type="double" value="118.28"/><!--2d:2.0, Richter 3d: 1.0-->
         
         <Parameter name="Model Geometry" type="string" value="Laplace"/>
         
@@ -47,7 +47,7 @@
         <Parameter name="Normal Scale" type="double" value="-1.0"/>
         <Parameter name="Poisson Ratio" type="double" value="0.49"/>
         <!-- Absorbing boundary condition -->
-        <Parameter name="Reference fluid pressure" type="double" value="1.0665"/> <!-- 40 mmHg, N/cm^2 translated from 140 mmHg = 1.8664,  -->
+        <Parameter name="Reference fluid pressure" type="double" value="1.0665"/> <!-- 80 mmHg, N/cm^2 translated from 140 mmHg = 1.8664,  -->
         <Parameter name="Wall thickness" type="double" value="0.14"/> <!-- cm -->
          <Parameter name="E" type="double" value="0.3801585e2"/>
        	<!-- Resistance boundary condition -->

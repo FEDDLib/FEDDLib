@@ -4867,6 +4867,9 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundaryPaper(int dim,
         beta = ((wallThickness* E)/(1.-pow(poissonRatio,2))) * (M_PI/areaOutlet_T ) ;
 
     // We determine p_ref via a ramp
+    funcParameter.push_back(p_ref_input);
+    funcParameter.push_back(bcRamp); 
+    funcParameter.push_back(flagOutlet); 
     SC* paramsFunc = &(funcParameter[0]);
     vec_dbl_Type x_tmp(dim,0.); //dummy
     paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
