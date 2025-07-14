@@ -5037,8 +5037,7 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundary(int dim,
     int flagOutlet = params->sublist("General").get("Flag Outlet Fluid", 5);
 
     double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
-    double E = params->sublist("Parameter Fluid").get("E",12.0); 
-    double wallThickness = params->sublist("Parameter Fluid").get("Wall thickness",0.0006); 
+     
     double density = params->sublist("Parameter Fluid").get("Density",1.0); 
     double p_ref_input = params->sublist("Parameter Fluid").get("Reference fluid pressure",10666.); 
 
@@ -5076,6 +5075,9 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundary(int dim,
 
     double beta=0.;
    
+    double E = params->sublist("Parameter Fluid").get("E",12.0); 
+    double wallThickness = params->sublist("Parameter Fluid").get("Wall thickness",0.0006);
+    
     beta = ((wallThickness* E)/(1.-pow(poissonRatio,2))) * (M_PI/areaOutlet_init ) ;
     
 

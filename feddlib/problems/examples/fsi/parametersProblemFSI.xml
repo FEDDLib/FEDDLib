@@ -35,7 +35,7 @@
     </ParameterList>
     
     <ParameterList name="Parameter Fluid">
-        <Parameter name="Viscosity" type="double" value="3.0e-2"/> <!-- cm^2/s -->
+        <Parameter name="Viscosity" type="double" value="3.0e-2"/> <!-- kinematic viscosity cm^2/s -->
         <Parameter name="Density" type="double" value="1.06e-3"/><!-- kg/cm³ -->
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
          <Parameter name="MeanVelocity" type="double" value="118.28"/> <!-- cm/s -->
@@ -43,13 +43,17 @@
         <Parameter name="Pressure Boundary Condition" type="string" value="Absorbing"/>         <!-- Resistance , Absorbing , Absorbing Resistance-->
         <Parameter name="Unsteady Start" type="double" value="1.0"/><!-- Start of 'unsteady' phase -->
         <Parameter name="Average Flowrate" type="bool" value="true"/>
-        <Parameter name="BC Ramp" type="double" value="0.0"/>
-        <Parameter name="Resistance Ramp" type="double" value="0.0"/>
-        <Parameter name="Reference fluid pressure" type="double" value="1.8664"/> <!-- N/cm^2 translated from 140 mmHg -->
-       	<!-- Resistance boundary condition -->
-        <Parameter name="Resistance" type="double" value="3.6660e-4"/> <!-- ?? CHECK| old: g/cm s² s/cm³ (eigentliche Einheit mPa*s/m³ , 1mPa = 10e6 N/m² -->
+        <Parameter name="BC Ramp" type="double" value="0.2"/>
         <Parameter name="Normal Scale" type="double" value="-1.0"/>
         <Parameter name="Poisson Ratio" type="double" value="0.49"/>
+        <!-- Absorbing boundary condition -->
+        <Parameter name="Reference fluid pressure" type="double" value="1.0665"/> <!-- 40 mmHg, N/cm^2 translated from 140 mmHg = 1.8664,  -->
+        <Parameter name="Wall thickness" type="double" value="0.14"/> <!-- cm -->
+         <Parameter name="E" type="double" value="0.3801585e2"/>
+       	<!-- Resistance boundary condition -->
+        <Parameter name="Resistance" type="double" value="3.6660e-4"/> <!-- ?? CHECK| old: g/cm s² s/cm³ (eigentliche Einheit mPa*s/m³ , 1mPa = 10e6 N/m² -->
+        <Parameter name="Resistance Ramp" type="double" value="0.0"/>
+
 
     </ParameterList>
     
@@ -91,7 +95,7 @@
         <Parameter name="Export Suffix" type="string" value=""/>
         <Parameter name="Export Data" type="bool" value="true"/>
         <Parameter name="Export Extra Data" type="bool" value="false"/>
-        <Parameter name="Export drag and lift" type="bool" value="true"/>
+        <Parameter name="Export Flow Rate" type="bool" value="true"/>
         
         <Parameter name="Preconditioner Method" type="string" value="FaCSI"/><!-- Monolithic, FaCSI, FaCSI-Teko -->
         <Parameter name="Use Fluid Preconditioner" type="bool" value="true"/>

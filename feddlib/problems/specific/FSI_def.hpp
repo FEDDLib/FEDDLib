@@ -1304,6 +1304,7 @@ void FSI<SC,LO,GO,NO>::computePressureRHSInTime() const{
 
         // Adding the assembled RHS on the Fluid component to the fluid RHS
         this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
+        
         flowRateOutlet_n_1_ = flowRateOutlet_n_;
         if ( this->parameterList_->sublist("Timestepping Parameter").get("Checkpointing", false)){
             exporterBoundaryCondition_->exportData( "FlowrateOutlet_Previous_Timestep", flowRateOutlet_n_1_ );

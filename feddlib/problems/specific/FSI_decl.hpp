@@ -199,6 +199,9 @@ public:
     void getValuesOfInterest3DBenchmark( vec_dbl_Type& values );
     
     virtual void computeValuesOfInterestAndExport();
+
+    double getPressureOutlet(){return pressureOutlet_;};
+
     /*####################*/
 
     // Alternativ wie in reAssembleExtrapolation() in NS?

@@ -397,7 +397,7 @@ int main(int argc, char *argv[])
 
             domainFluidVelocity->exportNodeFlags("Fluid");
             domainStructure->exportNodeFlags("Solid"); 
-
+            domainFluidVelocity->exportSurfaceNormals();
             if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
                 
                 if (verbose)
