@@ -4833,6 +4833,8 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundaryPaper(int dim,
     double unsteadyStart = params->sublist("Parameter Fluid").get("Unsteady Start",0.2); 
     double flowRateInput = params->sublist("Parameter").get("Flowrate",3.0e-06); 
 
+    double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
+
 
     SC elScaling;
     SmallMatrix<SC> B(dim);
