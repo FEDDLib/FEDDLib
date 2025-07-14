@@ -157,18 +157,16 @@ void NavierStokesAssFE<SC,LO,GO,NO>::assembleConstantMatrices() const{
     
     MatrixPtr_Type B(new Matrix_Type( pressureMap, this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     MatrixPtr_Type BT(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) );
-    MatrixPtr_Type C(new Matrix_Type( pressureMap,1));
 
 
 	this->system_->addBlock(A_,0,0);
 	this->system_->addBlock(BT,0,1);
 	this->system_->addBlock(B,1,0);
-	this->system_->addBlock(C,1,1);
 
 	this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_,this->residualVec_,this->coeff_, this->parameterList_,false, "Jacobian", true/*call fillComplete*/);
 
     if ( !this->getFEType(0).compare("P1") ) {
-        C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+        MatrixPtr_Type C(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
         this->feFactory_->assemblyBDStabilization( this->dim_, "P1", C, true);
         C->resumeFill();
         C->scale( -1. / ( viscosity * density ) );
