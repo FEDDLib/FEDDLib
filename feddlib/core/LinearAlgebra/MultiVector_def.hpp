@@ -46,7 +46,7 @@ exporter_()
     
     map_.reset( new Map_Type( tpetraMVPtrIn->getMap() ) );
 
-    FEDDLIB_WARNING("MultiVector_def", this->getMap()->getComm()->getRank() == 0, " MultiVector(TpetraMultiVectorPtr_Type& tpetraMVPtrIn) -- this is not a deep copy of the contents of the MV.");
+    // FEDDLIB_WARNING("MultiVector_def", this->getMap()->getComm()->getRank() == 0, " MultiVector(TpetraMultiVectorPtr_Type& tpetraMVPtrIn) -- this is not a deep copy of the contents of the MV.");
 
 }
 
