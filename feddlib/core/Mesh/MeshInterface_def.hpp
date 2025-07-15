@@ -139,7 +139,7 @@ void MeshInterface<SC,LO,GO,NO>::determineInterface( vec2D_dbl_ptr_Type pointsRe
             }
         }
 
-        std::cout << "serial determineInterface - number flag nodes this:" << indexThis.size()<< " other:" << indexOther.size() << std::endl;
+        // std::cout << "serial determineInterface - number flag nodes this:" << indexThis.size()<< " other:" << indexOther.size() << std::endl;
         
         sort(indexThis.begin(), indexThis.end(),
              [&](const int& a, const int& b) {
@@ -248,8 +248,8 @@ void MeshInterface<SC,LO,GO,NO>::determineInterfaceParallelAndDistance( vec2D_db
 
         MapPtr_Type mapOther = Teuchos::rcp( new Map_Type(  -1, Teuchos::arrayViewFromVector( indexGlobalCommOther ), 0, this->comm_ ) );
         
-        std::cout << "numInterfaceGlobalThis:" << numInterfaceGlobalThis << std::endl;
-        std::cout << "numInterfaceGlobalOther:" << numInterfaceGlobalOther << std::endl;
+        // std::cout << "numInterfaceGlobalThis:" << numInterfaceGlobalThis << std::endl;
+        // std::cout << "numInterfaceGlobalOther:" << numInterfaceGlobalOther << std::endl;
         TEUCHOS_TEST_FOR_EXCEPTION( numInterfaceGlobalThis != numInterfaceGlobalOther, std::runtime_error, "DetermineInterfaceInParallel failed. ThisMesh and OtherMesh seem to have different numbers of interface nodes." );
         
         std::vector<GO> gatherAllIndices(numInterfaceGlobalThis);

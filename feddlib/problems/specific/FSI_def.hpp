@@ -748,14 +748,16 @@ void FSI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         
         this->system_->addBlock( this->problemFluid_->system_->getBlock(0,1), 0, 1 );
         this->system_->addBlock( this->problemFluid_->system_->getBlock(1,0), 1, 0 );
-        TEUCHOS_TEST_FOR_EXCEPTION(this->problemFluid_->system_->blockExists(1,1) , std::runtime_error, "Stabilization is used. Account for it.");
+        if (this->problemFluid_->system_->blockExists(1,1))
+                this->system_->addBlock( this->problemFluid_->system_->getBlock(1,1), 1, 1 ); 
+        // TEUCHOS_TEST_FOR_EXCEPTION(this->problemFluid_->system_->blockExists(1,1) , std::runtime_error, "Stabilization is used. Account for it."); ???
     }
     if ( this->verbose_ )
         std::cout << "Warning: Wrong consideration of temporal discretization for multi-stage RK methods!" << std::endl;
     
     this->problemFluid_->calculateNonLinResidualVecWithMeshVelo( "reverse", time, u_minus_w_rep_, P_ );
     this->system_->addBlock( problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
-    
+   
     // we need to account for the coupling in the residuals
     if (materialModel_!="linear"){
         this->problemStructureNonLin_->calculateNonLinResidualVec( "reverse", time );

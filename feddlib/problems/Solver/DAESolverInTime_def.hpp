@@ -1237,18 +1237,9 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
         {
             exportTimestep();
         }
-
-    }
-
-    comm_->barrier();
-    if (printExtraData) {
-        exporterTimeTxt->closeExporter();
-        exporterIterations->closeExporter();
-        exporterNewtonIterations->closeExporter();
-    }
-    if(printFlowRate){
+        if(printFlowRate){
             FE<SC,LO,GO,NO> fe;
-		    fe.addFE(problemTime_->getDomain(0));
+            fe.addFE(problemTime_->getDomain(0));
             double flowRateInlet;
             double flowRateOutlet;
 
@@ -1256,7 +1247,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
             int flagOutlet = this->parameterList_->sublist("General").get("Flag Outlet Fluid", 5);
 
             MultiVectorPtr_Type u_rep = Teuchos::rcp(new MultiVector_Type ( problemTime_->getDomain(0)->getMapVecFieldRepeated() ) );   
-    	    u_rep->importFromVector(problemTime_->getSolution()->getBlock(0),false,"Insert");
+            u_rep->importFromVector(problemTime_->getSolution()->getBlock(0),false,"Insert");
             fe.assemblyFlowRate(problemTime_->getDomain(0)->getDimension(), flowRateInlet, problemTime_->getDomain(0)->getFEType() , problemTime_->getDomain(0)->getDimension(), flagInlet , u_rep);
             fe.assemblyFlowRate(problemTime_->getDomain(0)->getDimension(), flowRateOutlet, problemTime_->getDomain(0)->getFEType() , problemTime_->getDomain(0)->getDimension(), flagOutlet , u_rep);
 
@@ -1273,8 +1264,17 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
 
             exporterAreaInlet->exportData( timeSteppingTool_->currentTime() , areaInlet);
             exporterAreaOutlet->exportData(  timeSteppingTool_->currentTime() ,areaOutlet );
-
         }
+
+    }
+
+    comm_->barrier();
+    if (printExtraData) {
+        exporterTimeTxt->closeExporter();
+        exporterIterations->closeExporter();
+        exporterNewtonIterations->closeExporter();
+    }
+    
     if (printExtraData) {
         exporterDisplXTxt->closeExporter();
         exporterDisplYTxt->closeExporter();        

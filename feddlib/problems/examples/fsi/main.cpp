@@ -144,13 +144,13 @@ void parabolicInflow3D(double* x, double* res, double t, const double* parameter
     {
         res[0] = 0.;
         res[1] = 0.;
-        res[2] = parameters[0] * (1- r/parameters[1]) * ( 1 - cos( M_PI*t/parameters[2] ));
+        res[2] = parameters[0] * (1. - r/parameters[1]) * ( 1. - cos( M_PI*t/parameters[2] ));
     }
     else
     {
         res[0] = 0.;
         res[1] = 0.;
-        res[2] = parameters[0] * (1- r/parameters[1]) ;
+        res[2] = parameters[0] * (1.- r/parameters[1]) ;
     }
 
     return;
@@ -215,8 +215,8 @@ int main(int argc, char *argv[])
     string xmlPrecFileFluidTeko = "parametersPrecFluidTeko.xml";
     myCLP.setOption("precfileFluidMono",&xmlPrecFileFluidMono,".xml file with Inputparameters.");
     myCLP.setOption("precfileFluidTeko",&xmlPrecFileFluidTeko,".xml file with Inputparameters.");
-    string xmlProblemFileFluid = "parametersProblemFluid.xml";
-    myCLP.setOption("problemFileFluid",&xmlProblemFileFluid,".xml file with Inputparameters.");
+    // string xmlProblemFileFluid = "parametersProblemFluid.xml";
+    // myCLP.setOption("problemFileFluid",&xmlProblemFileFluid,".xml file with Inputparameters.");
     string xmlPrecFileStructure = "parametersPrecStructure.xml";
     myCLP.setOption("precfileStructure",&xmlPrecFileStructure,".xml file with Inputparameters.");
     string xmlPrecFileGeometry = "parametersPrecGeometry.xml";
@@ -330,10 +330,10 @@ int main(int argc, char *argv[])
                     vec_int_Type idsInterface(1,-1);
                     if (bcType == "partialCFD")
                         idsInterface[0] = 5;
-                    else if ( bcType == "Richter3D" || bcType == "Richter3DFull" || bcType == "Richter3DFullFaster" || bcType == "Richter3DFullSuperFast" || bcType == "Tube3D"){
+                    else if ( bcType == "Richter3D" || bcType == "Richter3DFull" || bcType == "Richter3DFullFaster" || bcType == "Richter3DFullSuperFast" || bcType == "Tube2D"){
                         idsInterface[0] = 6;
                     }
-                    else if (bcType == "Tube2D"){
+                    else if (bcType == "Tube3D"){
                         idsInterface[0] = 6;
                         idsInterface.push_back(9);
                         idsInterface.push_back(10);
@@ -369,8 +369,7 @@ int main(int argc, char *argv[])
                     domainP1fluid->identifyInterfaceParallelAndDistance(domainP1struct, idsInterface);
                     if (!discType.compare("P2"))
                         domainP2fluid->identifyInterfaceParallelAndDistance(domainP2struct, idsInterface);
-                    
-
+                
                     if (verbose){
                         cout << "done! -- " << endl;
                     }
@@ -397,9 +396,6 @@ int main(int argc, char *argv[])
 //                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
             }
 
-            domainFluidVelocity->exportNodeFlags("Fluid");
-            domainStructure->exportNodeFlags("Solid"); 
-            domainFluidVelocity->exportSurfaceNormals();
             if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
                 
                 if (verbose)
@@ -442,7 +438,6 @@ int main(int argc, char *argv[])
 
             // Baue die Interface-Maps in der Interface-Nummerierung
             domainFluidVelocity->buildInterfaceMaps();
-            
             domainStructure->buildInterfaceMaps();
 
             // domainInterface als dummyDomain mit mapVecFieldRepeated_ als interfaceMapVecFieldUnique_.
@@ -454,6 +449,7 @@ int main(int argc, char *argv[])
 
             domainFluidVelocity->setReferenceConfiguration();
             domainFluidPressure->setReferenceConfiguration();
+            domainStructure->setReferenceConfiguration();
                            
             // #####################
             // Problem definieren
@@ -663,10 +659,10 @@ int main(int argc, char *argv[])
             }
             else if (dim==3) {
              
-                if (!fsi.problemStructure_.is_null())
-                    fsi.problemStructure_->addRhsFunction( rhsDummy );
-                else
-                    fsi.problemStructureNonLin_->addRhsFunction( rhsDummy );
+                // if (!fsi.problemStructure_.is_null())
+                //     fsi.problemStructure_->addRhsFunction( rhsDummy );
+                // else
+                //     fsi.problemStructureNonLin_->addRhsFunction( rhsDummy );
                 
             }
             
@@ -706,14 +702,17 @@ int main(int argc, char *argv[])
 
                 if(bcType=="Tube3D"){
 
+                    // Adding BC geometry
                     bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // Interface
                     bcFactoryGeometry->addBC(zeroDirichlet3D, 9, 0, domainGeometry, "Dirichlet", dim); // Interface
                     bcFactoryGeometry->addBC(zeroDirichlet3D, 10, 0, domainGeometry, "Dirichlet", dim); // Interface
+                    // bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // Interface
+                    // bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // Interface
 
                     // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand.
                     // Hier erstmal Dirichlet Nullrand, wird spaeter von der Sturkturloesung vorgegeben
                     // bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
-                    if (preconditionerMethod == "FaCSCI" ) //|| preconditionerMethod == "FaCSI-Teko")
+                    if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
                     {
                         bcFactoryFluidInterface->addBC(zeroDirichlet3D, 6, 0, domainFluidVelocity, "Dirichlet", dim);
                         bcFactoryFluidInterface->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet", dim);
