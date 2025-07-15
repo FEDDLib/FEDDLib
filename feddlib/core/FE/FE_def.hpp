@@ -4879,7 +4879,7 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundaryPaper(int dim,
     func( &x_tmp[0], &valueFunc[0], paramsFunc);
     double p_ref = valueFunc[0];
     if(funcParameter[0]+1e-12 >= unsteadyStart){
-        p_ref = p_ref - pow( (sqrt(density)/(2*sqrt(2)) * flowRateInput/areaOutlet_T + sqrt(beta*sqrt(areaOutlet_T))),2) + beta*sqrt(areaOutlet_T);
+        p_ref = p_ref - std::pow( (std::sqrt(density)/(2*std::sqrt(2)) * flowRateInput/areaOutlet_T + std::sqrt(beta*std::sqrt(areaOutlet_T))),2) + beta*std::sqrt(areaOutlet_T);
 
         if(domainVec_.at(0)->getComm()->getRank()==0){
             std::cout << " ---------------------------------------------------------- " <<std::endl;
@@ -4896,13 +4896,13 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundaryPaper(int dim,
     if(isNeg==1)
         flowRateUse = 0.;
 
-    double A_bar = 1./((sqrt(beta*sqrt(areaOutlet_init)+p_ref_input)-sqrt(beta*sqrt(areaOutlet_init)))*2.*sqrt(2.)*(1./sqrt(density))*(1./flowRateInput));
+    double A_bar = 1./((std::sqrt(beta*std::sqrt(areaOutlet_init)+p_ref_input)-std::sqrt(beta*std::sqrt(areaOutlet_init)))*2.*std::sqrt(2.)*(1./std::sqrt(density))*(1./flowRateInput));
     double h_x = 0.;
 
     if(funcParameter[0] < unsteadyStart)
-        h_x=  pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/A_bar + sqrt(beta*sqrt(areaOutlet_init))),2) - beta*sqrt(areaOutlet_init);
+        h_x=  std::pow( (std::sqrt(density)/(2*std::sqrt(2)) * flowRateUse/A_bar + std::sqrt(beta*std::sqrt(areaOutlet_init))),2) - beta*std::sqrt(areaOutlet_init);
     else
-        h_x=  pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta*sqrt(areaOutlet_T))),2) - beta*sqrt(areaOutlet_T) + p_ref;
+        h_x=  std::pow( (std::sqrt(density)/(2*std::sqrt(2)) * flowRateUse/areaOutlet + std::sqrt(beta*std::sqrt(areaOutlet_T))),2) - beta*std::sqrt(areaOutlet_T) + p_ref;
 
     //         h_x=  pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta*sqrt(areaOutlet_init))),2) - beta*sqrt(areaOutlet_init) + p_ref;
 

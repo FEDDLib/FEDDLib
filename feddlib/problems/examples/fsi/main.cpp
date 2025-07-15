@@ -60,6 +60,7 @@ void inflow2D(double* x, double* res, double t, const double* parameters)
         res[0] = (4.0*1.5*parameters[0]*x[1]*(H-x[1])/(H*H)) * 0.5 * ( ( 1 - cos(2.*M_PI*t) ) );
         res[1] = 0.;
     }
+    
     else
     {
         res[0] = (4.0*1.5*parameters[0]*x[1]*(H-x[1])/(H*H));
@@ -133,16 +134,17 @@ void parabolicInflow3D(double* x, double* res, double t, const double* parameter
 {
     // parameters[0] is the maxium desired velocity
     // parameters[1] the radius
+    // parameters[2] the ramp
 
     // The center point of the inlet is (0,0,0)   
 
     // Distance from center
     double r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
-    if(t < 0.2)
+    if(t < parameters[2])
     {
         res[0] = 0.;
         res[1] = 0.;
-        res[2] = parameters[0] * (1- r/parameters[1]) * ( 1 - cos( 2.*M_PI*t ));
+        res[2] = parameters[0] * (1- r/parameters[1]) * ( 1 - cos( M_PI*t/parameters[2] ));
     }
     else
     {
@@ -528,6 +530,7 @@ int main(int argc, char *argv[])
             else if(!bcType.compare("Tube3D"))
             {
                 parameter_vec.push_back(0.09); // Height of inflow region is 0.18 cm! We use Radius here
+                parameter_vec.push_back(parameterListProblem->sublist("Parameter").get("Max Ramp Time",1.0));
             }
             else
             {
