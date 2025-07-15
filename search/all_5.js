@@ -21,8 +21,9 @@ var searchData=
   ['exporterparaviewamr_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_18',['ExporterParaViewAMR&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1ExporterParaViewAMR.html',1,'FEDD']]],
   ['exporterror_19',['exportError',['../classFEDD_1_1AdaptiveMeshRefinement.html#a87f47249e2d8714bd44fe2821e859046',1,'FEDD::AdaptiveMeshRefinement']]],
   ['exportertxt_20',['ExporterTxt',['../classFEDD_1_1ExporterTxt.html',1,'FEDD']]],
-  ['exportmesh_21',['exportMesh',['../classFEDD_1_1Domain.html#ae55dcd00227f596970c66171c48ecde5',1,'FEDD::Domain::exportMesh()'],['../classFEDD_1_1MeshUnstructured.html#a4d37576e5ce8ed904198f96cba5764b1',1,'FEDD::MeshUnstructured::exportMesh()']]],
-  ['exportnodeflags_22',['exportNodeFlags',['../classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9',1,'FEDD::Domain']]],
-  ['exportsolution_23',['exportSolution',['../classFEDD_1_1AdaptiveMeshRefinement.html#aba81680cde702776b95800bd03308067',1,'FEDD::AdaptiveMeshRefinement']]],
-  ['exportsurfacenormals_24',['exportSurfaceNormals',['../classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5',1,'FEDD::Domain']]]
+  ['exportfromvector_21',['exportFromVector',['../classFEDD_1_1Matrix.html#a39109e02a3914b754117a24d925ac9ac',1,'FEDD::Matrix']]],
+  ['exportmesh_22',['exportMesh',['../classFEDD_1_1Domain.html#ae55dcd00227f596970c66171c48ecde5',1,'FEDD::Domain::exportMesh()'],['../classFEDD_1_1MeshUnstructured.html#a4d37576e5ce8ed904198f96cba5764b1',1,'FEDD::MeshUnstructured::exportMesh()']]],
+  ['exportnodeflags_23',['exportNodeFlags',['../classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9',1,'FEDD::Domain']]],
+  ['exportsolution_24',['exportSolution',['../classFEDD_1_1AdaptiveMeshRefinement.html#aba81680cde702776b95800bd03308067',1,'FEDD::AdaptiveMeshRefinement']]],
+  ['exportsurfacenormals_25',['exportSurfaceNormals',['../classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5',1,'FEDD::Domain']]]
 ];

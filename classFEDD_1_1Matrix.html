@@ -271,6 +271,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>replaceLocalValues</b
 TpetraMatrixConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>getTpetraMatrix</b> () const</td></tr>
 <tr class="memdesc:aeea2c3601945a03db224838d0a36e2ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return matrix in Xpetra Format of type " ". <br /></td></tr>
 <tr class="separator:aeea2c3601945a03db224838d0a36e2ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad283508c5443b6e5fca6179cacdbe2eb" id="r_ad283508c5443b6e5fca6179cacdbe2eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad283508c5443b6e5fca6179cacdbe2eb">Multiply</a> (const MatrixPtr_Type &amp;tpA, bool transposeA, const MatrixPtr_Type &amp;tpB, bool transposeB, bool <a class="el" href="#ac7a973c3c60225c44317ce16688b2e40">fillComplete</a>=true)</td></tr>
+<tr class="separator:ad283508c5443b6e5fca6179cacdbe2eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4c09a28b93ff4303027047a96d98cf1" id="r_ac4c09a28b93ff4303027047a96d98cf1"><td class="memItemLeft" align="right" valign="top"><a id="ac4c09a28b93ff4303027047a96d98cf1" name="ac4c09a28b93ff4303027047a96d98cf1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>apply</b> (const <a class="el" href="classFEDD_1_1MultiVector.html">MultiVector_Type</a> &amp;X, <a class="el" href="classFEDD_1_1MultiVector.html">MultiVector_Type</a> &amp;Y, Teuchos::ETransp mode=Teuchos::NO_TRANS, SC alpha=Teuchos::ScalarTraits&lt; SC &gt;::one(), SC beta=Teuchos::ScalarTraits&lt; SC &gt;::zero()) const</td></tr>
 <tr class="memdesc:ac4c09a28b93ff4303027047a96d98cf1"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> Vector Operation. Applying <a class="el" href="classFEDD_1_1MultiVector.html">MultiVector</a> X to this. Y = alpha * (this)^mode * X + beta * Y. Mode being transposed or not. <br /></td></tr>
@@ -298,13 +300,221 @@ LO&#160;</td><td class="memItemRight" valign="bottom"><b>getGlobalMaxNumRowEntri
 <tr class="memitem:add5726ccfea240cfc83f7b964c89d919" id="r_add5726ccfea240cfc83f7b964c89d919"><td class="memItemLeft" align="right" valign="top"><a id="add5726ccfea240cfc83f7b964c89d919" name="add5726ccfea240cfc83f7b964c89d919"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>insertLocalValues</b> (LO localRow, const Teuchos::ArrayView&lt; const LO &gt; &amp;cols, const Teuchos::ArrayView&lt; const SC &gt; &amp;vals)</td></tr>
 <tr class="separator:add5726ccfea240cfc83f7b964c89d919"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1cc09c8d0df0259895a16b5e80e2a1f" id="r_ab1cc09c8d0df0259895a16b5e80e2a1f"><td class="memItemLeft" align="right" valign="top"><a id="ab1cc09c8d0df0259895a16b5e80e2a1f" name="ab1cc09c8d0df0259895a16b5e80e2a1f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>importFromVector</b> (MatrixPtr_Type mvIn, bool reuseImport=false, std::string combineMode=&quot;Insert&quot;, std::string type=&quot;Forward&quot;)</td></tr>
+<tr class="memitem:ab1cc09c8d0df0259895a16b5e80e2a1f" id="r_ab1cc09c8d0df0259895a16b5e80e2a1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1cc09c8d0df0259895a16b5e80e2a1f">importFromVector</a> (MatrixPtr_Type mvIn, bool reuseImport=false, std::string combineMode=&quot;Insert&quot;, std::string type=&quot;Forward&quot;)</td></tr>
 <tr class="separator:ab1cc09c8d0df0259895a16b5e80e2a1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39109e02a3914b754117a24d925ac9ac" id="r_a39109e02a3914b754117a24d925ac9ac"><td class="memItemLeft" align="right" valign="top"><a id="a39109e02a3914b754117a24d925ac9ac" name="a39109e02a3914b754117a24d925ac9ac"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>exportFromVector</b> (MatrixPtr_Type mvIn, bool reuseExport=false, std::string combineMode=&quot;Insert&quot;, std::string type=&quot;Forward&quot;)</td></tr>
+<tr class="memitem:a39109e02a3914b754117a24d925ac9ac" id="r_a39109e02a3914b754117a24d925ac9ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39109e02a3914b754117a24d925ac9ac">exportFromVector</a> (MatrixPtr_Type mvIn, bool reuseExport=false, std::string combineMode=&quot;Insert&quot;, std::string type=&quot;Forward&quot;)</td></tr>
 <tr class="separator:a39109e02a3914b754117a24d925ac9ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1054a364d8f9bbc01acd502642ba50d4" id="r_a1054a364d8f9bbc01acd502642ba50d4"><td class="memItemLeft" align="right" valign="top">MatrixPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1054a364d8f9bbc01acd502642ba50d4">buildDiagonalInverse</a> (std::string diagonalType)</td></tr>
+<tr class="separator:a1054a364d8f9bbc01acd502642ba50d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1054a364d8f9bbc01acd502642ba50d4" name="a1054a364d8f9bbc01acd502642ba50d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1054a364d8f9bbc01acd502642ba50d4">&#9670;&#160;</a></span>buildDiagonalInverse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classFEDD_1_1Matrix.html">Matrix</a>&lt; SC, LO, GO, NO &gt;::MatrixPtr_Type <a class="el" href="classFEDD_1_1Matrix.html">FEDD::Matrix</a>&lt; SC, LO, GO, NO &gt;::buildDiagonalInverse </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>diagonalType</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Build Diagonal Inverse of this matrix and return it </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Matrix_a1054a364d8f9bbc01acd502642ba50d4_cgraph.png" border="0" usemap="#aclassFEDD_1_1Matrix_a1054a364d8f9bbc01acd502642ba50d4_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Matrix_a1054a364d8f9bbc01acd502642ba50d4_cgraph" id="aclassFEDD_1_1Matrix_a1054a364d8f9bbc01acd502642ba50d4_cgraph">
+<area shape="rect" title=" " alt="" coords="5,29,185,70"/>
+<area shape="poly" title=" " alt="" coords="61,29,59,19,65,10,77,5,95,3,115,5,126,11,124,16,113,10,95,8,78,10,68,14,64,20,66,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Matrix_a1054a364d8f9bbc01acd502642ba50d4_icgraph.png" border="0" usemap="#aclassFEDD_1_1Matrix_a1054a364d8f9bbc01acd502642ba50d4_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Matrix_a1054a364d8f9bbc01acd502642ba50d4_icgraph" id="aclassFEDD_1_1Matrix_a1054a364d8f9bbc01acd502642ba50d4_icgraph">
+<area shape="rect" title=" " alt="" coords="5,29,185,70"/>
+<area shape="poly" title=" " alt="" coords="124,16,113,10,95,8,78,10,68,14,64,20,66,28,61,29,59,19,65,10,77,5,95,3,115,5,126,11"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a39109e02a3914b754117a24d925ac9ac" name="a39109e02a3914b754117a24d925ac9ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39109e02a3914b754117a24d925ac9ac">&#9670;&#160;</a></span>exportFromVector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1Matrix.html">FEDD::Matrix</a>&lt; SC, LO, GO, NO &gt;::exportFromVector </td>
+          <td>(</td>
+          <td class="paramtype">MatrixPtr_Type</td>          <td class="paramname"><span class="paramname"><em>mvIn</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>reuseExport</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>combineMode</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Insert&quot;</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>type</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Forward&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> Analogue to <a class="el" href="classFEDD_1_1MultiVector.html">MultiVector</a> Export. Based on Row <a class="el" href="classFEDD_1_1Map.html">Map</a> of <a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> mvIn. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Matrix_a39109e02a3914b754117a24d925ac9ac_cgraph.png" border="0" usemap="#aclassFEDD_1_1Matrix_a39109e02a3914b754117a24d925ac9ac_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Matrix_a39109e02a3914b754117a24d925ac9ac_cgraph" id="aclassFEDD_1_1Matrix_a39109e02a3914b754117a24d925ac9ac_cgraph">
+<area shape="rect" title=" " alt="" coords="5,29,173,70"/>
+<area shape="poly" title=" " alt="" coords="47,29,45,19,52,10,67,5,89,3,113,5,127,11,125,16,112,10,89,8,68,10,55,15,50,21,52,28"/>
+<area shape="rect" href="classFEDD_1_1Matrix.html#a6b292c8ba998d10c1562252279c7a0d5" title="Return map in Xpetra Format of type &quot; &quot;." alt="" coords="221,37,403,62"/>
+<area shape="poly" title=" " alt="" coords="173,47,205,47,205,52,173,52"/>
+<area shape="poly" title=" " alt="" coords="275,38,268,28,272,18,287,12,312,10,339,13,353,20,351,24,338,18,312,15,288,18,276,22,273,28,279,35"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Matrix_a39109e02a3914b754117a24d925ac9ac_icgraph.png" border="0" usemap="#aclassFEDD_1_1Matrix_a39109e02a3914b754117a24d925ac9ac_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Matrix_a39109e02a3914b754117a24d925ac9ac_icgraph" id="aclassFEDD_1_1Matrix_a39109e02a3914b754117a24d925ac9ac_icgraph">
+<area shape="rect" title=" " alt="" coords="5,29,173,70"/>
+<area shape="poly" title=" " alt="" coords="116,16,106,10,89,8,73,10,64,14,60,20,62,28,57,29,55,19,60,11,72,5,89,3,107,5,118,11"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ab1cc09c8d0df0259895a16b5e80e2a1f" name="ab1cc09c8d0df0259895a16b5e80e2a1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1cc09c8d0df0259895a16b5e80e2a1f">&#9670;&#160;</a></span>importFromVector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1Matrix.html">FEDD::Matrix</a>&lt; SC, LO, GO, NO &gt;::importFromVector </td>
+          <td>(</td>
+          <td class="paramtype">MatrixPtr_Type</td>          <td class="paramname"><span class="paramname"><em>mvIn</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>reuseImport</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>combineMode</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Insert&quot;</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>type</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Forward&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> Analogue to <a class="el" href="classFEDD_1_1MultiVector.html">MultiVector</a> Import. Based on Row <a class="el" href="classFEDD_1_1Map.html">Map</a> of <a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> mvIn. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Matrix_ab1cc09c8d0df0259895a16b5e80e2a1f_cgraph.png" border="0" usemap="#aclassFEDD_1_1Matrix_ab1cc09c8d0df0259895a16b5e80e2a1f_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Matrix_ab1cc09c8d0df0259895a16b5e80e2a1f_cgraph" id="aclassFEDD_1_1Matrix_ab1cc09c8d0df0259895a16b5e80e2a1f_cgraph">
+<area shape="rect" title=" " alt="" coords="5,29,174,70"/>
+<area shape="poly" title=" " alt="" coords="47,29,45,19,52,10,67,5,90,3,114,5,128,11,126,16,112,10,89,8,68,10,55,15,50,21,53,28"/>
+<area shape="rect" href="classFEDD_1_1Matrix.html#a6b292c8ba998d10c1562252279c7a0d5" title="Return map in Xpetra Format of type &quot; &quot;." alt="" coords="222,37,404,62"/>
+<area shape="poly" title=" " alt="" coords="174,47,206,47,206,52,174,52"/>
+<area shape="poly" title=" " alt="" coords="276,38,268,28,273,18,288,12,313,10,340,13,354,20,352,24,339,18,313,15,289,18,276,22,274,28,280,35"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Matrix_ab1cc09c8d0df0259895a16b5e80e2a1f_icgraph.png" border="0" usemap="#aclassFEDD_1_1Matrix_ab1cc09c8d0df0259895a16b5e80e2a1f_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Matrix_ab1cc09c8d0df0259895a16b5e80e2a1f_icgraph" id="aclassFEDD_1_1Matrix_ab1cc09c8d0df0259895a16b5e80e2a1f_icgraph">
+<area shape="rect" title=" " alt="" coords="5,29,174,70"/>
+<area shape="poly" title=" " alt="" coords="116,16,106,10,89,8,74,10,64,14,61,20,62,28,57,29,55,19,61,11,72,5,90,3,108,5,119,11"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ad283508c5443b6e5fca6179cacdbe2eb" name="ad283508c5443b6e5fca6179cacdbe2eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad283508c5443b6e5fca6179cacdbe2eb">&#9670;&#160;</a></span>Multiply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1Matrix.html">FEDD::Matrix</a>&lt; SC, LO, GO, NO &gt;::Multiply </td>
+          <td>(</td>
+          <td class="paramtype">const MatrixPtr_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>tpA</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>transposeA</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MatrixPtr_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>tpB</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>transposeB</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>fillComplete</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Tpetra <a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> <a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> Multiply </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Matrix_ad283508c5443b6e5fca6179cacdbe2eb_cgraph.png" border="0" usemap="#aclassFEDD_1_1Matrix_ad283508c5443b6e5fca6179cacdbe2eb_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Matrix_ad283508c5443b6e5fca6179cacdbe2eb_cgraph" id="aclassFEDD_1_1Matrix_ad283508c5443b6e5fca6179cacdbe2eb_cgraph">
+<area shape="rect" title=" " alt="" coords="5,29,152,55"/>
+<area shape="poly" title=" " alt="" coords="44,31,37,21,41,11,55,5,79,3,104,5,117,12,114,17,102,10,78,8,57,10,45,15,43,20,48,27"/>
+<area shape="rect" href="classFEDD_1_1Matrix.html#ac7a973c3c60225c44317ce16688b2e40" title="after inserting global values into matrix. After this step the column map is fixed...." alt="" coords="200,29,369,55"/>
+<area shape="poly" title=" " alt="" coords="152,40,184,40,184,45,152,45"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Matrix_ad283508c5443b6e5fca6179cacdbe2eb_icgraph.png" border="0" usemap="#aclassFEDD_1_1Matrix_ad283508c5443b6e5fca6179cacdbe2eb_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Matrix_ad283508c5443b6e5fca6179cacdbe2eb_icgraph" id="aclassFEDD_1_1Matrix_ad283508c5443b6e5fca6179cacdbe2eb_icgraph">
+<area shape="rect" title=" " alt="" coords="5,29,152,55"/>
+<area shape="poly" title=" " alt="" coords="103,16,95,10,78,8,63,10,56,14,54,20,58,28,53,30,48,21,51,11,62,5,79,3,97,5,106,12"/>
+</map>
+</div>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>feddlib/core/LinearAlgebra/<a class="el" href="Matrix__decl_8hpp_source.html">Matrix_decl.hpp</a></li>
 <li>feddlib/core/LinearAlgebra/<a class="el" href="Matrix__def_8hpp_source.html">Matrix_def.hpp</a></li>

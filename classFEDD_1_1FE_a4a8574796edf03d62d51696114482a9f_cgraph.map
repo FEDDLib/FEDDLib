@@ -1,5 +1,5 @@
 <map id="FEDD::FE::assemblyBDStabilization" name="FEDD::FE::assemblyBDStabilization">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,55,232,80"/>
+<area shape="rect" id="Node000001" title="Bochev&#45; Dohrmann Stabilization." alt="" coords="5,55,232,80"/>
 <area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="74,56,65,46,71,36,89,30,119,28,153,31,169,38,167,43,151,36,118,33,90,35,74,40,71,45,78,52"/>
 <area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#aa39723a79c28706566d5b54a4cde6b4e" title="Build transformation of element to reference element depending on FEType." alt="" coords="280,5,499,31"/>
 <area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="193,51,299,32,300,37,194,57"/>

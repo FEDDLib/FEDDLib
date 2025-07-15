@@ -1,0 +1,7 @@
+<map id="FEDD::LinearSolver::solve" name="FEDD::LinearSolver::solve">
+<area shape="rect" id="Node000001" title="Call to solve a linear/linearized problem with right&#45;hand side rhs. Depending on &#39;type&#39; solveMonolith..." alt="" coords="5,39,140,79"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1LinearSolver.html#accdc269bebb9df38a3233c7db61eacbc" title="In case of a block system, solve block is called. It works also for teko." alt="" coords="188,5,322,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="140,44,172,38,173,43,141,49"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1LinearSolver.html#a6b1be3b3f5eee893ef83e11d5b935e78" title="Solve linear/linearized problem monolithicly." alt="" coords="188,71,322,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="141,68,173,74,172,79,140,73"/>
+</map>

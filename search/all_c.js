@@ -10,7 +10,7 @@ var searchData=
   ['nonlinearproblem_7',['NonLinearProblem',['../classFEDD_1_1NonLinearProblem.html',1,'FEDD']]],
   ['nonlinearproblem_3c_20default_5fsc_2c_20default_5flo_2c_20default_5fgo_2c_20default_5fno_20_3e_8',['NonLinearProblem&lt; default_sc, default_lo, default_go, default_no &gt;',['../classFEDD_1_1NonLinearProblem.html',1,'FEDD']]],
   ['nonlinearproblem_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_9',['NonLinearProblem&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1NonLinearProblem.html',1,'FEDD']]],
-  ['nonlinearsolver_10',['NonLinearSolver',['../classFEDD_1_1NonLinearSolver.html',1,'FEDD']]],
+  ['nonlinearsolver_10',['NonLinearSolver',['../classFEDD_1_1NonLinearSolver.html',1,'FEDD::NonLinearSolver&lt; SC, LO, GO, NO &gt;'],['../classFEDD_1_1NonLinearSolver.html#a8a4e8212e9d3926451c75a1ba4ba94b4',1,'FEDD::NonLinearSolver::NonLinearSolver()']]],
   ['nonlinelasassfe_11',['NonLinElasAssFE',['../classFEDD_1_1NonLinElasAssFE.html',1,'FEDD']]],
   ['nonlinelasticity_12',['NonLinElasticity',['../classFEDD_1_1NonLinElasticity.html',1,'FEDD']]],
   ['nonlinelasticity_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_13',['NonLinElasticity&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1NonLinElasticity.html',1,'FEDD']]],

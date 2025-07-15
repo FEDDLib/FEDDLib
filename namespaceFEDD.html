@@ -238,7 +238,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1MultiVector.html">MultiVector</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1NavierStokes.html">NavierStokes</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Navier-Stokes.  <a href="classFEDD_1_1NavierStokes.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1NavierStokesAssFE.html">NavierStokesAssFE</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Navier-Stokes.  <a href="classFEDD_1_1NavierStokesAssFE.html#details">More...</a><br /></td></tr>
@@ -460,9 +459,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>dummyFuncSol</b> (dou
 <tr class="memitem:ad575f69248172a8447e6814b01eec819" id="r_ad575f69248172a8447e6814b01eec819"><td class="memItemLeft" align="right" valign="top"><a id="ad575f69248172a8447e6814b01eec819" name="ad575f69248172a8447e6814b01eec819"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>rhsFunc</b> (double *x, double *res, double *parameters)</td></tr>
 <tr class="separator:ad575f69248172a8447e6814b01eec819"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a3f2c0a33df2543f2f54fdc1aa12b72" id="r_a5a3f2c0a33df2543f2f54fdc1aa12b72"><td class="memItemLeft" align="right" valign="top"><a id="a5a3f2c0a33df2543f2f54fdc1aa12b72" name="a5a3f2c0a33df2543f2f54fdc1aa12b72"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SPP</b> (double v[1817], <a class="el" href="structElementSpec.html">ElementSpec</a> *es, <a class="el" href="structElementData.html">ElementData</a> *ed, <a class="el" href="structNodeSpec.html">NodeSpec</a> **ns, <a class="el" href="structNodeData.html">NodeData</a> **nd, double *rdata, int *idata, double **gpost, double **npost)</td></tr>
-<tr class="separator:a5a3f2c0a33df2543f2f54fdc1aa12b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e0871da8a28ea618adc6dc0fe51e537" id="r_a3e0871da8a28ea618adc6dc0fe51e537"><td class="memItemLeft" align="right" valign="top"><a id="a3e0871da8a28ea618adc6dc0fe51e537" name="a3e0871da8a28ea618adc6dc0fe51e537"></a>
 char&#160;</td><td class="memItemRight" valign="bottom"><b>ch_cap</b> (char ch)</td></tr>
 <tr class="separator:a3e0871da8a28ea618adc6dc0fe51e537"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -639,6 +635,18 @@ template&lt;typename T&gt; </td></tr>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a5b8cfd7b0684282f3a30ff07ff537389"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>make_unique</b> (std::vector&lt; T &gt; &amp;in)</td></tr>
 <tr class="separator:a5b8cfd7b0684282f3a30ff07ff537389"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8f5ffdb4b3d327391c626609d7b4ca0" id="r_ae8f5ffdb4b3d327391c626609d7b4ca0"><td class="memItemLeft" align="right" valign="top"><a id="ae8f5ffdb4b3d327391c626609d7b4ca0" name="ae8f5ffdb4b3d327391c626609d7b4ca0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ZeroDirichlet</b> (double *x, double *res, double t, double *parameters)</td></tr>
+<tr class="separator:ae8f5ffdb4b3d327391c626609d7b4ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00e3cae725505671a5319407353f4f16" id="r_a00e3cae725505671a5319407353f4f16"><td class="memItemLeft" align="right" valign="top"><a id="a00e3cae725505671a5319407353f4f16" name="a00e3cae725505671a5319407353f4f16"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPM</b> (int material, double h, std::vector&lt; double &gt; &amp;matrix)</td></tr>
+<tr class="separator:a00e3cae725505671a5319407353f4f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76be31aea31e400cbf01496cf9296cbb" id="r_a76be31aea31e400cbf01496cf9296cbb"><td class="memItemLeft" align="right" valign="top"><a id="a76be31aea31e400cbf01496cf9296cbb" name="a76be31aea31e400cbf01496cf9296cbb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPMold</b> (int material, double h, std::vector&lt; double &gt; &amp;matrix)</td></tr>
+<tr class="separator:a76be31aea31e400cbf01496cf9296cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4de4f13d0a6cec1cfc49b418b9b00507" id="r_a4de4f13d0a6cec1cfc49b418b9b00507"><td class="memItemLeft" align="right" valign="top"><a id="a4de4f13d0a6cec1cfc49b418b9b00507" name="a4de4f13d0a6cec1cfc49b418b9b00507"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPMSingleMat</b> (int material, double h, std::vector&lt; double &gt; &amp;matrix)</td></tr>
+<tr class="separator:a4de4f13d0a6cec1cfc49b418b9b00507"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00e95b8b063bc3554d3236c7c703bd37" id="r_a00e95b8b063bc3554d3236c7c703bd37"><td class="memItemLeft" align="right" valign="top"><a id="a00e95b8b063bc3554d3236c7c703bd37" name="a00e95b8b063bc3554d3236c7c703bd37"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ZeroFErhsFunc2D</b> (double *x, double *result, double *parameters)</td></tr>
 <tr class="separator:a00e95b8b063bc3554d3236c7c703bd37"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -654,35 +662,23 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>rhsFunc2D</b> (double
 <tr class="memitem:a5fa599910e753135345a6f202afd581e" id="r_a5fa599910e753135345a6f202afd581e"><td class="memItemLeft" align="right" valign="top"><a id="a5fa599910e753135345a6f202afd581e" name="a5fa599910e753135345a6f202afd581e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>rhsFunc3D</b> (double *x, double *result, double *parameters)</td></tr>
 <tr class="separator:a5fa599910e753135345a6f202afd581e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8f5ffdb4b3d327391c626609d7b4ca0" id="r_ae8f5ffdb4b3d327391c626609d7b4ca0"><td class="memItemLeft" align="right" valign="top"><a id="ae8f5ffdb4b3d327391c626609d7b4ca0" name="ae8f5ffdb4b3d327391c626609d7b4ca0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ZeroDirichlet</b> (double *x, double *res, double t, double *parameters)</td></tr>
-<tr class="separator:ae8f5ffdb4b3d327391c626609d7b4ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af560e21a70fdb5deae994c250a8d3b51" id="r_af560e21a70fdb5deae994c250a8d3b51"><td class="memItemLeft" align="right" valign="top"><a id="af560e21a70fdb5deae994c250a8d3b51" name="af560e21a70fdb5deae994c250a8d3b51"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>OneFunction</b> (double *x, int *parameter)</td></tr>
 <tr class="separator:af560e21a70fdb5deae994c250a8d3b51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00e3cae725505671a5319407353f4f16" id="r_a00e3cae725505671a5319407353f4f16"><td class="memItemLeft" align="right" valign="top"><a id="a00e3cae725505671a5319407353f4f16" name="a00e3cae725505671a5319407353f4f16"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPM</b> (int material, double h, std::vector&lt; double &gt; &amp;matrix)</td></tr>
-<tr class="separator:a00e3cae725505671a5319407353f4f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76be31aea31e400cbf01496cf9296cbb" id="r_a76be31aea31e400cbf01496cf9296cbb"><td class="memItemLeft" align="right" valign="top"><a id="a76be31aea31e400cbf01496cf9296cbb" name="a76be31aea31e400cbf01496cf9296cbb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPMold</b> (int material, double h, std::vector&lt; double &gt; &amp;matrix)</td></tr>
-<tr class="separator:a76be31aea31e400cbf01496cf9296cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4de4f13d0a6cec1cfc49b418b9b00507" id="r_a4de4f13d0a6cec1cfc49b418b9b00507"><td class="memItemLeft" align="right" valign="top"><a id="a4de4f13d0a6cec1cfc49b418b9b00507" name="a4de4f13d0a6cec1cfc49b418b9b00507"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPMSingleMat</b> (int material, double h, std::vector&lt; double &gt; &amp;matrix)</td></tr>
-<tr class="separator:a4de4f13d0a6cec1cfc49b418b9b00507"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Adaptive <a class="el" href="classFEDD_1_1Mesh.html">Mesh</a> Refinement. </p>
-<p><a class="el" href="classFEDD_1_1TPM.html">TPM</a>.</p>
 <p><a class="el" href="classFEDD_1_1Stokes.html">Stokes</a>.</p>
-<p><a class="el" href="classFEDD_1_1NonLinTPM.html">NonLinTPM</a>.</p>
 <p><a class="el" href="classFEDD_1_1NonLinLaplace.html">NonLinLaplace</a>.</p>
 <p><a class="el" href="classFEDD_1_1NonLinElasticity.html">NonLinElasticity</a>.</p>
 <p>Navier-Stokes.</p>
 <p><a class="el" href="classFEDD_1_1LaplaceBlocks.html">LaplaceBlocks</a>.</p>
 <p><a class="el" href="classFEDD_1_1Laplace.html">Laplace</a>.</p>
-<p><a class="el" href="classFEDD_1_1Elasticity.html" title="Elasticity.">Elasticity</a>.</p>
 <p>Diffusion Reaction Equation.</p>
 <p>Diffusion.</p>
+<p><a class="el" href="classFEDD_1_1TPM.html">TPM</a>.</p>
+<p><a class="el" href="classFEDD_1_1NonLinTPM.html">NonLinTPM</a>.</p>
+<p><a class="el" href="classFEDD_1_1Elasticity.html" title="Elasticity.">Elasticity</a>.</p>
 <p><a class="el" href="classFEDD_1_1TimeSteppingTools.html">TimeSteppingTools</a>.</p>
 <p><a class="el" href="classFEDD_1_1PrecOpFaCSI.html">PrecOpFaCSI</a>.</p>
 <p><a class="el" href="classFEDD_1_1PreconditionerOperator.html">PreconditionerOperator</a>, copied from.</p>
@@ -973,14 +969,26 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPMSingleMat</b> (i
 <dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
+<p>Class to define the nonlinear solver for a nonlinear problem.</p>
+<p>Possible nonlinear solivng methods are:</p><ul>
+<li>Newton</li>
+<li>Fixed Point</li>
+<li>NOX (Newton implementation of Trilinos containing multiple features like forcing term strategies and globalization)</li>
+</ul>
 <p>Definition of <a class="el" href="classFEDD_1_1NonLinearSolver.html">NonLinearSolver</a></p>
 <dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
 <p>Declaration of <a class="el" href="classFEDD_1_1PrecBlock2x2.html">PrecBlock2x2</a></p>
-<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth/Lea Saßmannshausen </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
+<p>Applying a 2x2 block preconditioner for the (Navier)-<a class="el" href="classFEDD_1_1Stokes.html">Stokes</a> problem | F B^T | | B -C | The matrix C corresponds to a stabilzation, if needed. For stable finite element discretizations, the matrix C corresponds to a zero matrix. In PCD there is no special consideration of the stabiization needed. In LSC it would be considered, but that is not implemented here.</p>
+<p>Diagonal <a class="el" href="classFEDD_1_1Preconditioner.html">Preconditioner</a>: | \hat{F}^-1 0 | | 0 \hat{S}^-1 |</p>
+<p>Triangular <a class="el" href="classFEDD_1_1Preconditioner.html">Preconditioner</a>: | \hat{F}^-1 B^T | | 0 \hat{S}^-1 |</p>
+<p>The inverse of the fluid system is always approximated the same by a Schwarz method</p>
+<p>The Schur complement is replaced by different approximations depending on the strategy: -&gt; 'Diagonal' Prec: the Schur complement is replaced by -1/nu M_p -&gt; 'Triangular' Prec: the Schur complement is replaced by -1/nu M_p -&gt; 'PCD' Prec: the Schur complement is replaced by -M_p F_p^-1 A_p -&gt; 'LSC' Prec: the Schur complement is replaced by -A_p^-1 (B (M_v^-1) F (M_v^-1) B^T ) A_p^-1</p>
+<p>the arising inverses are again approximated by a Schwarz method</p>
 <p>Definition of <a class="el" href="classFEDD_1_1PrecBlock2x2.html">PrecBlock2x2</a></p>
 <dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
@@ -1017,6 +1025,26 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPMSingleMat</b> (i
 <dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
+<p>Definition of <a class="el" href="classFEDD_1_1Elasticity.html" title="Elasticity.">Elasticity</a></p>
+<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
+<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
+<p>Declaration of <a class="el" href="classFEDD_1_1NonLinTPM.html">NonLinTPM</a></p>
+<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
+<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
+<p>Definition of <a class="el" href="classFEDD_1_1NonLinTPM.html">NonLinTPM</a></p>
+<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
+<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
+<p>Declaration of <a class="el" href="classFEDD_1_1TPM.html">TPM</a></p>
+<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
+<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
+<p>Definition of <a class="el" href="classFEDD_1_1TPM.html">TPM</a></p>
+<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
+<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
 <p>Declaration of <a class="el" href="classFEDD_1_1DiffusionReaction.html">DiffusionReaction</a></p>
 <dl class="section author"><dt>Author</dt><dd>Lea Sassmannshausen </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
@@ -1025,10 +1053,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPMSingleMat</b> (i
 <dl class="section author"><dt>Author</dt><dd>Lea Sassmannshausen </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>LS</dd></dl>
-<p>Definition of <a class="el" href="classFEDD_1_1Elasticity.html" title="Elasticity.">Elasticity</a></p>
-<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
-<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
 <p>Declaration of <a class="el" href="classFEDD_1_1Laplace.html">Laplace</a></p>
 <dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
@@ -1043,6 +1067,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPMSingleMat</b> (i
 <dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
 <p>Definition of <a class="el" href="classFEDD_1_1LaplaceBlocks.html">LaplaceBlocks</a></p>
 <dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
+<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
+<p>Declaration of Navier-Stokes</p>
+<dl class="section author"><dt>Authors</dt><dd>Christian Hochmuth, Lea Saßmannshausen </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
 <p>Declaration of Navier-Stokes</p>
@@ -1069,23 +1097,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>myTPMSingleMat</b> (i
 <dl class="section author"><dt>Author</dt><dd>Kyrill Ho </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>KH</dd></dl>
-<p>Declaration of <a class="el" href="classFEDD_1_1NonLinTPM.html">NonLinTPM</a></p>
-<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
-<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
-<p>Definition of <a class="el" href="classFEDD_1_1NonLinTPM.html">NonLinTPM</a></p>
-<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
-<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
 <p>Definition of <a class="el" href="classFEDD_1_1Stokes.html">Stokes</a></p>
-<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
-<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
-<p>Declaration of <a class="el" href="classFEDD_1_1TPM.html">TPM</a></p>
-<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
-<dl class="section copyright"><dt>Copyright</dt><dd>CH</dd></dl>
-<p>Definition of <a class="el" href="classFEDD_1_1TPM.html">TPM</a></p>
 <dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>CH </dd></dl>

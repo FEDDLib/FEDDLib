@@ -1,4 +1,13 @@
 <map id="FEDD::PrecBlock2x2::setDiagonal" name="FEDD::PrecBlock2x2::setDiagonal">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,29,147,70"/>
-<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="48,29,47,20,51,11,61,5,76,3,92,5,101,12,98,16,90,10,76,8,63,10,55,14,52,20,54,28"/>
+<area shape="rect" id="Node000001" title="Diagonal preconditioner with \hat{S}= &#45;1/nu M_p schur complement approximation." alt="" coords="5,119,147,159"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="40,119,38,109,44,100,57,94,76,92,97,94,109,101,107,105,95,100,76,97,58,99,47,104,43,110,45,117"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1PrecBlock2x2.html#a7f01ad1a54ad083158ed766ceaaa452a" title="Setting inverse approximation of Schur complement." alt="" coords="195,29,336,70"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="120,116,206,75,208,79,122,120"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1PrecBlock2x2.html#a6cc765f218d013c26d182191902d856b" title="Setting the preconditioning ype." alt="" coords="195,119,336,159"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="147,136,179,136,179,142,147,142"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1PrecBlock2x2.html#a811230597ae15a019bf76ce01c0c9279" title="Setting velocity inverse approximation." alt="" coords="195,208,336,249"/>
+<area shape="poly" id="edge6_Node000001_Node000004" title=" " alt="" coords="122,158,208,199,206,203,120,162"/>
+<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="229,29,227,19,233,10,246,5,265,3,286,5,298,11,296,16,284,10,265,8,247,10,237,15,233,20,234,28"/>
+<area shape="poly" id="edge5_Node000003_Node000003" title=" " alt="" coords="229,119,227,109,233,100,246,94,265,92,286,94,298,101,296,105,284,100,265,97,247,99,237,104,233,110,234,117"/>
+<area shape="poly" id="edge7_Node000004_Node000004" title=" " alt="" coords="229,208,227,198,233,189,246,183,265,181,286,184,298,190,296,195,284,189,265,187,247,189,237,193,233,199,234,207"/>
 </map>

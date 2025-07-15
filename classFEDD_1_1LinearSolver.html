@@ -149,25 +149,296 @@ typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1BlockMultiVector.html"
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:adb86ac28d97d3db35faae29751a9e662" id="r_adb86ac28d97d3db35faae29751a9e662"><td class="memItemLeft" align="right" valign="top"><a id="adb86ac28d97d3db35faae29751a9e662" name="adb86ac28d97d3db35faae29751a9e662"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>solve</b> (<a class="el" href="classFEDD_1_1Problem.html">Problem_Type</a> *problem, BlockMultiVectorPtr_Type rhs, std::string type=&quot;Monolithic&quot;)</td></tr>
+<tr class="memitem:adb86ac28d97d3db35faae29751a9e662" id="r_adb86ac28d97d3db35faae29751a9e662"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb86ac28d97d3db35faae29751a9e662">solve</a> (<a class="el" href="classFEDD_1_1Problem.html">Problem_Type</a> *problem, BlockMultiVectorPtr_Type rhs, std::string type=&quot;Monolithic&quot;)</td></tr>
+<tr class="memdesc:adb86ac28d97d3db35faae29751a9e662"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call to solve a linear/linearized problem with right-hand side rhs. Depending on 'type' solveMonolithic, solveTeko, solveBlock is called.  <br /></td></tr>
 <tr class="separator:adb86ac28d97d3db35faae29751a9e662"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae07f03b75143261839ad2ed8d040dba8" id="r_ae07f03b75143261839ad2ed8d040dba8"><td class="memItemLeft" align="right" valign="top"><a id="ae07f03b75143261839ad2ed8d040dba8" name="ae07f03b75143261839ad2ed8d040dba8"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>solve</b> (<a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> *timeProblem, BlockMultiVectorPtr_Type rhs, std::string type=&quot;Monolithic&quot;)</td></tr>
+<tr class="memitem:ae07f03b75143261839ad2ed8d040dba8" id="r_ae07f03b75143261839ad2ed8d040dba8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae07f03b75143261839ad2ed8d040dba8">solve</a> (<a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> *timeProblem, BlockMultiVectorPtr_Type rhs, std::string type=&quot;Monolithic&quot;)</td></tr>
+<tr class="memdesc:ae07f03b75143261839ad2ed8d040dba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call to solve a linear/linearized problem with right-hand side rhs. Depending on 'type' solveMonolithic, solveTeko, solveBlock is called.  <br /></td></tr>
 <tr class="separator:ae07f03b75143261839ad2ed8d040dba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b1be3b3f5eee893ef83e11d5b935e78" id="r_a6b1be3b3f5eee893ef83e11d5b935e78"><td class="memItemLeft" align="right" valign="top"><a id="a6b1be3b3f5eee893ef83e11d5b935e78" name="a6b1be3b3f5eee893ef83e11d5b935e78"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>solveMonolithic</b> (<a class="el" href="classFEDD_1_1Problem.html">Problem_Type</a> *problem, BlockMultiVectorPtr_Type rhs, std::string type)</td></tr>
+<tr class="memitem:a6b1be3b3f5eee893ef83e11d5b935e78" id="r_a6b1be3b3f5eee893ef83e11d5b935e78"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6b1be3b3f5eee893ef83e11d5b935e78">solveMonolithic</a> (<a class="el" href="classFEDD_1_1Problem.html">Problem_Type</a> *problem, BlockMultiVectorPtr_Type rhs, std::string type)</td></tr>
+<tr class="memdesc:a6b1be3b3f5eee893ef83e11d5b935e78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve linear/linearized problem monolithicly.  <br /></td></tr>
 <tr class="separator:a6b1be3b3f5eee893ef83e11d5b935e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a837d567c479f24f572a1bab5f764c9cd" id="r_a837d567c479f24f572a1bab5f764c9cd"><td class="memItemLeft" align="right" valign="top"><a id="a837d567c479f24f572a1bab5f764c9cd" name="a837d567c479f24f572a1bab5f764c9cd"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>solveMonolithic</b> (<a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> *problem, BlockMultiVectorPtr_Type rhs)</td></tr>
+<tr class="memitem:a837d567c479f24f572a1bab5f764c9cd" id="r_a837d567c479f24f572a1bab5f764c9cd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a837d567c479f24f572a1bab5f764c9cd">solveMonolithic</a> (<a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> *problem, BlockMultiVectorPtr_Type rhs)</td></tr>
+<tr class="memdesc:a837d567c479f24f572a1bab5f764c9cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve linear/linearized time dependent problem monolithicly.  <br /></td></tr>
 <tr class="separator:a837d567c479f24f572a1bab5f764c9cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accdc269bebb9df38a3233c7db61eacbc" id="r_accdc269bebb9df38a3233c7db61eacbc"><td class="memItemLeft" align="right" valign="top"><a id="accdc269bebb9df38a3233c7db61eacbc" name="accdc269bebb9df38a3233c7db61eacbc"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>solveBlock</b> (<a class="el" href="classFEDD_1_1Problem.html">Problem_Type</a> *problem, BlockMultiVectorPtr_Type rhs, std::string precType)</td></tr>
+<tr class="memitem:accdc269bebb9df38a3233c7db61eacbc" id="r_accdc269bebb9df38a3233c7db61eacbc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#accdc269bebb9df38a3233c7db61eacbc">solveBlock</a> (<a class="el" href="classFEDD_1_1Problem.html">Problem_Type</a> *problem, BlockMultiVectorPtr_Type rhs, std::string precType)</td></tr>
+<tr class="memdesc:accdc269bebb9df38a3233c7db61eacbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">In case of a block system, solve block is called. It works also for teko.  <br /></td></tr>
 <tr class="separator:accdc269bebb9df38a3233c7db61eacbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71632bf46498398066b8cf4735eb543d" id="r_a71632bf46498398066b8cf4735eb543d"><td class="memItemLeft" align="right" valign="top"><a id="a71632bf46498398066b8cf4735eb543d" name="a71632bf46498398066b8cf4735eb543d"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>solveBlock</b> (<a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> *problem, BlockMultiVectorPtr_Type rhs, std::string precType)</td></tr>
+<tr class="memitem:a71632bf46498398066b8cf4735eb543d" id="r_a71632bf46498398066b8cf4735eb543d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a71632bf46498398066b8cf4735eb543d">solveBlock</a> (<a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> *problem, BlockMultiVectorPtr_Type rhs, std::string precType)</td></tr>
+<tr class="memdesc:a71632bf46498398066b8cf4735eb543d"><td class="mdescLeft">&#160;</td><td class="mdescRight">In case of a block system, solve block is called. It works also for teko.  <br /></td></tr>
 <tr class="separator:a71632bf46498398066b8cf4735eb543d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="adb86ac28d97d3db35faae29751a9e662" name="adb86ac28d97d3db35faae29751a9e662"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb86ac28d97d3db35faae29751a9e662">&#9670;&#160;</a></span>solve() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classFEDD_1_1LinearSolver.html">FEDD::LinearSolver</a>&lt; SC, LO, GO, NO &gt;::solve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFEDD_1_1Problem.html">Problem_Type</a> *</td>          <td class="paramname"><span class="paramname"><em>problem</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BlockMultiVectorPtr_Type</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>type</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Monolithic&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call to solve a linear/linearized problem with right-hand side rhs. Depending on 'type' solveMonolithic, solveTeko, solveBlock is called. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">problem</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1LinearSolver_adb86ac28d97d3db35faae29751a9e662_cgraph.png" border="0" usemap="#aclassFEDD_1_1LinearSolver_adb86ac28d97d3db35faae29751a9e662_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1LinearSolver_adb86ac28d97d3db35faae29751a9e662_cgraph" id="aclassFEDD_1_1LinearSolver_adb86ac28d97d3db35faae29751a9e662_cgraph">
+<area shape="rect" title="Call to solve a linear/linearized problem with right&#45;hand side rhs. Depending on &#39;type&#39; solveMonolith..." alt="" coords="5,39,140,79"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#accdc269bebb9df38a3233c7db61eacbc" title="In case of a block system, solve block is called. It works also for teko." alt="" coords="188,5,322,46"/>
+<area shape="poly" title=" " alt="" coords="140,44,172,38,173,43,141,49"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#a6b1be3b3f5eee893ef83e11d5b935e78" title="Solve linear/linearized problem monolithicly." alt="" coords="188,71,322,111"/>
+<area shape="poly" title=" " alt="" coords="141,68,173,74,172,79,140,73"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae07f03b75143261839ad2ed8d040dba8" name="ae07f03b75143261839ad2ed8d040dba8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae07f03b75143261839ad2ed8d040dba8">&#9670;&#160;</a></span>solve() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classFEDD_1_1LinearSolver.html">FEDD::LinearSolver</a>&lt; SC, LO, GO, NO &gt;::solve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> *</td>          <td class="paramname"><span class="paramname"><em>timeProblem</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BlockMultiVectorPtr_Type</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>type</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Monolithic&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call to solve a linear/linearized problem with right-hand side rhs. Depending on 'type' solveMonolithic, solveTeko, solveBlock is called. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">timeProblem</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1LinearSolver_ae07f03b75143261839ad2ed8d040dba8_cgraph.png" border="0" usemap="#aclassFEDD_1_1LinearSolver_ae07f03b75143261839ad2ed8d040dba8_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1LinearSolver_ae07f03b75143261839ad2ed8d040dba8_cgraph" id="aclassFEDD_1_1LinearSolver_ae07f03b75143261839ad2ed8d040dba8_cgraph">
+<area shape="rect" title="Call to solve a linear/linearized problem with right&#45;hand side rhs. Depending on &#39;type&#39; solveMonolith..." alt="" coords="5,39,140,79"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#accdc269bebb9df38a3233c7db61eacbc" title="In case of a block system, solve block is called. It works also for teko." alt="" coords="188,5,322,46"/>
+<area shape="poly" title=" " alt="" coords="140,44,172,38,173,43,141,49"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#a6b1be3b3f5eee893ef83e11d5b935e78" title="Solve linear/linearized problem monolithicly." alt="" coords="188,71,322,111"/>
+<area shape="poly" title=" " alt="" coords="141,68,173,74,172,79,140,73"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="accdc269bebb9df38a3233c7db61eacbc" name="accdc269bebb9df38a3233c7db61eacbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accdc269bebb9df38a3233c7db61eacbc">&#9670;&#160;</a></span>solveBlock() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classFEDD_1_1LinearSolver.html">FEDD::LinearSolver</a>&lt; SC, LO, GO, NO &gt;::solveBlock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFEDD_1_1Problem.html">Problem_Type</a> *</td>          <td class="paramname"><span class="paramname"><em>problem</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BlockMultiVectorPtr_Type</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>precType</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>In case of a block system, solve block is called. It works also for teko. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">problem</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">precType</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1LinearSolver_accdc269bebb9df38a3233c7db61eacbc_icgraph.png" border="0" usemap="#aclassFEDD_1_1LinearSolver_accdc269bebb9df38a3233c7db61eacbc_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1LinearSolver_accdc269bebb9df38a3233c7db61eacbc_icgraph" id="aclassFEDD_1_1LinearSolver_accdc269bebb9df38a3233c7db61eacbc_icgraph">
+<area shape="rect" title="In case of a block system, solve block is called. It works also for teko." alt="" coords="188,39,322,79"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#adb86ac28d97d3db35faae29751a9e662" title="Call to solve a linear/linearized problem with right&#45;hand side rhs. Depending on &#39;type&#39; solveMonolith..." alt="" coords="5,5,140,46"/>
+<area shape="poly" title=" " alt="" coords="172,47,139,41,140,35,173,41"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#ae07f03b75143261839ad2ed8d040dba8" title="Call to solve a linear/linearized problem with right&#45;hand side rhs. Depending on &#39;type&#39; solveMonolith..." alt="" coords="5,71,140,111"/>
+<area shape="poly" title=" " alt="" coords="173,76,140,82,139,77,172,71"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a71632bf46498398066b8cf4735eb543d" name="a71632bf46498398066b8cf4735eb543d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71632bf46498398066b8cf4735eb543d">&#9670;&#160;</a></span>solveBlock() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classFEDD_1_1LinearSolver.html">FEDD::LinearSolver</a>&lt; SC, LO, GO, NO &gt;::solveBlock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> *</td>          <td class="paramname"><span class="paramname"><em>problem</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BlockMultiVectorPtr_Type</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>precType</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>In case of a block system, solve block is called. It works also for teko. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">problem</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">precTypes</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6b1be3b3f5eee893ef83e11d5b935e78" name="a6b1be3b3f5eee893ef83e11d5b935e78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b1be3b3f5eee893ef83e11d5b935e78">&#9670;&#160;</a></span>solveMonolithic() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classFEDD_1_1LinearSolver.html">FEDD::LinearSolver</a>&lt; SC, LO, GO, NO &gt;::solveMonolithic </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFEDD_1_1Problem.html">Problem_Type</a> *</td>          <td class="paramname"><span class="paramname"><em>problem</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BlockMultiVectorPtr_Type</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>type</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve linear/linearized problem monolithicly. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">problem</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1LinearSolver_a6b1be3b3f5eee893ef83e11d5b935e78_icgraph.png" border="0" usemap="#aclassFEDD_1_1LinearSolver_a6b1be3b3f5eee893ef83e11d5b935e78_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1LinearSolver_a6b1be3b3f5eee893ef83e11d5b935e78_icgraph" id="aclassFEDD_1_1LinearSolver_a6b1be3b3f5eee893ef83e11d5b935e78_icgraph">
+<area shape="rect" title="Solve linear/linearized problem monolithicly." alt="" coords="188,39,322,79"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#adb86ac28d97d3db35faae29751a9e662" title="Call to solve a linear/linearized problem with right&#45;hand side rhs. Depending on &#39;type&#39; solveMonolith..." alt="" coords="5,5,140,46"/>
+<area shape="poly" title=" " alt="" coords="172,47,139,41,140,35,173,41"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#ae07f03b75143261839ad2ed8d040dba8" title="Call to solve a linear/linearized problem with right&#45;hand side rhs. Depending on &#39;type&#39; solveMonolith..." alt="" coords="5,71,140,111"/>
+<area shape="poly" title=" " alt="" coords="173,76,140,82,139,77,172,71"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a837d567c479f24f572a1bab5f764c9cd" name="a837d567c479f24f572a1bab5f764c9cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a837d567c479f24f572a1bab5f764c9cd">&#9670;&#160;</a></span>solveMonolithic() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classFEDD_1_1LinearSolver.html">FEDD::LinearSolver</a>&lt; SC, LO, GO, NO &gt;::solveMonolithic </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> *</td>          <td class="paramname"><span class="paramname"><em>problem</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BlockMultiVectorPtr_Type</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solve linear/linearized time dependent problem monolithicly. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">problem</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>feddlib/problems/Solver/<a class="el" href="LinearSolver__decl_8hpp_source.html">LinearSolver_decl.hpp</a></li>
 <li>feddlib/problems/Solver/<a class="el" href="LinearSolver__def_8hpp_source.html">LinearSolver_def.hpp</a></li>

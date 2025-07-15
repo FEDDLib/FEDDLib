@@ -187,11 +187,18 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0f6f3d4ddedfe54b8351f7c9a849c1fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85f4fe085c295973bd70331d6022e095" id="r_a85f4fe085c295973bd70331d6022e095"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a85f4fe085c295973bd70331d6022e095">setDirichletBoundaryFromExternal</a> (Teuchos::ArrayRCP&lt; SC &gt; &amp;values, LO index, int loc, double time, std::string type, Teuchos::ArrayRCP&lt; SC &gt; valuesSubstract=Teuchos::null) const</td></tr>
 <tr class="separator:a85f4fe085c295973bd70331d6022e095"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac31eba76d1547d2dca7f367237c4b7ba" id="r_ac31eba76d1547d2dca7f367237c4b7ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac31eba76d1547d2dca7f367237c4b7ba">setDirichletBCScaled</a> (const MatrixPtr_Type &amp;matrix, int loc, int blockRow, bool isDiagonalBlock, double eps=1.0) const</td></tr>
+<tr class="separator:ac31eba76d1547d2dca7f367237c4b7ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3343b81acef348c1813aafba3543978" id="r_af3343b81acef348c1813aafba3543978"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3343b81acef348c1813aafba3543978">setLocalRowEntry</a> (const MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, int loc, double eps) const</td></tr>
+<tr class="separator:af3343b81acef348c1813aafba3543978"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a979cf662a563682ff35be5b0c8860e63" id="r_a979cf662a563682ff35be5b0c8860e63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a979cf662a563682ff35be5b0c8860e63">setAllDirichletZero</a> (const BlockMultiVectorPtr_Type &amp;blockMV) const</td></tr>
 <tr class="separator:a979cf662a563682ff35be5b0c8860e63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d2b064c1a50b229c015bd599a66c7f1" id="r_a2d2b064c1a50b229c015bd599a66c7f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d2b064c1a50b229c015bd599a66c7f1">setSystem</a> (const BlockMatrixPtr_Type &amp;blockMatrix) const</td></tr>
 <tr class="memdesc:a2d2b064c1a50b229c015bd599a66c7f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set boundary conditions to system.  <br /></td></tr>
 <tr class="separator:a2d2b064c1a50b229c015bd599a66c7f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bcf132e19cb9550961450af34829fea" id="r_a8bcf132e19cb9550961450af34829fea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8bcf132e19cb9550961450af34829fea">setSystemScaled</a> (const BlockMatrixPtr_Type &amp;blockMatrix, double eps=1.0) const</td></tr>
+<tr class="memdesc:a8bcf132e19cb9550961450af34829fea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set boundary conditions to system.  <br /></td></tr>
+<tr class="separator:a8bcf132e19cb9550961450af34829fea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f5210f0fc644f81d938225973f2353d" id="r_a8f5210f0fc644f81d938225973f2353d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f5210f0fc644f81d938225973f2353d">setDirichletBC</a> (const MatrixPtr_Type &amp;matrix, int loc, int blockRow, bool isDiagonalBlock) const</td></tr>
 <tr class="separator:a8f5210f0fc644f81d938225973f2353d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6af4aae6cb0bd2ec8edbde638274c44" id="r_af6af4aae6cb0bd2ec8edbde638274c44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af6af4aae6cb0bd2ec8edbde638274c44">setLocalRowOne</a> (const MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, int loc) const</td></tr>
@@ -491,18 +498,20 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1BCBuilder_aaf5b29a7c5663fe235385da3941707ea_icgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_aaf5b29a7c5663fe235385da3941707ea_icgraph" alt=""/></div>
 <map name="aclassFEDD_1_1BCBuilder_aaf5b29a7c5663fe235385da3941707ea_icgraph" id="aclassFEDD_1_1BCBuilder_aaf5b29a7c5663fe235385da3941707ea_icgraph">
-<area shape="rect" title=" " alt="" coords="476,168,656,209"/>
-<area shape="poly" title=" " alt="" coords="608,155,592,149,566,147,542,149,527,153,521,159,524,167,519,168,516,158,524,149,541,143,566,141,593,144,610,150"/>
+<area shape="rect" title=" " alt="" coords="476,209,656,250"/>
+<area shape="poly" title=" " alt="" coords="608,196,592,190,566,188,542,190,527,195,521,201,524,208,519,209,516,199,524,190,541,185,566,183,593,185,610,191"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#aa698d57ead266fed91436682f523f977" title=" " alt="" coords="222,5,402,46"/>
-<area shape="poly" title=" " alt="" coords="537,158,489,107,459,82,427,60,402,48,404,44,429,55,462,77,493,103,541,154"/>
+<area shape="poly" title=" " alt="" coords="544,197,497,127,464,91,427,60,402,47,404,42,429,55,468,87,501,124,549,194"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#a979cf662a563682ff35be5b0c8860e63" title=" " alt="" coords="197,94,428,120"/>
-<area shape="poly" title=" " alt="" coords="505,164,427,135,382,123,384,118,429,130,506,159"/>
+<area shape="poly" title=" " alt="" coords="529,201,482,166,427,135,393,123,395,118,429,130,485,162,532,197"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#a02280f3620316e30150471917de4e4d0" title=" " alt="" coords="214,168,410,209"/>
-<area shape="poly" title=" " alt="" coords="461,191,411,191,411,186,461,186"/>
+<area shape="poly" title=" " alt="" coords="460,215,410,207,411,202,461,210"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#a2d2b064c1a50b229c015bd599a66c7f1" title="Set boundary conditions to system." alt="" coords="219,257,406,282"/>
-<area shape="poly" title=" " alt="" coords="487,216,356,259,354,254,485,211"/>
-<area shape="rect" href="classFEDD_1_1BCBuilder.html#a0f6f3d4ddedfe54b8351f7c9a849c1fb" title=" " alt="" coords="222,331,403,371"/>
-<area shape="poly" title=" " alt="" coords="531,221,484,259,429,297,363,333,360,328,427,293,481,255,528,217"/>
+<area shape="poly" title=" " alt="" coords="461,249,399,259,398,254,460,244"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a8bcf132e19cb9550961450af34829fea" title="Set boundary conditions to system." alt="" coords="219,331,406,371"/>
+<area shape="poly" title=" " alt="" coords="509,259,358,332,356,328,507,255"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a0f6f3d4ddedfe54b8351f7c9a849c1fb" title=" " alt="" coords="222,420,403,461"/>
+<area shape="poly" title=" " alt="" coords="543,264,494,324,463,356,430,385,399,405,367,422,364,417,396,401,426,381,460,352,490,320,539,261"/>
 <area shape="poly" title=" " alt="" coords="353,82,340,75,312,73,287,75,274,80,271,85,278,92,273,95,266,86,270,76,286,70,312,68,341,70,356,77"/>
 <area shape="poly" title=" " alt="" coords="351,155,336,149,312,147,290,149,276,153,271,159,273,167,268,168,266,158,273,149,289,143,312,141,338,144,353,150"/>
 <area shape="poly" title=" " alt="" coords="353,244,340,238,312,235,287,238,274,242,271,248,278,255,273,258,266,248,270,238,286,232,312,230,341,233,356,240"/>
@@ -510,6 +519,7 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="203,272,149,272,149,267,203,267"/>
 <area shape="poly" title=" " alt="" coords="118,244,104,238,77,235,52,238,39,242,36,248,42,255,38,258,30,248,35,238,51,232,77,230,106,233,120,240"/>
 <area shape="poly" title=" " alt="" coords="351,318,336,312,312,309,290,311,276,316,271,322,273,329,268,331,266,321,273,312,289,306,312,304,338,306,353,313"/>
+<area shape="poly" title=" " alt="" coords="351,407,336,401,312,399,290,401,276,405,271,411,273,419,268,420,266,410,273,401,289,395,312,393,338,396,353,402"/>
 </map>
 </div>
 
@@ -649,16 +659,18 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1BCBuilder_aed3efb55b048d3ff75763fb0726c69f9_icgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_aed3efb55b048d3ff75763fb0726c69f9_icgraph" alt=""/></div>
 <map name="aclassFEDD_1_1BCBuilder_aed3efb55b048d3ff75763fb0726c69f9_icgraph" id="aclassFEDD_1_1BCBuilder_aed3efb55b048d3ff75763fb0726c69f9_icgraph">
-<area shape="rect" title=" " alt="" coords="711,152,882,178"/>
-<area shape="poly" title=" " alt="" coords="840,140,826,133,796,131,770,133,756,138,753,143,760,150,756,153,747,143,752,133,769,127,797,125,827,128,843,135"/>
+<area shape="rect" title=" " alt="" coords="711,192,882,218"/>
+<area shape="poly" title=" " alt="" coords="840,180,826,173,796,171,770,173,756,178,753,183,760,190,756,193,747,183,752,173,769,167,797,165,827,168,843,175"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#a979cf662a563682ff35be5b0c8860e63" title=" " alt="" coords="432,29,663,55"/>
-<area shape="poly" title=" " alt="" coords="768,143,721,105,662,70,629,58,631,53,664,65,724,101,772,139"/>
+<area shape="poly" title=" " alt="" coords="776,181,729,124,697,94,662,70,634,58,636,53,665,65,701,90,733,120,780,177"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#a02280f3620316e30150471917de4e4d0" title=" " alt="" coords="450,103,646,144"/>
-<area shape="poly" title=" " alt="" coords="700,152,646,142,647,137,701,146"/>
+<area shape="poly" title=" " alt="" coords="747,188,662,158,627,147,628,142,664,153,748,183"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d" title=" " alt="" coords="444,192,652,218"/>
-<area shape="poly" title=" " alt="" coords="698,183,632,194,632,189,697,178"/>
-<area shape="rect" href="classFEDD_1_1BCBuilder.html#a0f6f3d4ddedfe54b8351f7c9a849c1fb" title=" " alt="" coords="457,266,638,306"/>
-<area shape="poly" title=" " alt="" coords="756,187,665,233,593,268,591,263,662,228,754,182"/>
+<area shape="poly" title=" " alt="" coords="696,208,652,208,652,202,696,202"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba" title=" " alt="" coords="452,266,643,306"/>
+<area shape="poly" title=" " alt="" coords="741,226,613,268,612,263,739,220"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a0f6f3d4ddedfe54b8351f7c9a849c1fb" title=" " alt="" coords="457,355,638,396"/>
+<area shape="poly" title=" " alt="" coords="773,231,725,275,665,320,598,357,596,352,662,316,721,270,769,227"/>
 <area shape="poly" title=" " alt="" coords="592,17,577,11,548,8,521,10,507,15,504,20,511,27,507,31,499,21,503,11,520,5,548,3,579,5,594,13"/>
 <area shape="poly" title=" " alt="" coords="588,90,573,84,548,82,524,84,509,89,504,94,506,102,501,103,499,93,506,84,523,79,548,77,574,79,590,85"/>
 <area shape="poly" title=" " alt="" coords="592,180,577,173,548,171,521,173,507,178,504,183,511,190,507,193,499,183,503,173,520,167,548,165,579,168,594,175"/>
@@ -669,6 +681,10 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="182,208,149,208,149,202,182,202"/>
 <area shape="poly" title=" " alt="" coords="114,180,102,173,77,171,54,173,42,177,40,183,46,190,41,193,34,183,39,174,53,167,77,165,103,168,116,175"/>
 <area shape="poly" title=" " alt="" coords="588,253,573,247,548,244,524,246,509,251,504,257,506,265,501,266,499,256,506,247,523,241,548,239,574,242,590,248"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a8bcf132e19cb9550961450af34829fea" title="Set boundary conditions to system." alt="" coords="197,266,384,306"/>
+<area shape="poly" title=" " alt="" coords="437,289,384,289,384,284,437,284"/>
+<area shape="poly" title=" " alt="" coords="325,253,312,247,290,244,270,246,258,251,253,257,255,265,250,266,248,256,255,247,269,241,290,239,313,242,327,248"/>
+<area shape="poly" title=" " alt="" coords="588,342,573,336,548,334,524,336,509,341,504,346,506,354,501,355,499,345,506,336,523,331,548,329,574,331,590,337"/>
 </map>
 </div>
 
@@ -938,6 +954,83 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="ac31eba76d1547d2dca7f367237c4b7ba" name="ac31eba76d1547d2dca7f367237c4b7ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac31eba76d1547d2dca7f367237c4b7ba">&#9670;&#160;</a></span>setDirichletBCScaled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1BCBuilder.html">FEDD::BCBuilder</a>&lt; SC, LO, GO, NO &gt;::setDirichletBCScaled </td>
+          <td>(</td>
+          <td class="paramtype">const MatrixPtr_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>matrix</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>loc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>blockRow</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>isDiagonalBlock</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>eps</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1.0</span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">matrix</td><td></td></tr>
+    <tr><td class="paramname">loc</td><td></td></tr>
+    <tr><td class="paramname">blockRow</td><td></td></tr>
+    <tr><td class="paramname">isDiagonalBlock</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1BCBuilder_ac31eba76d1547d2dca7f367237c4b7ba_cgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_ac31eba76d1547d2dca7f367237c4b7ba_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1BCBuilder_ac31eba76d1547d2dca7f367237c4b7ba_cgraph" id="aclassFEDD_1_1BCBuilder_ac31eba76d1547d2dca7f367237c4b7ba_cgraph">
+<area shape="rect" title=" " alt="" coords="5,103,196,144"/>
+<area shape="poly" title=" " alt="" coords="57,103,55,93,62,84,77,79,101,77,125,79,140,85,138,90,124,84,100,82,78,84,65,88,60,94,62,102"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#aed3efb55b048d3ff75763fb0726c69f9" title=" " alt="" coords="246,29,416,55"/>
+<area shape="poly" title=" " alt="" coords="150,100,243,65,266,57,268,62,245,70,152,105"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978" title=" " alt="" coords="244,103,419,144"/>
+<area shape="poly" title=" " alt="" coords="196,121,228,121,228,126,196,126"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94" title=" " alt="" coords="244,192,419,233"/>
+<area shape="poly" title=" " alt="" coords="156,142,263,184,261,189,154,147"/>
+<area shape="poly" title=" " alt="" coords="293,31,286,21,290,11,306,5,331,3,360,5,374,12,372,17,358,10,331,8,307,10,294,15,291,20,297,27"/>
+<area shape="poly" title=" " alt="" coords="288,103,286,93,293,84,308,79,331,77,356,79,371,85,369,90,355,84,331,82,309,84,296,88,291,94,293,102"/>
+<area shape="poly" title=" " alt="" coords="288,192,286,183,293,173,308,168,331,166,356,168,371,174,369,179,355,173,331,171,309,173,296,178,291,184,293,191"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1BCBuilder_ac31eba76d1547d2dca7f367237c4b7ba_icgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_ac31eba76d1547d2dca7f367237c4b7ba_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1BCBuilder_ac31eba76d1547d2dca7f367237c4b7ba_icgraph" id="aclassFEDD_1_1BCBuilder_ac31eba76d1547d2dca7f367237c4b7ba_icgraph">
+<area shape="rect" title=" " alt="" coords="241,29,431,70"/>
+<area shape="poly" title=" " alt="" coords="375,16,360,10,336,8,313,10,299,15,294,21,296,28,291,29,289,19,296,10,312,5,336,3,361,5,377,11"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a8bcf132e19cb9550961450af34829fea" title="Set boundary conditions to system." alt="" coords="5,29,193,70"/>
+<area shape="poly" title=" " alt="" coords="225,52,193,52,193,47,225,47"/>
+<area shape="poly" title=" " alt="" coords="138,16,123,10,99,8,76,10,63,15,57,21,60,28,54,29,52,19,60,10,75,5,99,3,125,5,140,11"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a85f4fe085c295973bd70331d6022e095" name="a85f4fe085c295973bd70331d6022e095"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a85f4fe085c295973bd70331d6022e095">&#9670;&#160;</a></span>setDirichletBoundaryFromExternal()</h2>
 
@@ -1011,6 +1104,77 @@ Here is the caller graph for this function:</div>
 <area shape="poly" title=" " alt="" coords="235,118,195,125,194,120,234,113"/>
 <area shape="poly" title=" " alt="" coords="143,16,128,10,103,8,80,10,66,15,61,21,63,28,58,29,56,19,63,10,79,5,104,3,130,5,145,11"/>
 <area shape="poly" title=" " alt="" coords="143,106,128,100,103,97,80,99,66,104,61,110,63,117,58,119,56,109,63,100,79,94,104,92,130,94,145,101"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="af3343b81acef348c1813aafba3543978" name="af3343b81acef348c1813aafba3543978"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3343b81acef348c1813aafba3543978">&#9670;&#160;</a></span>setLocalRowEntry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1BCBuilder.html">FEDD::BCBuilder</a>&lt; SC, LO, GO, NO &gt;::setLocalRowEntry </td>
+          <td>(</td>
+          <td class="paramtype">const MatrixPtr_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>matrix</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">LO</td>          <td class="paramname"><span class="paramname"><em>localNode</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">UN</td>          <td class="paramname"><span class="paramname"><em>dofsPerNode</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>loc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>eps</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">matrix</td><td></td></tr>
+    <tr><td class="paramname">localNode</td><td></td></tr>
+    <tr><td class="paramname">dofsPerNode</td><td></td></tr>
+    <tr><td class="paramname">loc</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1BCBuilder_af3343b81acef348c1813aafba3543978_cgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_af3343b81acef348c1813aafba3543978_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1BCBuilder_af3343b81acef348c1813aafba3543978_cgraph" id="aclassFEDD_1_1BCBuilder_af3343b81acef348c1813aafba3543978_cgraph">
+<area shape="rect" title=" " alt="" coords="5,29,181,70"/>
+<area shape="poly" title=" " alt="" coords="59,29,58,19,63,10,75,5,93,3,112,5,124,11,121,16,111,10,93,8,77,10,67,14,63,20,65,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1BCBuilder_af3343b81acef348c1813aafba3543978_icgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_af3343b81acef348c1813aafba3543978_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1BCBuilder_af3343b81acef348c1813aafba3543978_icgraph" id="aclassFEDD_1_1BCBuilder_af3343b81acef348c1813aafba3543978_icgraph">
+<area shape="rect" title=" " alt="" coords="479,29,654,70"/>
+<area shape="poly" title=" " alt="" coords="604,16,590,10,567,8,545,10,531,15,526,21,528,28,523,29,521,19,528,10,544,5,567,3,592,5,606,11"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba" title=" " alt="" coords="241,29,431,70"/>
+<area shape="poly" title=" " alt="" coords="463,52,431,52,431,47,463,47"/>
+<area shape="poly" title=" " alt="" coords="374,16,359,10,336,8,314,10,300,15,295,21,298,28,292,29,290,19,297,10,313,5,336,3,361,5,376,11"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a8bcf132e19cb9550961450af34829fea" title="Set boundary conditions to system." alt="" coords="5,29,193,70"/>
+<area shape="poly" title=" " alt="" coords="225,52,193,52,193,47,225,47"/>
+<area shape="poly" title=" " alt="" coords="138,16,123,10,99,8,76,10,63,15,57,21,60,28,54,29,52,19,60,10,75,5,99,3,125,5,140,11"/>
 </map>
 </div>
 
@@ -1138,17 +1302,23 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1BCBuilder_a4028cf583fa3693387fe390f51724f94_icgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_a4028cf583fa3693387fe390f51724f94_icgraph" alt=""/></div>
 <map name="aclassFEDD_1_1BCBuilder_a4028cf583fa3693387fe390f51724f94_icgraph" id="aclassFEDD_1_1BCBuilder_a4028cf583fa3693387fe390f51724f94_icgraph">
-<area shape="rect" title=" " alt="" coords="688,29,864,70"/>
-<area shape="poly" title=" " alt="" coords="815,16,801,10,776,8,753,10,739,15,734,21,736,28,731,29,729,19,736,10,752,5,776,3,802,5,817,11"/>
-<area shape="rect" href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d" title=" " alt="" coords="432,37,640,62"/>
-<area shape="poly" title=" " alt="" coords="673,52,641,52,641,47,673,47"/>
-<area shape="poly" title=" " alt="" coords="578,25,565,18,536,15,511,18,497,22,494,28,501,35,497,38,489,28,493,18,510,12,536,10,566,13,581,20"/>
-<area shape="rect" href="classFEDD_1_1BCBuilder.html#a2d2b064c1a50b229c015bd599a66c7f1" title="Set boundary conditions to system." alt="" coords="197,37,384,62"/>
-<area shape="poly" title=" " alt="" coords="416,52,385,52,385,47,416,47"/>
-<area shape="poly" title=" " alt="" coords="327,24,315,18,290,15,268,18,256,22,253,28,259,35,255,38,248,28,252,18,267,12,290,10,316,13,330,20"/>
-<area shape="rect" href="classFEDD_1_1BCBuilder.html#a21dac1adbaa03e8272afde11386858e8" title="Setting bundary condtions to problem." alt="" coords="5,37,149,62"/>
-<area shape="poly" title=" " alt="" coords="182,52,149,52,149,47,182,47"/>
-<area shape="poly" title=" " alt="" coords="114,24,102,18,77,15,54,18,42,22,40,28,46,35,41,38,34,28,39,18,53,12,77,10,103,13,116,20"/>
+<area shape="rect" title=" " alt="" coords="688,63,864,104"/>
+<area shape="poly" title=" " alt="" coords="815,50,801,44,776,42,753,44,739,49,734,54,736,62,731,63,729,53,736,44,752,39,776,37,802,39,817,45"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d" title=" " alt="" coords="432,29,640,55"/>
+<area shape="poly" title=" " alt="" coords="672,68,614,58,615,53,673,63"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba" title=" " alt="" coords="441,103,631,144"/>
+<area shape="poly" title=" " alt="" coords="673,103,632,110,631,105,673,98"/>
+<area shape="poly" title=" " alt="" coords="578,17,565,11,536,8,511,10,497,15,494,20,501,27,497,31,489,21,493,11,510,5,536,3,566,5,581,13"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a2d2b064c1a50b229c015bd599a66c7f1" title="Set boundary conditions to system." alt="" coords="197,29,384,55"/>
+<area shape="poly" title=" " alt="" coords="416,45,385,45,385,40,416,40"/>
+<area shape="poly" title=" " alt="" coords="327,17,315,10,290,8,268,10,256,15,253,20,259,27,255,31,248,21,252,11,267,5,290,3,316,5,330,12"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a21dac1adbaa03e8272afde11386858e8" title="Setting bundary condtions to problem." alt="" coords="5,29,149,55"/>
+<area shape="poly" title=" " alt="" coords="182,45,149,45,149,40,182,40"/>
+<area shape="poly" title=" " alt="" coords="114,17,102,10,77,8,54,10,42,15,40,20,46,27,41,31,34,21,39,11,53,5,77,3,103,5,116,12"/>
+<area shape="poly" title=" " alt="" coords="575,90,561,84,536,82,513,84,499,89,494,94,496,102,491,103,489,93,496,84,512,79,536,77,562,79,577,85"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a8bcf132e19cb9550961450af34829fea" title="Set boundary conditions to system." alt="" coords="197,103,384,144"/>
+<area shape="poly" title=" " alt="" coords="425,126,384,126,384,121,425,121"/>
+<area shape="poly" title=" " alt="" coords="325,90,312,84,290,82,270,84,258,88,253,94,255,102,250,103,248,93,255,84,269,79,290,77,313,79,327,85"/>
 </map>
 </div>
 
@@ -1265,6 +1435,70 @@ Here is the caller graph for this function:</div>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#a21dac1adbaa03e8272afde11386858e8" title="Setting bundary condtions to problem." alt="" coords="5,29,149,55"/>
 <area shape="poly" title=" " alt="" coords="182,45,149,45,149,40,182,40"/>
 <area shape="poly" title=" " alt="" coords="114,17,102,10,77,8,54,10,42,15,40,20,46,27,41,31,34,21,39,11,53,5,77,3,103,5,116,12"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a8bcf132e19cb9550961450af34829fea" name="a8bcf132e19cb9550961450af34829fea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bcf132e19cb9550961450af34829fea">&#9670;&#160;</a></span>setSystemScaled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1BCBuilder.html">FEDD::BCBuilder</a>&lt; SC, LO, GO, NO &gt;::setSystemScaled </td>
+          <td>(</td>
+          <td class="paramtype">const BlockMatrixPtr_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>blockMatrix</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>eps</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1.0</span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set boundary conditions to system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">blockMatrix</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1BCBuilder_a8bcf132e19cb9550961450af34829fea_cgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_a8bcf132e19cb9550961450af34829fea_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1BCBuilder_a8bcf132e19cb9550961450af34829fea_cgraph" id="aclassFEDD_1_1BCBuilder_a8bcf132e19cb9550961450af34829fea_cgraph">
+<area shape="rect" title="Set boundary conditions to system." alt="" coords="5,75,193,115"/>
+<area shape="poly" title=" " alt="" coords="54,75,52,65,60,56,75,50,99,48,125,50,140,57,138,62,123,56,99,53,76,55,63,60,57,66,60,73"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#aaf5b29a7c5663fe235385da3941707ea" title=" " alt="" coords="246,29,426,70"/>
+<area shape="poly" title=" " alt="" coords="193,74,230,67,231,72,194,80"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba" title=" " alt="" coords="241,119,431,159"/>
+<area shape="poly" title=" " alt="" coords="194,110,226,116,225,121,193,115"/>
+<area shape="poly" title=" " alt="" coords="292,29,290,19,297,10,313,5,336,3,361,5,376,11,374,16,359,10,336,8,314,10,300,15,295,21,298,28"/>
+<area shape="poly" title=" " alt="" coords="292,119,290,109,297,100,313,94,336,92,361,94,376,101,374,106,359,100,336,97,314,99,300,104,295,110,298,117"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#aed3efb55b048d3ff75763fb0726c69f9" title=" " alt="" coords="482,45,652,70"/>
+<area shape="poly" title=" " alt="" coords="386,116,478,80,502,73,503,78,480,86,388,121"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978" title=" " alt="" coords="479,119,654,159"/>
+<area shape="poly" title=" " alt="" coords="431,136,463,136,463,142,431,142"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94" title=" " alt="" coords="479,208,654,249"/>
+<area shape="poly" title=" " alt="" coords="392,157,499,199,497,204,390,162"/>
+<area shape="poly" title=" " alt="" coords="528,46,521,36,525,26,541,20,567,18,595,21,609,28,607,32,593,26,567,23,542,26,529,30,526,36,533,43"/>
+<area shape="poly" title=" " alt="" coords="523,119,521,109,528,100,544,94,567,92,592,94,606,101,604,106,590,100,567,97,545,99,531,104,526,110,528,117"/>
+<area shape="poly" title=" " alt="" coords="523,208,521,198,528,189,544,183,567,181,592,184,606,190,604,195,590,189,567,187,545,189,531,193,526,199,528,207"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1BCBuilder_a8bcf132e19cb9550961450af34829fea_icgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_a8bcf132e19cb9550961450af34829fea_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1BCBuilder_a8bcf132e19cb9550961450af34829fea_icgraph" id="aclassFEDD_1_1BCBuilder_a8bcf132e19cb9550961450af34829fea_icgraph">
+<area shape="rect" title="Set boundary conditions to system." alt="" coords="5,29,193,70"/>
+<area shape="poly" title=" " alt="" coords="129,16,118,10,99,8,81,10,71,15,67,20,68,28,63,29,61,19,67,10,80,5,99,3,119,5,132,11"/>
 </map>
 </div>
 

@@ -153,7 +153,7 @@ $(function(){initNavTree('BlockMultiVector__decl_8hpp_source.html',''); initResi
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    ~BlockMultiVector();</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    BlockMultiVector_Type&amp; operator= (<span class="keyword">const</span> BlockMultiVector_Type&amp; rhs) {</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        TEUCHOS_TEST_FOR_EXCEPTION( size() != rhs.size(), std::logic_error,<span class="stringliteral">&quot;BlockMultiVector sizes are not equal for deep copy.&quot;</span>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        TEUCHOS_TEST_FOR_EXCEPTION( size() != rhs.size(), std::logic_error,<span class="stringliteral">&quot;BlockMultiVector sizes are not equal for deep copy.&quot;</span>)</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;size(); i++) {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            *blockMultiVector_[i] = *rhs[i];</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
@@ -161,7 +161,7 @@ $(function(){initNavTree('BlockMultiVector__decl_8hpp_source.html',''); initResi
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    MultiVectorPtr_Type operator[] (<span class="keywordtype">int</span> i)<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        TEUCHOS_TEST_FOR_EXCEPTION( i &gt; size()-1, std::logic_error,<span class="stringliteral">&quot;The requested MultiVector does not exist in BlockMultiVector.&quot;</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        TEUCHOS_TEST_FOR_EXCEPTION( i &gt; size()-1, std::logic_error,<span class="stringliteral">&quot;The requested MultiVector does not exist in BlockMultiVector.&quot;</span>)</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">return</span> blockMultiVector_[i];</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    }</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    </div>
@@ -249,7 +249,7 @@ $(function(){initNavTree('BlockMultiVector__decl_8hpp_source.html',''); initResi
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassFEDD_1_1BlockMap_html"><div class="ttname"><a href="classFEDD_1_1BlockMap.html">FEDD::BlockMap</a></div><div class="ttdoc">Block Variant of Map class.</div><div class="ttdef"><b>Definition</b> BlockMap_decl.hpp:38</div></div>
 <div class="ttc" id="aclassFEDD_1_1MultiVector_html"><div class="ttname"><a href="classFEDD_1_1MultiVector.html">FEDD::MultiVector</a></div><div class="ttdef"><b>Definition</b> MultiVector_decl.hpp:36</div></div>
-<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement.cpp:5</div></div>
+<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

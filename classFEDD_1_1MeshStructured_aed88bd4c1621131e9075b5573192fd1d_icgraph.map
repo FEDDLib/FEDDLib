@@ -1,7 +1,4 @@
 <map id="FEDD::MeshStructured::buildMesh2D" name="FEDD::MeshStructured::buildMesh2D">
-<area shape="rect" id="Node000001" title="Building a general 2D rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectan..." alt="" coords="207,29,360,70"/>
-<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="316,16,304,10,283,8,264,10,253,15,248,20,250,28,245,29,243,19,249,10,263,5,283,3,305,5,318,11"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshStructured.html#ac6e7dbd11c8199eb9ab2edd70e6091c0" title="Building 2D TPM rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectangle&#39; &#45;..." alt="" coords="5,29,159,70"/>
-<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="191,52,159,52,159,47,191,47"/>
-<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="115,16,102,10,82,8,63,10,51,15,47,20,49,28,44,29,42,19,48,10,62,5,82,3,104,5,117,11"/>
+<area shape="rect" id="Node000001" title="Building a general 2D rectangular mesh with the lenght and height as defined per &#39;setGeomerty2DRectan..." alt="" coords="5,29,159,70"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="106,16,97,10,82,8,68,10,59,14,56,20,57,28,52,29,51,19,56,11,66,5,82,3,99,5,109,11"/>
 </map>

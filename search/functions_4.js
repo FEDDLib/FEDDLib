@@ -9,8 +9,9 @@ var searchData=
   ['exportelementflags_6',['exportElementFlags',['../classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30',1,'FEDD::Domain']]],
   ['exportelementorientation_7',['exportElementOrientation',['../classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817',1,'FEDD::Domain']]],
   ['exporterror_8',['exportError',['../classFEDD_1_1AdaptiveMeshRefinement.html#a87f47249e2d8714bd44fe2821e859046',1,'FEDD::AdaptiveMeshRefinement']]],
-  ['exportmesh_9',['exportMesh',['../classFEDD_1_1Domain.html#ae55dcd00227f596970c66171c48ecde5',1,'FEDD::Domain::exportMesh()'],['../classFEDD_1_1MeshUnstructured.html#a4d37576e5ce8ed904198f96cba5764b1',1,'FEDD::MeshUnstructured::exportMesh()']]],
-  ['exportnodeflags_10',['exportNodeFlags',['../classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9',1,'FEDD::Domain']]],
-  ['exportsolution_11',['exportSolution',['../classFEDD_1_1AdaptiveMeshRefinement.html#aba81680cde702776b95800bd03308067',1,'FEDD::AdaptiveMeshRefinement']]],
-  ['exportsurfacenormals_12',['exportSurfaceNormals',['../classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5',1,'FEDD::Domain']]]
+  ['exportfromvector_9',['exportFromVector',['../classFEDD_1_1Matrix.html#a39109e02a3914b754117a24d925ac9ac',1,'FEDD::Matrix']]],
+  ['exportmesh_10',['exportMesh',['../classFEDD_1_1Domain.html#ae55dcd00227f596970c66171c48ecde5',1,'FEDD::Domain::exportMesh()'],['../classFEDD_1_1MeshUnstructured.html#a4d37576e5ce8ed904198f96cba5764b1',1,'FEDD::MeshUnstructured::exportMesh()']]],
+  ['exportnodeflags_11',['exportNodeFlags',['../classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9',1,'FEDD::Domain']]],
+  ['exportsolution_12',['exportSolution',['../classFEDD_1_1AdaptiveMeshRefinement.html#aba81680cde702776b95800bd03308067',1,'FEDD::AdaptiveMeshRefinement']]],
+  ['exportsurfacenormals_13',['exportSurfaceNormals',['../classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5',1,'FEDD::Domain']]]
 ];

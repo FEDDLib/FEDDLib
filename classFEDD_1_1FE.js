@@ -5,6 +5,7 @@ var classFEDD_1_1FE =
     [ "assemblyAdditionalConvection", "classFEDD_1_1FE.html#ab1ff7a8cf8700b25ebb7e58dc327f48a", null ],
     [ "assemblyAdvectionInUVecField", "classFEDD_1_1FE.html#a8f695e32739a3fca232110d33c24013b", null ],
     [ "assemblyAdvectionVecField", "classFEDD_1_1FE.html#a884513e6f5c732191b52ec80c18c2a07", null ],
+    [ "assemblyAdvectionVecFieldScalar", "classFEDD_1_1FE.html#a1bcff7bb197ed373c7c6aaa8796e4ac7", null ],
     [ "assemblyBDStabilization", "classFEDD_1_1FE.html#a4a8574796edf03d62d51696114482a9f", null ],
     [ "assemblyDivAndDivT", "classFEDD_1_1FE.html#a2450ea597a2a54d067adef6b27f56b34", null ],
     [ "assemblyDivAndDivTFast", "classFEDD_1_1FE.html#a661127e7bb58b7dfe810d8a1b8bff0fe", null ],

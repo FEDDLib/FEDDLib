@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['writemm_0',['writeMM',['../classFEDD_1_1Matrix.html#aa55f99367fe4a2fe17abee2a331fcfb5',1,'FEDD::Matrix']]],
-  ['writerefinementinfo_1',['writeRefinementInfo',['../classFEDD_1_1AdaptiveMeshRefinement.html#a7103d3aaea99021774a69bb80a6b0044',1,'FEDD::AdaptiveMeshRefinement']]],
-  ['writevariableshdf5_2',['writeVariablesHDF5',['../classFEDD_1_1HDF5Export.html#aa127fe42b7ba3e784a53a098189d708a',1,'FEDD::HDF5Export']]]
+  ['uninitialize_0',['uninitialize',['../classFEDD_1_1PreconditionerOperator.html#a5063ade275eb107363d1137c0c8dc487',1,'FEDD::PreconditionerOperator']]],
+  ['updateelementsofedgeslocalandglobal_1',['updateElementsOfEdgesLocalAndGlobal',['../classFEDD_1_1RefinementFactory.html#a2ebf82a5deb92e26a48805fd470f6840',1,'FEDD::RefinementFactory']]],
+  ['updateelementsofsurfacelocalandglobal_2',['updateElementsOfSurfaceLocalAndGlobal',['../classFEDD_1_1ErrorEstimation.html#ab4e45f837a9605396828ff330ac53630',1,'FEDD::ErrorEstimation']]],
+  ['updateparameter_3',['updateParameter',['../classFEDD_1_1AssembleFE.html#a31cf00b2988cbb482a880f7d807c763f',1,'FEDD::AssembleFE::updateParameter()'],['../classFEDD_1_1AssembleFE__NonLinElas2.html#a138babdc3757fbcd43077cda13ac021c',1,'FEDD::AssembleFE_NonLinElas2::updateParameter()'],['../classFEDD_1_1AssembleFE__NonLinElas.html#a328c95d4f81456e189c3c6e00881f74c',1,'FEDD::AssembleFE_NonLinElas::updateParameter()']]],
+  ['updateparams_4',['updateParams',['../classFEDD_1_1AssembleFE.html#a48ea6d9259f538a88fa5b21667869bce',1,'FEDD::AssembleFE::updateParams()'],['../classFEDD_1_1InputToOutputMappingClass.html#a5c857cc22563d4db1a0a754b9ea9df57',1,'FEDD::InputToOutputMappingClass::updateParams()']]],
+  ['updatesolution_5',['updateSolution',['../classFEDD_1_1AssembleFE.html#a5303adf0752fe27d9ff47ae8a39c1da4',1,'FEDD::AssembleFE']]]
 ];

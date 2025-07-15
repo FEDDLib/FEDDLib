@@ -30,7 +30,7 @@
 <area shape="poly" id="edge35_Node000001_Node000002" title=" " alt="" coords="471,712,473,709,485,694,491,679,496,649,501,618,508,602,521,586,538,574,541,578,525,590,513,605,506,620,501,650,496,681,489,697,477,713,474,715"/>
 <area shape="rect" id="Node000003" href="$classFEDD_1_1FSI.html" title=" " alt="" coords="542,600,683,641"/>
 <area shape="poly" id="edge36_Node000001_Node000003" title=" " alt="" coords="468,713,473,709,488,695,497,681,506,666,521,652,543,639,546,643,525,656,510,670,501,683,492,698,477,713,471,717"/>
-<area shape="rect" id="Node000004" href="$classFEDD_1_1NavierStokes.html" title="Navier&#45;Stokes." alt="" coords="542,665,683,706"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1NavierStokes.html" title=" " alt="" coords="542,665,683,706"/>
 <area shape="poly" id="edge37_Node000001_Node000004" title=" " alt="" coords="489,718,541,703,543,708,491,723"/>
 <area shape="rect" id="Node000005" href="$classFEDD_1_1NavierStokesAssFE.html" title="Navier&#45;Stokes." alt="" coords="523,731,702,771"/>
 <area shape="poly" id="edge38_Node000001_Node000005" title=" " alt="" coords="491,748,523,748,523,754,491,754"/>

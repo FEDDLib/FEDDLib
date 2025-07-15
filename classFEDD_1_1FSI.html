@@ -321,10 +321,16 @@ typedef Thyra::LinearOpBase&lt; default_sc &gt;&#160;</td><td class="memItemRigh
 <tr class="memitem:a6dc666bd77c57b273de2daeba0673700 inherit pub_types_classFEDD_1_1NonLinearProblem" id="r_a6dc666bd77c57b273de2daeba0673700"><td class="memItemLeft" align="right" valign="top">
 typedef Tpetra::Operator&lt; default_sc, default_lo, default_go, default_no &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>TpetraOp_Type</b></td></tr>
 <tr class="separator:a6dc666bd77c57b273de2daeba0673700 inherit pub_types_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a929293d39c73f758c558c66f121b236f inherit pub_types_classFEDD_1_1NonLinearProblem" id="r_a929293d39c73f758c558c66f121b236f"><td class="memItemLeft" align="right" valign="top">
+typedef Thyra::BlockedLinearOpBase&lt; default_sc &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraBlockOp_Type</b></td></tr>
+<tr class="separator:a929293d39c73f758c558c66f121b236f inherit pub_types_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_classFEDD_1_1Problem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classFEDD_1_1Problem')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a></td></tr>
 <tr class="memitem:ae937d40090cbeab59834b37b0d76f000 inherit pub_types_classFEDD_1_1Problem" id="r_ae937d40090cbeab59834b37b0d76f000"><td class="memItemLeft" align="right" valign="top">
 typedef <a class="el" href="classFEDD_1_1Domain.html">Domain</a>&lt; default_sc, default_lo, default_go, default_no &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Domain_Type</b></td></tr>
 <tr class="separator:ae937d40090cbeab59834b37b0d76f000 inherit pub_types_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90d255cf247e513ceed97c4d95261fd3 inherit pub_types_classFEDD_1_1Problem" id="r_a90d255cf247e513ceed97c4d95261fd3"><td class="memItemLeft" align="right" valign="top">
+typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1Domain.html">Domain_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>DomainPtr_Type</b></td></tr>
+<tr class="separator:a90d255cf247e513ceed97c4d95261fd3 inherit pub_types_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73dee47a0587952493143ccf5b0fc960 inherit pub_types_classFEDD_1_1Problem" id="r_a73dee47a0587952493143ccf5b0fc960"><td class="memItemLeft" align="right" valign="top">
 typedef Teuchos::RCP&lt; const <a class="el" href="classFEDD_1_1Domain.html">Domain_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>DomainConstPtr_Type</b></td></tr>
 <tr class="separator:a73dee47a0587952493143ccf5b0fc960 inherit pub_types_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -594,6 +600,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initVectorSpacesBlock
 <tr class="memitem:a18c0cd3fc4142dce21288be0e6cdf388 inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_a18c0cd3fc4142dce21288be0e6cdf388"><td class="memItemLeft" align="right" valign="top">
 virtual ::Thyra::ModelEvaluatorBase::OutArgs&lt; default_sc &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createOutArgsImpl</b> () const</td></tr>
 <tr class="separator:a18c0cd3fc4142dce21288be0e6cdf388 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90cd81c8804f191c15ebe589a0021c5f inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_a90cd81c8804f191c15ebe589a0021c5f"><td class="memItemLeft" align="right" valign="top">
+Teuchos::RCP&lt; Thyra::LinearOpBase&lt; default_sc &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_op</b> () const</td></tr>
+<tr class="memdesc:a90cd81c8804f191c15ebe589a0021c5f inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution. ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver. <br /></td></tr>
+<tr class="separator:a90cd81c8804f191c15ebe589a0021c5f inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3e3feb79000c141fe56ae60d0e5a915 inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_ad3e3feb79000c141fe56ae60d0e5a915"><td class="memItemLeft" align="right" valign="top">
+Teuchos::RCP&lt; Thyra::LinearOpBase&lt; default_sc &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_op_Monolithic</b> () const</td></tr>
+<tr class="separator:ad3e3feb79000c141fe56ae60d0e5a915 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b1f016e3adcef0bbe1b6efaf7b529f1 inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_a3b1f016e3adcef0bbe1b6efaf7b529f1"><td class="memItemLeft" align="right" valign="top">
+Teuchos::RCP&lt; Thyra::PreconditionerBase&lt; default_sc &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_prec</b> () const</td></tr>
+<tr class="separator:a3b1f016e3adcef0bbe1b6efaf7b529f1 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classFEDD_1_1Problem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classFEDD_1_1Problem')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a></td></tr>
 <tr class="memitem:a54446bbeb0bbc6172d1493196e8e77e9 inherit pub_methods_classFEDD_1_1Problem" id="r_a54446bbeb0bbc6172d1493196e8e77e9"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Problem</b> (CommConstPtr_Type comm)</td></tr>
@@ -604,6 +620,9 @@ virtual ::Thyra::ModelEvaluatorBase::OutArgs&lt; default_sc &gt;&#160;</td><td c
 <tr class="memitem:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem" id="r_a06af5dc8c475870e7f4b1d4f3af16292"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>infoProblem</b> ()</td></tr>
 <tr class="separator:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem" id="r_a8f976001c5ea628fe4c723bd5e0a6a29"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>infoParameter</b> ()</td></tr>
+<tr class="separator:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem" id="r_afc5030d3ac4aac4b721d1fb8947621ec"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addVariable</b> (const DomainConstPtr_Type &amp;domain, std::string FEType, std::string name, int dofsPerNode)</td></tr>
 <tr class="separator:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -797,6 +816,9 @@ BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>r
 <tr class="memitem:abaeea73ed0531a3969cd382056cc17d3 inherit pub_attribs_classFEDD_1_1NonLinearProblem" id="r_abaeea73ed0531a3969cd382056cc17d3"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classFEDD_1_1SmallMatrix.html">SmallMatrix</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>coeff_</b></td></tr>
 <tr class="separator:abaeea73ed0531a3969cd382056cc17d3 inherit pub_attribs_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db745e18eb03474a6f12eef6a5c1ba3 inherit pub_attribs_classFEDD_1_1NonLinearProblem" id="r_a1db745e18eb03474a6f12eef6a5c1ba3"><td class="memItemLeft" align="right" valign="top">
+int&#160;</td><td class="memItemRight" valign="bottom"><b>newtonStep_</b></td></tr>
+<tr class="separator:a1db745e18eb03474a6f12eef6a5c1ba3 inherit pub_attribs_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classFEDD_1_1Problem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classFEDD_1_1Problem')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a></td></tr>
 <tr class="memitem:a09067a5efcdb96dc8ee3896bcb3e98af inherit pub_attribs_classFEDD_1_1Problem" id="r_a09067a5efcdb96dc8ee3896bcb3e98af"><td class="memItemLeft" align="right" valign="top">
 int&#160;</td><td class="memItemRight" valign="bottom"><b>dim_</b></td></tr>

@@ -24,8 +24,9 @@ var searchData=
   ['minprecproblem_21',['MinPrecProblem',['../classFEDD_1_1MinPrecProblem.html',1,'FEDD']]],
   ['minprecproblem_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_22',['MinPrecProblem&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1MinPrecProblem.html',1,'FEDD']]],
   ['movemesh_23',['moveMesh',['../classFEDD_1_1Domain.html#a7875a9fbcea1da8412e8f484bf9adf94',1,'FEDD::Domain::moveMesh()'],['../classFEDD_1_1Mesh.html#ae05072a7ae7bcdaeb5ce345e8ec7e7c4',1,'FEDD::Mesh::moveMesh()']]],
-  ['multivector_24',['MultiVector',['../classFEDD_1_1MultiVector.html',1,'FEDD::MultiVector&lt; SC, LO, GO, NO &gt;'],['../classFEDD_1_1MultiVector.html#ad230b8fcfecbbfd9dfbd0b9d929cb013',1,'FEDD::MultiVector::MultiVector(MapConstPtr_Type map, UN nmbVectors=1)'],['../classFEDD_1_1MultiVector.html#a2699448caa6dba8872aca8e8dafb22b3',1,'FEDD::MultiVector::MultiVector(TpetraMultiVectorPtr_Type &amp;TpetraMVPtrIn)'],['../classFEDD_1_1MultiVector.html#a53c267add0e1f3b90b696f653db672c2',1,'FEDD::MultiVector::MultiVector(MultiVectorConstPtr_Type mvIn)']]],
-  ['multivector_3c_20go_2c_20lo_2c_20go_2c_20no_20_3e_25',['MultiVector&lt; GO, LO, GO, NO &gt;',['../classFEDD_1_1MultiVector.html',1,'FEDD']]],
-  ['multivector_3c_20lo_2c_20lo_2c_20go_2c_20no_20_3e_26',['MultiVector&lt; LO, LO, GO, NO &gt;',['../classFEDD_1_1MultiVector.html',1,'FEDD']]],
-  ['multivector_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_27',['MultiVector&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1MultiVector.html',1,'FEDD']]]
+  ['multiply_24',['Multiply',['../classFEDD_1_1Matrix.html#ad283508c5443b6e5fca6179cacdbe2eb',1,'FEDD::Matrix']]],
+  ['multivector_25',['MultiVector',['../classFEDD_1_1MultiVector.html',1,'FEDD::MultiVector&lt; SC, LO, GO, NO &gt;'],['../classFEDD_1_1MultiVector.html#ad230b8fcfecbbfd9dfbd0b9d929cb013',1,'FEDD::MultiVector::MultiVector(MapConstPtr_Type map, UN nmbVectors=1)'],['../classFEDD_1_1MultiVector.html#a2699448caa6dba8872aca8e8dafb22b3',1,'FEDD::MultiVector::MultiVector(TpetraMultiVectorPtr_Type &amp;TpetraMVPtrIn)'],['../classFEDD_1_1MultiVector.html#a53c267add0e1f3b90b696f653db672c2',1,'FEDD::MultiVector::MultiVector(MultiVectorConstPtr_Type mvIn)']]],
+  ['multivector_3c_20go_2c_20lo_2c_20go_2c_20no_20_3e_26',['MultiVector&lt; GO, LO, GO, NO &gt;',['../classFEDD_1_1MultiVector.html',1,'FEDD']]],
+  ['multivector_3c_20lo_2c_20lo_2c_20go_2c_20no_20_3e_27',['MultiVector&lt; LO, LO, GO, NO &gt;',['../classFEDD_1_1MultiVector.html',1,'FEDD']]],
+  ['multivector_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_28',['MultiVector&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1MultiVector.html',1,'FEDD']]]
 ];

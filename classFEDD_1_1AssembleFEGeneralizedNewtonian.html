@@ -687,7 +687,6 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
 </div><div class="memdoc">
 
 <p>Assembly function for neumann boundary term - If we want to have same outflow boundary condition as for the Newtonian case (<a class="el" href="classFEDD_1_1Laplace.html">Laplace</a> operator) we have to subtract boundary integral term see @article{Pacheco2021, abstract = {The matter of appropriate boundary conditions for open or truncated outflow regions in internal flow is still focus of discussion and research. In most practical applications, one can at best estimate mean pressure values or flow rates at such outlets. In the context of finite element methods, it is known that enforcing mean pressures through the pseudo-tractions arising from the Laplacian Navier-Stokes formulation yields accurate, physically consistent solutions. Nevertheless, when generalised Newtonian fluid models are considered, the resulting non-uniform viscosity fields render the classical Laplacian formulation inadequate. Thus, it is common practice to use the socalled stress-divergence formulation with natural boundary conditions known for causing nonphysical outflow behaviour. In order to overcome such a limitation, this work presents a novel mixed variational formulation that can be seen as a generalisation of the Laplacian Navier-Stokes form to fluids with shear-rate-dependent viscosity, as appearing in hemodynamic and polymeric flows. By appropriately manipulating the viscous terms in the variational formulation and employing a simple projection of the constitutive law, it is possible to devise a formulation with the desired natural boundary conditions and low computational complexity. Several numerical examples are presented to showcase the potential of our method, revealing improved accuracy and robustness in comparison with the state of the art.}, author = {Pacheco, Douglas R Q and Steinbach, Olaf}, doi = {10.51375/ijcvse.2021.1.6}, file = {:home/user/.local/share/data/Mendeley Ltd./Mendeley Desktop/Downloaded/Pacheco, Steinbach - 2021 - On outflow boundary conditions in finite element simulations of non-Newtonian internal flows.pdf:pdf}, journal = {International Journal of Computing and Visualization in Science and Engineering}, mendeley-groups = {DoctoralThesis/Numerical Fluid Dynamics/NonNewtonian/Boundary_Conditions}, number = {April}, title = {{On outflow boundary conditions in finite element simulations of non-Newtonian internal flows}}, year = {2021} }. </p>
-<p>/*!</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">&amp;elementMatrix</td><td></td></tr>
@@ -723,7 +722,7 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
 </div><div class="memdoc">
 
 <p>Assembly function for directional derivative contribution neumann boundary term. </p>
-<p>/*! </p><dl class="params"><dt>Parameters</dt><dd>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">&amp;elementMatrix</td><td></td></tr>
   </table>
@@ -952,7 +951,18 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
   </table>
   </dd>
 </dl>
-<p>Building Transformation </p>
+<p>Building Transformation</p>
+<ul>
+<li>Triangle numbering <pre class="fragment">          2
+            *
+              *
+          5     4
+                  *
+                    *
+          0 * * 3 * * 1
+</pre></li>
+</ul>
+<p>In 2D B=[ 1(x)-0(x) 2(x)-0(x) ] [ 1(y)-0(y) 2(y)-0(y) ] </p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

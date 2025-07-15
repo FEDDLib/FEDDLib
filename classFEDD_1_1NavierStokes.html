@@ -102,17 +102,12 @@ $(function(){initNavTree('classFEDD_1_1NavierStokes.html',''); initResizable(tru
   <div class="headertitle"><div class="title">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p>Navier-Stokes.  
- <a href="#details">More...</a></p>
-
-<p><code>#include &lt;<a class="el" href="NavierStokes__decl_8hpp_source.html">NavierStokes_decl.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1NavierStokes__inherit__graph.png" border="0" usemap="#aFEDD_1_1NavierStokes_3_01SC_00_01LO_00_01GO_00_01NO_01_4_inherit__map" alt="Inheritance graph"/></div>
 <map name="aFEDD_1_1NavierStokes_3_01SC_00_01LO_00_01GO_00_01NO_01_4_inherit__map" id="aFEDD_1_1NavierStokes_3_01SC_00_01LO_00_01GO_00_01NO_01_4_inherit__map">
-<area shape="rect" title="Navier&#45;Stokes." alt="" coords="493,49,633,90"/>
+<area shape="rect" title=" " alt="" coords="493,49,633,90"/>
 <area shape="rect" href="classFEDD_1_1NonLinearProblem.html" title=" " alt="" coords="262,41,445,97"/>
 <area shape="poly" title=" " alt="" coords="461,66,493,66,493,72,461,72"/>
 <area shape="rect" href="classFEDD_1_1Problem.html" title=" " alt="" coords="30,5,189,61"/>
@@ -128,12 +123,15 @@ Public Types</h2></td></tr>
 <tr class="memitem:a6f3627b457c360973d8a439711d74986" id="r_a6f3627b457c360973d8a439711d74986"><td class="memItemLeft" align="right" valign="top"><a id="a6f3627b457c360973d8a439711d74986" name="a6f3627b457c360973d8a439711d74986"></a>
 typedef <a class="el" href="classFEDD_1_1Problem.html">Problem</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Problem_Type</b></td></tr>
 <tr class="separator:a6f3627b457c360973d8a439711d74986"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab56182fda5b1b11ede8b560070fff2c5" id="r_ab56182fda5b1b11ede8b560070fff2c5"><td class="memItemLeft" align="right" valign="top"><a id="ab56182fda5b1b11ede8b560070fff2c5" name="ab56182fda5b1b11ede8b560070fff2c5"></a>
-typedef <a class="el" href="classFEDD_1_1Matrix.html">Problem_Type::Matrix_Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Matrix_Type</b></td></tr>
-<tr class="separator:ab56182fda5b1b11ede8b560070fff2c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad31596d7c5048afe9733dc49802f9f28" id="r_ad31596d7c5048afe9733dc49802f9f28"><td class="memItemLeft" align="right" valign="top"><a id="ad31596d7c5048afe9733dc49802f9f28" name="ad31596d7c5048afe9733dc49802f9f28"></a>
-typedef Problem_Type::MatrixPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>MatrixPtr_Type</b></td></tr>
-<tr class="separator:ad31596d7c5048afe9733dc49802f9f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc4e68faf0b69642001eb1c629c3c236" id="r_acc4e68faf0b69642001eb1c629c3c236"><td class="memItemLeft" align="right" valign="top"><a id="acc4e68faf0b69642001eb1c629c3c236" name="acc4e68faf0b69642001eb1c629c3c236"></a>
+typedef <a class="el" href="classFEDD_1_1Matrix.html">Matrix</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Matrix_Type</b></td></tr>
+<tr class="separator:acc4e68faf0b69642001eb1c629c3c236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9789afba9f75cd8358749af6a6f91be6" id="r_a9789afba9f75cd8358749af6a6f91be6"><td class="memItemLeft" align="right" valign="top"><a id="a9789afba9f75cd8358749af6a6f91be6" name="a9789afba9f75cd8358749af6a6f91be6"></a>
+typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1Matrix.html">Matrix_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MatrixPtr_Type</b></td></tr>
+<tr class="separator:a9789afba9f75cd8358749af6a6f91be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e0731150196f7dbb83ea260ec001521" id="r_a4e0731150196f7dbb83ea260ec001521"><td class="memItemLeft" align="right" valign="top"><a id="a4e0731150196f7dbb83ea260ec001521" name="a4e0731150196f7dbb83ea260ec001521"></a>
+typedef Teuchos::RCP&lt; const MatrixPtr_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MatrixConstPtr_Type</b></td></tr>
+<tr class="separator:a4e0731150196f7dbb83ea260ec001521"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1e5f860a2bab00475e8b960b32d00eb" id="r_ab1e5f860a2bab00475e8b960b32d00eb"><td class="memItemLeft" align="right" valign="top"><a id="ab1e5f860a2bab00475e8b960b32d00eb" name="ab1e5f860a2bab00475e8b960b32d00eb"></a>
 typedef Problem_Type::MapConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>MapConstPtr_Type</b></td></tr>
 <tr class="separator:ab1e5f860a2bab00475e8b960b32d00eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,6 +153,12 @@ typedef Problem_Type::MultiVectorConstPtr_Type&#160;</td><td class="memItemRight
 <tr class="memitem:af8aab235ac6aba1c837f414a5d140688" id="r_af8aab235ac6aba1c837f414a5d140688"><td class="memItemLeft" align="right" valign="top"><a id="af8aab235ac6aba1c837f414a5d140688" name="af8aab235ac6aba1c837f414a5d140688"></a>
 typedef Problem_Type::BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>BlockMultiVectorPtr_Type</b></td></tr>
 <tr class="separator:af8aab235ac6aba1c837f414a5d140688"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23cb5b69a1f5b44530f832728913aadd" id="r_a23cb5b69a1f5b44530f832728913aadd"><td class="memItemLeft" align="right" valign="top"><a id="a23cb5b69a1f5b44530f832728913aadd" name="a23cb5b69a1f5b44530f832728913aadd"></a>
+typedef <a class="el" href="classFEDD_1_1Domain.html">Problem_Type::Domain_Type</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Domain_Type</b></td></tr>
+<tr class="separator:a23cb5b69a1f5b44530f832728913aadd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55ed98290a41ea275f4fdb7584575819" id="r_a55ed98290a41ea275f4fdb7584575819"><td class="memItemLeft" align="right" valign="top"><a id="a55ed98290a41ea275f4fdb7584575819" name="a55ed98290a41ea275f4fdb7584575819"></a>
+typedef Problem_Type::DomainPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>DomainPtr_Type</b></td></tr>
+<tr class="separator:a55ed98290a41ea275f4fdb7584575819"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d0a73e4c7c468427e67703b540c4d19" id="r_a4d0a73e4c7c468427e67703b540c4d19"><td class="memItemLeft" align="right" valign="top"><a id="a4d0a73e4c7c468427e67703b540c4d19" name="a4d0a73e4c7c468427e67703b540c4d19"></a>
 typedef Problem_Type::DomainConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>DomainConstPtr_Type</b></td></tr>
 <tr class="separator:a4d0a73e4c7c468427e67703b540c4d19"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,6 +186,15 @@ typedef NonLinearProblem_Type::ThyraOp_Type&#160;</td><td class="memItemRight" v
 <tr class="memitem:ae5d62263363ab9e5c85275f93d8aa9c3" id="r_ae5d62263363ab9e5c85275f93d8aa9c3"><td class="memItemLeft" align="right" valign="top"><a id="ae5d62263363ab9e5c85275f93d8aa9c3" name="ae5d62263363ab9e5c85275f93d8aa9c3"></a>
 typedef Thyra::BlockedLinearOpBase&lt; SC &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraBlockOp_Type</b></td></tr>
 <tr class="separator:ae5d62263363ab9e5c85275f93d8aa9c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a52ce66d1993e72d3aa9d60e92d4f96" id="r_a8a52ce66d1993e72d3aa9d60e92d4f96"><td class="memItemLeft" align="right" valign="top"><a id="a8a52ce66d1993e72d3aa9d60e92d4f96" name="a8a52ce66d1993e72d3aa9d60e92d4f96"></a>
+typedef <a class="el" href="classFEDD_1_1BCBuilder.html">BCBuilder</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>BC_Type</b></td></tr>
+<tr class="separator:a8a52ce66d1993e72d3aa9d60e92d4f96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad301d09cf4de8d66e4fbe163e23f24f7" id="r_ad301d09cf4de8d66e4fbe163e23f24f7"><td class="memItemLeft" align="right" valign="top"><a id="ad301d09cf4de8d66e4fbe163e23f24f7" name="ad301d09cf4de8d66e4fbe163e23f24f7"></a>
+typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1BCBuilder.html">BC_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>BCPtr_Type</b></td></tr>
+<tr class="separator:ad301d09cf4de8d66e4fbe163e23f24f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c265c19c06c7a68e3197e09e6bc7e7e" id="r_a5c265c19c06c7a68e3197e09e6bc7e7e"><td class="memItemLeft" align="right" valign="top"><a id="a5c265c19c06c7a68e3197e09e6bc7e7e" name="a5c265c19c06c7a68e3197e09e6bc7e7e"></a>
+typedef Teuchos::RCP&lt; const <a class="el" href="classFEDD_1_1BCBuilder.html">BC_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>BCConstPtr_Type</b></td></tr>
+<tr class="separator:a5c265c19c06c7a68e3197e09e6bc7e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e6ed893f8718257a1e001ec762f20bb" id="r_a9e6ed893f8718257a1e001ec762f20bb"><td class="memItemLeft" align="right" valign="top"><a id="a9e6ed893f8718257a1e001ec762f20bb" name="a9e6ed893f8718257a1e001ec762f20bb"></a>
 typedef NonLinearProblem_Type::TpetraOp_Type&#160;</td><td class="memItemRight" valign="bottom"><b>TpetraOp_Type</b></td></tr>
 <tr class="separator:a9e6ed893f8718257a1e001ec762f20bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -264,10 +277,16 @@ typedef Thyra::LinearOpBase&lt; default_sc &gt;&#160;</td><td class="memItemRigh
 <tr class="memitem:a6dc666bd77c57b273de2daeba0673700 inherit pub_types_classFEDD_1_1NonLinearProblem" id="r_a6dc666bd77c57b273de2daeba0673700"><td class="memItemLeft" align="right" valign="top">
 typedef Tpetra::Operator&lt; default_sc, default_lo, default_go, default_no &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>TpetraOp_Type</b></td></tr>
 <tr class="separator:a6dc666bd77c57b273de2daeba0673700 inherit pub_types_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a929293d39c73f758c558c66f121b236f inherit pub_types_classFEDD_1_1NonLinearProblem" id="r_a929293d39c73f758c558c66f121b236f"><td class="memItemLeft" align="right" valign="top">
+typedef Thyra::BlockedLinearOpBase&lt; default_sc &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraBlockOp_Type</b></td></tr>
+<tr class="separator:a929293d39c73f758c558c66f121b236f inherit pub_types_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_classFEDD_1_1Problem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classFEDD_1_1Problem')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a></td></tr>
 <tr class="memitem:ae937d40090cbeab59834b37b0d76f000 inherit pub_types_classFEDD_1_1Problem" id="r_ae937d40090cbeab59834b37b0d76f000"><td class="memItemLeft" align="right" valign="top">
 typedef <a class="el" href="classFEDD_1_1Domain.html">Domain</a>&lt; default_sc, default_lo, default_go, default_no &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Domain_Type</b></td></tr>
 <tr class="separator:ae937d40090cbeab59834b37b0d76f000 inherit pub_types_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90d255cf247e513ceed97c4d95261fd3 inherit pub_types_classFEDD_1_1Problem" id="r_a90d255cf247e513ceed97c4d95261fd3"><td class="memItemLeft" align="right" valign="top">
+typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1Domain.html">Domain_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>DomainPtr_Type</b></td></tr>
+<tr class="separator:a90d255cf247e513ceed97c4d95261fd3 inherit pub_types_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73dee47a0587952493143ccf5b0fc960 inherit pub_types_classFEDD_1_1Problem" id="r_a73dee47a0587952493143ccf5b0fc960"><td class="memItemLeft" align="right" valign="top">
 typedef Teuchos::RCP&lt; const <a class="el" href="classFEDD_1_1Domain.html">Domain_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>DomainConstPtr_Type</b></td></tr>
 <tr class="separator:a73dee47a0587952493143ccf5b0fc960 inherit pub_types_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -384,6 +403,24 @@ vec_int_ptr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>pressureI
 <tr class="memitem:a79de277b69b847f85fbff7e699187752" id="r_a79de277b69b847f85fbff7e699187752"><td class="memItemLeft" align="right" valign="top"><a id="a79de277b69b847f85fbff7e699187752" name="a79de277b69b847f85fbff7e699187752"></a>
 MultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>u_rep_</b></td></tr>
 <tr class="separator:a79de277b69b847f85fbff7e699187752"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d8db0511907f57e3e339404110d4956" id="r_a4d8db0511907f57e3e339404110d4956"><td class="memItemLeft" align="right" valign="top"><a id="a4d8db0511907f57e3e339404110d4956" name="a4d8db0511907f57e3e339404110d4956"></a>
+BCPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>bcFactoryPCD_</b></td></tr>
+<tr class="separator:a4d8db0511907f57e3e339404110d4956"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a352bcee6c922e8a4692c754b8fc89de5" id="r_a352bcee6c922e8a4692c754b8fc89de5"><td class="memItemLeft" align="right" valign="top"><a id="a352bcee6c922e8a4692c754b8fc89de5" name="a352bcee6c922e8a4692c754b8fc89de5"></a>
+MatrixPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>Mp_</b></td></tr>
+<tr class="separator:a352bcee6c922e8a4692c754b8fc89de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adec4e5f9f2f7fe3a51055843baf392e3" id="r_adec4e5f9f2f7fe3a51055843baf392e3"><td class="memItemLeft" align="right" valign="top"><a id="adec4e5f9f2f7fe3a51055843baf392e3" name="adec4e5f9f2f7fe3a51055843baf392e3"></a>
+MatrixPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>BT_Mp_</b></td></tr>
+<tr class="separator:adec4e5f9f2f7fe3a51055843baf392e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06873aa6b55d0de7053405f8e0fba9fd" id="r_a06873aa6b55d0de7053405f8e0fba9fd"><td class="memItemLeft" align="right" valign="top"><a id="a06873aa6b55d0de7053405f8e0fba9fd" name="a06873aa6b55d0de7053405f8e0fba9fd"></a>
+MatrixPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>BT_Mp_B_</b></td></tr>
+<tr class="separator:a06873aa6b55d0de7053405f8e0fba9fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ea22994b70bded2a65e3e816dcda7f8" id="r_a7ea22994b70bded2a65e3e816dcda7f8"><td class="memItemLeft" align="right" valign="top"><a id="a7ea22994b70bded2a65e3e816dcda7f8" name="a7ea22994b70bded2a65e3e816dcda7f8"></a>
+MatrixPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>Ap_</b></td></tr>
+<tr class="separator:a7ea22994b70bded2a65e3e816dcda7f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55506b796c865a957b8997b1b095d5a1" id="r_a55506b796c865a957b8997b1b095d5a1"><td class="memItemLeft" align="right" valign="top"><a id="a55506b796c865a957b8997b1b095d5a1" name="a55506b796c865a957b8997b1b095d5a1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>augmentedLagrange_</b> =false</td></tr>
+<tr class="separator:a55506b796c865a957b8997b1b095d5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a953e052ee533a5b132aa4c42044e1d20" id="r_a953e052ee533a5b132aa4c42044e1d20"><td class="memItemLeft" align="right" valign="top"><a id="a953e052ee533a5b132aa4c42044e1d20" name="a953e052ee533a5b132aa4c42044e1d20"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>NavierStokes</b> (const DomainConstPtr_Type &amp;domainVelocity, std::string FETypeVelocity, const DomainConstPtr_Type &amp;domainPressure, std::string FETypePressure, ParameterListPtr_Type parameterList)</td></tr>
 <tr class="separator:a953e052ee533a5b132aa4c42044e1d20"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -397,12 +434,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>assembleConstantMatri
 <tr class="memitem:a67e35ceb19a7e153e953ec32e20ce2b5" id="r_a67e35ceb19a7e153e953ec32e20ce2b5"><td class="memItemLeft" align="right" valign="top"><a id="a67e35ceb19a7e153e953ec32e20ce2b5" name="a67e35ceb19a7e153e953ec32e20ce2b5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assembleDivAndStab</b> () const</td></tr>
 <tr class="separator:a67e35ceb19a7e153e953ec32e20ce2b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a659358f44434479e3debb13022f6ff9b" id="r_a659358f44434479e3debb13022f6ff9b"><td class="memItemLeft" align="right" valign="top"><a id="a659358f44434479e3debb13022f6ff9b" name="a659358f44434479e3debb13022f6ff9b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>updateConvectionDiffusionOperator</b> () const</td></tr>
+<tr class="separator:a659358f44434479e3debb13022f6ff9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade2f25893ec601e7be85504205dbdd53" id="r_ade2f25893ec601e7be85504205dbdd53"><td class="memItemLeft" align="right" valign="top"><a id="ade2f25893ec601e7be85504205dbdd53" name="ade2f25893ec601e7be85504205dbdd53"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssemble</b> (std::string type) const</td></tr>
 <tr class="separator:ade2f25893ec601e7be85504205dbdd53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a907fa81baf4e67588bdabcf6f9c0b228" id="r_a907fa81baf4e67588bdabcf6f9c0b228"><td class="memItemLeft" align="right" valign="top"><a id="a907fa81baf4e67588bdabcf6f9c0b228" name="a907fa81baf4e67588bdabcf6f9c0b228"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssemble</b> (BlockMultiVectorPtr_Type previousSolution) const</td></tr>
-<tr class="separator:a907fa81baf4e67588bdabcf6f9c0b228"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5c82610761ac44db5b91c7ce23e1c75" id="r_aa5c82610761ac44db5b91c7ce23e1c75"><td class="memItemLeft" align="right" valign="top"><a id="aa5c82610761ac44db5b91c7ce23e1c75" name="aa5c82610761ac44db5b91c7ce23e1c75"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssemble</b> (BlockMultiVectorPtr_Type previousSolution) const override</td></tr>
+<tr class="separator:aa5c82610761ac44db5b91c7ce23e1c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad426645fdc6a679ace73031ddd8cd11e" id="r_ad426645fdc6a679ace73031ddd8cd11e"><td class="memItemLeft" align="right" valign="top"><a id="ad426645fdc6a679ace73031ddd8cd11e" name="ad426645fdc6a679ace73031ddd8cd11e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssembleFSI</b> (std::string type, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const</td></tr>
 <tr class="separator:ad426645fdc6a679ace73031ddd8cd11e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -413,24 +453,14 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssemble</b
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssembleExtrapolation</b> (BlockMultiVectorPtrArray_Type previousSolutions)</td></tr>
 <tr class="separator:a6b8b1a17f1731c171d595560b00b108f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade0b2fbe57e56350f4285fb43dac06b3" id="r_ade0b2fbe57e56350f4285fb43dac06b3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade0b2fbe57e56350f4285fb43dac06b3">calculateNonLinResidualVec</a> (std::string type=&quot;standard&quot;, double time=0.) const</td></tr>
-<tr class="memdesc:ade0b2fbe57e56350f4285fb43dac06b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution. ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver.  <br /></td></tr>
 <tr class="separator:ade0b2fbe57e56350f4285fb43dac06b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc4c88153ecdda10021d2e7f45b99355" id="r_abc4c88153ecdda10021d2e7f45b99355"><td class="memItemLeft" align="right" valign="top"><a id="abc4c88153ecdda10021d2e7f45b99355" name="abc4c88153ecdda10021d2e7f45b99355"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>calculateNonLinResidualVecWithMeshVelo</b> (std::string type, double time, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const</td></tr>
 <tr class="separator:abc4c88153ecdda10021d2e7f45b99355"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a207ca82dca0be4fdeed2a5d50afcd1ef" id="r_a207ca82dca0be4fdeed2a5d50afcd1ef"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a207ca82dca0be4fdeed2a5d50afcd1ef">getValuesOfInterest</a> (vec_dbl_Type &amp;values)</td></tr>
-<tr class="separator:a207ca82dca0be4fdeed2a5d50afcd1ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a036861807a3b4edf59408227c8b2300e" id="r_a036861807a3b4edf59408227c8b2300e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a036861807a3b4edf59408227c8b2300e">computeValuesOfInterestAndExport</a> ()</td></tr>
-<tr class="separator:a036861807a3b4edf59408227c8b2300e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13c1b0be032ddc360216e0aa1ccfc17f" id="r_a13c1b0be032ddc360216e0aa1ccfc17f"><td class="memItemLeft" align="right" valign="top"><a id="a13c1b0be032ddc360216e0aa1ccfc17f" name="a13c1b0be032ddc360216e0aa1ccfc17f"></a>
-Teuchos::RCP&lt; Thyra::LinearOpBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_op</b> () const</td></tr>
-<tr class="separator:a13c1b0be032ddc360216e0aa1ccfc17f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af592c45f93dad21b9f01c5de219284f5" id="r_af592c45f93dad21b9f01c5de219284f5"><td class="memItemLeft" align="right" valign="top"><a id="af592c45f93dad21b9f01c5de219284f5" name="af592c45f93dad21b9f01c5de219284f5"></a>
-Teuchos::RCP&lt; Thyra::LinearOpBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_op_Monolithic</b> () const</td></tr>
-<tr class="separator:af592c45f93dad21b9f01c5de219284f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ff44150882fe2da004596d8d4918342" id="r_a6ff44150882fe2da004596d8d4918342"><td class="memItemLeft" align="right" valign="top"><a id="a6ff44150882fe2da004596d8d4918342" name="a6ff44150882fe2da004596d8d4918342"></a>
-Teuchos::RCP&lt; Thyra::PreconditionerBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_prec</b> () const</td></tr>
-<tr class="separator:a6ff44150882fe2da004596d8d4918342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89d5fb90a5c4908d7cd2b59f1cb224e8" id="r_a89d5fb90a5c4908d7cd2b59f1cb224e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89d5fb90a5c4908d7cd2b59f1cb224e8">getValuesOfInterest</a> (vec_dbl_Type &amp;values) override</td></tr>
+<tr class="separator:a89d5fb90a5c4908d7cd2b59f1cb224e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4667767ab19ece743ba3f18741bdf21" id="r_af4667767ab19ece743ba3f18741bdf21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af4667767ab19ece743ba3f18741bdf21">computeValuesOfInterestAndExport</a> () override</td></tr>
+<tr class="separator:af4667767ab19ece743ba3f18741bdf21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -504,6 +534,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initVectorSpacesBlock
 <tr class="memitem:a18c0cd3fc4142dce21288be0e6cdf388 inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_a18c0cd3fc4142dce21288be0e6cdf388"><td class="memItemLeft" align="right" valign="top">
 virtual ::Thyra::ModelEvaluatorBase::OutArgs&lt; default_sc &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createOutArgsImpl</b> () const</td></tr>
 <tr class="separator:a18c0cd3fc4142dce21288be0e6cdf388 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90cd81c8804f191c15ebe589a0021c5f inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_a90cd81c8804f191c15ebe589a0021c5f"><td class="memItemLeft" align="right" valign="top">
+Teuchos::RCP&lt; Thyra::LinearOpBase&lt; default_sc &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_op</b> () const</td></tr>
+<tr class="memdesc:a90cd81c8804f191c15ebe589a0021c5f inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution. ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver. <br /></td></tr>
+<tr class="separator:a90cd81c8804f191c15ebe589a0021c5f inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3e3feb79000c141fe56ae60d0e5a915 inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_ad3e3feb79000c141fe56ae60d0e5a915"><td class="memItemLeft" align="right" valign="top">
+Teuchos::RCP&lt; Thyra::LinearOpBase&lt; default_sc &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_op_Monolithic</b> () const</td></tr>
+<tr class="separator:ad3e3feb79000c141fe56ae60d0e5a915 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b1f016e3adcef0bbe1b6efaf7b529f1 inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_a3b1f016e3adcef0bbe1b6efaf7b529f1"><td class="memItemLeft" align="right" valign="top">
+Teuchos::RCP&lt; Thyra::PreconditionerBase&lt; default_sc &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_prec</b> () const</td></tr>
+<tr class="separator:a3b1f016e3adcef0bbe1b6efaf7b529f1 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classFEDD_1_1Problem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classFEDD_1_1Problem')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a></td></tr>
 <tr class="memitem:a54446bbeb0bbc6172d1493196e8e77e9 inherit pub_methods_classFEDD_1_1Problem" id="r_a54446bbeb0bbc6172d1493196e8e77e9"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>Problem</b> (CommConstPtr_Type comm)</td></tr>
@@ -514,6 +554,9 @@ virtual ::Thyra::ModelEvaluatorBase::OutArgs&lt; default_sc &gt;&#160;</td><td c
 <tr class="memitem:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem" id="r_a06af5dc8c475870e7f4b1d4f3af16292"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>infoProblem</b> ()</td></tr>
 <tr class="separator:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem" id="r_a8f976001c5ea628fe4c723bd5e0a6a29"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>infoParameter</b> ()</td></tr>
+<tr class="separator:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem" id="r_afc5030d3ac4aac4b721d1fb8947621ec"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addVariable</b> (const DomainConstPtr_Type &amp;domain, std::string FEType, std::string name, int dofsPerNode)</td></tr>
 <tr class="separator:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -653,6 +696,9 @@ BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>r
 <tr class="memitem:abaeea73ed0531a3969cd382056cc17d3 inherit pub_attribs_classFEDD_1_1NonLinearProblem" id="r_abaeea73ed0531a3969cd382056cc17d3"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classFEDD_1_1SmallMatrix.html">SmallMatrix</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>coeff_</b></td></tr>
 <tr class="separator:abaeea73ed0531a3969cd382056cc17d3 inherit pub_attribs_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db745e18eb03474a6f12eef6a5c1ba3 inherit pub_attribs_classFEDD_1_1NonLinearProblem" id="r_a1db745e18eb03474a6f12eef6a5c1ba3"><td class="memItemLeft" align="right" valign="top">
+int&#160;</td><td class="memItemRight" valign="bottom"><b>newtonStep_</b></td></tr>
+<tr class="separator:a1db745e18eb03474a6f12eef6a5c1ba3 inherit pub_attribs_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classFEDD_1_1Problem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classFEDD_1_1Problem')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a></td></tr>
 <tr class="memitem:a09067a5efcdb96dc8ee3896bcb3e98af inherit pub_attribs_classFEDD_1_1Problem" id="r_a09067a5efcdb96dc8ee3896bcb3e98af"><td class="memItemLeft" align="right" valign="top">
 int&#160;</td><td class="memItemRight" valign="bottom"><b>dim_</b></td></tr>
@@ -709,14 +755,7 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>d
 <tr class="memitem:a8ab364ed3f0be15fcd70cb39c36f169e inherit pro_attribs_classFEDD_1_1Problem" id="r_a8ab364ed3f0be15fcd70cb39c36f169e"><td class="memItemLeft" align="right" valign="top">BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">sourceTerm_</a></td></tr>
 <tr class="separator:a8ab364ed3f0be15fcd70cb39c36f169e inherit pro_attribs_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt;<br />
-class FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</div><p>Navier-Stokes. </p>
-<p>Declaration of Navier-Stokes</p>
-<dl class="section author"><dt>Author</dt><dd>Christian Hochmuth </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
-<dl class="section copyright"><dt>Copyright</dt><dd>CH </dd></dl>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a0fce4c4a70d3fb5833f3f3100346718c" name="a0fce4c4a70d3fb5833f3f3100346718c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0fce4c4a70d3fb5833f3f3100346718c">&#9670;&#160;</a></span>assemble()</h2>
 
@@ -775,32 +814,12 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution. ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver. </p>
-
 <p>Implements <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem&lt; default_sc, default_lo, default_go, default_no &gt;</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1NavierStokes_ade0b2fbe57e56350f4285fb43dac06b3_cgraph.png" border="0" usemap="#aclassFEDD_1_1NavierStokes_ade0b2fbe57e56350f4285fb43dac06b3_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1NavierStokes_ade0b2fbe57e56350f4285fb43dac06b3_cgraph" id="aclassFEDD_1_1NavierStokes_ade0b2fbe57e56350f4285fb43dac06b3_cgraph">
-<area shape="rect" title="Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and updat..." alt="" coords="5,29,200,70"/>
-<area shape="poly" title=" " alt="" coords="65,29,64,19,70,10,83,5,103,3,124,5,136,11,134,16,122,10,102,8,84,10,73,15,69,20,71,28"/>
-</map>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1NavierStokes_ade0b2fbe57e56350f4285fb43dac06b3_icgraph.png" border="0" usemap="#aclassFEDD_1_1NavierStokes_ade0b2fbe57e56350f4285fb43dac06b3_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1NavierStokes_ade0b2fbe57e56350f4285fb43dac06b3_icgraph" id="aclassFEDD_1_1NavierStokes_ade0b2fbe57e56350f4285fb43dac06b3_icgraph">
-<area shape="rect" title="Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and updat..." alt="" coords="5,29,200,70"/>
-<area shape="poly" title=" " alt="" coords="134,16,122,10,102,8,84,10,73,15,69,20,71,28,65,29,64,19,70,10,83,5,103,3,124,5,136,11"/>
-</map>
-</div>
 
 </div>
 </div>
-<a id="a036861807a3b4edf59408227c8b2300e" name="a036861807a3b4edf59408227c8b2300e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a036861807a3b4edf59408227c8b2300e">&#9670;&#160;</a></span>computeValuesOfInterestAndExport()</h2>
+<a id="af4667767ab19ece743ba3f18741bdf21" name="af4667767ab19ece743ba3f18741bdf21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4667767ab19ece743ba3f18741bdf21">&#9670;&#160;</a></span>computeValuesOfInterestAndExport()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -811,7 +830,7 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void <a class="el" href="classFEDD_1_1NavierStokes.html">FEDD::NavierStokes</a>&lt; SC, LO, GO, NO &gt;::computeValuesOfInterestAndExport </td>
+          <td class="memname">void <a class="el" href="classFEDD_1_1NavierStokes.html">FEDD::NavierStokes</a>&lt; SC, LO, GO, NO &gt;::computeValuesOfInterestAndExport </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -819,7 +838,7 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -828,8 +847,8 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
 
 </div>
 </div>
-<a id="a207ca82dca0be4fdeed2a5d50afcd1ef" name="a207ca82dca0be4fdeed2a5d50afcd1ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a207ca82dca0be4fdeed2a5d50afcd1ef">&#9670;&#160;</a></span>getValuesOfInterest()</h2>
+<a id="a89d5fb90a5c4908d7cd2b59f1cb224e8" name="a89d5fb90a5c4908d7cd2b59f1cb224e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89d5fb90a5c4908d7cd2b59f1cb224e8">&#9670;&#160;</a></span>getValuesOfInterest()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -840,7 +859,7 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void <a class="el" href="classFEDD_1_1NavierStokes.html">FEDD::NavierStokes</a>&lt; SC, LO, GO, NO &gt;::getValuesOfInterest </td>
+          <td class="memname">void <a class="el" href="classFEDD_1_1NavierStokes.html">FEDD::NavierStokes</a>&lt; SC, LO, GO, NO &gt;::getValuesOfInterest </td>
           <td>(</td>
           <td class="paramtype">vec_dbl_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>values</em></span></td><td>)</td>
           <td></td>
@@ -848,7 +867,7 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

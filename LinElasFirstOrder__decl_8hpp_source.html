@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.13.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Finite Element Domain Decomposition Library: feddlib/problems/specific/LinElasFirstOrder_decl.hpp Source File</title>
+<title>Finite Element Domain Decomposition Library: feddlib/problems/specific/deprecated/LinElasFirstOrder_decl.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -145,14 +145,14 @@ $(function(){initNavTree('LinElasFirstOrder__decl_8hpp_source.html',''); initRes
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="comment">// TODO: Baue in Problem_def.hpp sowas wie boolHasTimeDependentSourceTerm ein, mit default auf false.</span></div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="comment">//    void assembleSourceTerm(double time);</span></div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> getValuesOfInterest( vec_dbl_Type&amp; values ){};</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> getValuesOfInterest( vec_dbl_Type&amp; values ){}</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> computeValuesOfInterestAndExport() {};</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> computeValuesOfInterestAndExport() {}</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="comment">// Steifigkeitsmatrix des Problems der linearen Elastizitaet gegeben wie in assemble().</span></div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="comment">// Moeglicherweise nicht noetig (vgl. Laplace.hpp)</span></div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="comment">// Falls es doch irgendwann benutzt wird, denke daran den Konstruktor zu aendern (vgl. Stokes.hpp)</span></div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">// Teuchos::RCP&lt;Matrix_Type&gt;    K_;</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment">//    virtual void assembleExternal( std::string type ){};</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment">//    virtual void assembleExternal( std::string type ){}</span></div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
@@ -160,13 +160,13 @@ $(function(){initNavTree('LinElasFirstOrder__decl_8hpp_source.html',''); initRes
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement.cpp:5</div></div>
+<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_a7abe54e76939ade77b37861375e4c18.html">feddlib</a></li><li class="navelem"><a class="el" href="dir_77dd9975209729874a7e19874eee99bb.html">problems</a></li><li class="navelem"><a class="el" href="dir_d3ea561aebf7274761e7193436e21d53.html">specific</a></li><li class="navelem"><b>LinElasFirstOrder_decl.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_a7abe54e76939ade77b37861375e4c18.html">feddlib</a></li><li class="navelem"><a class="el" href="dir_77dd9975209729874a7e19874eee99bb.html">problems</a></li><li class="navelem"><a class="el" href="dir_d3ea561aebf7274761e7193436e21d53.html">specific</a></li><li class="navelem"><a class="el" href="dir_9133d0e4f1a454cd4b7c7e68643393ac.html">deprecated</a></li><li class="navelem"><b>LinElasFirstOrder_decl.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>

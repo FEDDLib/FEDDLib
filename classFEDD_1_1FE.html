@@ -228,6 +228,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a338b9f48e0f5f0d2680469c58d55a015" id="r_a338b9f48e0f5f0d2680469c58d55a015"><td class="memItemLeft" align="right" valign="top"><a id="a338b9f48e0f5f0d2680469c58d55a015" name="a338b9f48e0f5f0d2680469c58d55a015"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyIdentity</b> (MatrixPtr_Type &amp;A)</td></tr>
 <tr class="separator:a338b9f48e0f5f0d2680469c58d55a015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d941d482ee640b8765706d9b4b929f7" id="r_a5d941d482ee640b8765706d9b4b929f7"><td class="memItemLeft" align="right" valign="top"><a id="a5d941d482ee640b8765706d9b4b929f7" name="a5d941d482ee640b8765706d9b4b929f7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblySurfaceRobinBC</b> (int dim, std::string FETypeP, std::string FETypeV, MultiVectorPtr_Type u, MatrixPtr_Type A, std::vector&lt; SC &gt; &amp;funcParameter, RhsFunc_Type func, ParameterListPtr_Type params)</td></tr>
+<tr class="separator:a5d941d482ee640b8765706d9b4b929f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c94ca46979fab0ec19a061a6f149f29" id="r_a8c94ca46979fab0ec19a061a6f149f29"><td class="memItemLeft" align="right" valign="top"><a id="a8c94ca46979fab0ec19a061a6f149f29" name="a8c94ca46979fab0ec19a061a6f149f29"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblySurfaceIntegral</b> (int dim, std::string FEType, MultiVectorPtr_Type a, std::string fieldType, RhsFunc_Type func, std::vector&lt; SC &gt; &amp;funcParameter)</td></tr>
 <tr class="separator:a8c94ca46979fab0ec19a061a6f149f29"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -240,9 +243,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblySurfaceIntegr
 <tr class="memitem:aee812b6bcbf3166b513493edd0849f4c" id="r_aee812b6bcbf3166b513493edd0849f4c"><td class="memItemLeft" align="right" valign="top"><a id="aee812b6bcbf3166b513493edd0849f4c" name="aee812b6bcbf3166b513493edd0849f4c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblySurfaceIntegralFlag</b> (int dim, std::string FEType, MultiVectorPtr_Type a, std::string fieldType, BC_func_Type func, std::vector&lt; SC &gt; &amp;funcParameter)</td></tr>
 <tr class="separator:aee812b6bcbf3166b513493edd0849f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa722516031f4a32c08f5834d623e2b74" id="r_aa722516031f4a32c08f5834d623e2b74"><td class="memItemLeft" align="right" valign="top"><a id="aa722516031f4a32c08f5834d623e2b74" name="aa722516031f4a32c08f5834d623e2b74"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyAceGenTPM</b> (MatrixPtr_Type &amp;A00, MatrixPtr_Type &amp;A01, MatrixPtr_Type &amp;A10, MatrixPtr_Type &amp;A11, MultiVectorPtr_Type &amp;F0, MultiVectorPtr_Type &amp;F1, MapPtr_Type &amp;mapRepeated1, MapPtr_Type &amp;mapRepeated2, ParameterListPtr_Type parameterList, MultiVectorPtr_Type u_repeatedNewton=Teuchos::null, MultiVectorPtr_Type p_repeatedNewton=Teuchos::null, MultiVectorPtr_Type u_repeatedTime=Teuchos::null, MultiVectorPtr_Type p_repeatedTime=Teuchos::null, bool update=true, bool updateHistory=true)</td></tr>
-<tr class="separator:aa722516031f4a32c08f5834d623e2b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac75a7fcf88130e98a77930e9152be709" id="r_ac75a7fcf88130e98a77930e9152be709"><td class="memItemLeft" align="right" valign="top"><a id="ac75a7fcf88130e98a77930e9152be709" name="ac75a7fcf88130e98a77930e9152be709"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addFE</b> (DomainConstPtr_Type domain)</td></tr>
 <tr class="separator:ac75a7fcf88130e98a77930e9152be709"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -302,6 +302,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyAdvectionVecF
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyAdvectionInUVecField</b> (int dim, std::string FEType, MatrixPtr_Type &amp;A, MultiVectorPtr_Type u, bool callFillComplete)</td></tr>
 <tr class="memdesc:a8f695e32739a3fca232110d33c24013b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembly of operator \int ((v_h \cdot \nabla ) u_h)v_h dx. <br /></td></tr>
 <tr class="separator:a8f695e32739a3fca232110d33c24013b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bcff7bb197ed373c7c6aaa8796e4ac7" id="r_a1bcff7bb197ed373c7c6aaa8796e4ac7"><td class="memItemLeft" align="right" valign="top"><a id="a1bcff7bb197ed373c7c6aaa8796e4ac7" name="a1bcff7bb197ed373c7c6aaa8796e4ac7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyAdvectionVecFieldScalar</b> (int dim, std::string FEType, std::string FETypeV, MatrixPtr_Type &amp;A, MultiVectorPtr_Type u, bool callFillComplete)</td></tr>
+<tr class="memdesc:a1bcff7bb197ed373c7c6aaa8796e4ac7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembly of operator \int ((u_h \cdot \nabla ) p_h)p_h dx. <br /></td></tr>
+<tr class="separator:a1bcff7bb197ed373c7c6aaa8796e4ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2450ea597a2a54d067adef6b27f56b34" id="r_a2450ea597a2a54d067adef6b27f56b34"><td class="memItemLeft" align="right" valign="top"><a id="a2450ea597a2a54d067adef6b27f56b34" name="a2450ea597a2a54d067adef6b27f56b34"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyDivAndDivT</b> (int dim, std::string FEType1, std::string FEType2, int degree, MatrixPtr_Type &amp;Bmat, MatrixPtr_Type &amp;BTmat, MapConstPtr_Type map1, MapConstPtr_Type map2, bool callFillComplete=true)</td></tr>
 <tr class="memdesc:a2450ea597a2a54d067adef6b27f56b34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembly of \int q_h (nabla \cdot v_h) dx. <br /></td></tr>
@@ -311,6 +315,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyDivAndDivTFas
 <tr class="memdesc:a661127e7bb58b7dfe810d8a1b8bff0fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembly of \int q_h (nabla \cdot v_h) dx. <br /></td></tr>
 <tr class="separator:a661127e7bb58b7dfe810d8a1b8bff0fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a8574796edf03d62d51696114482a9f" id="r_a4a8574796edf03d62d51696114482a9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a8574796edf03d62d51696114482a9f">assemblyBDStabilization</a> (int dim, std::string FEType, MatrixPtr_Type &amp;A, bool callFillComplete=true)</td></tr>
+<tr class="memdesc:a4a8574796edf03d62d51696114482a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bochev- Dohrmann Stabilization.  <br /></td></tr>
 <tr class="separator:a4a8574796edf03d62d51696114482a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ea805b0f5879a5eac203ba6805868f7" id="r_a7ea805b0f5879a5eac203ba6805868f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ea805b0f5879a5eac203ba6805868f7">assemblyLaplaceXDim</a> (int dim, std::string FEType, MatrixPtr_Type &amp;A, CoeffFuncDbl_Type func, double *parameters, bool callFillComplete=true)</td></tr>
 <tr class="separator:a7ea805b0f5879a5eac203ba6805868f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -357,7 +362,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>fillMatrixArray</b> (
 void&#160;</td><td class="memItemRight" valign="bottom"><b>epsilonTensor</b> (vec_dbl_Type &amp;basisValues, <a class="el" href="classFEDD_1_1SmallMatrix.html">SmallMatrix</a>&lt; SC &gt; &amp;epsilonValues, int activeDof)</td></tr>
 <tr class="separator:ad57b6ca396c5f11746d7701bd31cca42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba0868a3c3c54f3740a7d2c7931ad624" id="r_aba0868a3c3c54f3740a7d2c7931ad624"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba0868a3c3c54f3740a7d2c7931ad624">assemblyNavierStokes</a> (int dim, std::string FETypeVelocity, std::string FETypePressure, int degree, int dofsVelocity, int dofsPressure, MultiVectorPtr_Type u_rep, MultiVectorPtr_Type p_rep, BlockMatrixPtr_Type &amp;A, BlockMultiVectorPtr_Type &amp;resVec, <a class="el" href="classFEDD_1_1SmallMatrix.html">SmallMatrix_Type</a> coeff, ParameterListPtr_Type params, bool reAssemble, std::string assembleMode, bool callFillComplete=true, int FELocExternal=-1)</td></tr>
-<tr class="memdesc:aba0868a3c3c54f3740a7d2c7931ad624"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembly of Jacobian for <a class="el" href="classFEDD_1_1NavierStokes.html" title="Navier-Stokes.">NavierStokes</a>.  <br /></td></tr>
+<tr class="memdesc:aba0868a3c3c54f3740a7d2c7931ad624"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembly of Jacobian for <a class="el" href="classFEDD_1_1NavierStokes.html">NavierStokes</a>.  <br /></td></tr>
 <tr class="separator:aba0868a3c3c54f3740a7d2c7931ad624"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbf3c4b21d001524003c1bd94eef7a9b" id="r_adbf3c4b21d001524003c1bd94eef7a9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adbf3c4b21d001524003c1bd94eef7a9b">assemblyLaplaceAssFE</a> (int dim, std::string FEType, int degree, int dofs, BlockMatrixPtr_Type &amp;A, bool callFillComplete, int FELocExternal=-1)</td></tr>
 <tr class="memdesc:adbf3c4b21d001524003c1bd94eef7a9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembly of constant stiffness matix for laplacian operator <picture><source srcset="form_6_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$ \Delta $" src="form_6.png"/></picture>.  <br /></td></tr>
@@ -722,13 +727,15 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Bochev- Dohrmann Stabilization. </p>
 <p>Bochev-Dohrmann stabilization for P1-P1 finite elements. Must be scaled with 1/nu for general Navier-Stokes problem. </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1FE_a4a8574796edf03d62d51696114482a9f_cgraph.png" border="0" usemap="#aclassFEDD_1_1FE_a4a8574796edf03d62d51696114482a9f_cgraph" alt=""/></div>
 <map name="aclassFEDD_1_1FE_a4a8574796edf03d62d51696114482a9f_cgraph" id="aclassFEDD_1_1FE_a4a8574796edf03d62d51696114482a9f_cgraph">
-<area shape="rect" title=" " alt="" coords="5,55,232,80"/>
+<area shape="rect" title="Bochev&#45; Dohrmann Stabilization." alt="" coords="5,55,232,80"/>
 <area shape="poly" title=" " alt="" coords="74,56,65,46,71,36,89,30,119,28,153,31,169,38,167,43,151,36,118,33,90,35,74,40,71,45,78,52"/>
 <area shape="rect" href="classFEDD_1_1Helper.html#aa39723a79c28706566d5b54a4cde6b4e" title="Build transformation of element to reference element depending on FEType." alt="" coords="280,5,499,31"/>
 <area shape="poly" title=" " alt="" coords="193,51,299,32,300,37,194,57"/>
@@ -747,7 +754,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1FE_a4a8574796edf03d62d51696114482a9f_icgraph.png" border="0" usemap="#aclassFEDD_1_1FE_a4a8574796edf03d62d51696114482a9f_icgraph" alt=""/></div>
 <map name="aclassFEDD_1_1FE_a4a8574796edf03d62d51696114482a9f_icgraph" id="aclassFEDD_1_1FE_a4a8574796edf03d62d51696114482a9f_icgraph">
-<area shape="rect" title=" " alt="" coords="5,29,232,55"/>
+<area shape="rect" title="Bochev&#45; Dohrmann Stabilization." alt="" coords="5,29,232,55"/>
 <area shape="poly" title=" " alt="" coords="158,17,145,10,118,8,95,10,82,15,79,20,85,27,81,31,74,21,78,11,93,5,119,3,146,5,160,12"/>
 </map>
 </div>
@@ -1281,7 +1288,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Assembly of Jacobian for <a class="el" href="classFEDD_1_1NavierStokes.html" title="Navier-Stokes.">NavierStokes</a>. </p>
+<p>Assembly of Jacobian for <a class="el" href="classFEDD_1_1NavierStokes.html">NavierStokes</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">dim</td><td>Dimension </td></tr>

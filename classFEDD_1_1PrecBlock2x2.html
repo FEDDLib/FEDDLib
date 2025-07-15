@@ -136,18 +136,47 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>PrecBlock2x2</b> (CommConstPtr_Type comm)</td></tr>
 <tr class="separator:a2158bb419ece77592d0ea77736b024fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a705e2a1ccea84b09b67bbd2408abb4dd" id="r_a705e2a1ccea84b09b67bbd2408abb4dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a705e2a1ccea84b09b67bbd2408abb4dd">setDiagonal</a> (ThyraLinOpPtr_Type velocityInv, ThyraLinOpPtr_Type pressureInv)</td></tr>
+<tr class="memdesc:a705e2a1ccea84b09b67bbd2408abb4dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diagonal preconditioner with \hat{S}= -1/nu M_p schur complement approximation.  <br /></td></tr>
 <tr class="separator:a705e2a1ccea84b09b67bbd2408abb4dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad8f79a27cdedbd51fd37ff0201e29e0" id="r_aad8f79a27cdedbd51fd37ff0201e29e0"><td class="memItemLeft" align="right" valign="top"><a id="aad8f79a27cdedbd51fd37ff0201e29e0" name="aad8f79a27cdedbd51fd37ff0201e29e0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setTriangular</b> (ThyraLinOpPtr_Type velocityInv, ThyraLinOpPtr_Type pressureInv, ThyraLinOpPtr_Type BT)</td></tr>
+<tr class="memdesc:aad8f79a27cdedbd51fd37ff0201e29e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Triangular preconditioner with \hat{S}= -1/nu M_p schur complement approximation. <br /></td></tr>
 <tr class="separator:aad8f79a27cdedbd51fd37ff0201e29e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa95411db9ec015e2f139153f844bfb01" id="r_aa95411db9ec015e2f139153f844bfb01"><td class="memItemLeft" align="right" valign="top"><a id="aa95411db9ec015e2f139153f844bfb01" name="aa95411db9ec015e2f139153f844bfb01"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setTriangular</b> (ThyraLinOpPtr_Type velocityInv, ThyraLinOpPtr_Type laplaceInverse, ThyraLinOpPtr_Type convectionDiffusionOperator, ThyraLinOpPtr_Type massMatrixInverse, ThyraLinOpPtr_Type massMatrixVInverse, ThyraLinOpPtr_Type BT)</td></tr>
+<tr class="memdesc:aa95411db9ec015e2f139153f844bfb01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pressure-Convection-Diffusion (PCD) block triangular preconditioner. <br /></td></tr>
+<tr class="separator:aa95411db9ec015e2f139153f844bfb01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a307830418304c132ee3ec570b6d62e7b" id="r_a307830418304c132ee3ec570b6d62e7b"><td class="memItemLeft" align="right" valign="top"><a id="a307830418304c132ee3ec570b6d62e7b" name="a307830418304c132ee3ec570b6d62e7b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setTriangular</b> (ThyraLinOpPtr_Type velocityInv, ThyraLinOpPtr_Type laplaceInverse, ThyraLinOpPtr_Type massMatrixVInverse, ThyraLinOpPtr_Type BT)</td></tr>
+<tr class="memdesc:a307830418304c132ee3ec570b6d62e7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Least-Squares-Commutator (LSC) block triangular preconditioner. <br /></td></tr>
+<tr class="separator:a307830418304c132ee3ec570b6d62e7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a811230597ae15a019bf76ce01c0c9279" id="r_a811230597ae15a019bf76ce01c0c9279"><td class="memItemLeft" align="right" valign="top"><a id="a811230597ae15a019bf76ce01c0c9279" name="a811230597ae15a019bf76ce01c0c9279"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setVeloctiyInv</b> (ThyraLinOpPtr_Type veloctiyInv)</td></tr>
+<tr class="memdesc:a811230597ae15a019bf76ce01c0c9279"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting velocity inverse approximation. <br /></td></tr>
 <tr class="separator:a811230597ae15a019bf76ce01c0c9279"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f01ad1a54ad083158ed766ceaaa452a" id="r_a7f01ad1a54ad083158ed766ceaaa452a"><td class="memItemLeft" align="right" valign="top"><a id="a7f01ad1a54ad083158ed766ceaaa452a" name="a7f01ad1a54ad083158ed766ceaaa452a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setPressureInv</b> (ThyraLinOpPtr_Type pressureInv)</td></tr>
+<tr class="memdesc:a7f01ad1a54ad083158ed766ceaaa452a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting inverse approximation of Schur complement. <br /></td></tr>
 <tr class="separator:a7f01ad1a54ad083158ed766ceaaa452a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb72e6126474348bfe1ab087fff6afb0" id="r_afb72e6126474348bfe1ab087fff6afb0"><td class="memItemLeft" align="right" valign="top"><a id="afb72e6126474348bfe1ab087fff6afb0" name="afb72e6126474348bfe1ab087fff6afb0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setPressureInvs</b> (ThyraLinOpPtr_Type laplaceInverse, ThyraLinOpPtr_Type convectionDiffusionOperator, ThyraLinOpPtr_Type massMatrixInverse, ThyraLinOpPtr_Type massMatrixVInverse)</td></tr>
+<tr class="memdesc:afb72e6126474348bfe1ab087fff6afb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting inverse approximation of Schur complement by multiple operators. Corresponds to PCD. <br /></td></tr>
+<tr class="separator:afb72e6126474348bfe1ab087fff6afb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe034446afcdc7d7dfe1c0063ab75021" id="r_abe034446afcdc7d7dfe1c0063ab75021"><td class="memItemLeft" align="right" valign="top"><a id="abe034446afcdc7d7dfe1c0063ab75021" name="abe034446afcdc7d7dfe1c0063ab75021"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setPressureInvs</b> (ThyraLinOpPtr_Type laplaceInverse, ThyraLinOpPtr_Type massMatrixVInverse)</td></tr>
+<tr class="memdesc:abe034446afcdc7d7dfe1c0063ab75021"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting inverse approximation of Schur complement by multiple operators. Corresponds to LSC. <br /></td></tr>
+<tr class="separator:abe034446afcdc7d7dfe1c0063ab75021"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecd86fbf4ccaa1749dbdb24663f13c65" id="r_aecd86fbf4ccaa1749dbdb24663f13c65"><td class="memItemLeft" align="right" valign="top"><a id="aecd86fbf4ccaa1749dbdb24663f13c65" name="aecd86fbf4ccaa1749dbdb24663f13c65"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setB</b> (ThyraLinOpPtr_Type B)</td></tr>
+<tr class="memdesc:aecd86fbf4ccaa1749dbdb24663f13c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting fluid system matrix B. <br /></td></tr>
+<tr class="separator:aecd86fbf4ccaa1749dbdb24663f13c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1c599a7b49b13499f7c3ed4ab56af3a" id="r_ae1c599a7b49b13499f7c3ed4ab56af3a"><td class="memItemLeft" align="right" valign="top"><a id="ae1c599a7b49b13499f7c3ed4ab56af3a" name="ae1c599a7b49b13499f7c3ed4ab56af3a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setF</b> (ThyraLinOpPtr_Type F)</td></tr>
+<tr class="memdesc:ae1c599a7b49b13499f7c3ed4ab56af3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting fluid system matrix F. <br /></td></tr>
+<tr class="separator:ae1c599a7b49b13499f7c3ed4ab56af3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6cc765f218d013c26d182191902d856b" id="r_a6cc765f218d013c26d182191902d856b"><td class="memItemLeft" align="right" valign="top"><a id="a6cc765f218d013c26d182191902d856b" name="a6cc765f218d013c26d182191902d856b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setType</b> (std::string type)</td></tr>
+<tr class="memdesc:a6cc765f218d013c26d182191902d856b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting the preconditioning ype. <br /></td></tr>
 <tr class="separator:a6cc765f218d013c26d182191902d856b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ac0196a429bdd33ad29a98dc839545c" id="r_a2ac0196a429bdd33ad29a98dc839545c"><td class="memItemLeft" align="right" valign="top"><a id="a2ac0196a429bdd33ad29a98dc839545c" name="a2ac0196a429bdd33ad29a98dc839545c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> ()</td></tr>
@@ -226,6 +255,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>describe</b> (Teuchos
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a05782c26718c60189a50004899f83b48" id="r_a05782c26718c60189a50004899f83b48"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a05782c26718c60189a50004899f83b48">applyImpl</a> (const Thyra::EOpTransp M_trans, const Thyra::MultiVectorBase&lt; SC &gt; &amp;X, const Teuchos::Ptr&lt; Thyra::MultiVectorBase&lt; SC &gt; &gt; &amp;Y, const SC alpha, const SC beta) const</td></tr>
+<tr class="memdesc:a05782c26718c60189a50004899f83b48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply of preconditioner in e.g. GMRES.  <br /></td></tr>
 <tr class="separator:a05782c26718c60189a50004899f83b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafa6386b67249afd038eeb1881c6d68c" id="r_aafa6386b67249afd038eeb1881c6d68c"><td class="memItemLeft" align="right" valign="top"><a id="aafa6386b67249afd038eeb1881c6d68c" name="aafa6386b67249afd038eeb1881c6d68c"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>opSupportedImpl</b> (Thyra::EOpTransp M_trans) const</td></tr>
@@ -286,7 +316,8 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
 </table>
 </div><div class="memdoc">
 
-<p></p>
+<p>Apply of preconditioner in e.g. GMRES. </p>
+<p>Function called within e.g. GMRES to apply the input vector X_in (corresponding to the RHS = (f_u,f_p)) to the preconditioner Output is the contents of vector Y_inout </p>
 
 <p>Implements <a class="el" href="classFEDD_1_1PreconditionerOperator.html#aab990011035f5a76e127a4d1ae0f5dbe">FEDD::PreconditionerOperator&lt; default_sc, default_lo, default_go, default_no &gt;</a>.</p>
 <div class="dynheader">
@@ -294,7 +325,7 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1PrecBlock2x2_a05782c26718c60189a50004899f83b48_cgraph.png" border="0" usemap="#aclassFEDD_1_1PrecBlock2x2_a05782c26718c60189a50004899f83b48_cgraph" alt=""/></div>
 <map name="aclassFEDD_1_1PrecBlock2x2_a05782c26718c60189a50004899f83b48_cgraph" id="aclassFEDD_1_1PrecBlock2x2_a05782c26718c60189a50004899f83b48_cgraph">
-<area shape="rect" title=" " alt="" coords="5,29,147,70"/>
+<area shape="rect" title="Apply of preconditioner in e.g. GMRES." alt="" coords="5,29,147,70"/>
 <area shape="poly" title=" " alt="" coords="48,29,47,20,51,11,61,5,76,3,92,5,101,12,98,16,90,10,76,8,63,10,55,14,52,20,54,28"/>
 </map>
 </div>
@@ -303,7 +334,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1PrecBlock2x2_a05782c26718c60189a50004899f83b48_icgraph.png" border="0" usemap="#aclassFEDD_1_1PrecBlock2x2_a05782c26718c60189a50004899f83b48_icgraph" alt=""/></div>
 <map name="aclassFEDD_1_1PrecBlock2x2_a05782c26718c60189a50004899f83b48_icgraph" id="aclassFEDD_1_1PrecBlock2x2_a05782c26718c60189a50004899f83b48_icgraph">
-<area shape="rect" title=" " alt="" coords="5,29,147,70"/>
+<area shape="rect" title="Apply of preconditioner in e.g. GMRES." alt="" coords="5,29,147,70"/>
 <area shape="poly" title=" " alt="" coords="98,16,90,10,76,8,63,10,55,14,52,20,54,28,48,29,47,20,51,11,61,5,76,3,92,5,101,12"/>
 </map>
 </div>
@@ -330,14 +361,25 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Diagonal preconditioner with \hat{S}= -1/nu M_p schur complement approximation. </p>
 <p>In the following, we assume that we build a precondtioner for a Stokes-type fluid problem with velocity and pressure variables </p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1PrecBlock2x2_a705e2a1ccea84b09b67bbd2408abb4dd_cgraph.png" border="0" usemap="#aclassFEDD_1_1PrecBlock2x2_a705e2a1ccea84b09b67bbd2408abb4dd_cgraph" alt=""/></div>
 <map name="aclassFEDD_1_1PrecBlock2x2_a705e2a1ccea84b09b67bbd2408abb4dd_cgraph" id="aclassFEDD_1_1PrecBlock2x2_a705e2a1ccea84b09b67bbd2408abb4dd_cgraph">
-<area shape="rect" title=" " alt="" coords="5,29,147,70"/>
-<area shape="poly" title=" " alt="" coords="48,29,47,20,51,11,61,5,76,3,92,5,101,12,98,16,90,10,76,8,63,10,55,14,52,20,54,28"/>
+<area shape="rect" title="Diagonal preconditioner with \hat{S}= &#45;1/nu M_p schur complement approximation." alt="" coords="5,119,147,159"/>
+<area shape="poly" title=" " alt="" coords="40,119,38,109,44,100,57,94,76,92,97,94,109,101,107,105,95,100,76,97,58,99,47,104,43,110,45,117"/>
+<area shape="rect" href="classFEDD_1_1PrecBlock2x2.html#a7f01ad1a54ad083158ed766ceaaa452a" title="Setting inverse approximation of Schur complement." alt="" coords="195,29,336,70"/>
+<area shape="poly" title=" " alt="" coords="120,116,206,75,208,79,122,120"/>
+<area shape="rect" href="classFEDD_1_1PrecBlock2x2.html#a6cc765f218d013c26d182191902d856b" title="Setting the preconditioning ype." alt="" coords="195,119,336,159"/>
+<area shape="poly" title=" " alt="" coords="147,136,179,136,179,142,147,142"/>
+<area shape="rect" href="classFEDD_1_1PrecBlock2x2.html#a811230597ae15a019bf76ce01c0c9279" title="Setting velocity inverse approximation." alt="" coords="195,208,336,249"/>
+<area shape="poly" title=" " alt="" coords="122,158,208,199,206,203,120,162"/>
+<area shape="poly" title=" " alt="" coords="229,29,227,19,233,10,246,5,265,3,286,5,298,11,296,16,284,10,265,8,247,10,237,15,233,20,234,28"/>
+<area shape="poly" title=" " alt="" coords="229,119,227,109,233,100,246,94,265,92,286,94,298,101,296,105,284,100,265,97,247,99,237,104,233,110,234,117"/>
+<area shape="poly" title=" " alt="" coords="229,208,227,198,233,189,246,183,265,181,286,184,298,190,296,195,284,189,265,187,247,189,237,193,233,199,234,207"/>
 </map>
 </div>
 <div class="dynheader">
@@ -345,7 +387,7 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1PrecBlock2x2_a705e2a1ccea84b09b67bbd2408abb4dd_icgraph.png" border="0" usemap="#aclassFEDD_1_1PrecBlock2x2_a705e2a1ccea84b09b67bbd2408abb4dd_icgraph" alt=""/></div>
 <map name="aclassFEDD_1_1PrecBlock2x2_a705e2a1ccea84b09b67bbd2408abb4dd_icgraph" id="aclassFEDD_1_1PrecBlock2x2_a705e2a1ccea84b09b67bbd2408abb4dd_icgraph">
-<area shape="rect" title=" " alt="" coords="5,29,147,70"/>
+<area shape="rect" title="Diagonal preconditioner with \hat{S}= &#45;1/nu M_p schur complement approximation." alt="" coords="5,29,147,70"/>
 <area shape="poly" title=" " alt="" coords="98,16,90,10,76,8,63,10,55,14,52,20,54,28,48,29,47,20,51,11,61,5,76,3,92,5,101,12"/>
 </map>
 </div>
