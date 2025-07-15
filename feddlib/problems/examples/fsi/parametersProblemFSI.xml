@@ -26,6 +26,7 @@
         <Parameter name="Criterion" type="string" value="Update"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
     </ParameterList>
     <ParameterList name="Parameter Solid">        
+
         <Parameter name="Density" type="double"   value="1.0e-0"/><!-- g/cm³ -->
         <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
         <Parameter name="Mu" type="double" value="147694.13"/><!-- 1g⋅cm/s² * 1/cm²-->
@@ -60,12 +61,13 @@
     </ParameterList>
     <ParameterList name="Parameter Geometry">
         <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
-        <Parameter name="Mu" type="double" value="126.700e-2"/>
+        <Parameter name="Mu" type="double" value="126.700e4"/>
         <Parameter name="Model Geometry" type="string" value="Elasticity"/>
         <Parameter name="Model" type="string" value="Elasticity"/>
         <Parameter name="Distance Laplace" type="double" value="0.1"/>
         <Parameter name="Coefficient Laplace" type="double" value="1000."/>
     </ParameterList>
+
 
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>

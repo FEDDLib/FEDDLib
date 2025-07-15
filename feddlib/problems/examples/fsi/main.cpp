@@ -237,8 +237,6 @@ int main(int argc, char *argv[])
         ParameterListPtr_Type parameterListPrecGI = Teuchos::getParametersFromXmlFile(xmlPrecFileGI);
         ParameterListPtr_Type parameterListSolverFSI = Teuchos::getParametersFromXmlFile(xmlSolverFileFSI);
         ParameterListPtr_Type parameterListSolverGeometry = Teuchos::getParametersFromXmlFile(xmlSolverFileGeometry);
-//        ParameterListPtr_Type parameterListProblemFluid = Teuchos::getParametersFromXmlFile(xmlProblemFileFluid);
-//        ParameterListPtr_Type parameterListProblemStructure = Teuchos::getParametersFromXmlFile("parametersProblemStructure.xml");
         ParameterListPtr_Type parameterListPrecGeometry = Teuchos::getParametersFromXmlFile(xmlPrecFileGeometry);
 
         ParameterListPtr_Type parameterListPrecFluidMono = Teuchos::getParametersFromXmlFile(xmlPrecFileFluidMono);
@@ -274,12 +272,14 @@ int main(int argc, char *argv[])
         // CH: We might want to add a paramterlist, which defines the Geometry problem
         ParameterListPtr_Type parameterListGeometry(new Teuchos::ParameterList(*parameterListPrecGeometry));
         parameterListGeometry->setParameters(*parameterListSolverGeometry);
+        sublist(parameterListGeometry, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Geometry") );
+
         // we only compute the preconditioner for the geometry problem once
         sublist( parameterListGeometry, "General" )->set( "Preconditioner Method", "MonolithicConstPrec" );
-        sublist( parameterListGeometry, "Parameter" )->set( "Model", parameterListProblem->sublist("Parameter").get("Model Geometry","Laplace") );
+        // sublist( parameterListGeometry, "Parameter" )->set( "Model", parameterListProblem->sublist("Parameter").get("Model Geometry","Laplace") );
         
-        sublist( parameterListGeometry, "Parameter" )->set( "Poisson Ratio", 0.4 );
-        sublist( parameterListGeometry, "Parameter" )->set( "Mu", 2.0e+6 );
+        // sublist( parameterListGeometry, "Parameter" )->set( "Poisson Ratio", 0.4 );
+        // sublist( parameterListGeometry, "Parameter" )->set( "Mu", 2.0e+6 );
             
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);        
         string      discType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");
