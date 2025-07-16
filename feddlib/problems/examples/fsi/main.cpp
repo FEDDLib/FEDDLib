@@ -144,7 +144,7 @@ void parabolicInflow3D(double* x, double* res, double t, const double* parameter
     {
         res[0] = 0.;
         res[1] = 0.;
-        res[2] = parameters[0] * (1. - r/parameters[1]) * ( 1. - cos( M_PI*t/parameters[2] ));
+        res[2] = parameters[0] * (1. - r/parameters[1]) * 0.5*( 1. - cos( M_PI*t/parameters[2] ));
     }
     else
     {
