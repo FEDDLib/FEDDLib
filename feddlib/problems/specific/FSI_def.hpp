@@ -1323,6 +1323,11 @@ void FSI<SC,LO,GO,NO>::computePressureRHSInTime() const{
 
     
     }    
+
+    int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 4); 
+    double averageVelocity =0.;  
+    this->feFactory_->assemblyAverageVelocity(this->dim_, averageVelocity, this->getDomain(0)->getFEType() , this->dim_, flagInlet , u_rep_);  
+
   
 }
 

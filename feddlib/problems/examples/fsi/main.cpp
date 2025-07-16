@@ -134,25 +134,58 @@ void parabolicInflow3D(double* x, double* res, double t, const double* parameter
 {
     // parameters[0] is the maxium desired velocity
     // parameters[1] the radius
-    // parameters[2] the ramp
 
     // The center point of the inlet is (0,0,0)   
 
     // Distance from center
     double r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
-    if(t < parameters[2])
+
+    res[0] = 0.;
+    res[1] = 0.;
+    res[2] = parameters[0] * (1.- r/parameters[1]) ;
+    
+
+    return;
+}
+
+void parabolicInflow(double* x, double* res, double t, const double* parameters)
+{
+    // parameters[0] is the maxium desired velocity
+    // parameters[1] the radius
+
+    // The center point of the inlet is (0,0,0)   
+
+    // Distance from center
+    double r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
+
+    res[0] = parameters[0] * (1.- r/parameters[1]) ;
+    
+
+    return;
+}
+
+void flowrate3D(double* x, double* res, double t, const double* parameters)
+{
+    // parameters[0] is the maxium desired velocity
+    // parameters[1] rampTime
+    // parameters[2] radius of intlet
+    // parameters[3] flowrate
+
+    // The center point of the inlet is (0,0,0)   
+
+    // Distance from center
+    double Q = 0.;
+    if(t < parameters[1])
     {
-        res[0] = 0.;
-        res[1] = 0.;
-        res[2] = parameters[0] * (1. - r/parameters[1]) * 0.5*( 1. - cos( M_PI*t/parameters[2] ));
+       
+        Q = parameters[3] * 0.5*( 1. - cos( M_PI*t/parameters[1] ));
     }
     else
     {
-        res[0] = 0.;
-        res[1] = 0.;
-        res[2] = parameters[0] * (1.- r/parameters[1]) ;
+        Q = parameters[3];
     }
 
+    res[0] = Q;
     return;
 }
 
@@ -527,6 +560,8 @@ int main(int argc, char *argv[])
             {
                 parameter_vec.push_back(0.09); // Height of inflow region is 0.18 cm! We use Radius here
                 parameter_vec.push_back(parameterListProblem->sublist("Parameter").get("Max Ramp Time",1.0));
+                parameter_vec.push_back(parameterListProblem->sublist("Parameter").get("Flowrate",1.0));
+
             }
             else
             {
@@ -569,9 +604,20 @@ int main(int argc, char *argv[])
                 else if(dim==3)
                 {
                     if(bcType == "Tube3D"){
-                        
-                        bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow 
-                        bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec); // inflow 
+                        // We build a vector containing the parabolic flow profile on the inlet 
+                        Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryDummy( new BCBuilder<SC,LO,GO,NO>( ) );
+                        bcFactoryDummy->addBC(parabolicInflow, 4, 0, domainFluidVelocity, "Dirichlet", 1, parameter_vec); // inflow 
+                        MultiVectorPtr_Type fluidDummy = rcp(new MultiVector_Type( domainFluidVelocity->getMapUnique() ) );
+                        fluidDummy->putScalar(0.);
+                        BlockMultiVectorPtr_Type blockFluidDummy = rcp(new BlockMultiVector_Type( 1 ) );
+                        blockFluidDummy->addBlock(fluidDummy,0);
+                        bcFactoryDummy->setRHS(blockFluidDummy,0.);
+                        // The vector is used to determine the maximum velocity for the desired flow profile
+                        MultiVectorConstPtr_Type fluidDummyConst = blockFluidDummy->getBlock(0);
+                        fluidDummyConst->print(); 
+
+                        bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,fluidDummyConst,true, flowrate3D); // inflow 
+                        bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,fluidDummyConst,true, flowrate3D); // inflow 
                         bcFactory->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
                         bcFactoryFluid->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
                         bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 

@@ -207,6 +207,14 @@ class FE {
                             MultiVectorPtr_Type solution_rep,
                             int FEloc=0) ;
 
+    void assemblyAverageVelocity(int dim, 
+                                double &averageVelocity, 
+                                std::string FEType, 
+                                int dofs, int flag, 
+                                MultiVectorPtr_Type solution_rep, 
+                                int FEloc=0);
+
+
     // void assemblyAceGenTPM( MatrixPtr_Type &A00,
     //                         MatrixPtr_Type &A01,
     //                         MatrixPtr_Type &A10,

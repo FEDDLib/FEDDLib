@@ -5826,7 +5826,6 @@ int FE<SC,LO,GO,NO>::assemblyFlowRate(int dim,
                                     value[i] += weights->at(w) *v_E[j]/norm_v_E *solution_u[i]*(*phi)[w][i]; // valueFunc[0]* = 1.0
                                 }
                                 else{
-                                     
                                     LO index = dim * i + j;
                                     value[i] += weights->at(w) *v_E[j]/norm_v_E *solution_u[index]*(*phi)[w][i]; // valueFunc[0]* = 1.0
                                 }
@@ -5853,6 +5852,105 @@ int FE<SC,LO,GO,NO>::assemblyFlowRate(int dim,
 
     return isNeg;
 
+}
+
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyAverageVelocity(int dim,
+                                        double &averageVelocity,
+                                        std::string FEType, 
+                                        int dofs,
+                                        int flag,
+                                        MultiVectorPtr_Type solution_rep,
+                                        int FEloc){
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+   
+    Helper::getPhi(phi, weights, dim-1, FEType, 2);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, 2, quadPoints, w, FEType);
+    w.reset();
+
+    double area =0.;
+    this->assemblyArea(dim, area, flag);
+   
+    SC elScaling;
+    vec_dbl_Type b(dim);
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+  
+    double velocity=0.;
+ 
+    vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
+
+    Teuchos::ArrayRCP< const SC > uArray = solution_rep->getData(0);
+    // Step 0: determie flowrate on inlet to calculate resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for(int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                if(feSub.getFlag() == flag){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, solution_rep,dofs);
+                    
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+                    
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                    // Step 1: Quadrature Points on physical surface:    
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    Teuchos::Array<SC> value(0);
+                    value.resize(  numNodes_T, 0. ); // Volumetric flow rate over one surface is a skalar value
+                    // //cout << " Velocity over node ";
+                    // for (int w=0; w<phi->size(); w++){ //quads points
+                    //     for (int d=0; d<dim; d++) {
+                    //         uLoc[d][w] = 0.;
+                    //         for (int i=0; i < phi->at(0).size(); i++) {
+                    //             LO index = dim * nodeList[i] + d;
+                    //             uLoc[d][w] += uArray[index] * phi->at(w).at(i);
+                    //         }
+                    //     }
+                    // }
+
+                    for (UN i=0; i < numNodes_T; i++) {
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {
+                            for (int j=0; j<dim; j++){
+                                if(dofs==1){
+                                    value[i] += weights->at(w)*solution_u[i]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+                                else{
+                                    LO index = dim * i + j;
+                                    value[i] += weights->at(w)*solution_u[index]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+
+                            }
+                        }             
+                        velocity +=  value[i] * elScaling;
+                    }
+                }
+            }
+        }
+    }
+    reduceAll<int, double> (*domainVec_.at(0)->getComm(), REDUCE_SUM, velocity, outArg (velocity));
+    velocity = velocity/area;
+    std::cout << " Average Flowvelocity "<< velocity << " ####### " <<std::endl; 
+
+    averageVelocity = velocity;
 }
 
 
