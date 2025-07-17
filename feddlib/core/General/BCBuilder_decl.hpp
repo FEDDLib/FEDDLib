@@ -251,7 +251,7 @@ private:
     std::vector<DomainPtr_Type> vecDomain_;
     std::vector<std::string> vecBCType_;
     vec_int_Type vecDofs_;
-    vec2D_dbl_Type vecBC_Parameters_;
+    mutable vec2D_dbl_Type vecBC_Parameters_;
     std::vector<MultiVectorConstPtr_Type> vecExternalSol_;
     mutable vec_dbl_ptr_Type resultPtr_;
     mutable vec_dbl_ptr_Type pointPtr_;
