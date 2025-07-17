@@ -614,7 +614,7 @@ int main(int argc, char *argv[])
                         bcFactoryDummy->setRHS(blockFluidDummy,0.);
                         // The vector is used to determine the maximum velocity for the desired flow profile
                         MultiVectorConstPtr_Type fluidDummyConst = blockFluidDummy->getBlock(0);
-                        fluidDummyConst->print(); 
+                        // fluidDummyConst->print(); 
 
                         bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,fluidDummyConst,true, flowrate3D); // inflow 
                         bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,fluidDummyConst,true, flowrate3D); // inflow 
