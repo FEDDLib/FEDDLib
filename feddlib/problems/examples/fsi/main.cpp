@@ -133,17 +133,14 @@ void inflow3DRichterSuperFast(double* x, double* res, double t, const double* pa
 void parabolicInflow3D(double* x, double* res, double t, const double* parameters)
 {
     // parameters[0] is the maxium desired velocity
-    // parameters[1] the radius
-
+    // x[0] is the parabolic profile value
     // The center point of the inlet is (0,0,0)   
 
-    // Distance from center
-    double r = std::sqrt(x[0]*x[0] + x[1]*x[1]);
+  
 
     res[0] = 0.;
     res[1] = 0.;
-    res[2] = parameters[0] * (1.- r/parameters[1]) ;
-    
+    res[2] = parameters[0] * x[0]; 
 
     return;
 }
@@ -612,6 +609,8 @@ int main(int argc, char *argv[])
                         BlockMultiVectorPtr_Type blockFluidDummy = rcp(new BlockMultiVector_Type( 1 ) );
                         blockFluidDummy->addBlock(fluidDummy,0);
                         bcFactoryDummy->setRHS(blockFluidDummy,0.);
+                        SC maxValue = blockFluidDummy->getBlock(0)->getMax();
+                        blockFluidDummy->getBlockNonConst(0)->scale(1./maxValue);
                         // The vector is used to determine the maximum velocity for the desired flow profile
                         MultiVectorConstPtr_Type fluidDummyConst = blockFluidDummy->getBlock(0);
                         // fluidDummyConst->print(); 
