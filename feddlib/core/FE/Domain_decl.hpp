@@ -536,6 +536,9 @@ public:
    /// @param name export suffix to identify flags
    void exportElementOrientation(std::string name = "default");
 
+     /// @brief Exporting Paraview file displaying distribution of elements to the differnt cores
+   /// @param name export suffix to identify flags
+   void exportDistribution(std::string name = "default");
    /* ----------------------------------------------------------------------------------------*/
 
    private:

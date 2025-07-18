@@ -1010,6 +1010,25 @@ void Domain<SC, LO, GO, NO>::exportNodeFlags(std::string name)
 } 
 
 template <class SC, class LO, class GO, class NO>
+void Domain<SC, LO, GO, NO>::exportDistribution(std::string name)
+{
+        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+
+        Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(this->getElementMap()));
+        exportSolution->putScalar(comm_->getRank()+1.);
+       
+        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+        exPara->setup("Subdomains"+name,this->getMesh(), "P0");
+
+        exPara->addVariable(exportSolutionConst, "Core", "Scalar", 1,this->getElementMap()); 
+        exPara->save(0.0);
+
+        exPara->closeExporter();
+} 
+
+             
+template <class SC, class LO, class GO, class NO>
 void Domain<SC, LO, GO, NO>::exportSurfaceNormals(std::string name)
 {
         Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());

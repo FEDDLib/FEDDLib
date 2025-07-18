@@ -7,11 +7,14 @@
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
+#include "feddlib/core/General/HDF5Import.hpp"
 
 #include "feddlib/problems/specific/FSI.hpp"
 #include "feddlib/problems/specific/Laplace.hpp"
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
+
+#include "feddlib/core/General/HDF5Export.hpp"
 
 
 /*! Test case for specific artery geometrie or straight tube geometry. Inflow depends on inflow region
@@ -201,20 +204,11 @@ int main(int argc, char *argv[])
     string xmlPrecFileFluidTeko = "parametersPrecFluidTeko.xml";
     myCLP.setOption("precfileFluidMono",&xmlPrecFileFluidMono,".xml file with Inputparameters.");
     myCLP.setOption("precfileFluidTeko",&xmlPrecFileFluidTeko,".xml file with Inputparameters.");
-    string xmlProblemFileFluid = "parametersProblemFluid.xml";
-    myCLP.setOption("problemFileFluid",&xmlProblemFileFluid,".xml file with Inputparameters.");
-    string xmlPrecFileStructure = "parametersPrecStructure.xml";
+     string xmlPrecFileStructure = "parametersPrecStructure.xml";
     myCLP.setOption("precfileStructure",&xmlPrecFileStructure,".xml file with Inputparameters.");
     string xmlPrecFileGeometry = "parametersPrecGeometry.xml";
     myCLP.setOption("precfileGeometry",&xmlPrecFileGeometry,".xml file with Inputparameters.");
-    
-    string xmlProbL = "plistProblemLaplace.xml";
-    myCLP.setOption("probLaplace",&xmlProbL,".xml file with Inputparameters.");
-    string xmlPrecL = "plistPrecLaplace.xml";
-    myCLP.setOption("precLaplace",&xmlPrecL,".xml file with Inputparameters.");
-    string xmlSolverL = "plistSolverLaplace.xml";
-    myCLP.setOption("solverLaplace",&xmlSolverL,".xml file with Inputparameters.");
-    
+      
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
     Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = myCLP.parse(argc,argv);
@@ -263,20 +257,10 @@ int main(int argc, char *argv[])
         // CH: We might want to add a paramterlist, which defines the Geometry problem
         ParameterListPtr_Type parameterListGeometry(new Teuchos::ParameterList(*parameterListPrecGeometry));
         parameterListGeometry->setParameters(*parameterListSolverGeometry);
-        // we only compute the preconditioner for the geometry problem once
+        sublist(parameterListGeometry, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Geometry") );
+    // we only compute the preconditioner for the geometry problem once
         sublist( parameterListGeometry, "General" )->set( "Preconditioner Method", "MonolithicConstPrec" );
-        sublist( parameterListGeometry, "Parameter" )->set( "Model", parameterListProblem->sublist("Parameter").get("Model Geometry","Laplace") );
-        
-        double poissonRatio = parameterListProblem->sublist("Parameter Geometry").get("Poisson Ratio",0.3);
-        double mu = parameterListProblem->sublist("Parameter Geometry").get("Mu",2.0e+6);
-        double distanceLaplace = parameterListProblem->sublist("Parameter Geometry").get("Distance Laplace",0.1);
-        double coefficientLaplace = parameterListProblem->sublist("Parameter Geometry").get("Coefficient Laplace",1000.);
-        
-        sublist( parameterListGeometry, "Parameter" )->set( "Poisson Ratio", poissonRatio );
-        sublist( parameterListGeometry, "Parameter" )->set( "Mu", mu );
-        sublist( parameterListGeometry, "Parameter" )->set( "Distance Laplace", distanceLaplace );
-        sublist( parameterListGeometry, "Parameter" )->set( "Coefficient Laplace", coefficientLaplace );
-            
+                   
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",2);
         string		meshType    	= parameterListProblem->sublist("Parameter").get("Mesh Type","unstructured");
         
@@ -372,41 +356,6 @@ int main(int argc, char *argv[])
 							//                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
 						}
 
-						Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-
-						Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(domainFluidVelocity->getMapUnique()));
-						vec_int_ptr_Type BCFlags = domainFluidVelocity->getBCFlagUnique();
-
-						Teuchos::ArrayRCP< SC > entries  = exportSolution->getDataNonConst(0);
-						for(int i=0; i< entries.size(); i++){
-							entries[i] = BCFlags->at(i);
-						}
-
-						Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
-
-						exPara->setup("FlagsFluid",domainFluidVelocity->getMesh(), discType);
-
-						exPara->addVariable(exportSolutionConst, "Flags", "Scalar", 1,domainFluidVelocity->getMapUnique());
-
-						exPara->save(0.0);
-
-						Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara2(new ExporterParaView<SC,LO,GO,NO>());
-
-						Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution2(new MultiVector<SC,LO,GO,NO>(domainStructure->getMapUnique()));
-						vec_int_ptr_Type BCFlags2 = domainStructure->getBCFlagUnique();
-
-						Teuchos::ArrayRCP< SC > entries2  = exportSolution2->getDataNonConst(0);
-						for(int i=0; i< entries2.size(); i++){
-							entries2[i] = BCFlags2->at(i);
-						}
-
-						Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst2 = exportSolution2;
-
-						exPara2->setup("FlagsStructure", domainStructure->getMesh(), discType);
-
-						exPara2->addVariable(exportSolutionConst2, "Flags", "Scalar", 1,domainStructure->getMapUnique());
-
-						exPara2->save(0.0);
 
                         // Calculate distances is done in: identifyInterfaceParallelAndDistance
                         domainP1fluid->identifyInterfaceParallelAndDistance(domainP1struct, idsInterface);
@@ -429,38 +378,8 @@ int main(int argc, char *argv[])
                 if (verbose)
                     std::cout << "\t### Exporting fluid and solid subdomains ###\n";
 
-                typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
-                typedef RCP<MultiVector_Type> MultiVectorPtr_Type;
-                typedef RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
-                typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
-                typedef RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
-
-                {
-                    MultiVectorPtr_Type vecDecomposition = rcp(new MultiVector_Type( domainFluidVelocity->getElementMap() ) );
-                    MultiVectorConstPtr_Type vecDecompositionConst = vecDecomposition;
-                    vecDecomposition->putScalar(comm->getRank()+1.);
-                    
-                    Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-                    
-                    exPara->setup( "subdomains_fluid", domainFluidVelocity->getMesh(), "P0" );
-                    
-                    exPara->addVariable( vecDecompositionConst, "subdomains", "Scalar", 1, domainFluidVelocity->getElementMap());
-                    exPara->save(0.0);
-                    exPara->closeExporter();
-                }
-                {
-                    MultiVectorPtr_Type vecDecomposition = rcp(new MultiVector_Type( domainStructure->getElementMap() ) );
-                    MultiVectorConstPtr_Type vecDecompositionConst = vecDecomposition;
-                    vecDecomposition->putScalar(comm->getRank()+1.);
-                    
-                    Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-                    
-                    exPara->setup( "subdomains_solid", domainStructure->getMesh(), "P0" );
-                    
-                    exPara->addVariable( vecDecompositionConst, "subdomains", "Scalar", 1, domainStructure->getElementMap());
-                    exPara->save(0.0);
-                    exPara->closeExporter();
-                }
+               domainFluidVelocity->exportDistribution("Fluid");
+               domainStructure->exportDistribution("Solid");
 
             }
             
@@ -532,64 +451,7 @@ int main(int argc, char *argv[])
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("Max Velocity",1.));
             parameter_vec.push_back( parameterListProblem->sublist("Parameter").get("Max Ramp Time",2.) );
             
-            TEUCHOS_TEST_FOR_EXCEPTION(bcType != "Compute Inflow", std::logic_error, "Select a valid boundary condition. Only Compute Inflow available.");
-
-            //#############################################
-            //#############################################
-            //#### Compute parabolic inflow with laplacian
-            //#############################################
-            //#############################################
-            MultiVectorConstPtr_Type solutionLaplace;
-            {
-                Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryLaplace(new BCBuilder<SC,LO,GO,NO>( ));
-                
-                bcFactoryLaplace->addBC(zeroBC, 4, 0, domainFluidVelocity, "Dirichlet", 1); //inflow ring
-                bcFactoryLaplace->addBC(zeroBC, 4, 0, domainFluidVelocity, "Dirichlet", 1); //outflow ring
-                bcFactoryLaplace->addBC(zeroBC, 6, 0, domainFluidVelocity, "Dirichlet", 1); //surface
-                
-                ParameterListPtr_Type parameterListProblemL = Teuchos::getParametersFromXmlFile(xmlProbL);
-                ParameterListPtr_Type parameterListPrecL = Teuchos::getParametersFromXmlFile(xmlPrecL);
-                ParameterListPtr_Type parameterListSolverL = Teuchos::getParametersFromXmlFile(xmlSolverL);
-
-                ParameterListPtr_Type parameterListLaplace(new Teuchos::ParameterList(*parameterListProblemL)) ;
-                parameterListLaplace->setParameters(*parameterListPrecL);
-                parameterListLaplace->setParameters(*parameterListSolverL);
-                
-                Laplace<SC,LO,GO,NO> laplace( domainFluidVelocity, discType, parameterListLaplace, false );
-                {
-                    laplace.addRhsFunction(oneFunc);
-                    laplace.addBoundaries(bcFactoryLaplace);
-                    
-                    laplace.initializeProblem();
-                    laplace.assemble();
-                    laplace.setBoundaries();
-                    laplace.solve();
-                }
-                
-                //We need the values in the inflow area. Therefore, we use the above bcFactory and the volume flag 10 and the outlet flag 5 and set zero Dirichlet boundary values
-                bcFactoryLaplace->addBC(zeroBC, 3, 0, domainFluidVelocity, "Dirichlet", 1);
-                bcFactoryLaplace->addBC(zeroBC, 10, 0, domainFluidVelocity, "Dirichlet", 1);
-                bcFactoryLaplace->setRHS( laplace.getSolution(), 0./*time; does not matter here*/ );
-                solutionLaplace = laplace.getSolution()->getBlock(0);
-            
-                SC maxValue = solutionLaplace->getMax();
-                
-                parameter_vec.push_back(maxValue);
-
-                Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-                
-                exPara->setup("parabolicInflow", domainFluidVelocity->getMesh(), discType);
-                
-//                exPara->setup(domainFluidVelocity->getDimension(), domainFluidVelocity->getNumElementsGlobal(), domainFluidVelocity->getElements(), domainFluidVelocity->getPointsUnique(), domainFluidVelocity->getMapUnique(), domainFluidVelocity->getMapRepeated(), discType, "parabolicInflow", 1, comm);
-
-                MultiVectorConstPtr_Type valuesConst = laplace.getSolution()->getBlock(0);
-                exPara->addVariable( valuesConst, "values", "Scalar", 1, domainFluidVelocity->getMapUnique() );
-
-                exPara->save(0.0);
-                exPara->closeExporter();
-
-            }
-            
+        
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
 
             // TODO: Vermutlich braucht man keine bcFactoryFluid und bcFactoryStructure,
@@ -597,6 +459,13 @@ int main(int argc, char *argv[])
 
             // Fluid-RW
             {
+
+                MultiVectorConstPtr_Type solutionLaplace;
+
+                HDF5Import<SC,LO,GO,NO> importer(domainFluidVelocity->getMapUnique() ,"laplace_parabolic_fluidBenchmark2_"+discType);
+                Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solutionImported = importer.readVariablesHDF5("solution");
+                solutionLaplace = solutionImported;
+
                 bool zeroPressure = parameterListProblem->sublist("Parameter Fluid").get("Set Outflow Pressure to Zero",false);
                 Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryFluid( new BCBuilder<SC,LO,GO,NO>( ) );
                                
