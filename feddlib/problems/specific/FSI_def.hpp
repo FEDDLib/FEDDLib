@@ -1117,6 +1117,7 @@ void FSI<SC,LO,GO,NO>::setFluidMassmatrix( MatrixPtr_Type& massmatrix ) const
 
 
 // Function to compute the pressure boundary conditions for the fluid component
+// Note it already contains some code connected to restarts
 template<class SC,class LO,class GO,class NO>
 void FSI<SC,LO,GO,NO>::computePressureRHSInTime() const{
 
@@ -1324,9 +1325,9 @@ void FSI<SC,LO,GO,NO>::computePressureRHSInTime() const{
     
     }    
 
-    int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 4); 
-    double averageVelocity =0.;  
-    this->feFactory_->assemblyAverageVelocity(this->dim_, averageVelocity, this->getDomain(0)->getFEType() , this->dim_, flagInlet , u_rep_);  
+    // int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 4); 
+    // double averageVelocity =0.;  
+    // this->feFactory_->assemblyAverageVelocity(this->dim_, averageVelocity, this->getDomain(0)->getFEType() , this->dim_, flagInlet , u_rep_);  
 
   
 }

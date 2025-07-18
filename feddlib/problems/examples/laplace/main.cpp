@@ -2,6 +2,7 @@
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include "feddlib/core/General/HDF5Export.hpp"
 
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
@@ -189,6 +190,9 @@ int main(int argc, char *argv[]) {
             bcFactory->addBC(zeroBC, 1, 0, domain, "Dirichlet", 1);
             bcFactory->addBC(zeroBC, 2, 0, domain, "Dirichlet", 1);
             bcFactory->addBC(zeroBC, 3, 0, domain, "Dirichlet", 1);
+            //  bcFactory->addBC(zeroBC, 6, 0, domain, "Dirichlet", 1);
+            // bcFactory->addBC(zeroBC, 9, 0, domain, "Dirichlet", 1);
+            // bcFactory->addBC(zeroBC, 10, 0, domain, "Dirichlet", 1);
         }
 
         Laplace<SC,LO,GO,NO> laplace(domain,FEType,parameterListAll,vL);
@@ -201,8 +205,17 @@ int main(int argc, char *argv[]) {
             laplace.setBoundaries();
             laplace.solve();
         }
+        // bcFactory->addBC(zeroBC, 5, 0, domain, "Dirichlet", 1);
+        // bcFactory->addBC(zeroBC, 15, 0, domain, "Dirichlet", 1);
+              
+           
 
-        bool boolExportSolution = true;
+        // bcFactory->setRHS( laplace.getSolution(), 0.);
+           
+        // bool boolExportSolution = true;
+        // HDF5Export<SC,LO,GO,NO> exporter(laplace.getSolution()->getBlock(0)->getMap(), "laplace_parabolic_parabolic_fsi_fluid_length_0_5_mm_"+FEType); //  Map and file name
+        // exporter.writeVariablesHDF5("solution",laplace.getSolution()->getBlock(0)); // VariableName and Variable
+
         if (boolExportSolution) {
             Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 

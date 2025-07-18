@@ -7,6 +7,8 @@
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
+#include "feddlib/core/General/HDF5Import.hpp"
+
 
 #include "feddlib/problems/specific/FSI.hpp"
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
@@ -602,21 +604,31 @@ int main(int argc, char *argv[])
                 {
                     if(bcType == "Tube3D"){
                         // We build a vector containing the parabolic flow profile on the inlet 
-                        Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryDummy( new BCBuilder<SC,LO,GO,NO>( ) );
-                        bcFactoryDummy->addBC(parabolicInflow, 4, 0, domainFluidVelocity, "Dirichlet", 1, parameter_vec); // inflow 
-                        MultiVectorPtr_Type fluidDummy = rcp(new MultiVector_Type( domainFluidVelocity->getMapUnique() ) );
-                        fluidDummy->putScalar(0.);
-                        BlockMultiVectorPtr_Type blockFluidDummy = rcp(new BlockMultiVector_Type( 1 ) );
-                        blockFluidDummy->addBlock(fluidDummy,0);
-                        bcFactoryDummy->setRHS(blockFluidDummy,0.);
-                        SC maxValue = blockFluidDummy->getBlock(0)->getMax();
-                        blockFluidDummy->getBlockNonConst(0)->scale(1./maxValue);
-                        // The vector is used to determine the maximum velocity for the desired flow profile
-                        MultiVectorConstPtr_Type fluidDummyConst = blockFluidDummy->getBlock(0);
-                        // fluidDummyConst->print(); 
+                        MultiVectorConstPtr_Type inflowProfile;
 
-                        bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,fluidDummyConst,true, flowrate3D); // inflow 
-                        bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,fluidDummyConst,true, flowrate3D); // inflow 
+                        if(false){
+                            Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryDummy( new BCBuilder<SC,LO,GO,NO>( ) );
+                            bcFactoryDummy->addBC(parabolicInflow, 4, 0, domainFluidVelocity, "Dirichlet", 1, parameter_vec); // inflow 
+                            MultiVectorPtr_Type fluidDummy = rcp(new MultiVector_Type( domainFluidVelocity->getMapUnique() ) );
+                            fluidDummy->putScalar(0.);
+                            BlockMultiVectorPtr_Type blockFluidDummy = rcp(new BlockMultiVector_Type( 1 ) );
+                            blockFluidDummy->addBlock(fluidDummy,0);
+                            bcFactoryDummy->setRHS(blockFluidDummy,0.);
+                            SC maxValue = blockFluidDummy->getBlock(0)->getMax();
+                            blockFluidDummy->getBlockNonConst(0)->scale(1./maxValue);
+                            // The vector is used to determine the maximum velocity for the desired flow profile
+                            // fluidDummyConst->print(); 
+                            inflowProfile = blockFluidDummy->getBlock(0);
+                        }
+                        else{
+                            HDF5Import<SC,LO,GO,NO> importer(domainFluidVelocity->getMapUnique() ,"laplace_parabolic_parabolic_fsi_fluid_length_0_5_mm_"+discType);
+                            Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solutionImported = importer.readVariablesHDF5("solution");
+                            inflowProfile = solutionImported;
+                        }
+
+
+                        bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,inflowProfile,true, flowrate3D); // inflow 
+                        bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,inflowProfile,true, flowrate3D); // inflow 
                         bcFactory->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
                         bcFactoryFluid->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
                         bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 

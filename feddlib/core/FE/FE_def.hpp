@@ -5447,7 +5447,10 @@ double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
     double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
     double resistance = params->sublist("Parameter Fluid").get("Resistance",1.0); 
     double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
-  
+
+    double referencePressure =  params->sublist("Parameter Fluid").get("Reference fluid pressure",11.99e1);
+
+
     SC elScaling;
     SmallMatrix<SC> B(dim);
     SmallMatrix<SC> Binv(dim);
@@ -5470,7 +5473,7 @@ double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
     this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
     int isNeg = this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);  
     
-    double resistanceRef = 10666/flowRateInlet; // WHY AND WHAT?
+    double resistanceRef = referencePressure/flowRateInlet; // The resistance based on a reference pressure value and the current inlet flow rate
 
     double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
 
@@ -5487,9 +5490,9 @@ double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
         std::cout << " Volmetric flow Outlet: " << flowRateOutlet << std::endl;
         std::cout << " Averaged volmetric flow Outlet: " << flowRateOutletAveraged << std::endl;
         std::cout << " Resistance per Input: " << valueFunc[0] << std::endl;
-        std::cout << " Assumed pressure at outlet: approx. 10.66kPa " << std::endl;
+        std::cout << " Assumed reference pressure at outlet " << referencePressure<< std::endl;
         std::cout << " Implicit pressure at outlet with p=R*Q: " << flowRateOutlet*valueFunc[0] << std::endl;
-        std::cout << " Resistance based on (desired pressure)/flowRateInlet at this point would be: " << resistanceRef << std::endl;
+        std::cout << " Resistance based on (referencePressure)/flowRateInlet at this point would be: " << resistanceRef << std::endl;
         std::cout << " --------------------------------------------------------- " << std::endl;
         std::cout << " --------------------------------------------------------- " << std::endl;
 
@@ -5596,14 +5599,14 @@ double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
                         value.resize(  dim, 0. );
                         // loop over basis functions quadrature points
                         for (UN w=0; w<phi->size(); w++) {       
-                            for (int j=0; j<dim; j++){
-                                value[j] += weights->at(w) *normalScale*v_E[j]/norm_v_E *flowRateUse*valueFunc[0]*(*phi)[w][i];//valueFunc[0]
+                            for (int d=0; d<dim; d++){
+                                value[d] += weights->at(w) *normalScale*v_E[d]/norm_v_E *flowRateUse*valueFunc[0]*(*phi)[w][i];//valueFunc[0]
                             }
                         }             
 
                         //cout << " Value First component " << value[0] << " " << value[1] << " " << value[2] <<std::endl;
-                        for (int j=0; j<value.size(); j++)
-                            valuesF[ dim * nodeList[ i ] + j ] += value[j] * elScaling;
+                        for (int d=0; d<dim; d++)
+                            valuesF[ dim * nodeList[ i ] + d ] += value[d] * elScaling;
                     }
                    
                     // We make the distinction between a gradient jump calculation or a simple jump calculation 
@@ -5915,16 +5918,6 @@ void FE<SC,LO,GO,NO>::assemblyAverageVelocity(int dim,
                     
                     Teuchos::Array<SC> value(0);
                     value.resize(  numNodes_T, 0. ); // Volumetric flow rate over one surface is a skalar value
-                    // //cout << " Velocity over node ";
-                    // for (int w=0; w<phi->size(); w++){ //quads points
-                    //     for (int d=0; d<dim; d++) {
-                    //         uLoc[d][w] = 0.;
-                    //         for (int i=0; i < phi->at(0).size(); i++) {
-                    //             LO index = dim * nodeList[i] + d;
-                    //             uLoc[d][w] += uArray[index] * phi->at(w).at(i);
-                    //         }
-                    //     }
-                    // }
 
                     for (UN i=0; i < numNodes_T; i++) {
                         // loop over basis functions quadrature points
