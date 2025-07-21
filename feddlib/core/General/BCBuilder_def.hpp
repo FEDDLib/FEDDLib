@@ -591,8 +591,8 @@ void BCBuilder<SC,LO,GO,NO>::determineVelocityForFlowrate(LO i, double time) con
     // std::cout << " Flowrate parabolic " << flowRateParabolic << std::endl; 
     // Then we have flowRateParabolic * u_max == Q  <=> u_max = Q/flowRateParabolic, and Q is given as 'desired flowrate' in flowrate
     double maxVelocity = flowRate[0] / std::fabs(flowRateParabolic);
-    if(domain->getComm()->getRank() == 0)
-       std::cout << " --- Desired Flow Rate: " << flowRate[0] << " --- flowrate for parabolic inflow profile: " << flowRateParabolic  << " --- v_max based on flowrate and inflow profile: " << maxVelocity << " --- " << std::endl;
+    // if(domain->getComm()->getRank() == 0)
+    //    std::cout << " --- Desired Flow Rate: " << flowRate[0] << " --- flowrate for parabolic inflow profile: " << flowRateParabolic  << " --- v_max based on flowrate and inflow profile: " << maxVelocity << " --- " << std::endl;
     // Then we replace the parameter which contains the maximum velocity with the updated one
     vecBC_Parameters_[i][0] = maxVelocity;
 
