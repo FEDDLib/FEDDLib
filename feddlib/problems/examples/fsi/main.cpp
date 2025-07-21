@@ -539,7 +539,7 @@ int main(int argc, char *argv[])
             // Fluid/ Geometrie: 1 = wall; 2 = inflow; 3 = outflow; 4 = Fluid-obstacle; 5 = Interface in 2d
             // Struktur: 1 = linke Seite (homogener Dirichletrand); 5 = Interface in 2d
             // #####################
-            std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MeanVelocity",2.0));
+            std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter Fluid").get("MeanVelocity",2.0));
             
             if(!bcType.compare("partialCFD"))
             {
@@ -558,8 +558,8 @@ int main(int argc, char *argv[])
             else if(!bcType.compare("Tube3D"))
             {
                 parameter_vec.push_back(0.09); // Height of inflow region is 0.18 cm! We use Radius here
-                parameter_vec.push_back(parameterListProblem->sublist("Parameter").get("Max Ramp Time",1.0));
-                parameter_vec.push_back(parameterListProblem->sublist("Parameter").get("Flowrate",1.0));
+                parameter_vec.push_back(parameterListProblem->sublist("Parameter Fluid").get("Max Ramp Time",1.0));
+                parameter_vec.push_back(parameterListProblem->sublist("Parameter Fluid").get("Flowrate",1.0));
 
             }
             else

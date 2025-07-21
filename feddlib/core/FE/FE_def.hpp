@@ -4829,9 +4829,9 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundaryPaper(int dim,
     double density = params->sublist("Parameter Fluid").get("Density",1000.0); 
     double p_ref_input = params->sublist("Parameter Fluid").get("Reference fluid pressure",10666.); 
 
-    double rampTime = params->sublist("Parameter").get("Max Ramp Time",0.1); 
+    double rampTime = params->sublist("Parameter Fluid").get("Max Ramp Time",0.1); 
     double unsteadyStart = params->sublist("Parameter Fluid").get("Unsteady Start",0.2); 
-    double flowRateInput = params->sublist("Parameter").get("Flowrate",3.0e-06); 
+    double flowRateInput = params->sublist("Parameter Fluid").get("Flowrate",3.0); 
 
     double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
 
@@ -5046,9 +5046,9 @@ double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundary(int dim,
     double density = params->sublist("Parameter Fluid").get("Density",1.0); 
     double p_ref_input = params->sublist("Parameter Fluid").get("Reference fluid pressure",10666.); 
 
-    double rampTime = params->sublist("Parameter").get("Max Ramp Time",0.1); 
-    double unsteadyStart = params->sublist("Parameter").get("Heart Beat Start",0.2); 
-    double flowRateInput = params->sublist("Parameter").get("Flowrate",3.0e-06); 
+    double rampTime = params->sublist("Parameter Fluid").get("Max Ramp Time",0.1); 
+    double unsteadyStart = params->sublist("Parameter Fluid").get("Heart Beat Start",0.2); 
+    double flowRateInput = params->sublist("Parameter Fluid").get("Flowrate",3.0e-06); 
 
     double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
 
