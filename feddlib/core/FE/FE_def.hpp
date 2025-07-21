@@ -5845,8 +5845,8 @@ int FE<SC,LO,GO,NO>::assemblyFlowRate(int dim,
         }
     }
     reduceAll<int, double> (*domainVec_.at(0)->getComm(), REDUCE_SUM, flowRateInlet, outArg (flowRateInlet));
-    if(flowRateInlet < 0  && domainVec_.at(0)->getComm()->getRank() == 0)
-        std::cout << " ###### WARNING: the flow rate you computed is negative. Either the surface normal has the wrong orientation, or your solution is negative. Or both :D. Flowrate:"<< flowRateInlet << " ####### " <<std::endl; 
+    // if(flowRateInlet < 0  && domainVec_.at(0)->getComm()->getRank() == 0)
+    //     std::cout << " ###### WARNING: the flow rate you computed is negative. Either the surface normal has the wrong orientation, or your solution is negative. Or both :D. Flowrate:"<< flowRateInlet << " ####### " <<std::endl; 
     int isNeg=0;
 
     if(flowRateInlet <0)
