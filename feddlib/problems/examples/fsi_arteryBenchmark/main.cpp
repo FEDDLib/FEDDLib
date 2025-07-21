@@ -348,6 +348,8 @@ int main(int argc, char *argv[])
                domainStructure->exportDistribution("Solid");
 
             }
+            // domainFluidVelocity->preProcessMesh(true,false);
+            domainFluidVelocity->exportSurfaceNormals();
             // Baue die Interface-Maps in der Interface-Nummerierung
             domainFluidVelocity->buildInterfaceMaps();
             
