@@ -212,9 +212,9 @@ int main(int argc, char *argv[]) {
 
         // bcFactory->setRHS( laplace.getSolution(), 0.);
            
-        // bool boolExportSolution = true;
         // HDF5Export<SC,LO,GO,NO> exporter(laplace.getSolution()->getBlock(0)->getMap(), "laplace_parabolic_parabolic_fsi_fluid_length_0_5_mm_"+FEType); //  Map and file name
         // exporter.writeVariablesHDF5("solution",laplace.getSolution()->getBlock(0)); // VariableName and Variable
+        bool boolExportSolution = true;
 
         if (boolExportSolution) {
             Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());

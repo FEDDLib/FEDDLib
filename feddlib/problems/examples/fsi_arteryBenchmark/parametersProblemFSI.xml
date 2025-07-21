@@ -2,11 +2,7 @@
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P1"/><!--P2-->
-               <Parameter name="MeanVelocity" type="double" value="118.28"/><!--2d:2.0, Richter 3d: 1.0-->
-        <Parameter name="Max Ramp Time" type="double" value="0.1"/>
-       
-        <Parameter name="Flowrate" type="double" value="3"/><!-- For Absorbing BC-->
-        
+           
         <Parameter name="Model Geometry" type="string" value="Laplace"/>
         
         <Parameter name="FSI" type="bool" value="true"/>
@@ -41,9 +37,16 @@
 
     <ParameterList name="Parameter Fluid">
         <Parameter name="Ramp type" type="string" value="cos"/><!--cos, linear -->
+        <Parameter name="Max Velocity" type="double" value="118.28"/><!--2d:2.0, Richter 3d: 1.0-->
+        <Parameter name="Max Ramp Time" type="double" value="0.1"/>
+       
+        <Parameter name="Flowrate" type="double" value="3"/><!-- For Absorbing BC-->
+     
         <Parameter name="Viscosity" type="double" value="3.0e-2"/> <!-- kinematic viscosity cm^2/s -->
         <Parameter name="Density" type="double" value="1.3e-03"/><!-- kg/cm³ -->
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
+
+
 
         <Parameter name="Pressure Boundary Condition" type="string" value="Absorbing Paper"/>         <!-- Resistance , Absorbing , Absorbing Resistance-->
         <Parameter name="Unsteady Start" type="double" value="1.0"/><!-- Start of 'unsteady' phase -->
@@ -107,6 +110,9 @@
         <Parameter name="Export Suffix" type="string" value=""/>
         <Parameter name="Export Data" type="bool" value="true"/>
         <Parameter name="Export Flow Rate" type="bool" value="true"/>
+
+        <Parameter name="Flag Inlet Fluid" type="int" value="2"/>
+        <Parameter name="Flag Outlet Fluid" type="int" value="3"/>
 
         <Parameter name="Preconditioner Method" type="string" value="FaCSI"/><!-- Monolithic, FaCSI, FaCSI-Teko -->
         <Parameter name="Use Fluid Preconditioner" type="bool" value="true"/>
