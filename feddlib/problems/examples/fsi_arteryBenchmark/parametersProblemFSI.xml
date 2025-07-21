@@ -22,14 +22,14 @@
     <ParameterList name="Parameter Solid">        
         <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
         <Parameter name="Density" type="double"   value="1.0e-03"/><!-- kg/cm³ -->
-        <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
-        <Parameter name="Mu" type="double" value="147694.13e-3"/><!-- 1kg⋅cm/s² * 1/cm²-->
-        <Parameter name="Mu1" type="double" value="147694.13e-3"/><!-- 1kg⋅cm/s² * 1/cm²-->
-        <Parameter name="Mu2" type="double" value="147694.13e-3"/><!-- 1kg⋅cm/s² * 1/cm²-->
+        <!-- Parameters NH4 Neo Hooke Model from 'Comparison of arterial wall models in fluid–structure interaction simulations' -->
+        <Parameter name="Mu" type="double" value="1476.5"/><!-- 1kg⋅cm/s² * 1/cm²-->
+        <Parameter name="Mu1" type="double" value="1476.5"/><!-- 1kg⋅cm/s² * 1/cm²-->
+        <Parameter name="Mu2" type="double" value="1476.5"/><!-- 1kg⋅cm/s² * 1/cm²-->
 
-        <Parameter name="E" type="double" value="440158.5e-3"/> <!-- 1kg⋅cm/s² * 1/cm² -->
-		<Parameter name="E1" type="double" value="440158.5e-3"/><!-- 1kg⋅cm/s² * 1/cm²-->
-   		<Parameter name="E2" type="double" value="440158.5e-3"/><!-- 1kg⋅cm/s² * 1/cm²-->
+        <Parameter name="E" type="double" value="4398.48"/> <!-- 1kg⋅cm/s² * 1/cm² -->
+		<Parameter name="E1" type="double" value="4398.48"/><!-- 1kg⋅cm/s² * 1/cm²-->
+   		<Parameter name="E2" type="double" value="4398.48"/><!-- 1kg⋅cm/s² * 1/cm²-->
 
 		<Parameter name="c1" type="double" value="0.25"/>
 		<Parameter name="Poisson Ratio" type="double" value="0.49"/>
