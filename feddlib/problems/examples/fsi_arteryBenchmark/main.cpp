@@ -103,7 +103,7 @@ void flowrate3D(double* x, double* res, double t, const double* parameters)
         Q -= 0.026039341343493;
         Q = (Q - 2.85489)/(7.96908-2.85489);
 
-        res[0] =  parameters[2] * Q ;
+        res[0] =  parameters[2] + parameters[2]* Q ;
         
     }
     else
@@ -563,10 +563,10 @@ int main(int argc, char *argv[])
             if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
                 bcFactoryFluidInterface = Teuchos::rcp( new BCBuilder<SC,LO,GO,NO>( ) );
 
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 0, 0, domainGeometry, "Dirichlet", dim); // inflow/outflow strip fixed in y direction
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 1, 0, domainGeometry, "Dirichlet", dim); // inflow/outflow strip fixed in y direction
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 2, 0, domainGeometry, "Dirichlet", dim); // inlet fixed in Z direction
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // inlet fixed in X direction
+            // bcFactoryGeometry->addBC(zeroDirichlet3D, 0, 0, domainGeometry, "Dirichlet", dim); // inflow/outflow strip fixed in y direction
+            // bcFactoryGeometry->addBC(zeroDirichlet3D, 1, 0, domainGeometry, "Dirichlet", dim); // inflow/outflow strip fixed in y direction
+            // bcFactoryGeometry->addBC(zeroDirichlet3D, 2, 0, domainGeometry, "Dirichlet", dim); // inlet fixed in Z direction
+            // bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // inlet fixed in X direction
             bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // inlet/outlet Ring
             bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // ?
             bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // Interface
