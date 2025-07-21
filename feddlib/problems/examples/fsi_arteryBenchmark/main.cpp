@@ -333,7 +333,9 @@ int main(int argc, char *argv[])
                     if (!meshType.compare("unstructured")) {
 
                         vec_int_Type idsInterface(1,6);
-                                                
+                        idsInterface.push_back(4);
+                        idsInterface.push_back(5);
+               
                         MeshPartitioner_Type::DomainPtrArray_Type domainP1Array(2);
                         domainP1Array[0] = domainP1fluid;
                         domainP1Array[1] = domainP1struct;
@@ -373,7 +375,9 @@ int main(int argc, char *argv[])
 							//                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
 						}
 
-
+                        // domainFluidVelocity->preProcessMesh(true,false);
+                        domainFluidVelocity->exportNodeFlags("Fluid");
+                        domainStructure->exportNodeFlags("Solid");
                         // Calculate distances is done in: identifyInterfaceParallelAndDistance
                         domainP1fluid->identifyInterfaceParallelAndDistance(domainP1struct, idsInterface);
                         if (!discType.compare("P2"))
@@ -399,8 +403,8 @@ int main(int argc, char *argv[])
                domainStructure->exportDistribution("Solid");
 
             }
-            // domainFluidVelocity->preProcessMesh(true,false);
-            domainFluidVelocity->exportSurfaceNormals();
+           
+
             // Baue die Interface-Maps in der Interface-Nummerierung
             domainFluidVelocity->buildInterfaceMaps();
             
@@ -511,9 +515,12 @@ int main(int argc, char *argv[])
                     bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
                 }
                 
-                bcFactory->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring                
-                bcFactoryFluid->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet", dim); // inflow ring
+                bcFactory->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet_Z", dim); // inflow ring                
+                bcFactoryFluid->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet_Z", dim); // inflow ring
                 
+                // bcFactory->addBC(zeroDirichlet3D, 5, 0, domainFluidVelocity, "Dirichlet_X", dim); // inflow ring                
+                // bcFactoryFluid->addBC(zeroDirichlet3D, 5, 0, domainFluidVelocity, "Dirichlet_X", dim); // inflow ring
+
                 if (zeroPressure) {
                     //bcFactory->addBC(zeroBC, 4, 1, domainFluidPressure, "Dirichlet", 1); // outflow ring
                     bcFactory->addBC(zeroBC, 3, 1, domainFluidPressure, "Dirichlet", 1); // outflow
@@ -538,7 +545,7 @@ int main(int argc, char *argv[])
                 bcFactoryStructure->addBC(zeroDirichlet3D, 0, 0, domainStructure, "Dirichlet_Y_Z", dim); 
                 bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_X_Y", dim); 
                 bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Z", dim);           
-                bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_x", dim); 
+                bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_X", dim); 
                 // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
                 // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
                 if (!fsi.problemStructure_.is_null())
@@ -567,16 +574,17 @@ int main(int argc, char *argv[])
             // bcFactoryGeometry->addBC(zeroDirichlet3D, 1, 0, domainGeometry, "Dirichlet", dim); // inflow/outflow strip fixed in y direction
             // bcFactoryGeometry->addBC(zeroDirichlet3D, 2, 0, domainGeometry, "Dirichlet", dim); // inlet fixed in Z direction
             // bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // inlet fixed in X direction
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // inlet/outlet Ring
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // ?
+            bcFactoryGeometry->addBC(zeroDirichlet3D, 4, 0, domainGeometry, "Dirichlet", dim); // inlet Ring
+            bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // outlet Ring
             bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // Interface
           
             // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand.
             // Hier erstmal Dirichlet Nullrand, wird spaeter von der Sturkturloesung vorgegeben
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
-            if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
+            if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko"){
+                bcFactoryFluidInterface->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet", dim);
+                bcFactoryFluidInterface->addBC(zeroDirichlet3D, 5, 0, domainFluidVelocity, "Dirichlet", dim);
                 bcFactoryFluidInterface->addBC(zeroDirichlet3D, 6, 0, domainFluidVelocity, "Dirichlet", dim);
-
+            }
             fsi.problemGeometry_->addBoundaries(bcFactoryGeometry);
             if ( preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
                 fsi.getPreconditioner()->setFaCSIBCFactory( bcFactoryFluidInterface );
