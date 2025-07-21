@@ -60,14 +60,13 @@
        	<!-- Resistance boundary condition -->
         <Parameter name="Resistance" type="double" value="3.6660e-4"/> <!-- ?? CHECK| old: g/cm s² s/cm³ (eigentliche Einheit mPa*s/m³ , 1mPa = 10e6 N/m² -->
         <Parameter name="Resistance Ramp" type="double" value="0.0"/>
-
-
     </ParameterList>
+
     <ParameterList name="Parameter Geometry">
         <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
         <Parameter name="Mu" type="double" value="126.700e1"/>
-        <Parameter name="Model Geometry" type="string" value="Elasticity"/>
-        <Parameter name="Model" type="string" value="Elasticity"/>
+        <Parameter name="Model Geometry" type="string" value="Laplace"/>
+        <Parameter name="Model" type="string" value="Laplace"/>
         <Parameter name="Distance Laplace" type="double" value="0.1"/>
         <Parameter name="Coefficient Laplace" type="double" value="1000."/>
     </ParameterList>
