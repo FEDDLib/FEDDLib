@@ -515,8 +515,8 @@ int main(int argc, char *argv[])
                     bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
                 }
                 
-                bcFactory->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet_Z", dim); // inflow ring                
-                bcFactoryFluid->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet_Z", dim); // inflow ring
+                // bcFactory->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet_Z", dim); // inflow ring                
+                // bcFactoryFluid->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet_Z", dim); // inflow ring
                 
                 // bcFactory->addBC(zeroDirichlet3D, 5, 0, domainFluidVelocity, "Dirichlet_X", dim); // inflow ring                
                 // bcFactoryFluid->addBC(zeroDirichlet3D, 5, 0, domainFluidVelocity, "Dirichlet_X", dim); // inflow ring
