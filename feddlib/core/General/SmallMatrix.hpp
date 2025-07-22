@@ -37,27 +37,25 @@ public:
     
     Vec_T_Const_Type &operator[](int i) const;
     
-    SmallMatrix<T> &operator=(SmallMatrix<T> &sm);
+    SmallMatrix<T> &operator=(const SmallMatrix<T> &sm);
     
-    SmallMatrix<T> operator*(SmallMatrix<T> &other);
+    SmallMatrix<T> operator*(const SmallMatrix<T> &other);
     
-    SmallMatrix<T> operator+(SmallMatrix<T> &other);
+    SmallMatrix<T> operator+(const SmallMatrix<T> &other);
     
-    SmallMatrix<T> &operator*=(SmallMatrix<T> &other);
+    SmallMatrix<T> &operator*=(const SmallMatrix<T> &other);
     
-    SmallMatrix<T> &operator+=(SmallMatrix<T> &other);
+    SmallMatrix<T> &operator+=(const SmallMatrix<T> &other);
     
-    //T &operator[](int i);
+    int multiply(const SmallMatrix<T> &bMat, SmallMatrix<T> &cMat) const; //this*B=C
     
-    int multiply(SmallMatrix<T> &bMat, SmallMatrix<T> &cMat); //this*B=C
+    int add(const SmallMatrix<T> &bMat, SmallMatrix<T> &cMat) const; //this+B=C
     
-    int add(SmallMatrix<T> &bMat, SmallMatrix<T> &cMat); //this+B=C
+    int innerProduct(const SmallMatrix<T> &bMat, T &res) const;
     
-    int innerProduct(SmallMatrix<T> &bMat, T &res);
+    double innerProduct(const SmallMatrix<T> &bMat) const;
     
-    double innerProduct(SmallMatrix<T> &bMat);
-    
-    void trace(T &res);
+    void trace(T &res) const;
     
     void scale(T scalar);
     
@@ -65,13 +63,14 @@ public:
     
     void resize(UN size);
     
-    void print();
+    void print() const;
     
-    double computeInverse(SmallMatrix<T> &inverse);
+    double computeInverse(SmallMatrix<T> &inverse) const;
         
-    double computeDet();
+    double computeDet() const;
     
-    double computeScaling();
+    double computeScaling() const;
+
 private:
     Vec2D_T_Type     values_;
     int         size_;
@@ -109,7 +108,7 @@ typename SmallMatrix<T>::Vec_T_Const_Type &SmallMatrix<T>::operator[](int i) con
     return values_.at(i);
 }
 template<class T>
-int SmallMatrix<T>::multiply(SmallMatrix<T> &bMat, SmallMatrix &cMat){
+int SmallMatrix<T>::multiply(const SmallMatrix<T> &bMat, SmallMatrix &cMat) const {
     
     if (size_==2) {
         cMat[0][0] = values_[0][0]*bMat[0][0] + values_[0][1]*bMat[1][0];
@@ -137,7 +136,7 @@ int SmallMatrix<T>::multiply(SmallMatrix<T> &bMat, SmallMatrix &cMat){
 }
 
 template<class T>
-int SmallMatrix<T>::add(SmallMatrix<T> &bMat, SmallMatrix &cMat){
+int SmallMatrix<T>::add(const SmallMatrix<T> &bMat, SmallMatrix &cMat) const {
     
 	for(int i=0; i< size_; i++){
 		for(int j=0; j< size_;j++){
@@ -172,7 +171,7 @@ int SmallMatrix<T>::add(SmallMatrix<T> &bMat, SmallMatrix &cMat){
 
 
 template<class T>
-int SmallMatrix<T>::innerProduct(SmallMatrix<T> &bMat, T &res){
+int SmallMatrix<T>::innerProduct(const SmallMatrix<T> &bMat, T &res) const {
     res = 0.;
     if (size_==2) {
         res =   values_[0][0]*bMat[0][0] + values_[0][1]*bMat[0][1] +
@@ -190,7 +189,7 @@ int SmallMatrix<T>::innerProduct(SmallMatrix<T> &bMat, T &res){
 }
 
 template<class T>
-double SmallMatrix<T>::innerProduct(SmallMatrix<T> &bMat){
+double SmallMatrix<T>::innerProduct(const SmallMatrix<T> &bMat) const {
     
     if (size_==2) {
         return   values_[0][0]*bMat[0][0] + values_[0][1]*bMat[0][1] +
@@ -208,7 +207,7 @@ double SmallMatrix<T>::innerProduct(SmallMatrix<T> &bMat){
 }
 
 template<class T>
-void SmallMatrix<T>::trace(T &res)
+void SmallMatrix<T>::trace(T &res) const
 {
     // In res steht das Resultat
     if(size_ == 2)
@@ -251,7 +250,7 @@ void SmallMatrix<T>::resize(UN size){
 }
 
 template<class T>
-typename SmallMatrix<T>::SmallMatrix &SmallMatrix<T>::operator=(SmallMatrix<T> &sm){
+typename SmallMatrix<T>::SmallMatrix &SmallMatrix<T>::operator=(const SmallMatrix<T> &sm){
     
     size_ = sm.size();
     values_.resize(size_);
@@ -264,7 +263,7 @@ typename SmallMatrix<T>::SmallMatrix &SmallMatrix<T>::operator=(SmallMatrix<T> &
 }
 
 template<class T>
-typename SmallMatrix<T>::SmallMatrix SmallMatrix<T>::operator*(SmallMatrix<T> &other){
+typename SmallMatrix<T>::SmallMatrix SmallMatrix<T>::operator*(const SmallMatrix<T> &other){
     
     size_ = other.size();
     SmallMatrix<T> result(size_);
@@ -275,7 +274,7 @@ typename SmallMatrix<T>::SmallMatrix SmallMatrix<T>::operator*(SmallMatrix<T> &o
 }
 
 template<class T>
-typename SmallMatrix<T>::SmallMatrix SmallMatrix<T>::operator+(SmallMatrix<T> &other){
+typename SmallMatrix<T>::SmallMatrix SmallMatrix<T>::operator+(const SmallMatrix<T> &other){
     
     size_ = other.size();
     SmallMatrix<T> result(size_);
@@ -286,7 +285,7 @@ typename SmallMatrix<T>::SmallMatrix SmallMatrix<T>::operator+(SmallMatrix<T> &o
 }
 
 template<class T>
-typename SmallMatrix<T>::SmallMatrix &SmallMatrix<T>::operator*=(SmallMatrix<T> &other){
+typename SmallMatrix<T>::SmallMatrix &SmallMatrix<T>::operator*=(const SmallMatrix<T> &other){
     
     this->multiply(other, *this);
     
@@ -294,7 +293,7 @@ typename SmallMatrix<T>::SmallMatrix &SmallMatrix<T>::operator*=(SmallMatrix<T> 
 }
 
 template<class T>
-typename SmallMatrix<T>::SmallMatrix &SmallMatrix<T>::operator+=(SmallMatrix<T> &other){
+typename SmallMatrix<T>::SmallMatrix &SmallMatrix<T>::operator+=(const SmallMatrix<T> &other){
     
     this->add(other, *this);
     
@@ -302,7 +301,7 @@ typename SmallMatrix<T>::SmallMatrix &SmallMatrix<T>::operator+=(SmallMatrix<T> 
 }
 
 template<class T>
-void SmallMatrix<T>::print(){
+void SmallMatrix<T>::print() const {
     
     for (int i=0; i<size_; i++) {
         std::cout << "row "<< i << " values:";
@@ -314,7 +313,7 @@ void SmallMatrix<T>::print(){
 }
 
 template<class T>
-double SmallMatrix<T>::computeInverse(SmallMatrix<T> &inverse){
+double SmallMatrix<T>::computeInverse(SmallMatrix<T> &inverse) const {
     
     T det = this->computeDet();
 
@@ -346,7 +345,7 @@ double SmallMatrix<T>::computeInverse(SmallMatrix<T> &inverse){
 }
 
 template<class T>
-double SmallMatrix<T>::computeDet( ){
+double SmallMatrix<T>::computeDet() const {
     
     double det;
     if (size_==2) {
@@ -368,7 +367,7 @@ double SmallMatrix<T>::computeDet( ){
 }
     
 template<class T>
-double SmallMatrix<T>::computeScaling( ){
+double SmallMatrix<T>::computeScaling() const {
     
     double scaling;
     if (size_==2)
