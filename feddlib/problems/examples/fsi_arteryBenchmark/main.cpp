@@ -411,7 +411,7 @@ int main(int argc, char *argv[])
 
             }
            
-
+            domainFluidVelocity->exportSurfaceNormals();
             // Baue die Interface-Maps in der Interface-Nummerierung
             domainFluidVelocity->buildInterfaceMaps();
             
