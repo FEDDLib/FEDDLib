@@ -187,12 +187,12 @@ int main(int argc, char *argv[]) {
             }
         }
         else{
-            bcFactory->addBC(zeroBC, 1, 0, domain, "Dirichlet", 1);
-            bcFactory->addBC(zeroBC, 2, 0, domain, "Dirichlet", 1);
-            bcFactory->addBC(zeroBC, 3, 0, domain, "Dirichlet", 1);
-            //  bcFactory->addBC(zeroBC, 6, 0, domain, "Dirichlet", 1);
-            // bcFactory->addBC(zeroBC, 9, 0, domain, "Dirichlet", 1);
-            // bcFactory->addBC(zeroBC, 10, 0, domain, "Dirichlet", 1);
+            // bcFactory->addBC(zeroBC, 1, 0, domain, "Dirichlet", 1);
+            // bcFactory->addBC(zeroBC, 2, 0, domain, "Dirichlet", 1);
+            // bcFactory->addBC(zeroBC, 3, 0, domain, "Dirichlet", 1);
+            bcFactory->addBC(zeroBC, 6, 0, domain, "Dirichlet", 1);
+            bcFactory->addBC(zeroBC, 9, 0, domain, "Dirichlet", 1);
+            bcFactory->addBC(zeroBC, 10, 0, domain, "Dirichlet", 1);
         }
 
         Laplace<SC,LO,GO,NO> laplace(domain,FEType,parameterListAll,vL);
@@ -205,15 +205,15 @@ int main(int argc, char *argv[]) {
             laplace.setBoundaries();
             laplace.solve();
         }
-        // bcFactory->addBC(zeroBC, 5, 0, domain, "Dirichlet", 1);
-        // bcFactory->addBC(zeroBC, 15, 0, domain, "Dirichlet", 1);
+        bcFactory->addBC(zeroBC, 5, 0, domain, "Dirichlet", 1);
+        bcFactory->addBC(zeroBC, 15, 0, domain, "Dirichlet", 1);
               
-           
+        bcFactory->setRHS( laplace.getSolution(), 0.);
+        SC maxValue = laplace.getSolution()->getBlockNonConst(0)->getMax();  
+        laplace.getSolution()->getBlockNonConst(0)->scale(1/maxValue);
 
-        // bcFactory->setRHS( laplace.getSolution(), 0.);
-           
-        // HDF5Export<SC,LO,GO,NO> exporter(laplace.getSolution()->getBlock(0)->getMap(), "laplace_parabolic_parabolic_fsi_fluid_length_0_5_mm_"+FEType); //  Map and file name
-        // exporter.writeVariablesHDF5("solution",laplace.getSolution()->getBlock(0)); // VariableName and Variable
+        HDF5Export<SC,LO,GO,NO> exporter(laplace.getSolution()->getBlock(0)->getMap(), "laplace_parabolic_fluidBenchmark4_"+FEType); //  Map and file name
+        exporter.writeVariablesHDF5("solution",laplace.getSolution()->getBlock(0)); // VariableName and Variable
         bool boolExportSolution = true;
 
         if (boolExportSolution) {

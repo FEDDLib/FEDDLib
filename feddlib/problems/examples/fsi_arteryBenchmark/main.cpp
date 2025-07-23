@@ -17,9 +17,18 @@
 #include "feddlib/core/General/HDF5Export.hpp"
 
 
-/*! Test case for specific artery geometrie or straight tube geometry. Inflow depends on inflow region
-	-> artery: Inflow scaled with normal vector on inflow (x,y,z) * laplaceInflow	
-
+/*! Test case for the curved artery gemeotry proposed in 
+    [1] Numerical modeling of fluid–structure interaction in arteries with
+      anisotropic polyconvex hyperelastic and anisotropic viscoelastic
+      material models at finite strains
+      Daniel Balzani, Simone Deparis, Simon Fausten, Davide Forti, Alexander Heinlein,
+      Axel Klawonn, Alfio Quarteroni, Oliver Rheinbach,and Joerg Schröder
+    [2] Comparison of arterial wall models in fluid–structure interaction simulations
+      D. Balzani, A. Heinlein, A. Klawonn,O. Rheinbach, J. Schröder (2023)
+    - The Parameters for fluid and structure are currently set to the NH3/NH4 model in [2]
+    - The parabolic inflow profile was computed beforehand (e.g. in laplace example) and safed
+      to be reloaded for specific mesh resolution and discretization
+    - The uses meshes are #2, #3, #4 from table 4 in [1]. The other resolutions were to large for P2 disc.
 */
 
 
@@ -103,7 +112,7 @@ void flowrate3D(double* x, double* res, double t, const double* parameters)
         Q -= 0.026039341343493;
         Q = (Q - 2.85489)/(7.96908-2.85489);
 
-        res[0] =  parameters[2] + parameters[2]* Q *1.6563 - 0.01 ;
+        res[0] =  parameters[2] + parameters[2]* Q *1.6563 - 0.1 ;
         
     }
     else
@@ -374,7 +383,6 @@ int main(int argc, char *argv[])
 							domainGeometry = domainP1fluid;
 							//                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
 						}
-
                         // domainFluidVelocity->preProcessMesh(true,false);
                         domainFluidVelocity->exportNodeFlags("Fluid");
                         domainStructure->exportNodeFlags("Solid");
@@ -392,8 +400,7 @@ int main(int argc, char *argv[])
                     }
                 }
             }
-
-           
+         
             if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
                 
                 if (verbose)
@@ -485,8 +492,9 @@ int main(int argc, char *argv[])
             {
 
                 MultiVectorConstPtr_Type solutionLaplace;
+                string meshNumber = parameterListProblem->sublist("Mesh Partitioner").get("Mesh Number","2");
 
-                HDF5Import<SC,LO,GO,NO> importer(domainFluidVelocity->getMapUnique() ,"laplace_parabolic_fluidBenchmark2_"+discType);
+                HDF5Import<SC,LO,GO,NO> importer(domainFluidVelocity->getMapUnique() ,"laplace_parabolic_fluidBenchmark"+ meshNumber+"_"+discType);
                 Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solutionImported = importer.readVariablesHDF5("solution");
                 solutionLaplace = solutionImported; // This must me normalized to 1!!
 
