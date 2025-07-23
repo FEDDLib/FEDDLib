@@ -411,7 +411,6 @@ int main(int argc, char *argv[])
 
             }
            
-            domainFluidVelocity->exportSurfaceNormals();
             // Baue die Interface-Maps in der Interface-Nummerierung
             domainFluidVelocity->buildInterfaceMaps();
             
@@ -480,7 +479,7 @@ int main(int argc, char *argv[])
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter Fluid").get("Max Velocity",1.));
             parameter_vec.push_back( parameterListProblem->sublist("Parameter Fluid").get("Max Ramp Time",0.1) );
             parameter_vec.push_back(parameterListProblem->sublist("Parameter Fluid").get("Flowrate",3.0));
-            parameter_vec.push_back(parameterListProblem->sublist("Heart Beat Start").get("Flowrate",0.2));
+            parameter_vec.push_back(parameterListProblem->sublist("Parameter Fluid").get("Heart Beat Start",0.2));
 
         
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory( new BCBuilder<SC,LO,GO,NO>( ) );
@@ -508,10 +507,7 @@ int main(int argc, char *argv[])
                     bcFactory->addBC(parabolicInflow3D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace,true, flowrate3D); // inflow ring
                     //bcFactory->addBC(parabolicInflow3DArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
                     bcFactoryFluid->addBC(parabolicInflow3D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace,true, flowrate3D); // inflow ring
-                    //bcFactoryFluid->addBC(parabolicInflow3DArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow
-            
-                    bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
-                  
+                    //bcFactoryFluid->addBC(parabolicInflow3DArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow                  
                 }
                 else if(rampType == "linear"){
                 
@@ -519,8 +515,6 @@ int main(int argc, char *argv[])
                     //bcFactory->addBC(parabolicInflow3DLinArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring
                     bcFactoryFluid->addBC(parabolicInflow3D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace,true, flowrate3DLinear); // inflow
                     //bcFactoryFluid->addBC(parabolicInflow3DLinArtery, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec, solutionLaplace); // inflow ring               
-
-                    bcFactoryFluid->addBC(zeroDirichlet3D, 1, 0, domainFluidVelocity, "Dirichlet", dim); // wall
                 }
                 
                 // bcFactory->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet_Z", dim); // inflow ring                

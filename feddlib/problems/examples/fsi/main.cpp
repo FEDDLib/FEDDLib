@@ -482,43 +482,13 @@ int main(int argc, char *argv[])
 //                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
             }
 
-            if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
+             if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
                 
                 if (verbose)
                     std::cout << "\t### Exporting fluid and solid subdomains ###\n";
 
-                typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
-                typedef RCP<MultiVector_Type> MultiVectorPtr_Type;
-                typedef RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
-                typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
-                typedef RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
-
-                {
-                    MultiVectorPtr_Type vecDecomposition = rcp(new MultiVector_Type( domainFluidVelocity->getElementMap() ) );
-                    MultiVectorConstPtr_Type vecDecompositionConst = vecDecomposition;
-                    vecDecomposition->putScalar(comm->getRank()+1.);
-                    
-                    Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-                    
-                    exPara->setup( "subdomains_fluid", domainFluidVelocity->getMesh(), "P0" );
-                    
-                    exPara->addVariable( vecDecompositionConst, "subdomains", "Scalar", 1, domainFluidVelocity->getElementMap());
-                    exPara->save(0.0);
-                    exPara->closeExporter();
-                }
-                {
-                    MultiVectorPtr_Type vecDecomposition = rcp(new MultiVector_Type( domainStructure->getElementMap() ) );
-                    MultiVectorConstPtr_Type vecDecompositionConst = vecDecomposition;
-                    vecDecomposition->putScalar(comm->getRank()+1.);
-                    
-                    Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
-                    
-                    exPara->setup( "subdomains_solid", domainStructure->getMesh(), "P0" );
-                    
-                    exPara->addVariable( vecDecompositionConst, "subdomains", "Scalar", 1, domainStructure->getElementMap());
-                    exPara->save(0.0);
-                    exPara->closeExporter();
-                }
+               domainFluidVelocity->exportDistribution("Fluid");
+               domainStructure->exportDistribution("Solid");
 
             }
 
