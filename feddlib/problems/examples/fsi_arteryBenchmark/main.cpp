@@ -103,7 +103,7 @@ void flowrate3D(double* x, double* res, double t, const double* parameters)
         Q -= 0.026039341343493;
         Q = (Q - 2.85489)/(7.96908-2.85489);
 
-        res[0] =  parameters[2] + parameters[2]* Q ;
+        res[0] =  parameters[2] + parameters[2]* Q *1.6563 - 0.01 ;
         
     }
     else
@@ -518,8 +518,8 @@ int main(int argc, char *argv[])
                 // bcFactory->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet_Z", dim); // inflow ring                
                 // bcFactoryFluid->addBC(zeroDirichlet3D, 4, 0, domainFluidVelocity, "Dirichlet_Z", dim); // inflow ring
                 
-                // bcFactory->addBC(zeroDirichlet3D, 5, 0, domainFluidVelocity, "Dirichlet_X", dim); // inflow ring                
-                // bcFactoryFluid->addBC(zeroDirichlet3D, 5, 0, domainFluidVelocity, "Dirichlet_X", dim); // inflow ring
+                // bcFactory->addBC(zeroDirichlet3D, 5, 0, domainFluidVelocity, "Dirichlet_X", dim); // outflow ring                
+                // bcFactoryFluid->addBC(zeroDirichlet3D, 5, 0, domainFluidVelocity, "Dirichlet_X", dim); // outflow ring
 
                 if (zeroPressure) {
                     //bcFactory->addBC(zeroBC, 4, 1, domainFluidPressure, "Dirichlet", 1); // outflow ring
