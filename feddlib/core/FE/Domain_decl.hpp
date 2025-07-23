@@ -462,7 +462,7 @@ public:
          @param[in] FEType
          @param[in] volumeID       
     */
-    void initializeUnstructuredMesh(int dimension, std::string feType, int volumeID=10);
+    void initializeUnstructuredMesh(int dimension, std::string feType, int volumeID=10,  std::string meshUnit = "cm", bool convertToCM = false);
 
     /*!
 		 \brief Hilfsfunktion fuer buildLocalInterfaceIDInGlobal().

@@ -349,7 +349,7 @@ typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
                     }
                     MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
                     
-                    partitionerP1.readAndPartition(15);
+                    partitionerP1.readAndPartition(15,"mm",true); // We convert the mesh of this test from mm to cm!! 
                     
                     if (!discType.compare("P2")){
                         domainP2fluid->buildP2ofP1Domain( domainP1fluid );
