@@ -41,6 +41,9 @@
     </ParameterList>
 
     <ParameterList name="Parameter Fluid">
+        <Parameter name="Preconditioner Type" type="string" value="PCD"/><!--only relevant for block preconditioner for fluid -->
+
+
         <Parameter name="Ramp type" type="string" value="cos"/><!--cos, linear -->
         <Parameter name="Max Velocity" type="double" value="118.28"/><!--2d:2.0, Richter 3d: 1.0-->
         <Parameter name="Max Ramp Time" type="double" value="0.1"/>
@@ -116,7 +119,7 @@
         <Parameter name="Export Extra Data" type="bool" value="false"/>
         <Parameter name="Export Flow Rate" type="bool" value="true"/>
         
-        <Parameter name="Preconditioner Method" type="string" value="FaCSI"/><!-- Monolithic, FaCSI, FaCSI-Teko -->
+        <Parameter name="Preconditioner Method" type="string" value="FaCSI"/><!-- Monolithic, FaCSI, FaCSI-Teko, , FaCSI-Block -->
         <Parameter name="Use Fluid Preconditioner" type="bool" value="true"/>
         <Parameter name="Use Solid Preconditioner" type="bool" value="true"/>
 

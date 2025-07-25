@@ -57,7 +57,7 @@ int LinearSolver<SC,LO,GO,NO>::solve(TimeProblem_Type* problem, BlockMultiVector
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Teko not found! Build Trilinos with Teko.");
 #endif
     }
-    else if(!type.compare("FaCSI") || type == "FaCSI-Teko" )
+    else if(!type.compare("FaCSI") || type == "FaCSI-Teko" || type == "FaCSI-Blck" )
         its = solveBlock( problem, rhs, type );
     else if (type=="Diagonal" || type=="Triangular" || type=="PCD" || type=="LSC")
         its = solveBlock( problem, rhs, type );

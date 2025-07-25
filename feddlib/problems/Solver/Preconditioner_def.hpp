@@ -146,7 +146,7 @@ void Preconditioner<SC,LO,GO,NO>::initializePreconditioner( std::string type )
             initPreconditionerBlock( );
         
     }
-    else if (type == "Teko" || type == "FaCSI-Teko"){
+    else if (type == "Teko" || type == "FaCSI-Teko" || type == "FaCSI-Block"){
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Please construct the Teko precondtioner completely.");
     }
     else
@@ -251,7 +251,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditioner( std::string type )
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Teko not found! Build Trilinos with Teko.");
 #endif
     }
-    else if( type == "FaCSI" || type == "FaCSI-Teko" ){
+    else if( type == "FaCSI" || type == "FaCSI-Teko" || type == "FaCSI-Block" ){
         buildPreconditionerFaCSI( type );
     }
     else if(type == "Triangular" || type == "Diagonal" || type == "PCD" || type == "LSC"){
@@ -989,6 +989,9 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerFaCSI( std::string type )
         precTypeFluid = "Monolithic";
     else if (type == "FaCSI-Teko")
         precTypeFluid = "Teko";
+    else if (type == "FaCSI-Block"){
+        precTypeFluid = parameterList->sublist("Parameter Fluid").get("Preconditioner Type", "PCD");
+    }
 
     CommConstPtr_Type comm = timeProblem_->getComm();
     bool useFluidPreconditioner = parameterList->sublist("General").get("Use Fluid Preconditioner", true);
