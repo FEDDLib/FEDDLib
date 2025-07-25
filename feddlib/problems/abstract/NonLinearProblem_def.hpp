@@ -237,7 +237,7 @@ namespace FEDD
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method", "Monolithic");
         if (!type.compare("Monolithic"))
             initVectorSpacesMonolithic();
-        else if (!type.compare("Teko") || type == "FaCSI" || type == "FaCSI-Teko" || type == "Diagonal" || type == "Triangular" || type == "PCD"|| type == "LSC")
+        else if (!type.compare("Teko") || type == "FaCSI" || type == "FaCSI-Teko"  || type == "FaCSI-Block" || type == "Diagonal" || type == "Triangular" || type == "PCD"|| type == "LSC")
             initVectorSpacesBlock();
         else
             TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unkown preconditioner/solver type.");
