@@ -276,6 +276,10 @@ typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
 
         ParameterListPtr_Type parameterListFluidAll(new Teuchos::ParameterList(*parametersListPrecFluid)) ;
         sublist(parameterListFluidAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Fluid") );
+        std::string precTypeFluid = parameterListProblem->sublist("Parameter Fluid").get("Preconditioner Type","Monolithic");
+
+        sublist( parameterListFluidAll, "General" )->set( "Preconditioner Method",precTypeFluid  );
+
         // parameterListFluidAll->setParameters(*parameterListPrecFluidTeko);
 
         
