@@ -991,6 +991,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerFaCSI( std::string type )
         precTypeFluid = "Teko";
     else if (type == "FaCSI-Block"){
         precTypeFluid = parameterList->sublist("Parameter Fluid").get("Preconditioner Type", "PCD");
+        sublist( pLFluid, "General" )->set( "Preconditioner Method",precTypeFluid  );
     }
 
     CommConstPtr_Type comm = timeProblem_->getComm();
