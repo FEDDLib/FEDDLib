@@ -1007,10 +1007,14 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerFaCSI( std::string type )
             std::cout << "\t### FaCSI standard ###" << std::endl;
     }
 
-    
+    // Two Ideas:
+    // - Either replace proFluid with the real fluid problem
+    // - Use real fluid problem to initialize the probfluid
+    Teuchos::RCP< NavierStokes<SC,LO,GO,NO> > fluidProblem = steadyFSI->problemFluid_;
+
     //Setup fluid problem
     if (probFluid_.is_null()){
-        probFluid_ = Teuchos::rcp( new MinPrecProblem_Type( pLFluid, timeProblem_->getComm() ) );
+        probFluid_ = Teuchos::rcp( new MinPrecProblem_Type(pLFluid, timeProblem_->getComm(),fluidProblem->getPreconditioner() ) );
         DomainConstPtr_vec_Type fluidDomains = steadyFSI->getFluidProblem()->getDomainVector();
         probFluid_->initializeDomains( fluidDomains );
         probFluid_->initializeLinSolverBuilder( timeProblem_->getLinearSolverBuilder() );
