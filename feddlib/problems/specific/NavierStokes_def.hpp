@@ -199,10 +199,14 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
     this->system_->addBlock( A_, 0, 0 );
     assembleDivAndStab();
     
+    std::cout << " Navier Stokes:: assembleConstantMatrices:: prec " << this->parameterList_->sublist("General").get("Preconditioner Method","Nothing") << std::endl;
+
 #ifdef FEDD_HAVE_TEKO
     if ( !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Teko") 
     || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD")
     || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")) {
+
+    std::cout << " Navier Stokes:: assembleConstantMatrices:: prec Teko, Pcd, LSC" << std::endl;
 
         // ###############################################
         // LSC Preconditioner
@@ -254,6 +258,8 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         else if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
         || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD") ){
             
+            std::cout << " Navier Stokes:: assembleConstantMatrices:: prec Teko_PCD, FEDD_PCD" << std::endl;
+
             // ###############################################
             // Velocity mass matrix: Currently this is set to not have an error in preconditioner. PLEASE FIX
             MatrixPtr_Type Mvelocity(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
