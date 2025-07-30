@@ -37,7 +37,9 @@
 
     
     <ParameterList name="Parameter Fluid">
-        <Parameter name="Viscosity" type="double" value="3.0e-2"/> <!-- kinematic viscosity cm^2/s -->
+        <Parameter name="Preconditioner Type" type="string" value="PCD"/><!--only relevant for block preconditioner for fluid -->
+
+        <Parameter name="Viscosity" type="double" value="2.31e-2"/> <!-- kinematic viscosity cm^2/s converted from dynamic visco 0.003 Pa s -->
         <Parameter name="Density" type="double" value="1.3e-03"/><!-- kg/cm³ -->
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
 
@@ -112,7 +114,7 @@
         <Parameter name="Export Extra Data" type="bool" value="false"/>
         <Parameter name="Export Flow Rate" type="bool" value="true"/>
         
-        <Parameter name="Preconditioner Method" type="string" value="FaCSI"/><!-- Monolithic, FaCSI, FaCSI-Teko -->
+        <Parameter name="Preconditioner Method" type="string" value="FaCSI"/><!-- Monolithic, FaCSI, FaCSI-Teko, FaCSI-Block -->
         <Parameter name="Use Fluid Preconditioner" type="bool" value="true"/>
         <Parameter name="Use Solid Preconditioner" type="bool" value="true"/>
 

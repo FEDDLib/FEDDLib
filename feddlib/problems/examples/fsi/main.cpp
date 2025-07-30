@@ -299,6 +299,8 @@ int main(int argc, char *argv[])
 
     string xmlPrecFileFluidMono = "parametersPrecFluidMono.xml";
     string xmlPrecFileFluidTeko = "parametersPrecFluidTeko.xml";
+    string xmlPrecFileFluidBlock = "parametersPrecFluidBlock.xml";
+
     myCLP.setOption("precfileFluidMono",&xmlPrecFileFluidMono,".xml file with Inputparameters.");
     myCLP.setOption("precfileFluidTeko",&xmlPrecFileFluidTeko,".xml file with Inputparameters.");
     // string xmlProblemFileFluid = "parametersProblemFluid.xml";
@@ -327,6 +329,7 @@ int main(int argc, char *argv[])
 
         ParameterListPtr_Type parameterListPrecFluidMono = Teuchos::getParametersFromXmlFile(xmlPrecFileFluidMono);
         ParameterListPtr_Type parameterListPrecFluidTeko = Teuchos::getParametersFromXmlFile(xmlPrecFileFluidTeko);
+        ParameterListPtr_Type parameterListPrecFluidBlock = Teuchos::getParametersFromXmlFile(xmlPrecFileFluidBlock);
 
         ParameterListPtr_Type parameterListPrecStructure = Teuchos::getParametersFromXmlFile(xmlPrecFileStructure);
         
@@ -342,11 +345,28 @@ int main(int argc, char *argv[])
         parameterListAll->setParameters(*parameterListSolverFSI);
 
         
-        ParameterListPtr_Type parameterListFluidAll(new Teuchos::ParameterList(*parameterListPrecFluidMono)) ;
-        sublist(parameterListFluidAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Fluid") );
-        parameterListFluidAll->setParameters(*parameterListPrecFluidTeko);
-
+        std::string preconditionerMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
+        ParameterListPtr_Type parametersListPrecFluid;
         
+        if(preconditionerMethod == "FaCSI")
+            parametersListPrecFluid = parameterListPrecFluidMono;
+        else if(preconditionerMethod == "FaCSI-Teko")
+            parametersListPrecFluid=parameterListPrecFluidTeko;
+        else if(preconditionerMethod == "FaCSI-Block")
+            parametersListPrecFluid=parameterListPrecFluidBlock;
+
+        ParameterListPtr_Type parameterListFluidAll(new Teuchos::ParameterList(*parametersListPrecFluid)) ;
+        sublist(parameterListFluidAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Fluid") );
+        std::string precTypeFluid = parameterListProblem->sublist("Parameter Fluid").get("Preconditioner Type","Monolithic");
+
+        sublist( parameterListFluidAll, "General" )->set( "Preconditioner Method",precTypeFluid  );
+
+        sublist( parameterListFluidAll, "General" )->set( "Flag Inlet Fluid",parameterListProblem->sublist("General").get("Flag Inlet Fluid",4) );
+        sublist( parameterListFluidAll, "General" )->set( "Flag Outlet Fluid",parameterListProblem->sublist("General").get("Flag Outlet Fluid",5)  );
+        sublist( parameterListFluidAll, "General" )->set( "Flag Interface",parameterListProblem->sublist("General").get("Flag Interface",6)  );
+        sublist( parameterListFluidAll, "Timestepping Parameter" )->set( "dt",parameterListProblem->sublist("Timestepping Parameter").get("dt",0.1)  );
+        sublist( parameterListFluidAll, "Timestepping Parameter" )->set( "BDF",parameterListProblem->sublist("Timestepping Parameter").get("BDF",2)  );
+
         ParameterListPtr_Type parameterListStructureAll(new Teuchos::ParameterList(*parameterListPrecStructure));
         sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Solid") );
 
@@ -369,7 +389,6 @@ int main(int argc, char *argv[])
             
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);        
         string      discType        = parameterListProblem->sublist("Parameter").get("Discretization","P2");
-        string preconditionerMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
         int         n;
 
         TimePtr_Type totalTime(TimeMonitor_Type::getNewCounter("FEDD - main - Total Time"));
@@ -450,7 +469,8 @@ int main(int argc, char *argv[])
                         domainP2fluid->buildP2ofP1Domain( domainP1fluid );
                         domainP2struct->buildP2ofP1Domain( domainP1struct );
                     }
-                    
+                    domainP1fluid->exportNodeFlags("Fluid");
+                    domainP1struct->exportNodeFlags("Solid");
                     // Calculate distances is done in: identifyInterfaceParallelAndDistance
                     domainP1fluid->identifyInterfaceParallelAndDistance(domainP1struct, idsInterface);
                     if (!discType.compare("P2"))
@@ -757,7 +777,7 @@ int main(int argc, char *argv[])
             // in derselben Zeile, der nur Werte auf dem Interface haelt, mit eliminiert.
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryGeometry( new BCBuilder<SC,LO,GO,NO>( ) );
             Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactoryFluidInterface;
-            if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
+            if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko" || preconditionerMethod == "FaCSI-Block")
                 bcFactoryFluidInterface = Teuchos::rcp( new BCBuilder<SC,LO,GO,NO>( ) );
 
             if(dim == 2)
@@ -794,7 +814,7 @@ int main(int argc, char *argv[])
                     // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand.
                     // Hier erstmal Dirichlet Nullrand, wird spaeter von der Sturkturloesung vorgegeben
                     // bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
-                    if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
+                    if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko" || preconditionerMethod == "FaCSI-Block")
                     {
                         bcFactoryFluidInterface->addBC(zeroDirichlet3D, 6, 0, domainFluidVelocity, "Dirichlet", dim);
                         bcFactoryFluidInterface->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet", dim);
@@ -811,14 +831,14 @@ int main(int argc, char *argv[])
                     }
                     bcFactoryGeometry->addBC(zeroDirichlet3D, 5, 0, domainGeometry, "Dirichlet", dim); // outflow
                     bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
-                    if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
+                    if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko" || preconditionerMethod == "FaCSI-Block")
                         bcFactoryFluidInterface->addBC(zeroDirichlet2D, 6, 0, domainFluidVelocity, "Dirichlet", dim);
                     // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand
                 }
             }
 
             fsi.problemGeometry_->addBoundaries(bcFactoryGeometry);
-            if ( preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko")
+            if ( preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko"|| preconditionerMethod == "FaCSI-Block")
                 fsi.getPreconditioner()->setFaCSIBCFactory( bcFactoryFluidInterface );
 
 

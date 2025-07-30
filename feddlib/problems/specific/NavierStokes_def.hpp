@@ -51,7 +51,9 @@ double OneFunction(double* x, int* parameter)
 }
 
 void dummyFuncRhs(double* x, double* res, double* parameters){
-    if(parameters[0]==2)
+
+    // parameters[1] contains the surface flag, parameter[0] contains the inlet flag
+    if(parameters[1]==parameters[0])
         res[0]=1;
     else
         res[0] = 0.;
@@ -129,8 +131,16 @@ u_rep_()
         || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
         || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("LSC-Pressure-Laplace") )
     { 
+
+        int flagOutlet = this->parameterList_->sublist("General").get("Flag Outlet Fluid", 3);
+        int flagInterface = this->parameterList_->sublist("General").get("Flag Interface", 6);
+
         this->bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
-        this->bcFactoryPCD_->addBC(zeroDirichletBC, 3, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
+        this->bcFactoryPCD_->addBC(zeroDirichletBC, flagOutlet, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
+        // this->bcFactoryPCD_->addBC(zeroDirichletBC, flagInterface, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
+        // this->bcFactoryPCD_->addBC(zeroDirichletBC, 9, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
+        // this->bcFactoryPCD_->addBC(zeroDirichletBC, 10, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
+
     } 
 
     if(this->parameterList_->sublist("General").get("Augmented Lagrange",false))  
@@ -199,14 +209,11 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
     this->system_->addBlock( A_, 0, 0 );
     assembleDivAndStab();
     
-    std::cout << " Navier Stokes:: assembleConstantMatrices:: prec " << this->parameterList_->sublist("General").get("Preconditioner Method","Nothing") << std::endl;
 
 #ifdef FEDD_HAVE_TEKO
     if ( !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Teko") 
     || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD")
     || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")) {
-
-    std::cout << " Navier Stokes:: assembleConstantMatrices:: prec Teko, Pcd, LSC" << std::endl;
 
         // ###############################################
         // LSC Preconditioner
@@ -258,8 +265,6 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         else if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
         || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD") ){
             
-            std::cout << " Navier Stokes:: assembleConstantMatrices:: prec Teko_PCD, FEDD_PCD" << std::endl;
-
             // ###############################################
             // Velocity mass matrix: Currently this is set to not have an error in preconditioner. PLEASE FIX
             MatrixPtr_Type Mvelocity(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
@@ -277,10 +282,15 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
             // --------------------------------------------------------------------------------------------
             // Pressure Laplace matrix
+            SC density = this->parameterList_->sublist("Parameter").get("Density",1.); // Ap need to be scaled with viscosity
+
             MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
             this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );
+            // Lp->resumeFill();
+            // Lp->scale(density);
+            // Lp->fillComplete();
             Ap_.reset(new Matrix_Type(Lp)); // Setting Ap_ as Lp without any BC
-        
+            
             // Adding boundary information to pressure Laplace operator
             BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
             bcBlockMatrix->addBlock(Lp,0,0);
@@ -301,13 +311,18 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             MatrixPtr_Type Ap2(new Matrix_Type( Ap_) );
 
             SC kinVisco = this->parameterList_->sublist("Parameter").get("Viscosity",1.); // Ap need to be scaled with viscosity
+
             Ap2->resumeFill();
             Ap2->scale(kinVisco);
+            // Ap2->scale(density);
             Ap2->fillComplete(); 
             
             
             MatrixPtr_Type K_robin(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
-            vec_dbl_Type funcParameter(1,kinVisco);
+            int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 2);
+
+            vec_dbl_Type funcParameter(1,flagInlet);
+            funcParameter.push_back(0.0); // Dummy for flag
             this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,K_robin, funcParameter, dummyFuncRhs,this->parameterList_);
             K_robin->addMatrix(-1.,Kp,1.); // adding robin boundary condition to to Kp
             
@@ -315,6 +330,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
             Ap2->addMatrix(1.,Kp,1.); // adding advection to diffusion
             AdvPressure->addMatrix(1.,Kp,1.); // adding advection to diffusion
             
+            // Kp->scale(density);
             Kp->fillComplete();
 
             bcBlockMatrix->addBlock(Kp,0,0);
@@ -360,11 +376,11 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
 
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
-    
+
     if ( !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
                 || !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("PCD")) 
     {
-    
+        std::cout << "NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() set to TRUE" << std::endl;
         NAVIER_STOKES_START(ReassemblePCD," Reassembling Matrix for PCD ");
       
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
@@ -380,14 +396,20 @@ void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
         // Diffusion component: \nu * \Delta
         MatrixPtr_Type Ap2(new Matrix_Type( Ap_ ) ); // We use A_p which we already stored
         SC kinVisco = this->parameterList_->sublist("Parameter").get("Viscosity",1.);
+        SC density = this->parameterList_->sublist("Parameter").get("Density",1.);
+
         Ap2->resumeFill();
         Ap2->scale(kinVisco);
+        // Ap2->scale(density); //<------------------------------
         Ap2->fillComplete();
 
         // ---------------------
         // Robin boundary
         MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
-        vec_dbl_Type funcParameter(1,kinVisco);
+        int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 2);
+        vec_dbl_Type funcParameter(1,flagInlet);
+        funcParameter.push_back(0.0); // Dummy for flag
+
         this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,Kext, funcParameter, dummyFuncRhs,this->parameterList_);
         Kext->addMatrix(-1.,Fp,1.); // adding advection to diffusion
         
@@ -407,9 +429,11 @@ void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
             else
                 TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "PCD operator for transient problems only defined for BDF-1 and BDF-2.");
 
+            // Mp2->scale(density);
             Mp2->fillComplete();
             Mp2->addMatrix(1.,Fp,1.);
         }
+        // Fp->scale(1./density);
         Fp->fillComplete();
 
         BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));

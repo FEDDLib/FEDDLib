@@ -920,7 +920,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
     double beta = timeSteppingTool_->get_beta();
     double gamma = timeSteppingTool_->get_gamma();
     int nmbBDF = timeSteppingTool_->getBDFNumber();
-
     // ######################
     // Fluid: Mass-, Problem, SourceTerm Koeffizienten
     // ######################
@@ -1190,14 +1189,20 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
         // ######################
         // Use BDF1 Parameters for first system
         if (timeSteppingTool_->currentTime() == 0.) {
+            SmallMatrix<double> massCoeffFluidTmp(sizeFluid);
+
             for (int i = 0; i < sizeFluid; i++)
             {
                 for (int j = 0; j < sizeFluid; j++){
-                    if (massCoeffFSI[i][j] != 0.)
+                    if (massCoeffFSI[i][j] != 0.){
                         massCoeffFSI[i][j] = 1./dt ;
+                        massCoeffFluidTmp[i][j] = 1./dt;
+                    }
                 }
             }
             this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+            fsi->problemTimeFluid_->setTimeParameters(massCoeffFluidTmp, problemCoeffFluid);
+
         }
         
         
@@ -1215,6 +1220,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
                 }
             }
             this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+            fsi->problemTimeFluid_->setTimeParameters(massCoeffFluid, problemCoeffFluid);
+
         }
         
         this->problemTime_->computeValuesOfInterestAndExport();

@@ -620,91 +620,92 @@ void FSI<SC,LO,GO,NO>::reAssemble(std::string type) const
 template<class SC,class LO,class GO,class NO>
 void FSI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions)
 {
-    double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
-    // Fluid-Dichte
-    double density = this->problemFluid_->getParameterList()->sublist("Parameter").get("Density",1.);
+    std::cout << "FSI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions)"<< std::endl;
+    // double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
+    // // Fluid-Dichte
+    // double density = this->problemFluid_->getParameterList()->sublist("Parameter").get("Density",1.);
 
-    // ###############
-    // w bestimmen
-    // ###############
-    MultiVectorConstPtr_Type geometrySolution;
-    if(geometryExplicit_)
-    {
-        geometrySolution = this->problemGeometry_->getSolution()->getBlock(0);
-    }
-    else
-    {
-        geometrySolution = this->solution_->getBlock(4);
-    }
-    meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
-
-
-    *w_rep_ = *meshDisplacementNew_rep_;
-    // update(): this = alpha*A + beta*this
-    w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
-    w_rep_->scale(1.0/dt);
+    // // ###############
+    // // w bestimmen
+    // // ###############
+    // MultiVectorConstPtr_Type geometrySolution;
+    // if(geometryExplicit_)
+    // {
+    //     geometrySolution = this->problemGeometry_->getSolution()->getBlock(0);
+    // }
+    // else
+    // {
+    //     geometrySolution = this->solution_->getBlock(4);
+    // }
+    // meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
 
 
-    // ###############
-    // u extrapolieren
-    // ###############
-    // Beachte: getBlock(0) ist hier der Richtige, da dies der u-Variable in FSI entspricht.
-    if (previousSolutions.size() >= 2)
-    {
-        MultiVectorPtr_Type extrapolatedVector = Teuchos::rcp( new MultiVector_Type( previousSolutions[0]->getBlock(0) ) );
-
-        // Extrapolation fuer BDF2
-        // update(): this = alpha*A + beta*this
-        extrapolatedVector->update( -1., *previousSolutions[1]->getBlock(0), 2. );
-
-        u_rep_->importFromVector(extrapolatedVector, true);
-    }
-    else if(previousSolutions.size() == 1)
-    {
-        MultiVectorConstPtr_Type u = previousSolutions[0]->getBlock(0);
-        u_rep_->importFromVector(u, true);
-    }
-    else if (previousSolutions.size() == 0)
-    {
-        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);
-    }
-
-    // (u-w)
-    *u_minus_w_rep_ = *u_rep_;
-    // update(): this = alpha*A + beta*this
-    u_minus_w_rep_->update(-1.0, *w_rep_, 1.0);
+    // *w_rep_ = *meshDisplacementNew_rep_;
+    // // update(): this = alpha*A + beta*this
+    // w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
+    // w_rep_->scale(1.0/dt);
 
 
-    // ###############
-    // Neu assemblieren
-    // ###############
+    // // ###############
+    // // u extrapolieren
+    // // ###############
+    // // Beachte: getBlock(0) ist hier der Richtige, da dies der u-Variable in FSI entspricht.
+    // if (previousSolutions.size() >= 2)
+    // {
+    //     MultiVectorPtr_Type extrapolatedVector = Teuchos::rcp( new MultiVector_Type( previousSolutions[0]->getBlock(0) ) );
 
-    MatrixPtr_Type APN = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    //     // Extrapolation fuer BDF2
+    //     // update(): this = alpha*A + beta*this
+    //     extrapolatedVector->update( -1., *previousSolutions[1]->getBlock(0), 2. );
 
-    MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-    this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, u_minus_w_rep_, true );
+    //     u_rep_->importFromVector(extrapolatedVector, true);
+    // }
+    // else if(previousSolutions.size() == 1)
+    // {
+    //     MultiVectorConstPtr_Type u = previousSolutions[0]->getBlock(0);
+    //     u_rep_->importFromVector(u, true);
+    // }
+    // else if (previousSolutions.size() == 0)
+    // {
+    //     MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+    //     u_rep_->importFromVector(u, true);
+    // }
 
-    P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    // // (u-w)
+    // *u_minus_w_rep_ = *u_rep_;
+    // // update(): this = alpha*A + beta*this
+    // u_minus_w_rep_->update(-1.0, *w_rep_, 1.0);
+
+
+    // // ###############
+    // // Neu assemblieren
+    // // ###############
+
+    // MatrixPtr_Type APN = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+
+    // MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    // this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, u_minus_w_rep_, true );
+
+    // P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     
-    this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
-    P_->resumeFill();
-    P_->scale(density);
-    P_->scale(-1.0);
-    P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
+    // this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
+    // P_->resumeFill();
+    // P_->scale(density);
+    // P_->scale(-1.0);
+    // P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
 
 
-    N->resumeFill();
-    N->scale(density);
-    N->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
+    // N->resumeFill();
+    // N->scale(density);
+    // N->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
 
-    this->problemFluid_->A_->addMatrix(1.0, APN, 0.0);
-    P_->addMatrix(1.0, APN, 1.0);
-    N->addMatrix(1.0, APN, 1.0);
+    // this->problemFluid_->A_->addMatrix(1.0, APN, 0.0);
+    // P_->addMatrix(1.0, APN, 1.0);
+    // N->addMatrix(1.0, APN, 1.0);
 
-    APN->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
+    // APN->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
 
-    this->system_->addBlock( APN, 0, 0 );
+    // this->system_->addBlock( APN, 0, 0 );
 }
 
 template<class SC,class LO,class GO,class NO>
