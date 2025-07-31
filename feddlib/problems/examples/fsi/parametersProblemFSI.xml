@@ -37,6 +37,7 @@
 
     
     <ParameterList name="Parameter Fluid">
+        <Parameter name="Mesh Name Inflow" type="string" value="fsi_fluid_length_0_5_mm"/>
         <Parameter name="Preconditioner Type" type="string" value="PCD"/><!--only relevant for block preconditioner for fluid -->
 
         <Parameter name="Viscosity" type="double" value="2.31e-2"/> <!-- kinematic viscosity cm^2/s converted from dynamic visco 0.003 Pa s -->

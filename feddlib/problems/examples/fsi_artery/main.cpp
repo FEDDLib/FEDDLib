@@ -267,6 +267,7 @@ typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
         std::string preconditionerMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
         ParameterListPtr_Type parametersListPrecFluid;
         
+         // We also have the option to use FaCSI with one of the FEDDLib implemented block preconditioners
         if(preconditionerMethod == "FaCSI")
             parametersListPrecFluid = parameterListPrecFluidMono;
         else if(preconditionerMethod == "FaCSI-Teko")
@@ -279,6 +280,11 @@ typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
         std::string precTypeFluid = parameterListProblem->sublist("Parameter Fluid").get("Preconditioner Type","Monolithic");
 
         sublist( parameterListFluidAll, "General" )->set( "Preconditioner Method",precTypeFluid  );
+        // Information used for PCD
+        sublist( parameterListFluidAll, "General" )->set( "Flag Inlet Fluid",parameterListProblem->sublist("General").get("Flag Inlet Fluid",4) );
+        sublist( parameterListFluidAll, "General" )->set( "Flag Outlet Fluid",parameterListProblem->sublist("General").get("Flag Outlet Fluid",5)  );
+        sublist( parameterListFluidAll, "General" )->set( "Flag Interface",parameterListProblem->sublist("General").get("Flag Interface",6)  );
+        sublist( parameterListFluidAll, "Timestepping Parameter" )->setParameters( parameterListProblem->sublist("Timestepping Parameter") );
 
         // parameterListFluidAll->setParameters(*parameterListPrecFluidTeko);
 
@@ -489,6 +495,13 @@ typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
             // TODO: Vermutlich braucht man keine bcFactoryFluid und bcFactoryStructure,
             // da die RW sowieso auf dem FSI-Problem gesetzt werden.
 
+            // #####################
+            // Randwerte
+            // Fluid: 4 = inflow, 5=outflow,9 = inflow ring, 10 = outflow ring
+            // Struktur: 7 = linke (z=0) Seite, 8 = rechte (z=L) seite. 13,14 einzelne Freiheitsgrade festgehalten in x,y Richtung
+            // Interface: 6 , 9 , 10  
+            // #####################
+
             // Fluid-RW
             {
                  MultiVectorConstPtr_Type solutionLaplace;
@@ -538,8 +551,6 @@ typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
                 bcFactory->addBC(zeroDirichlet3D, 7, 2, domainStructure, "Dirichlet_Z", dim); // inlet fixed in Z direction
                 bcFactory->addBC(zeroDirichlet3D, 8, 2, domainStructure, "Dirichlet_Z", dim); // outlet fixed in Z direction
                 // bcFactory->addBC(zeroDirichlet3D, 9, 2, domainStructure, "Dirichlet_Z", dim); // inlet ring in Z direction
-                // bcFactory->addBC(zeroDirichlet3D, 1, 2, domainStructure, "Dirichlet_Z", dim); // outer ring of inlet area
-                // bcFactory->addBC(zeroDirichlet3D, 2, 2, domainStructure, "Dirichlet_Z", dim); // outer ring of outlet area
                 // bcFactory->addBC(zeroDirichlet3D, 10, 2, domainStructure, "Dirichlet_Z", dim); // outlet ring in Z direction
 
                 bcFactoryStructure->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Y_Z", dim); 
@@ -547,9 +558,8 @@ typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
                 bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_Z", dim);           
                 bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Z", dim); 
                 // bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Z", dim);  
-                // bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_Z", dim); 
-                // bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Z", dim);           
                 // bcFactoryStructure->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Z", dim); 
+             
                 // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
                 // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
                 if (!fsi.problemStructure_.is_null())
@@ -574,23 +584,23 @@ typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
             if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko" || preconditionerMethod == "FaCSI-Block" )
                 bcFactoryFluidInterface = Teuchos::rcp( new BCBuilder<SC,LO,GO,NO>( ) );
 
-
-            // bcFactoryGeometry->addBC(zeroDirichlet3D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow ring
-            // bcFactoryGeometry->addBC(zeroDirichlet3D, 3, 0, domainGeometry, "Dirichlet", dim); // outflow ring
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 9, 0, domainGeometry, "Dirichlet", dim); // inflow
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 10, 0, domainGeometry, "Dirichlet", dim); // outflow
-            // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand.
-            // Hier erstmal Dirichlet Nullrand, wird spaeter von der Sturkturloesung vorgegeben
-            bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
             if (preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko" || preconditionerMethod == "FaCSI-Block"){
                 bcFactoryFluidInterface->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet", dim);
                 bcFactoryFluidInterface->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet", dim);
                 bcFactoryFluidInterface->addBC(zeroDirichlet3D, 6, 0, domainFluidVelocity, "Dirichlet", dim);
             }
-            fsi.problemGeometry_->addBoundaries(bcFactoryGeometry);
-            if ( preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko" || preconditionerMethod == "FaCSI-Block")
-                fsi.getPreconditioner()->setFaCSIBCFactory( bcFactoryFluidInterface );
 
+            if ( preconditionerMethod == "FaCSI" || preconditionerMethod == "FaCSI-Teko" || preconditionerMethod == "FaCSI-Block")
+               fsi.getPreconditioner()->setFaCSIBCFactory( bcFactoryFluidInterface );
+
+            bcFactoryGeometry->addBC(zeroDirichlet3D, 9, 0, domainGeometry, "Dirichlet", dim); // inflow ring
+            bcFactoryGeometry->addBC(zeroDirichlet3D, 10, 0, domainGeometry, "Dirichlet", dim); // outflow ring
+            // Die RW, welche nicht Null sind in der rechten Seite (nur Interface) setzen wir spaeter per Hand.
+            // Hier erstmal Dirichlet Nullrand, wird spaeter von der Sturkturloesung vorgegeben
+            bcFactoryGeometry->addBC(zeroDirichlet3D, 6, 0, domainGeometry, "Dirichlet", dim); // interface
+
+            fsi.problemGeometry_->addBoundaries(bcFactoryGeometry);
+           
 
             // #####################
             // Zeitintegration

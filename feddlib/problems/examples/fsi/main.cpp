@@ -348,6 +348,7 @@ int main(int argc, char *argv[])
         std::string preconditionerMethod = parameterListProblem->sublist("General").get("Preconditioner Method","Monolithic");
         ParameterListPtr_Type parametersListPrecFluid;
         
+        // We also have the option to use FaCSI with one of the FEDDLib implemented block preconditioners
         if(preconditionerMethod == "FaCSI")
             parametersListPrecFluid = parameterListPrecFluidMono;
         else if(preconditionerMethod == "FaCSI-Teko")
@@ -360,18 +361,18 @@ int main(int argc, char *argv[])
         std::string precTypeFluid = parameterListProblem->sublist("Parameter Fluid").get("Preconditioner Type","Monolithic");
 
         sublist( parameterListFluidAll, "General" )->set( "Preconditioner Method",precTypeFluid  );
-
+        // Information used for PCD
         sublist( parameterListFluidAll, "General" )->set( "Flag Inlet Fluid",parameterListProblem->sublist("General").get("Flag Inlet Fluid",4) );
         sublist( parameterListFluidAll, "General" )->set( "Flag Outlet Fluid",parameterListProblem->sublist("General").get("Flag Outlet Fluid",5)  );
         sublist( parameterListFluidAll, "General" )->set( "Flag Interface",parameterListProblem->sublist("General").get("Flag Interface",6)  );
-        sublist( parameterListFluidAll, "Timestepping Parameter" )->set( "dt",parameterListProblem->sublist("Timestepping Parameter").get("dt",0.1)  );
-        sublist( parameterListFluidAll, "Timestepping Parameter" )->set( "BDF",parameterListProblem->sublist("Timestepping Parameter").get("BDF",2)  );
+        sublist( parameterListFluidAll, "Timestepping Parameter" )->setParameters( parameterListProblem->sublist("Timestepping Parameter") );
 
         ParameterListPtr_Type parameterListStructureAll(new Teuchos::ParameterList(*parameterListPrecStructure));
         sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Solid") );
 
         parameterListStructureAll->setParameters(*parameterListPrecStructure);
 
+        std::string meshName = parameterListProblem->sublist("Parameter Fluid").get("Mesh Name Inflow","fsi_fluid_length_0_5_mm");
 
         
         // Fuer das Geometrieproblem, falls GE
@@ -469,8 +470,6 @@ int main(int argc, char *argv[])
                         domainP2fluid->buildP2ofP1Domain( domainP1fluid );
                         domainP2struct->buildP2ofP1Domain( domainP1struct );
                     }
-                    domainP1fluid->exportNodeFlags("Fluid");
-                    domainP1struct->exportNodeFlags("Solid");
                     // Calculate distances is done in: identifyInterfaceParallelAndDistance
                     domainP1fluid->identifyInterfaceParallelAndDistance(domainP1struct, idsInterface);
                     if (!discType.compare("P2"))
@@ -501,7 +500,8 @@ int main(int argc, char *argv[])
                 domainGeometry = domainP1fluid;
 //                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
             }
-
+            domainFluidVelocity->exportNodeFlags("Fluid");
+            domainStructure->exportNodeFlags("Solid");
              if (parameterListAll->sublist("General").get("ParaView export subdomains",false) ){
                 
                 if (verbose)
@@ -582,6 +582,10 @@ int main(int argc, char *argv[])
             // Zusammenfassung der Flags:
             // Fluid/ Geometrie: 1 = wall; 2 = inflow; 3 = outflow; 4 = Fluid-obstacle; 5 = Interface in 2d
             // Struktur: 1 = linke Seite (homogener Dirichletrand); 5 = Interface in 2d
+            // Tube 3D:
+            // Fluid: 4 = inflow, 5=outflow,9 = inflow ring, 10 = outflow ring
+            // Struktur: 7 = linke (z=0) Seite, 8 = rechte (z=L) seite. 13,14 einzelne Freiheitsgrade festgehalten in x,y Richtung
+            // Interface: 6 , 9 , 10  
             // #####################
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter Fluid").get("MeanVelocity",2.0));
             
@@ -666,7 +670,7 @@ int main(int argc, char *argv[])
                             inflowProfile = blockFluidDummy->getBlock(0);
                         }
                         else{
-                            HDF5Import<SC,LO,GO,NO> importer(domainFluidVelocity->getMapUnique() ,"laplace_parabolic_parabolic_fsi_fluid_length_0_5_mm_"+discType);
+                            HDF5Import<SC,LO,GO,NO> importer(domainFluidVelocity->getMapUnique() ,"laplace_parabolic_parabolic_"+meshName+"_"+discType);
                             Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solutionImported = importer.readVariablesHDF5("solution");
                             inflowProfile = solutionImported;
                         }
@@ -674,10 +678,10 @@ int main(int argc, char *argv[])
 
                         bcFactory->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,inflowProfile,true, flowrate3D); // inflow 
                         bcFactoryFluid->addBC(parabolicInflow3D, 4, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec,inflowProfile,true, flowrate3D); // inflow 
-                        bcFactory->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
-                        bcFactoryFluid->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
-                        bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
-                        bcFactoryFluid->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
+                        // bcFactory->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
+                        // bcFactoryFluid->addBC(zeroDirichlet3D, 9, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
+                        // bcFactory->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
+                        // bcFactoryFluid->addBC(zeroDirichlet3D, 10, 0, domainFluidVelocity, "Dirichlet_Z", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
 
                     }
                     else{ 
