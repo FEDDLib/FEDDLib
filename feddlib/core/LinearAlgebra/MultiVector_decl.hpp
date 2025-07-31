@@ -96,7 +96,7 @@ public:
     /// @param nmbVectors number of vectors in multivector (seen maybe as different columns)
     MultiVector( MapConstPtr_Type map, UN nmbVectors=1 );
 
-    /// @brief Initialize tpetra multivector based on input multivector. Uses underlying map. !! Probably, this is not a deep copy. Both mv have the same pointer.
+    /// @brief Wrap an existing tpetra multivector. TpetraMVPtrIn is left intact and points to the same Tpetra::MultiVector as this->multiVector_.
     /// @param TpetraMVPtrIn tpetra multivector used to build new multivector 
     MultiVector( TpetraMultiVectorPtr_Type& TpetraMVPtrIn );
 
@@ -107,13 +107,13 @@ public:
     /// @brief Destructor
     ~MultiVector();
 
-
-    /// @brief This will replace *this contents with the rhs input. Updated to deep copy, as this is necessary so both this and rhs would NOT have the same pointer
+    /// @brief Copy assignment operator. This does a deep copy of the rhs into *this. The Xpetra::MultiVector copy
+    /// assignment operator performed a deep copy under the hood e.g. for the Xpetra::TpetraMultiVector assign()
+    /// function see
+    /// https://docs.trilinos.org/dev/packages/xpetra/doc/html/Xpetra__TpetraMultiVector__def_8hpp_source.html#l00577
     /// @param rhs source for copy
     /// @return destination/result of copy
     MultiVector_Type& operator= (const MultiVector_Type& rhs) {
-        //*multiVector_ = *rhs.getTpetraMultiVector(); // old version which worked with xpetra
-        FEDDLIB_NOTIFICATION("MultiVector_decl",rhs.getMap()->getComm()->getRank() == 0, " '=' creating a deep copy of input vector into this.");
         Tpetra::deep_copy<SC,LO,GO,NO>(*multiVector_,*rhs.getTpetraMultiVector()); // (destination, source)
         return *this;
     }

@@ -204,14 +204,7 @@ void NavierStokesAssFE<SC,LO,GO,NO>::assembleConstantMatrices() const{
         this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
     }
     if (this->verbose_)
-        std::cout << " Call Reassemble FixedPoint and Newton to allocate the Matrix pattern " << std::endl;
-
-    // this->reAssemble("FixedPoint");
-    this->reAssemble("Newton");
-    
-    if (this->verbose_)
         std::cout << "done -- " << std::endl;
-    
 };
     
 
