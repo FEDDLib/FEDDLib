@@ -47,6 +47,7 @@ void LinElasAssFE<SC,LO,GO,NO>::assemble( std::string type ) const
     this->system_->addBlock( K, 0, 0 );
     // Assembliere die Steifigkeitsmatrix. Die 2 gibt degree an, d.h. die Ordnung der Quadraturformel, die benutzt werden soll.
     this->feFactory_->assemblyLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, d_rep_, this->system_, this->rhs_, this->parameterList_,false, "Jacobian", true);
+
     // Setup fuer die linke Seite des zu loesdenen GLS. Beachte, dass system_ via system_() im Standardkonstruktor (von der Klasse Problem)
     // initialisiert worden ist, hier wird dieser also erst richtig initialisiert.
     // Ein Objekt der Klasse Bmat ist eine Blockmatrix; also ist system_ eine Blockmatrix (Objekt von BMat)

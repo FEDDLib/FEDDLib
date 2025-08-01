@@ -73,9 +73,12 @@ void LinElas<SC,LO,GO,NO>::assemble( std::string type ) const
     double mu = this->parameterList_->sublist("Parameter").get("Mu",2.0e+6);
 
     // Berechne daraus nun E (Youngsches Modul) und die erste Lamé-Konstanten \lambda
-    double youngModulus = mu*2.*(1 + poissonRatio);
+    double youngModulus = this->parameterList_->sublist("Parameter").get("E",-1.);
+    if(youngModulus < 0 )
+        youngModulus = mu*2.*(1 + poissonRatio);
+
     double lambda = (poissonRatio*youngModulus)/((1 + poissonRatio)*(1 - 2*poissonRatio));
-    // std::cout << " Parameter Lin Elas| mu " << mu << " E " << youngModulus << " lambda " << lambda << " dens "<< density << std::endl;
+    std::cout << " Parameter Lin Elas| mu " << mu << " E " << youngModulus << " lambda " << lambda << " dens "<< density << std::endl;
     // Initialisiere die Steifigkeitsmatrix. Das letzte Argument gibt die (ungefaehre) Anzahl an Eintraege pro Zeile an
     MatrixPtr_Type K = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     // MatrixPtr_Type K = Teuchos::rcp(new Matrix_Type( this->domainPtr_vec_.at(0)->getMapVecFieldUnique(), 10 ) );
