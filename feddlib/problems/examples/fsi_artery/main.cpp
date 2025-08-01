@@ -291,6 +291,7 @@ typedef MeshUnstructured<SC,LO,GO,NO> MeshUnstr_Type;
         
         ParameterListPtr_Type parameterListStructureAll(new Teuchos::ParameterList(*parameterListPrecStructure));
         sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Solid") );
+        sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter") );
 
         parameterListStructureAll->setParameters(*parameterListPrecStructure);
 

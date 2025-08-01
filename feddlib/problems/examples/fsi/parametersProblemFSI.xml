@@ -22,14 +22,14 @@
     <ParameterList name="Parameter Solid">        
         <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--linear, Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
         <Parameter name="Density" type="double"   value="1.0e-03"/><!-- kg/cm³ -->
-         <Parameter name="Mu" type="double" value="1275.2"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5 | NH_3: 1275.2 | NH_2: 671-->
-        <Parameter name="Mu1" type="double" value="1275.2"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5-->
-        <Parameter name="Mu2" type="double" value="1275.2"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5-->
+        <Parameter name="Mu" type="double" value="671.0"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5 | NH_3: 1275.2 | NH_2: 671-->
+        <Parameter name="Mu1" type="double" value="671.0"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5-->
+        <Parameter name="Mu2" type="double" value="671.0"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5-->
 
-        <Parameter name="E" type="double" value="3.8e3"/> <!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48 | NH_3 = 3800, NH_2 = 2000-->
-		<Parameter name="E1" type="double" value="3.8e3"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48-->
-   		<Parameter name="E2" type="double" value="3.8e3"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48-->
-        
+        <Parameter name="E" type="double" value="2.0e3"/> <!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48 | NH_3 = 3800, NH_2 = 2000-->
+        <Parameter name="E1" type="double" value="2.0e3"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48-->
+        <Parameter name="E2" type="double" value="2.0e3"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48-->
+       
 		<Parameter name="c1" type="double" value="0.25"/>
 		<Parameter name="Poisson Ratio" type="double" value="0.49"/>
     </ParameterList>
