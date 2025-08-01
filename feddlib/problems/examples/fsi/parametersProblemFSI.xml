@@ -23,13 +23,13 @@
     <ParameterList name="Parameter Solid">        
         <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
         <Parameter name="Density" type="double"   value="1.0e-03"/><!-- kg/cm³ -->
-         <Parameter name="Mu" type="double" value="1476.5"/><!-- 1kg⋅cm/s² * 1/cm²-->
-        <Parameter name="Mu1" type="double" value="1476.5"/><!-- 1kg⋅cm/s² * 1/cm²-->
-        <Parameter name="Mu2" type="double" value="1476.5"/><!-- 1kg⋅cm/s² * 1/cm²-->
+         <Parameter name="Mu" type="double" value="1275.2"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5 | NH_3: 1275.2 | NH_2: 671-->
+        <Parameter name="Mu1" type="double" value="1275.2"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5-->
+        <Parameter name="Mu2" type="double" value="1275.2"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5-->
 
-        <Parameter name="E" type="double" value="4398.48"/> <!-- 1kg⋅cm/s² * 1/cm² -->
-		<Parameter name="E1" type="double" value="4398.48"/><!-- 1kg⋅cm/s² * 1/cm²-->
-   		<Parameter name="E2" type="double" value="4398.48"/><!-- 1kg⋅cm/s² * 1/cm²-->
+        <Parameter name="E" type="double" value="3.8e3"/> <!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48 | NH_3 = 3800, NH_2 = 2000-->
+		<Parameter name="E1" type="double" value="3.8e3"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48-->
+   		<Parameter name="E2" type="double" value="3.8e3"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48-->
         
 		<Parameter name="c1" type="double" value="0.25"/>
 		<Parameter name="Poisson Ratio" type="double" value="0.49"/>
@@ -37,21 +37,20 @@
 
     
     <ParameterList name="Parameter Fluid">
-        <Parameter name="Mesh Name Inflow" type="string" value="fsi_fluid_length_0_5_mm"/>
+        <Parameter name="Mesh Name Inflow" type="string" value="fsi_fluid_2mm"/> <!--inflow solution name for Tube3D Problem -->
         <Parameter name="Preconditioner Type" type="string" value="PCD"/><!--only relevant for block preconditioner for fluid -->
 
-        <Parameter name="Viscosity" type="double" value="2.31e-2"/> <!-- kinematic viscosity cm^2/s converted from dynamic visco 0.003 Pa s -->
-        <Parameter name="Density" type="double" value="1.3e-03"/><!-- kg/cm³ -->
+        <Parameter name="Viscosity" type="double" value="2.91e-2"/> <!-- kinematic viscosity cm^2/s converted from dynamic visco 0.003 Pa s -->
+        <Parameter name="Density" type="double" value="1.03e-03"/><!-- kg/cm³ -->
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
 
         <Parameter name="MeanVelocity" type="double" value="118.28"/><!--2d:2.0, Richter 3d: 1.0-->
         <Parameter name="Max Ramp Time" type="double" value="0.1"/>
        
         <Parameter name="Flowrate" type="double" value="3"/><!-- For Absorbing BC-->
-
   
         <Parameter name="Pressure Boundary Condition" type="string" value="Absorbing Paper"/>         <!-- Resistance , Absorbing , Absorbing Resistance-->
-        <Parameter name="Unsteady Start" type="double" value="1.0"/><!-- Start of 'unsteady' phase -->
+        <Parameter name="Unsteady Start" type="double" value="0.2"/><!-- Start of 'unsteady' phase -->
         <Parameter name="Average Flowrate" type="bool" value="true"/>
         <Parameter name="BC Ramp" type="double" value="0.0"/>
         <Parameter name="Normal Scale" type="double" value="-1.0"/>
@@ -60,6 +59,7 @@
         <Parameter name="Reference fluid pressure" type="double" value="11.99e1"/> <!-- 1kg⋅cm/s² * 1/cm²  -->
         <Parameter name="Wall thickness" type="double" value="0.15"/> <!-- cm -->
          <Parameter name="E" type="double" value="120.0e1"/> <!-- 1kg⋅cm/s² * 1/cm²-->
+       
        	<!-- Resistance boundary condition -->
         <Parameter name="Resistance" type="double" value="3.6660e-4"/> <!-- ?? CHECK| old: g/cm s² s/cm³ (eigentliche Einheit mPa*s/m³ , 1mPa = 10e6 N/m² -->
         <Parameter name="Resistance Ramp" type="double" value="0.0"/>
@@ -78,8 +78,8 @@
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="fsi_fluid_length_0_5_mm.mesh"/>
-        <Parameter name="Mesh 2 Name" type="string" value="fsi_solid_length_0_5_mm.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="fsi_fluid_2mm.mesh"/>
+        <Parameter name="Mesh 2 Name" type="string" value="fsi_solid_2mm.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
         

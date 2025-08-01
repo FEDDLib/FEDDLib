@@ -50,8 +50,8 @@
 
         <Parameter name="Flowrate" type="double" value="3."/><!-- For Absorbing BC-->
 
-        <Parameter name="Viscosity" type="double" value="2.31e-2"/> <!-- kinematic viscosity cm^2/s converted from dynamic visco 0.003 Pa s -->
-        <Parameter name="Density" type="double" value="1.3e-03"/><!-- kg/cm³ -->
+        <Parameter name="Viscosity" type="double" value="2.91e-2"/> <!-- kinematic viscosity cm^2/s converted from dynamic visco 0.003 Pa s -->
+        <Parameter name="Density" type="double" value="1.03e-03"/><!-- kg/cm³ -->
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
 
         <Parameter name="Pressure Boundary Condition" type="string" value="Absorbing Paper"/>         <!-- Resistance , Absorbing , Absorbing Resistance-->
