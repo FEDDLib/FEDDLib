@@ -9,9 +9,8 @@
         <Parameter name="FSI" type="bool" value="true"/>
         <Parameter name="Geometry Explicit" type="bool" value="true"/>
         
-        <Parameter name="relNonLinTol" type="double" value="1.0e-6"/>
-        <Parameter name="absNonLinTol" type="double" value="1.0e-6"/>
-        <Parameter name="updateTol" type="double" value="1.0e-6"/>
+        <Parameter name="relNonLinTol" type="double" value="1.0e-8"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-8"/>
         <Parameter name="Combo" type="string" value="OR"/>
         <Parameter name="Use update tol" type="bool" value="true"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
@@ -21,7 +20,7 @@
         <Parameter name="Criterion" type="string" value="Update"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
     </ParameterList>
     <ParameterList name="Parameter Solid">        
-        <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
+        <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--linear, Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
         <Parameter name="Density" type="double"   value="1.0e-03"/><!-- kg/cm³ -->
          <Parameter name="Mu" type="double" value="1275.2"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5 | NH_3: 1275.2 | NH_2: 671-->
         <Parameter name="Mu1" type="double" value="1275.2"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5-->

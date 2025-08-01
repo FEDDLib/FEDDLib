@@ -230,7 +230,7 @@ void flowrate3D(double* x, double* res, double t, const double* parameters)
         Q -= 0.026039341343493;
         Q = (Q - 2.85489)/(7.96908-2.85489);
 
-        res[0] =  parameters[2] + parameters[2]* Q *1.6563 - 0.1 ;
+        res[0] =  parameters[3] + parameters[3]* Q *1.6563 - 0.1 ;
         
     }
     else

@@ -37,7 +37,7 @@
                 <Parameter name="Forcing Term Minimum Tolerance" type="double" value="1.e-6"/>
                 <Parameter name="Forcing Term Maximum Tolerance" type="double" value="0.001"/>
                 <ParameterList name="Linear Solver">
-                    <Parameter name="Tolerance" type="double" value="1e-8"/>
+                    <Parameter name="Tolerance" type="double" value="1e-6"/>
                 </ParameterList>
             </ParameterList>
         </ParameterList>
