@@ -100,7 +100,14 @@ void flowrate3D(double* x, double* res, double t, const double* parameters)
         Q -= 0.026039341343493;
         Q = (Q - 2.85489)/(7.96908-2.85489);
 
-        res[0] =  parameters[2] + parameters[2]* Q *1.6563 - 0.1 ;
+        double lambda = 1.;
+        if( t+1.0e-10 < heartBeatStart + 0.5)
+		    lambda = 0.90 + 0.1*cos(2*M_PI*t);
+        else 
+    	    lambda= 0.8 + 1.2*Q-0.1;
+
+
+        res[0] =  parameters[2] *lambda;
         
     }
     else
