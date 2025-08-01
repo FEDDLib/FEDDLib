@@ -146,10 +146,10 @@ exporterGeo_()
     }
     p_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
     
-    if ( this->parameterList_->sublist("Timestepping Parameter").get("Checkpointing", false)){
-        exporterBoundaryCondition_ = Teuchos::rcp(new ExporterTxt () );
-        exporterBoundaryCondition_->setup( "boundaryConditionFluid", this->comm_ );
-    }
+    // if ( this->parameterList_->sublist("Timestepping Parameter").get("Checkpointing", false)){
+    //     exporterBoundaryCondition_ = Teuchos::rcp(new ExporterTxt () );
+    //     exporterBoundaryCondition_->setup( "boundaryConditionFluid", this->comm_ );
+    // }
 }
 
 template<class SC,class LO,class GO,class NO>

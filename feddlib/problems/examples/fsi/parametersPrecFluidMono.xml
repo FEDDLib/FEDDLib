@@ -38,7 +38,7 @@
                     <Parameter name="Use Triple MatrixMultiply" type="bool" value="false"/>
                     <Parameter name="Test Unconnected Interface" type="bool" value="false"/>
                     <Parameter name="Reuse: Coarse Basis" type="bool" value="true"/>
-                    <Parameter name="Reuse: Coarse Matrix" type="bool" value="true"/>
+                    <Parameter name="Reuse: Coarse Matrix" type="bool" value="false"/>
                     
                     <Parameter name="Phi: Dropping Threshold" type="double" value="1.0e-3"/>
 

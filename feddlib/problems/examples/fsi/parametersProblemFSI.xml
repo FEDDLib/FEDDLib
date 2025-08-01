@@ -56,7 +56,7 @@
         <Parameter name="Poisson Ratio" type="double" value="0.49"/>
         <!-- Absorbing boundary condition -->
         <Parameter name="Reference fluid pressure" type="double" value="11.99e1"/> <!-- 1kg⋅cm/s² * 1/cm²  -->
-        <Parameter name="Wall thickness" type="double" value="0.15"/> <!-- cm -->
+        <Parameter name="Wall thickness" type="double" value="0.12"/> <!-- cm -->
          <Parameter name="E" type="double" value="120.0e1"/> <!-- 1kg⋅cm/s² * 1/cm²-->
        
        	<!-- Resistance boundary condition -->
@@ -131,7 +131,7 @@
         <Parameter name="Class" type="string" value="Multistep"/>
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value="0.5"/>
+        <Parameter name="Final time" type="double" value="1.2"/>
         <Parameter name="dt" type="double" value="0.005"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
