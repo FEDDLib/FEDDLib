@@ -708,6 +708,18 @@ void FSI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type pre
     // this->system_->addBlock( APN, 0, 0 );
 }
 
+// Residual of FSI is defined as:
+// GI (Geometry Implicit)
+//   |b_f     |   | F(u,p,d_f)  0       C_1^T   0 |
+//R= |b_s     | - | 0           S       C_3^T   0 |
+//   |C_2*d_s |   | C_1         C_2     0       0 |   
+//   |0       |   | 0           C_4     0       G |
+//   
+// GE (Geometry Implicit)
+//   |b_f     |   | F(u,p,d_f)  0       C_1^T   0 |
+//R= |b_s     | - | 0           S       C_3^T   0 |
+//   |C_2*d_s |   | C_1         C_2     0       0 |   
+
 template<class SC,class LO,class GO,class NO>
 void FSI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const
 {
@@ -775,31 +787,37 @@ void FSI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     }
     
     MultiVectorPtr_Type residualFluidVelocityFSI =
-        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(0) );
+        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(0) ); // residual of fluid part
+
     MultiVectorPtr_Type residualSolidFSI =
-        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(2) );
+        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(2) ); // residual of solid part
 
     MultiVectorPtr_Type residualCouplingFSI =
-        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(3) );
+        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(3) ); // residual of interface / lambda
     residualCouplingFSI->update( 1. , *this->rhs_->getBlock(3), 0. ); // change to -1 for standard
     
     //Now we need to add the coupling blocks
-    this->system_->getBlock(0,3)->apply( *this->solution_->getBlock(3) , *residualFluidVelocityFSI, Teuchos::NO_TRANS, -1., 1. );
+    // adding C_1^T * \lambda to fluid residual
+    this->system_->getBlock(0,3)->apply( *this->solution_->getBlock(3) , *residualFluidVelocityFSI, Teuchos::NO_TRANS, -1., 1. ); 
     
-    this->system_->getBlock(2,3)->apply( *this->solution_->getBlock(3) , *residualSolidFSI, Teuchos::NO_TRANS, -1., 1. );
+    // adding C_3 ^T * \lambda to solid residual
+    this->system_->getBlock(2,3)->apply( *this->solution_->getBlock(3) , *residualSolidFSI, Teuchos::NO_TRANS, -1., 1. ); 
+     
+     // adding C_1 * u to coupling/lambda 
+    this->system_->getBlock(3,0)->apply( *this->solution_->getBlock(0) , *residualCouplingFSI, Teuchos::NO_TRANS, -1., 1. ); 
     
-    this->system_->getBlock(3,0)->apply( *this->solution_->getBlock(0) , *residualCouplingFSI, Teuchos::NO_TRANS, -1., 1. );
-    
+    // adding C_2 * d_s to coupling/lambda 
     this->system_->getBlock(3,2)->apply( *this->solution_->getBlock(2) , *residualCouplingFSI, Teuchos::NO_TRANS, -1., 1. );
 
     if (!geometryExplicit_) {
-        
+        // If we have GI coupling we need to add that component to residual as well
         MultiVectorPtr_Type residualGeometryFSI =
             Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(4) );
-        residualGeometryFSI->update( 1. , *this->rhs_->getBlock(4), 0. ); // change to -1 for standard
 
+        residualGeometryFSI->update( 1. , *this->rhs_->getBlock(4), 0. ); // change to -1 for standard
+        // G * d_f
         this->system_->getBlock(4,4)->apply( *this->solution_->getBlock(4) , *residualGeometryFSI, Teuchos::NO_TRANS, -1., 1. );
-        
+        // C_4 * d_f
         this->system_->getBlock(4,2)->apply( *this->solution_->getBlock(2) , *residualGeometryFSI, Teuchos::NO_TRANS, -1., 1. );
         
     }
