@@ -37,7 +37,7 @@
     
     <ParameterList name="Parameter Fluid">
         <Parameter name="Mesh Name Inflow" type="string" value="fsi_fluid_2mm"/> <!--inflow solution name for Tube3D Problem -->
-        <Parameter name="Preconditioner Type" type="string" value="PCD"/><!--only relevant for block preconditioner for fluid -->
+        <Parameter name="Preconditioner Type" type="string" value="Monolithic"/><!--only relevant for block preconditioner for fluid -->
 
         <Parameter name="Viscosity" type="double" value="2.91e-2"/> <!-- kinematic viscosity cm^2/s converted from dynamic visco 0.003 Pa s -->
         <Parameter name="Density" type="double" value="1.03e-03"/><!-- kg/cm³ -->

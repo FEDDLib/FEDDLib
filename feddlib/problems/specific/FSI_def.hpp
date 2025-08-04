@@ -111,18 +111,22 @@ exporterGeo_()
     
     problemFluid_ = Teuchos::rcp( new FluidProblem_Type( domainVelocity, FETypeVelocity, domainPressure, FETypePressure, parameterListFluid ) );
     problemFluid_->initializeProblem();
+    problemFluid_->infoParameter(false,"Fluid");
     
     if (materialModel_=="linear"){
         problemStructure_ = Teuchos::rcp( new StructureProblem_Type( domainStructure, FETypeStructure, parameterListStructure ) );
         problemStructure_->initializeProblem();
+        problemStructure_->infoParameter(false,"Solid");
     }
     else{
         problemStructureNonLin_ = Teuchos::rcp( new StructureNonLinProblem_Type( domainStructure, FETypeStructure, parameterListStructure) );
         problemStructureNonLin_->initializeProblem();
+        problemStructureNonLin_->infoParameter(false, "Solid");
     }
     
     problemGeometry_ = Teuchos::rcp( new GeometryProblem_Type( domainGeometry, FETypeGeometry, parameterListGeometry ) );
     problemGeometry_->initializeProblem();
+    problemGeometry_->infoParameter(false,"Geometry");
     //We initialize the subproblems. In the main routine, we need to call initializeFSI(). There, we first initialize the vectors of the FSI problem and then we set the pointers of the subproblems to the vectors of the full monolithic FSI system. This way all values are only saved once in the subproblems and can be used by the monolithic FSI system.
     
     meshDisplacementNew_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(4)->getMapVecFieldRepeated() ) );
@@ -1343,11 +1347,6 @@ void FSI<SC,LO,GO,NO>::computePressureRHSInTime() const{
 
     
     }    
-
-    // int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 4); 
-    // double averageVelocity =0.;  
-    // this->feFactory_->assemblyAverageVelocity(this->dim_, averageVelocity, this->getDomain(0)->getFEType() , this->dim_, flagInlet , u_rep_);  
-
   
 }
 

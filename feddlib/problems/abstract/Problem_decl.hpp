@@ -103,7 +103,7 @@ public:
 
     void infoProblem();
 
-    void infoParameter();
+    void infoParameter(bool full = true, std::string ="empty");
 
     void addVariable(const DomainConstPtr_Type &domain, std::string FEType, std::string name, int dofsPerNode);
 

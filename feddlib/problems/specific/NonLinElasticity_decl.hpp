@@ -1,6 +1,7 @@
 #ifndef NonLinElasticity_decl_hpp
 #define NonLinElasticity_decl_hpp
 #include "feddlib/problems/abstract/NonLinearProblem.hpp"
+#include "feddlib/problems/Solver/TimeSteppingTools.hpp"
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_ModelEvaluatorBase_decl.hpp>
 /*!
@@ -39,17 +40,6 @@ public:
     typedef NonLinearProblem<SC,LO,GO,NO> NonLinearProblem_Type;
     typedef typename NonLinearProblem_Type::BlockMultiVectorPtrArray_Type BlockMultiVectorPtrArray_Type;
     
-    typedef typename NonLinearProblem_Type::TpetraMatrix_Type TpetraMatrix_Type;
-    
-    typedef typename NonLinearProblem_Type::ThyraVecSpace_Type ThyraVecSpace_Type;
-    typedef typename NonLinearProblem_Type::ThyraVec_Type ThyraVec_Type;
-    typedef typename NonLinearProblem_Type::ThyraOp_Type ThyraOp_Type;
-    
-    typedef typename NonLinearProblem_Type::TpetraOp_Type TpetraOp_Type;
-
-    typedef Tpetra::CrsMatrix<SC, LO, GO, NO> tpetra_matrix;
-
-    
     //@}
     
     //! @name Constructor/Destructor
@@ -76,16 +66,27 @@ public:
     
     void computeValuesOfInterestAndExport() override {}
     
-//    virtual void assembleExternal( std::string type ){}
+    void assembleSourceTermLoadstepping(double time=0.) const;
+
+    void updateTime() const;
+
+    void updateConcentration(MultiVectorConstPtr_Type concentration) {concentration_.reset(new MultiVector_Type (concentration));}
+
+    mutable Teuchos::RCP<TimeSteppingTools>	timeSteppingTool_;
+
         
 private:
     
     mutable MultiVectorPtr_Type u_rep_;
+    MultiVectorPtr_Type concentration_;
     double E_;
     double mue_;
     double C_;
     double poissonRatio_;
     double lambda_;
+    bool loadStepping_;
+    bool externalForce_;
+    bool nonlinearExternalForce_;
     /*####################*/
 
 };

@@ -3,9 +3,7 @@
 #include "feddlib/problems/abstract/TimeProblem.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
 #include "feddlib/problems/specific/LinElas.hpp"
-#include "feddlib/problems/specific/LinElasAssFE.hpp"
 #include "feddlib/problems/specific/NonLinElasticity.hpp"
-#include "feddlib/problems/specific/NonLinElasAssFE.hpp"
 #include "feddlib/problems/specific/Geometry.hpp"
 #include "feddlib/problems/Solver/TimeSteppingTools.hpp"
 #include <Xpetra_ThyraUtils.hpp>
@@ -20,10 +18,6 @@ template <class SC , class LO , class GO , class NO >
 class Geometry;
 template <class SC , class LO , class GO , class NO >
 class NavierStokes;
-template <class SC , class LO , class GO , class NO >
-class LinElasAssFE; //LinElas;
-template <class SC , class LO , class GO , class NO >
-class NonLinElasAssFE; //NonLinElasticity;
 template <class SC , class LO , class GO , class NO >
 class LinElas;
 template <class SC , class LO , class GO , class NO >
@@ -61,10 +55,13 @@ public:
     typedef TimeProblem<SC,LO,GO,NO> TimeProblem_Type;
     typedef Teuchos::RCP<TimeProblem_Type> TimeProblemPtr_Type;
 
-    // typedef LinElas<SC,LO,GO,NO> StructureProblem_Type;
-    typedef LinElasAssFE<SC,LO,GO,NO> StructureProblem_Type;
-    // typedef NonLinElasticity<SC,LO,GO,NO> StructureNonLinProblem_Type;
-    typedef NonLinElasAssFE<SC,LO,GO,NO> StructureNonLinProblem_Type;
+// #ifdef FEDD_HAVE_ACEGENINTERFACE
+//     typedef LinElasAssFE<SC,LO,GO,NO> StructureProblem_Type;
+//     typedef NonLinElasAssFE<SC,LO,GO,NO> StructureNonLinProblem_Type;
+// #else
+    typedef LinElas<SC,LO,GO,NO> StructureProblem_Type;
+    typedef NonLinElasticity<SC,LO,GO,NO> StructureNonLinProblem_Type;
+
 
     typedef NavierStokes<SC,LO,GO,NO> FluidProblem_Type;
     typedef Geometry<SC,LO,GO,NO> GeometryProblem_Type;
