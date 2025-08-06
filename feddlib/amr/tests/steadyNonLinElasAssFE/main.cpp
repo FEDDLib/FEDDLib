@@ -288,7 +288,6 @@ int main(int argc, char *argv[])
 
         // LinElas Objekt erstellen
         NonLinElasticity<SC,LO,GO,NO> NonLinElasAssFE( domain, FEType, parameterListAll );
-
         NonLinElasAssFE.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
 
         if (dim==2)
