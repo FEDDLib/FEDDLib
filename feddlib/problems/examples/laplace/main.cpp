@@ -203,6 +203,8 @@ int main(int argc, char *argv[]) {
             laplace.solve();
         }
 
+        bool boolExportSolution = true;
+
         if (boolExportSolution) {
             Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
