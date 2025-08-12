@@ -1,6 +1,7 @@
 #ifndef MULTIVECTOR_DEF_hpp
 #define MULTIVECTOR_DEF_hpp
 #include "MultiVector_decl.hpp"
+#include "BlockMultiVector_decl.hpp"
 
 /*!
  Defintion of MultiVector
@@ -12,8 +13,6 @@
  */
 
 namespace FEDD {
-
-extern template class MultiVector<default_sc, default_lo, default_go, default_no>;
 
 template <class SC, class LO, class GO, class NO>
 MultiVector<SC,LO,GO,NO>::MultiVector():

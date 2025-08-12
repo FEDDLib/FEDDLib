@@ -16,6 +16,7 @@
 #include <chrono> 
 
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include "feddlib/core/core_config.h"
 #include "feddlib/core/General/SmallMatrix.hpp"
 
 #include <Teuchos_RCPDecl.hpp>
