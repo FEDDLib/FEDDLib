@@ -18,7 +18,7 @@ map_()
 }
 
 template <class LO, class GO, class NO>
-Map<LO,GO,NO>::Map( TpetraMapConstPtrConst_Type& tpetraMapPtrIn ):
+Map<LO,GO,NO>::Map( TpetraMapConstPtrConst_Type tpetraMapPtrIn ):
 map_( tpetraMapPtrIn )
 {
     

@@ -61,7 +61,7 @@ public:
 
     Map();
     
-    Map( const TpetraMapConstPtr_Type& tpetraMatPtrIn );
+    Map( const TpetraMapConstPtr_Type tpetraMatPtrIn );
     
     Map( const Map_Type& mapIn );
     
