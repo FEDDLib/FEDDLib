@@ -168,7 +168,7 @@ $(function(){initNavTree('AssembleFEFactory__def_8hpp_source.html',''); initResi
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        assembleFE = assembleFESpecific;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            TEUCHOS_TEST_FOR_EXCEPTION(<span class="keyword">true</span>, std::logic_error, <span class="stringliteral">&quot;No specific implementation for your request.&quot;</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            TEUCHOS_TEST_FOR_EXCEPTION(<span class="keyword">true</span>, std::logic_error, <span class="stringliteral">&quot;AssembleFE for problem \&quot;&quot;</span> + problemType + <span class="stringliteral">&quot;\&quot; is not implemented&quot;</span>);</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">return</span> assembleFE;</div>
