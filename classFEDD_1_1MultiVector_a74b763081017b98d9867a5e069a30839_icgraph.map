@@ -1,5 +1,0 @@
-<map id="FEDD::MultiVector::getMap" name="FEDD::MultiVector::getMap">
-<area shape="rect" id="Node000001" title="Return underlying map." alt="" coords="187,5,320,46"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1MultiVector.html#a2699448caa6dba8872aca8e8dafb22b3" title="Initialize tpetra multivector based on input multivector. Uses underlying map. !! Probably,..." alt="" coords="5,5,139,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,28,139,28,139,23,171,23"/>
-</map>

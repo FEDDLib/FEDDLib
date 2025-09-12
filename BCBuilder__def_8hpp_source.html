@@ -793,232 +793,230 @@ $(function(){initNavTree('BCBuilder__def_8hpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span> </div>
 <div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>                    <span class="comment">// To get the correct domain from vecDomain_ we need to know the index of any (in this case the</span></div>
 <div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>                    <span class="comment">// first) entry that was done with addBC for this block</span></div>
-<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>                    <span class="keyword">const</span> <span class="keyword">auto</span> it = std::find(this-&gt;vecBlockID_.begin(), this-&gt;vecBlockID_.end(), blockRow);</div>
-<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>                    std::cout &lt;&lt; <span class="stringliteral">&quot; loc &quot;</span> &lt;&lt; loc &lt;&lt; <span class="stringliteral">&quot; it - something &quot;</span> &lt;&lt; it - this-&gt;vecBlockID_.begin() &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>                    <span class="keyword">auto</span> matrixMap = this-&gt;vecDomain_.at(loc)-&gt;getMapUnique();</div>
-<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>                    <span class="comment">// // Use Xpetra::MatrixFactory to build a matrix with known row and column maps</span></div>
-<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>                    <span class="keyword">auto</span> tpetraMatrix = Teuchos::rcp(<span class="keyword">new</span> Tpetra::CrsMatrix&lt;SC,LO,GO,NO&gt;(matrixMap-&gt;getTpetraMap(), matrixMap-&gt;getTpetraMap(), 1)); <span class="comment">// Tpetra::MatrixFactory&lt;SC, LO, GO, NO&gt;::Build(matrixMap-&gt;getTpetraMap(), matrixMap-&gt;getTpetraMap(), 1);</span></div>
+<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>                    <span class="keyword">auto</span> matrixMap = this-&gt;vecDomain_.at(loc)-&gt;getMapUnique();</div>
+<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>                    <span class="comment">// // Use Xpetra::MatrixFactory to build a matrix with known row and column maps</span></div>
+<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>                    <span class="keyword">auto</span> tpetraMatrix = Teuchos::rcp(<span class="keyword">new</span> Tpetra::CrsMatrix&lt;SC,LO,GO,NO&gt;(matrixMap-&gt;getTpetraMap(), matrixMap-&gt;getTpetraMap(), 1)); <span class="comment">// Tpetra::MatrixFactory&lt;SC, LO, GO, NO&gt;::Build(matrixMap-&gt;getTpetraMap(), matrixMap-&gt;getTpetraMap(), 1);</span></div>
+<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span> </div>
+<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>                    MatrixPtr_Type matrix = Teuchos::rcp(<span class="keyword">new</span> Matrix_Type(tpetraMatrix));</div>
 <div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span> </div>
-<div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span>                    MatrixPtr_Type matrix = Teuchos::rcp(<span class="keyword">new</span> Matrix_Type(tpetraMatrix));</div>
-<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span> </div>
-<div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span>                    <span class="comment">// Fill the matrix with zeros on the diagonal</span></div>
-<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span>                    Teuchos::Array&lt;LO&gt; colIndex(1, 0);</div>
-<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span>                    Teuchos::Array&lt;SC&gt; val(1, Teuchos::ScalarTraits&lt;SC&gt;::zero());</div>
-<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>                    <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; matrixMap-&gt;getNodeNumElements(); i++) {</div>
-<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>                        colIndex[0] = i;</div>
-<div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>                        <span class="comment">// Since the matrix has a column map we can use insertLocalValues(). This is more efficient!</span></div>
-<div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>                        matrix-&gt;insertLocalValues(i, colIndex, val);</div>
-<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>                    }</div>
-<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>                    matrix-&gt;fillComplete(matrixMap, matrixMap);</div>
-<div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d">setDirichletBC</a>(matrix, loc, blockRow, <span class="keyword">true</span>);</div>
-<div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span>                    blockMatrix-&gt;addBlock(matrix, blockRow, blockCol);</div>
-<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span>                }</div>
-<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>            }</div>
-<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>        }</div>
-<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span>    }</div>
-<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span>}</div>
+<div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span>                    <span class="comment">// Fill the matrix with zeros on the diagonal</span></div>
+<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>                    Teuchos::Array&lt;LO&gt; colIndex(1, 0);</div>
+<div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span>                    Teuchos::Array&lt;SC&gt; val(1, Teuchos::ScalarTraits&lt;SC&gt;::zero());</div>
+<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span>                    <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = 0; i &lt; matrixMap-&gt;getNodeNumElements(); i++) {</div>
+<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span>                        colIndex[0] = i;</div>
+<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>                        <span class="comment">// Since the matrix has a column map we can use insertLocalValues(). This is more efficient!</span></div>
+<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>                        matrix-&gt;insertLocalValues(i, colIndex, val);</div>
+<div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>                    }</div>
+<div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>                    matrix-&gt;fillComplete(matrixMap, matrixMap);</div>
+<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d">setDirichletBC</a>(matrix, loc, blockRow, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>                    blockMatrix-&gt;addBlock(matrix, blockRow, blockCol);</div>
+<div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>                }</div>
+<div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span>            }</div>
+<div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span>        }</div>
+<div class="line"><a id="l00677" name="l00677"></a><span class="lineno">  677</span>    }</div>
+<div class="line"><a id="l00678" name="l00678"></a><span class="lineno">  678</span>}</div>
 </div>
-<div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span> </div>
-<div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span> </div>
-<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00684" data-start="{" data-end="}">
-<div class="line"><a id="l00684" name="l00684"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba">  684</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba">BCBuilder&lt;SC,LO,GO,NO&gt;::setDirichletBCScaled</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, <span class="keywordtype">int</span> loc, <span class="keywordtype">int</span> blockRow, <span class="keywordtype">bool</span> isDiagonalBlock, <span class="keywordtype">double</span> eps)<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span>    </div>
-<div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span>    matrix-&gt;resumeFill();</div>
-<div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span>    <span class="keywordtype">bool</span> isDirichlet;</div>
-<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span>    UN dofsPerNode = vecDofs_.at(loc);</div>
-<div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span>    vec_int_ptr_Type bcFlags = vecDomain_.at(loc)-&gt;getBCFlagUnique();</div>
-<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span>    MapConstPtr_Type nodeMap = vecDomain_.at(loc)-&gt;getMapUnique();</div>
-<div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span> </div>
-<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>    <span class="keywordflow">for</span> (LO i=0; i&lt;bcFlags-&gt;size(); i++) { <span class="comment">// flags are for nodes.</span></div>
-<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>        <span class="keywordtype">int</span> flag = bcFlags-&gt;at(i);</div>
-<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>        isDirichlet = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>        <span class="keywordtype">int</span> locThisFlag;</div>
+<div class="line"><a id="l00679" name="l00679"></a><span class="lineno">  679</span> </div>
+<div class="line"><a id="l00680" name="l00680"></a><span class="lineno">  680</span> </div>
+<div class="line"><a id="l00681" name="l00681"></a><span class="lineno">  681</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00682" data-start="{" data-end="}">
+<div class="line"><a id="l00682" name="l00682"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba">  682</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba">BCBuilder&lt;SC,LO,GO,NO&gt;::setDirichletBCScaled</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, <span class="keywordtype">int</span> loc, <span class="keywordtype">int</span> blockRow, <span class="keywordtype">bool</span> isDiagonalBlock, <span class="keywordtype">double</span> eps)<span class="keyword"> const</span>{</div>
+<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span>    </div>
+<div class="line"><a id="l00684" name="l00684"></a><span class="lineno">  684</span>    matrix-&gt;resumeFill();</div>
+<div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span>    <span class="keywordtype">bool</span> isDirichlet;</div>
+<div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span>    UN dofsPerNode = vecDofs_.at(loc);</div>
+<div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span>    vec_int_ptr_Type bcFlags = vecDomain_.at(loc)-&gt;getBCFlagUnique();</div>
+<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span>    MapConstPtr_Type nodeMap = vecDomain_.at(loc)-&gt;getMapUnique();</div>
+<div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span> </div>
+<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span>    <span class="keywordflow">for</span> (LO i=0; i&lt;bcFlags-&gt;size(); i++) { <span class="comment">// flags are for nodes.</span></div>
+<div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span>        <span class="keywordtype">int</span> flag = bcFlags-&gt;at(i);</div>
+<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>        isDirichlet = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>        <span class="keywordtype">int</span> locThisFlag;</div>
+<div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span> </div>
+<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>        <span class="keywordflow">if</span>( <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#aed3efb55b048d3ff75763fb0726c69f9">findFlag</a>(flag, blockRow, locThisFlag) ){</div>
 <div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span> </div>
-<div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span>        <span class="keywordflow">if</span>( <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#aed3efb55b048d3ff75763fb0726c69f9">findFlag</a>(flag, blockRow, locThisFlag) ){</div>
-<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span> </div>
-<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span>            <span class="keywordflow">if</span>( !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet&quot;</span>) ||</div>
-<div class="line"><a id="l00700" name="l00700"></a><span class="lineno">  700</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X&quot;</span>) ||</div>
-<div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Y&quot;</span>) ||</div>
-<div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Z&quot;</span>) ||</div>
-<div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span>) ||</div>
-<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span>) ||</div>
-<div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span>) )</div>
-<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>                isDirichlet = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>            <span class="keywordflow">if</span> (isDirichlet) {</div>
-<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span> </div>
-<div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span>                <span class="keywordflow">if</span> (isDiagonalBlock)</div>
-<div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978">setLocalRowEntry</a>(matrix, i, dofsPerNode, locThisFlag,eps );</div>
-<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>                <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">setLocalRowZero</a>(matrix, i, dofsPerNode, locThisFlag );</div>
-<div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>            }</div>
-<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>        }</div>
-<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>    }</div>
-<div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span>    matrix-&gt;fillComplete( matrix-&gt;getMap(<span class="stringliteral">&quot;domain&quot;</span>), matrix-&gt;getMap(<span class="stringliteral">&quot;range&quot;</span>) );</div>
-<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span>}</div>
+<div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span>            <span class="keywordflow">if</span>( !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet&quot;</span>) ||</div>
+<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X&quot;</span>) ||</div>
+<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Y&quot;</span>) ||</div>
+<div class="line"><a id="l00700" name="l00700"></a><span class="lineno">  700</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Z&quot;</span>) ||</div>
+<div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span>) ||</div>
+<div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span>) ||</div>
+<div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span>) )</div>
+<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>                isDirichlet = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span>            <span class="keywordflow">if</span> (isDirichlet) {</div>
+<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span> </div>
+<div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>                <span class="keywordflow">if</span> (isDiagonalBlock)</div>
+<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978">setLocalRowEntry</a>(matrix, i, dofsPerNode, locThisFlag,eps );</div>
+<div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">setLocalRowZero</a>(matrix, i, dofsPerNode, locThisFlag );</div>
+<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>            }</div>
+<div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>        }</div>
+<div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>    }</div>
+<div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>    matrix-&gt;fillComplete( matrix-&gt;getMap(<span class="stringliteral">&quot;domain&quot;</span>), matrix-&gt;getMap(<span class="stringliteral">&quot;range&quot;</span>) );</div>
+<div class="line"><a id="l00715" name="l00715"></a><span class="lineno">  715</span>}</div>
 </div>
-<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span> </div>
-<div class="line"><a id="l00719" name="l00719"></a><span class="lineno">  719</span> </div>
-<div class="line"><a id="l00720" name="l00720"></a><span class="lineno">  720</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00721" data-start="{" data-end="}">
-<div class="line"><a id="l00721" name="l00721"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978">  721</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978">BCBuilder&lt;SC,LO,GO,NO&gt;::setLocalRowEntry</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, <span class="keywordtype">int</span> loc,<span class="keywordtype">double</span> eps)<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00722" name="l00722"></a><span class="lineno">  722</span>    </div>
-<div class="line"><a id="l00723" name="l00723"></a><span class="lineno">  723</span>    Teuchos::ArrayView&lt;const SC&gt; valuesOld;</div>
-<div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span>    Teuchos::ArrayView&lt;const LO&gt; indices;</div>
-<div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span> </div>
-<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span>    MapConstPtr_Type colMap = matrix-&gt;getMap(<span class="stringliteral">&quot;col&quot;</span>);</div>
-<div class="line"><a id="l00727" name="l00727"></a><span class="lineno">  727</span>    LO localDof = (LO) (dofsPerNode * localNode);</div>
-<div class="line"><a id="l00728" name="l00728"></a><span class="lineno">  728</span>    <span class="keywordflow">for</span> (UN dof=0; dof&lt;dofsPerNode; dof++) {</div>
-<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span>        <span class="keywordflow">if</span> ( vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet&quot;</span> ||</div>
-<div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X&quot;</span> &amp;&amp; dof==0 ) ||</div>
-<div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y&quot;</span> &amp;&amp; dof==1 ) ||</div>
-<div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Z&quot;</span> &amp;&amp; dof==2 ) ||</div>
-<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span> &amp;&amp; dof!=2 )||</div>
-<div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span> &amp;&amp; dof!=1 )||</div>
-<div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span> &amp;&amp; dof!=0 )</div>
-<div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>            ) {</div>
-<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>           <span class="comment">// cout &lt;&lt; &quot; Setting Dirichlet Row 1 for node &quot; &lt;&lt; localDof &lt;&lt; &quot; of type &quot; &lt;&lt; vecBCType_.at(loc)  &lt;&lt;endl;</span></div>
-<div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>            GO globalDof = matrix-&gt;getMap()-&gt;getGlobalElement( localDof );</div>
-<div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span>            matrix-&gt;getLocalRowView(localDof, indices, valuesOld);</div>
-<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>            <span class="keywordtype">double</span> rowSum = 0.;</div>
-<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>            <span class="keywordflow">for</span> (UN j=0; j&lt;indices.size(); j++) {</div>
-<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>               rowSum += abs(valuesOld[j]);</div>
-<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>            }</div>
-<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>            Teuchos::Array&lt;SC&gt; values( valuesOld.size(), Teuchos::ScalarTraits&lt;SC&gt;::zero() );</div>
-<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>            <span class="keywordtype">bool</span> setOne = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span>            <span class="keywordflow">for</span> (UN j=0; j&lt;indices.size() &amp;&amp; !setOne; j++) {</div>
-<div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span>                <span class="keywordflow">if</span> ( colMap-&gt;getGlobalElement( indices[j] )  == globalDof ){</div>
-<div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span>                    values[j] = valuesOld[j]*eps;</div>
-<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span> </div>
-<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>                    setOne = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span>                }</div>
-<div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span>            }</div>
-<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span>            matrix-&gt;replaceLocalValues(localDof, indices(), values());</div>
-<div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span>        }</div>
-<div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>        localDof++;</div>
-<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>    }</div>
-<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>    </div>
-<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>}</div>
+<div class="line"><a id="l00716" name="l00716"></a><span class="lineno">  716</span> </div>
+<div class="line"><a id="l00717" name="l00717"></a><span class="lineno">  717</span> </div>
+<div class="line"><a id="l00718" name="l00718"></a><span class="lineno">  718</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00719" data-start="{" data-end="}">
+<div class="line"><a id="l00719" name="l00719"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978">  719</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978">BCBuilder&lt;SC,LO,GO,NO&gt;::setLocalRowEntry</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, <span class="keywordtype">int</span> loc,<span class="keywordtype">double</span> eps)<span class="keyword"> const</span>{</div>
+<div class="line"><a id="l00720" name="l00720"></a><span class="lineno">  720</span>    </div>
+<div class="line"><a id="l00721" name="l00721"></a><span class="lineno">  721</span>    Teuchos::ArrayView&lt;const SC&gt; valuesOld;</div>
+<div class="line"><a id="l00722" name="l00722"></a><span class="lineno">  722</span>    Teuchos::ArrayView&lt;const LO&gt; indices;</div>
+<div class="line"><a id="l00723" name="l00723"></a><span class="lineno">  723</span> </div>
+<div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span>    MapConstPtr_Type colMap = matrix-&gt;getMap(<span class="stringliteral">&quot;col&quot;</span>);</div>
+<div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span>    LO localDof = (LO) (dofsPerNode * localNode);</div>
+<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span>    <span class="keywordflow">for</span> (UN dof=0; dof&lt;dofsPerNode; dof++) {</div>
+<div class="line"><a id="l00727" name="l00727"></a><span class="lineno">  727</span>        <span class="keywordflow">if</span> ( vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet&quot;</span> ||</div>
+<div class="line"><a id="l00728" name="l00728"></a><span class="lineno">  728</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X&quot;</span> &amp;&amp; dof==0 ) ||</div>
+<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y&quot;</span> &amp;&amp; dof==1 ) ||</div>
+<div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Z&quot;</span> &amp;&amp; dof==2 ) ||</div>
+<div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span> &amp;&amp; dof!=2 )||</div>
+<div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span> &amp;&amp; dof!=1 )||</div>
+<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span> &amp;&amp; dof!=0 )</div>
+<div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span>            ) {</div>
+<div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span>           <span class="comment">// cout &lt;&lt; &quot; Setting Dirichlet Row 1 for node &quot; &lt;&lt; localDof &lt;&lt; &quot; of type &quot; &lt;&lt; vecBCType_.at(loc)  &lt;&lt;endl;</span></div>
+<div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>            GO globalDof = matrix-&gt;getMap()-&gt;getGlobalElement( localDof );</div>
+<div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span>            matrix-&gt;getLocalRowView(localDof, indices, valuesOld);</div>
+<div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>            <span class="keywordtype">double</span> rowSum = 0.;</div>
+<div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span>            <span class="keywordflow">for</span> (UN j=0; j&lt;indices.size(); j++) {</div>
+<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>               rowSum += abs(valuesOld[j]);</div>
+<div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>            }</div>
+<div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>            Teuchos::Array&lt;SC&gt; values( valuesOld.size(), Teuchos::ScalarTraits&lt;SC&gt;::zero() );</div>
+<div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>            <span class="keywordtype">bool</span> setOne = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00744" name="l00744"></a><span class="lineno">  744</span>            <span class="keywordflow">for</span> (UN j=0; j&lt;indices.size() &amp;&amp; !setOne; j++) {</div>
+<div class="line"><a id="l00745" name="l00745"></a><span class="lineno">  745</span>                <span class="keywordflow">if</span> ( colMap-&gt;getGlobalElement( indices[j] )  == globalDof ){</div>
+<div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span>                    values[j] = valuesOld[j]*eps;</div>
+<div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span> </div>
+<div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span>                    setOne = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span>                }</div>
+<div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>            }</div>
+<div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span>            matrix-&gt;replaceLocalValues(localDof, indices(), values());</div>
+<div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span>        }</div>
+<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span>        localDof++;</div>
+<div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span>    }</div>
+<div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>    </div>
+<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>}</div>
 </div>
-<div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span> </div>
-<div class="line"><a id="l00760" name="l00760"></a><span class="lineno">  760</span> </div>
-<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00762" data-start="{" data-end="}">
-<div class="line"><a id="l00762" name="l00762"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d">  762</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d">BCBuilder&lt;SC,LO,GO,NO&gt;::setDirichletBC</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, <span class="keywordtype">int</span> loc, <span class="keywordtype">int</span> blockRow, <span class="keywordtype">bool</span> isDiagonalBlock)<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>    </div>
-<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>    matrix-&gt;resumeFill();</div>
-<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>    <span class="keywordtype">bool</span> isDirichlet;</div>
-<div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>    UN dofsPerNode = vecDofs_.at(loc);</div>
-<div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span>    vec_int_ptr_Type bcFlags = vecDomain_.at(loc)-&gt;getBCFlagUnique();</div>
-<div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span> </div>
-<div class="line"><a id="l00769" name="l00769"></a><span class="lineno">  769</span>    <span class="keywordflow">for</span> (LO i=0; i&lt;bcFlags-&gt;size(); i++) { <span class="comment">// flags are for nodes.</span></div>
-<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span>        <span class="keywordtype">int</span> flag = bcFlags-&gt;at(i);</div>
-<div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span>        isDirichlet = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span>        <span class="keywordtype">int</span> locThisFlag;</div>
+<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span> </div>
+<div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span> </div>
+<div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00760" data-start="{" data-end="}">
+<div class="line"><a id="l00760" name="l00760"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d">  760</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d">BCBuilder&lt;SC,LO,GO,NO&gt;::setDirichletBC</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, <span class="keywordtype">int</span> loc, <span class="keywordtype">int</span> blockRow, <span class="keywordtype">bool</span> isDiagonalBlock)<span class="keyword"> const</span>{</div>
+<div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span>    </div>
+<div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span>    matrix-&gt;resumeFill();</div>
+<div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>    <span class="keywordtype">bool</span> isDirichlet;</div>
+<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>    UN dofsPerNode = vecDofs_.at(loc);</div>
+<div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span>    vec_int_ptr_Type bcFlags = vecDomain_.at(loc)-&gt;getBCFlagUnique();</div>
+<div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span> </div>
+<div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span>    <span class="keywordflow">for</span> (LO i=0; i&lt;bcFlags-&gt;size(); i++) { <span class="comment">// flags are for nodes.</span></div>
+<div class="line"><a id="l00768" name="l00768"></a><span class="lineno">  768</span>        <span class="keywordtype">int</span> flag = bcFlags-&gt;at(i);</div>
+<div class="line"><a id="l00769" name="l00769"></a><span class="lineno">  769</span>        isDirichlet = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00770" name="l00770"></a><span class="lineno">  770</span>        <span class="keywordtype">int</span> locThisFlag;</div>
+<div class="line"><a id="l00771" name="l00771"></a><span class="lineno">  771</span> </div>
+<div class="line"><a id="l00772" name="l00772"></a><span class="lineno">  772</span>        <span class="keywordflow">if</span>( <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#aed3efb55b048d3ff75763fb0726c69f9">findFlag</a>(flag, blockRow, locThisFlag) ){</div>
 <div class="line"><a id="l00773" name="l00773"></a><span class="lineno">  773</span> </div>
-<div class="line"><a id="l00774" name="l00774"></a><span class="lineno">  774</span>        <span class="keywordflow">if</span>( <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#aed3efb55b048d3ff75763fb0726c69f9">findFlag</a>(flag, blockRow, locThisFlag) ){</div>
-<div class="line"><a id="l00775" name="l00775"></a><span class="lineno">  775</span> </div>
-<div class="line"><a id="l00776" name="l00776"></a><span class="lineno">  776</span>            <span class="keywordflow">if</span>( !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet&quot;</span>) ||</div>
-<div class="line"><a id="l00777" name="l00777"></a><span class="lineno">  777</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X&quot;</span>) ||</div>
-<div class="line"><a id="l00778" name="l00778"></a><span class="lineno">  778</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Y&quot;</span>) ||</div>
-<div class="line"><a id="l00779" name="l00779"></a><span class="lineno">  779</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Z&quot;</span>) ||</div>
-<div class="line"><a id="l00780" name="l00780"></a><span class="lineno">  780</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span>) ||</div>
-<div class="line"><a id="l00781" name="l00781"></a><span class="lineno">  781</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span>) ||</div>
-<div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span>) )</div>
-<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span>                isDirichlet = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>            <span class="keywordflow">if</span> (isDirichlet) {</div>
-<div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span> </div>
-<div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span>                <span class="keywordflow">if</span> (isDiagonalBlock)</div>
-<div class="line"><a id="l00787" name="l00787"></a><span class="lineno">  787</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#af6af4aae6cb0bd2ec8edbde638274c44">setLocalRowOne</a>(matrix, i, dofsPerNode, locThisFlag );</div>
-<div class="line"><a id="l00788" name="l00788"></a><span class="lineno">  788</span>                <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00789" name="l00789"></a><span class="lineno">  789</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">setLocalRowZero</a>(matrix, i, dofsPerNode, locThisFlag );</div>
-<div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span>            }</div>
-<div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>        }</div>
-<div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span>    }</div>
-<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>    matrix-&gt;fillComplete( matrix-&gt;getMap(<span class="stringliteral">&quot;domain&quot;</span>), matrix-&gt;getMap(<span class="stringliteral">&quot;range&quot;</span>) );</div>
-<div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span>}</div>
+<div class="line"><a id="l00774" name="l00774"></a><span class="lineno">  774</span>            <span class="keywordflow">if</span>( !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet&quot;</span>) ||</div>
+<div class="line"><a id="l00775" name="l00775"></a><span class="lineno">  775</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X&quot;</span>) ||</div>
+<div class="line"><a id="l00776" name="l00776"></a><span class="lineno">  776</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Y&quot;</span>) ||</div>
+<div class="line"><a id="l00777" name="l00777"></a><span class="lineno">  777</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Z&quot;</span>) ||</div>
+<div class="line"><a id="l00778" name="l00778"></a><span class="lineno">  778</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span>) ||</div>
+<div class="line"><a id="l00779" name="l00779"></a><span class="lineno">  779</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span>) ||</div>
+<div class="line"><a id="l00780" name="l00780"></a><span class="lineno">  780</span>                !vecBCType_.at(locThisFlag).compare(<span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span>) )</div>
+<div class="line"><a id="l00781" name="l00781"></a><span class="lineno">  781</span>                isDirichlet = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span>            <span class="keywordflow">if</span> (isDirichlet) {</div>
+<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span> </div>
+<div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>                <span class="keywordflow">if</span> (isDiagonalBlock)</div>
+<div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#af6af4aae6cb0bd2ec8edbde638274c44">setLocalRowOne</a>(matrix, i, dofsPerNode, locThisFlag );</div>
+<div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00787" name="l00787"></a><span class="lineno">  787</span>                    <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">setLocalRowZero</a>(matrix, i, dofsPerNode, locThisFlag );</div>
+<div class="line"><a id="l00788" name="l00788"></a><span class="lineno">  788</span>            }</div>
+<div class="line"><a id="l00789" name="l00789"></a><span class="lineno">  789</span>        }</div>
+<div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span>    }</div>
+<div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>    matrix-&gt;fillComplete( matrix-&gt;getMap(<span class="stringliteral">&quot;domain&quot;</span>), matrix-&gt;getMap(<span class="stringliteral">&quot;range&quot;</span>) );</div>
+<div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span>}</div>
 </div>
-<div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span> </div>
-<div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00797" data-start="{" data-end="}">
-<div class="line"><a id="l00797" name="l00797"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#af6af4aae6cb0bd2ec8edbde638274c44">  797</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#af6af4aae6cb0bd2ec8edbde638274c44">BCBuilder&lt;SC,LO,GO,NO&gt;::setLocalRowOne</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, <span class="keywordtype">int</span> loc)<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>    </div>
-<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span>    Teuchos::ArrayView&lt;const SC&gt; valuesOld;</div>
-<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>    Teuchos::ArrayView&lt;const LO&gt; indices;</div>
-<div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span> </div>
-<div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span>    MapConstPtr_Type colMap = matrix-&gt;getMap(<span class="stringliteral">&quot;col&quot;</span>);</div>
-<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span>    LO localDof = (LO) (dofsPerNode * localNode);</div>
-<div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span>    <span class="keywordflow">for</span> (UN dof=0; dof&lt;dofsPerNode; dof++) {</div>
-<div class="line"><a id="l00805" name="l00805"></a><span class="lineno">  805</span>        <span class="keywordflow">if</span> ( vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet&quot;</span> ||</div>
-<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X&quot;</span> &amp;&amp; dof==0 ) ||</div>
-<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y&quot;</span> &amp;&amp; dof==1 ) ||</div>
-<div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Z&quot;</span> &amp;&amp; dof==2 ) ||</div>
-<div class="line"><a id="l00809" name="l00809"></a><span class="lineno">  809</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span> &amp;&amp; dof!=2 )||</div>
-<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span> &amp;&amp; dof!=1 )||</div>
-<div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span> &amp;&amp; dof!=0 )</div>
-<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>            ) {</div>
-<div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>           <span class="comment">// std::cout &lt;&lt; &quot; Setting Dirichlet Row 1 for node &quot; &lt;&lt; localDof &lt;&lt; &quot; of type &quot; &lt;&lt; vecBCType_.at(loc)  &lt;&lt;endl;</span></div>
-<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>            GO globalDof = matrix-&gt;getMap()-&gt;getGlobalElement( localDof );</div>
-<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>            matrix-&gt;getLocalRowView(localDof, indices, valuesOld);</div>
-<div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span>            Teuchos::Array&lt;SC&gt; values( valuesOld.size(), Teuchos::ScalarTraits&lt;SC&gt;::zero() );</div>
-<div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span>            <span class="keywordtype">bool</span> setOne = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>            <span class="keywordflow">for</span> (UN j=0; j&lt;indices.size() &amp;&amp; !setOne; j++) {</div>
-<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>                <span class="keywordflow">if</span> ( colMap-&gt;getGlobalElement( indices[j] )  == globalDof ){</div>
-<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>                    values[j] = Teuchos::ScalarTraits&lt;SC&gt;::one();</div>
-<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>                    setOne = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span>                }</div>
-<div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span>            }</div>
-<div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span>            matrix-&gt;replaceLocalValues(localDof, indices(), values());</div>
-<div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span>        }</div>
-<div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>        localDof++;</div>
-<div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span>    }</div>
-<div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span>    </div>
-<div class="line"><a id="l00829" name="l00829"></a><span class="lineno">  829</span>}</div>
+<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span> </div>
+<div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00795" data-start="{" data-end="}">
+<div class="line"><a id="l00795" name="l00795"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#af6af4aae6cb0bd2ec8edbde638274c44">  795</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#af6af4aae6cb0bd2ec8edbde638274c44">BCBuilder&lt;SC,LO,GO,NO&gt;::setLocalRowOne</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, <span class="keywordtype">int</span> loc)<span class="keyword"> const</span>{</div>
+<div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span>    </div>
+<div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>    Teuchos::ArrayView&lt;const SC&gt; valuesOld;</div>
+<div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>    Teuchos::ArrayView&lt;const LO&gt; indices;</div>
+<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span> </div>
+<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>    MapConstPtr_Type colMap = matrix-&gt;getMap(<span class="stringliteral">&quot;col&quot;</span>);</div>
+<div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>    LO localDof = (LO) (dofsPerNode * localNode);</div>
+<div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span>    <span class="keywordflow">for</span> (UN dof=0; dof&lt;dofsPerNode; dof++) {</div>
+<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span>        <span class="keywordflow">if</span> ( vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet&quot;</span> ||</div>
+<div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X&quot;</span> &amp;&amp; dof==0 ) ||</div>
+<div class="line"><a id="l00805" name="l00805"></a><span class="lineno">  805</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y&quot;</span> &amp;&amp; dof==1 ) ||</div>
+<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Z&quot;</span> &amp;&amp; dof==2 ) ||</div>
+<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span> &amp;&amp; dof!=2 )||</div>
+<div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span> &amp;&amp; dof!=1 )||</div>
+<div class="line"><a id="l00809" name="l00809"></a><span class="lineno">  809</span>            (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span> &amp;&amp; dof!=0 )</div>
+<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span>            ) {</div>
+<div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>           <span class="comment">// std::cout &lt;&lt; &quot; Setting Dirichlet Row 1 for node &quot; &lt;&lt; localDof &lt;&lt; &quot; of type &quot; &lt;&lt; vecBCType_.at(loc)  &lt;&lt;endl;</span></div>
+<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>            GO globalDof = matrix-&gt;getMap()-&gt;getGlobalElement( localDof );</div>
+<div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>            matrix-&gt;getLocalRowView(localDof, indices, valuesOld);</div>
+<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>            Teuchos::Array&lt;SC&gt; values( valuesOld.size(), Teuchos::ScalarTraits&lt;SC&gt;::zero() );</div>
+<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>            <span class="keywordtype">bool</span> setOne = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span>            <span class="keywordflow">for</span> (UN j=0; j&lt;indices.size() &amp;&amp; !setOne; j++) {</div>
+<div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span>                <span class="keywordflow">if</span> ( colMap-&gt;getGlobalElement( indices[j] )  == globalDof ){</div>
+<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>                    values[j] = Teuchos::ScalarTraits&lt;SC&gt;::one();</div>
+<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>                    setOne = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>                }</div>
+<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>            }</div>
+<div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span>            matrix-&gt;replaceLocalValues(localDof, indices(), values());</div>
+<div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span>        }</div>
+<div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span>        localDof++;</div>
+<div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span>    }</div>
+<div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>    </div>
+<div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span>}</div>
 </div>
-<div class="line"><a id="l00830" name="l00830"></a><span class="lineno">  830</span> </div>
-<div class="line"><a id="l00831" name="l00831"></a><span class="lineno">  831</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00832" data-start="{" data-end="}">
-<div class="line"><a id="l00832" name="l00832"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">  832</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">BCBuilder&lt;SC,LO,GO,NO&gt;::setLocalRowZero</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, <span class="keywordtype">int</span> loc)<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00833" name="l00833"></a><span class="lineno">  833</span>    </div>
-<div class="line"><a id="l00834" name="l00834"></a><span class="lineno">  834</span>    Teuchos::ArrayView&lt;const SC&gt; valuesOld;</div>
-<div class="line"><a id="l00835" name="l00835"></a><span class="lineno">  835</span>    Teuchos::ArrayView&lt;const LO&gt; indices;</div>
-<div class="line"><a id="l00836" name="l00836"></a><span class="lineno">  836</span>    LO localDof = (LO) (dofsPerNode * localNode);</div>
-<div class="line"><a id="l00837" name="l00837"></a><span class="lineno">  837</span>    <span class="keywordflow">for</span> (UN dof=0; dof&lt;dofsPerNode; dof++) {</div>
-<div class="line"><a id="l00838" name="l00838"></a><span class="lineno">  838</span>        <span class="keywordflow">if</span> ( vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet&quot;</span> ||</div>
-<div class="line"><a id="l00839" name="l00839"></a><span class="lineno">  839</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X&quot;</span> &amp;&amp; dof==0 ) ||</div>
-<div class="line"><a id="l00840" name="l00840"></a><span class="lineno">  840</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y&quot;</span> &amp;&amp; dof==1 ) ||</div>
-<div class="line"><a id="l00841" name="l00841"></a><span class="lineno">  841</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Z&quot;</span> &amp;&amp; dof==2 ) ||</div>
-<div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span> &amp;&amp; dof!=2 )||</div>
-<div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span> &amp;&amp; dof!=1 )||</div>
-<div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span> &amp;&amp; dof!=0 )</div>
-<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>        ) {</div>
-<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>            matrix-&gt;getLocalRowView(localDof, indices, valuesOld);</div>
-<div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>            Teuchos::Array&lt;SC&gt; values( valuesOld.size(), Teuchos::ScalarTraits&lt;SC&gt;::zero() );</div>
-<div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>            matrix-&gt;replaceLocalValues(localDof, indices(), values());</div>
-<div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span>        }</div>
-<div class="line"><a id="l00850" name="l00850"></a><span class="lineno">  850</span>        localDof++;</div>
-<div class="line"><a id="l00851" name="l00851"></a><span class="lineno">  851</span>    }</div>
-<div class="line"><a id="l00852" name="l00852"></a><span class="lineno">  852</span>}</div>
+<div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span> </div>
+<div class="line"><a id="l00829" name="l00829"></a><span class="lineno">  829</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00830" data-start="{" data-end="}">
+<div class="line"><a id="l00830" name="l00830"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">  830</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">BCBuilder&lt;SC,LO,GO,NO&gt;::setLocalRowZero</a>(<span class="keyword">const</span> MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, <span class="keywordtype">int</span> loc)<span class="keyword"> const</span>{</div>
+<div class="line"><a id="l00831" name="l00831"></a><span class="lineno">  831</span>    </div>
+<div class="line"><a id="l00832" name="l00832"></a><span class="lineno">  832</span>    Teuchos::ArrayView&lt;const SC&gt; valuesOld;</div>
+<div class="line"><a id="l00833" name="l00833"></a><span class="lineno">  833</span>    Teuchos::ArrayView&lt;const LO&gt; indices;</div>
+<div class="line"><a id="l00834" name="l00834"></a><span class="lineno">  834</span>    LO localDof = (LO) (dofsPerNode * localNode);</div>
+<div class="line"><a id="l00835" name="l00835"></a><span class="lineno">  835</span>    <span class="keywordflow">for</span> (UN dof=0; dof&lt;dofsPerNode; dof++) {</div>
+<div class="line"><a id="l00836" name="l00836"></a><span class="lineno">  836</span>        <span class="keywordflow">if</span> ( vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet&quot;</span> ||</div>
+<div class="line"><a id="l00837" name="l00837"></a><span class="lineno">  837</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X&quot;</span> &amp;&amp; dof==0 ) ||</div>
+<div class="line"><a id="l00838" name="l00838"></a><span class="lineno">  838</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y&quot;</span> &amp;&amp; dof==1 ) ||</div>
+<div class="line"><a id="l00839" name="l00839"></a><span class="lineno">  839</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Z&quot;</span> &amp;&amp; dof==2 ) ||</div>
+<div class="line"><a id="l00840" name="l00840"></a><span class="lineno">  840</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Y&quot;</span> &amp;&amp; dof!=2 )||</div>
+<div class="line"><a id="l00841" name="l00841"></a><span class="lineno">  841</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_X_Z&quot;</span> &amp;&amp; dof!=1 )||</div>
+<div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>        (vecBCType_.at(loc) == <span class="stringliteral">&quot;Dirichlet_Y_Z&quot;</span> &amp;&amp; dof!=0 )</div>
+<div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>        ) {</div>
+<div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>            matrix-&gt;getLocalRowView(localDof, indices, valuesOld);</div>
+<div class="line"><a id="l00845" name="l00845"></a><span class="lineno">  845</span>            Teuchos::Array&lt;SC&gt; values( valuesOld.size(), Teuchos::ScalarTraits&lt;SC&gt;::zero() );</div>
+<div class="line"><a id="l00846" name="l00846"></a><span class="lineno">  846</span>            matrix-&gt;replaceLocalValues(localDof, indices(), values());</div>
+<div class="line"><a id="l00847" name="l00847"></a><span class="lineno">  847</span>        }</div>
+<div class="line"><a id="l00848" name="l00848"></a><span class="lineno">  848</span>        localDof++;</div>
+<div class="line"><a id="l00849" name="l00849"></a><span class="lineno">  849</span>    }</div>
+<div class="line"><a id="l00850" name="l00850"></a><span class="lineno">  850</span>}</div>
 </div>
+<div class="line"><a id="l00851" name="l00851"></a><span class="lineno">  851</span> </div>
+<div class="line"><a id="l00852" name="l00852"></a><span class="lineno">  852</span> </div>
 <div class="line"><a id="l00853" name="l00853"></a><span class="lineno">  853</span> </div>
-<div class="line"><a id="l00854" name="l00854"></a><span class="lineno">  854</span> </div>
-<div class="line"><a id="l00855" name="l00855"></a><span class="lineno">  855</span> </div>
-<div class="line"><a id="l00856" name="l00856"></a><span class="lineno">  856</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00857" data-start="{" data-end="}">
-<div class="line"><a id="l00857" name="l00857"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#aff21255d38d4e781963c4c795b1b172e">  857</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#aff21255d38d4e781963c4c795b1b172e">BCBuilder&lt;SC,LO,GO,NO&gt;::dofsPerNodeAtBlock</a>(<span class="keywordtype">int</span> block) {</div>
-<div class="line"><a id="l00858" name="l00858"></a><span class="lineno">  858</span>    std::vector&lt;int&gt;::iterator it;</div>
-<div class="line"><a id="l00859" name="l00859"></a><span class="lineno">  859</span>    it = find(vecBlockID_.begin(),vecBlockID_.end(),block);</div>
-<div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span><span class="preprocessor">#ifdef ASSERTS_WARNINGS</span></div>
-<div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>    MYASSERT(it!=vecBlockID_.end(),<span class="stringliteral">&quot;Requested dof information is not known to BCBuilder class.&quot;</span>);</div>
-<div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>    </div>
-<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>    <span class="keywordflow">return</span> vecDofs_.at(distance(vecBlockID_.begin(),it));</div>
-<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>}</div>
+<div class="line"><a id="l00854" name="l00854"></a><span class="lineno">  854</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00855" data-start="{" data-end="}">
+<div class="line"><a id="l00855" name="l00855"></a><span class="lineno"><a class="line" href="classFEDD_1_1BCBuilder.html#aff21255d38d4e781963c4c795b1b172e">  855</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classFEDD_1_1BCBuilder.html#aff21255d38d4e781963c4c795b1b172e">BCBuilder&lt;SC,LO,GO,NO&gt;::dofsPerNodeAtBlock</a>(<span class="keywordtype">int</span> block) {</div>
+<div class="line"><a id="l00856" name="l00856"></a><span class="lineno">  856</span>    std::vector&lt;int&gt;::iterator it;</div>
+<div class="line"><a id="l00857" name="l00857"></a><span class="lineno">  857</span>    it = find(vecBlockID_.begin(),vecBlockID_.end(),block);</div>
+<div class="line"><a id="l00858" name="l00858"></a><span class="lineno">  858</span><span class="preprocessor">#ifdef ASSERTS_WARNINGS</span></div>
+<div class="line"><a id="l00859" name="l00859"></a><span class="lineno">  859</span>    MYASSERT(it!=vecBlockID_.end(),<span class="stringliteral">&quot;Requested dof information is not known to BCBuilder class.&quot;</span>);</div>
+<div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>    </div>
+<div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span>    <span class="keywordflow">return</span> vecDofs_.at(distance(vecBlockID_.begin(),it));</div>
+<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>}</div>
 </div>
 </div>
-<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span>}</div>
-<div class="line"><a id="l00867" name="l00867"></a><span class="lineno">  867</span> </div>
-<div class="line"><a id="l00868" name="l00868"></a><span class="lineno">  868</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>}</div>
+<div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span> </div>
+<div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span><span class="preprocessor">#endif</span></div>
 </div>
 </div>
 </div>
@@ -1046,17 +1044,17 @@ $(function(){initNavTree('BCBuilder__def_8hpp_source.html',''); initResizable(tr
 <div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a21dac1adbaa03e8272afde11386858e8"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a21dac1adbaa03e8272afde11386858e8">FEDD::BCBuilder::set</a></div><div class="ttdeci">void set(const BlockMatrixPtr_Type &amp;blockMatrix, const BlockMultiVectorPtr_Type &amp;b, double t=0.) const</div><div class="ttdoc">Setting bundary condtions to problem.</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:88</div></div>
 <div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a2d2b064c1a50b229c015bd599a66c7f1"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a2d2b064c1a50b229c015bd599a66c7f1">FEDD::BCBuilder::setSystem</a></div><div class="ttdeci">void setSystem(const BlockMatrixPtr_Type &amp;blockMatrix) const</div><div class="ttdoc">Set boundary conditions to system.</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:626</div></div>
 <div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a2d77f42fbf81b56dd7b6d058b47547a4"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a2d77f42fbf81b56dd7b6d058b47547a4">FEDD::BCBuilder::addBC</a></div><div class="ttdeci">void addBC(BC_func_Type funcBC, int flag, int block, const DomainPtr_Type &amp;domain, std::string type, int dofs)</div><div class="ttdoc">Adding Boundary Condition.</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:42</div></div>
-<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a4028cf583fa3693387fe390f51724f94"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">FEDD::BCBuilder::setLocalRowZero</a></div><div class="ttdeci">void setLocalRowZero(const MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, int loc) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:832</div></div>
+<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a4028cf583fa3693387fe390f51724f94"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a4028cf583fa3693387fe390f51724f94">FEDD::BCBuilder::setLocalRowZero</a></div><div class="ttdeci">void setLocalRowZero(const MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, int loc) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:830</div></div>
 <div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a85f4fe085c295973bd70331d6022e095"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a85f4fe085c295973bd70331d6022e095">FEDD::BCBuilder&lt; SC, LO, GO, NO &gt;::setDirichletBoundaryFromExternal</a></div><div class="ttdeci">void setDirichletBoundaryFromExternal(Teuchos::ArrayRCP&lt; SC &gt; &amp;values, LO index, int loc, double time, std::string type, Teuchos::ArrayRCP&lt; SC &gt; valuesSubstract=Teuchos::null) const</div></div>
 <div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a8bcf132e19cb9550961450af34829fea"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a8bcf132e19cb9550961450af34829fea">FEDD::BCBuilder::setSystemScaled</a></div><div class="ttdeci">void setSystemScaled(const BlockMatrixPtr_Type &amp;blockMatrix, double eps=1.0) const</div><div class="ttdoc">Set boundary conditions to system.</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:595</div></div>
-<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a8f5210f0fc644f81d938225973f2353d"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d">FEDD::BCBuilder::setDirichletBC</a></div><div class="ttdeci">void setDirichletBC(const MatrixPtr_Type &amp;matrix, int loc, int blockRow, bool isDiagonalBlock) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:762</div></div>
+<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a8f5210f0fc644f81d938225973f2353d"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a8f5210f0fc644f81d938225973f2353d">FEDD::BCBuilder::setDirichletBC</a></div><div class="ttdeci">void setDirichletBC(const MatrixPtr_Type &amp;matrix, int loc, int blockRow, bool isDiagonalBlock) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:760</div></div>
 <div class="ttc" id="aclassFEDD_1_1BCBuilder_html_a979cf662a563682ff35be5b0c8860e63"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#a979cf662a563682ff35be5b0c8860e63">FEDD::BCBuilder::setAllDirichletZero</a></div><div class="ttdeci">void setAllDirichletZero(const BlockMultiVectorPtr_Type &amp;blockMV) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:468</div></div>
 <div class="ttc" id="aclassFEDD_1_1BCBuilder_html_aaf5b29a7c5663fe235385da3941707ea"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#aaf5b29a7c5663fe235385da3941707ea">FEDD::BCBuilder&lt; SC, LO, GO, NO &gt;::blockHasDirichletBC</a></div><div class="ttdeci">bool blockHasDirichletBC(int block) const</div></div>
-<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_ac31eba76d1547d2dca7f367237c4b7ba"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba">FEDD::BCBuilder::setDirichletBCScaled</a></div><div class="ttdeci">void setDirichletBCScaled(const MatrixPtr_Type &amp;matrix, int loc, int blockRow, bool isDiagonalBlock, double eps=1.0) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:684</div></div>
+<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_ac31eba76d1547d2dca7f367237c4b7ba"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#ac31eba76d1547d2dca7f367237c4b7ba">FEDD::BCBuilder::setDirichletBCScaled</a></div><div class="ttdeci">void setDirichletBCScaled(const MatrixPtr_Type &amp;matrix, int loc, int blockRow, bool isDiagonalBlock, double eps=1.0) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:682</div></div>
 <div class="ttc" id="aclassFEDD_1_1BCBuilder_html_aed3efb55b048d3ff75763fb0726c69f9"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#aed3efb55b048d3ff75763fb0726c69f9">FEDD::BCBuilder&lt; SC, LO, GO, NO &gt;::findFlag</a></div><div class="ttdeci">bool findFlag(LO flag, int block, int &amp;loc) const</div></div>
-<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_af3343b81acef348c1813aafba3543978"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978">FEDD::BCBuilder::setLocalRowEntry</a></div><div class="ttdeci">void setLocalRowEntry(const MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, int loc, double eps) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:721</div></div>
-<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_af6af4aae6cb0bd2ec8edbde638274c44"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#af6af4aae6cb0bd2ec8edbde638274c44">FEDD::BCBuilder::setLocalRowOne</a></div><div class="ttdeci">void setLocalRowOne(const MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, int loc) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:797</div></div>
-<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_aff21255d38d4e781963c4c795b1b172e"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#aff21255d38d4e781963c4c795b1b172e">FEDD::BCBuilder::dofsPerNodeAtBlock</a></div><div class="ttdeci">int dofsPerNodeAtBlock(int block)</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:857</div></div>
+<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_af3343b81acef348c1813aafba3543978"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#af3343b81acef348c1813aafba3543978">FEDD::BCBuilder::setLocalRowEntry</a></div><div class="ttdeci">void setLocalRowEntry(const MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, int loc, double eps) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:719</div></div>
+<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_af6af4aae6cb0bd2ec8edbde638274c44"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#af6af4aae6cb0bd2ec8edbde638274c44">FEDD::BCBuilder::setLocalRowOne</a></div><div class="ttdeci">void setLocalRowOne(const MatrixPtr_Type &amp;matrix, LO localNode, UN dofsPerNode, int loc) const</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:795</div></div>
+<div class="ttc" id="aclassFEDD_1_1BCBuilder_html_aff21255d38d4e781963c4c795b1b172e"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html#aff21255d38d4e781963c4c795b1b172e">FEDD::BCBuilder::dofsPerNodeAtBlock</a></div><div class="ttdeci">int dofsPerNodeAtBlock(int block)</div><div class="ttdef"><b>Definition</b> BCBuilder_def.hpp:855</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
