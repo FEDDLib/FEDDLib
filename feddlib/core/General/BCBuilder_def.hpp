@@ -570,7 +570,9 @@ void BCBuilder<SC,LO,GO,NO>::determineVelocityForFlowrate(LO i, double time) con
     // Domain of the corresponing boundary condition. Most probably fluid domain
     DomainPtr_Type domain = vecDomain_.at(i);
     // A vector containing and desribing the parabolic inflow
-    MultiVectorConstPtr_Type parabolic_unique =  vecExternalSol_[i]; // e.g. Laplace soution on inlet
+    MultiVectorConstPtr_Type parabolic_unique_const =  vecExternalSol_[i]; // e.g. Laplace soution on inlet
+    MultiVectorPtr_Type parabolic_unique = Teuchos::rcp_const_cast<MultiVector_Type> ( parabolic_unique_const );  // dirty const casting
+
     MultiVectorPtr_Type parabolic_rep = Teuchos::rcp(new MultiVector_Type ( domain->getMapRepeated() ) );
     // We normalize the solution and distribute it to the repeated map
     SC maxValue = parabolic_unique->getMax();
