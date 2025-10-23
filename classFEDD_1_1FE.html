@@ -243,6 +243,27 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblySurfaceIntegr
 <tr class="memitem:aee812b6bcbf3166b513493edd0849f4c" id="r_aee812b6bcbf3166b513493edd0849f4c"><td class="memItemLeft" align="right" valign="top"><a id="aee812b6bcbf3166b513493edd0849f4c" name="aee812b6bcbf3166b513493edd0849f4c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblySurfaceIntegralFlag</b> (int dim, std::string FEType, MultiVectorPtr_Type a, std::string fieldType, BC_func_Type func, std::vector&lt; SC &gt; &amp;funcParameter)</td></tr>
 <tr class="separator:aee812b6bcbf3166b513493edd0849f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a44e99b76541621b17ba21f93fc560c" id="r_a5a44e99b76541621b17ba21f93fc560c"><td class="memItemLeft" align="right" valign="top"><a id="a5a44e99b76541621b17ba21f93fc560c" name="a5a44e99b76541621b17ba21f93fc560c"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyResistanceBoundary</b> (int dim, std::string FEType, MultiVectorPtr_Type f, MultiVectorPtr_Type u_rep, vec_dbl_Type flowRate_vec, std::vector&lt; SC &gt; &amp;funcParameter, RhsFunc_Type func, ParameterListPtr_Type params, int FEloc=0)</td></tr>
+<tr class="separator:a5a44e99b76541621b17ba21f93fc560c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03ad373bd35106c1a1ba66df72bd75d5" id="r_a03ad373bd35106c1a1ba66df72bd75d5"><td class="memItemLeft" align="right" valign="top"><a id="a03ad373bd35106c1a1ba66df72bd75d5" name="a03ad373bd35106c1a1ba66df72bd75d5"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyAbsorbingBoundary</b> (int dim, std::string FEType, MultiVectorPtr_Type f, MultiVectorPtr_Type u_rep, vec_dbl_Type flowRate_vec, std::vector&lt; SC &gt; &amp;funcParameter, RhsFunc_Type func, double areaOutlet_init, double areaOutlet_T, ParameterListPtr_Type params, int FEloc=0)</td></tr>
+<tr class="separator:a03ad373bd35106c1a1ba66df72bd75d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58f32fbb8622c0c7f9f94233d70ca1ec" id="r_a58f32fbb8622c0c7f9f94233d70ca1ec"><td class="memItemLeft" align="right" valign="top"><a id="a58f32fbb8622c0c7f9f94233d70ca1ec" name="a58f32fbb8622c0c7f9f94233d70ca1ec"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyAbsorbingBoundaryPaper</b> (int dim, std::string FEType, MultiVectorPtr_Type f, MultiVectorPtr_Type u_rep, vec_dbl_Type flowRate_vec, std::vector&lt; SC &gt; &amp;funcParameter, RhsFunc_Type func, double areaOutlet_init, double areaOutlet_T, ParameterListPtr_Type params, int FEloc=0)</td></tr>
+<tr class="separator:a58f32fbb8622c0c7f9f94233d70ca1ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81ef833803d288e90e939b629c2ba558" id="r_a81ef833803d288e90e939b629c2ba558"><td class="memItemLeft" align="right" valign="top"><a id="a81ef833803d288e90e939b629c2ba558" name="a81ef833803d288e90e939b629c2ba558"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyAbsorbingResistanceBoundary</b> (int dim, std::string FEType, MultiVectorPtr_Type f, MultiVectorPtr_Type u_rep, vec_dbl_Type flowRate_vec, std::vector&lt; SC &gt; &amp;funcParameter, RhsFunc_Type func, double areaOutlet_init, ParameterListPtr_Type params, int FEloc=0)</td></tr>
+<tr class="separator:a81ef833803d288e90e939b629c2ba558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c0f23d1fd7c3cdc10c79128fea36574" id="r_a1c0f23d1fd7c3cdc10c79128fea36574"><td class="memItemLeft" align="right" valign="top"><a id="a1c0f23d1fd7c3cdc10c79128fea36574" name="a1c0f23d1fd7c3cdc10c79128fea36574"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyArea</b> (int dim, double &amp;area, int inflowFlag, int FEloc=0)</td></tr>
+<tr class="separator:a1c0f23d1fd7c3cdc10c79128fea36574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2069239debeb02e88a91ebc162ca1466" id="r_a2069239debeb02e88a91ebc162ca1466"><td class="memItemLeft" align="right" valign="top"><a id="a2069239debeb02e88a91ebc162ca1466" name="a2069239debeb02e88a91ebc162ca1466"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyFlowRate</b> (int dim, double &amp;flowRateParabolic, std::string FEType, int dofs, int inflowFlag, MultiVectorPtr_Type solution_rep, int FEloc=0)</td></tr>
+<tr class="separator:a2069239debeb02e88a91ebc162ca1466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73168023febd446d33d9978d195e362a" id="r_a73168023febd446d33d9978d195e362a"><td class="memItemLeft" align="right" valign="top"><a id="a73168023febd446d33d9978d195e362a" name="a73168023febd446d33d9978d195e362a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyAverageVelocity</b> (int dim, double &amp;averageVelocity, std::string FEType, int dofs, int flag, MultiVectorPtr_Type solution_rep, int FEloc=0)</td></tr>
+<tr class="separator:a73168023febd446d33d9978d195e362a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac75a7fcf88130e98a77930e9152be709" id="r_ac75a7fcf88130e98a77930e9152be709"><td class="memItemLeft" align="right" valign="top"><a id="ac75a7fcf88130e98a77930e9152be709" name="ac75a7fcf88130e98a77930e9152be709"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addFE</b> (DomainConstPtr_Type domain)</td></tr>
 <tr class="separator:ac75a7fcf88130e98a77930e9152be709"><td class="memSeparator" colspan="2">&#160;</td></tr>

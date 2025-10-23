@@ -141,6 +141,9 @@ typedef Problem_Type::Comm_Type&#160;</td><td class="memItemRight" valign="botto
 <tr class="memitem:adf40883fcf4affee0015d6179103eaa1" id="r_adf40883fcf4affee0015d6179103eaa1"><td class="memItemLeft" align="right" valign="top"><a id="adf40883fcf4affee0015d6179103eaa1" name="adf40883fcf4affee0015d6179103eaa1"></a>
 typedef Problem_Type::CommConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>CommConstPtr_Type</b></td></tr>
 <tr class="separator:adf40883fcf4affee0015d6179103eaa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63bf7a5de0a51db2379e111b18b0607a" id="r_a63bf7a5de0a51db2379e111b18b0607a"><td class="memItemLeft" align="right" valign="top"><a id="a63bf7a5de0a51db2379e111b18b0607a" name="a63bf7a5de0a51db2379e111b18b0607a"></a>
+typedef Problem_Type::PreconditionerPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>PreconditionerPtr_Type</b></td></tr>
+<tr class="separator:a63bf7a5de0a51db2379e111b18b0607a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a407b148f1310088e76d1638d75f48b7e" id="r_a407b148f1310088e76d1638d75f48b7e"><td class="memItemLeft" align="right" valign="top"><a id="a407b148f1310088e76d1638d75f48b7e" name="a407b148f1310088e76d1638d75f48b7e"></a>
 typedef Problem_Type::LinSolverBuilderPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>LinSolverBuilderPtr_Type</b></td></tr>
 <tr class="separator:a407b148f1310088e76d1638d75f48b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -262,6 +265,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a489bc7b5ca9af1b025d4ef74e88a52bd" id="r_a489bc7b5ca9af1b025d4ef74e88a52bd"><td class="memItemLeft" align="right" valign="top"><a id="a489bc7b5ca9af1b025d4ef74e88a52bd" name="a489bc7b5ca9af1b025d4ef74e88a52bd"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MinPrecProblem</b> (ParameterListPtr_Type pl, CommConstPtr_Type comm)</td></tr>
 <tr class="separator:a489bc7b5ca9af1b025d4ef74e88a52bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a862b07d796ffe583cc022300fb29299b" id="r_a862b07d796ffe583cc022300fb29299b"><td class="memItemLeft" align="right" valign="top"><a id="a862b07d796ffe583cc022300fb29299b" name="a862b07d796ffe583cc022300fb29299b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MinPrecProblem</b> (ParameterListPtr_Type pl, CommConstPtr_Type comm, PreconditionerPtr_Type prec)</td></tr>
+<tr class="separator:a862b07d796ffe583cc022300fb29299b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a243a20624fd0706722602a693b9fb783" id="r_a243a20624fd0706722602a693b9fb783"><td class="memItemLeft" align="right" valign="top"><a id="a243a20624fd0706722602a693b9fb783" name="a243a20624fd0706722602a693b9fb783"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>initializeSystem</b> (BlockMatrixPtr_Type system)</td></tr>
 <tr class="separator:a243a20624fd0706722602a693b9fb783"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -289,9 +295,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initializeLinSolverBu
 <tr class="memitem:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem" id="r_a06af5dc8c475870e7f4b1d4f3af16292"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>infoProblem</b> ()</td></tr>
 <tr class="separator:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem" id="r_a8f976001c5ea628fe4c723bd5e0a6a29"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>infoParameter</b> ()</td></tr>
-<tr class="separator:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fdc8379f1487e5e3913095cb7133bb2 inherit pub_methods_classFEDD_1_1Problem" id="r_a0fdc8379f1487e5e3913095cb7133bb2"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>infoParameter</b> (bool full=true, std::string=&quot;empty&quot;)</td></tr>
+<tr class="separator:a0fdc8379f1487e5e3913095cb7133bb2 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem" id="r_afc5030d3ac4aac4b721d1fb8947621ec"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addVariable</b> (const DomainConstPtr_Type &amp;domain, std::string FEType, std::string name, int dofsPerNode)</td></tr>
 <tr class="separator:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>

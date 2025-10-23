@@ -175,6 +175,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abf8c987c10e64eb33533f8d497c0a4a0" id="r_abf8c987c10e64eb33533f8d497c0a4a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf8c987c10e64eb33533f8d497c0a4a0">addBC</a> (BC_func_Type funcBC, int flag, int block, const DomainPtr_Type &amp;domain, std::string type, int dofs, vec_dbl_Type &amp;parameter_vec, MultiVectorConstPtr_Type &amp;externalSol)</td></tr>
 <tr class="memdesc:abf8c987c10e64eb33533f8d497c0a4a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adding Boundary Condition with extra parameters and vector values (i.e. when the inflow of a region is computed)  <br /></td></tr>
 <tr class="separator:abf8c987c10e64eb33533f8d497c0a4a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a956de55c2748d9394a7b8850bb07974f" id="r_a956de55c2748d9394a7b8850bb07974f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a956de55c2748d9394a7b8850bb07974f">addBC</a> (BC_func_Type funcBC, int flag, int block, const DomainPtr_Type &amp;domain, std::string type, int dofs, vec_dbl_Type &amp;parameter_vec, MultiVectorConstPtr_Type &amp;externalSol, bool determineFlowRate, BC_func_Type funcBC_flowRate)</td></tr>
+<tr class="memdesc:a956de55c2748d9394a7b8850bb07974f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adding Boundary Condition with extra parameters and vector values (i.e. when the inflow of a region is computed)  <br /></td></tr>
+<tr class="separator:a956de55c2748d9394a7b8850bb07974f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2789eb1e3c2f53a7176d16bf36a7d9d4" id="r_a2789eb1e3c2f53a7176d16bf36a7d9d4"><td class="memItemLeft" align="right" valign="top"><a id="a2789eb1e3c2f53a7176d16bf36a7d9d4" name="a2789eb1e3c2f53a7176d16bf36a7d9d4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>determineVelocityForFlowrate</b> (LO i, double time) const</td></tr>
+<tr class="separator:a2789eb1e3c2f53a7176d16bf36a7d9d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21dac1adbaa03e8272afde11386858e8" id="r_a21dac1adbaa03e8272afde11386858e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21dac1adbaa03e8272afde11386858e8">set</a> (const BlockMatrixPtr_Type &amp;blockMatrix, const BlockMultiVectorPtr_Type &amp;b, double t=0.) const</td></tr>
 <tr class="memdesc:a21dac1adbaa03e8272afde11386858e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting bundary condtions to problem.  <br /></td></tr>
 <tr class="separator:a21dac1adbaa03e8272afde11386858e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -232,7 +238,7 @@ class FEDD::BCBuilder&lt; SC, LO, GO, NO &gt;</div><p>This class is responsible 
 <p>BC Builder contains all boundary condition information of current problem. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a2d77f42fbf81b56dd7b6d058b47547a4" name="a2d77f42fbf81b56dd7b6d058b47547a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d77f42fbf81b56dd7b6d058b47547a4">&#9670;&#160;</a></span>addBC() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d77f42fbf81b56dd7b6d058b47547a4">&#9670;&#160;</a></span>addBC() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -298,19 +304,21 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1BCBuilder_a2d77f42fbf81b56dd7b6d058b47547a4_icgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_a2d77f42fbf81b56dd7b6d058b47547a4_icgraph" alt=""/></div>
 <map name="aclassFEDD_1_1BCBuilder_a2d77f42fbf81b56dd7b6d058b47547a4_icgraph" id="aclassFEDD_1_1BCBuilder_a2d77f42fbf81b56dd7b6d058b47547a4_icgraph">
-<area shape="rect" title="Adding Boundary Condition." alt="" coords="218,31,382,56"/>
-<area shape="poly" title=" " alt="" coords="337,18,324,12,300,9,277,11,265,16,263,21,269,29,264,32,257,22,262,12,276,6,300,4,326,7,339,14"/>
+<area shape="rect" title="Adding Boundary Condition." alt="" coords="218,55,382,80"/>
+<area shape="poly" title=" " alt="" coords="337,42,324,36,300,33,277,35,265,40,263,45,269,53,264,56,257,46,262,36,276,30,300,28,326,31,339,38"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#aa4a61789ad955f9338e8304945c864f8" title="Adding Boundary Condition with extra parameters." alt="" coords="5,5,170,31"/>
-<area shape="poly" title=" " alt="" coords="202,35,170,31,170,25,203,29"/>
+<area shape="poly" title=" " alt="" coords="226,53,145,34,147,29,227,48"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#abf8c987c10e64eb33533f8d497c0a4a0" title="Adding Boundary Condition with extra parameters and vector values (i.e. when the inflow of a region i..." alt="" coords="5,55,170,80"/>
-<area shape="poly" title=" " alt="" coords="203,57,170,61,170,56,202,52"/>
+<area shape="poly" title=" " alt="" coords="202,70,170,70,170,65,202,65"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a956de55c2748d9394a7b8850bb07974f" title="Adding Boundary Condition with extra parameters and vector values (i.e. when the inflow of a region i..." alt="" coords="5,104,170,130"/>
+<area shape="poly" title=" " alt="" coords="227,87,147,106,145,101,226,82"/>
 </map>
 </div>
 
 </div>
 </div>
 <a id="aa4a61789ad955f9338e8304945c864f8" name="aa4a61789ad955f9338e8304945c864f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa4a61789ad955f9338e8304945c864f8">&#9670;&#160;</a></span>addBC() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4a61789ad955f9338e8304945c864f8">&#9670;&#160;</a></span>addBC() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -383,7 +391,7 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <a id="abf8c987c10e64eb33533f8d497c0a4a0" name="abf8c987c10e64eb33533f8d497c0a4a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf8c987c10e64eb33533f8d497c0a4a0">&#9670;&#160;</a></span>addBC() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abf8c987c10e64eb33533f8d497c0a4a0">&#9670;&#160;</a></span>addBC() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -452,6 +460,96 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1BCBuilder_abf8c987c10e64eb33533f8d497c0a4a0_cgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_abf8c987c10e64eb33533f8d497c0a4a0_cgraph" alt=""/></div>
 <map name="aclassFEDD_1_1BCBuilder_abf8c987c10e64eb33533f8d497c0a4a0_cgraph" id="aclassFEDD_1_1BCBuilder_abf8c987c10e64eb33533f8d497c0a4a0_cgraph">
+<area shape="rect" title="Adding Boundary Condition with extra parameters and vector values (i.e. when the inflow of a region i..." alt="" coords="5,29,170,55"/>
+<area shape="rect" href="classFEDD_1_1BCBuilder.html#a2d77f42fbf81b56dd7b6d058b47547a4" title="Adding Boundary Condition." alt="" coords="218,29,382,55"/>
+<area shape="poly" title=" " alt="" coords="170,40,202,40,202,45,170,45"/>
+<area shape="poly" title=" " alt="" coords="264,31,257,21,262,11,276,5,300,3,326,5,339,12,337,17,324,10,300,8,277,10,265,15,263,20,269,27"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a956de55c2748d9394a7b8850bb07974f" name="a956de55c2748d9394a7b8850bb07974f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a956de55c2748d9394a7b8850bb07974f">&#9670;&#160;</a></span>addBC() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1BCBuilder.html">FEDD::BCBuilder</a>&lt; SC, LO, GO, NO &gt;::addBC </td>
+          <td>(</td>
+          <td class="paramtype">BC_func_Type</td>          <td class="paramname"><span class="paramname"><em>funcBC</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>flag</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>block</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const DomainPtr_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>domain</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dofs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vec_dbl_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>parameter_vec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">MultiVectorConstPtr_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>externalSol</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>determineFlowRate</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BC_func_Type</td>          <td class="paramname"><span class="paramname"><em>funcBC_flowRate</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adding Boundary Condition with extra parameters and vector values (i.e. when the inflow of a region is computed) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">funcBC</td><td>function representing bc </td></tr>
+    <tr><td class="paramname">flag</td><td>flag corresponding to the funcBC </td></tr>
+    <tr><td class="paramname">block</td><td>diagonal block corresponding to the bc (i.e. in block systems like stokes equation) </td></tr>
+    <tr><td class="paramname">domain</td><td>finite element space correspong to block </td></tr>
+    <tr><td class="paramname">type</td><td>of bc. Dirichlet, Dirichlet_X ... </td></tr>
+    <tr><td class="paramname">dofs</td><td>degrees of freedom of bc (i.e. 3 for a vector valued problem) </td></tr>
+    <tr><td class="paramname">parameter_vec</td><td>vector containing different parameters for bc </td></tr>
+    <tr><td class="paramname">externalSol</td><td>vector with values for bc </td></tr>
+    <tr><td class="paramname">determineFlowRate</td><td>We determine the maximum velocity by the flow rate </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1BCBuilder_a956de55c2748d9394a7b8850bb07974f_cgraph.png" border="0" usemap="#aclassFEDD_1_1BCBuilder_a956de55c2748d9394a7b8850bb07974f_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1BCBuilder_a956de55c2748d9394a7b8850bb07974f_cgraph" id="aclassFEDD_1_1BCBuilder_a956de55c2748d9394a7b8850bb07974f_cgraph">
 <area shape="rect" title="Adding Boundary Condition with extra parameters and vector values (i.e. when the inflow of a region i..." alt="" coords="5,29,170,55"/>
 <area shape="rect" href="classFEDD_1_1BCBuilder.html#a2d77f42fbf81b56dd7b6d058b47547a4" title="Adding Boundary Condition." alt="" coords="218,29,382,55"/>
 <area shape="poly" title=" " alt="" coords="170,40,202,40,202,45,170,45"/>

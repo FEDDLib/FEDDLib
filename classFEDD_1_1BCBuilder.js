@@ -3,6 +3,7 @@ var classFEDD_1_1BCBuilder =
     [ "addBC", "classFEDD_1_1BCBuilder.html#a2d77f42fbf81b56dd7b6d058b47547a4", null ],
     [ "addBC", "classFEDD_1_1BCBuilder.html#aa4a61789ad955f9338e8304945c864f8", null ],
     [ "addBC", "classFEDD_1_1BCBuilder.html#abf8c987c10e64eb33533f8d497c0a4a0", null ],
+    [ "addBC", "classFEDD_1_1BCBuilder.html#a956de55c2748d9394a7b8850bb07974f", null ],
     [ "blockHasDirichletBC", "classFEDD_1_1BCBuilder.html#aaf5b29a7c5663fe235385da3941707ea", null ],
     [ "blockHasDirichletBC", "classFEDD_1_1BCBuilder.html#aa698d57ead266fed91436682f523f977", null ],
     [ "dofsPerNodeAtBlock", "classFEDD_1_1BCBuilder.html#aff21255d38d4e781963c4c795b1b172e", null ],

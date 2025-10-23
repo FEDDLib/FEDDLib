@@ -1,7 +1,9 @@
 <map id="FEDD::Domain::getElementMap" name="FEDD::Domain::getElementMap">
-<area shape="rect" id="Node000001" title="Get map of elements." alt="" coords="247,46,448,72"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30" title="Exporting Paraview file displaying element flags of the underlying mesh." alt="" coords="5,5,199,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="233,46,199,41,199,36,233,41"/>
-<area shape="rect" id="Node000003" href="$classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817" title="Exporting Paraview file displaying element volume of underlying mesh." alt="" coords="5,71,199,111"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="232,77,200,81,199,76,231,71"/>
+<area shape="rect" id="Node000001" title="Get map of elements." alt="" coords="265,63,466,88"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#a2b6217d24d8870171e577ff826fa6df8" title="Exporting Paraview file displaying distribution of elements to the differnt cores." alt="" coords="5,5,217,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="290,61,171,34,172,29,291,56"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30" title="Exporting Paraview file displaying element flags of the underlying mesh." alt="" coords="14,55,208,96"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="249,78,208,78,208,73,249,73"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817" title="Exporting Paraview file displaying element volume of underlying mesh." alt="" coords="14,120,208,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="298,95,194,122,192,117,297,90"/>
 </map>

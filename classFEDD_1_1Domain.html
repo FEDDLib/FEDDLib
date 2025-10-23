@@ -364,9 +364,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setReferenceConfigura
 <tr class="memitem:a872ee75686a833b5e79348f35eec99cb" id="r_a872ee75686a833b5e79348f35eec99cb"><td class="memItemLeft" align="right" valign="top">MeshConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a872ee75686a833b5e79348f35eec99cb">getMesh</a> () const</td></tr>
 <tr class="memdesc:a872ee75686a833b5e79348f35eec99cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get mesh constant.  <br /></td></tr>
 <tr class="separator:a872ee75686a833b5e79348f35eec99cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8448beb178cf869025673e61c1131fc5" id="r_a8448beb178cf869025673e61c1131fc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8448beb178cf869025673e61c1131fc5">initializeUnstructuredMesh</a> (int dimension, std::string feType, int volumeID=10)</td></tr>
-<tr class="memdesc:a8448beb178cf869025673e61c1131fc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generally the domain object holds only meshes from type '<a class="el" href="classFEDD_1_1Mesh.html">Mesh</a>'. If we read a mesh from file it becomes the type '<a class="el" href="classFEDD_1_1MeshUnstructured.html">MeshUnstructured</a>' and needs to be initialized.  <br /></td></tr>
-<tr class="separator:a8448beb178cf869025673e61c1131fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a551a8e73c03111b652ef2d43cbcf9540" id="r_a551a8e73c03111b652ef2d43cbcf9540"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a551a8e73c03111b652ef2d43cbcf9540">initializeUnstructuredMesh</a> (int dimension, std::string feType, int volumeID=10, std::string meshUnit=&quot;cm&quot;, bool convertToCM=false)</td></tr>
+<tr class="memdesc:a551a8e73c03111b652ef2d43cbcf9540"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generally the domain object holds only meshes from type '<a class="el" href="classFEDD_1_1Mesh.html">Mesh</a>'. If we read a mesh from file it becomes the type '<a class="el" href="classFEDD_1_1MeshUnstructured.html">MeshUnstructured</a>' and needs to be initialized.  <br /></td></tr>
+<tr class="separator:a551a8e73c03111b652ef2d43cbcf9540"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69201fea8c13b3cc350db52ab2367aa8" id="r_a69201fea8c13b3cc350db52ab2367aa8"><td class="memItemLeft" align="right" valign="top"><a id="a69201fea8c13b3cc350db52ab2367aa8" name="a69201fea8c13b3cc350db52ab2367aa8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>toNodeID</b> (UN dim, GO dofID, GO &amp;nodeID, LO &amp;localDofNumber)</td></tr>
 <tr class="memdesc:a69201fea8c13b3cc350db52ab2367aa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hilfsfunktion fuer buildLocalInterfaceIDInGlobal(). Gibt fuer eine gegebene nodeID die entsprechende dofID und umgekehrt. localDofNumber entspricht dem Rest der Division, also ob es sich um die x- (=0), y- (=1) oder z-Komponente (=2) handelt. <br /></td></tr>
@@ -406,6 +406,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exportMesh</b> (bool 
 <tr class="memitem:ac8b967be92ac02d53ee4608023417817" id="r_ac8b967be92ac02d53ee4608023417817"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8b967be92ac02d53ee4608023417817">exportElementOrientation</a> (std::string name=&quot;default&quot;)</td></tr>
 <tr class="memdesc:ac8b967be92ac02d53ee4608023417817"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exporting Paraview file displaying element volume of underlying mesh.  <br /></td></tr>
 <tr class="separator:ac8b967be92ac02d53ee4608023417817"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b6217d24d8870171e577ff826fa6df8" id="r_a2b6217d24d8870171e577ff826fa6df8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b6217d24d8870171e577ff826fa6df8">exportDistribution</a> (std::string name=&quot;default&quot;)</td></tr>
+<tr class="memdesc:a2b6217d24d8870171e577ff826fa6df8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exporting Paraview file displaying distribution of elements to the differnt cores.  <br /></td></tr>
+<tr class="separator:a2b6217d24d8870171e577ff826fa6df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a25fc2bbb7dc04de042db9e127be5ed15" name="a25fc2bbb7dc04de042db9e127be5ed15"></a>
@@ -681,6 +684,45 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a2b6217d24d8870171e577ff826fa6df8" name="a2b6217d24d8870171e577ff826fa6df8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b6217d24d8870171e577ff826fa6df8">&#9670;&#160;</a></span>exportDistribution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void Domain::exportDistribution </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>name</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;default&quot;</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exporting Paraview file displaying distribution of elements to the differnt cores. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>export suffix to identify flags </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Domain_a2b6217d24d8870171e577ff826fa6df8_cgraph.png" border="0" usemap="#aclassFEDD_1_1Domain_a2b6217d24d8870171e577ff826fa6df8_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Domain_a2b6217d24d8870171e577ff826fa6df8_cgraph" id="aclassFEDD_1_1Domain_a2b6217d24d8870171e577ff826fa6df8_cgraph">
+<area shape="rect" title="Exporting Paraview file displaying distribution of elements to the differnt cores." alt="" coords="5,31,217,56"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e" title="Get map of elements." alt="" coords="265,5,466,31"/>
+<area shape="poly" title=" " alt="" coords="217,30,249,27,249,32,218,36"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f" title="Get mesh." alt="" coords="285,55,446,80"/>
+<area shape="poly" title=" " alt="" coords="217,51,269,56,269,61,217,56"/>
+</map>
+</div>
 
 </div>
 </div>
@@ -1107,11 +1149,13 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1Domain_acc7dc177f778811d110d032a0e3f234e_icgraph.png" border="0" usemap="#aclassFEDD_1_1Domain_acc7dc177f778811d110d032a0e3f234e_icgraph" alt=""/></div>
 <map name="aclassFEDD_1_1Domain_acc7dc177f778811d110d032a0e3f234e_icgraph" id="aclassFEDD_1_1Domain_acc7dc177f778811d110d032a0e3f234e_icgraph">
-<area shape="rect" title="Get map of elements." alt="" coords="247,46,448,72"/>
-<area shape="rect" href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30" title="Exporting Paraview file displaying element flags of the underlying mesh." alt="" coords="5,5,199,46"/>
-<area shape="poly" title=" " alt="" coords="233,46,199,41,199,36,233,41"/>
-<area shape="rect" href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817" title="Exporting Paraview file displaying element volume of underlying mesh." alt="" coords="5,71,199,111"/>
-<area shape="poly" title=" " alt="" coords="232,77,200,81,199,76,231,71"/>
+<area shape="rect" title="Get map of elements." alt="" coords="265,63,466,88"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#a2b6217d24d8870171e577ff826fa6df8" title="Exporting Paraview file displaying distribution of elements to the differnt cores." alt="" coords="5,5,217,31"/>
+<area shape="poly" title=" " alt="" coords="290,61,171,34,172,29,291,56"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30" title="Exporting Paraview file displaying element flags of the underlying mesh." alt="" coords="14,55,208,96"/>
+<area shape="poly" title=" " alt="" coords="249,78,208,78,208,73,249,73"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817" title="Exporting Paraview file displaying element volume of underlying mesh." alt="" coords="14,120,208,161"/>
+<area shape="poly" title=" " alt="" coords="298,95,194,122,192,117,297,90"/>
 </map>
 </div>
 
@@ -1527,21 +1571,23 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFEDD_1_1Domain_a336eb1045c6e65bdb90013f97109358f_icgraph.png" border="0" usemap="#aclassFEDD_1_1Domain_a336eb1045c6e65bdb90013f97109358f_icgraph" alt=""/></div>
 <map name="aclassFEDD_1_1Domain_a336eb1045c6e65bdb90013f97109358f_icgraph" id="aclassFEDD_1_1Domain_a336eb1045c6e65bdb90013f97109358f_icgraph">
-<area shape="rect" title="Get mesh." alt="" coords="275,193,436,219"/>
+<area shape="rect" title="Get mesh." alt="" coords="275,211,436,236"/>
 <area shape="rect" href="classFEDD_1_1Domain.html#a36ee94dc00b0b8ff344faa6ed9b64385" title="Build interface maps." alt="" coords="5,5,227,31"/>
-<area shape="poly" title=" " alt="" coords="338,181,294,112,262,76,225,46,201,34,203,29,228,41,266,72,298,109,343,178"/>
+<area shape="poly" title=" " alt="" coords="340,197,322,162,297,121,264,80,225,46,202,34,204,29,228,41,268,76,301,118,327,160,345,195"/>
 <area shape="rect" href="classFEDD_1_1Domain.html#a41b784cb22cb50300882951b40d9d942" title="Build unique node and dof interfaceMap in interface numbering." alt="" coords="26,55,206,96"/>
-<area shape="poly" title=" " alt="" coords="328,185,282,147,225,111,197,99,199,94,228,106,285,143,331,181"/>
-<area shape="rect" href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30" title="Exporting Paraview file displaying element flags of the underlying mesh." alt="" coords="19,120,213,161"/>
-<area shape="poly" title=" " alt="" coords="290,191,193,164,194,159,292,186"/>
-<area shape="rect" href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817" title="Exporting Paraview file displaying element volume of underlying mesh." alt="" coords="19,186,213,226"/>
-<area shape="poly" title=" " alt="" coords="259,209,213,209,213,204,259,204"/>
-<area shape="rect" href="classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9" title="Exporting Paraview file displaying node flags of the underlying mesh." alt="" coords="27,251,205,292"/>
-<area shape="poly" title=" " alt="" coords="292,226,194,253,193,248,290,221"/>
-<area shape="rect" href="classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5" title="Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not ab..." alt="" coords="20,316,212,357"/>
-<area shape="poly" title=" " alt="" coords="331,232,285,269,228,306,199,318,197,313,225,301,282,265,328,227"/>
-<area shape="rect" href="classFEDD_1_1Domain.html#a311d61719473745d65f22487764602b1" title="Set partial coupling." alt="" coords="33,382,199,422"/>
-<area shape="poly" title=" " alt="" coords="342,234,298,302,266,339,228,371,201,386,198,381,225,367,262,336,293,299,338,231"/>
+<area shape="poly" title=" " alt="" coords="331,201,285,154,256,130,225,110,202,99,204,94,228,105,260,126,289,150,335,197"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#a2b6217d24d8870171e577ff826fa6df8" title="Exporting Paraview file displaying distribution of elements to the differnt cores." alt="" coords="10,120,222,146"/>
+<area shape="poly" title=" " alt="" coords="318,205,275,182,226,161,186,149,188,144,228,156,277,177,320,200"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#aa0640df799ab28838b271f9cecc52e30" title="Exporting Paraview file displaying element flags of the underlying mesh." alt="" coords="19,170,213,210"/>
+<area shape="poly" title=" " alt="" coords="259,213,213,206,213,201,260,208"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#ac8b967be92ac02d53ee4608023417817" title="Exporting Paraview file displaying element volume of underlying mesh." alt="" coords="19,235,213,276"/>
+<area shape="poly" title=" " alt="" coords="260,239,213,245,213,240,259,234"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9" title="Exporting Paraview file displaying node flags of the underlying mesh." alt="" coords="27,300,205,341"/>
+<area shape="poly" title=" " alt="" coords="319,246,228,290,193,302,191,297,226,285,316,242"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5" title="Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not ab..." alt="" coords="20,366,212,406"/>
+<area shape="poly" title=" " alt="" coords="338,250,292,303,261,331,228,355,203,368,200,363,225,351,258,327,288,299,334,247"/>
+<area shape="rect" href="classFEDD_1_1Domain.html#a311d61719473745d65f22487764602b1" title="Set partial coupling." alt="" coords="33,431,199,472"/>
+<area shape="poly" title=" " alt="" coords="346,252,328,290,303,335,269,381,228,420,201,436,198,431,225,416,265,377,298,332,324,287,341,250"/>
 </map>
 </div>
 
@@ -1853,8 +1899,8 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
 
 </div>
 </div>
-<a id="a8448beb178cf869025673e61c1131fc5" name="a8448beb178cf869025673e61c1131fc5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8448beb178cf869025673e61c1131fc5">&#9670;&#160;</a></span>initializeUnstructuredMesh()</h2>
+<a id="a551a8e73c03111b652ef2d43cbcf9540" name="a551a8e73c03111b652ef2d43cbcf9540"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a551a8e73c03111b652ef2d43cbcf9540">&#9670;&#160;</a></span>initializeUnstructuredMesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1874,7 +1920,17 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>volumeID</em></span><span class="paramdefsep"> = </span><span class="paramdefval">10</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>volumeID</em></span><span class="paramdefsep"> = </span><span class="paramdefval">10</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>meshUnit</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;cm&quot;</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>convertToCM</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

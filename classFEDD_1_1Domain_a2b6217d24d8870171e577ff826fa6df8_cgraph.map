@@ -1,0 +1,7 @@
+<map id="FEDD::Domain::exportDistribution" name="FEDD::Domain::exportDistribution">
+<area shape="rect" id="Node000001" title="Exporting Paraview file displaying distribution of elements to the differnt cores." alt="" coords="5,31,217,56"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#acc7dc177f778811d110d032a0e3f234e" title="Get map of elements." alt="" coords="265,5,466,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="217,30,249,27,249,32,218,36"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Domain.html#a336eb1045c6e65bdb90013f97109358f" title="Get mesh." alt="" coords="285,55,446,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="217,51,269,56,269,61,217,56"/>
+</map>

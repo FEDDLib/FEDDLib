@@ -59,7 +59,7 @@ var namespaceFEDD =
     [ "MeshUnstructured", "classFEDD_1_1MeshUnstructured.html", "classFEDD_1_1MeshUnstructured" ],
     [ "MinPrecProblem", "classFEDD_1_1MinPrecProblem.html", null ],
     [ "MultiVector", "classFEDD_1_1MultiVector.html", "classFEDD_1_1MultiVector" ],
-    [ "NavierStokes", "classFEDD_1_1NavierStokes.html", null ],
+    [ "NavierStokes", "classFEDD_1_1NavierStokes.html", "classFEDD_1_1NavierStokes" ],
     [ "NavierStokesAssFE", "classFEDD_1_1NavierStokesAssFE.html", null ],
     [ "NonLinearProblem", "classFEDD_1_1NonLinearProblem.html", "classFEDD_1_1NonLinearProblem" ],
     [ "NonLinearSolver", "classFEDD_1_1NonLinearSolver.html", "classFEDD_1_1NonLinearSolver" ],

@@ -434,8 +434,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>assembleConstantMatri
 <tr class="memitem:a67e35ceb19a7e153e953ec32e20ce2b5" id="r_a67e35ceb19a7e153e953ec32e20ce2b5"><td class="memItemLeft" align="right" valign="top"><a id="a67e35ceb19a7e153e953ec32e20ce2b5" name="a67e35ceb19a7e153e953ec32e20ce2b5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assembleDivAndStab</b> () const</td></tr>
 <tr class="separator:a67e35ceb19a7e153e953ec32e20ce2b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a659358f44434479e3debb13022f6ff9b" id="r_a659358f44434479e3debb13022f6ff9b"><td class="memItemLeft" align="right" valign="top"><a id="a659358f44434479e3debb13022f6ff9b" name="a659358f44434479e3debb13022f6ff9b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>updateConvectionDiffusionOperator</b> () const</td></tr>
+<tr class="memitem:a659358f44434479e3debb13022f6ff9b" id="r_a659358f44434479e3debb13022f6ff9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a659358f44434479e3debb13022f6ff9b">updateConvectionDiffusionOperator</a> () const</td></tr>
 <tr class="separator:a659358f44434479e3debb13022f6ff9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade2f25893ec601e7be85504205dbdd53" id="r_ade2f25893ec601e7be85504205dbdd53"><td class="memItemLeft" align="right" valign="top"><a id="ade2f25893ec601e7be85504205dbdd53" name="ade2f25893ec601e7be85504205dbdd53"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssemble</b> (std::string type) const</td></tr>
@@ -554,9 +553,9 @@ Teuchos::RCP&lt; Thyra::PreconditionerBase&lt; default_sc &gt; &gt;&#160;</td><t
 <tr class="memitem:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem" id="r_a06af5dc8c475870e7f4b1d4f3af16292"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>infoProblem</b> ()</td></tr>
 <tr class="separator:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem" id="r_a8f976001c5ea628fe4c723bd5e0a6a29"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>infoParameter</b> ()</td></tr>
-<tr class="separator:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fdc8379f1487e5e3913095cb7133bb2 inherit pub_methods_classFEDD_1_1Problem" id="r_a0fdc8379f1487e5e3913095cb7133bb2"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>infoParameter</b> (bool full=true, std::string=&quot;empty&quot;)</td></tr>
+<tr class="separator:a0fdc8379f1487e5e3913095cb7133bb2 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem" id="r_afc5030d3ac4aac4b721d1fb8947621ec"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addVariable</b> (const DomainConstPtr_Type &amp;domain, std::string FEType, std::string name, int dofsPerNode)</td></tr>
 <tr class="separator:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -902,6 +901,44 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem&lt; default_sc, default_lo, default_go, default_no &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a659358f44434479e3debb13022f6ff9b" name="a659358f44434479e3debb13022f6ff9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a659358f44434479e3debb13022f6ff9b">&#9670;&#160;</a></span>updateConvectionDiffusionOperator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1NavierStokes.html">FEDD::NavierStokes</a>&lt; SC, LO, GO, NO &gt;::updateConvectionDiffusionOperator </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>@TODO: Extract parameters from timestepping tool.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1NavierStokes_a659358f44434479e3debb13022f6ff9b_cgraph.png" border="0" usemap="#aclassFEDD_1_1NavierStokes_a659358f44434479e3debb13022f6ff9b_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1NavierStokes_a659358f44434479e3debb13022f6ff9b_cgraph" id="aclassFEDD_1_1NavierStokes_a659358f44434479e3debb13022f6ff9b_cgraph">
+<area shape="rect" title=" " alt="" coords="5,29,187,85"/>
+<area shape="poly" title=" " alt="" coords="60,29,60,19,67,10,79,5,96,3,115,5,127,12,124,17,114,10,96,8,80,10,70,14,65,21,65,29"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1NavierStokes_a659358f44434479e3debb13022f6ff9b_icgraph.png" border="0" usemap="#aclassFEDD_1_1NavierStokes_a659358f44434479e3debb13022f6ff9b_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1NavierStokes_a659358f44434479e3debb13022f6ff9b_icgraph" id="aclassFEDD_1_1NavierStokes_a659358f44434479e3debb13022f6ff9b_icgraph">
+<area shape="rect" title=" " alt="" coords="5,29,187,85"/>
+<area shape="poly" title=" " alt="" coords="124,17,114,10,96,8,80,10,70,14,65,21,65,29,60,29,60,19,67,10,79,5,96,3,115,5,127,12"/>
+</map>
+</div>
 
 </div>
 </div>

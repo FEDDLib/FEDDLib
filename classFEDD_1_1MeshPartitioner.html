@@ -149,10 +149,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a745ba92f098900321cc15a18df8a9f18" id="r_a745ba92f098900321cc15a18df8a9f18"><td class="memItemLeft" align="right" valign="top"><a id="a745ba92f098900321cc15a18df8a9f18" name="a745ba92f098900321cc15a18df8a9f18"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MeshPartitioner</b> (DomainPtrArray_Type domains, ParameterListPtr_Type pL, std::string feType, int dimension)</td></tr>
 <tr class="separator:a745ba92f098900321cc15a18df8a9f18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a6cd851a1a340ef96ca5be1a8235bb8" id="r_a4a6cd851a1a340ef96ca5be1a8235bb8"><td class="memItemLeft" align="right" valign="top"><a id="a4a6cd851a1a340ef96ca5be1a8235bb8" name="a4a6cd851a1a340ef96ca5be1a8235bb8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>readAndPartition</b> (int volumeID=10)</td></tr>
-<tr class="memdesc:a4a6cd851a1a340ef96ca5be1a8235bb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main Function of partitioner. Called with volume ID in order to set in case it is not equal to ten. Always make sure the volumeID corresponds to the highest given flag. <br /></td></tr>
-<tr class="separator:a4a6cd851a1a340ef96ca5be1a8235bb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75c7d54184eb986f0c281f8e27096106" id="r_a75c7d54184eb986f0c281f8e27096106"><td class="memItemLeft" align="right" valign="top"><a id="a75c7d54184eb986f0c281f8e27096106" name="a75c7d54184eb986f0c281f8e27096106"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>readAndPartition</b> (int volumeID=10, std::string meshUnit=&quot;cm&quot;, bool convertToCM=false)</td></tr>
+<tr class="memdesc:a75c7d54184eb986f0c281f8e27096106"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main Function of partitioner. Called with volume ID in order to set in case it is not equal to ten. Always make sure the volumeID corresponds to the highest given flag. <br /></td></tr>
+<tr class="separator:a75c7d54184eb986f0c281f8e27096106"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba7026d049c6ec787d262772335d3340" id="r_aba7026d049c6ec787d262772335d3340"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba7026d049c6ec787d262772335d3340">setEdgesToSurfaces</a> (int meshNumber)</td></tr>
 <tr class="memdesc:aba7026d049c6ec787d262772335d3340"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only used in 3D to set the edges as subelements to surfaces.  <br /></td></tr>
 <tr class="separator:aba7026d049c6ec787d262772335d3340"><td class="memSeparator" colspan="2">&#160;</td></tr>

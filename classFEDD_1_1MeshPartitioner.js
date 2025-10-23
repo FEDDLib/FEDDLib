@@ -5,7 +5,7 @@ var classFEDD_1_1MeshPartitioner =
     [ "findAndSetSurfaceEdges", "classFEDD_1_1MeshPartitioner.html#ace36675f375879942e0f4d56f46a85d0", null ],
     [ "findAndSetSurfacesPartitioned", "classFEDD_1_1MeshPartitioner.html#a80456d18a8a598338fcac1e496191bb5", null ],
     [ "partitionMesh", "classFEDD_1_1MeshPartitioner.html#a612c64b91688cd12de6f75b6204d4279", null ],
-    [ "readAndPartition", "classFEDD_1_1MeshPartitioner.html#a4a6cd851a1a340ef96ca5be1a8235bb8", null ],
+    [ "readAndPartition", "classFEDD_1_1MeshPartitioner.html#a75c7d54184eb986f0c281f8e27096106", null ],
     [ "searchInSurfaces", "classFEDD_1_1MeshPartitioner.html#a89dff61b3bc7159bc8a668378d5c9c11", null ],
     [ "setEdgesToSurfaces", "classFEDD_1_1MeshPartitioner.html#aba7026d049c6ec787d262772335d3340", null ],
     [ "setLocalEdgeIndices", "classFEDD_1_1MeshPartitioner.html#af5aa5776e2903999d5172ac6d8c7d928", null ],

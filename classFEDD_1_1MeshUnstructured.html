@@ -245,9 +245,9 @@ typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1AABBTree.html">AABBTre
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2d2d7ff635b1072e8b46d09436c1cc74" id="r_a2d2d7ff635b1072e8b46d09436c1cc74"><td class="memItemLeft" align="right" valign="top"><a id="a2d2d7ff635b1072e8b46d09436c1cc74" name="a2d2d7ff635b1072e8b46d09436c1cc74"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstructured</b> (CommConstPtr_Type comm, int volumeID=10)</td></tr>
-<tr class="separator:a2d2d7ff635b1072e8b46d09436c1cc74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9eb3c895f54aab6bb7562801e2d6f09" id="r_af9eb3c895f54aab6bb7562801e2d6f09"><td class="memItemLeft" align="right" valign="top"><a id="af9eb3c895f54aab6bb7562801e2d6f09" name="af9eb3c895f54aab6bb7562801e2d6f09"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MeshUnstructured</b> (CommConstPtr_Type comm, int volumeID=10, std::string meshUnit=&quot;cm&quot;, bool convertToCM=false)</td></tr>
+<tr class="separator:af9eb3c895f54aab6bb7562801e2d6f09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06539e8a4e35240b21b40d85622ca754" id="r_a06539e8a4e35240b21b40d85622ca754"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06539e8a4e35240b21b40d85622ca754">buildP2ofP1MeshEdge</a> (MeshUnstrPtr_Type meshP1)</td></tr>
 <tr class="memdesc:a06539e8a4e35240b21b40d85622ca754"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to build a P2 mesh of a P1 mesh.  <br /></td></tr>
 <tr class="separator:a06539e8a4e35240b21b40d85622ca754"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -483,6 +483,15 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>numEdges_</b></td></tr
 <tr class="memitem:aab54476d5f87f87bbf0f1d6c0eed7e34" id="r_aab54476d5f87f87bbf0f1d6c0eed7e34"><td class="memItemLeft" align="right" valign="top"><a id="aab54476d5f87f87bbf0f1d6c0eed7e34" name="aab54476d5f87f87bbf0f1d6c0eed7e34"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>numNodes_</b></td></tr>
 <tr class="separator:aab54476d5f87f87bbf0f1d6c0eed7e34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f8d8c2daabb4488bc069bba71bcff9d" id="r_a1f8d8c2daabb4488bc069bba71bcff9d"><td class="memItemLeft" align="right" valign="top"><a id="a1f8d8c2daabb4488bc069bba71bcff9d" name="a1f8d8c2daabb4488bc069bba71bcff9d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>convertToCM_</b></td></tr>
+<tr class="separator:a1f8d8c2daabb4488bc069bba71bcff9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a757b038dab90ce4e74bc20f7b75e6fcd" id="r_a757b038dab90ce4e74bc20f7b75e6fcd"><td class="memItemLeft" align="right" valign="top"><a id="a757b038dab90ce4e74bc20f7b75e6fcd" name="a757b038dab90ce4e74bc20f7b75e6fcd"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>meshUnitFinal_</b></td></tr>
+<tr class="separator:a757b038dab90ce4e74bc20f7b75e6fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72b9e7f5e8acbaceed4712a66a47f2a4" id="r_a72b9e7f5e8acbaceed4712a66a47f2a4"><td class="memItemLeft" align="right" valign="top"><a id="a72b9e7f5e8acbaceed4712a66a47f2a4" name="a72b9e7f5e8acbaceed4712a66a47f2a4"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>meshUnitRead_</b></td></tr>
+<tr class="separator:a72b9e7f5e8acbaceed4712a66a47f2a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classFEDD_1_1Mesh"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classFEDD_1_1Mesh')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classFEDD_1_1Mesh.html">FEDD::Mesh&lt; default_sc, default_lo, default_go, default_no &gt;</a></td></tr>
 <tr class="memitem:afd8b1727d8db22e0c5321ab6deec57ff inherit pub_attribs_classFEDD_1_1Mesh" id="r_afd8b1727d8db22e0c5321ab6deec57ff"><td class="memItemLeft" align="right" valign="top">
 int&#160;</td><td class="memItemRight" valign="bottom"><b>dim_</b></td></tr>

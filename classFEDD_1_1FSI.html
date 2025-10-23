@@ -182,15 +182,15 @@ typedef <a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem</a>&lt; S
 <tr class="memitem:ad12f78ea64b7f1374fd1d5e306747d8b" id="r_ad12f78ea64b7f1374fd1d5e306747d8b"><td class="memItemLeft" align="right" valign="top"><a id="ad12f78ea64b7f1374fd1d5e306747d8b" name="ad12f78ea64b7f1374fd1d5e306747d8b"></a>
 typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1TimeProblem.html">TimeProblem_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>TimeProblemPtr_Type</b></td></tr>
 <tr class="separator:ad12f78ea64b7f1374fd1d5e306747d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81e3f0173dbade830069fa12bab3e016" id="r_a81e3f0173dbade830069fa12bab3e016"><td class="memItemLeft" align="right" valign="top"><a id="a81e3f0173dbade830069fa12bab3e016" name="a81e3f0173dbade830069fa12bab3e016"></a>
-typedef <a class="el" href="classFEDD_1_1NavierStokes.html">NavierStokes</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>FluidProblem_Type</b></td></tr>
-<tr class="separator:a81e3f0173dbade830069fa12bab3e016"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c4c5e54a48501553d2a358837beff14" id="r_a3c4c5e54a48501553d2a358837beff14"><td class="memItemLeft" align="right" valign="top"><a id="a3c4c5e54a48501553d2a358837beff14" name="a3c4c5e54a48501553d2a358837beff14"></a>
 typedef <a class="el" href="classFEDD_1_1LinElas.html">LinElas</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>StructureProblem_Type</b></td></tr>
 <tr class="separator:a3c4c5e54a48501553d2a358837beff14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86725a93ac4764686056f7dc25a4d941" id="r_a86725a93ac4764686056f7dc25a4d941"><td class="memItemLeft" align="right" valign="top"><a id="a86725a93ac4764686056f7dc25a4d941" name="a86725a93ac4764686056f7dc25a4d941"></a>
 typedef <a class="el" href="classFEDD_1_1NonLinElasticity.html">NonLinElasticity</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>StructureNonLinProblem_Type</b></td></tr>
 <tr class="separator:a86725a93ac4764686056f7dc25a4d941"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81e3f0173dbade830069fa12bab3e016" id="r_a81e3f0173dbade830069fa12bab3e016"><td class="memItemLeft" align="right" valign="top"><a id="a81e3f0173dbade830069fa12bab3e016" name="a81e3f0173dbade830069fa12bab3e016"></a>
+typedef <a class="el" href="classFEDD_1_1NavierStokes.html">NavierStokes</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>FluidProblem_Type</b></td></tr>
+<tr class="separator:a81e3f0173dbade830069fa12bab3e016"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0faf6ecf455020309a3f43eea8b4ba66" id="r_a0faf6ecf455020309a3f43eea8b4ba66"><td class="memItemLeft" align="right" valign="top"><a id="a0faf6ecf455020309a3f43eea8b4ba66" name="a0faf6ecf455020309a3f43eea8b4ba66"></a>
 typedef <a class="el" href="classFEDD_1_1Geometry.html">Geometry</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GeometryProblem_Type</b></td></tr>
 <tr class="separator:a0faf6ecf455020309a3f43eea8b4ba66"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -486,6 +486,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setSolidMassmatrix</b
 <tr class="memitem:a32f56a53670374b9c38fbaf935c919d9" id="r_a32f56a53670374b9c38fbaf935c919d9"><td class="memItemLeft" align="right" valign="top"><a id="a32f56a53670374b9c38fbaf935c919d9" name="a32f56a53670374b9c38fbaf935c919d9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>computeSolidRHSInTime</b> () const</td></tr>
 <tr class="separator:a32f56a53670374b9c38fbaf935c919d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54effe514f7d27a8c45be23339967294" id="r_a54effe514f7d27a8c45be23339967294"><td class="memItemLeft" align="right" valign="top"><a id="a54effe514f7d27a8c45be23339967294" name="a54effe514f7d27a8c45be23339967294"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>computePressureRHSInTime</b> () const</td></tr>
+<tr class="separator:a54effe514f7d27a8c45be23339967294"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69fcd9f46d75fe38edb47cdba536325c" id="r_a69fcd9f46d75fe38edb47cdba536325c"><td class="memItemLeft" align="right" valign="top"><a id="a69fcd9f46d75fe38edb47cdba536325c" name="a69fcd9f46d75fe38edb47cdba536325c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateTime</b> () const</td></tr>
 <tr class="separator:a69fcd9f46d75fe38edb47cdba536325c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -530,6 +533,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>getValuesOfInterest3D
 <tr class="separator:a715924d946dc9b8a30047e31f3752973"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91c83171d46d8fc12bffb9892d7d3266" id="r_a91c83171d46d8fc12bffb9892d7d3266"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91c83171d46d8fc12bffb9892d7d3266">computeValuesOfInterestAndExport</a> ()</td></tr>
 <tr class="separator:a91c83171d46d8fc12bffb9892d7d3266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca4a856b42c87f1997e0d68cc3768e4d" id="r_aca4a856b42c87f1997e0d68cc3768e4d"><td class="memItemLeft" align="right" valign="top"><a id="aca4a856b42c87f1997e0d68cc3768e4d" name="aca4a856b42c87f1997e0d68cc3768e4d"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>getPressureOutlet</b> ()</td></tr>
+<tr class="separator:aca4a856b42c87f1997e0d68cc3768e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classFEDD_1_1NonLinearProblem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classFEDD_1_1NonLinearProblem')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem&lt; default_sc, default_lo, default_go, default_no &gt;</a></td></tr>
 <tr class="memitem:ac1514ee8e1c08506cf9d23e202094e98 inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_ac1514ee8e1c08506cf9d23e202094e98"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>NonLinearProblem</b> (CommConstPtr_Type comm)</td></tr>
@@ -620,9 +626,9 @@ Teuchos::RCP&lt; Thyra::PreconditionerBase&lt; default_sc &gt; &gt;&#160;</td><t
 <tr class="memitem:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem" id="r_a06af5dc8c475870e7f4b1d4f3af16292"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>infoProblem</b> ()</td></tr>
 <tr class="separator:a06af5dc8c475870e7f4b1d4f3af16292 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem" id="r_a8f976001c5ea628fe4c723bd5e0a6a29"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>infoParameter</b> ()</td></tr>
-<tr class="separator:a8f976001c5ea628fe4c723bd5e0a6a29 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fdc8379f1487e5e3913095cb7133bb2 inherit pub_methods_classFEDD_1_1Problem" id="r_a0fdc8379f1487e5e3913095cb7133bb2"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>infoParameter</b> (bool full=true, std::string=&quot;empty&quot;)</td></tr>
+<tr class="separator:a0fdc8379f1487e5e3913095cb7133bb2 inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem" id="r_afc5030d3ac4aac4b721d1fb8947621ec"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addVariable</b> (const DomainConstPtr_Type &amp;domain, std::string FEType, std::string name, int dofsPerNode)</td></tr>
 <tr class="separator:afc5030d3ac4aac4b721d1fb8947621ec inherit pub_methods_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
