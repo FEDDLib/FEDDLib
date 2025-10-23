@@ -4,7 +4,13 @@
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 
+// #include <Xpetra_MapFactory.hpp>
+// #include <Xpetra_MultiVectorFactory.hpp>
+// #include <Xpetra_VectorFactory.hpp>
+// #include <Xpetra_ExportFactory.hpp>
+// #include <Xpetra_ImportFactory.hpp>
 #include <Teuchos_VerboseObject.hpp>
+// #include <Xpetra_ThyraUtils.hpp>
 #include <Thyra_VectorSpaceBase_decl.hpp>
 
 #include <Tpetra_Map.hpp>
@@ -40,10 +46,10 @@ public:
     typedef Teuchos::RCP<const TpetraMap_Type> TpetraMapConstPtr_Type;
     typedef const TpetraMapConstPtr_Type TpetraMapConstPtrConst_Type;
     
-    typedef Xpetra::Map<LO,GO,NO> XpetraMap_Type;
-    typedef Teuchos::RCP<XpetraMap_Type> XpetraMapPtr_Type;
-    typedef Teuchos::RCP<const XpetraMap_Type> XpetraMapConstPtr_Type;
-    typedef const XpetraMapConstPtr_Type XpetraMapConstPtrConst_Type;
+    // typedef Xpetra::Map<LO,GO,NO> XpetraMap_Type;
+    // typedef Teuchos::RCP<XpetraMap_Type> XpetraMapPtr_Type;
+    // typedef Teuchos::RCP<const XpetraMap_Type> XpetraMapConstPtr_Type;
+    // typedef const XpetraMapConstPtr_Type XpetraMapConstPtrConst_Type;
 
     typedef Thyra::VectorSpaceBase<default_sc> ThyraVSB_Type;
     typedef Teuchos::RCP<ThyraVSB_Type> ThyraVSBPtr_Type;
@@ -90,7 +96,7 @@ public:
    
     TpetraMapConstPtr_Type getTpetraMap() const;
 
-    XpetraMapConstPtr_Type getXpetraMap();
+    // XpetraMapConstPtr_Type getXpetraMap();
 
     GO getMaxAllGlobalIndex() const;
     
@@ -113,7 +119,7 @@ public:
 private:
     
     TpetraMapConstPtr_Type map_;
-    XpetraMapConstPtr_Type mapX_;
+    // XpetraMapConstPtr_Type mapX_;
 
 };
 }
