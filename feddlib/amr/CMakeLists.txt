@@ -77,7 +77,6 @@ CACHE INTERNAL "")
 #  COMPONENT ${PACKAGE_NAME}
 #)
 
-TRIBITS_EXCLUDE_AUTOTOOLS_FILES()
 # This is the list of files excluded from the tarball
 TRIBITS_EXCLUDE_FILES()
 

@@ -54,7 +54,6 @@ ADD_SUBDIRECTORY(specific)
 SET(HEADERS ${HEADERS} ${problems_specific_HEADERS})
 SET(SOURCES ${SOURCES} ${problems_specific_SOURCES})
 
-TRIBITS_EXCLUDE_AUTOTOOLS_FILES()
 # This is the list of files excluded from the tarball
 TRIBITS_EXCLUDE_FILES()
 

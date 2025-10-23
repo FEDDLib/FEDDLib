@@ -1,47 +1,17 @@
 # -*- mode: cmake -*-
 # @HEADER
-# ************************************************************************
-#
+# *****************************************************************************
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2016 Sandia Corporation
 #
-# Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-# the U.S. Government retains certain rights in this software.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-# 1. Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright
-# notice, this list of conditions and the following disclaimer in the
-# documentation and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the Corporation nor the names of the
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# ************************************************************************
+# Copyright 2013-2016 NTESS and the TriBITS contributors.
+# SPDX-License-Identifier: BSD-3-Clause
+# *****************************************************************************
 # @HEADER
 #
 # Based on version from MSTK which is from Amanzi open source code -
 # https://software.lanl.gov/ascem/trac)
 #
-#       ADD_PACKAGE_DEPENDENCY(<PACKNAME> DEPENDS_ON <req_pack>)
+#       add_package_dependency(<PACKNAME> DEPENDS_ON <req_pack>)
 #
 
 # CMake module
@@ -50,13 +20,13 @@ include(CMakeParseArguments)
 # MSTK modules
 include(ParseLibraryList)
 
-function(ADD_PACKAGE_DEPENDENCY)
+function(add_package_dependency)
 
     # Macro: _print_usage
     macro(_print_usage)
-        message("\nADD_PACKAGE_DEPENDENCY(<target_package> DEPENDS_ON <req_package>)\n"
+        message("\nadd_package_dependency(<target_package> DEPENDS_ON <req_package>)\n"
                 " Add req_package to target_package dependencies.\n")
-    endmacro(_print_usage)
+    endmacro()
 
     # Parse the arguments
     set(_options "")
@@ -113,7 +83,7 @@ function(ADD_PACKAGE_DEPENDENCY)
         set(_save_lib_list "")
         if ( ${target_libs_split} OR ${req_libs_split} )
 
-            # Define the parsed lists if the orginal list did not contain keywords
+            # Define the parsed lists if the original list did not contain keywords
             if ( NOT ${target_libs_split} )
                 set(target_debug_libs ${${target_package}_LIBRARIES})
                 set(target_opt_libs ${${target_package}_LIBRARIES})
@@ -172,4 +142,4 @@ function(ADD_PACKAGE_DEPENDENCY)
 
     endif()    
 
-endfunction(ADD_PACKAGE_DEPENDENCY)
+endfunction()

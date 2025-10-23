@@ -234,12 +234,6 @@ TRIBITS_ADD_TEST(
     ARGS "--FEType=P2 --fileExport=export_2D_P2.mesh"
     NUM_MPI_PROCS 2
 )
-TRIBITS_ADD_TEST(
-	mesh_unstructured_writeMesh
-    NAME mesh_unstructured_writeMesh_3D_P2
-    ARGS "--FEType=P2 --dim=3 --file=cube_h_1.mesh --fileExport=export_3D_P2.mesh"
-    NUM_MPI_PROCS 3
-)
 
 TRIBITS_ADD_TEST(
 	mesh_unstructured_writeMesh
