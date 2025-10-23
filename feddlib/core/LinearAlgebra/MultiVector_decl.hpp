@@ -5,6 +5,8 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "Map.hpp"
 #include <Thyra_LinearOpBase_decl.hpp>
+#include <Thyra_DefaultProductVectorSpace.hpp>
+#include <Thyra_TpetraThyraWrappers.hpp>
 #include <Teuchos_VerboseObject.hpp>
 #include <MatrixMarket_Tpetra.hpp>
 
