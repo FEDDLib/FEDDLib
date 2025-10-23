@@ -2,6 +2,7 @@
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include "feddlib/core/General/HDF5Export.hpp"
 
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
@@ -158,7 +159,7 @@ int main(int argc, char *argv[]) {
             ParameterListPtr_Type pListPartitioner = sublist( parameterListAll, "Mesh Partitioner" );
             MeshPartitioner<SC,LO,GO,NO> partitionerP1 ( domainP1Array, pListPartitioner, "P1", dim );
             
-            partitionerP1.readAndPartition();
+            partitionerP1.readAndPartition(15);
 
             if (FEType=="P2") {
                 domainP2.reset( new Domain<SC,LO,GO,NO>( comm, dim ));
@@ -169,7 +170,7 @@ int main(int argc, char *argv[]) {
                 domain = domainP1;
         }
 
-
+        domain->exportNodeFlags();
 
         // ####################
         Teuchos::RCP<BCBuilder<SC,LO,GO,NO> > bcFactory(new BCBuilder<SC,LO,GO,NO>( ));
@@ -203,6 +204,7 @@ int main(int argc, char *argv[]) {
         }
 
         bool boolExportSolution = true;
+
         if (boolExportSolution) {
             Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 

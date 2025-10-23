@@ -4788,6 +4788,1166 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
 }
 
 
+template <class SC, class LO, class GO, class NO>
+double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundaryPaper(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type u_rep,
+                                              vec_dbl_Type flowRate_vec,
+                                              std::vector<SC>& funcParameter, 
+                                              RhsFunc_Type func, 
+                                              double areaOutlet_init,
+                                              double areaOutlet_T,
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    ElementsPtr_Type elementsPressure = domainVec_.at(FEloc+1)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0);// + 1.0;
+    Helper::getPhi(phi, weights, dim-1, FEType, deg);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, deg, quadPoints, w, FEType);
+    w.reset();
+
+    double poissonRatio=params->sublist("Parameter Fluid").get("Poisson Ratio",0.49); 
+    int flagInlet = params->sublist("General").get("Flag Inlet Fluid", 4);
+    int flagOutlet = params->sublist("General").get("Flag Outlet Fluid", 5);
+
+    double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
+    double E = params->sublist("Parameter Fluid").get("E",12.0); 
+    double wallThickness = params->sublist("Parameter Fluid").get("Wall thickness",0.0006); 
+    double density = params->sublist("Parameter Fluid").get("Density",1000.0); 
+    double p_ref_input = params->sublist("Parameter Fluid").get("Reference fluid pressure",10666.); 
+
+    double rampTime = params->sublist("Parameter Fluid").get("Max Ramp Time",0.1); 
+    double unsteadyStart = params->sublist("Parameter Fluid").get("Unsteady Start",0.2); 
+    double flowRateInput = params->sublist("Parameter Fluid").get("Flowrate",3.0); 
+
+    double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
+
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+       
+    std::vector<double> valueFunc(dim);
+
+    double flowRateOutlet=0.;
+    double flowRateInlet=0.;
+
+    this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
+
+    int isNeg = this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);
+    
+    double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
+
+    double areaOutlet = 0.;
+    this->assemblyArea(dim, areaOutlet, flagOutlet);
+
+    double areaInlet =0.;
+    this->assemblyArea(dim, areaInlet, flagInlet);
+
+    double beta=0.;
+    if(funcParameter[0] < unsteadyStart)
+        beta = ((wallThickness* E)/(1.-pow(poissonRatio,2))) * (M_PI/areaOutlet_init ) ;
+    else
+        beta = ((wallThickness* E)/(1.-pow(poissonRatio,2))) * (M_PI/areaOutlet_T ) ;
+
+    // We determine p_ref via a ramp
+    funcParameter.push_back(p_ref_input);
+    funcParameter.push_back(bcRamp); 
+    funcParameter.push_back(flagOutlet); 
+    SC* paramsFunc = &(funcParameter[0]);
+    vec_dbl_Type x_tmp(dim,0.); //dummy
+    paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+    paramsFunc[ 1 ]  = p_ref_input;
+    func( &x_tmp[0], &valueFunc[0], paramsFunc);
+    double p_ref = valueFunc[0];
+    if(funcParameter[0]+1e-12 >= unsteadyStart){
+        p_ref = p_ref - std::pow( (std::sqrt(density)/(2*std::sqrt(2)) * flowRateInput/areaOutlet_T + std::sqrt(beta*std::sqrt(areaOutlet_T))),2) + beta*std::sqrt(areaOutlet_T);
+
+        if(domainVec_.at(0)->getComm()->getRank()==0){
+            std::cout << " ---------------------------------------------------------- " <<std::endl;
+            std::cout << " ----------------  Start of unsteady phase ---------------- " <<std::endl;
+            std::cout << " Reference pressure adjusted from " << p_ref_input << " to " << p_ref <<std::endl;
+        }
+
+    }
+    // Value of h_x for this timestep
+    double flowRateUse = flowRateOutlet;
+    if(params->sublist("Parameter Fluid").get("Average Flowrate",false) )
+        flowRateUse = flowRateOutletAveraged;
+
+    if(isNeg==1)
+        flowRateUse = 0.;
+
+    double A_bar = 1./((std::sqrt(beta*std::sqrt(areaOutlet_init)+p_ref_input)-std::sqrt(beta*std::sqrt(areaOutlet_init)))*2.*std::sqrt(2.)*(1./std::sqrt(density))*(1./flowRateInput));
+    double h_x = 0.;
+
+    if(funcParameter[0] < unsteadyStart)
+        h_x=  std::pow( (std::sqrt(density)/(2*std::sqrt(2)) * flowRateUse/A_bar + std::sqrt(beta*std::sqrt(areaOutlet_init))),2) - beta*std::sqrt(areaOutlet_init);
+    else
+        h_x=  std::pow( (std::sqrt(density)/(2*std::sqrt(2)) * flowRateUse/areaOutlet + std::sqrt(beta*std::sqrt(areaOutlet_T))),2) - beta*std::sqrt(areaOutlet_T) + p_ref;
+
+    //         h_x=  pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta*sqrt(areaOutlet_init))),2) - beta*sqrt(areaOutlet_init) + p_ref;
+
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " Absorbing Boundary Condition " <<std::endl;
+        std::cout << " Input p_ref: " << p_ref_input <<std::endl;
+        std::cout << " Adjusted p_ref: " << p_ref <<std::endl;
+        std::cout << " Unsteady start time_ " << unsteadyStart <<std::endl;
+        std::cout << " Volmetric flow Inlet: " << flowRateInlet <<std::endl;
+        std::cout << " Volmetric flow Outlet: " << flowRateOutlet <<std::endl;
+        std::cout << " Averaged volmetric flow Outlet: " << flowRateOutletAveraged <<std::endl;
+        std::cout << " beta per Input: " << beta <<std::endl;
+        std::cout << " Area_init outlet: " << areaOutlet_init <<std::endl;
+        std::cout << " Area_init outlet_T: " << areaOutlet_T <<std::endl;
+        std::cout << " Area inlet: " << areaInlet <<std::endl;
+        std::cout << " Area outlet: " << areaOutlet <<std::endl;
+        std::cout << " A_bar: " << A_bar <<std::endl;
+        std::cout << " Flowrate was negative: " << isNeg <<std::endl;
+        std::cout << " Value h_x at outlet: " << h_x <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+
+    }
+    // Second step: use flow rate to determine pressure with resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+               if(feSub.getFlag() == flagOutlet){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
+                    vec2D_dbl_Type nodes;
+                    nodes = getCoordinates(nodeList, pointsRep);
+
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    
+
+                    }
+
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                // Step 1: Quadrature Points on physical surface:
+                    // Resulting Quad Points allways (0.5,0,0) (0.5,0.5,0) (0,0.5,0)
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    //cout <<std::endl;
+
+                    for (UN i=0; i < numNodes_T; i++) {
+        
+                        // 2.   
+                        Teuchos::Array<SC> value(0);                    
+                        value.resize(  dim, 0. );
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {       
+                            for (int j=0; j<dim; j++){
+                                value[j] += weights->at(w) *normalScale*v_E[j]/norm_v_E *h_x*(*phi)[w][i];//valueFunc[0]
+                            }
+                        }             
+
+                        //cout << " Value First component " << value[0] << " " << value[1] << " " << value[2] <<std::endl;
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ i ] + j ] += value[j] * elScaling;
+                    }
+
+               }
+                    
+            }
+        }
+    }
+    double p_out = h_x;
+    return p_out;
+}
+
+template <class SC, class LO, class GO, class NO>
+double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundary(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type u_rep,
+                                              vec_dbl_Type flowRate_vec,
+                                              std::vector<SC>& funcParameter, 
+                                              RhsFunc_Type func, 
+                                              double areaOutlet_init,
+                                              double areaOutlet_T,
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    ElementsPtr_Type elementsPressure = domainVec_.at(FEloc+1)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0);// + 1.0;
+    Helper::getPhi(phi, weights, dim-1, FEType, deg);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, deg, quadPoints, w, FEType);
+    w.reset();
+
+    double poissonRatio=params->sublist("Parameter Fluid").get("Poisson Ratio",0.49); 
+    int flagInlet = params->sublist("General").get("Flag Inlet Fluid", 4);
+    int flagOutlet = params->sublist("General").get("Flag Outlet Fluid", 5);
+
+    double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
+     
+    double density = params->sublist("Parameter Fluid").get("Density",1.0); 
+    double p_ref_input = params->sublist("Parameter Fluid").get("Reference fluid pressure",10666.); 
+
+    double rampTime = params->sublist("Parameter Fluid").get("Max Ramp Time",0.1); 
+    double unsteadyStart = params->sublist("Parameter Fluid").get("Heart Beat Start",0.2); 
+    double flowRateInput = params->sublist("Parameter Fluid").get("Flowrate",3.0e-06); 
+
+    double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
+
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+       
+    std::vector<double> valueFunc(dim);
+
+    double flowRateOutlet=0.;
+    double flowRateInlet=0.;
+
+    this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
+    int isNeg = this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);
+    
+    double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
+
+    double areaOutlet = 0.;
+    this->assemblyArea(dim, areaOutlet, flagOutlet);
+
+    double areaInlet =0.;
+    this->assemblyArea(dim, areaInlet, flagInlet);
+
+    double beta=0.;
+   
+    double E = params->sublist("Parameter Fluid").get("E",12.0); 
+    double wallThickness = params->sublist("Parameter Fluid").get("Wall thickness",0.0006);
+    
+    beta = ((wallThickness* E)/(1.-pow(poissonRatio,2))) * (M_PI/areaOutlet_init ) ;
+    
+
+    funcParameter.push_back(p_ref_input);
+    funcParameter.push_back(bcRamp); 
+    funcParameter.push_back(flagOutlet); 
+    // We determine p_ref via a ramp
+    SC* paramsFunc = &(funcParameter[0]);
+    vec_dbl_Type x_tmp(dim,0.); //dummy
+      // Adding parameters
+
+    // paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+    // paramsFunc[ 1 ]  = p_ref_input;
+    func( &x_tmp[0], &valueFunc[0], paramsFunc);
+    double p_ref = valueFunc[0];
+    //if(funcParameter[0]+1e-12 >= unsteadyStart){
+   
+
+    //}
+    // Value of h_x for this timestep
+    double flowRateUse = flowRateOutlet;
+    if(params->sublist("Parameter Fluid").get("Average Flowrate",false) )
+        flowRateUse = flowRateOutletAveraged;
+
+    if(isNeg==1)
+        flowRateUse = 0.;
+
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " ----------------  computing p_ref ---------------- " <<std::endl;
+        std::cout << " Reference pressure adjusted from " << p_ref_input << " to " << p_ref <<std::endl;
+    }
+    //double A_bar = 1./((sqrt(beta*sqrt(areaOutlet_init)+p_ref_input)-sqrt(beta*sqrt(areaOutlet_init)))*2.*sqrt(2.)*(1./sqrt(density))*(1./flowRateInput));
+    
+    double h_x = pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta*sqrt(areaOutlet_init))),2) - beta*sqrt(areaOutlet_init)+p_ref;
+
+    //         h_x=  pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta*sqrt(areaOutlet_init))),2) - beta*sqrt(areaOutlet_init) + p_ref;
+
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " Absorbing Boundary Condition " <<std::endl;
+        std::cout << " Input p_ref: " << p_ref_input <<std::endl;
+        std::cout << " Adjusted p_ref: " << p_ref <<std::endl;
+        std::cout << " Volmetric flow Inlet: " << flowRateInlet <<std::endl;
+        std::cout << " Volmetric flow Outlet: " << flowRateOutlet <<std::endl;
+        std::cout << " Averaged volmetric flow Outlet: " << flowRateOutletAveraged <<std::endl;
+        std::cout << " beta per Input: " << beta <<std::endl;
+        std::cout << " Area_init outlet: " << areaOutlet_init <<std::endl;
+        std::cout << " Area inlet: " << areaInlet <<std::endl;
+        std::cout << " Area outlet: " << areaOutlet <<std::endl;
+        std::cout << " Value h_x at outlet: " << h_x <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+
+    }
+    // Second step: use flow rate to determine pressure with resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+               if(feSub.getFlag() == flagOutlet){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
+                    vec2D_dbl_Type nodes;
+                    nodes = getCoordinates(nodeList, pointsRep);
+
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    
+
+                    }
+
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    for (UN i=0; i < numNodes_T; i++) {
+        
+                        // 2.   
+                        Teuchos::Array<SC> value(0);                    
+                        value.resize(  dim, 0. );
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {       
+                            for (int j=0; j<dim; j++){
+                                value[j] += weights->at(w) *normalScale*v_E[j]/norm_v_E *h_x*(*phi)[w][i];//valueFunc[0]
+                            }
+                        }             
+
+                        //cout << " Value First component " << value[0] << " " << value[1] << " " << value[2] <<std::endl;
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ i ] + j ] += value[j] * elScaling;
+                    }
+
+               }
+                    
+            }
+        }
+    }
+    double p_out = h_x;
+    return p_out;
+}
+
+
+template <class SC, class LO, class GO, class NO>
+double FE<SC,LO,GO,NO>::assemblyAbsorbingResistanceBoundary(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type u_rep,
+                                              vec_dbl_Type flowRate_vec,
+                                              std::vector<SC>& funcParameter, 
+                                              RhsFunc_Type func, 
+                                              double areaOutlet_init,
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    ElementsPtr_Type elementsPressure = domainVec_.at(FEloc+1)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0);// + 1.0;
+    Helper::getPhi(phi, weights, dim-1, FEType, deg);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, deg, quadPoints, w, FEType);
+    w.reset();
+
+    double poissonRatio=params->sublist("Parameter Fluid").get("Poisson Ratio",0.49); 
+    double viscosity=params->sublist("Parameter Fluid").get("Viscosity",1.0e-06); 
+    int flagInlet = params->sublist("General").get("Flag Inlet Fluid", 4);
+    int flagOutlet = params->sublist("General").get("Flag Outlet Fluid", 5);
+
+    double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
+    double E = params->sublist("Parameter Fluid").get("E",12.0); 
+    double wallThickness = params->sublist("Parameter Fluid").get("Wall thickness",0.001); 
+    double density = params->sublist("Parameter Fluid").get("Density",1000.0); 
+    double p_ref_input = params->sublist("Parameter Fluid").get("Reference fluid pressure",8000.); 
+    double resistanceRamp = params->sublist("Parameter Fluid").get("Resistance Ramp",2.); // Ramp time of fluid
+    double resistance = params->sublist("Parameter Fluid").get("Resistance",1.0); 
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+       
+    std::vector<double> valueFunc(dim);
+
+    double flowRateOutlet=0.;
+    double flowRateInlet=0.;
+
+    this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
+    this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);
+    
+    double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
+
+    double areaOutlet = 0.;
+    this->assemblyArea(dim, areaOutlet, flagOutlet);
+
+    double areaInlet =0.;
+    this->assemblyArea(dim, areaInlet, flagInlet);
+
+    double beta = (((wallThickness* E)/(1-pow(poissonRatio,2))) * M_PI/areaOutlet_init ) *sqrt(areaOutlet_init);
+    // We determine p_ref via a ramp
+    SC* paramsFunc = &(funcParameter[0]);
+    vec_dbl_Type x_tmp(dim,0.); //dummy
+    paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+    //paramsFunc[ 1 ]  = p_ref;
+    //p_ref = valueFunc[0];
+    // Value of h_x for this timestep
+    double flowRateUse = flowRateOutlet;
+    if(params->sublist("Parameter Fluid").get("Average Flowrate",false) )
+        flowRateUse = flowRateOutletAveraged;
+
+    double p_ref = 0.;
+    if(paramsFunc[0] < resistanceRamp){
+        //func( &x_tmp[0], &valueFunc[0], paramsFunc);
+        p_ref = flowRateUse*resistance;
+
+    }
+    else{         
+        paramsFunc[ 1 ]  = p_ref_input;
+        func( &x_tmp[0], &valueFunc[0], paramsFunc);
+        //p_ref = valueFunc[0];
+        p_ref = valueFunc[0];
+
+    }
+
+    double h_x =  pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta)),2) - beta + p_ref;
+
+    
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " Absorbing Boundary Condition " <<std::endl;
+        std::cout << " p_ref: " << p_ref <<std::endl;
+        std::cout << " Volmetric flow Inlet: " << flowRateInlet <<std::endl;
+        std::cout << " Volmetric flow Outlet: " << flowRateOutlet <<std::endl;
+        std::cout << " Averaged volmetric flow Outlet: " << flowRateOutletAveraged <<std::endl;
+        std::cout << " beta*sqrt(A_0) per Input: " << beta <<std::endl;
+        std::cout << " Area_init outlet: " << areaOutlet_init <<std::endl;
+        std::cout << " Area inlet: " << areaInlet <<std::endl;
+        std::cout << " Area outlet: " << areaOutlet <<std::endl;
+        std::cout << " Value h_x at outlet: " << h_x <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+
+    }
+    // Second step: use flow rate to determine pressure with resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+               if(feSub.getFlag() == flagOutlet){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
+                    vec2D_dbl_Type nodes;
+                    nodes = getCoordinates(nodeList, pointsRep);
+
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    
+
+                    }
+
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                // Step 1: Quadrature Points on physical surface:
+                    // Resulting Quad Points allways (0.5,0,0) (0.5,0.5,0) (0,0.5,0)
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    //cout <<std::endl;
+
+                    for (UN i=0; i < numNodes_T; i++) {
+        
+                        // 2.   
+                        Teuchos::Array<SC> value(0);                    
+                        value.resize(  dim, 0. );
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {       
+                            for (int j=0; j<dim; j++){
+                                value[j] += weights->at(w) *normalScale*v_E[j]/norm_v_E *h_x*(*phi)[w][i];//valueFunc[0]
+                            }
+                        }             
+
+                        //cout << " Value First component " << value[0] << " " << value[1] << " " << value[2] <<std::endl;
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ i ] + j ] += value[j] * elScaling;
+                    }
+
+               }
+                    
+            }
+        }
+    }
+    double p_out = h_x;
+    return p_out;
+}
+
+
+template <class SC, class LO, class GO, class NO>
+double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type u_rep,
+                                              vec_dbl_Type flowRate_vec, 
+                                              std::vector<SC>& funcParameter,
+                                              RhsFunc_Type func,
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    ElementsPtr_Type elementsPressure = domainVec_.at(FEloc+1)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+    vec2D_dbl_ptr_Type phi1;
+
+    vec3D_dbl_ptr_Type 	dPhi;
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+    vec_dbl_ptr_Type weights1 = Teuchos::rcp(new vec_dbl_Type(0));
+
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0);// + 1.0;
+    Helper::getDPhi(dPhi, weights, dim, FEType, deg);
+    Helper::getPhi(phi, weights, dim-1, FEType, deg);
+    Helper::getPhi(phi1, weights1, dim-1, FEType, 2);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, deg, quadPoints, w, FEType);
+    w.reset();
+
+    double viscosity=params->sublist("Parameter").get("Viscosity",0.49); 
+    int flagInlet = params->sublist("General").get("Flag Inlet Fluid", 4);
+    int flagOutlet = params->sublist("General").get("Flag Outlet Fluid", 5);
+
+    double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
+    double resistance = params->sublist("Parameter Fluid").get("Resistance",1.0); 
+    double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
+
+    double referencePressure =  params->sublist("Parameter Fluid").get("Reference fluid pressure",11.99e1);
+
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+       
+    std::vector<double> valueFunc(dim);
+    
+    // Adding parameters
+    funcParameter.push_back(resistance);
+    funcParameter.push_back(bcRamp); 
+    funcParameter.push_back(flagOutlet); 
+
+    SC* paramsFunc = &(funcParameter[0]);
+    double flowRateInlet=0.;
+    double flowRateOutlet=0.;
+    this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
+    int isNeg = this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);  
+    
+    double resistanceRef = referencePressure/flowRateInlet; // The resistance based on a reference pressure value and the current inlet flow rate
+
+    double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
+
+    vec_dbl_Type x_tmp(dim,0.); //dummy
+    // paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+
+    func( &x_tmp[0], &valueFunc[0], paramsFunc);
+
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " << std::endl;
+        std::cout << " ---------------------------------------------------------- " << std::endl;
+        std::cout << " Resistance Boundary Condition " << std::endl;
+        std::cout << " Volmetric flow Inlet: " << flowRateInlet << std::endl;
+        std::cout << " Volmetric flow Outlet: " << flowRateOutlet << std::endl;
+        std::cout << " Averaged volmetric flow Outlet: " << flowRateOutletAveraged << std::endl;
+        std::cout << " Resistance per Input: " << valueFunc[0] << std::endl;
+        std::cout << " Assumed reference pressure at outlet " << referencePressure<< std::endl;
+        std::cout << " Implicit pressure at outlet with p=R*Q: " << flowRateOutlet*valueFunc[0] << std::endl;
+        std::cout << " Resistance based on (referencePressure)/flowRateInlet at this point would be: " << resistanceRef << std::endl;
+        std::cout << " --------------------------------------------------------- " << std::endl;
+        std::cout << " --------------------------------------------------------- " << std::endl;
+
+    }
+
+    double flowRateUse = flowRateOutlet;
+    if(params->sublist("Parameter Fluid").get("Average Flowrate",false) )
+        flowRateUse = flowRateOutletAveraged;
+
+    if(isNeg==1)
+        flowRateUse = 0.;
+    
+    double p_out = flowRateUse*valueFunc[0];
+
+    // Second step: use flow rate to determine pressure with resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+               
+               // We only need to compute it on the outlet of the geometry
+                if(feSub.getFlag() == flagOutlet){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
+                    vec2D_dbl_Type nodes;
+                    nodes = getCoordinates(nodeList, pointsRep);
+
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    }
+                    
+                    // vec_dbl_Type x(dim,0.); //dummy
+                    // paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();          
+
+                    // func( &x[0], &valueFunc[0], paramsFunc);
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                    // Step 1: Quadrature Points on physical surface:
+                    vec_dbl_Type quadWeights(dim);
+                    quadWeights[0] = 1/6.;
+                    quadWeights[1] = 1/6.;
+                    quadWeights[2] = 1/6.;
+                    vec2D_dbl_Type quadPoints(quadWeights.size(), vec_dbl_Type(dim));
+
+                    vec_int_Type kn1= elements->getElement(T).getVectorNodeListNonConst();
+
+                    vec2D_dbl_Type quadPointsT1(quadWeights.size(),vec_dbl_Type(dim));
+                    quadPointsT1.push_back({0.5,0.5,0.0});
+                    quadPointsT1.push_back({0.0,0.5,0.0});
+                    quadPointsT1.push_back({0.5,0.0,0.0});
+
+                    SC detB1;
+                    SC absDetB1;
+                    SmallMatrix<SC> B1(dim);
+                    SmallMatrix<SC> Binv1(dim);  
+                    int index0,index;
+
+                    index0 = kn1[0];
+                    for (int s=0; s<dim; s++) {
+                        index = kn1[s+1];
+                        for (int t=0; t<dim; t++) {
+                            B1[t][s] = pointsRep->at(index).at(t) -pointsRep->at(index0).at(t);
+                        }
+                    }
+
+                    detB1 = B1.computeInverse(Binv1);
+                    detB1 = std::fabs(detB1);
+
+                    // Resulting Quad Points allways (0.5,0,0) (0.5,0.5,0) (0,0.5,0)
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                   
+                    //cout <<std::endl;
+
+                    for (UN i=0; i < numNodes_T; i++) {
+       
+                        // 2.   
+                        Teuchos::Array<SC> value(0);                    
+                        value.resize(  dim, 0. );
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {       
+                            for (int d=0; d<dim; d++){
+                                value[d] += weights->at(w) *normalScale*v_E[d]/norm_v_E *flowRateUse*valueFunc[0]*(*phi)[w][i];//valueFunc[0]
+                            }
+                        }             
+
+                        //cout << " Value First component " << value[0] << " " << value[1] << " " << value[2] <<std::endl;
+                        for (int d=0; d<dim; d++)
+                            valuesF[ dim * nodeList[ i ] + d ] += value[d] * elScaling;
+                    }
+                   
+                    // We make the distinction between a gradient jump calculation or a simple jump calculation 
+                    vec_dbl_Type valueSecondComp(dim,0.);
+				   
+                    for (UN t=0; t < numNodes_T; t++) {
+                        Teuchos::Array<SC> value( dim, 0. ); //These are value (W_ix,W_iy,W_iz)
+                        for(int l=0; l< quadWeights.size(); l++){
+                            vec_dbl_Type deriPhi1( dim,0.0)  ;
+                            vec_dbl_ptr_Type valuePhi(new vec_dbl_Type(dim,0.0));
+
+                            auto it1 = find( kn1.begin(), kn1.end() ,nodeList[t] );
+                            int id_in_element = distance( kn1.begin() , it1 );
+
+                            Helper::gradPhi(dim,2,id_in_element,quadPointsT1[l],valuePhi);
+                            for (int j=0; j<3; j++) {
+                                deriPhi1[j] = valuePhi->at(j);
+                            }
+
+                            vec_dbl_Type deriPhiT1(dim,0.);
+                            for(int q=0; q<dim; q++){
+                                for(int s=0; s< dim ; s++)
+                                    deriPhiT1[q] += (deriPhi1[s]*Binv1[s][q]);
+                                
+                            }
+                            // Phi might have other quad points
+                            for (UN d=0; d<dim; d++) {
+                                value[d] += quadWeights[l] *solution_u[t*dim+d] * deriPhi1[d]* v_E[d]/norm_v_E * (*phi)[l][t];
+                            }
+                        }   
+                       // cout << " Value Second component " << value[0] << " " << value[1] << " " << value[2]  <<std::endl;
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ t ] + j ] -= normalScale*value[j] *elScaling*viscosity;
+                                 
+                    }
+
+
+                }
+                    
+            }
+        }
+    }
+    return p_out; 
+}
+
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyArea(int dim,
+                                    double &area,
+                                    int inflowFlag,
+                                    int FEloc){
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+
+    int inletFlag=inflowFlag; //params->sublist("Parameter Fluid").get("Fluid Flag",4); 
+
+    double areaSurface=0.;
+
+    // Step 0: determie flowrate on inlet to calculate resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                if(feSub.getFlag() == inletFlag){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        areaSurface += norm_v_E;
+
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+
+                        //  A = norm_v_E * 0.5
+                        areaSurface += norm_v_E*0.5;
+    
+                    
+                    }
+                    
+                  
+                    
+                }
+
+
+            }
+        }
+    }
+    reduceAll<int, double> (*domainVec_.at(0)->getComm(), REDUCE_SUM, areaSurface, outArg (areaSurface));
+
+    area = areaSurface;
+
+}
+
+template <class SC, class LO, class GO, class NO>
+int FE<SC,LO,GO,NO>::assemblyFlowRate(int dim,
+                                        double &flowRateParabolic,
+                                        std::string FEType, 
+                                        int dofs,
+                                        int inflowFlag,
+                                        MultiVectorPtr_Type solution_rep,
+                                        int FEloc){
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+   
+    Helper::getPhi(phi, weights, dim-1, FEType, 2);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, 2, quadPoints, w, FEType);
+    w.reset();
+
+    int inletFlag=inflowFlag; //params->sublist("Parameter Fluid").get("Fluid Flag",4); 
+
+   
+    SC elScaling;
+    vec_dbl_Type b(dim);
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+  
+    double flowRateInlet=0.;
+ 
+    vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
+
+    Teuchos::ArrayRCP< const SC > uArray = solution_rep->getData(0);
+    // Step 0: determie flowrate on inlet to calculate resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                if(feSub.getFlag() == inletFlag){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, solution_rep,dofs);
+
+                    
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    
+                       // cout << " Normal Vector " << v_E[0] << " " << v_E[1] << " "<< v_E[2] <<std::endl; 
+                    }
+                    
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                    // Step 1: Quadrature Points on physical surface:    
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    Teuchos::Array<SC> value(0);
+                    value.resize(  numNodes_T, 0. ); // Volumetric flow rate over one surface is a skalar value
+                    // //cout << " Velocity over node ";
+                    // for (int w=0; w<phi->size(); w++){ //quads points
+                    //     for (int d=0; d<dim; d++) {
+                    //         uLoc[d][w] = 0.;
+                    //         for (int i=0; i < phi->at(0).size(); i++) {
+                    //             LO index = dim * nodeList[i] + d;
+                    //             uLoc[d][w] += uArray[index] * phi->at(w).at(i);
+                    //         }
+                    //     }
+                    // }
+
+                    for (UN i=0; i < numNodes_T; i++) {
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {
+                            for (int j=0; j<dim; j++){
+                                if(dofs==1){
+                                    value[i] += weights->at(w) *v_E[j]/norm_v_E *solution_u[i]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+                                else{
+                                    LO index = dim * i + j;
+                                    value[i] += weights->at(w) *v_E[j]/norm_v_E *solution_u[index]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+
+                            }
+                        }             
+                        flowRateInlet +=  value[i] * elScaling;
+    
+                    }
+                }
+
+
+            }
+        }
+    }
+    reduceAll<int, double> (*domainVec_.at(0)->getComm(), REDUCE_SUM, flowRateInlet, outArg (flowRateInlet));
+    // if(flowRateInlet < 0  && domainVec_.at(0)->getComm()->getRank() == 0)
+    //     std::cout << " ###### WARNING: the flow rate you computed is negative. Either the surface normal has the wrong orientation, or your solution is negative. Or both :D. Flowrate:"<< flowRateInlet << " ####### " <<std::endl; 
+    int isNeg=0;
+
+    if(flowRateInlet <0)
+        isNeg = 1;
+    flowRateParabolic = fabs(flowRateInlet);
+
+    return isNeg;
+
+}
+
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyAverageVelocity(int dim,
+                                        double &averageVelocity,
+                                        std::string FEType, 
+                                        int dofs,
+                                        int flag,
+                                        MultiVectorPtr_Type solution_rep,
+                                        int FEloc){
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+   
+    Helper::getPhi(phi, weights, dim-1, FEType, 2);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, 2, quadPoints, w, FEType);
+    w.reset();
+
+    double area =0.;
+    this->assemblyArea(dim, area, flag);
+   
+    SC elScaling;
+    vec_dbl_Type b(dim);
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+  
+    double velocity=0.;
+ 
+    vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
+
+    Teuchos::ArrayRCP< const SC > uArray = solution_rep->getData(0);
+    // Step 0: determie flowrate on inlet to calculate resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for(int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                if(feSub.getFlag() == flag){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, solution_rep,dofs);
+                    
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+                    
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                    // Step 1: Quadrature Points on physical surface:    
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    Teuchos::Array<SC> value(0);
+                    value.resize(  numNodes_T, 0. ); // Volumetric flow rate over one surface is a skalar value
+
+                    for (UN i=0; i < numNodes_T; i++) {
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {
+                            for (int j=0; j<dim; j++){
+                                if(dofs==1){
+                                    value[i] += weights->at(w)*solution_u[i]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+                                else{
+                                    LO index = dim * i + j;
+                                    value[i] += weights->at(w)*solution_u[index]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+
+                            }
+                        }             
+                        velocity +=  value[i] * elScaling;
+                    }
+                }
+            }
+        }
+    }
+    reduceAll<int, double> (*domainVec_.at(0)->getComm(), REDUCE_SUM, velocity, outArg (velocity));
+    velocity = velocity/area;
+    std::cout << " Average Flowvelocity "<< velocity << " ####### " <<std::endl; 
+
+    averageVelocity = velocity;
+}
+
+
 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,

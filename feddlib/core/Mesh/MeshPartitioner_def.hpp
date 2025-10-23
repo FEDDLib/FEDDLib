@@ -38,7 +38,7 @@ MeshPartitioner<SC,LO,GO,NO>::~MeshPartitioner(){
 
     
 template <class SC, class LO, class GO, class NO>
-void MeshPartitioner<SC,LO,GO,NO>::readAndPartition( int volumeID)
+void MeshPartitioner<SC,LO,GO,NO>::readAndPartition( int volumeID, std::string meshUnit, bool convertToCM)
 {
 	if(volumeID != 10 ){
 		if(this->comm_->getRank()==0){
@@ -50,7 +50,7 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartition( int volumeID)
     for (int i=0; i<domains_.size(); i++) {
         std::string meshName = pList_->get( "Mesh " + std::to_string(i+1) + " Name", "noName" );
         TEUCHOS_TEST_FOR_EXCEPTION( meshName == "noName", std::runtime_error, "No mesh name given.");
-        domains_[i]->initializeUnstructuredMesh( domains_[i]->getDimension(), "P1",volumeID ); //we only allow to read P1 meshes.
+        domains_[i]->initializeUnstructuredMesh( domains_[i]->getDimension(), "P1",volumeID, meshUnit, convertToCM ); //we only allow to read P1 meshes.
         domains_[i]->readMeshSize( meshName, delimiter );
     }
     
@@ -262,14 +262,97 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     // Setup Metis
     idx_t options[METIS_NOPTIONS];
     METIS_SetDefaultOptions(options);
+
+    // METIS DOKU: https://www.lrz.de/services/software/mathematik/metis/metis_5_0.pdf
+
+    /* 
+    options[METIS_OPTION_NUMBERING]
+    Used to indicate which numbering scheme is used for the adjacency structure of a graph or the element-
+    node structure of a mesh. The possible values are:
+     0 C-style numbering is assumed that starts from 0.
+     1 Fortran-style numbering is assumed that starts from 1.
+    */
     options[METIS_OPTION_NUMBERING] = 0;
+
+    /*
+    options[METIS_OPTION_SEED]
+    Specifies the seed for the random number generator.
+    */
     options[METIS_OPTION_SEED] = 666;
+
+    /*
+    ptions[METIS_OPTION_CONTIG]
+    Specifies that the partitioning routines should try to produce partitions that are contiguous. Note that if the
+    input graph is not connected this option is ignored.
+    */
     options[METIS_OPTION_CONTIG] = pList_->get("Contiguous",false); //0: Does not force contiguous partitions; 1: Forces contiguous partitions.
-    options[METIS_OPTION_MINCONN] = 0; // 1: Explicitly minimize the maximum connectivity.
-    options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_CUT;// or METIS_OBJTYPE_VOL
-    //    options[METIS_OPTION_RTYPE] = METIS_RTYPE_GREEDY;
-    options[METIS_OPTION_NITER] = 50; // default is 10
-    options[METIS_OPTION_CCORDER] = 1;
+    
+    /*
+    options[METIS_OPTION_NCUTS]
+    Specifies the number of different partitionings that it will compute. The final partitioning is the one that
+    achieves the best edgecut or communication volume. Default is 1.
+    */
+    options[METIS_OPTION_NCUTS] = pList_->get("NCUTS",1);
+
+    /*
+    options[METIS_OPTION_MINCONN]
+    Specifies that the partitioning routines should try to minimize the maximum degree of the subdomain graph,
+    i.e., the graph in which each partition is a node, and edges connect subdomains with a shared interface.
+    */
+    options[METIS_OPTION_MINCONN] = pList_->get("MINCONN",1); //0; // 1: Explicitly minimize the maximum connectivity.
+    
+    /* 
+     options[METIS_OPTION_OBJTYPE]: Specifies the type of objective. Possible values are:
+     METIS_OBJTYPE_CUT Edge-cut minimization.
+     METIS_OBJTYPE_VOL Total communication volume minimization.
+    */
+    idx_t objtype = METIS_OBJTYPE_CUT;
+    if( pList_->get("OBJTYPE","METIS_OBJTYPE_CUT") == "METIS_OBJTYPE_CUT")
+        objtype =METIS_OBJTYPE_CUT;
+    else if(pList_->get("OBJTYPE","METIS_OBJTYPE_CUT") == "METIS_OBJTYPE_VOL")
+        objtype = METIS_OBJTYPE_VOL;
+    options[METIS_OPTION_OBJTYPE] =objtype; // METIS_OBJTYPE_CUT;// or METIS_OBJTYPE_VOL
+    
+    /*
+     options[METIS_OPTION_RTYPE]
+     Determines the algorithm used for refinement. Possible values are:
+     METIS_RTYPE_FM FM-based cut refinement.
+     METIS_RTYPE_GREEDY Greedy-based cut and volume refinement.
+     METIS_RTYPE_SEP2SIDED Two-sided node FM refinement.
+     METIS_RTYPE_SEP1SIDED One-sided node FM refinement.
+    */
+    idx_t rtype = METIS_RTYPE_FM;
+    if(pList_->get("RTYPE","METIS_RTYPE_FM")=="METIS_RTYPE_FM")
+        rtype = METIS_RTYPE_FM;
+    else if(pList_->get("RTYPE","METIS_RTYPE_FM")== "METIS_RTYPE_GREEDY")
+         rtype = METIS_RTYPE_GREEDY;
+    else if(pList_->get("RTYPE","METIS_RTYPE_FM") == "METIS_RTYPE_SEP2SIDED")
+         rtype = METIS_RTYPE_SEP2SIDED;
+    else if(pList_->get("RTYPE","METIS_RTYPE_FM") == "METIS_RTYPE_SEP1SIDED")
+         rtype = METIS_RTYPE_SEP1SIDED;
+
+    options[METIS_OPTION_RTYPE] = rtype; //pList_->get("RTYPE","METIS_RTYPE_FM"); // METIS_RTYPE_GREEDY;
+
+    /*
+    options[METIS_OPTION_NITER]
+    Specifies the number of iterations for the refinement algorithms at each stage of the uncoarsening process.
+    Default is 10.
+    */
+    options[METIS_OPTION_NITER] = pList_->get("NITER",50); // 50; // default is 10
+    
+    /*
+     options[METIS_OPTION_CCORDER]
+     Specifies if the connected components of the graph should first be identified and ordered separately.
+    */
+    options[METIS_OPTION_CCORDER] = pList_->get("CCORDER",1);
+
+    /*options[METIS OPTION DBGLVL]
+     Specifies the amount of progress/debugging information will be printed during the execution of the algo-
+     rithms. The default value is 0 (no debugging/progress information). A non-zero value can be supplied that
+     is obtained by a bit-wise OR of the following values
+    */
+    options[METIS_OPTION_DBGLVL] =  pList_->get("DBGLVL",0);
+    
     idx_t ne = meshUnstr->getNumElementsGlobal(); // Global number of elements
     idx_t nn = meshUnstr->getNumGlobalNodes();	// Global number of nodes
     idx_t ned = meshUnstr->getEdgeElements()->numberElements(); // Global number of edges

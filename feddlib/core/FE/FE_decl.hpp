@@ -152,6 +152,69 @@ class FE {
                                      BC_func_Type func,
                                      std::vector<SC>& funcParameter);
     
+    double assemblyResistanceBoundary(int dim, 
+                                std::string FEType, 
+                                MultiVectorPtr_Type f, 
+                                MultiVectorPtr_Type u_rep,
+                                vec_dbl_Type flowRate_vec, 
+                                std::vector<SC>& funcParameter, 
+                                RhsFunc_Type func, 
+                                ParameterListPtr_Type params, 
+                                int FEloc=0);
+    double assemblyAbsorbingBoundary(int dim, 
+                                std::string FEType, 
+                                MultiVectorPtr_Type f, 
+                                MultiVectorPtr_Type u_rep, 
+                                vec_dbl_Type flowRate_vec, 
+                                std::vector<SC>& funcParameter, 
+                                RhsFunc_Type func, 
+                                double areaOutlet_init, 
+                                double areaOutlet_T, 
+                                ParameterListPtr_Type params, 
+                                int FEloc=0);
+
+    double assemblyAbsorbingBoundaryPaper(int dim, 
+                                std::string FEType, 
+                                MultiVectorPtr_Type f, 
+                                MultiVectorPtr_Type u_rep, 
+                                vec_dbl_Type flowRate_vec, 
+                                std::vector<SC>& funcParameter, 
+                                RhsFunc_Type func, 
+                                double areaOutlet_init, 
+                                double areaOutlet_T, 
+                                ParameterListPtr_Type params, 
+                                int FEloc=0);
+    double assemblyAbsorbingResistanceBoundary(int dim, 
+                                std::string FEType, 
+                                MultiVectorPtr_Type f, 
+                                MultiVectorPtr_Type u_rep, 
+                                vec_dbl_Type flowRate_vec, 
+                                std::vector<SC>& funcParameter, 
+                                RhsFunc_Type func, 
+                                double areaOutlet_init, 
+                                ParameterListPtr_Type params, 
+                                int FEloc=0);
+    void assemblyArea(int dim,
+                            double &area,
+                            int inflowFlag,
+                            int FEloc=0);       
+                                 
+    int assemblyFlowRate(int dim,
+                            double &flowRateParabolic,
+                            std::string FEType, 
+                            int dofs,
+                            int inflowFlag,
+                            MultiVectorPtr_Type solution_rep,
+                            int FEloc=0) ;
+
+    void assemblyAverageVelocity(int dim, 
+                                double &averageVelocity, 
+                                std::string FEType, 
+                                int dofs, int flag, 
+                                MultiVectorPtr_Type solution_rep, 
+                                int FEloc=0);
+
+
     // void assemblyAceGenTPM( MatrixPtr_Type &A00,
     //                         MatrixPtr_Type &A01,
     //                         MatrixPtr_Type &A10,

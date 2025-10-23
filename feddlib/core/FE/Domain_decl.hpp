@@ -462,7 +462,7 @@ public:
          @param[in] FEType
          @param[in] volumeID       
     */
-    void initializeUnstructuredMesh(int dimension, std::string feType, int volumeID=10);
+    void initializeUnstructuredMesh(int dimension, std::string feType, int volumeID=10,  std::string meshUnit = "cm", bool convertToCM = false);
 
     /*!
 		 \brief Hilfsfunktion fuer buildLocalInterfaceIDInGlobal().
@@ -536,6 +536,9 @@ public:
    /// @param name export suffix to identify flags
    void exportElementOrientation(std::string name = "default");
 
+     /// @brief Exporting Paraview file displaying distribution of elements to the differnt cores
+   /// @param name export suffix to identify flags
+   void exportDistribution(std::string name = "default");
    /* ----------------------------------------------------------------------------------------*/
 
    private:

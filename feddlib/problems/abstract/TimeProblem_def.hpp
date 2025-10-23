@@ -99,7 +99,6 @@ void TimeProblem<SC,LO,GO,NO>::reAssembleAndFill( BlockMatrixPtr_Type bMat, std:
 
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
-    //std::cout << "combineSystems is called" << std::endl;
     BlockMatrixPtr_Type tmpSystem = problem_->getSystem();
     int size = tmpSystem->size();
     systemCombined_.reset( new BlockMatrix_Type ( size ) );
@@ -921,7 +920,6 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_op_Blo
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::PreconditionerBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_prec()
 {
- 
     NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
     TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
     
@@ -931,14 +929,14 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
         this->setBoundariesSystem();
         
-        if ( type == "Teko" || type == "FaCSI-Teko" || type =="Diagonal" ) { //we need to construct the whole preconditioner if Teko is used
-            nonLinProb->setupPreconditioner( type );
-            precInitOnly_ = false;
-        }
-        else{
+        // if ( type == "Teko" || type == "FaCSI-Teko" || || type == "FaCSI-Block" || type =="Diagonal" ) { //we need to construct the whole preconditioner if Teko is used
+        //     nonLinProb->setupPreconditioner( type );
+        //     precInitOnly_ = false;
+        // }
+        // else{
             nonLinProb->setupPreconditioner( type ); //nonLinProb->initializePreconditioner( type );
             precInitOnly_ = false;
-        }
+        // }
     }
     
     Teuchos::RCP<const Thyra::PreconditionerBase<SC> > thyraPrec =  nonLinProb->getPreconditionerConst()->getThyraPrecConst();
@@ -1071,7 +1069,6 @@ template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
                                                    const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
 {
-    
     
     using Teuchos::RCP;
     using Teuchos::rcp;

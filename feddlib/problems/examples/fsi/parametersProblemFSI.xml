@@ -1,52 +1,84 @@
 <ParameterList name="FSI">
     <ParameterList name="Parameter">
-        <Parameter name="Dimension" type="int" value="2"/>
-        <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
-        <Parameter name="BC Type" type="string" value="partialCFD"/><!--partialCFD,Richter3DFull-->
-        
-        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
-        
-        <Parameter name="MeanVelocity" type="double" value="2.0"/><!--2d:2.0, Richter 3d: 1.0-->
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization" type="string" value="P1"/><!--P2-->
+        <Parameter name="BC Type" type="string" value="Tube3D"/><!--partialCFD,Richter3DFull-->
         
         <Parameter name="Model Geometry" type="string" value="Laplace"/>
         
         <Parameter name="FSI" type="bool" value="true"/>
         <Parameter name="Geometry Explicit" type="bool" value="true"/>
         
-        <Parameter name="relNonLinTol" type="double" value="1.0e-6"/>
-        <Parameter name="absNonLinTol" type="double" value="1.0e-2"/>
-        <Parameter name="updateTol" type="double" value="1.0e-6"/>
+        <Parameter name="relNonLinTol" type="double" value="1.0e-8"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-8"/>
         <Parameter name="Combo" type="string" value="OR"/>
-        <Parameter name="Use update tol" type="bool" value="false"/>
+        <Parameter name="Use update tol" type="bool" value="true"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
         
         <Parameter name="MaxNonLinIts" type="int" value="10"/>
 
-        <Parameter name="Criterion" type="string" value="Residual"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
+        <Parameter name="Criterion" type="string" value="Update"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
     </ParameterList>
     <ParameterList name="Parameter Solid">        
-        <Parameter name="Material model" type="string" value="linear"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
-        <Parameter name="Density" type="double"   value="1000."/>
-        <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
-        <Parameter name="Poisson Ratio" type="double" value="0.4"/>
-        <Parameter name="Mu" type="double" value="2.0e+6"/>
-        <!-- Parameter for Neo-Hooke and Mooney-Rivlin, additioanlly poisson ratio is used -->
-        <Parameter name="E" type="double" value="3.0e+6"/>
-        <!-- Parameter for Mooney-Rivlin-->
-        <Parameter name="C" type="double" value="1."/><!-- Mooney-Rivlin parameter -->
+        <Parameter name="Material model" type="string" value="Neo-Hooke"/><!--linear, Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
+        <Parameter name="Density" type="double"   value="1.0e-03"/><!-- kg/cm³ -->
+        <Parameter name="Mu" type="double" value="671.0"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5 | NH_3: 1275.2 | NH_2: 671-->
+        <Parameter name="Mu1" type="double" value="671.0"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5-->
+        <Parameter name="Mu2" type="double" value="671.0"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 1476.5-->
+
+        <Parameter name="E" type="double" value="2.0e3"/> <!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48 | NH_3 = 3800, NH_2 = 2000-->
+        <Parameter name="E1" type="double" value="2.0e3"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48-->
+        <Parameter name="E2" type="double" value="2.0e3"/><!-- 1kg⋅cm/s² * 1/cm² | NH4: 4398.48-->
+       
+		<Parameter name="c1" type="double" value="0.25"/>
+		<Parameter name="Poisson Ratio" type="double" value="0.49"/>
     </ParameterList>
+
     
     <ParameterList name="Parameter Fluid">
-        <Parameter name="Viscosity" type="double" value="1.0e-3"/>
-        <Parameter name="Density" type="double" value="1000.0"/>
+        <Parameter name="Mesh Name Inflow" type="string" value="fsi_fluid_2mm"/> <!--inflow solution name for Tube3D Problem -->
+        <Parameter name="Preconditioner Type" type="string" value="Monolithic"/><!--only relevant for block preconditioner for fluid -->
+
+        <Parameter name="Viscosity" type="double" value="2.91e-2"/> <!-- kinematic viscosity cm^2/s converted from dynamic visco 0.003 Pa s -->
+        <Parameter name="Density" type="double" value="1.03e-03"/><!-- kg/cm³ -->
         <Parameter name="Symmetric gradient" type="bool" value="true"/>
+
+        <Parameter name="MeanVelocity" type="double" value="118.28"/><!--2d:2.0, Richter 3d: 1.0-->
+        <Parameter name="Max Ramp Time" type="double" value="0.1"/>
+       
+        <Parameter name="Flowrate" type="double" value="3"/><!-- For Absorbing BC-->
+  
+        <Parameter name="Pressure Boundary Condition" type="string" value="Absorbing Paper"/>         <!-- Resistance , Absorbing , Absorbing Resistance-->
+        <Parameter name="Unsteady Start" type="double" value="0.2"/><!-- Start of 'unsteady' phase -->
+        <Parameter name="Average Flowrate" type="bool" value="true"/>
+        <Parameter name="BC Ramp" type="double" value="0.0"/>
+        <Parameter name="Normal Scale" type="double" value="-1.0"/>
+        <Parameter name="Poisson Ratio" type="double" value="0.49"/>
+        <!-- Absorbing boundary condition -->
+        <Parameter name="Reference fluid pressure" type="double" value="11.99e1"/> <!-- 1kg⋅cm/s² * 1/cm²  -->
+        <Parameter name="Wall thickness" type="double" value="0.12"/> <!-- cm -->
+         <Parameter name="E" type="double" value="120.0e1"/> <!-- 1kg⋅cm/s² * 1/cm²-->
+       
+       	<!-- Resistance boundary condition -->
+        <Parameter name="Resistance" type="double" value="3.6660e-4"/> <!-- ?? CHECK| old: g/cm s² s/cm³ (eigentliche Einheit mPa*s/m³ , 1mPa = 10e6 N/m² -->
+        <Parameter name="Resistance Ramp" type="double" value="0.0"/>
     </ParameterList>
-    
+
+    <ParameterList name="Parameter Geometry">
+        <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
+        <Parameter name="Mu" type="double" value="126.700e1"/>
+        <Parameter name="Model Geometry" type="string" value="Laplace"/>
+        <Parameter name="Model" type="string" value="Laplace"/>
+        <Parameter name="Distance Laplace" type="double" value="0.1"/>
+        <Parameter name="Coefficient Laplace" type="double" value="1000."/>
+    </ParameterList>
+
+
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h004.mesh"/>
-        <Parameter name="Mesh 2 Name" type="string" value="dfg_fsi_solid_h004.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="fsi_fluid_2mm.mesh"/>
+        <Parameter name="Mesh 2 Name" type="string" value="fsi_solid_2mm.mesh"/>
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
         
@@ -80,9 +112,9 @@
         <Parameter name="Export Suffix" type="string" value=""/>
         <Parameter name="Export Data" type="bool" value="true"/>
         <Parameter name="Export Extra Data" type="bool" value="false"/>
-        <Parameter name="Export drag and lift" type="bool" value="true"/>
+        <Parameter name="Export Flow Rate" type="bool" value="true"/>
         
-        <Parameter name="Preconditioner Method" type="string" value="FaCSI"/><!-- Monolithic, FaCSI, FaCSI-Teko -->
+        <Parameter name="Preconditioner Method" type="string" value="FaCSI"/><!-- Monolithic, FaCSI, FaCSI-Teko, FaCSI-Block -->
         <Parameter name="Use Fluid Preconditioner" type="bool" value="true"/>
         <Parameter name="Use Solid Preconditioner" type="bool" value="true"/>
 
@@ -91,7 +123,7 @@
         <Parameter name="Scale mass matrix" type="bool" value="true"/>
         <Parameter name="Set Zeros" type="bool" value="true"/>
         
-        <Parameter name="Linearization" type="string" value="Newton"/> <!-- FixedPoint, Newton, Extrapolation-->
+        <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, Extrapolation-->
     </ParameterList>
     <ParameterList name="Timestepping Parameter">
         
@@ -99,9 +131,82 @@
         <Parameter name="Class" type="string" value="Multistep"/>
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value="0.002"/>
-        <Parameter name="dt" type="double" value="0.001"/>
+        <Parameter name="Final time" type="double" value="0.01"/>
+        <Parameter name="dt" type="double" value="0.005"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
     </ParameterList>
 </ParameterList>
+
+
+<!-- <ParameterList name="Parameter"> -->
+        <!-- <Parameter name="Dimension" type="int" value="3"/> -->
+        <!--P2-->
+        <!-- <Parameter name="Discretization" type="string" value="P1"/> -->
+        <!--partialCFD,Richter3DFull-->
+        <!-- <Parameter name="BC Type" type="string" value="Tube3D"/> -->
+        
+        <!-- <Parameter name="MeanVelocity" type="double" value="118.28"/> -->
+        
+        <!-- <Parameter name="Model Geometry" type="string" value="Laplace"/>
+        
+        <Parameter name="FSI" type="bool" value="true"/>
+        <Parameter name="Geometry Explicit" type="bool" value="true"/>
+        
+        <Parameter name="relNonLinTol" type="double" value="1.0e-6"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-6"/>
+        <Parameter name="updateTol" type="double" value="1.0e-6"/>
+        <Parameter name="Combo" type="string" value="OR"/>
+        <Parameter name="Use update tol" type="bool" value="true"/>
+        <Parameter name="Use WRMS" type="bool" value="false"/>
+        
+        <Parameter name="MaxNonLinIts" type="int" value="10"/> -->
+
+        <!-- <Parameter name="Criterion" type="string" value="Update"/> -->
+    <!-- </ParameterList> -->
+    <!--Units in kg/cm³, N -->
+    <!-- <ParameterList name="Parameter Solid">        
+        <Parameter name="Density" type="double"   value="1.3e-3"/>  -->
+        <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
+        <!-- N/cm²-->
+        <!-- <Parameter name="Mu" type="double" value="0.1276e2"/> -->
+        <!-- 380158.5 N/m² to 0.3801585e2 N/cm² -->
+        <!-- <Parameter name="E" type="double" value="0.3801585e2"/> 
+		<Parameter name="E1" type="double" value="0.3801585e2"/>
+		<Parameter name="c1" type="double" value="0.25"/>
+		<Parameter name="Poisson Ratio" type="double" value="0.49"/>
+    </ParameterList> -->
+
+       
+    <!-- <ParameterList name="Parameter Fluid"> -->
+    <!-- kinematic viscosity cm^2/s -->
+        <!-- <Parameter name="Viscosity" type="double" value="3.0e-2"/>  -->
+        <!-- kg/cm³ -->
+        <!-- <Parameter name="Density" type="double" value="1.06e-3"/> -->
+        <!-- <Parameter name="Symmetric gradient" type="bool" value="true"/> -->
+         <!-- cm/s -->
+         <!-- <Parameter name="MeanVelocity" type="double" value="118.28"/> --> 
+         <!-- Resistance , Absorbing , Absorbing Resistance-->
+        <!-- <Parameter name="Pressure Boundary Condition" type="string" value="Absorbing Paper"/> -->
+        <!-- Start of 'unsteady' phase -->    
+        <!-- <Parameter name="Unsteady Start" type="double" value="1.0"/> -->
+        <!-- <Parameter name="Average Flowrate" type="bool" value="true"/> -->
+        <!-- <Parameter name="BC Ramp" type="double" value="0.0"/> -->
+        <!-- <Parameter name="Normal Scale" type="double" value="-1.0"/>
+        <Parameter name="Poisson Ratio" type="double" value="0.49"/> -->
+        <!-- Absorbing boundary condition -->
+        <!-- 80 mmHg, N/cm^2 translated from 140 mmHg = 1.8664,  -->
+        <!-- <Parameter name="Reference fluid pressure" type="double" value="1.0665"/>  -->
+        <!-- cm -->
+        <!-- <Parameter name="Wall thickness" type="double" value="0.14"/> 
+         <Parameter name="E" type="double" value="0.3801585e2"/> -->
+       	<!-- Resistance boundary condition -->
+    <!-- </ParameterList>
+    <ParameterList name="Parameter Geometry">
+        <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
+        <Parameter name="Mu" type="double" value="126.700e-2"/>
+        <Parameter name="Model Geometry" type="string" value="Elasticity"/>
+        <Parameter name="Model" type="string" value="Elasticity"/>
+        <Parameter name="Distance Laplace" type="double" value="0.1"/>
+        <Parameter name="Coefficient Laplace" type="double" value="1000."/>
+    </ParameterList>  -->

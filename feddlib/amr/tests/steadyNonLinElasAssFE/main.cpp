@@ -7,8 +7,6 @@
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/problems/specific/LinElas.hpp"
 #include "feddlib/problems/specific/NonLinElasticity.hpp"
-#include "feddlib/problems/specific/LinElasAssFE.hpp"
-#include "feddlib/problems/specific/NonLinElasAssFE.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
@@ -287,40 +285,9 @@ int main(int argc, char *argv[])
             bcFactory->addBC(zeroDirichlet2D, 9, 0, domain, "Dirichlet_X_Z", dim);
         
 		}
-            
 
         // LinElas Objekt erstellen
-        NonLinElasticity<SC,LO,GO,NO> NonLinElas( domain, FEType, parameterListAll );
-
-        NonLinElas.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
-
-        if (dim==2)
-            NonLinElas.addRhsFunction( rhs2D );
-        else if(dim==3)
-            NonLinElas.addRhsFunction( rhsYZ );
-
-        double force = parameterListAll->sublist("Parameter").get("Volume force",0.);
-        double degree = 0;
-        
-        NonLinElas.addParemeterRhs( force );
-        NonLinElas.addParemeterRhs( degree );
-        // ######################
-        // Matrix assemblieren, RW setzen und System loesen
-        // ######################
-        NonLinElas.initializeProblem();
-        NonLinElas.assemble();                
-        NonLinElas.setBoundaries(); // In der Klasse Problem
-		NonLinElas.setBoundariesRHS();
-
-		std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
-        NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
-        nlSolver.solve( NonLinElas );
-        comm->barrier();	
-
-
-        // LinElas Objekt erstellen
-        NonLinElasAssFE<SC,LO,GO,NO> NonLinElasAssFE( domain, FEType, parameterListAll );
-
+        NonLinElasticity<SC,LO,GO,NO> NonLinElasAssFE( domain, FEType, parameterListAll );
         NonLinElasAssFE.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
 
         if (dim==2)
@@ -328,6 +295,9 @@ int main(int argc, char *argv[])
         else if(dim==3)
             NonLinElasAssFE.addRhsFunction( rhsYZ );
         
+        double force = parameterListAll->sublist("Parameter").get("Volume force",0.);
+        double degree = 0;      
+  
         NonLinElasAssFE.addParemeterRhs( force );
         NonLinElasAssFE.addParemeterRhs( degree );
         // ######################
@@ -338,9 +308,38 @@ int main(int argc, char *argv[])
         NonLinElasAssFE.setBoundaries(); // In der Klasse Problem
         NonLinElasAssFE.setBoundariesRHS();
 
+		std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
         NonLinearSolver<SC,LO,GO,NO> nlSolverAssFE( nlSolverType );
         nlSolverAssFE.solve( NonLinElasAssFE );
-        comm->barrier();
+        comm->barrier(); 
+
+        // LinElas Objekt erstellen
+        parameterListAll->sublist("Parameter").set("Use AceGen Interface",false); // Not use interface
+        NonLinElasticity<SC,LO,GO,NO> NonLinElas( domain, FEType, parameterListAll );
+
+        NonLinElas.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
+
+        if (dim==2)
+            NonLinElas.addRhsFunction( rhs2D );
+        else if(dim==3)
+            NonLinElas.addRhsFunction( rhsYZ );
+
+        NonLinElas.addParemeterRhs( force );
+        NonLinElas.addParemeterRhs( degree );
+        // ######################
+        // Matrix assemblieren, RW setzen und System loesen
+        // ######################
+        NonLinElas.initializeProblem();
+        NonLinElas.assemble();                
+        NonLinElas.setBoundaries(); // In der Klasse Problem
+		NonLinElas.setBoundariesRHS();
+
+        NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
+        nlSolver.solve( NonLinElas );
+        comm->barrier();	
+
+
+        
         
 		if(comm->getRank() ==0){
 			cout << " ############################################### " << endl;
@@ -350,64 +349,46 @@ int main(int argc, char *argv[])
 
 		}
 
-			// ######################
-            // Mesh-Bewegung testen
-            // ######################
-            // Setze die aktuelle (nicht-deformierte) Konfiguration als Referenzkonfiguration
-            /*domain->setReferenceConfiguration();
+        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
 
-            typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
-            typedef RCP<MultiVector_Type> MultiVectorPtr_Type;
-            typedef RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
+        exPara->setup( "displacements", domain->getMesh(), FEType );
 
-            MultiVectorConstPtr_Type displacementUniqueConst = LinElas.getSolution()->getBlock(0);
-            MultiVectorPtr_Type displacementRepeated = rcp( new MultiVector_Type( LinElas.getDomain(0)->getMapVecFieldRepeated() ) );
+        MultiVectorConstPtr_Type valuesSolidConst1 = NonLinElas.getSolution()->getBlock(0);
+        exPara->addVariable( valuesSolidConst1, "valuesNonLinElas", "Vector", dim, domain->getMapUnique());
 
-            displacementRepeated->importFromVector( displacementUniqueConst );
-            MultiVectorPtr_Type displacementUnique = rcp_const_cast<MultiVector_Type>(displacementUniqueConst);
-            // Verschiebe das Gitter
-            domain->moveMesh(displacementUnique, displacementRepeated);*/
+        MultiVectorConstPtr_Type valuesSolidConst2 = NonLinElasAssFE.getSolution()->getBlock(0);
+        exPara->addVariable( valuesSolidConst2, "valuesNonLinElasAssFE", "Vector", dim, domain->getMapUnique());
 
-			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+        // Calculating the error per node
+        Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValues = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( valuesSolidConst1->getMap() ) ); 
+        //this = alpha*A + beta*B + gamma*this
+        errorValues->update( 1., valuesSolidConst2, -1. ,valuesSolidConst1, 0.);
 
-			exPara->setup( "displacements", domain->getMesh(), FEType );
+        // Taking abs norm
+        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > errorValuesAbs = errorValues;
 
-			MultiVectorConstPtr_Type valuesSolidConst1 = NonLinElas.getSolution()->getBlock(0);
-			exPara->addVariable( valuesSolidConst1, "valuesNonLinElas", "Vector", dim, domain->getMapUnique());
+        errorValues->abs(errorValuesAbs);
 
-			MultiVectorConstPtr_Type valuesSolidConst2 = NonLinElasAssFE.getSolution()->getBlock(0);
-			exPara->addVariable( valuesSolidConst2, "valuesNonLinElasAssFE", "Vector", dim, domain->getMapUnique());
+        exPara->addVariable( errorValuesAbs, "erroeValues", "Vector", dim, domain->getMapUnique());
+        exPara->save(0.0);
 
-			// Calculating the error per node
-			Teuchos::RCP<MultiVector<SC,LO,GO,NO> > errorValues = Teuchos::rcp(new MultiVector<SC,LO,GO,NO>( valuesSolidConst1->getMap() ) ); 
-			//this = alpha*A + beta*B + gamma*this
-			errorValues->update( 1., valuesSolidConst2, -1. ,valuesSolidConst1, 0.);
+        Teuchos::Array<SC> norm(1); 
+        errorValues->normInf(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
+        double res = norm[0];
+        if(comm->getRank() ==0)
+            cout << " Inf Norm of Error of Solutions " << res << endl;
+        double infNormError = res;
+    
+        NonLinElas.getSolution()->getBlock(0)->normInf(norm);
+        res = norm[0];
+        if(comm->getRank() ==0)
+            cout << " Relative error Inf-Norm of solution nonlinear elasticity " << infNormError/res << endl;
 
-			// Taking abs norm
-			Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > errorValuesAbs = errorValues;
-
-			errorValues->abs(errorValuesAbs);
-
-			exPara->addVariable( errorValuesAbs, "erroeValues", "Vector", dim, domain->getMapUnique());
-			exPara->save(0.0);
-
- 			Teuchos::Array<SC> norm(1); 
-    		errorValues->normInf(norm);//const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
-			double res = norm[0];
-			if(comm->getRank() ==0)
-				cout << " Inf Norm of Error of Solutions " << res << endl;
-			double infNormError = res;
-		
-			NonLinElas.getSolution()->getBlock(0)->normInf(norm);
-			res = norm[0];
-			if(comm->getRank() ==0)
-				cout << " Relative error Inf-Norm of solution nonlinear elasticity " << infNormError/res << endl;
-
-			NonLinElasAssFE.getSolution()->getBlock(0)->normInf(norm);
-			res = norm[0];
-			if(comm->getRank() ==0)
-				cout << " Relative error Inf-Norm of solutions nonlinear elasticity assemFE " << infNormError/res << endl;
-		
+        NonLinElasAssFE.getSolution()->getBlock(0)->normInf(norm);
+        res = norm[0];
+        if(comm->getRank() ==0)
+            cout << " Relative error Inf-Norm of solutions nonlinear elasticity assemFE " << infNormError/res << endl;
+    
 
           // TEUCHOS_TEST_FOR_EXCEPTION( infNormError > 1e-11 , std::logic_error, "Inf Norm of Error between calculated solutions is too great. Exceeded 1e-11. ");
 

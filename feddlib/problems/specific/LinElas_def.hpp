@@ -47,6 +47,9 @@ Problem_Type(parameterList, domain->getComm() )
     // Siehe Problem_def.hpp fuer die Funktion AddVariable()
     this->addVariable( domain , FEType , "d_s" ,domain->getDimension() );
     this->dim_ = this->getDomain(0)->getDimension();
+
+    d_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ) );
+
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -74,6 +77,7 @@ void LinElas<SC,LO,GO,NO>::assemble( std::string type ) const
 
     // Berechne daraus nun E (Youngsches Modul) und die erste Lamé-Konstanten \lambda
     double youngModulus = mu*2.*(1 + poissonRatio);
+
     double lambda = (poissonRatio*youngModulus)/((1 + poissonRatio)*(1 - 2*poissonRatio));
 
     // Initialisiere die Steifigkeitsmatrix. Das letzte Argument gibt die (ungefaehre) Anzahl an Eintraege pro Zeile an
@@ -81,8 +85,21 @@ void LinElas<SC,LO,GO,NO>::assemble( std::string type ) const
     // MatrixPtr_Type K = Teuchos::rcp(new Matrix_Type( this->domainPtr_vec_.at(0)->getMapVecFieldUnique(), 10 ) );
 
     // Assembliere die Steifigkeitsmatrix. Die 2 gibt degree an, d.h. die Ordnung der Quadraturformel, die benutzt werden soll.
-    this->feFactory_->assemblyLinElasXDim( this->dim_, this->getDomain(0)->getFEType(), K, lambda, mu );
+#ifdef FEDD_HAVE_ACEGENINTERFACE
+    bool useInterface = this->parameterList_->sublist("Parameter").get("Use AceGen Interface", true);
+    if(this->getFEType(0) =="P2" && useInterface){
+        MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
+        d_rep_->importFromVector(d, true);
 
+        this->system_->addBlock( K, 0, 0 );
+        // Assembliere die Steifigkeitsmatrix. Die 2 gibt degree an, d.h. die Ordnung der Quadraturformel, die benutzt werden soll.
+        this->feFactory_->assemblyLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, d_rep_, this->system_, this->rhs_, this->parameterList_,false, "Jacobian", true);
+    }
+    else 
+        this->feFactory_->assemblyLinElasXDim( this->dim_, this->getDomain(0)->getFEType(), K, lambda, mu );
+#else
+    this->feFactory_->assemblyLinElasXDim( this->dim_, this->getDomain(0)->getFEType(), K, lambda, mu );
+#endif
     // Setup fuer die linke Seite des zu loesdenen GLS. Beachte, dass system_ via system_() im Standardkonstruktor (von der Klasse Problem)
     // initialisiert worden ist, hier wird dieser also erst richtig initialisiert.
     // Ein Objekt der Klasse Bmat ist eine Blockmatrix; also ist system_ eine Blockmatrix (Objekt von BMat)

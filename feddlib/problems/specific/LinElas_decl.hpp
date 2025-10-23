@@ -16,6 +16,7 @@ public:
     
     typedef typename Problem_Type::MultiVector_Type MultiVector_Type;
     typedef typename Problem_Type::MultiVectorPtr_Type MultiVectorPtr_Type;
+    typedef typename Problem_Type::MultiVectorConstPtr_Type MultiVectorConstPtr_Type;
 
     typedef typename Problem_Type::BlockMultiVector_Type BlockMultiVector_Type;
     typedef typename Problem_Type::BlockMultiVectorPtr_Type BlockMultiVectorPtr_Type;
@@ -51,6 +52,7 @@ public:
     // Teuchos::RCP<Matrix_Type> 	K_;
 //    virtual void assembleExternal( std::string type ){}
 private:
+    MultiVectorPtr_Type d_rep_;
 
 };
 }

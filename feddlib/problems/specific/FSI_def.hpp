@@ -40,6 +40,23 @@ void lift3D(double* x, double* res, double t, const double* parameters)
     
     return;
 }
+void pressureRamp(double* x, double* res, double* parameters){
+
+    double pressureValue = parameters[1];
+    double flag = parameters[3];
+    double ramp = parameters[2];
+  	res[0] =0.;
+    
+    if(parameters[0]+1.e-12 < ramp)
+        pressureValue = parameters[0]*pressureValue/ramp;
+    else
+        pressureValue = parameters[1];
+
+    res[0] = pressureValue;  // Usually we check here for the correct flag. But as the boundary condition is limited to the outlet anyway, we have no issues
+    
+
+    return;
+}
 
 namespace FEDD {
 // Funktionen fuer die rechte Seite der Struktur/ Fluid/ Geometrie sind im jeweiligen Problem
@@ -94,18 +111,22 @@ exporterGeo_()
     
     problemFluid_ = Teuchos::rcp( new FluidProblem_Type( domainVelocity, FETypeVelocity, domainPressure, FETypePressure, parameterListFluid ) );
     problemFluid_->initializeProblem();
+    problemFluid_->infoParameter(false,"Fluid");
     
     if (materialModel_=="linear"){
         problemStructure_ = Teuchos::rcp( new StructureProblem_Type( domainStructure, FETypeStructure, parameterListStructure ) );
         problemStructure_->initializeProblem();
+        problemStructure_->infoParameter(false,"Solid");
     }
     else{
         problemStructureNonLin_ = Teuchos::rcp( new StructureNonLinProblem_Type( domainStructure, FETypeStructure, parameterListStructure) );
         problemStructureNonLin_->initializeProblem();
+        problemStructureNonLin_->infoParameter(false, "Solid");
     }
     
     problemGeometry_ = Teuchos::rcp( new GeometryProblem_Type( domainGeometry, FETypeGeometry, parameterListGeometry ) );
     problemGeometry_->initializeProblem();
+    problemGeometry_->infoParameter(false,"Geometry");
     //We initialize the subproblems. In the main routine, we need to call initializeFSI(). There, we first initialize the vectors of the FSI problem and then we set the pointers of the subproblems to the vectors of the full monolithic FSI system. This way all values are only saved once in the subproblems and can be used by the monolithic FSI system.
     
     meshDisplacementNew_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(4)->getMapVecFieldRepeated() ) );
@@ -129,6 +150,10 @@ exporterGeo_()
     }
     p_rep_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(1)->getMapRepeated() ) );
     
+    // if ( this->parameterList_->sublist("Timestepping Parameter").get("Checkpointing", false)){
+    //     exporterBoundaryCondition_ = Teuchos::rcp(new ExporterTxt () );
+    //     exporterBoundaryCondition_->setup( "boundaryConditionFluid", this->comm_ );
+    // }
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -437,6 +462,14 @@ void FSI<SC,LO,GO,NO>::reAssemble(std::string type) const
         computeSolidRHSInTime( );
         return;
     }
+    if(type == "ComputePressureRHSInTime")
+    {
+        if(this->verbose_)
+            std::cout << "-- Reassembly (ComputePressureRHSInTime)" << '\n';
+        
+        computePressureRHSInTime();
+        return;
+    }
 
     
     // ###############
@@ -591,92 +624,105 @@ void FSI<SC,LO,GO,NO>::reAssemble(std::string type) const
 template<class SC,class LO,class GO,class NO>
 void FSI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions)
 {
-    double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
-    // Fluid-Dichte
-    double density = this->problemFluid_->getParameterList()->sublist("Parameter").get("Density",1.);
+    std::cout << "FSI<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions)"<< std::endl;
+    // double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",0.02);
+    // // Fluid-Dichte
+    // double density = this->problemFluid_->getParameterList()->sublist("Parameter").get("Density",1.);
 
-    // ###############
-    // w bestimmen
-    // ###############
-    MultiVectorConstPtr_Type geometrySolution;
-    if(geometryExplicit_)
-    {
-        geometrySolution = this->problemGeometry_->getSolution()->getBlock(0);
-    }
-    else
-    {
-        geometrySolution = this->solution_->getBlock(4);
-    }
-    meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
-
-
-    *w_rep_ = *meshDisplacementNew_rep_;
-    // update(): this = alpha*A + beta*this
-    w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
-    w_rep_->scale(1.0/dt);
+    // // ###############
+    // // w bestimmen
+    // // ###############
+    // MultiVectorConstPtr_Type geometrySolution;
+    // if(geometryExplicit_)
+    // {
+    //     geometrySolution = this->problemGeometry_->getSolution()->getBlock(0);
+    // }
+    // else
+    // {
+    //     geometrySolution = this->solution_->getBlock(4);
+    // }
+    // meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
 
 
-    // ###############
-    // u extrapolieren
-    // ###############
-    // Beachte: getBlock(0) ist hier der Richtige, da dies der u-Variable in FSI entspricht.
-    if (previousSolutions.size() >= 2)
-    {
-        MultiVectorPtr_Type extrapolatedVector = Teuchos::rcp( new MultiVector_Type( previousSolutions[0]->getBlock(0) ) );
-
-        // Extrapolation fuer BDF2
-        // update(): this = alpha*A + beta*this
-        extrapolatedVector->update( -1., *previousSolutions[1]->getBlock(0), 2. );
-
-        u_rep_->importFromVector(extrapolatedVector, true);
-    }
-    else if(previousSolutions.size() == 1)
-    {
-        MultiVectorConstPtr_Type u = previousSolutions[0]->getBlock(0);
-        u_rep_->importFromVector(u, true);
-    }
-    else if (previousSolutions.size() == 0)
-    {
-        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-        u_rep_->importFromVector(u, true);
-    }
-
-    // (u-w)
-    *u_minus_w_rep_ = *u_rep_;
-    // update(): this = alpha*A + beta*this
-    u_minus_w_rep_->update(-1.0, *w_rep_, 1.0);
+    // *w_rep_ = *meshDisplacementNew_rep_;
+    // // update(): this = alpha*A + beta*this
+    // w_rep_->update(-1.0, *meshDisplacementOld_rep_, 1.0);
+    // w_rep_->scale(1.0/dt);
 
 
-    // ###############
-    // Neu assemblieren
-    // ###############
+    // // ###############
+    // // u extrapolieren
+    // // ###############
+    // // Beachte: getBlock(0) ist hier der Richtige, da dies der u-Variable in FSI entspricht.
+    // if (previousSolutions.size() >= 2)
+    // {
+    //     MultiVectorPtr_Type extrapolatedVector = Teuchos::rcp( new MultiVector_Type( previousSolutions[0]->getBlock(0) ) );
 
-    MatrixPtr_Type APN = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    //     // Extrapolation fuer BDF2
+    //     // update(): this = alpha*A + beta*this
+    //     extrapolatedVector->update( -1., *previousSolutions[1]->getBlock(0), 2. );
 
-    MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-    this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, u_minus_w_rep_, true );
+    //     u_rep_->importFromVector(extrapolatedVector, true);
+    // }
+    // else if(previousSolutions.size() == 1)
+    // {
+    //     MultiVectorConstPtr_Type u = previousSolutions[0]->getBlock(0);
+    //     u_rep_->importFromVector(u, true);
+    // }
+    // else if (previousSolutions.size() == 0)
+    // {
+    //     MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+    //     u_rep_->importFromVector(u, true);
+    // }
 
-    P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    // // (u-w)
+    // *u_minus_w_rep_ = *u_rep_;
+    // // update(): this = alpha*A + beta*this
+    // u_minus_w_rep_->update(-1.0, *w_rep_, 1.0);
+
+
+    // // ###############
+    // // Neu assemblieren
+    // // ###############
+
+    // MatrixPtr_Type APN = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+
+    // MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    // this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, u_minus_w_rep_, true );
+
+    // P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     
-    this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
-    P_->resumeFill();
-    P_->scale(density);
-    P_->scale(-1.0);
-    P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
+    // this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
+    // P_->resumeFill();
+    // P_->scale(density);
+    // P_->scale(-1.0);
+    // P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
 
 
-    N->resumeFill();
-    N->scale(density);
-    N->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
+    // N->resumeFill();
+    // N->scale(density);
+    // N->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
 
-    this->problemFluid_->A_->addMatrix(1.0, APN, 0.0);
-    P_->addMatrix(1.0, APN, 1.0);
-    N->addMatrix(1.0, APN, 1.0);
+    // this->problemFluid_->A_->addMatrix(1.0, APN, 0.0);
+    // P_->addMatrix(1.0, APN, 1.0);
+    // N->addMatrix(1.0, APN, 1.0);
 
-    APN->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
+    // APN->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
 
-    this->system_->addBlock( APN, 0, 0 );
+    // this->system_->addBlock( APN, 0, 0 );
 }
+
+// Residual of FSI is defined as:
+// GI (Geometry Implicit)
+//   |b_f     |   | F(u,p,d_f)  0       C_1^T   0 |
+//R= |b_s     | - | 0           S       C_3^T   0 |
+//   |C_2*d_s |   | C_1         C_2     0       0 |   
+//   |0       |   | 0           C_4     0       G |
+//   
+// GE (Geometry Implicit)
+//   |b_f     |   | F(u,p,d_f)  0       C_1^T   0 |
+//R= |b_s     | - | 0           S       C_3^T   0 |
+//   |C_2*d_s |   | C_1         C_2     0       0 |   
 
 template<class SC,class LO,class GO,class NO>
 void FSI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const
@@ -719,14 +765,16 @@ void FSI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
         
         this->system_->addBlock( this->problemFluid_->system_->getBlock(0,1), 0, 1 );
         this->system_->addBlock( this->problemFluid_->system_->getBlock(1,0), 1, 0 );
-        TEUCHOS_TEST_FOR_EXCEPTION(this->problemFluid_->system_->blockExists(1,1) , std::runtime_error, "Stabilization is used. Account for it.");
+        if (this->problemFluid_->system_->blockExists(1,1))
+                this->system_->addBlock( this->problemFluid_->system_->getBlock(1,1), 1, 1 ); 
+        // TEUCHOS_TEST_FOR_EXCEPTION(this->problemFluid_->system_->blockExists(1,1) , std::runtime_error, "Stabilization is used. Account for it."); ???
     }
     if ( this->verbose_ )
         std::cout << "Warning: Wrong consideration of temporal discretization for multi-stage RK methods!" << std::endl;
     
     this->problemFluid_->calculateNonLinResidualVecWithMeshVelo( "reverse", time, u_minus_w_rep_, P_ );
     this->system_->addBlock( problemFluid_->getSystem()->getBlock( 0, 0 ), 0, 0 );
-    
+   
     // we need to account for the coupling in the residuals
     if (materialModel_!="linear"){
         this->problemStructureNonLin_->calculateNonLinResidualVec( "reverse", time );
@@ -743,31 +791,37 @@ void FSI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     }
     
     MultiVectorPtr_Type residualFluidVelocityFSI =
-        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(0) );
+        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(0) ); // residual of fluid part
+
     MultiVectorPtr_Type residualSolidFSI =
-        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(2) );
+        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(2) ); // residual of solid part
 
     MultiVectorPtr_Type residualCouplingFSI =
-        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(3) );
+        Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(3) ); // residual of interface / lambda
     residualCouplingFSI->update( 1. , *this->rhs_->getBlock(3), 0. ); // change to -1 for standard
     
     //Now we need to add the coupling blocks
-    this->system_->getBlock(0,3)->apply( *this->solution_->getBlock(3) , *residualFluidVelocityFSI, Teuchos::NO_TRANS, -1., 1. );
+    // adding C_1^T * \lambda to fluid residual
+    this->system_->getBlock(0,3)->apply( *this->solution_->getBlock(3) , *residualFluidVelocityFSI, Teuchos::NO_TRANS, -1., 1. ); 
     
-    this->system_->getBlock(2,3)->apply( *this->solution_->getBlock(3) , *residualSolidFSI, Teuchos::NO_TRANS, -1., 1. );
+    // adding C_3 ^T * \lambda to solid residual
+    this->system_->getBlock(2,3)->apply( *this->solution_->getBlock(3) , *residualSolidFSI, Teuchos::NO_TRANS, -1., 1. ); 
+     
+     // adding C_1 * u to coupling/lambda 
+    this->system_->getBlock(3,0)->apply( *this->solution_->getBlock(0) , *residualCouplingFSI, Teuchos::NO_TRANS, -1., 1. ); 
     
-    this->system_->getBlock(3,0)->apply( *this->solution_->getBlock(0) , *residualCouplingFSI, Teuchos::NO_TRANS, -1., 1. );
-    
+    // adding C_2 * d_s to coupling/lambda 
     this->system_->getBlock(3,2)->apply( *this->solution_->getBlock(2) , *residualCouplingFSI, Teuchos::NO_TRANS, -1., 1. );
 
     if (!geometryExplicit_) {
-        
+        // If we have GI coupling we need to add that component to residual as well
         MultiVectorPtr_Type residualGeometryFSI =
             Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(4) );
-        residualGeometryFSI->update( 1. , *this->rhs_->getBlock(4), 0. ); // change to -1 for standard
 
+        residualGeometryFSI->update( 1. , *this->rhs_->getBlock(4), 0. ); // change to -1 for standard
+        // G * d_f
         this->system_->getBlock(4,4)->apply( *this->solution_->getBlock(4) , *residualGeometryFSI, Teuchos::NO_TRANS, -1., 1. );
-        
+        // C_4 * d_f
         this->system_->getBlock(4,2)->apply( *this->solution_->getBlock(2) , *residualGeometryFSI, Teuchos::NO_TRANS, -1., 1. );
         
     }
@@ -1084,6 +1138,210 @@ void FSI<SC,LO,GO,NO>::setFluidMassmatrix( MatrixPtr_Type& massmatrix ) const
     }
 }
 
+
+// Function to compute the pressure boundary conditions for the fluid component
+// Note it already contains some code connected to restarts
+template<class SC,class LO,class GO,class NO>
+void FSI<SC,LO,GO,NO>::computePressureRHSInTime() const{
+
+    // Type of pressure boundary condition
+    std::string pressureRB = this->parameterList_->sublist("Parameter Fluid").get("Pressure Boundary Condition","None");
+
+    // bool restart = this->parameterList_->sublist("Timestepping Parameter").get("Restart", false);
+    // double timeStepRestart = this->parameterList_->sublist("Timestepping Parameter").get("Time step", 0.0); 
+    
+    // Resistance boundary condition based on 'A parallel two-level method for simulating blood ﬂows in branching arteries
+    // with the resistive boundary condition -- Wu, Cai 2011'
+    // We assemble
+    // \int_{\Gamma_O} R flowrateOutlet \phi_f n ds + nu_f \int_{\Omega_O} \phi_f \cdot (\nabla u_f) \cdot n ds
+    if (pressureRB == "Resistance")
+    {
+        if(this->verbose_)
+            std::cout << " --- Computing resistance boundary condition .. " << std::endl;
+
+        // Value added to the RHS of the fluid component
+        MultiVectorPtr_Type FERhs = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
+
+        // Parameters for pressure ramp
+        vec_dbl_Type funcParameter(1,0.);
+        funcParameter[0] = timeSteppingTool_->t_;            
+       
+        // We need the outlet are thus we need to know the flags, as they are not always the same
+        int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 4);
+        int flagOutlet = this->parameterList_->sublist("General").get("Flag Outlet Fluid", 5);
+
+        // We compute the initial flow rate in the first timestep
+        if (timeSteppingTool_->currentTime()==0.) { 
+            double flowRateInlet_n_1 = 0.;
+            this->feFactory_->assemblyFlowRate(this->dim_, flowRateInlet_n_1, this->getDomain(0)->getFEType() , this->dim_, flagOutlet , u_rep_);  
+            flowRateOutlet_n_1_ = flowRateInlet_n_1; 
+        }  
+        // else if(restart && timeStepRestart +1e-8 > timeSteppingTool_->currentTime() )
+        // {
+        //     if(this->verbose_)
+        //         cout << " WARNING: Absorbing boundary condition is computed but the initial values usally corresponding to T=0 now correspond to the restart time " << endl;
+            
+        //     double flowRateInlet_n_1 = 0.;
+        //     this->feFactory_->assemblyFlowRate(this->dim_, flowRateInlet_n_1, this->getDomain(0)->getFEType() , this->dim_, flagOutlet , u_rep_);  
+        //     flowRateOutlet_n_1_ = flowRateInlet_n_1; 
+
+        // }
+
+        // Then we compute the flowrate in the current time step
+        double flowRateInlet_n = 0.;
+        this->feFactory_->assemblyFlowRate(this->dim_, flowRateInlet_n, this->getDomain(0)->getFEType() , this->dim_, flagOutlet , u_rep_);  
+        flowRateOutlet_n_ = flowRateInlet_n; 
+
+        vec_dbl_Type flowRateOutlet_timesteps(2);
+        flowRateOutlet_timesteps[0] = flowRateOutlet_n_1_;
+        flowRateOutlet_timesteps[1] = flowRateOutlet_n_;        
+
+        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+        u_rep_->importFromVector(u, true); 
+         
+        // We compute the pressure value set on the outlet of the domain based on the resitive boundary
+        pressureOutlet_ = this->feFactory_->assemblyResistanceBoundary(this->dim_, this->getDomain(0)->getFEType(),FERhs, u_rep_,flowRateOutlet_timesteps, funcParameter, pressureRamp,this->parameterList_,0);
+                  
+        flowRateOutlet_n_1_ = flowRateOutlet_n_;
+
+        this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
+
+        //double density = this->parameterList_->sublist("Parameter").get("Density",1.);
+        //this->problemTimeFluid_->getSourceTerm()->scale(density);
+        // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
+        // Die Skalierung mit der Dichte erfolgt schon in der Assemblierungsfunktion!
+        
+        // addSourceTermToRHS() aus DAESolverInTime
+        double coeffSourceTermStructure = 1.0;
+       // BlockMultiVectorPtr_Type tmpSourceterm = Teuchos::rcp(new BlockMultiVector_Type(1)) ;
+       // tmpSourceterm->addBlock(this->sourceTerm_->getBlockNonConst(1),0);
+
+            
+        this->problemTimeFluid_->getRhs()->getBlockNonConst(0)->update(coeffSourceTermStructure, *this->sourceTerm_->getBlockNonConst(0), 1.);
+        this->rhs_->addBlock( this->problemTimeFluid_->getRhs()->getBlockNonConst(0), 0 );
+
+        if(this->verbose_)
+            std::cout << "  .. done " << std::endl;
+
+    
+    }
+    // Absorbing boundary condition implemented as introduced in 
+    // 'AN EFFECTIVE FLUID-STRUCTURE INTERACTION FORMULATION FOR VASCULAR DYNAMICS BY GENERALIZED
+    // ROBIN CONDITIONS, Nobile, Vergara, 2008'
+    if (pressureRB == "Absorbing" || pressureRB == "Absorbing Paper")
+    {
+        if(this->verbose_)
+            std::cout << " Computing absorbing boundary condition .. " << std::endl;
+
+        MultiVectorPtr_Type FERhs = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
+
+        // Parameters for pressure ramp
+        vec_dbl_Type funcParameter(1,0.);
+        funcParameter[0] = timeSteppingTool_->t_;            
+        
+        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+        u_rep_->importFromVector(u, true); 
+         
+        int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 4);
+        int flagOutlet = this->parameterList_->sublist("General").get("Flag Outlet Fluid", 5);
+
+        if (timeSteppingTool_->currentTime()==0.) { 
+            double areaInlet_init = 0.;
+            double areaOutlet_init = 0.;
+
+            this->feFactory_->assemblyArea(this->dim_,areaInlet_init, flagInlet);
+            this->feFactory_->assemblyArea(this->dim_, areaOutlet_init, flagOutlet);
+
+            areaInlet_init_ = areaInlet_init;
+            areaOutlet_init_ = areaOutlet_init;
+
+            double flowRateInlet_n_1 = 0.;
+            this->feFactory_->assemblyFlowRate(this->dim_, flowRateInlet_n_1, this->getDomain(0)->getFEType() , this->dim_, flagOutlet , u_rep_);  
+            flowRateOutlet_n_1_ = flowRateInlet_n_1; 
+
+            if ( this->parameterList_->sublist("Timestepping Parameter").get("Checkpointing", false)){
+                exporterBoundaryCondition_->exportData( "Area_Inlet ", areaInlet_init );
+                exporterBoundaryCondition_->exportData( "Area_Outlet ", areaInlet_init );
+            }
+        } 
+        // else if(restart && timeStepRestart +1e-8 > timeSteppingTool_->currentTime() )
+        // {
+        //     if(this->verbose_)
+        //         cout << " WARNING: Absorbing boundary condition is computed but the initial values usally corresponding to T=0 now correspond to the restart time " << endl;
+        //     double areaInlet_init = 0.;
+        //     double areaOutlet_init = 0.;
+
+        //     this->feFactory_->assemblyArea(this->dim_,areaInlet_init, flagInlet);
+        //     this->feFactory_->assemblyArea(this->dim_, areaOutlet_init, flagOutlet);
+
+        //     areaInlet_init_ = 0.0253605;//areaInlet_init;
+        //     areaOutlet_init_ = 0.025605; //areaOutlet_init;
+
+        //     double flowRateInlet_n_1 = 0.;
+        //     this->feFactory_->assemblyFlowRate(this->dim_, flowRateInlet_n_1, this->getDomain(0)->getFEType() , this->dim_, flagOutlet , u_rep_);  
+        //     flowRateOutlet_n_1_ = flowRateInlet_n_1;  
+        // }
+        double flowRateInlet_n = 0.;
+        this->feFactory_->assemblyFlowRate(this->dim_, flowRateInlet_n, this->getDomain(0)->getFEType() , this->dim_, flagOutlet , u_rep_);  
+        flowRateOutlet_n_ = flowRateInlet_n; 
+
+        vec_dbl_Type flowRateOutlet_timesteps(2);
+        flowRateOutlet_timesteps[0] = flowRateOutlet_n_1_;
+        flowRateOutlet_timesteps[1] = flowRateOutlet_n_;
+
+        // The traditional approach differs slightly from the approach used in Comparison of arterial wall models in fluid–structure interaction
+        // simulations D. Balzani, A. Heinlein, A. Klawonn, O. Rheinbach, J. Schröder, 2023, and its predecessor. Thus, absorbing paper refers to 
+        // the aforementioned paper.
+        if(pressureRB == "Absorbing Paper"){
+
+            double unsteadyStart = this->parameterList_->sublist("Parameter Fluid").get("Unsteady Start",0.1); 
+            if( unsteadyStart +1e-10 > timeSteppingTool_->currentTime() &&  unsteadyStart -1e-10 < timeSteppingTool_->currentTime() )
+            {
+                double areaOutlet_T = 0.;
+                this->feFactory_->assemblyArea(this->dim_, areaOutlet_T, flagOutlet);
+                areaOutlet_T_ = areaOutlet_T;
+                if(this->verbose_)
+                    std::cout << " ---- Absorbing boundary condition: Start of unsteady Phase with areaOutlet_T=" << areaOutlet_T_<< " ---- " << std::endl;
+            }
+
+            pressureOutlet_ = this->feFactory_->assemblyAbsorbingBoundaryPaper(this->dim_, this->getDomain(0)->getFEType(),FERhs, u_rep_,flowRateOutlet_timesteps, funcParameter, pressureRamp,areaOutlet_init_, areaOutlet_T_,this->parameterList_,0);
+
+        }
+        else{
+            double rampTime = this->parameterList_->sublist("Parameter").get("Max Ramp Time",0.1); 
+            if( rampTime < timeSteppingTool_->currentTime() &&  rampTime + 0.05 > timeSteppingTool_->currentTime() )
+            {
+                double areaOutlet_T = 0.;
+                this->feFactory_->assemblyArea(this->dim_, areaOutlet_T, flagOutlet);
+                areaOutlet_T_ = areaOutlet_T;
+                if(this->verbose_)
+                    std::cout << " ---- Absorbing boundary condition: Start of unsteady Phase with areaOutlet_T=" << areaOutlet_T_<< " ---- " << std::endl;
+            }
+            pressureOutlet_ = this->feFactory_->assemblyAbsorbingBoundary(this->dim_, this->getDomain(0)->getFEType(),FERhs, u_rep_,flowRateOutlet_timesteps, funcParameter, pressureRamp,areaOutlet_init_,areaOutlet_T_,this->parameterList_,0);
+       
+        }
+
+        // Adding the assembled RHS on the Fluid component to the fluid RHS
+        this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
+        
+        flowRateOutlet_n_1_ = flowRateOutlet_n_;
+        if ( this->parameterList_->sublist("Timestepping Parameter").get("Checkpointing", false)){
+            exporterBoundaryCondition_->exportData( "FlowrateOutlet_Previous_Timestep", flowRateOutlet_n_1_ );
+        }
+        // addSourceTermToRHS() aus DAESolverInTime
+        double coeffSourceTermStructure = 1.0;
+       
+            
+        this->problemTimeFluid_->getRhs()->getBlockNonConst(0)->update(coeffSourceTermStructure, *this->sourceTerm_->getBlockNonConst(0), 1.);
+        this->rhs_->addBlock( this->problemTimeFluid_->getRhs()->getBlockNonConst(0), 0 );
+
+        if(this->verbose_)
+            std::cout << "  .. done " << std::endl;
+
+    
+    }    
+  
+}
 
 // TODO: updateMultistepRhsFSI() einbauen!
 template<class SC,class LO,class GO,class NO>

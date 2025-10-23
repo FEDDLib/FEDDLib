@@ -248,7 +248,6 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
     
     // Create nox parameter list
     Teuchos::RCP<Teuchos::ParameterList> nl_params = sublist(problemPtr->getParameterList(),"NOXSolver");
-    
     // Create the solver
     Teuchos::RCP<NOX::Solver::Generic> solver =
     NOX::Solver::buildSolver(nox_group, combo, nl_params);
@@ -517,7 +516,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
 
         problem.setBoundariesSystem();
 
-        problem.getSystem()->writeMM("Assembled");
+        // problem.getSystem()->writeMM("Assembled");
 
 
         if (timestepping == "External"){//AceGen

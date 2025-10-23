@@ -55,9 +55,15 @@ public:
     typedef TimeProblem<SC,LO,GO,NO> TimeProblem_Type;
     typedef Teuchos::RCP<TimeProblem_Type> TimeProblemPtr_Type;
 
-    typedef NavierStokes<SC,LO,GO,NO> FluidProblem_Type;
+// #ifdef FEDD_HAVE_ACEGENINTERFACE
+//     typedef LinElasAssFE<SC,LO,GO,NO> StructureProblem_Type;
+//     typedef NonLinElasAssFE<SC,LO,GO,NO> StructureNonLinProblem_Type;
+// #else
     typedef LinElas<SC,LO,GO,NO> StructureProblem_Type;
     typedef NonLinElasticity<SC,LO,GO,NO> StructureNonLinProblem_Type;
+
+
+    typedef NavierStokes<SC,LO,GO,NO> FluidProblem_Type;
     typedef Geometry<SC,LO,GO,NO> GeometryProblem_Type;
     
     typedef Teuchos::RCP<FluidProblem_Type> FluidProblemPtr_Type;
@@ -147,6 +153,7 @@ public:
 
     void computeSolidRHSInTime() const;
     
+    void computePressureRHSInTime() const;
     // Hier wird timeSteppingTool_->t_ inkrementiert
     void updateTime() const;
 
@@ -198,6 +205,9 @@ public:
     void getValuesOfInterest3DBenchmark( vec_dbl_Type& values );
     
     virtual void computeValuesOfInterestAndExport();
+
+    double getPressureOutlet(){return pressureOutlet_;};
+
     /*####################*/
 
     // Alternativ wie in reAssembleExtrapolation() in NS?
@@ -234,6 +244,13 @@ private:
     ExporterTxtPtr_Type exporterTxtLift_;
     mutable ExporterPtr_Type exporterGeo_;
     /*####################*/
+    ExporterTxtPtr_Type exporterBoundaryCondition_; // Values for absorbing boundary condition
+    mutable double areaInlet_init_=0.;
+    mutable double areaOutlet_init_ =0.;
+    mutable double areaOutlet_T_ =0.;
+    mutable double flowRateOutlet_n_ =0.; // Current flowrate
+    mutable double flowRateOutlet_n_1_ =0.; // flowrate from previous timestep
+    mutable double pressureOutlet_ =0.;
 
 public:
         // NOX and FSI only implement in combination with TimeProblem

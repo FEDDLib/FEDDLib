@@ -111,7 +111,10 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
     if (type=="Newton-Residual") {
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
         u_rep_->importFromVector(u, true);
+        
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+        
+        
         this->system_->addBlock( W, 0, 0 );  
 
         MultiVectorPtr_Type fRep = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) ); 

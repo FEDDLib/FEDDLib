@@ -836,7 +836,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
     bool print = parameterList_->sublist("General").get("ParaViewExport",false);
     bool printData = parameterList_->sublist("General").get("Export Data",false);
     bool printExtraData = parameterList_->sublist("General").get("Export Extra Data",false);
-        
+    bool printFlowRate = parameterList_->sublist("General").get("Export Flow Rate",true);
+
     if (print)
     {
         exportTimestep();
@@ -849,7 +850,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
     ExporterTxtPtr_Type exporterDisplYTxt;
     ExporterTxtPtr_Type exporterIterations;
     ExporterTxtPtr_Type exporterNewtonIterations;
-    
+    ExporterTxtPtr_Type exporterFlowRateInlet;
+    ExporterTxtPtr_Type exporterFlowRateOutlet;
+    ExporterTxtPtr_Type exporterAreaInlet;
+    ExporterTxtPtr_Type exporterAreaOutlet;
+    ExporterTxtPtr_Type exporterPressureOutlet;
     if (printData) {
         exporterTimeTxt = Teuchos::rcp(new ExporterTxt());
         exporterDisplXTxt = Teuchos::rcp(new ExporterTxt());
@@ -882,6 +887,26 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
         exporterDisplYTxt->setup( "displ_y" + suffix, this->comm_ , targetRank);
         
     }
+    if (printFlowRate) {
+        std::string suffix = parameterList_->sublist("General").get("Export Suffix","");
+
+        exporterFlowRateInlet = Teuchos::rcp(new ExporterTxt());
+        exporterFlowRateInlet->setup( "flowRateInlet" + suffix, this->comm_ );
+
+        exporterFlowRateOutlet = Teuchos::rcp(new ExporterTxt());
+        exporterFlowRateOutlet->setup( "flowRateOutlet" + suffix, this->comm_ );
+
+        exporterPressureOutlet = Teuchos::rcp(new ExporterTxt());
+        exporterPressureOutlet->setup( "pressureOutlet" + suffix, this->comm_ );
+
+        exporterAreaInlet = Teuchos::rcp(new ExporterTxt());
+        exporterAreaInlet->setup( "areaInlet" + suffix, this->comm_ );
+
+        exporterAreaOutlet = Teuchos::rcp(new ExporterTxt());
+        exporterAreaOutlet->setup( "areaOutlet" + suffix, this->comm_ );
+
+
+    }
     
     // Notwendige Parameter
     bool geometryExplicit = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
@@ -895,7 +920,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
     double beta = timeSteppingTool_->get_beta();
     double gamma = timeSteppingTool_->get_gamma();
     int nmbBDF = timeSteppingTool_->getBDFNumber();
-
     // ######################
     // Fluid: Mass-, Problem, SourceTerm Koeffizienten
     // ######################
@@ -1140,6 +1164,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
 #endif
             //Do we need this, if BDF for FSI is used correctly? We still need it to save the mass matrices
             this->problemTime_->assemble("UpdateFluidInTime");
+
+            // We add the pressure influence on the boundary condition. This is done in each time step since it depends on the 
+            // current flow rate and area of outlet
+            this->problemTime_->assemble("ComputePressureRHSInTime");
+
         }
         // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
         // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
@@ -1160,14 +1189,20 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
         // ######################
         // Use BDF1 Parameters for first system
         if (timeSteppingTool_->currentTime() == 0.) {
+            SmallMatrix<double> massCoeffFluidTmp(sizeFluid);
+
             for (int i = 0; i < sizeFluid; i++)
             {
                 for (int j = 0; j < sizeFluid; j++){
-                    if (massCoeffFSI[i][j] != 0.)
+                    if (massCoeffFSI[i][j] != 0.){
                         massCoeffFSI[i][j] = 1./dt ;
+                        massCoeffFluidTmp[i][j] = 1./dt;
+                    }
                 }
             }
             this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+            fsi->problemTimeFluid_->setTimeParameters(massCoeffFluidTmp, problemCoeffFluid);
+
         }
         
         
@@ -1185,6 +1220,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
                 }
             }
             this->problemTime_->setTimeParameters(massCoeffFSI, problemCoeffFSI);
+            fsi->problemTimeFluid_->setTimeParameters(massCoeffFluid, problemCoeffFluid);
+
         }
         
         this->problemTime_->computeValuesOfInterestAndExport();
@@ -1207,6 +1244,34 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
         {
             exportTimestep();
         }
+        if(printFlowRate){
+            FE<SC,LO,GO,NO> fe;
+            fe.addFE(problemTime_->getDomain(0));
+            double flowRateInlet;
+            double flowRateOutlet;
+
+            int flagInlet = this->parameterList_->sublist("General").get("Flag Inlet Fluid", 4);
+            int flagOutlet = this->parameterList_->sublist("General").get("Flag Outlet Fluid", 5);
+
+            MultiVectorPtr_Type u_rep = Teuchos::rcp(new MultiVector_Type ( problemTime_->getDomain(0)->getMapVecFieldRepeated() ) );   
+            u_rep->importFromVector(problemTime_->getSolution()->getBlock(0),false,"Insert");
+            fe.assemblyFlowRate(problemTime_->getDomain(0)->getDimension(), flowRateInlet, problemTime_->getDomain(0)->getFEType() , problemTime_->getDomain(0)->getDimension(), flagInlet , u_rep);
+            fe.assemblyFlowRate(problemTime_->getDomain(0)->getDimension(), flowRateOutlet, problemTime_->getDomain(0)->getFEType() , problemTime_->getDomain(0)->getDimension(), flagOutlet , u_rep);
+
+            exporterFlowRateInlet->exportData(  timeSteppingTool_->currentTime() , flowRateInlet );
+            exporterFlowRateOutlet->exportData(  timeSteppingTool_->currentTime() ,flowRateOutlet );
+
+            exporterPressureOutlet->exportData(  timeSteppingTool_->currentTime() , fsi->getPressureOutlet() );
+
+            double areaInlet=0.;
+            fe.assemblyArea(problemTime_->getDomain(0)->getDimension(), areaInlet, flagInlet);
+
+            double areaOutlet=0.;
+            fe.assemblyArea(problemTime_->getDomain(0)->getDimension(), areaOutlet, flagOutlet);
+
+            exporterAreaInlet->exportData( timeSteppingTool_->currentTime() , areaInlet);
+            exporterAreaOutlet->exportData(  timeSteppingTool_->currentTime() ,areaOutlet );
+        }
 
     }
 
@@ -1216,6 +1281,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
         exporterIterations->closeExporter();
         exporterNewtonIterations->closeExporter();
     }
+    
     if (printExtraData) {
         exporterDisplXTxt->closeExporter();
         exporterDisplYTxt->closeExporter();        
