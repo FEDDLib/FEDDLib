@@ -1,4 +1,6 @@
 #!/bin/bash                                                                                                                  
+
+#! Change paths in base and install dir to fit your setup !#
 TYPE=DEBUG
 BASE_DIR=/home/lsassmannshausen/Trilinos/source/Trilinos/ # Trilinos source directory
 INSTALL_DIR=/home/lsassmannshausen/Trilinos/install/ # Trilinos install directory
