@@ -9,7 +9,7 @@
  Declaration of BlockMap
  
  @brief  BlockMap
- @author Christian Hochmuth
+ @author Christian Hochmuth Lea Saßmannshausen
  @version 1.0
  @copyright CH
  */
