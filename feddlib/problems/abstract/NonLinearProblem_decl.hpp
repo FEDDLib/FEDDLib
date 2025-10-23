@@ -131,7 +131,6 @@ public:
     /// @return 
     BlockMultiVectorPtr_Type getPreviousSolution() const{ return previousSolution_; }
 
-protected
     virtual Thyra::ModelEvaluatorBase::InArgs<SC> getNominalValues() const;
 
     virtual Teuchos::RCP<const ::Thyra::VectorSpaceBase<SC> > get_x_space() const;
