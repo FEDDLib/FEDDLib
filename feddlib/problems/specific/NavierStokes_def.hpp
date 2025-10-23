@@ -856,8 +856,7 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std::stri
     // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson
     
     this->system_->apply( *this->solution_, *this->residualVec_ );
-//    this->residualVec_->getBlock(0)->writeMM("Ax.mm");
-//    this->rhs_->getBlock(0)->writeMM("nsRHS.mm");
+
     if (!type.compare("standard")){
         this->residualVec_->update(-1.,*this->rhs_,1.);
         if ( !this->sourceTerm_.is_null() )
