@@ -125,13 +125,13 @@ typename Map<LO,GO,NO>::TpetraMapConstPtr_Type Map<LO,GO,NO>::getTpetraMap() con
     return map_;
 }
 
-template < class LO, class GO, class NO>
-typename Map<LO,GO,NO>::XpetraMapConstPtr_Type Map<LO,GO,NO>::getXpetraMap() {
+// template < class LO, class GO, class NO>
+// typename Map<LO,GO,NO>::XpetraMapConstPtr_Type Map<LO,GO,NO>::getXpetraMap() {
     
-    TEUCHOS_TEST_FOR_EXCEPTION(mapX_.is_null(),std::runtime_error,"getXpetraMap(): map_ is null.");
+//     TEUCHOS_TEST_FOR_EXCEPTION(mapX_.is_null(),std::runtime_error,"getXpetraMap(): map_ is null.");
     
-    return mapX_;
-}
+//     return mapX_;
+// }
 
 template < class LO, class GO, class NO>
 GO Map<LO,GO,NO>::getMaxAllGlobalIndex() const{
