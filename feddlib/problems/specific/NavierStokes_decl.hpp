@@ -95,6 +95,8 @@ public:
     
     void computeValuesOfInterestAndExport() override {}
 
+    void establishNNZPattern() const;
+
 //    virtual void assembleExternal( std::string type ){}
     /*####################*/
 
