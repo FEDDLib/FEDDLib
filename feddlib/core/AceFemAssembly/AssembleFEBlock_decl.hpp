@@ -18,7 +18,7 @@ namespace FEDD {
     \tparam SC The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.g., for using complex instead
     \tparam LO The local ordinal type. The is the index type for local indices
     \tparam GO The global ordinal type. The is the index type for global indices
-    @todo This should actually be removed since the class should operate only on element level)
+    TODO: This should actually be removed since the class should operate only on element level)
     \tparam NO The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.
 
     Any new assembly routine on element level should implemented following the interface provided in this class. During the setup of a specific boundary value problem one AssembleFEBlock object will be constructed using the AssembleFEBlockFactory for each finite element. This is can be understood roughly as follows:
@@ -95,7 +95,7 @@ namespace FEDD {
                    ParameterListPtr_Type parameters,
 		   		tuple_disk_vec_ptr_Type tuple);
 
-		//void readTuple(); /// @todo To have tuple information in basis class as well?
+		//void readTuple(); /// TODO: To have tuple information in basis class as well?
 		//tuple_disk_vec_ptr_Type getTuple();  
     private:
 

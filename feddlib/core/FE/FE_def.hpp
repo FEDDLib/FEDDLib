@@ -1344,7 +1344,7 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Ty
 /*!
 
  \brief Adding FEBlock (row,column) to FE Blockmatrix
-@todo column indices pre determine
+TODO: column indices pre determine
 
 @param[in] &A Global Block Matrix
 @param[in] elementMatrix Stiffness matrix of one element

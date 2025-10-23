@@ -417,7 +417,7 @@ void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
         AdvPressure->addMatrix(1.,Fp,1.); // adding advection to diffusion
 
         // Finally if we deal with a transient problem we additionally add the Mass term 1/delta t M_p
-        ///@TODO: Extract parameters from timestepping tool.
+        ///TODO: Extract parameters from timestepping tool.
         if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> -1 ){ // In case we have a timeproblem
             MatrixPtr_Type Mp2(new Matrix_Type( Mp_ ) );
             double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.);
