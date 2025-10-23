@@ -242,7 +242,7 @@ $(function(){initNavTree('AssembleFEGeneralizedNewtonian__def_8hpp_source.html',
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="comment">         natural boundary condition is different</span></div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="comment">         We have to check whether it is an element which has edges (2D) / surfaces (3D) corresponding to an Outflow Neumann boundary</span></div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="comment">         Then we have to compute contribution</span></div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="comment">         @ToDo Add if element normal computation is integrated</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="comment">         TODO: Add if element normal computation is integrated</span></div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="comment">        */</span></div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    }</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
@@ -784,7 +784,7 @@ $(function(){initNavTree('AssembleFEGeneralizedNewtonian__def_8hpp_source.html',
 <div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>        elementMatrixNC-&gt;scale(this-&gt;density_);</div>
 <div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>        this-&gt;ANB_-&gt;add((*elementMatrixNC), (*this-&gt;ANB_));</div>
 <div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span> </div>
-<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>        <span class="comment">// @ToDo If underlying element is an outflow boundary element - will be added when func nonlinear boundar term *******************************</span></div>
+<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>        <span class="comment">// TODO: If underlying element is an outflow boundary element - will be added when func nonlinear boundar term *******************************</span></div>
 <div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>        <span class="comment">/*if (this-&gt;surfaceElement == true)</span></div>
 <div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span><span class="comment">        {</span></div>
 <div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span><span class="comment">            SmallMatrixPtr_Type elementMatrixNB = Teuchos::rcp(new SmallMatrix_Type(this-&gt;dofsElementVelocity_ + this-&gt;numNodesPressure_));</span></div>

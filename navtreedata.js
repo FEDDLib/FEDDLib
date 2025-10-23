@@ -25,7 +25,6 @@
 var NAVTREE =
 [
   [ "Finite Element Domain Decomposition Library", "index.html", [
-    [ "Todo List", "todo.html", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ]
     ] ],

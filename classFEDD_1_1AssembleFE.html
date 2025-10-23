@@ -183,7 +183,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>postProcessing</b> ()
 <tr class="memdesc:a8ae32f71020082d81b055afbeda6fc29"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is called at the end of each Newton step after updating the solution vector. <br /></td></tr>
 <tr class="separator:a8ae32f71020082d81b055afbeda6fc29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35ada89164c74b433340733c01f30f4b" id="r_a35ada89164c74b433340733c01f30f4b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35ada89164c74b433340733c01f30f4b">getDim</a> ()</td></tr>
-<tr class="memdesc:a35ada89164c74b433340733c01f30f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the spatial dimension. (Typically 2 or 3)  <br /></td></tr>
+<tr class="memdesc:a35ada89164c74b433340733c01f30f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: PostProcessing: Teuchos::Array with values and one global Array with Strings and names.  <br /></td></tr>
 <tr class="separator:a35ada89164c74b433340733c01f30f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93f37b5e5f8f9a73152abb2e8be4ba4f" id="r_a93f37b5e5f8f9a73152abb2e8be4ba4f"><td class="memItemLeft" align="right" valign="top">vec2D_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a93f37b5e5f8f9a73152abb2e8be4ba4f">getNodesRefConfig</a> ()</td></tr>
 <tr class="memdesc:a93f37b5e5f8f9a73152abb2e8be4ba4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the coordnates of the finite element nodes.  <br /></td></tr>
@@ -238,7 +238,9 @@ tuple_disk_vec_ptr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>di
 <tr class="memitem:a75ac3bec40089aca4566313ae7dd2650" id="r_a75ac3bec40089aca4566313ae7dd2650"><td class="memItemLeft" align="right" valign="top"><a id="a75ac3bec40089aca4566313ae7dd2650" name="a75ac3bec40089aca4566313ae7dd2650"></a>
 tuple_sd_vec_ptr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>elementIntormation_</b></td></tr>
 <tr class="separator:a75ac3bec40089aca4566313ae7dd2650"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2892bff598d5a4f784d4f30ddf4836c" id="r_ab2892bff598d5a4f784d4f30ddf4836c"><td class="memItemLeft" align="right" valign="top">vec2D_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab2892bff598d5a4f784d4f30ddf4836c">nodesRefConfig_</a></td></tr>
+<tr class="memitem:ab2892bff598d5a4f784d4f30ddf4836c" id="r_ab2892bff598d5a4f784d4f30ddf4836c"><td class="memItemLeft" align="right" valign="top"><a id="ab2892bff598d5a4f784d4f30ddf4836c" name="ab2892bff598d5a4f784d4f30ddf4836c"></a>
+vec2D_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>nodesRefConfig_</b></td></tr>
+<tr class="memdesc:ab2892bff598d5a4f784d4f30ddf4836c"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Why "Reference Configuration"? <br /></td></tr>
 <tr class="separator:ab2892bff598d5a4f784d4f30ddf4836c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa84c5ca06ca8dcd1ad82d7d66ac8e4c" id="r_aaa84c5ca06ca8dcd1ad82d7d66ac8e4c"><td class="memItemLeft" align="right" valign="top"><a id="aaa84c5ca06ca8dcd1ad82d7d66ac8e4c" name="aaa84c5ca06ca8dcd1ad82d7d66ac8e4c"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>timeProblem_</b></td></tr>
@@ -284,13 +286,7 @@ class FEDD::AssembleFE&lt; SC, LO, GO, NO &gt;</div><p>This abstract class defin
   <table class="tparams">
     <tr><td class="paramname">SC</td><td>The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.g., for using complex instead </td></tr>
     <tr><td class="paramname">LO</td><td>The local ordinal type. The is the index type for local indices </td></tr>
-    <tr><td class="paramname">GO</td><td>The global ordinal type. The is the index type for global indices </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo</a></b></dt><dd>This should actually be removed since the class should operate only on element level) </dd></dl>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
+    <tr><td class="paramname">GO</td><td>The global ordinal type. The is the index type for global indices TODO: This should actually be removed since the class should operate only on element level) </td></tr>
     <tr><td class="paramname">NO</td><td>The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.</td></tr>
   </table>
   </dd>
@@ -430,7 +426,7 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo</a></b></dt><dd>Still work in Progress with RHS and Mass <a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> </dd></dl>
+<p>TODO: Still work in Progress with RHS and Mass <a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> </p>
 
 </div>
 </div>
@@ -619,9 +615,8 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Get the spatial dimension. (Typically 2 or 3) </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo</a></b></dt><dd>PostProcessing: Teuchos::Array with values and one global Array with Strings and names </dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>dimension. </dd></dl>
+<p>TODO: PostProcessing: Teuchos::Array with values and one global Array with Strings and names. </p>
+<p>Get the spatial dimension. (Typically 2 or 3) </p><dl class="section return"><dt>Returns</dt><dd>dimension. </dd></dl>
 
 </div>
 </div>
@@ -755,8 +750,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
 </div><div class="memdoc">
 
 <p>Return the coordnates of the finite element nodes. </p>
-<dl class="section return"><dt>Returns</dt><dd>a 2D array with the coordnates for each nodes </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo</a></b></dt><dd>How is the ordering? </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a 2D array with the coordnates for each nodes TODO: How is the ordering? </dd></dl>
 
 </div>
 </div>
@@ -988,39 +982,12 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
 </div><div class="memdoc">
 
 <p>Update the solution vector. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo</a></b></dt><dd>We still have to fix the ordering of the dofs. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">solution</td><td></td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="ab2892bff598d5a4f784d4f30ddf4836c" name="ab2892bff598d5a4f784d4f30ddf4836c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2892bff598d5a4f784d4f30ddf4836c">&#9670;&#160;</a></span>nodesRefConfig_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">vec2D_dbl_Type <a class="el" href="classFEDD_1_1AssembleFE.html">FEDD::AssembleFE</a>&lt; SC, LO, GO, NO &gt;::nodesRefConfig_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo</a></b></dt><dd>Why "Reference Configuration"? </dd></dl>
 
 </div>
 </div>

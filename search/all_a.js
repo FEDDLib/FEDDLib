@@ -8,6 +8,5 @@ var searchData=
   ['linelas_5',['LinElas',['../classFEDD_1_1LinElas.html',1,'FEDD']]],
   ['linelas_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_6',['LinElas&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1LinElas.html',1,'FEDD']]],
   ['linelasassfe_7',['LinElasAssFE',['../classFEDD_1_1LinElasAssFE.html',1,'FEDD']]],
-  ['linelasfirstorder_8',['LinElasFirstOrder',['../classFEDD_1_1LinElasFirstOrder.html',1,'FEDD']]],
-  ['list_9',['Todo List',['../todo.html',1,'']]]
+  ['linelasfirstorder_8',['LinElasFirstOrder',['../classFEDD_1_1LinElasFirstOrder.html',1,'FEDD']]]
 ];

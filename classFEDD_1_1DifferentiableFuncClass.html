@@ -196,13 +196,7 @@ class FEDD::DifferentiableFuncClass&lt; SC, LO, GO, NO &gt;</div><p>This abstrac
   <table class="tparams">
     <tr><td class="paramname">SC</td><td>The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.g., for using complex instead </td></tr>
     <tr><td class="paramname">LO</td><td>The local ordinal type. The is the index type for local indices </td></tr>
-    <tr><td class="paramname">GO</td><td>The global ordinal type. The is the index type for global indices </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo</a></b></dt><dd>This should actually be removed since the class should operate only on element level) </dd></dl>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
+    <tr><td class="paramname">GO</td><td>The global ordinal type. The is the index type for global indices TODO: This should actually be removed since the class should operate only on element level) </td></tr>
     <tr><td class="paramname">NO</td><td>The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.</td></tr>
   </table>
   </dd>

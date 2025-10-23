@@ -221,7 +221,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>postProcessing</b> ()
 <tr class="memdesc:a8ae32f71020082d81b055afbeda6fc29 inherit pub_methods_classFEDD_1_1AssembleFE"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is called at the end of each Newton step after updating the solution vector. <br /></td></tr>
 <tr class="separator:a8ae32f71020082d81b055afbeda6fc29 inherit pub_methods_classFEDD_1_1AssembleFE"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35ada89164c74b433340733c01f30f4b inherit pub_methods_classFEDD_1_1AssembleFE" id="r_a35ada89164c74b433340733c01f30f4b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AssembleFE.html#a35ada89164c74b433340733c01f30f4b">getDim</a> ()</td></tr>
-<tr class="memdesc:a35ada89164c74b433340733c01f30f4b inherit pub_methods_classFEDD_1_1AssembleFE"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the spatial dimension. (Typically 2 or 3)  <br /></td></tr>
+<tr class="memdesc:a35ada89164c74b433340733c01f30f4b inherit pub_methods_classFEDD_1_1AssembleFE"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: PostProcessing: Teuchos::Array with values and one global Array with Strings and names.  <br /></td></tr>
 <tr class="separator:a35ada89164c74b433340733c01f30f4b inherit pub_methods_classFEDD_1_1AssembleFE"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93f37b5e5f8f9a73152abb2e8be4ba4f inherit pub_methods_classFEDD_1_1AssembleFE" id="r_a93f37b5e5f8f9a73152abb2e8be4ba4f"><td class="memItemLeft" align="right" valign="top">vec2D_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AssembleFE.html#a93f37b5e5f8f9a73152abb2e8be4ba4f">getNodesRefConfig</a> ()</td></tr>
 <tr class="memdesc:a93f37b5e5f8f9a73152abb2e8be4ba4f inherit pub_methods_classFEDD_1_1AssembleFE"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the coordnates of the finite element nodes.  <br /></td></tr>
@@ -350,7 +350,9 @@ tuple_disk_vec_ptr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>di
 <tr class="memitem:a75ac3bec40089aca4566313ae7dd2650 inherit pro_attribs_classFEDD_1_1AssembleFE" id="r_a75ac3bec40089aca4566313ae7dd2650"><td class="memItemLeft" align="right" valign="top">
 tuple_sd_vec_ptr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>elementIntormation_</b></td></tr>
 <tr class="separator:a75ac3bec40089aca4566313ae7dd2650 inherit pro_attribs_classFEDD_1_1AssembleFE"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2892bff598d5a4f784d4f30ddf4836c inherit pro_attribs_classFEDD_1_1AssembleFE" id="r_ab2892bff598d5a4f784d4f30ddf4836c"><td class="memItemLeft" align="right" valign="top">vec2D_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1AssembleFE.html#ab2892bff598d5a4f784d4f30ddf4836c">nodesRefConfig_</a></td></tr>
+<tr class="memitem:ab2892bff598d5a4f784d4f30ddf4836c inherit pro_attribs_classFEDD_1_1AssembleFE" id="r_ab2892bff598d5a4f784d4f30ddf4836c"><td class="memItemLeft" align="right" valign="top">
+vec2D_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>nodesRefConfig_</b></td></tr>
+<tr class="memdesc:ab2892bff598d5a4f784d4f30ddf4836c inherit pro_attribs_classFEDD_1_1AssembleFE"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Why "Reference Configuration"? <br /></td></tr>
 <tr class="separator:ab2892bff598d5a4f784d4f30ddf4836c inherit pro_attribs_classFEDD_1_1AssembleFE"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa84c5ca06ca8dcd1ad82d7d66ac8e4c inherit pro_attribs_classFEDD_1_1AssembleFE" id="r_aaa84c5ca06ca8dcd1ad82d7d66ac8e4c"><td class="memItemLeft" align="right" valign="top">
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>timeProblem_</b></td></tr>
@@ -935,9 +937,7 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Todo</a></b></dt><dd><p class="startdd">Why do we need dofs1_ and dofs2_ in the abstract class? I think, we should think about a general framework for this </p>
-<p class="enddd">Put into Parameterlist. </p>
-</dd></dl>
+<p>TODO: Why do we need dofs1_ and dofs2_ in the abstract class? I think, we should think about a general framework for this TODO: Put into Parameterlist. </p>
 
 </div>
 </div>
