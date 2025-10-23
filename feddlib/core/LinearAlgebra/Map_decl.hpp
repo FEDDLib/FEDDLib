@@ -4,13 +4,7 @@
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 
-#include <Xpetra_MapFactory.hpp>
-#include <Xpetra_MultiVectorFactory.hpp>
-#include <Xpetra_VectorFactory.hpp>
-#include <Xpetra_ExportFactory.hpp>
-#include <Xpetra_ImportFactory.hpp>
 #include <Teuchos_VerboseObject.hpp>
-#include <Xpetra_ThyraUtils.hpp>
 #include <Thyra_VectorSpaceBase_decl.hpp>
 
 #include <Tpetra_Map.hpp>
