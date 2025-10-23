@@ -100,6 +100,7 @@ public:
     /*####################*/
 
     mutable MatrixPtr_Type 	A_;
+    mutable MatrixPtr_Type 	NNZ_A_;
     vec_int_ptr_Type pressureIDsLoc;
     MultiVectorPtr_Type u_rep_;
 

@@ -319,7 +319,7 @@ namespace FEDD
                                                             const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
     {
         using Teuchos::RCP;
-        using Teuchos::rcp;
+        // using Teuchos::rcp;
         using Teuchos::rcp_dynamic_cast;
         using Teuchos::rcp_const_cast;
         using Teuchos::ArrayView;
@@ -395,12 +395,13 @@ namespace FEDD
             if (fill_W_prec) {
                 
                 if (precInitOnly_){
+                    // We have the option to reuse the preconditioner after the first X Newtonsteps
                     int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
                     if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
                     {
-                        this->setupPreconditioner( "Monolithic" );
+                        this->setupPreconditioner( "Monolithic" ); // Rebuilding preconditioner
                     }
-                    else{
+                    else{ // Reusing preconditioner
                         if (this->verbose_)
                             std::cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImplMonolithic:: Skipping preconditioner reconstruction" << std::endl;
                     }
@@ -431,7 +432,7 @@ namespace FEDD
                                                     const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
     {
         using Teuchos::RCP;
-        using Teuchos::rcp;
+        // using Teuchos::rcp;
         using Teuchos::rcp_dynamic_cast;
         using Teuchos::rcp_const_cast;
         using Teuchos::ArrayView;
