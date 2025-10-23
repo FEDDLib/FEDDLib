@@ -5,7 +5,7 @@
 # To be safe, define your minimum CMake version.  This may be newer than the
 # min required by TriBITS.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.17.0 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.23.0 FATAL_ERROR)
 
 INCLUDE(${CMAKE_SOURCE_DIR}/ProjectName.cmake)
 PROJECT(${PROJECT_NAME})
@@ -48,7 +48,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION ${TRIBITS_CMAKE_MINIMUM_REQUIRED})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 # Do all of the processing for this Tribits project
-TRIBITS_PROJECT()
+tribits_project()
 
 #SET_TARGET_PROPERTIES(PROJECTLANGUAGE PROPERTIES LINKER_LANGUAGE C11) #CH 14.12.18:can we get rid of this?
 

@@ -1,9 +1,9 @@
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	unsteadyLinElasFirstOrder
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	unsteadyLinElasFirstOrder
 	NAME unsteadyLinElasFirstOrder
 	ARGS
@@ -11,7 +11,7 @@ TRIBITS_ADD_TEST(
 	NUM_MPI_PROCS 2
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_unsteadyLinElasFirstOrder
+tribits_copy_files_to_binary_dir(data_unsteadyLinElasFirstOrder
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrec.xml  parametersProblem.xml parametersSolver.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -19,7 +19,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_unsteadyLinElasFirstOrder
 	EXEDEPS unsteadyLinElasFirstOrder
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_unsteadyLinElasFirstOrder
+tribits_copy_files_to_binary_dir(mesh_unsteadyLinElasFirstOrder
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
 	SOURCE_FILES dfg_fsi_solid_h004.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

@@ -6,14 +6,13 @@ INCLUDE(TribitsLibraryMacros)
 # A) Define the package
 #
 
-TRIBITS_PACKAGE(amr)
+tribits_package(amr)
 SET(${PACKAGE_NAME}_VERSION "1.0.0")
 
 #
 # B) Set up package-specific options
 #
 
-TRIBITS_ADD_SHOW_DEPRECATED_WARNINGS_OPTION()
 
 #FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
 #    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Ifpack2")
@@ -34,7 +33,7 @@ FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
 ENDFOREACH()
 
 
-TRIBITS_CONFIGURE_FILE(${PACKAGE_NAME}_config.h)
+tribits_configure_file(${PACKAGE_NAME}_config.h)
 
 SET(HEADERS "")
 SET(SOURCES "")
@@ -78,16 +77,16 @@ CACHE INTERNAL "")
 #)
 
 # This is the list of files excluded from the tarball
-TRIBITS_EXCLUDE_FILES()
+tribits_exclude_files()
 
 # Add library target
-TRIBITS_ADD_LIBRARY(
+tribits_add_library(
 amr
 HEADERS ${HEADERS}
 SOURCES ${SOURCES}
 )
 
-TRIBITS_ADD_TEST_DIRECTORIES(tests)
+tribits_add_test_directories(tests)
 
 
 #TRIBITS_ADD_EXAMPLE_DIRECTORIES(examples)
@@ -96,5 +95,5 @@ TRIBITS_ADD_TEST_DIRECTORIES(tests)
 # Do standard postprocessing
 #
 
-TRIBITS_PACKAGE_POSTPROCESS()
+tribits_package_postprocess()
 

@@ -1,9 +1,9 @@
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	stokes
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	stokes
 	NAME stokes
 	ARGS
@@ -11,7 +11,7 @@ TRIBITS_ADD_TEST(
 	NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_stokes
+tribits_copy_files_to_binary_dir(data_stokes
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml parametersPrecBlock.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

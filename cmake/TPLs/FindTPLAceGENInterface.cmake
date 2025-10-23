@@ -53,7 +53,7 @@
 # ************************************************************************
 # @HEADER
 
-TRIBITS_TPL_FIND_INCLUDE_DIRS_AND_LIBRARIES( AceGENInterface
+tribits_tpl_find_include_dirs_and_libraries( AceGENInterface
   REQUIRED_HEADERS aceinterface.h ace2.h
   REQUIRED_LIBS_NAMES interface2 aceutility
   )

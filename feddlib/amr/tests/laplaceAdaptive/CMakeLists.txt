@@ -1,9 +1,9 @@
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	laplaceAdaptive
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	laplaceAdaptive
     NAME laplaceAdaptive2D
     ARGS 
@@ -11,7 +11,7 @@ TRIBITS_ADD_TEST(
     NUM_MPI_PROCS 4
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	laplaceAdaptive
     NAME laplaceAdaptive3D
     ARGS 
@@ -19,7 +19,7 @@ TRIBITS_ADD_TEST(
     NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_laplaceAdaptive
+tribits_copy_files_to_binary_dir(data_laplaceAdaptive
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrec.xml  parametersProblem.xml parametersSolver.xml parametersProblem3D.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -27,7 +27,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_laplaceAdaptive
 	EXEDEPS laplaceAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive2D
+tribits_copy_files_to_binary_dir(mesh_laplaceAdaptive2D
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES lShape4.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -35,7 +35,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive2D
 	EXEDEPS laplaceAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive2D1
+tribits_copy_files_to_binary_dir(mesh_laplaceAdaptive2D1
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES lShape1.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -44,7 +44,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive2D1
 )
 
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive2D2
+tribits_copy_files_to_binary_dir(mesh_laplaceAdaptive2D2
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES square_paper.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -52,7 +52,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive2D2
 	EXEDEPS laplaceAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive2D3
+tribits_copy_files_to_binary_dir(mesh_laplaceAdaptive2D3
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES lShape3D.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -60,7 +60,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive2D3
 	EXEDEPS laplaceAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive3D
+tribits_copy_files_to_binary_dir(mesh_laplaceAdaptive3D
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES cube_131.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -68,7 +68,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive3D
 	EXEDEPS laplaceAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive3D1
+tribits_copy_files_to_binary_dir(mesh_laplaceAdaptive3D1
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES cube_14.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -76,7 +76,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive3D1
 	EXEDEPS laplaceAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplaceAdaptive3D2
+tribits_copy_files_to_binary_dir(mesh_laplaceAdaptive3D2
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES cutCube.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
