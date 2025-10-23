@@ -1162,13 +1162,10 @@ void FSI<SC,LO,GO,NO>::computePressureRHSInTime() const{
         // Value added to the RHS of the fluid component
         MultiVectorPtr_Type FERhs = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
 
+        // Parameters for pressure ramp
         vec_dbl_Type funcParameter(1,0.);
         funcParameter[0] = timeSteppingTool_->t_;            
-        // // how can we use different parameters for different blocks here?
-        // for (int j = 0; j < this->problemTimeFluid_->getUnderlyingProblem()->getParameterCount(); j++)
-        //     funcParameter.push_back(this->problemTimeFluid_->getUnderlyingProblem()->getParameterRhs(j));
-        // funcParameter.push_back(0.);
-        
+       
         // We need the outlet are thus we need to know the flags, as they are not always the same
         int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 4);
         int flagOutlet = this->parameterList_->sublist("General").get("Flag Outlet Fluid", 5);
@@ -1209,7 +1206,6 @@ void FSI<SC,LO,GO,NO>::computePressureRHSInTime() const{
 
         this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
 
-        //this->sourceTerm_->getBlockNonConst(0)->print();
         //double density = this->parameterList_->sublist("Parameter").get("Density",1.);
         //this->problemTimeFluid_->getSourceTerm()->scale(density);
         // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
@@ -1239,12 +1235,9 @@ void FSI<SC,LO,GO,NO>::computePressureRHSInTime() const{
 
         MultiVectorPtr_Type FERhs = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
 
+        // Parameters for pressure ramp
         vec_dbl_Type funcParameter(1,0.);
         funcParameter[0] = timeSteppingTool_->t_;            
-        // how can we use different parameters for different blocks here?
-        // for (int j = 0; j < this->problemTimeFluid_->getUnderlyingProblem()->getParameterCount(); j++)
-        //     funcParameter.push_back(this->problemTimeFluid_->getUnderlyingProblem()->getParameterRhs(j));
-        // funcParameter.push_back(0.);
         
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
         u_rep_->importFromVector(u, true); 

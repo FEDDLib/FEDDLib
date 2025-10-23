@@ -564,6 +564,12 @@ void BCBuilder<SC,LO,GO,NO>::setAllDirichletZero(const BlockMultiVectorPtr_Type 
 // In an FSI setting, the flowrate is also influences by the changing 
 // area of the inlet. Consequently, the velocity we prescibe changes depending
 // on the changing area.
+// We follow the following idea: The flowrate Q is given as \int_{Inlet} u * n dA
+// In our case we have a parabolic-like inflow profile, which we can write as u = u_max * vec
+// With the desired flow rate Q, we can determine u_max as follows: 
+// \int_{Inlet} u_max * vec * n dA != Q  
+// <=> u_max * \int_{Inlet} vec * n dA != Q  
+// <=> u_max = Q / \int_{Inlet} vec * n dA
 template<class SC,class LO,class GO,class NO>
 void BCBuilder<SC,LO,GO,NO>::determineVelocityForFlowrate(LO i, double time) const{
     
@@ -586,15 +592,11 @@ void BCBuilder<SC,LO,GO,NO>::determineVelocityForFlowrate(LO i, double time) con
     vec_dbl_Type p1 = {1.,1.,1.}; // Dummy vector
     vec_dbl_Type flowRate = {0.}; //
     vecBC_func_flowRate_.at(i)( &(p1[0]), &(flowRate[0]), time, &(funcParameter[0])); // Determine Flowrate based on BC function
-    // std::cout << " Flowrate desired " << flowRate[0] << std::endl;
     // We assemble the flowrate for parabolic inflow profile. As we have the inflow profile normalized we have: vec* u_max = RB Inlet normally
     double flowRateParabolic=0.;
     feFactory->assemblyFlowRate(domain->getDimension(), flowRateParabolic, domain->getFEType(),1, vecFlag_[i] , parabolic_rep);
-    // std::cout << " Flowrate parabolic " << flowRateParabolic << std::endl; 
-    // Then we have flowRateParabolic * u_max == Q  <=> u_max = Q/flowRateParabolic, and Q is given as 'desired flowrate' in flowrate
+    // Then we have \int_{Inlet} vec * n dA * u_max == Q  <=> u_max = Q/\int_{Inlet} vec * n dA, and Q is given as 'desired flowrate' in flowrate
     double maxVelocity = flowRate[0] / std::fabs(flowRateParabolic);
-    // if(domain->getComm()->getRank() == 0)
-    //    std::cout << " --- Desired Flow Rate: " << flowRate[0] << " --- flowrate for parabolic inflow profile: " << flowRateParabolic  << " --- v_max based on flowrate and inflow profile: " << maxVelocity << " --- " << std::endl;
     // Then we replace the parameter which contains the maximum velocity with the updated one
     vecBC_Parameters_[i][0] = maxVelocity;
 
