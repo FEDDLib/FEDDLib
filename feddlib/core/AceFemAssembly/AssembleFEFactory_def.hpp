@@ -63,7 +63,7 @@ typename AssembleFEFactory<SC,LO,GO,NO>::AssembleFEPtr_Type AssembleFEFactory<SC
 		assembleFE = assembleFESpecific;
 	}
 	else
-    		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "No specific implementation for your request.");
+    		TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "AssembleFE for problem \"" + problemType + "\" is not implemented");
 
 
 	return assembleFE;

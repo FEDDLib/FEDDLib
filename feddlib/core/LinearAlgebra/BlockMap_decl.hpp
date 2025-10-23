@@ -3,7 +3,7 @@
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "MultiVector.hpp"
+#include "Map.hpp"
 
 /*!
  Declaration of BlockMap

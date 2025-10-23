@@ -1,6 +1,8 @@
 #ifndef FE_DEF_hpp
 #define FE_DEF_hpp
 
+#include <string>
+#include "feddlib/core/core_config.h"
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 #include <aceinterface.hpp>
 #endif
@@ -1217,7 +1219,6 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 		A->getBlock(0,0)->fillComplete();
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
 	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocPres)->getMapUnique(),domainVec_.at(FElocVel)->getMapVecFieldUnique());
-	    A->getBlock(1,1)->fillComplete();
 	}
 
 	if(assembleMode == "Rhs"){

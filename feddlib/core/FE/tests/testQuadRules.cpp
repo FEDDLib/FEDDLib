@@ -37,8 +37,8 @@ template <std::size_t dim, typename Lambda> int check_integration(const int degr
         }
     }
     
-    SC error_result = fabs(integral - expected_result);
-    if (error_result > std::numeric_limits<double>::epsilon() * 20000.0) {
+    SC error_result = std::fabs(integral - expected_result) / std::fabs(expected_result);
+    if (error_result > std::numeric_limits<double>::epsilon() * 100.0) {
         std::ostringstream oss;
         oss << std::scientific << std::setprecision(2) << error_result;
         std::cout << "Test (" << test << ") " << "Integral does not match expected result: error = " << oss.str() << std::endl << "    " << file << ":" << line << std::endl;
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    /////////////// 2D Tests ///////////////
+    /////////////// 2D Triangle Tests ///////////////
 
     // Test 9: 2D, triangle, polynomial order 0
     {
@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    /////////////// 3D Tests ///////////////
+    /////////////// 3D Tetrahedron Tests ///////////////
 
     // Test 17: 3D, tetrahedron, polynomial order 0
     {
@@ -312,11 +312,9 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
-    // ###################################################################
-    // 3D Quadrilateral Elements
-    // ###################################################################
+    /////////////// 3D Cube Tests ///////////////
 
-    // Test 24: 3D, quadrilateral, polynomial order 1
+    // Test 24: 3D, cube, polynomial order 1
     {
         auto f = [](SC x, SC y, SC z) -> SC { return 1.0; };
         SC r = 8.0; // expected result
@@ -327,7 +325,7 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
-    // Test 25: 3D, quadrilateral, polynomial order 3
+    // Test 25: 3D, cube, polynomial order 3
     {
         auto f = [](SC x, SC y, SC z) -> SC { return 0.5 - 26*z + 60*y*x + 42*x*x*x + 54*x*x*y + 54*x*x*z + 54*x*y*y + 54*x*y*z + 54*x*z*z + 42*y*y*y + 54*y*y*z + 54*y*z*z + 42*z*z*z; };
         SC r = 4.0; // expected result
@@ -338,7 +336,7 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
-    // Test 26: 3D, quadrilateral, polynomial order 5
+    // Test 26: 3D, cube, polynomial order 5
     {
         auto f = [](SC x, SC y, SC z) -> SC { return 8.0 + 18.0*y - 30.0*x*z + 180.0*x*y*y - 1260.0*x*y*y*z + 3360.0*x*x*x*y*z + 3360.0*x*x*x*z*z - 336.0*x*x*y*z*z + 336.0*x*y*y*y*y - 840.0*x*z*z*z*z + 168.0*y*y*y*y*z + 672.0*y*z*z*z*z; };
         SC r = 64.0; // expected result
@@ -349,7 +347,7 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
     }
 
-    // Test 27: 3D, quadrilateral, polynomial order 7
+    // Test 27: 3D, cube, polynomial order 7
     {
         auto f = [](SC x, SC y, SC z) -> SC { return -7.0 + 24.0*z - 30.0*y*z + 840.0*x*y*z + 52.5*pow(z,4) - 3360.0*x*y*z*z*z*x*x + 1008.0*pow(x,6) - 6048.0*pow(x,5)*y + 1512.0*pow(x,3)*y*y*z - 4536.0*pow(x,3)*y*z*z + 1512.0*x*pow(y,4)*z + 1512.0*x*pow(z,5) + 1512.0*y*pow(z,5); };
         SC r = 1180.; // expected result

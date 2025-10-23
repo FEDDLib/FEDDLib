@@ -5,7 +5,7 @@
 
 
 #ifndef FEDD_TIMER_START
-#define FEDD_TIMER_START(A,S) Teuchos::RCP<Teuchos::TimeMonitor> A = Teuchos::rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer(std::string("FEDD") + std::string(S))));
+#define FEDD_TIMER_START(A,S) Teuchos::RCP<Teuchos::TimeMonitor> A = Teuchos::rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewCounter(std::string("FEDD: ") + std::string(S))));
 #endif
 
 #ifndef FEDD_TIMER_STOP

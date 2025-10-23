@@ -101,10 +101,10 @@ public:
     void setPressureInvs(ThyraLinOpPtr_Type laplaceInverse, ThyraLinOpPtr_Type massMatrixVInverse);
 
     /// Setting fluid system matrix B
-    void setB(ThyraLinOpPtr_Type B) {B_ = B;};
+    void setB(ThyraLinOpPtr_Type B) {B_ = B;}
 
     /// Setting fluid system matrix F
-    void setF(ThyraLinOpPtr_Type F) {F_ = F;};
+    void setF(ThyraLinOpPtr_Type F) {F_ = F;}
 
     /// Setting the preconditioning ype
     void setType(std::string type);
