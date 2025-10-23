@@ -48,6 +48,15 @@ To see a list of installed packages:
 In my case, the packages are installed in ~/opt/spack/opt/spack/linux-zen4/
 To load the installed packages:
    spack load metis parmetis mumps
+
+----------------------------------
+Issue:
+
+For the configure script that I was using to install Trilinos for FEDDLib, I had to set in 
+   packages/thyra/cmake/Dependencies.cmake
+EpetraAdapters and EpetraExtAdapters to REQUIRED (from OPTIONAL). This will certainly change, since Epetra is deprecated.
+----------------------------------
+
 In the Trilinos cmake configure script, add
    -D Amesos2_ENABLE_MUMPS:BOOL=ON \
    -D Amesos2_ENABLE_MUMPS:BOOL=ON \
@@ -55,6 +64,7 @@ In the Trilinos cmake configure script, add
 and
    -D Tpetra_INST_INT_LONG_LONG:BOOL=OFF \
    -D Tpetra_INST_INT_INT:BOOL=ON \
+As of now, the opposite (INT_LONG_LONG is on, INT_INT is off) also works, which may be preferably to you.
 See sampleConfigureScripts/configure-on-CentOS-Linux-8.sh for a sample Trilinos configure script.
 To the FEDDLib configure script add
    -D HAVE_XPETRA_EPETRA
