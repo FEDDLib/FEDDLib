@@ -4,9 +4,9 @@
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
+#include <Tpetra_Core.hpp>
 
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
 
 /*!
  Matrix test
@@ -31,8 +31,8 @@ int main(int argc, char *argv[]) {
     oblackholestream blackhole;
     GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    RCP<const Comm<int> > commWorld = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
-
+    Tpetra::ScopeGuard tpetraScope (&argc, &argv); // initializes MPI
+    Teuchos::RCP<const Teuchos::Comm<int> > commWorld = Tpetra::getDefaultComm();
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
     GO numGlobalElements = 4;

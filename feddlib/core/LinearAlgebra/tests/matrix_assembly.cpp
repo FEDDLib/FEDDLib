@@ -6,7 +6,7 @@
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"
 
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
+#include <Tpetra_Core.hpp>
 
 /*!
  Matrix assembly test
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     oblackholestream blackhole;
     GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    RCP<const Comm<int> > commWorld = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
+    Teuchos::RCP<const Teuchos::Comm<int> > commWorld = Tpetra::getDefaultComm();
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;

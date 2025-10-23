@@ -105,7 +105,7 @@ public:
     MapConstPtr_Type getMap(std::string map_string="") const;
 
 	/*!
-		\brief Return map in Xpetra Format of type " ".
+		\brief Return map in Tpetra Format of type " ".
 	*/
     TpetraMapConstPtr_Type getMapTpetra(std::string map_string="");
 
@@ -173,7 +173,7 @@ public:
     void replaceLocalValues(LO localRow, const Teuchos::ArrayView< const LO > &indices, const Teuchos::ArrayView< const SC > &values);
 
 	/*!
-		\brief Return matrix in Xpetra Format of type " ".
+		\brief Return matrix in Tpetra Format.
 	*/
     TpetraMatrixConstPtr_Type getTpetraMatrix() const;
     
