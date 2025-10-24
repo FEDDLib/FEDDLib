@@ -3,6 +3,10 @@
 #include "feddlib/problems/problems_config.h"
 #include "feddlib/problems/abstract/NonLinearProblem.hpp"
 #include "feddlib/problems/abstract/TimeProblem.hpp"
+
+
+#include <boost/function.hpp>
+
 #ifdef FEDD_HAVE_NOX
 #include <NOX.H>
 #include <NOX_Thyra.H>
@@ -43,6 +47,10 @@ public:
     typedef typename Problem_Type::MatrixPtr_Type MatrixPtr_Type;
     
     typedef Teuchos::RCP<ExporterTxt> ExporterTxtPtr_Type;
+
+    // boost function type for switching strategy 
+    typedef boost::function<bool( std::string& , int, double, ParameterListPtr_Type parameterList)> SwitchingStrategyFunc;
+
     
     NonLinearSolver();
     
@@ -68,6 +76,17 @@ public:
     
     /// return the number of nonlinear iterations needed
 	int getNonLinIts() {return nonLinearIts_;}
+
+    /*!
+        \brief Add a switching strategy function for the FixedPointNewton method
+        @param[in] switchingStrategy function which decides whether to switch the linearization or not and outputs a boolean value whether linearization was switched or not
+    */
+    void addSwitchingStrategyFunction( SwitchingStrategyFunc switchingStrategy ) {
+        switchingStrategy_ = switchingStrategy;
+    }
+
+
+
 private:
 #ifdef FEDD_HAVE_NOX
     /*!
@@ -98,6 +117,17 @@ private:
 		@param[in] valuesForExport contains nonlinear and average linear iteration count per solve step
     */
     void solveNewton(NonLinearProblem_Type& problem, vec_dbl_ptr_Type valuesForExport = Teuchos::null );
+
+    /*!
+        \brief Solving nonlinear problem with a combination of Picard and Newtons method, implemented in the FEDDLib
+               General idea behind it: Picard/ FixedPoint iteration has a larger radius of convergence but only linear convergence, in general,
+                                       while Newton can have quadratic convergence but has a small radius of convergence. Thus, combine both methods
+                                       in some way, e.g., do some Picard steps to get close enough to the solution and then switch to Newton for fast convergence.
+		@param[in] problem
+		@param[in] valuesForExport contains nonlinear and average linear iteration count per solve step
+    */
+    void solveFixedPointNewton(NonLinearProblem_Type& problem, vec_dbl_ptr_Type valuesForExport = Teuchos::null );
+
     
     /*!
         \brief Solving nonlinear time-dependent problem via the fixed point method
@@ -114,6 +144,8 @@ private:
     */
     void solveNewton(TimeProblem_Type& problem, double time, vec_dbl_ptr_Type valuesForExport = Teuchos::null );
 
+
+
     /*!
         \brief 
 		@param[in] 
@@ -125,6 +157,9 @@ private:
     std::string 	type_;
 
 	int nonLinearIts_ =0;
+
+    // Create a default switching strategy function which does nothing
+    SwitchingStrategyFunc switchingStrategy_ = []( std::string& currentLinearization , int nlIts, double criterionValue, ParameterListPtr_Type parameterList ) {return false;};
 
 
 };

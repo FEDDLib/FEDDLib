@@ -684,9 +684,14 @@ class FE {
 										MultiVectorPtr_Type p_rep,
  										ParameterListPtr_Type params);
 
+    // Change for all assembleFEElements the linearization type to the specified ones
+    void  changeLinearizationFE(std::string linearization);
+
     // Write prostprocessing output fields like e.g. the viscosity based on  velocity, pressure .. solution
     // inside this BMV -> For visualization or postprocessing                                
     BlockMultiVectorPtr_Type const_output_fields;
+
+
 
 
 /* ----------------------------------------------------------------------------------------*/

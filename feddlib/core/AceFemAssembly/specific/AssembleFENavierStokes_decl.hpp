@@ -132,7 +132,7 @@ class AssembleFENavierStokes : public AssembleFE<SC,LO,GO,NO> {
 	double viscosity_ ;
    	double density_ ;
 
-	std::string linearization_;
+	// std::string linearization_; Now attribute of base class AssembleFE
 
    private:
 
