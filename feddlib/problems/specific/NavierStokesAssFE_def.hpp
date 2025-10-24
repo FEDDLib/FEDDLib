@@ -438,7 +438,7 @@ void NavierStokesAssFE<SC,LO,GO,NO>::computeSteadyPostprocessingViscosity_Soluti
     
     // Reset here the viscosity so at this moment this makes only sense to call at the end of a simulation
     // to visualize viscosity field
-    // @ToDo Add possibility for transient problem to save viscosity solution in each time step
+    // TODO: Add possibility for transient problem to save viscosity solution in each time step
     viscosity_element_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getElementMap() ) );
     this->feFactory_->computeSteadyViscosityFE_CM(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), this->dim_,1,u_rep_,p_rep_,this->parameterList_);        
   

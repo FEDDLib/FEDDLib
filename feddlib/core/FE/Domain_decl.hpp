@@ -27,7 +27,7 @@ class Domain {
     \tparam SC The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.g., for using complex instead
     \tparam LO The local ordinal type. The is the index type for local indices
     \tparam GO The global ordinal type. The is the index type for global indices
-    @todo This should actually be removed since the class should operate only on element level)
+    TODO: This should actually be removed since the class should operate only on element level)
     \tparam NO The Kokkos Node type. This would allow for performance portability when using Kokkos. Currently, this is not used.
     
     Example: If you construct a Stokes finite element problem, you get a velocity and pressure 'P2-P1' discretization and, thus, one domain for the P2 elements and one for the P1 elements, with the respective node list etc.

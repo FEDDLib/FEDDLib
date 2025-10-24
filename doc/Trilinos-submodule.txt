@@ -1,0 +1,6 @@
+The Trilinos submodule contains a reference to the Trilinos GitHub repository, including a reference to a specific commit. The referenced version of Trilinos was the last one tested with FEDDLib (and for which the submodule reference was updated).
+
+You can find the URL to the referenced repository in the root folder in .gitmodules. By default, if FEDDLib's repository is cloned, the submodule repository is not cloned. If you want to download the repository within FEDDLib, use the following command:
+   git submodule update --init -- trilinos
+If you simply want to find the commit that is referenced, use
+   git submodule status
