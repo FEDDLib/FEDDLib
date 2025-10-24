@@ -7,8 +7,7 @@
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/problems/specific/LaplaceBlocks.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
-
+#include <Tpetra_Core.hpp>
 
 /*!
  main of Laplace problem
@@ -63,7 +62,7 @@ int main(int argc, char *argv[]) {
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    Teuchos::RCP<const Teuchos::Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;

@@ -1000,7 +1000,7 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
     if ( fill_f || fill_W || fill_W_prec ) {
         
         // ****************
-        // Get the underlying xpetra objects
+        // Get the underlying tpetra objects
         // ****************
         // 1) Calculate residual vector f
 
