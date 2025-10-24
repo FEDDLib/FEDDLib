@@ -46,5 +46,3 @@ configure_file(${CMAKE_SOURCE_DIR}/FEDDLib_Config.h.in
 
 # Install the generated configuration header
 install(FILES ${CMAKE_BINARY_DIR}/FEDDLib_Config.h DESTINATION include)
-
-DESTINATION share/feddlib)
