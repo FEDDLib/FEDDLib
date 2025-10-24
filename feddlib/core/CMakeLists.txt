@@ -29,45 +29,45 @@ SET(HEADERS "")
 SET(SOURCES "")
 
 # Add the generated configuration header to the headers list
-SET(HEADERS ${HEADERS}
+append_set(HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_config.h
 )
 
 # Add the main package header
-SET(HEADERS ${HEADERS} FEDDCore.hpp)
+append_set(HEADERS FEDDCore.hpp)
 
 # Add headers/sources from all subfolders
 ADD_SUBDIRECTORY(FE)
-SET(HEADERS ${HEADERS} ${FE_HEADERS})
-SET(SOURCES ${SOURCES} ${FE_SOURCES})
+append_set(HEADERS ${FE_HEADERS})
+append_set(SOURCES ${FE_SOURCES})
 
 ADD_SUBDIRECTORY(General)
-SET(HEADERS ${HEADERS} ${General_HEADERS})
-SET(SOURCES ${SOURCES} ${General_SOURCES})
+append_set(HEADERS ${General_HEADERS})
+append_set(SOURCES ${General_SOURCES})
 
 ADD_SUBDIRECTORY(IO)
-SET(HEADERS ${HEADERS} ${IO_HEADERS})
-SET(SOURCES ${SOURCES} ${IO_SOURCES})
+append_set(HEADERS ${IO_HEADERS})
+append_set(SOURCES ${IO_SOURCES})
 
 ADD_SUBDIRECTORY(LinearAlgebra)
-SET(HEADERS ${HEADERS} ${LinearAlgebra_HEADERS})
-SET(SOURCES ${SOURCES} ${LinearAlgebra_SOURCES})
+append_set(HEADERS ${LinearAlgebra_HEADERS})
+append_set(SOURCES ${LinearAlgebra_SOURCES})
 
 ADD_SUBDIRECTORY(Mesh)
-SET(HEADERS ${HEADERS} ${Mesh_HEADERS})
-SET(SOURCES ${SOURCES} ${Mesh_SOURCES})
+append_set(HEADERS ${Mesh_HEADERS})
+append_set(SOURCES ${Mesh_SOURCES})
 
 ADD_SUBDIRECTORY(AceFemAssembly)
-SET(HEADERS ${HEADERS} ${AceFemAssembly_HEADERS})
-SET(SOURCES ${SOURCES} ${AceFemAssembly_SOURCES})
+append_set(HEADERS ${AceFemAssembly_HEADERS})
+append_set(SOURCES ${AceFemAssembly_SOURCES})
 
 ADD_SUBDIRECTORY(AceFemAssembly/specific)
-SET(HEADERS ${HEADERS} ${AceFemAssemblySpecific_HEADERS})
-SET(SOURCES ${SOURCES} ${AceFemAssemblySpecific_SOURCES})
+append_set(HEADERS ${AceFemAssemblySpecific_HEADERS})
+append_set(SOURCES ${AceFemAssemblySpecific_SOURCES})
 
 ADD_SUBDIRECTORY(AceFemAssembly/AceInterface)
-SET(HEADERS ${HEADERS} ${AceFemAssemblyAceInterface_HEADERS})
-SET(SOURCES ${SOURCES} ${AceFemAssemblyAceInterface_SOURCES})
+append_set(HEADERS ${AceFemAssemblyAceInterface_HEADERS})
+append_set(SOURCES ${AceFemAssemblyAceInterface_SOURCES})
 
 # This is the list of files excluded from the tarball
 # TriBITS will exclude these files when creating distribution packages

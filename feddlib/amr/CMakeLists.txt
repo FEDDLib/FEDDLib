@@ -18,11 +18,11 @@ tribits_configure_file(${PACKAGE_NAME}_config.h)
 SET(HEADERS "")
 SET(SOURCES "")
 
-SET(HEADERS ${HEADERS}
+append_set(HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_config.h
 )
 
-SET(HEADERS ${HEADERS} 
+append_set(HEADERS
 	AdaptiveMeshRefinement.hpp
 	AdaptiveMeshRefinement_decl.hpp
 	AdaptiveMeshRefinement_def.hpp
@@ -37,7 +37,7 @@ SET(HEADERS ${HEADERS}
 	ExporterParaViewAMR_def.hpp
 )
 
-SET(SOURCES ${SOURCES} 
+append_set(SOURCES
 	AdaptiveMeshRefinement.cpp
 	RefinementFactory.cpp
 	ErrorEstimation.cpp

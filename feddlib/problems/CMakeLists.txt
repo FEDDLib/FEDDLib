@@ -18,21 +18,21 @@ tribits_configure_file(${PACKAGE_NAME}_config.h)
 SET(HEADERS "")
 SET(SOURCES "")
 
-SET(HEADERS ${HEADERS}
+append_set(HEADERS
 ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_config.h
 )
 
 ADD_SUBDIRECTORY(abstract)
-SET(HEADERS ${HEADERS} ${problems_abstract_HEADERS})
-SET(SOURCES ${SOURCES} ${problems_abstract_SOURCES})
+append_set(HEADERS ${problems_abstract_HEADERS})
+append_set(SOURCES ${problems_abstract_SOURCES})
 
 ADD_SUBDIRECTORY(Solver)
-SET(HEADERS ${HEADERS} ${Solver_HEADERS})
-SET(SOURCES ${SOURCES} ${Solver_SOURCES})
+append_set(HEADERS ${Solver_HEADERS})
+append_set(SOURCES ${Solver_SOURCES})
 
 ADD_SUBDIRECTORY(specific)
-SET(HEADERS ${HEADERS} ${problems_specific_HEADERS})
-SET(SOURCES ${SOURCES} ${problems_specific_SOURCES})
+append_set(HEADERS ${problems_specific_HEADERS})
+append_set(SOURCES ${problems_specific_SOURCES})
 
 # This is the list of files excluded from the tarball
 tribits_exclude_files()
