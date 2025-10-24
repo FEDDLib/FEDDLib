@@ -1,1 +1,1 @@
-set(PROJECT_NAME FEDDlib)
+set(PROJECT_NAME FEDDLib)
