@@ -110,7 +110,7 @@ $(function(){initNavTree('NonLinLaplace__decl_8hpp_source.html',''); initResizab
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">template</span> &lt;<span class="keyword">class </span>SC = default_sc, <span class="keyword">class </span>LO = default_lo, <span class="keyword">class </span>GO = default_go,</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>          <span class="keyword">class </span>NO = default_no&gt;</div>
 <div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinLaplace.html">   18</a></span><span class="keyword">class </span>NonLinLaplace : <span class="keyword">public</span> NonLinearProblem&lt;SC, LO, GO, NO&gt; {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinLaplace.html">   18</a></span><span class="keyword">class </span>NonLinLaplace : <span class="keyword">public</span> <a class="code hl_function" href="classFEDD_1_1NonLinearProblem.html#ac1514ee8e1c08506cf9d23e202094e98">NonLinearProblem</a>&lt;SC, LO, GO, NO&gt; {</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span></div>
@@ -135,7 +135,7 @@ $(function(){initNavTree('NonLinLaplace__decl_8hpp_source.html',''); initResizab
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::DomainConstPtr_Type DomainConstPtr_Type;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::CommConstPtr_Type CommConstPtr_Type;</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keyword">typedef</span> NonLinearProblem&lt;SC, LO, GO, NO&gt; NonLinearProblem_Type;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keyword">typedef</span> <a class="code hl_function" href="classFEDD_1_1NonLinearProblem.html#ac1514ee8e1c08506cf9d23e202094e98">NonLinearProblem&lt;SC, LO, GO, NO&gt;</a> NonLinearProblem_Type;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keyword">typedef</span> <span class="keyword">typename</span> NonLinearProblem_Type::BlockMultiVectorPtrArray_Type</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>      BlockMultiVectorPtrArray_Type;</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
@@ -157,7 +157,7 @@ $(function(){initNavTree('NonLinLaplace__decl_8hpp_source.html',''); initResizab
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> info();</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> assemble(std::string type = <span class="stringliteral">&quot;&quot;</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NonLinLaplace.html#aa793a15db7db580a9c567e649f2b6f8c">assemble</a>(std::string type = <span class="stringliteral">&quot;&quot;</span>) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keywordtype">void</span> initAssemble() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
@@ -170,10 +170,10 @@ $(function(){initNavTree('NonLinLaplace__decl_8hpp_source.html',''); initResizab
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span></div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions);</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> calculateNonLinResidualVec(std::string type,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NonLinLaplace.html#a8b7c02e8f59f2a5c34d64a474fb22a4c">calculateNonLinResidualVec</a>(std::string type,</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                                          <span class="keywordtype">double</span> time = 0.) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">void</span> getValuesOfInterest(vec_dbl_Type &amp;values)<span class="keyword"> override</span>{}</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinLaplace.html#ace20e01bab06955315387510fc511f93">   85</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NonLinLaplace.html#ace20e01bab06955315387510fc511f93">getValuesOfInterest</a>(vec_dbl_Type &amp;values)<span class="keyword"> override</span>{}</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">void</span> computeValuesOfInterestAndExport()<span class="keyword"> override</span>{}</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
@@ -186,6 +186,10 @@ $(function(){initNavTree('NonLinLaplace__decl_8hpp_source.html',''); initResizab
 </div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>} <span class="comment">// namespace FEDD</span></div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinLaplace_html_a8b7c02e8f59f2a5c34d64a474fb22a4c"><div class="ttname"><a href="classFEDD_1_1NonLinLaplace.html#a8b7c02e8f59f2a5c34d64a474fb22a4c">FEDD::NonLinLaplace::calculateNonLinResidualVec</a></div><div class="ttdeci">virtual void calculateNonLinResidualVec(std::string type, double time=0.) const</div><div class="ttdoc">Virtual function which is implemented in the specific non-linear problem classes to calculate the non...</div><div class="ttdef"><b>Definition</b> NonLinLaplace_def.hpp:130</div></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinLaplace_html_aa793a15db7db580a9c567e649f2b6f8c"><div class="ttname"><a href="classFEDD_1_1NonLinLaplace.html#aa793a15db7db580a9c567e649f2b6f8c">FEDD::NonLinLaplace::assemble</a></div><div class="ttdeci">virtual void assemble(std::string type=&quot;&quot;) const</div><div class="ttdoc">assemble of type exectuted by the derived specific non-linear problem classes</div><div class="ttdef"><b>Definition</b> NonLinLaplace_def.hpp:43</div></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinLaplace_html_ace20e01bab06955315387510fc511f93"><div class="ttname"><a href="classFEDD_1_1NonLinLaplace.html#ace20e01bab06955315387510fc511f93">FEDD::NonLinLaplace::getValuesOfInterest</a></div><div class="ttdeci">void getValuesOfInterest(vec_dbl_Type &amp;values) override</div><div class="ttdoc">Virtual class to extract values of interest that are computed during the solve.</div><div class="ttdef"><b>Definition</b> NonLinLaplace_decl.hpp:85</div></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_ac1514ee8e1c08506cf9d23e202094e98"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#ac1514ee8e1c08506cf9d23e202094e98">FEDD::NonLinearProblem&lt; default_sc, default_lo, default_go, default_no &gt;::NonLinearProblem</a></div><div class="ttdeci">NonLinearProblem(CommConstPtr_Type comm)</div><div class="ttdef"><b>Definition</b> NonLinearProblem_def.hpp:18</div></div>
 <div class="ttc" id="aclassFEDD_1_1Problem_html"><div class="ttname"><a href="classFEDD_1_1Problem.html">FEDD::Problem</a></div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:40</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->

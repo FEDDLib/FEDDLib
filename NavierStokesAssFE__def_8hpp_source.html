@@ -207,7 +207,8 @@ $(function(){initNavTree('NavierStokesAssFE__def_8hpp_source.html',''); initResi
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keywordtype">void</span> NavierStokesAssFE&lt;SC,LO,GO,NO&gt;::assemble( std::string type )<span class="keyword"> const</span>{</div>
+<div class="foldopen" id="foldopen00116" data-start="{" data-end="}">
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classFEDD_1_1NavierStokesAssFE.html#a6fb89c6d63465ce978cd6f98c319a4b4">  116</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NavierStokesAssFE.html#a6fb89c6d63465ce978cd6f98c319a4b4">NavierStokesAssFE&lt;SC,LO,GO,NO&gt;::assemble</a>( std::string type )<span class="keyword"> const</span>{</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    </div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (type==<span class="stringliteral">&quot;&quot;</span>) {</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">if</span> (this-&gt;verbose_)</div>
@@ -222,6 +223,7 @@ $(function(){initNavTree('NavierStokesAssFE__def_8hpp_source.html',''); initResi
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        reAssemble( type );</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>};</div>
+</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="keywordtype">void</span> NavierStokesAssFE&lt;SC,LO,GO,NO&gt;::assembleConstantMatrices()<span class="keyword"> const</span>{</div>
@@ -358,7 +360,8 @@ $(function(){initNavTree('NavierStokesAssFE__def_8hpp_source.html',''); initResi
 <div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
 <div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
 <div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span><span class="keywordtype">void</span> NavierStokesAssFE&lt;SC,LO,GO,NO&gt;::calculateNonLinResidualVec(std::string type, <span class="keywordtype">double</span> time)<span class="keyword"> const</span>{</div>
+<div class="foldopen" id="foldopen00267" data-start="{" data-end="}">
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno"><a class="line" href="classFEDD_1_1NavierStokesAssFE.html#ae2da1e8318d2e0e0be637c26caccc292">  267</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NavierStokesAssFE.html#ae2da1e8318d2e0e0be637c26caccc292">NavierStokesAssFE&lt;SC,LO,GO,NO&gt;::calculateNonLinResidualVec</a>(std::string type, <span class="keywordtype">double</span> time)<span class="keyword"> const</span>{</div>
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    </div>
 <div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="comment">//this-&gt;reAssemble(&quot;FixedPoint&quot;);</span></div>
 <div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    this-&gt;reAssemble(<span class="stringliteral">&quot;Rhs&quot;</span>);</div>
@@ -400,6 +403,7 @@ $(function(){initNavTree('NavierStokesAssFE__def_8hpp_source.html',''); initResi
 <div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    }</div>
 <div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span> </div>
 <div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>}</div>
+</div>
 <div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
 <div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
 <div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span><span class="keywordtype">void</span> NavierStokesAssFE&lt;SC,LO,GO,NO&gt;::calculateNonLinResidualVecWithMeshVelo(std::string type, <span class="keywordtype">double</span> time, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P)<span class="keyword"> const</span>{</div>
@@ -552,6 +556,8 @@ $(function(){initNavTree('NavierStokesAssFE__def_8hpp_source.html',''); initResi
 <div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>}</div>
 <div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span> </div>
 <div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassFEDD_1_1NavierStokesAssFE_html_a6fb89c6d63465ce978cd6f98c319a4b4"><div class="ttname"><a href="classFEDD_1_1NavierStokesAssFE.html#a6fb89c6d63465ce978cd6f98c319a4b4">FEDD::NavierStokesAssFE::assemble</a></div><div class="ttdeci">virtual void assemble(std::string type=&quot;&quot;) const</div><div class="ttdoc">assemble of type exectuted by the derived specific non-linear problem classes</div><div class="ttdef"><b>Definition</b> NavierStokesAssFE_def.hpp:116</div></div>
+<div class="ttc" id="aclassFEDD_1_1NavierStokesAssFE_html_ae2da1e8318d2e0e0be637c26caccc292"><div class="ttname"><a href="classFEDD_1_1NavierStokesAssFE.html#ae2da1e8318d2e0e0be637c26caccc292">FEDD::NavierStokesAssFE::calculateNonLinResidualVec</a></div><div class="ttdeci">virtual void calculateNonLinResidualVec(std::string type=&quot;standard&quot;, double time=0.) const</div><div class="ttdoc">Virtual function which is implemented in the specific non-linear problem classes to calculate the non...</div><div class="ttdef"><b>Definition</b> NavierStokesAssFE_def.hpp:267</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a></div><div class="ttdef"><b>Definition</b> NonLinearProblem_decl.hpp:24</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->

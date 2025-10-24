@@ -134,7 +134,8 @@ $(function(){initNavTree('NonLinLaplace__def_8hpp_source.html',''); initResizabl
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment"> * required type specifies whether the residual or the Jacobian is needed</span></div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment"> */</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keywordtype">void</span> NonLinLaplace&lt;SC, LO, GO, NO&gt;::assemble(std::string type)<span class="keyword"> const </span>{</div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinLaplace.html#aa793a15db7db580a9c567e649f2b6f8c">   43</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NonLinLaplace.html#aa793a15db7db580a9c567e649f2b6f8c">NonLinLaplace&lt;SC, LO, GO, NO&gt;::assemble</a>(std::string type)<span class="keyword"> const </span>{</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;&quot;</span>) {</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (this-&gt;verbose_) {</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;-- Assembly nonlinear laplace ... &quot;</span> &lt;&lt; std::flush;</div>
@@ -147,6 +148,7 @@ $(function(){initNavTree('NonLinLaplace__def_8hpp_source.html',''); initResizabl
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;done -- &quot;</span> &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment">/*</span></div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="comment"> * Initial assembly of the system matrix (Jacobian)</span></div>
@@ -221,7 +223,8 @@ $(function(){initNavTree('NonLinLaplace__def_8hpp_source.html',''); initResizabl
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="comment"> * Updates the residual vector by reassembling and applying boundary conditions</span></div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="comment"> */</span></div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="keywordtype">void</span> NonLinLaplace&lt;SC, LO, GO, NO&gt;::calculateNonLinResidualVec(</div>
+<div class="foldopen" id="foldopen00130" data-start="{" data-end="}">
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinLaplace.html#a8b7c02e8f59f2a5c34d64a474fb22a4c">  130</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NonLinLaplace.html#a8b7c02e8f59f2a5c34d64a474fb22a4c">NonLinLaplace&lt;SC, LO, GO, NO&gt;::calculateNonLinResidualVec</a>(</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    std::string type, <span class="keywordtype">double</span> time)<span class="keyword"> const </span>{</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    this-&gt;reAssemble(<span class="stringliteral">&quot;Rhs&quot;</span>);</div>
@@ -247,8 +250,11 @@ $(function(){initNavTree('NonLinLaplace__def_8hpp_source.html',''); initResizabl
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                                   <span class="stringliteral">&quot;Unknown type for residual computation.&quot;</span>);</div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    }</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>}</div>
+</div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>} <span class="comment">// namespace FEDD</span></div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinLaplace_html_a8b7c02e8f59f2a5c34d64a474fb22a4c"><div class="ttname"><a href="classFEDD_1_1NonLinLaplace.html#a8b7c02e8f59f2a5c34d64a474fb22a4c">FEDD::NonLinLaplace::calculateNonLinResidualVec</a></div><div class="ttdeci">virtual void calculateNonLinResidualVec(std::string type, double time=0.) const</div><div class="ttdoc">Virtual function which is implemented in the specific non-linear problem classes to calculate the non...</div><div class="ttdef"><b>Definition</b> NonLinLaplace_def.hpp:130</div></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinLaplace_html_aa793a15db7db580a9c567e649f2b6f8c"><div class="ttname"><a href="classFEDD_1_1NonLinLaplace.html#aa793a15db7db580a9c567e649f2b6f8c">FEDD::NonLinLaplace::assemble</a></div><div class="ttdeci">virtual void assemble(std::string type=&quot;&quot;) const</div><div class="ttdoc">assemble of type exectuted by the derived specific non-linear problem classes</div><div class="ttdef"><b>Definition</b> NonLinLaplace_def.hpp:43</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a></div><div class="ttdef"><b>Definition</b> NonLinearProblem_decl.hpp:24</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->

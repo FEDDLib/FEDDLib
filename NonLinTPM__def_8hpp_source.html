@@ -214,13 +214,14 @@ $(function(){initNavTree('NonLinTPM__def_8hpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    </div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="keywordtype">void</span> NonLinTPM&lt;SC,LO,GO,NO&gt;::calculateNonLinResidualVec(std::string type, <span class="keywordtype">double</span> time)<span class="keyword"> const</span>{</div>
+<div class="foldopen" id="foldopen00123" data-start="{" data-end="}">
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinTPM.html#a770c8fa6555f065a92e73201cd3d5851">  123</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NonLinTPM.html#a770c8fa6555f065a92e73201cd3d5851">NonLinTPM&lt;SC,LO,GO,NO&gt;::calculateNonLinResidualVec</a>(std::string type, <span class="keywordtype">double</span> time)<span class="keyword"> const</span>{</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    this-&gt;assemble(<span class="stringliteral">&quot;Newton-Residual&quot;</span>);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    this-&gt;<a class="code hl_function" href="classFEDD_1_1NonLinTPM.html#a3a0005fb802050f2df841f13becccc9c">assemble</a>(<span class="stringliteral">&quot;Newton-Residual&quot;</span>);</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;external&quot;</span> ){<span class="comment">// we assume reverse computation: Ax-b but we need to scale the sourceTerm with -1</span></div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        this-&gt;residualVec_-&gt;update(1.,*this-&gt;rhs_,0.);        </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">if</span> ( !this-&gt;sourceTerm_.is_null() ){</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            this-&gt;residualVec_-&gt;update(-1.,*this-&gt;sourceTerm_,1.);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">if</span> ( !this-&gt;<a class="code hl_variable" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">sourceTerm_</a>.is_null() ){</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            this-&gt;residualVec_-&gt;update(-1.,*this-&gt;<a class="code hl_variable" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">sourceTerm_</a>,1.);</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        }</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    }</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">else</span>{</div>
@@ -229,6 +230,7 @@ $(function(){initNavTree('NonLinTPM__def_8hpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    this-&gt;bcFactory_-&gt;setBCMinusVector( this-&gt;residualVec_, this-&gt;solution_, time );</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    </div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>}</div>
+</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    </div>
 <div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="keywordtype">void</span> NonLinTPM&lt;SC,LO,GO,NO&gt;::reAssemble( BlockMultiVectorPtr_Type previousSolution )<span class="keyword"> const </span>{</div>
@@ -241,7 +243,8 @@ $(function(){initNavTree('NonLinTPM__def_8hpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span><span class="keywordtype">void</span> NonLinTPM&lt;SC,LO,GO,NO&gt;::assemble( std::string type )<span class="keyword"> const</span>{</div>
+<div class="foldopen" id="foldopen00150" data-start="{" data-end="}">
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinTPM.html#a3a0005fb802050f2df841f13becccc9c">  150</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NonLinTPM.html#a3a0005fb802050f2df841f13becccc9c">NonLinTPM&lt;SC,LO,GO,NO&gt;::assemble</a>( std::string type )<span class="keyword"> const</span>{</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    </div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">if</span> (this-&gt;verbose_)</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;-- Assembly nonlinear TPM &quot;</span> &lt;&lt;<span class="stringliteral">&quot; (&quot;</span>&lt;&lt;type &lt;&lt;<span class="stringliteral">&quot;) ... &quot;</span> &lt;&lt; std::flush;</div>
@@ -348,6 +351,7 @@ $(function(){initNavTree('NonLinTPM__def_8hpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;done -- &quot;</span> &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    </div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>}</div>
+</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    </div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
 <div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><span class="keywordtype">void</span> NonLinTPM&lt;SC,LO,GO,NO&gt;::reAssemble( MatrixPtr_Type&amp; massmatrix, std::string type )<span class="keyword"> const</span></div>
@@ -388,7 +392,10 @@ $(function(){initNavTree('NonLinTPM__def_8hpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>}</div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinTPM_html_a3a0005fb802050f2df841f13becccc9c"><div class="ttname"><a href="classFEDD_1_1NonLinTPM.html#a3a0005fb802050f2df841f13becccc9c">FEDD::NonLinTPM::assemble</a></div><div class="ttdeci">virtual void assemble(std::string type=&quot;&quot;) const</div><div class="ttdoc">assemble of type exectuted by the derived specific non-linear problem classes</div><div class="ttdef"><b>Definition</b> NonLinTPM_def.hpp:150</div></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinTPM_html_a770c8fa6555f065a92e73201cd3d5851"><div class="ttname"><a href="classFEDD_1_1NonLinTPM.html#a770c8fa6555f065a92e73201cd3d5851">FEDD::NonLinTPM::calculateNonLinResidualVec</a></div><div class="ttdeci">virtual void calculateNonLinResidualVec(std::string type, double time=0.) const</div><div class="ttdoc">Virtual function which is implemented in the specific non-linear problem classes to calculate the non...</div><div class="ttdef"><b>Definition</b> NonLinTPM_def.hpp:123</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a></div><div class="ttdef"><b>Definition</b> NonLinearProblem_decl.hpp:24</div></div>
+<div class="ttc" id="aclassFEDD_1_1Problem_html_a8ab364ed3f0be15fcd70cb39c36f169e"><div class="ttname"><a href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;::sourceTerm_</a></div><div class="ttdeci">BlockMultiVectorPtr_Type sourceTerm_</div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:242</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

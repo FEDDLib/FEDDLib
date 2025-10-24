@@ -1,7 +1,7 @@
 <map id="FEDD::Matrix::exportFromVector" name="FEDD::Matrix::exportFromVector">
 <area shape="rect" id="Node000001" title=" " alt="" coords="5,29,173,70"/>
 <area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="47,29,45,19,52,10,67,5,89,3,113,5,127,11,125,16,112,10,89,8,68,10,55,15,50,21,52,28"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1Matrix.html#a6b292c8ba998d10c1562252279c7a0d5" title="Return map in Xpetra Format of type &quot; &quot;." alt="" coords="221,37,403,62"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Matrix.html#a6b292c8ba998d10c1562252279c7a0d5" title="Return map in Tpetra Format of type &quot; &quot;." alt="" coords="221,37,403,62"/>
 <area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="173,47,205,47,205,52,173,52"/>
 <area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="275,38,268,28,272,18,287,12,312,10,339,13,353,20,351,24,338,18,312,15,288,18,276,22,273,28,279,35"/>
 </map>

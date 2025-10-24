@@ -1,0 +1,7 @@
+<map id="FEDD::NavierStokes::assemble" name="FEDD::NavierStokes::assemble">
+<area shape="rect" id="Node000001" title="assemble of type exectuted by the derived specific non&#45;linear problem classes" alt="" coords="5,37,146,78"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="36,37,34,27,40,18,54,12,76,10,98,13,112,19,109,24,97,18,75,15,56,17,44,22,39,28,41,36"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1NavierStokes.html#a659358f44434479e3debb13022f6ff9b" title=" " alt="" coords="194,29,375,85"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="146,54,178,54,178,60,146,60"/>
+<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="243,29,244,19,251,10,265,5,284,3,306,5,320,12,317,17,305,10,284,8,266,10,254,15,249,21,248,29"/>
+</map>

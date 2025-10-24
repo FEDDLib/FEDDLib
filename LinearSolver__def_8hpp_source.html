@@ -293,7 +293,7 @@ $(function(){initNavTree('LinearSolver__def_8hpp_source.html',''); initResizable
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keywordflow">if</span> (verbose)</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            std::cout &lt;&lt; status &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        problem-&gt;getSolution()-&gt;fromThyraMultiVector(thyraX);</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="comment">// problem-&gt;getSolution()-&gt;writeMM(&quot;solution&quot;);</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keywordflow">if</span> ( !pListThyraSolver-&gt;get(<span class="stringliteral">&quot;Linear Solver Type&quot;</span>,<span class="stringliteral">&quot;Belos&quot;</span>).compare(<span class="stringliteral">&quot;Belos&quot;</span>) ){</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            its = status.extraParameters-&gt;get(<span class="stringliteral">&quot;Belos/Iteration Count&quot;</span>,0);</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            <span class="keywordtype">double</span> achievedTol = status.extraParameters-&gt;get(<span class="stringliteral">&quot;Belos/Achieved Tolerance&quot;</span>,-1.);</div>

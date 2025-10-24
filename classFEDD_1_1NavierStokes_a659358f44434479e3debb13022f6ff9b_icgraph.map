@@ -1,4 +1,7 @@
 <map id="FEDD::NavierStokes::updateConvectionDiffusionOperator" name="FEDD::NavierStokes::updateConvectionDiffusionOperator">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,29,187,85"/>
-<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="124,17,114,10,96,8,80,10,70,14,65,21,65,29,60,29,60,19,67,10,79,5,96,3,115,5,127,12"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="194,29,375,85"/>
+<area shape="poly" id="edge3_Node000001_Node000001" title=" " alt="" coords="317,17,305,10,284,8,266,10,254,15,249,21,248,29,243,29,244,19,251,10,265,5,284,3,306,5,320,12"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1NavierStokes.html#a0fce4c4a70d3fb5833f3f3100346718c" title="assemble of type exectuted by the derived specific non&#45;linear problem classes" alt="" coords="5,37,146,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,60,146,60,146,54,178,54"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="109,24,97,18,75,15,56,17,44,22,39,28,41,36,36,37,34,27,40,18,54,12,76,10,98,13,112,19"/>
 </map>

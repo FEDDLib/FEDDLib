@@ -140,7 +140,8 @@ $(function(){initNavTree('NonLinElasAssFE__def_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    </div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keywordtype">void</span> NonLinElasAssFE&lt;SC,LO,GO,NO&gt;::assemble(std::string type)<span class="keyword"> const</span>{</div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinElasAssFE.html#a202c764e740b1b63587ad8564239bf7e">   49</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NonLinElasAssFE.html#a202c764e740b1b63587ad8564239bf7e">NonLinElasAssFE&lt;SC,LO,GO,NO&gt;::assemble</a>(std::string type)<span class="keyword"> const</span>{</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    </div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;&quot;</span>){</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">if</span> (this-&gt;verbose_)</div>
@@ -158,9 +159,9 @@ $(function(){initNavTree('NonLinElasAssFE__def_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        this-&gt;assembleSourceTerm( 0. );</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">if</span>(sourceType == <span class="stringliteral">&quot;volume&quot;</span>)</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            this-&gt;sourceTerm_-&gt;scale(density);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            this-&gt;<a class="code hl_variable" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">sourceTerm_</a>-&gt;scale(density);</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        this-&gt;addToRhs( this-&gt;sourceTerm_ );</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        this-&gt;addToRhs( this-&gt;<a class="code hl_variable" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">sourceTerm_</a> );</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        this-&gt;setBoundariesRHS();           </div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
@@ -186,6 +187,7 @@ $(function(){initNavTree('NonLinElasAssFE__def_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        this-&gt;reAssemble(type);</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="comment">// Damit die richtige timeSteppingTool_-&gt;currentTime() genommen wird.</span></div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
@@ -320,7 +322,8 @@ $(function(){initNavTree('NonLinElasAssFE__def_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>}</div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
 <div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span><span class="keywordtype">void</span> NonLinElasAssFE&lt;SC,LO,GO,NO&gt;::calculateNonLinResidualVec(std::string type, <span class="keywordtype">double</span> time)<span class="keyword"> const</span>{</div>
+<div class="foldopen" id="foldopen00229" data-start="{" data-end="}">
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinElasAssFE.html#a71f53e6dbb3fccc3764a0bc40930f647">  229</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1NonLinElasAssFE.html#a71f53e6dbb3fccc3764a0bc40930f647">NonLinElasAssFE&lt;SC,LO,GO,NO&gt;::calculateNonLinResidualVec</a>(std::string type, <span class="keywordtype">double</span> time)<span class="keyword"> const</span>{</div>
 <div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    </div>
 <div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    </div>
 <div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    this-&gt;reAssemble(<span class="stringliteral">&quot;Newton-Residual&quot;</span>);</div>
@@ -349,9 +352,13 @@ $(function(){initNavTree('NonLinElasAssFE__def_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    }</div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    </div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>}</div>
+</div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>}</div>
 <div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinElasAssFE_html_a202c764e740b1b63587ad8564239bf7e"><div class="ttname"><a href="classFEDD_1_1NonLinElasAssFE.html#a202c764e740b1b63587ad8564239bf7e">FEDD::NonLinElasAssFE::assemble</a></div><div class="ttdeci">virtual void assemble(std::string type=&quot;&quot;) const</div><div class="ttdoc">assemble of type exectuted by the derived specific non-linear problem classes</div><div class="ttdef"><b>Definition</b> NonLinElasAssFE_def.hpp:49</div></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinElasAssFE_html_a71f53e6dbb3fccc3764a0bc40930f647"><div class="ttname"><a href="classFEDD_1_1NonLinElasAssFE.html#a71f53e6dbb3fccc3764a0bc40930f647">FEDD::NonLinElasAssFE::calculateNonLinResidualVec</a></div><div class="ttdeci">virtual void calculateNonLinResidualVec(std::string type, double time=0.) const</div><div class="ttdoc">Virtual function which is implemented in the specific non-linear problem classes to calculate the non...</div><div class="ttdef"><b>Definition</b> NonLinElasAssFE_def.hpp:229</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a></div><div class="ttdef"><b>Definition</b> NonLinearProblem_decl.hpp:24</div></div>
+<div class="ttc" id="aclassFEDD_1_1Problem_html_a8ab364ed3f0be15fcd70cb39c36f169e"><div class="ttname"><a href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;::sourceTerm_</a></div><div class="ttdeci">BlockMultiVectorPtr_Type sourceTerm_</div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:242</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

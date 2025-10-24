@@ -316,32 +316,35 @@ typedef Teuchos::RCP&lt; Thyra::LinearOpBase&lt; default_sc &gt; &gt;&#160;</td>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac1514ee8e1c08506cf9d23e202094e98" id="r_ac1514ee8e1c08506cf9d23e202094e98"><td class="memItemLeft" align="right" valign="top"><a id="ac1514ee8e1c08506cf9d23e202094e98" name="ac1514ee8e1c08506cf9d23e202094e98"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>NonLinearProblem</b> (CommConstPtr_Type comm)</td></tr>
+<tr class="memitem:ac1514ee8e1c08506cf9d23e202094e98" id="r_ac1514ee8e1c08506cf9d23e202094e98"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1514ee8e1c08506cf9d23e202094e98">NonLinearProblem</a> (CommConstPtr_Type comm)</td></tr>
+<tr class="memdesc:ac1514ee8e1c08506cf9d23e202094e98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <br /></td></tr>
 <tr class="separator:ac1514ee8e1c08506cf9d23e202094e98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3090255ed838400dc04dcab2a9349611" id="r_a3090255ed838400dc04dcab2a9349611"><td class="memItemLeft" align="right" valign="top"><a id="a3090255ed838400dc04dcab2a9349611" name="a3090255ed838400dc04dcab2a9349611"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>NonLinearProblem</b> (ParameterListPtr_Type &amp;parameterList, CommConstPtr_Type comm)</td></tr>
+<tr class="memitem:a3090255ed838400dc04dcab2a9349611" id="r_a3090255ed838400dc04dcab2a9349611"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3090255ed838400dc04dcab2a9349611">NonLinearProblem</a> (ParameterListPtr_Type &amp;parameterList, CommConstPtr_Type comm)</td></tr>
+<tr class="memdesc:a3090255ed838400dc04dcab2a9349611"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with parameterlist.  <br /></td></tr>
 <tr class="separator:a3090255ed838400dc04dcab2a9349611"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9713d899a94938a5ea463fcd199c687f" id="r_a9713d899a94938a5ea463fcd199c687f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9713d899a94938a5ea463fcd199c687f">info</a> ()=0</td></tr>
 <tr class="separator:a9713d899a94938a5ea463fcd199c687f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd89e7822eba78630310f63dcd06a4ad" id="r_afd89e7822eba78630310f63dcd06a4ad"><td class="memItemLeft" align="right" valign="top"><a id="afd89e7822eba78630310f63dcd06a4ad" name="afd89e7822eba78630310f63dcd06a4ad"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>infoNonlinProblem</b> ()</td></tr>
+<tr class="memdesc:afd89e7822eba78630310f63dcd06a4ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information about the non-linear problem. <br /></td></tr>
 <tr class="separator:afd89e7822eba78630310f63dcd06a4ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c44e392d9aaede1e269479ac1d00f7d" id="r_a5c44e392d9aaede1e269479ac1d00f7d"><td class="memItemLeft" align="right" valign="top"><a id="a5c44e392d9aaede1e269479ac1d00f7d" name="a5c44e392d9aaede1e269479ac1d00f7d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initializeProblem</b> (int nmbVectors=1)</td></tr>
+<tr class="memitem:a5c44e392d9aaede1e269479ac1d00f7d" id="r_a5c44e392d9aaede1e269479ac1d00f7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c44e392d9aaede1e269479ac1d00f7d">initializeProblem</a> (int nmbVectors=1)</td></tr>
+<tr class="memdesc:a5c44e392d9aaede1e269479ac1d00f7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialisation of the non-linear problem with system, vectors, and Thyra vector spaces for NOX.  <br /></td></tr>
 <tr class="separator:a5c44e392d9aaede1e269479ac1d00f7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a4cfd75654ab793f979d952c2d927ac" id="r_a2a4cfd75654ab793f979d952c2d927ac"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a4cfd75654ab793f979d952c2d927ac">assemble</a> (std::string type=&quot;&quot;) const =0</td></tr>
+<tr class="memdesc:a2a4cfd75654ab793f979d952c2d927ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">assemble of type exectuted by the derived specific non-linear problem classes  <br /></td></tr>
 <tr class="separator:a2a4cfd75654ab793f979d952c2d927ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86f2234df0762544aa553c101e726716" id="r_a86f2234df0762544aa553c101e726716"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86f2234df0762544aa553c101e726716">getValuesOfInterest</a> (vec_dbl_Type &amp;values)=0</td></tr>
+<tr class="memdesc:a86f2234df0762544aa553c101e726716"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual class to extract values of interest that are computed during the solve.  <br /></td></tr>
 <tr class="separator:a86f2234df0762544aa553c101e726716"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1b05d52c6a329ca47862b8e7828d650" id="r_ad1b05d52c6a329ca47862b8e7828d650"><td class="memItemLeft" align="right" valign="top"><a id="ad1b05d52c6a329ca47862b8e7828d650" name="ad1b05d52c6a329ca47862b8e7828d650"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>solveAndUpdate</b> (const std::string &amp;criterion, double &amp;criterionValue)</td></tr>
+<tr class="memitem:ad1b05d52c6a329ca47862b8e7828d650" id="r_ad1b05d52c6a329ca47862b8e7828d650"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad1b05d52c6a329ca47862b8e7828d650">solveAndUpdate</a> (const std::string &amp;criterion, double &amp;criterionValue)</td></tr>
+<tr class="memdesc:ad1b05d52c6a329ca47862b8e7828d650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solving the non-linear problem and updating the solution.  <br /></td></tr>
 <tr class="separator:ad1b05d52c6a329ca47862b8e7828d650"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a723e96f970e9dc26090dcfab47dbcaa6" id="r_a723e96f970e9dc26090dcfab47dbcaa6"><td class="memItemLeft" align="right" valign="top"><a id="a723e96f970e9dc26090dcfab47dbcaa6" name="a723e96f970e9dc26090dcfab47dbcaa6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>solveUpdate</b> ()</td></tr>
+<tr class="memitem:a723e96f970e9dc26090dcfab47dbcaa6" id="r_a723e96f970e9dc26090dcfab47dbcaa6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a723e96f970e9dc26090dcfab47dbcaa6">solveUpdate</a> ()</td></tr>
+<tr class="memdesc:a723e96f970e9dc26090dcfab47dbcaa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is where the linear solve specifically happens.  <br /></td></tr>
 <tr class="separator:a723e96f970e9dc26090dcfab47dbcaa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bee4c0f6eb1f9da4cb69b393a0b0385" id="r_a7bee4c0f6eb1f9da4cb69b393a0b0385"><td class="memItemLeft" align="right" valign="top"><a id="a7bee4c0f6eb1f9da4cb69b393a0b0385" name="a7bee4c0f6eb1f9da4cb69b393a0b0385"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssemble</b> (BlockMultiVectorPtr_Type previousSolution) const =0</td></tr>
+<tr class="memitem:a7bee4c0f6eb1f9da4cb69b393a0b0385" id="r_a7bee4c0f6eb1f9da4cb69b393a0b0385"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7bee4c0f6eb1f9da4cb69b393a0b0385">reAssemble</a> (BlockMultiVectorPtr_Type previousSolution) const =0</td></tr>
+<tr class="memdesc:a7bee4c0f6eb1f9da4cb69b393a0b0385"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reassemble with previous solution. I think it is not used anymore. @TODO: Look into this.  <br /></td></tr>
 <tr class="separator:a7bee4c0f6eb1f9da4cb69b393a0b0385"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdd543d968fd92da944f5c7215bfd40a" id="r_acdd543d968fd92da944f5c7215bfd40a"><td class="memItemLeft" align="right" valign="top"><a id="acdd543d968fd92da944f5c7215bfd40a" name="acdd543d968fd92da944f5c7215bfd40a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssembleAndFill</b> (BlockMatrixPtr_Type bMat, std::string type=&quot;FixedPoint&quot;)</td></tr>
@@ -349,23 +352,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssembleAndFill</b>
 <tr class="memitem:a621ab851abf5698a1647c5a34ead00fe" id="r_a621ab851abf5698a1647c5a34ead00fe"><td class="memItemLeft" align="right" valign="top"><a id="a621ab851abf5698a1647c5a34ead00fe" name="a621ab851abf5698a1647c5a34ead00fe"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssembleExtrapolation</b> (BlockMultiVectorPtrArray_Type previousSolutions)=0</td></tr>
 <tr class="separator:a621ab851abf5698a1647c5a34ead00fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17138cdc8844ca30962f5f5619e7a3d6" id="r_a17138cdc8844ca30962f5f5619e7a3d6"><td class="memItemLeft" align="right" valign="top"><a id="a17138cdc8844ca30962f5f5619e7a3d6" name="a17138cdc8844ca30962f5f5619e7a3d6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initializeVectorsNonLinear</b> (int nmbVectors=1)</td></tr>
+<tr class="memitem:a17138cdc8844ca30962f5f5619e7a3d6" id="r_a17138cdc8844ca30962f5f5619e7a3d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17138cdc8844ca30962f5f5619e7a3d6">initializeVectorsNonLinear</a> (int nmbVectors=1)</td></tr>
+<tr class="memdesc:a17138cdc8844ca30962f5f5619e7a3d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialisation of the non-linear vectors like residual and previous solution.  <br /></td></tr>
 <tr class="separator:a17138cdc8844ca30962f5f5619e7a3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98a9d9723563ece2ab9eddc08f4e9570" id="r_a98a9d9723563ece2ab9eddc08f4e9570"><td class="memItemLeft" align="right" valign="top"><a id="a98a9d9723563ece2ab9eddc08f4e9570" name="a98a9d9723563ece2ab9eddc08f4e9570"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>calculateResidualNorm</b> () const</td></tr>
+<tr class="memitem:a98a9d9723563ece2ab9eddc08f4e9570" id="r_a98a9d9723563ece2ab9eddc08f4e9570"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a98a9d9723563ece2ab9eddc08f4e9570">calculateResidualNorm</a> () const</td></tr>
+<tr class="memdesc:a98a9d9723563ece2ab9eddc08f4e9570"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the 2-norm of the residual vector.  <br /></td></tr>
 <tr class="separator:a98a9d9723563ece2ab9eddc08f4e9570"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aedd83cdf3b7e9a2f8da1286a7b7534f6" id="r_aedd83cdf3b7e9a2f8da1286a7b7534f6"><td class="memItemLeft" align="right" valign="top"><a id="aedd83cdf3b7e9a2f8da1286a7b7534f6" name="aedd83cdf3b7e9a2f8da1286a7b7534f6"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>calculateNonLinResidualVec</b> (std::string type=&quot;standard&quot;, double time=0.) const =0</td></tr>
+<tr class="memitem:aedd83cdf3b7e9a2f8da1286a7b7534f6" id="r_aedd83cdf3b7e9a2f8da1286a7b7534f6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aedd83cdf3b7e9a2f8da1286a7b7534f6">calculateNonLinResidualVec</a> (std::string type=&quot;standard&quot;, double time=0.) const =0</td></tr>
+<tr class="memdesc:aedd83cdf3b7e9a2f8da1286a7b7534f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual function which is implemented in the specific non-linear problem classes to calculate the non-linear residual vector.  <br /></td></tr>
 <tr class="separator:aedd83cdf3b7e9a2f8da1286a7b7534f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a462d228c649c87e033cbc968e307a70c" id="r_a462d228c649c87e033cbc968e307a70c"><td class="memItemLeft" align="right" valign="top"><a id="a462d228c649c87e033cbc968e307a70c" name="a462d228c649c87e033cbc968e307a70c"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>calculateNonLinResidualVec</b> (<a class="el" href="classFEDD_1_1SmallMatrix.html">SmallMatrix</a>&lt; double &gt; &amp;coeff, std::string type=&quot;standard&quot;, double time=0.)</td></tr>
+<tr class="memdesc:a462d228c649c87e033cbc968e307a70c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the non-linear residual vector with given coefficients for time-dependent problems (if used for timeproblem) <br /></td></tr>
 <tr class="separator:a462d228c649c87e033cbc968e307a70c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25537d76e46d6a7bc20324d03de73568" id="r_a25537d76e46d6a7bc20324d03de73568"><td class="memItemLeft" align="right" valign="top"><a id="a25537d76e46d6a7bc20324d03de73568" name="a25537d76e46d6a7bc20324d03de73568"></a>
-BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>getResidualVector</b> () const</td></tr>
+<tr class="memitem:a25537d76e46d6a7bc20324d03de73568" id="r_a25537d76e46d6a7bc20324d03de73568"><td class="memItemLeft" align="right" valign="top">BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a25537d76e46d6a7bc20324d03de73568">getResidualVector</a> () const</td></tr>
+<tr class="memdesc:a25537d76e46d6a7bc20324d03de73568"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the residual vector.  <br /></td></tr>
 <tr class="separator:a25537d76e46d6a7bc20324d03de73568"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb51901c446aa2eb6d4856a97f4fc467" id="r_acb51901c446aa2eb6d4856a97f4fc467"><td class="memItemLeft" align="right" valign="top"><a id="acb51901c446aa2eb6d4856a97f4fc467" name="acb51901c446aa2eb6d4856a97f4fc467"></a>
-BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>getPreviousSolution</b> () const</td></tr>
+<tr class="memitem:acb51901c446aa2eb6d4856a97f4fc467" id="r_acb51901c446aa2eb6d4856a97f4fc467"><td class="memItemLeft" align="right" valign="top">BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb51901c446aa2eb6d4856a97f4fc467">getPreviousSolution</a> () const</td></tr>
+<tr class="memdesc:acb51901c446aa2eb6d4856a97f4fc467"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get previous solution. Needed for time-dependent problems.  <br /></td></tr>
 <tr class="separator:acb51901c446aa2eb6d4856a97f4fc467"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43c722ca808bc6beb2f31ef3cac5b42c" id="r_a43c722ca808bc6beb2f31ef3cac5b42c"><td class="memItemLeft" align="right" valign="top"><a id="a43c722ca808bc6beb2f31ef3cac5b42c" name="a43c722ca808bc6beb2f31ef3cac5b42c"></a>
 virtual Thyra::ModelEvaluatorBase::InArgs&lt; SC &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getNominalValues</b> () const</td></tr>
@@ -623,6 +627,66 @@ std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>d
 <tr class="memitem:a8ab364ed3f0be15fcd70cb39c36f169e inherit pro_attribs_classFEDD_1_1Problem" id="r_a8ab364ed3f0be15fcd70cb39c36f169e"><td class="memItemLeft" align="right" valign="top">BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">sourceTerm_</a></td></tr>
 <tr class="separator:a8ab364ed3f0be15fcd70cb39c36f169e inherit pro_attribs_classFEDD_1_1Problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac1514ee8e1c08506cf9d23e202094e98" name="ac1514ee8e1c08506cf9d23e202094e98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1514ee8e1c08506cf9d23e202094e98">&#9670;&#160;</a></span>NonLinearProblem() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::NonLinearProblem </td>
+          <td>(</td>
+          <td class="paramtype">CommConstPtr_Type</td>          <td class="paramname"><span class="paramname"><em>comm</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">comm</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3090255ed838400dc04dcab2a9349611" name="a3090255ed838400dc04dcab2a9349611"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3090255ed838400dc04dcab2a9349611">&#9670;&#160;</a></span>NonLinearProblem() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::NonLinearProblem </td>
+          <td>(</td>
+          <td class="paramtype">ParameterListPtr_Type &amp;</td>          <td class="paramname"><span class="paramname"><em>parameterList</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">CommConstPtr_Type</td>          <td class="paramname"><span class="paramname"><em>comm</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor with parameterlist. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parameterList</td><td></td></tr>
+    <tr><td class="paramname">comm</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a2a4cfd75654ab793f979d952c2d927ac" name="a2a4cfd75654ab793f979d952c2d927ac"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2a4cfd75654ab793f979d952c2d927ac">&#9670;&#160;</a></span>assemble()</h2>
@@ -649,7 +713,143 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
 </table>
 </div><div class="memdoc">
 
+<p>assemble of type exectuted by the derived specific non-linear problem classes </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>for example Newton </td></tr>
+  </table>
+  </dd>
+</dl>
+
 <p>Implements <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a>.</p>
+
+<p>Implemented in <a class="el" href="classFEDD_1_1FSI.html#a9dafbf6d00ccb60f60399daf47236f08">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#a9dafbf6d00ccb60f60399daf47236f08">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#a9dafbf6d00ccb60f60399daf47236f08">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#a0fce4c4a70d3fb5833f3f3100346718c">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#a0fce4c4a70d3fb5833f3f3100346718c">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#a0fce4c4a70d3fb5833f3f3100346718c">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokesAssFE.html#a6fb89c6d63465ce978cd6f98c319a4b4">FEDD::NavierStokesAssFE&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasAssFE.html#a202c764e740b1b63587ad8564239bf7e">FEDD::NonLinElasAssFE&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a6e8f9ce7b83d728695220a66142ac563">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a6e8f9ce7b83d728695220a66142ac563">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a6e8f9ce7b83d728695220a66142ac563">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinLaplace.html#aa793a15db7db580a9c567e649f2b6f8c">FEDD::NonLinLaplace&lt; SC, LO, GO, NO &gt;</a>, and <a class="el" href="classFEDD_1_1NonLinTPM.html#a3a0005fb802050f2df841f13becccc9c">FEDD::NonLinTPM&lt; SC, LO, GO, NO &gt;</a>.</p>
+
+</div>
+</div>
+<a id="aedd83cdf3b7e9a2f8da1286a7b7534f6" name="aedd83cdf3b7e9a2f8da1286a7b7534f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedd83cdf3b7e9a2f8da1286a7b7534f6">&#9670;&#160;</a></span>calculateNonLinResidualVec()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::calculateNonLinResidualVec </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>type</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;standard&quot;</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>time</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0.</span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Virtual function which is implemented in the specific non-linear problem classes to calculate the non-linear residual vector. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>standard or reverse depending on Newton formulation, e.g. as in NOX or FEDDLib-Newton </td></tr>
+    <tr><td class="paramname">time</td><td>current timestep </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classFEDD_1_1FSI.html#afa717420d31a8c74dc5a09dae2671dd1">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#afa717420d31a8c74dc5a09dae2671dd1">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#afa717420d31a8c74dc5a09dae2671dd1">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#ade0b2fbe57e56350f4285fb43dac06b3">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#ade0b2fbe57e56350f4285fb43dac06b3">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#ade0b2fbe57e56350f4285fb43dac06b3">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokesAssFE.html#ae2da1e8318d2e0e0be637c26caccc292">FEDD::NavierStokesAssFE&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasAssFE.html#a71f53e6dbb3fccc3764a0bc40930f647">FEDD::NonLinElasAssFE&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a32ad80e7bedb27d05fac223de4f89576">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a32ad80e7bedb27d05fac223de4f89576">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a32ad80e7bedb27d05fac223de4f89576">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinLaplace.html#a8b7c02e8f59f2a5c34d64a474fb22a4c">FEDD::NonLinLaplace&lt; SC, LO, GO, NO &gt;</a>, and <a class="el" href="classFEDD_1_1NonLinTPM.html#a770c8fa6555f065a92e73201cd3d5851">FEDD::NonLinTPM&lt; SC, LO, GO, NO &gt;</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1NonLinearProblem_aedd83cdf3b7e9a2f8da1286a7b7534f6_icgraph.png" border="0" usemap="#aclassFEDD_1_1NonLinearProblem_aedd83cdf3b7e9a2f8da1286a7b7534f6_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1NonLinearProblem_aedd83cdf3b7e9a2f8da1286a7b7534f6_icgraph" id="aclassFEDD_1_1NonLinearProblem_aedd83cdf3b7e9a2f8da1286a7b7534f6_icgraph">
+<area shape="rect" title="Virtual function which is implemented in the specific non&#45;linear problem classes to calculate the non..." alt="" coords="248,5,442,46"/>
+<area shape="rect" href="classFEDD_1_1NonLinearProblem.html#a462d228c649c87e033cbc968e307a70c" title="Calculate the non&#45;linear residual vector with given coefficients for time&#45;dependent problems (if used..." alt="" coords="5,5,200,46"/>
+<area shape="poly" title=" " alt="" coords="232,28,200,28,200,23,232,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a98a9d9723563ece2ab9eddc08f4e9570" name="a98a9d9723563ece2ab9eddc08f4e9570"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98a9d9723563ece2ab9eddc08f4e9570">&#9670;&#160;</a></span>calculateResidualNorm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::calculateResidualNorm </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculate the 2-norm of the residual vector. </p>
+<dl class="section return"><dt>Returns</dt><dd>Value of the norm of the residual </dd></dl>
+
+</div>
+</div>
+<a id="acb51901c446aa2eb6d4856a97f4fc467" name="acb51901c446aa2eb6d4856a97f4fc467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb51901c446aa2eb6d4856a97f4fc467">&#9670;&#160;</a></span>getPreviousSolution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">BlockMultiVectorPtr_Type <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::getPreviousSolution </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get previous solution. Needed for time-dependent problems. </p>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a25537d76e46d6a7bc20324d03de73568" name="a25537d76e46d6a7bc20324d03de73568"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25537d76e46d6a7bc20324d03de73568">&#9670;&#160;</a></span>getResidualVector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classFEDD_1_1NonLinearProblem.html">NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::BlockMultiVectorPtr_Type <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::getResidualVector </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the residual vector. </p>
+<dl class="section return"><dt>Returns</dt><dd>residual vector </dd></dl>
 
 </div>
 </div>
@@ -678,7 +878,17 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
 </table>
 </div><div class="memdoc">
 
+<p>Virtual class to extract values of interest that are computed during the solve. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">values</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
 <p>Implements <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a>.</p>
+
+<p>Implemented in <a class="el" href="classFEDD_1_1Elasticity.html#a47f5a9f375fa71e933cbf4d7ce673c9a">FEDD::Elasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#a81b173206825b6c90ee39581f5599de4">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#a81b173206825b6c90ee39581f5599de4">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#a81b173206825b6c90ee39581f5599de4">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#a89d5fb90a5c4908d7cd2b59f1cb224e8">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#a89d5fb90a5c4908d7cd2b59f1cb224e8">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#a89d5fb90a5c4908d7cd2b59f1cb224e8">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokesAssFE.html#a10b1c01f0b20c4082239ad4d8090f056">FEDD::NavierStokesAssFE&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasAssFE.html#a879befcfb269ad30d640d9a5c64fcecb">FEDD::NonLinElasAssFE&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a0b9f12000f4f30992ae8b45b04d0c1c5">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a0b9f12000f4f30992ae8b45b04d0c1c5">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a0b9f12000f4f30992ae8b45b04d0c1c5">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinLaplace.html#ace20e01bab06955315387510fc511f93">FEDD::NonLinLaplace&lt; SC, LO, GO, NO &gt;</a>, and <a class="el" href="classFEDD_1_1NonLinTPM.html#acaf8ebf68f5563b36db6264651954239">FEDD::NonLinTPM&lt; SC, LO, GO, NO &gt;</a>.</p>
 
 </div>
 </div>
@@ -708,6 +918,190 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a5c44e392d9aaede1e269479ac1d00f7d" name="a5c44e392d9aaede1e269479ac1d00f7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c44e392d9aaede1e269479ac1d00f7d">&#9670;&#160;</a></span>initializeProblem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::initializeProblem </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nmbVectors</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialisation of the non-linear problem with system, vectors, and Thyra vector spaces for NOX. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nmbVectors</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1NonLinearProblem_a5c44e392d9aaede1e269479ac1d00f7d_cgraph.png" border="0" usemap="#aclassFEDD_1_1NonLinearProblem_a5c44e392d9aaede1e269479ac1d00f7d_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1NonLinearProblem_a5c44e392d9aaede1e269479ac1d00f7d_cgraph" id="aclassFEDD_1_1NonLinearProblem_a5c44e392d9aaede1e269479ac1d00f7d_cgraph">
+<area shape="rect" title="Initialisation of the non&#45;linear problem with system, vectors, and Thyra vector spaces for NOX." alt="" coords="5,5,175,46"/>
+<area shape="rect" href="classFEDD_1_1NonLinearProblem.html#a17138cdc8844ca30962f5f5619e7a3d6" title="Initialisation of the non&#45;linear vectors like residual and previous solution." alt="" coords="223,5,401,46"/>
+<area shape="poly" title=" " alt="" coords="175,23,207,23,207,28,175,28"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a17138cdc8844ca30962f5f5619e7a3d6" name="a17138cdc8844ca30962f5f5619e7a3d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17138cdc8844ca30962f5f5619e7a3d6">&#9670;&#160;</a></span>initializeVectorsNonLinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::initializeVectorsNonLinear </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nmbVectors</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialisation of the non-linear vectors like residual and previous solution. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nmbVectors</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1NonLinearProblem_a17138cdc8844ca30962f5f5619e7a3d6_icgraph.png" border="0" usemap="#aclassFEDD_1_1NonLinearProblem_a17138cdc8844ca30962f5f5619e7a3d6_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1NonLinearProblem_a17138cdc8844ca30962f5f5619e7a3d6_icgraph" id="aclassFEDD_1_1NonLinearProblem_a17138cdc8844ca30962f5f5619e7a3d6_icgraph">
+<area shape="rect" title="Initialisation of the non&#45;linear vectors like residual and previous solution." alt="" coords="223,5,401,46"/>
+<area shape="rect" href="classFEDD_1_1NonLinearProblem.html#a5c44e392d9aaede1e269479ac1d00f7d" title="Initialisation of the non&#45;linear problem with system, vectors, and Thyra vector spaces for NOX." alt="" coords="5,5,175,46"/>
+<area shape="poly" title=" " alt="" coords="207,28,175,28,175,23,207,23"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a7bee4c0f6eb1f9da4cb69b393a0b0385" name="a7bee4c0f6eb1f9da4cb69b393a0b0385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bee4c0f6eb1f9da4cb69b393a0b0385">&#9670;&#160;</a></span>reAssemble()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::reAssemble </td>
+          <td>(</td>
+          <td class="paramtype">BlockMultiVectorPtr_Type</td>          <td class="paramname"><span class="paramname"><em>previousSolution</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reassemble with previous solution. I think it is not used anymore. @TODO: Look into this. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">previousSolution</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad1b05d52c6a329ca47862b8e7828d650" name="ad1b05d52c6a329ca47862b8e7828d650"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1b05d52c6a329ca47862b8e7828d650">&#9670;&#160;</a></span>solveAndUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::solveAndUpdate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>criterion</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>criterionValue</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solving the non-linear problem and updating the solution. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">criterion</td><td>Update or Residual </td></tr>
+    <tr><td class="paramname">criterionValue</td><td>The actual value of the criterion </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>number of linear iterations </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1NonLinearProblem_ad1b05d52c6a329ca47862b8e7828d650_cgraph.png" border="0" usemap="#aclassFEDD_1_1NonLinearProblem_ad1b05d52c6a329ca47862b8e7828d650_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1NonLinearProblem_ad1b05d52c6a329ca47862b8e7828d650_cgraph" id="aclassFEDD_1_1NonLinearProblem_ad1b05d52c6a329ca47862b8e7828d650_cgraph">
+<area shape="rect" title="Solving the non&#45;linear problem and updating the solution." alt="" coords="5,5,175,46"/>
+<area shape="rect" href="classFEDD_1_1NonLinearProblem.html#a723e96f970e9dc26090dcfab47dbcaa6" title="This is where the linear solve specifically happens." alt="" coords="223,5,392,46"/>
+<area shape="poly" title=" " alt="" coords="175,23,207,23,207,28,175,28"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a723e96f970e9dc26090dcfab47dbcaa6" name="a723e96f970e9dc26090dcfab47dbcaa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a723e96f970e9dc26090dcfab47dbcaa6">&#9670;&#160;</a></span>solveUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::solveUpdate </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This is where the linear solve specifically happens. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of linear iterations </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1NonLinearProblem_a723e96f970e9dc26090dcfab47dbcaa6_icgraph.png" border="0" usemap="#aclassFEDD_1_1NonLinearProblem_a723e96f970e9dc26090dcfab47dbcaa6_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1NonLinearProblem_a723e96f970e9dc26090dcfab47dbcaa6_icgraph" id="aclassFEDD_1_1NonLinearProblem_a723e96f970e9dc26090dcfab47dbcaa6_icgraph">
+<area shape="rect" title="This is where the linear solve specifically happens." alt="" coords="223,5,392,46"/>
+<area shape="rect" href="classFEDD_1_1NonLinearProblem.html#ad1b05d52c6a329ca47862b8e7828d650" title="Solving the non&#45;linear problem and updating the solution." alt="" coords="5,5,175,46"/>
+<area shape="poly" title=" " alt="" coords="207,28,175,28,175,23,207,23"/>
+</map>
+</div>
 
 </div>
 </div>
