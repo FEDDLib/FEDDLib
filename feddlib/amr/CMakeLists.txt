@@ -1,7 +1,3 @@
-INCLUDE(TribitsPackageMacros)
-INCLUDE(TribitsAddOptionAndDefine)
-INCLUDE(TribitsLibraryMacros)
-
 #
 # A) Define the package
 #
@@ -55,14 +51,14 @@ SET(HEADERS ${HEADERS}
 	ExporterParaViewAMR.hpp
 	ExporterParaViewAMR_decl.hpp
 	ExporterParaViewAMR_def.hpp
-CACHE INTERNAL "")
+)
 
 SET(SOURCES ${SOURCES} 
 	AdaptiveMeshRefinement.cpp
 	RefinementFactory.cpp
 	ErrorEstimation.cpp
 	ExporterParaViewAMR.cpp
-CACHE INTERNAL "")
+)
 	
 #SET(LOCAL_HEADERS)
 #FOREACH(INC ${AMR_HEADERS})
