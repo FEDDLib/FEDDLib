@@ -501,11 +501,6 @@ void TimeSteppingTools::setInformationBDF(){
             BDFInformation_->at(2) = 1.; //Mun/dt
             break;
         case 2:
-            // BDFInformation_->at(0) = 3.; //Mun+2/dt
-            // BDFInformation_->at(1) = 2.; //Aun+2
-            // BDFInformation_->at(2) = 4.; //Mun+1/dt
-            // BDFInformation_->at(3) = -1.; //Mun
-
             // BDFInformation_->at(0) = 1.5; //Mun+2/dt
             // BDFInformation_->at(1) = 1.0; //Aun+2
             // BDFInformation_->at(2) = 2.0; //Mun+1/dt
