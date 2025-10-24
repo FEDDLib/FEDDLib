@@ -12,29 +12,12 @@ SET(${PACKAGE_NAME}_VERSION "1.0.0")
 # Here we check for specific Trilinos packages and set corresponding flags
 #
 
+tribits_add_debug_option()
 
-# Check if NOX (Nonlinear Optimization eXtensions) is available in Trilinos
-# NOX provides nonlinear solvers and optimization capabilities
-FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "NOX")
-        SET(FEDD_HAVE_NOX TRUE)
-    ENDIF()
-ENDFOREACH()
+tribits_add_show_deprecated_warnings_option()
 
-# Check if Teko is available in Trilinos
-# Teko provides block preconditioning capabilities for linear systems
-FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Teko")
-        SET(FEDD_HAVE_TEKO TRUE)
-    ENDIF()
-ENDFOREACH()
-
-# Check if AceGEN Interface is available
-# AceGEN is a Mathematica package for automatic differentiation
-IF(HAVE_ACEGENINTERFACE EQUAL TRUE)
-	message (" Have ACEGEN Interface ")
-	SET(FEDD_HAVE_ACEGENINTERFACE TRUE)
-ENDIF()
+# TPL detection and feature flags are handled in FindTPLTrilinos.cmake
+# The FEDD_HAVE_* variables are defined there and available globally to all packages
 
 # Generate a configuration header file with package-specific defines
 # This creates core_config.h with all the FEDD_HAVE_* flags

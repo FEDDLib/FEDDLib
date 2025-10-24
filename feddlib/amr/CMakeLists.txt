@@ -9,25 +9,9 @@ SET(${PACKAGE_NAME}_VERSION "1.0.0")
 # B) Set up package-specific options
 #
 
+tribits_add_debug_option()
 
-#FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-#    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Ifpack2")
-#        SET(FEDD_HAVE_IFPACK2 TRUE)
-#    ENDIF()
-#ENDFOREACH()
-
-FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "NOX")
-        SET(FEDD_HAVE_NOX TRUE)
-    ENDIF()
-ENDFOREACH()
-
-FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Teko")
-        SET(FEDD_HAVE_TEKO TRUE)
-    ENDIF()
-ENDFOREACH()
-
+tribits_add_show_deprecated_warnings_option()
 
 tribits_configure_file(${PACKAGE_NAME}_config.h)
 
@@ -59,18 +43,6 @@ SET(SOURCES ${SOURCES}
 	ErrorEstimation.cpp
 	ExporterParaViewAMR.cpp
 )
-	
-#SET(LOCAL_HEADERS)
-#FOREACH(INC ${AMR_HEADERS})
-#  STRING(REPLACE "amr/ " "" LOCAL_INC ${INC})
-#  SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
-#ENDFOREACH()
-
-#INSTALL(
-#  FILES ${LOCAL_HEADERS}
-#  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/feddlib/amr"
-#  COMPONENT ${PACKAGE_NAME}
-#)
 
 # This is the list of files excluded from the tarball
 tribits_exclude_files()
@@ -84,12 +56,8 @@ SOURCES ${SOURCES}
 
 tribits_add_test_directories(tests)
 
-
-#TRIBITS_ADD_EXAMPLE_DIRECTORIES(examples)
-
 #
 # Do standard postprocessing
 #
 
 tribits_package_postprocess()
-

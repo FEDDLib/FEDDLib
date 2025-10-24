@@ -125,7 +125,34 @@ endforeach (TPL)
 # Filling variables needed by the TriBITS system
 set (TPL_Trilinos_INCLUDE_DIRS ${FEDDLib_Trilinos_INCLUDE_DIRS})
 set (TPL_Trilinos_LIBRARY_DIRS Trilinos::all_selected_libs) 
-set (TPL_Trilinos_LIBRARIES Trilinos::all_selected_libs) 
+set (TPL_Trilinos_LIBRARIES Trilinos::all_selected_libs)
+
+# Detect available Trilinos packages and set FEDD_HAVE_* flags
+# This runs after Trilinos is found, so Trilinos_PACKAGE_LIST is populated
+FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
+    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Ifpack2")
+        SET(FEDD_HAVE_IFPACK2 TRUE)
+        MESSAGE(STATUS "FEDDLib: Found Trilinos Ifpack2 package")
+    ENDIF()
+    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "NOX")
+        SET(FEDD_HAVE_NOX TRUE)
+        MESSAGE(STATUS "FEDDLib: Found Trilinos NOX package")
+    ENDIF()
+    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Teko")
+        SET(FEDD_HAVE_TEKO TRUE)
+        MESSAGE(STATUS "FEDDLib: Found Trilinos Teko package")
+    ENDIF()
+    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Zoltan2")
+        SET(FEDD_HAVE_ZOLTAN2 TRUE)
+        MESSAGE(STATUS "FEDDLib: Found Trilinos Zoltan2 package")
+    ENDIF()
+ENDFOREACH()
+
+# Summary of detected features
+MESSAGE(STATUS "FEDDLib: Feature detection summary:")
+MESSAGE(STATUS "  - FEDD_HAVE_IFPACK2: ${FEDD_HAVE_IFPACK2}")
+MESSAGE(STATUS "  - FEDD_HAVE_NOX: ${FEDD_HAVE_NOX}")
+MESSAGE(STATUS "  - FEDD_HAVE_TEKO: ${FEDD_HAVE_TEKO}")
 
 
 

@@ -9,24 +9,9 @@ SET(${PACKAGE_NAME}_VERSION "1.0.0")
 # B) Set up package-specific options
 #
 
+tribits_add_debug_option()
 
-FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Ifpack2")
-        SET(FEDD_HAVE_IFPACK2 TRUE)
-    ENDIF()
-ENDFOREACH()
-
-FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "NOX")
-        SET(FEDD_HAVE_NOX TRUE)
-    ENDIF()
-ENDFOREACH()
-
-FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Teko")
-        SET(FEDD_HAVE_TEKO TRUE)
-    ENDIF()
-ENDFOREACH()
+tribits_add_show_deprecated_warnings_option()
 
 tribits_configure_file(${PACKAGE_NAME}_config.h)
 
@@ -62,7 +47,6 @@ tribits_add_library(
 tribits_add_test_directories(Solver/tests)
 tribits_add_test_directories(tests)
 tribits_add_example_directories(examples)
-
 
 #
 # Do standard postprocessing
