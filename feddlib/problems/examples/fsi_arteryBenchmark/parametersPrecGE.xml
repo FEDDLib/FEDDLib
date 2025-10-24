@@ -1,20 +1,14 @@
 <ParameterList name="Prec">
-    <Parameter name="Number of blocks" type="int" value="4"/>
+    <Parameter name="Number of blocks" type="int" value="1"/>
     <ParameterList name="ThyraPreconditioner">
         <Parameter name="Preconditioner Type" type="string" value="FROSch"/>
         <ParameterList name="Preconditioner Types">
             <ParameterList name="FROSch">
                 <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
                 <Parameter name="Recycling" type="bool" value="true"/>
-                <Parameter name="Dimension" type="int" value="2"/>
-                <Parameter name="DofsPerNode1" type="int" value="2"/>
-                <Parameter name="DofsPerNode2" type="int" value="1"/>
-                <Parameter name="DofsPerNode3" type="int" value="2"/>
-                <Parameter name="DofsPerNode4" type="int" value="2"/>
+                <Parameter name="Dimension" type="int" value="3"/>
+                <Parameter name="DofsPerNode1" type="int" value="3"/>
                 <Parameter name="DofOrdering1" type="string" value="NodeWise"/>
-                <Parameter name="DofOrdering2" type="string" value="NodeWise"/>
-                <Parameter name="DofOrdering3" type="string" value="NodeWise"/>
-                <Parameter name="DofOrdering4" type="string" value="NodeWise"/>
                 <Parameter name="Overlap" type="int" value="1"/>
                 <Parameter name="TwoLevel" type="bool" value="true"/>
                 <Parameter name="Level Combination" type="string" value="Additive"/><!--Multiplicative,Additive-->
@@ -34,41 +28,23 @@
                 </ParameterList>
 
                 <ParameterList name="RGDSWCoarseOperator">
-                    <Parameter name="Store Phi" type="bool" value="true"/>
+                    <Parameter name="Store Phi" type="bool" value="false"/>
                 
                     <Parameter name="Write phi and problem" type="bool" value="false"/>
-                    <Parameter name="Write coarse matrix" type="bool" value="true"/>
+                    <Parameter name="Write coarse matrix" type="bool" value="false"/>
                     
                     <Parameter name="Use Triple MatrixMultiply" type="bool" value="false"/>
                     <Parameter name="Test Unconnected Interface" type="bool" value="false"/>
                     
                     <Parameter name="Reuse: Coarse Basis" type="bool" value="true"/>
-                    <Parameter name="Reuse: Coarse Matrix" type="bool" value="false"/>
+                    <Parameter name="Reuse: Coarse Matrix" type="bool" value="true"/>
                     
                     <Parameter name="Reuse: Extension Symbolic Factorization" type="bool" value="true"/>
-                    <Parameter name="Reuse: Coarse Matrix Symbolic Factorization" type="bool" value="false"/>
+                    <Parameter name="Reuse: Coarse Matrix Symbolic Factorization" type="bool" value="true"/>
 
                     <ParameterList name="Blocks">
                         <ParameterList name="1">
                             <Parameter name="Exclude" type="string" value="2"/>
-                            <Parameter name="Use For Coarse Space" type="bool" value="true"/>
-                            <Parameter name="Option" type="string" value="1"/>
-                            <Parameter name="Rotations" type="bool" value="false"/>
-                        </ParameterList>
-                        <ParameterList name="2">
-                            <Parameter name="Exclude" type="string" value="1"/>
-                            <Parameter name="Use For Coarse Space" type="bool" value="true"/>
-                            <Parameter name="Option" type="string" value="1"/>
-                            <Parameter name="Rotations" type="bool" value="false"/>
-                        </ParameterList>
-                        <ParameterList name="3">
-                            <Parameter name="Exclude" type="string" value="0"/>
-                            <Parameter name="Use For Coarse Space" type="bool" value="true"/>
-                            <Parameter name="Option" type="string" value="1"/>
-                            <Parameter name="Rotations" type="bool" value="false"/>
-                        </ParameterList>
-                        <ParameterList name="4">
-                            <Parameter name="Exclude" type="string" value="0"/>
                             <Parameter name="Use For Coarse Space" type="bool" value="true"/>
                             <Parameter name="Option" type="string" value="1"/>
                             <Parameter name="Rotations" type="bool" value="false"/>

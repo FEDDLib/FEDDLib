@@ -6,7 +6,7 @@
             
             <ParameterList name="Teko">
                 <!--<Parameter name="Strided Blocking" type="string" value="2 1"/>-->
-                <Parameter name="Inverse Type" type="string" value="SIMPLE"/>
+                <Parameter name="Inverse Type" type="string" value="PCD"/>
                 
                 <ParameterList name="Inverse Factory Library">
                     
@@ -20,6 +20,23 @@
                         <Parameter name="Assume Stable Discretization" type="bool" value="true"/>
                     </ParameterList>
                     
+                    <ParameterList name="PCD">
+						<Parameter name="Type" type="string" value="Block LU2x2"/>
+						<Parameter name="Strategy Name" type="string" value="NS PCD Strategy"/>
+						<Parameter name="Use LDU" type="bool" value="false"/>
+						<ParameterList name="Strategy Settings">
+							<Parameter name="PCD Operator" type="bool" value="true"/>
+						   	<Parameter name="Pressure Laplace Operator" type="bool" value="true"/>
+
+						   	<Parameter name="Pressure Mass Operator" type="bool" value="true"/>
+							<Parameter name="Inverse Type" type="string" value="FROSch-Pressure"/>
+							<Parameter name="Inverse F Type" type="string" value="FROSch-Velocity"/>
+							<Parameter name="Inverse Laplace Type" type="string" value="FROSch-Pressure"/>
+							<Parameter name="Inverse Mass Type" type="string" value="FROSch-Pressure"/>
+							<Parameter name="Flip Schur Complement Ordering" type="bool" value="true"/> <!-- true works better -->
+						</ParameterList>
+					</ParameterList>
+
                     <ParameterList name="LSC">
                         <Parameter name="Type" type="string" value="NS LSC"/>
                         <Parameter name="Inverse Type" type="string" value=""/>
@@ -36,7 +53,7 @@
                         <Parameter name="Type" type="string" value="Ifpack2"/>
                         <Parameter name="Prec Type" type="string" value="SCHWARZ"/>
                         <ParameterList name="Ifpack2 Settings">
-                            <Parameter name="Amesos2 solver name" type="string" value="KLU2"/>
+                            <Parameter name="Amesos2 solver name" type="string" value="klu22"/>
                         </ParameterList>
                     </ParameterList>
 
@@ -44,10 +61,10 @@
                         <Parameter name="Type" type="string" value="FROSch"/>
                         <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
                         <Parameter name="Recycling" type="bool" value="true"/>
-                        <Parameter name="Dimension" type="int" value="2"/>
+                        <Parameter name="Dimension" type="int" value="3"/>
                         <Parameter name="DofsPerNode" type="int" value="1"/>
                         <Parameter name="DofOrdering" type="string" value="NodeWise"/>
-                        <Parameter name="Overlap" type="int" value="0"/>
+                        <Parameter name="Overlap" type="int" value="1"/>
                         <Parameter name="TwoLevel" type="bool" value="false"/>
                         <Parameter name="Level Combination"  type="string" value="Additive"/>
                         <Parameter name="Pre Apply" type="bool" value="true"/>
@@ -63,7 +80,7 @@
                             <ParameterList name="Solver">
                             
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
-                                <Parameter name="Solver" type="string" value="klu"/>
+                                <Parameter name="Solver" type="string" value="klu2"/>
                             </ParameterList>
                         </ParameterList>
                         <ParameterList name="RGDSWCoarseOperator">
@@ -86,7 +103,7 @@
                             <ParameterList name="ExtensionSolver">
                                 
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
-                                <Parameter name="Solver" type="string" value="klu"/>
+                                <Parameter name="Solver" type="string" value="klu2"/>
                             </ParameterList>
                             
                             <ParameterList name="Distribution">
@@ -108,7 +125,7 @@
                             <ParameterList name="CoarseSolver">
 
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
-                                <Parameter name="Solver" type="string" value="klu"/>
+                                <Parameter name="Solver" type="string" value="klu2"/>
                             </ParameterList>
                         </ParameterList>
                     </ParameterList>
@@ -118,10 +135,10 @@
                         <Parameter name="Type" type="string" value="FROSch"/>
                         <Parameter name="FROSch Preconditioner Type" type="string" value="TwoLevelBlockPreconditioner"/>
                         <Parameter name="Recycling" type="bool" value="true"/>
-                        <Parameter name="Dimension" type="int" value="2"/>
-                        <Parameter name="DofsPerNode" type="int" value="2"/>
+                        <Parameter name="Dimension" type="int" value="3"/>
+                        <Parameter name="DofsPerNode" type="int" value="3"/>
                         <Parameter name="DofOrdering" type="string" value="NodeWise"/>
-                        <Parameter name="Overlap" type="int" value="0"/>
+                        <Parameter name="Overlap" type="int" value="1"/>
                         <Parameter name="TwoLevel" type="bool" value="false"/>
                         <Parameter name="Level Combination" type="string" value="Additive"/>
                         <Parameter name="Pre Apply" type="bool" value="true"/>
@@ -135,7 +152,7 @@
                             <Parameter name="Level ID" type="int" value="1"/>
                             <ParameterList name="Solver">
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
-                                <Parameter name="Solver" type="string" value="klu"/>
+                                <Parameter name="Solver" type="string" value="klu2"/>
                             </ParameterList>
                         </ParameterList>
                         <ParameterList name="RGDSWCoarseOperator">
@@ -154,7 +171,7 @@
                             
                             <ParameterList name="ExtensionSolver">
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
-                                <Parameter name="Solver" type="string" value="klu"/>
+                                <Parameter name="Solver" type="string" value="klu2"/>
                             </ParameterList>
                             
                             <ParameterList name="Distribution">
@@ -174,7 +191,7 @@
                             
                             <ParameterList name="CoarseSolver">
                                 <Parameter name="SolverType" type="string" value="Amesos2"/>
-                                <Parameter name="Solver" type="string" value="klu"/>
+                                <Parameter name="Solver" type="string" value="klu2"/>
                             </ParameterList>
                             
                         </ParameterList>

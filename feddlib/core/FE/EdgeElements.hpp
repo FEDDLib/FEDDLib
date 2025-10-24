@@ -48,9 +48,9 @@ class EdgeElements : public Elements {
     
     const vec_GO_Type& getElementsOfEdgeGlobal( int i );
     
-    vec2D_GO_Type getElementsOfEdgeGlobal(){return elementsOfEdgeGlobal_;};
+    vec2D_GO_Type getElementsOfEdgeGlobal(){return elementsOfEdgeGlobal_;}
 
-    vec2D_LO_Type getElementsOfEdgeLocal(){return elementsOfEdgeLocal_;}; 
+    vec2D_LO_Type getElementsOfEdgeLocal(){return elementsOfEdgeLocal_;}
     
     const vec_int_Type getEdgesOfElement( int i ); // returns the edges of Element i ( , , )
 

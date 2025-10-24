@@ -8,7 +8,7 @@
                 <ParameterList name="Solver Types">
                     <ParameterList name="Block GMRES">
 <!--                        <Parameter name="PreconditionerPosition" type="string" value="right"/>-->
-                        <Parameter name="Convergence Tolerance" type="double" value="1e-6"/>
+                        <Parameter name="Convergence Tolerance" type="double" value="1e-8"/>
                         <Parameter name="Maximum Iterations" type="int" value="1000"/>
                         <Parameter name="Num Blocks" type="int" value="1000"/>
                         <Parameter name="Block Size" type="int" value="1"/>

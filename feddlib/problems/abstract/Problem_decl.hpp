@@ -16,6 +16,8 @@
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_LinearOpBase_decl.hpp>
 
+#include "git_version.h"
+
 #ifdef FEDD_HAVE_TEKO
 #include <Teko_StratimikosFactory.hpp>
 #endif
@@ -40,6 +42,7 @@ class Problem {
 public:
 
     typedef Domain<SC,LO,GO,NO> Domain_Type;
+    typedef Teuchos::RCP<Domain_Type> DomainPtr_Type;
     typedef Teuchos::RCP<const Domain_Type> DomainConstPtr_Type;
     typedef std::vector<DomainConstPtr_Type> DomainConstPtr_vec_Type;
 
@@ -99,6 +102,8 @@ public:
     virtual void info() = 0;
 
     void infoProblem();
+
+    void infoParameter(bool full = true, std::string ="empty");
 
     void addVariable(const DomainConstPtr_Type &domain, std::string FEType, std::string name, int dofsPerNode);
 
@@ -177,7 +182,7 @@ public:
 
     DomainConstPtr_vec_Type getDomainVector() const{
         return domainPtr_vec_;
-    };
+    }
     
     std::string getFEType(int i) const;
 
@@ -193,9 +198,9 @@ public:
 
     void initSolutionWithVector(MultiVector_Type& mv);
 
-    LinSolverBuilderPtr_Type getLinearSolverBuilder() const{return linearSolverBuilder_;};
+    LinSolverBuilderPtr_Type getLinearSolverBuilder() const{return linearSolverBuilder_;}
 
-    CommConstPtr_Type getComm() const{return comm_;};
+    CommConstPtr_Type getComm() const{return comm_;}
 
     virtual void getValuesOfInterest( vec_dbl_Type& values ) = 0 ;
 

@@ -27,7 +27,7 @@ class Domain {
     \tparam SC The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.g., for using complex instead
     \tparam LO The local ordinal type. The is the index type for local indices
     \tparam GO The global ordinal type. The is the index type for global indices
-    @todo This should actually be removed since the class should operate only on element level)
+    TODO: This should actually be removed since the class should operate only on element level)
     \tparam NO The Kokkos Node type. This would allow for performance portability when using Kokkos. Currently, this is not used.
     
     Example: If you construct a Stokes finite element problem, you get a velocity and pressure 'P2-P1' discretization and, thus, one domain for the P2 elements and one for the P1 elements, with the respective node list etc.
@@ -357,13 +357,13 @@ public:
          \brief Get global interface map vector field partial
          \return partialGlobalInterfaceVecFieldMap
     */    
-    MapConstPtr_Type getGlobalInterfaceMapVecFieldPartial() const{ return partialGlobalInterfaceVecFieldMap_; };
+    MapConstPtr_Type getGlobalInterfaceMapVecFieldPartial() const{ return partialGlobalInterfaceVecFieldMap_; }
 
     /*!
          \brief Get other global interface map vec field partial
          \return otherPartialGlobalInterfaceVecFieldMap
     */
-    MapConstPtr_Type getOtherGlobalInterfaceMapVecFieldPartial() const{ return otherPartialGlobalInterfaceVecFieldMap_; };
+    MapConstPtr_Type getOtherGlobalInterfaceMapVecFieldPartial() const{ return otherPartialGlobalInterfaceVecFieldMap_; }
 
     /*!
          \brief Get interface map unique (for fsi coupling block c4)
@@ -462,7 +462,7 @@ public:
          @param[in] FEType
          @param[in] volumeID       
     */
-    void initializeUnstructuredMesh(int dimension, std::string feType, int volumeID=10);
+    void initializeUnstructuredMesh(int dimension, std::string feType, int volumeID=10,  std::string meshUnit = "cm", bool convertToCM = false);
 
     /*!
 		 \brief Hilfsfunktion fuer buildLocalInterfaceIDInGlobal().
@@ -536,6 +536,9 @@ public:
    /// @param name export suffix to identify flags
    void exportElementOrientation(std::string name = "default");
 
+     /// @brief Exporting Paraview file displaying distribution of elements to the differnt cores
+   /// @param name export suffix to identify flags
+   void exportDistribution(std::string name = "default");
    /* ----------------------------------------------------------------------------------------*/
 
    private:

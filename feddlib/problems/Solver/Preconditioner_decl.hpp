@@ -11,13 +11,13 @@
 #include "feddlib/problems/Solver/PrecBlock2x2.hpp"
 #include "feddlib/problems/specific/LaplaceBlocks.hpp"
 #include "feddlib/problems/specific/FSI.hpp"
-#include <Xpetra_ThyraUtils.hpp>
+#include "Xpetra_ThyraUtils.hpp"
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_DefaultPreconditioner_decl.hpp>
 #include <Stratimikos_FROSch_def.hpp>
 //#include <Stratimikos_FROSch_def.hpp> // hier werden schon alle FROSch VK eingebunden
 #ifdef FEDD_HAVE_TEKO
-#include <Teko_StratimikosFactory.hpp>
+#include "Teko_StratimikosFactory.hpp"
 #include <Teko_StaticRequestCallback.hpp>
 #endif
 
@@ -116,25 +116,34 @@ public:
     ThyraLinOpConstPtr_Type getTekoOp();
 
     void setVelocityMassMatrix(MatrixPtr_Type massMatrix) const;
+    MatrixPtr_Type getVelocityMassMatrix(){return velocityMassMatrixMatrixPtr_;}
+
+    void setPressureLaplaceMatrix(MatrixPtr_Type matrix) const;
+    MatrixPtr_Type getPressureLaplaceMatrix(){return pressureLaplaceMatrixPtr_;}
+
+    void setPCDOperator(MatrixPtr_Type matrix) const;
+    MatrixPtr_Type getPCDOperatorMatrix(){return pcdOperatorMatrixPtr_;}
 #endif
+
+    void setPressureMassMatrix(MatrixPtr_Type massMatrix) const;
+    MatrixPtr_Type getPressureMassMatrix(){return pressureMassMatrixPtr_;}
 
     void buildPreconditionerFaCSI( std::string type );
 
     void buildPreconditionerBlock2x2();
 
-    void setPressureMassMatrix(MatrixPtr_Type massMatrix) const;
+    void setFaCSIBCFactory( BCConstPtr_Type bcFactory ){ faCSIBCFactory_ = bcFactory; }
 
-    void setFaCSIBCFactory( BCConstPtr_Type bcFactory ){ faCSIBCFactory_ = bcFactory; };
+    bool hasFaCSIBCFactory(){ return !faCSIBCFactory_.is_null(); }
 
-    bool hasFaCSIBCFactory(){ return !faCSIBCFactory_.is_null(); };
-
-    BCConstPtr_Type getFaCSIBCFactory( ){ return faCSIBCFactory_; };
+    BCConstPtr_Type getFaCSIBCFactory( ){ return faCSIBCFactory_; }
 
     void exportCoarseBasis( );
 
     void exportCoarseBasisFSI( );
 
-    bool isPreconditionerComputed() const{return precondtionerIsBuilt_;};
+    bool isPreconditionerComputed() const{return precondtionerIsBuilt_;}
+
 
 private:
     ThyraPrecPtr_Type thyraPrec_;
@@ -144,7 +153,8 @@ private:
     Teuchos::RCP<Thyra::PreconditionerFactoryBase<SC> > precFactory_;
 #ifdef FEDD_HAVE_TEKO
     ThyraLinOpConstPtr_Type tekoLinOp_;
-    mutable ThyraLinOpConstPtr_Type velocityMassMatrix_;
+    Teuchos::RCP<Teko::RequestHandler> rh_;
+    Teuchos::RCP< Teko::StaticRequestCallback<Teko::LinearOp> > callbackPCD_;
 #endif
     // For FaCSI precondtioner
     ThyraLinOpConstPtr_Type fsiLinOp_;
@@ -161,7 +171,28 @@ private:
     ThyraLinOpPtr_Type precSchur_;
     MinPrecProblemPtr_Type probVelocity_;
     MinPrecProblemPtr_Type probSchur_;
-    mutable MatrixPtr_Type pressureMassMatrix_;
+    // mutable MatrixPtr_Type pressureMassMatrix_;
+
+    // For LSC and PCD preconditioner
+    mutable ThyraLinOpConstPtr_Type velocityMassMatrix_; // LSC
+    mutable MatrixPtr_Type velocityMassMatrixMatrixPtr_; // LSC
+
+    mutable MatrixPtr_Type pressureLaplaceMatrixPtr_; // PCD
+    mutable ThyraLinOpConstPtr_Type pressureLaplace_; // PCD
+
+    mutable MatrixPtr_Type pressureMassMatrixPtr_; // PCD
+    mutable ThyraLinOpConstPtr_Type pressureMass_; // PCD
+    
+    mutable MatrixPtr_Type pcdOperatorMatrixPtr_; // PCD
+    mutable ThyraLinOpConstPtr_Type pcdOperator_; // PCD
+
+    // For construction in the FEDDLib
+    MinPrecProblemPtr_Type probLaplace_;
+    MinPrecProblemPtr_Type probMass_;
+    MinPrecProblemPtr_Type probVMass_;
+    ThyraLinOpPtr_Type laplaceInverse_;
+    ThyraLinOpPtr_Type massMatrixInverse_;
+    ThyraLinOpPtr_Type massMatrixVInverse_;  
 
     ParameterListPtr_Type pListPhiExport_;
 #define PRECONDITIONER_TIMER

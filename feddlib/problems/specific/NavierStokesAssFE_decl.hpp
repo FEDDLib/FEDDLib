@@ -78,7 +78,7 @@ public:
     
     void reAssemble( std::string type ) const;
     
-    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
+    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{}
     
     //void reAssembleFSI(std::string type, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const;
     
@@ -91,11 +91,11 @@ public:
     void calculateNonLinResidualVecWithMeshVelo(std::string type, double time, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const;
 //    virtual int ComputeDragLift(vec_dbl_ptr_Type &values);
 
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    virtual void getValuesOfInterest( vec_dbl_Type& values ){}
     
-    virtual void computeValuesOfInterestAndExport() {};
+    virtual void computeValuesOfInterestAndExport() {}
 
-//    virtual void assembleExternal( std::string type ){};
+//    virtual void assembleExternal( std::string type ){}
     /*####################*/
 
     void computeSteadyPostprocessingViscosity_Solution(); // Compute the viscosity based on the current velocity solution and save it inside viscosity_element_
@@ -108,33 +108,11 @@ public:
 
     MultiVectorPtr_Type viscosity_element_; //In case of a generalized-Newtonian fluid one can compute viscosity for visualization
 
-private:
-    mutable bool stokesTekoPrecUsed_; //Help variable to signal that we constructed the initial preconditioner for NOX with the Stokes system and we do not need to compute it if fill_W_prec is called for the first time. However, the preconditioner is only correct if a Stokes system is solved in the first nonlinear iteration. This only affects the block preconditioners of Teko
-    /*####################*/
-
 public:
 
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Monolithic() const;
-#ifdef FEDD_HAVE_TEKO
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Block() const;
-#endif
-    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
-
 private:
 
-    virtual void evalModelImpl(
-                       const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                       const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
-                       ) const;
 
-    void evalModelImplMonolithic(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                                 const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
-
-#ifdef FEDD_HAVE_TEKO
-    void evalModelImplBlock(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                            const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
-#endif
 
 };
 }

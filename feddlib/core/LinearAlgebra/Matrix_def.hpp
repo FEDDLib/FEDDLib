@@ -216,6 +216,87 @@ bool Matrix<SC,LO,GO,NO>::isLocallyIndexed(){
     return matrix_->isLocallyIndexed();
 }
 
+template <class SC, class LO, class GO, class NO>
+void Matrix<SC,LO,GO,NO>::Multiply( const MatrixPtr_Type &tpA, bool transposeA , const MatrixPtr_Type  &tpB, bool transposeB,bool fillComplete){
+
+    // Tpetra::CrsMatrix<SC,LO,GO,NO>& tpA = A;
+
+    // Tpetra::CrsMatrix<SC,LO,GO,NO>& tpB = B;
+
+    // Tpetra::CrsMatrix<SC,LO,GO,NO>& C; 
+
+    Tpetra::MatrixMatrix::Multiply( *tpA->matrix_, transposeA , *tpB->matrix_, transposeB, *matrix_, fillComplete, std::string(), Teuchos::null);
+}
+
+
+template <class SC,class LO,class GO,class NO>
+typename Matrix<SC,LO,GO,NO>::MatrixPtr_Type Matrix<SC,LO,GO,NO>::buildDiagonalInverse( std::string diagonalType){
+    MatrixPtr_Type matrix(new Matrix_Type( matrix_ )); // Diagonal matrix
+    MatrixPtr_Type diagInverse(new Matrix_Type( matrix->getMap("row"), 1) ); // Diagonal matrix
+    MapConstPtr_Type colMap = matrix->getMap("col");
+    MapConstPtr_Type rowMap = matrix->getMap("row");
+
+    
+    if(diagonalType == "Diagonal")
+    {
+        for(int i =0; i< rowMap->getNodeNumElements(); i ++){
+            Teuchos::ArrayView<const SC> valuesOld;
+            Teuchos::ArrayView<const LO>  indices;
+            matrix->getLocalRowView(i, indices, valuesOld);
+
+            GO globalDof = rowMap->getGlobalElement( i );
+
+            Teuchos::Array<SC> values( 1, 0);
+            Teuchos::Array<GO> indicesGO( 1 , 0 );
+            bool setOne = false;
+
+            for (UN j=0; j<indices.size() && !setOne; j++) {
+                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
+                    values[0] = 1./valuesOld[j]; // Diagonal Value
+                    indicesGO[0] = colMap->getGlobalElement(indices[j]);
+                    setOne=true;
+                }
+            }
+            GO row = GO ( rowMap->getGlobalElement( i) );
+            diagInverse->insertGlobalValues( row, indicesGO(), values() );
+        }
+    }
+    else if(diagonalType == "AbsRowSum") 
+    {
+        for(int i =0; i< rowMap->getNodeNumElements(); i ++){
+            Teuchos::ArrayView<const SC> valuesOld;
+            Teuchos::ArrayView<const LO>  indices;
+            matrix->getLocalRowView(i, indices, valuesOld);
+
+            GO globalDof = rowMap->getGlobalElement( i );
+
+            double rowSum = 0.;
+            for (UN j=0; j<indices.size(); j++) {
+               rowSum += abs(valuesOld[j]);
+            }
+
+            Teuchos::Array<SC> values( 1, 0);
+            Teuchos::Array<GO> indicesGO( 1 , 0 );
+            bool setOne = false;
+
+            for (UN j=0; j<indices.size() && !setOne; j++) {
+                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
+                    values[0] = 1./rowSum; // Diagonal Value
+                    indicesGO[0] = colMap->getGlobalElement(indices[j]);
+                    setOne = true;
+
+                }
+            }
+            GO row = GO ( rowMap->getGlobalElement( i) );
+            diagInverse->insertGlobalValues( row, indicesGO(), values() );      
+        }
+    }
+
+    diagInverse->fillComplete();
+    // diagInverse->writeMM("Mu_Inverse_LSC");
+    return diagInverse;
+}
+
 //typename Matrix<SC,LO,GO,NO>::ThyraLinOpPtr_Type Matrix<SC,LO,GO,NO>::getThyraLinOp(){
 //
 //    return ;
@@ -288,7 +369,6 @@ void Matrix<SC,LO,GO,NO>::scale(const SC& alpha) {
 template <class SC, class LO, class GO, class NO>
 void Matrix<SC,LO,GO,NO>::writeMM(std::string fileName) const{
     TEUCHOS_TEST_FOR_EXCEPTION( matrix_.is_null(), std::runtime_error,"Matrix in writeMM is null.");
-   // TEUCHOS_TEST_FOR_EXCEPTION( !(matrix_->getMap()->lib()==Xpetra::UseTpetra), std::logic_error,"Only available for Tpetra underlying lib.");
     //typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
     //typedef Teuchos::RCP<TpetraCrsMatrix> TpetraCrsMatrixPtr;
 
@@ -307,7 +387,7 @@ void Matrix<SC,LO,GO,NO>::addMatrix(SC alpha, const MatrixPtr_Type &B, SC beta){
     //B = alpha*A + beta*B.
     if (B->isFillComplete())
         B->resumeFill();
-    TEUCHOS_TEST_FOR_EXCEPTION( B->isLocallyIndexed(), std::runtime_error,"Matrix in is locally index but Trilinos Epetra/Tpetra can not add to a matrix at this stage.");
+    TEUCHOS_TEST_FOR_EXCEPTION( B->isLocallyIndexed(), std::runtime_error,"Matrix in is locally index but Trilinos Tpetra cannot add to a matrix at this stage.");
     
     //const Tpetra::CrsMatrix<SC,LO,GO,NO>& tpA = Xpetra::Helpers<SC,LO,GO,NO>::Op2TpetraCrs(A);
     //Tpetra::CrsMatrix<SC,LO,GO,NO>& tpB = Xpetra::Helpers<SC,LO,GO,NO>::Op2NonConstTpetraCrs(B);

@@ -132,7 +132,7 @@ namespace FEDD
          natural boundary condition is different
          We have to check whether it is an element which has edges (2D) / surfaces (3D) corresponding to an Outflow Neumann boundary
          Then we have to compute contribution
-         @ToDo Add if element normal computation is integrated
+         TODO: Add if element normal computation is integrated
         */
     }
 
@@ -669,7 +669,7 @@ namespace FEDD
         elementMatrixNC->scale(this->density_);
         this->ANB_->add((*elementMatrixNC), (*this->ANB_));
 
-        // @ToDo If underlying element is an outflow boundary element - will be added when func nonlinear boundar term *******************************
+        // TODO: If underlying element is an outflow boundary element - will be added when func nonlinear boundar term *******************************
         /*if (this->surfaceElement == true)
         {
             SmallMatrixPtr_Type elementMatrixNB = Teuchos::rcp(new SmallMatrix_Type(this->dofsElementVelocity_ + this->numNodesPressure_));
@@ -700,6 +700,7 @@ namespace FEDD
     */
     /* In 2D B=[ nodesRefConfig(1).at(0)-nodesRefConfig(0).at(0)    nodesRefConfig(2).at(0)-nodesRefConfig(0).at(0)    ]
                [ nodesRefConfig(1).at(1)-nodesRefConfig(0).at(1)    nodesRefConfig(2).at(1)-nodesRefConfig(0).at(1)   ]
+    */
     /*!
         - Triangle numbering
 

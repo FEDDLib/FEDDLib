@@ -103,7 +103,7 @@ partialGlobalInterfaceVecFieldMap_(),
     geometries2DVec_.reset(new string_vec_Type(0));
     geometries2DVec_->push_back("Square");
     geometries2DVec_->push_back("BFS");
-    geometries2DVec_->push_back("SquareTPM");
+    // geometries2DVec_->push_back("SquareTPM");
     geometries2DVec_->push_back("structuredMiniTest");
 //    geometries2DVec->push_back("REC");
 }
@@ -177,23 +177,23 @@ template <class SC, class LO, class GO, class NO>
 LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
     if (this->dim_ == 2) {
         if ( this->FEType_ == "P1" ) {
-            return 44;
+            return 50;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 60;
+            return 100;
         }
         else {
-            return 60;
+            return 200;
         }
     } else {
         if ( this->FEType_ == "P1" ) {
-            return 400;
+            return 100;
         }
         else if ( this->FEType_ == "P2" ) {
-            return 460;
+            return 200;
         }
         else {
-            return 400;
+            return 300;
         }
     }
 }
@@ -229,16 +229,8 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
                     meshStructured->setGeometry2DRectangle(coorRec, length, height);
                     meshStructured->buildMesh2DBFS(FEType, n_, m_, numProcsCoarseSolve);
                     break;
-                case 2:
-                    meshStructured->setGeometry2DRectangle(coorRec, length, height);
-                    meshStructured->buildMesh2DTPM(FEType, n_, m_, numProcsCoarseSolve);
-                    break;
-                case 3:
-                    meshStructured->setGeometry2DRectangle(coorRec, length, height);
-                    meshStructured->buildMesh2DMiniTPM(FEType, n_, m_, numProcsCoarseSolve);
-                    break;
                 default:
-                    TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Select valid mesh. Structured types are 'structured' and 'structured_bfs' in 2D. TPM test meshes also available.");
+                    TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"Select valid mesh. Structured types are 'structured' and 'structured_bfs' in 2D.");
                     break;
             }
 
@@ -274,9 +266,9 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
 }
 
 template <class SC, class LO, class GO, class NO>
-void Domain<SC,LO,GO,NO>::initializeUnstructuredMesh(int dimension, std::string feType, int volumeID){
+void Domain<SC,LO,GO,NO>::initializeUnstructuredMesh(int dimension, std::string feType, int volumeID, std::string meshUnit, bool convertToCM){
     
-    MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp(new MeshUnstr_Type(comm_, volumeID));
+    MeshUnstrPtr_Type meshUnstructured = Teuchos::rcp(new MeshUnstr_Type(comm_, volumeID, meshUnit, convertToCM));
     mesh_ = meshUnstructured;
     mesh_->dim_ = dimension;
     FEType_ = feType;
@@ -737,7 +729,6 @@ void Domain<SC,LO,GO,NO>::buildUniqueInterfaceMaps()
     GO numberInterfaceNodes = localInterfaceID; // long long wg. 64
     
     // Baue nun die InterfaceMap (node)
-    //std::string ulib = this->getMapUnique()->getUnderlyingLib();
     Teuchos::ArrayView<GO> vecInterfaceMapArray =  Teuchos::arrayViewFromVector( vecInterfaceMap );
     interfaceMapUnique_ = Teuchos::rcp(new Map_Type( numberInterfaceNodes, vecInterfaceMapArray, 0, comm_ ) ); //maybe numberInterfaceNodes instead of -1
     // dof-Map bauen
@@ -1018,6 +1009,25 @@ void Domain<SC, LO, GO, NO>::exportNodeFlags(std::string name)
         exPara->closeExporter();
 } 
 
+template <class SC, class LO, class GO, class NO>
+void Domain<SC, LO, GO, NO>::exportDistribution(std::string name)
+{
+        Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
+
+        Teuchos::RCP<MultiVector<SC,LO,GO,NO> > exportSolution(new MultiVector<SC,LO,GO,NO>(this->getElementMap()));
+        exportSolution->putScalar(comm_->getRank()+1.);
+       
+        Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionConst = exportSolution;
+
+        exPara->setup("Subdomains"+name,this->getMesh(), "P0");
+
+        exPara->addVariable(exportSolutionConst, "Core", "Scalar", 1,this->getElementMap()); 
+        exPara->save(0.0);
+
+        exPara->closeExporter();
+} 
+
+             
 template <class SC, class LO, class GO, class NO>
 void Domain<SC, LO, GO, NO>::exportSurfaceNormals(std::string name)
 {

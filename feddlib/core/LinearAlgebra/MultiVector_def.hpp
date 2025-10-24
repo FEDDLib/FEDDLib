@@ -1,6 +1,7 @@
 #ifndef MULTIVECTOR_DEF_hpp
 #define MULTIVECTOR_DEF_hpp
 #include "MultiVector_decl.hpp"
+#include "BlockMultiVector_decl.hpp"
 
 /*!
  Defintion of MultiVector
@@ -12,8 +13,6 @@
  */
 
 namespace FEDD {
-
-extern template class MultiVector<default_sc, default_lo, default_go, default_no>;
 
 template <class SC, class LO, class GO, class NO>
 MultiVector<SC,LO,GO,NO>::MultiVector():
@@ -43,11 +42,7 @@ map_(),
 importer_(),
 exporter_()
 {
-    
     map_.reset( new Map_Type( tpetraMVPtrIn->getMap() ) );
-
-    FEDDLIB_WARNING("MultiVector_def", this->getMap()->getComm()->getRank() == 0, " MultiVector(TpetraMultiVectorPtr_Type& tpetraMVPtrIn) -- this is not a deep copy of the contents of the MV.");
-
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -57,8 +52,6 @@ map_(),
 importer_(),
 exporter_()
 {
-    //FEDDLIB_NOTIFICATION("MultiVector_def", mvIn->getMap()->getComm()->getRank() == 0, " MultiVector(MultiVectorConstPtr_Type mvIn) new multivector is created based on the input mv data");
-
     multiVector_ =Teuchos::RCP( new TpetraMultiVector_Type(  mvIn->getMap()->getTpetraMap(), mvIn->getNumVectors() ));
     map_.reset( new Map_Type( *mvIn->getMap() ) );
     for (UN j=0; j<this->getNumVectors(); j++) {
@@ -67,7 +60,6 @@ exporter_()
         for (UN i=0; i<valuesThis.size(); i++)//can this be quicker?
             valuesThis[i] = valuesIn[i];
     }
-
 }
 
 template <class SC, class LO, class GO, class NO>
@@ -87,7 +79,7 @@ typename MultiVector<SC,LO,GO,NO>::MapPtr_Type MultiVector<SC,LO,GO,NO>::getMapN
     
 template <class SC, class LO, class GO, class NO>
 typename MultiVector<SC,LO,GO,NO>::TpetraMapConstPtr_Type MultiVector<SC,LO,GO,NO>::getMapTpetra() const{
-    TEUCHOS_TEST_FOR_EXCEPTION(multiVector_.is_null(),std::runtime_error,"RCP<MultiVector> is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION(multiVector_.is_null(),std::runtime_error,"RCP<MultiVector> is null.")
 
     return multiVector_->getMap();
 }
@@ -182,51 +174,47 @@ Teuchos::RCP<const Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThy
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::fromThyraMultiVector( Teuchos::RCP< Thyra::MultiVectorBase<SC> > thyraMV){
 
-    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector is null but we need to know the underlying lib for function fromThyraMultiVector().");
-
     typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> TOVE_Type;
     
     Teuchos::RCP<TpetraMultiVector_Type> tMV = TOVE_Type::getTpetraMultiVector( thyraMV );
     multiVector_ = tMV;
-
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::norm2(const Teuchos::ArrayView< typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms) const {
-    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in norm2 is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in norm2 is null.")
     multiVector_->norm2(norms);
 }
 
 // Inf Norm of Multivector
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::normInf(const Teuchos::ArrayView< typename Teuchos::ScalarTraits<SC>::magnitudeType> &normsInf) const {
-    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in normInf is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in normInf is null.")
     multiVector_->normInf(normsInf);
 
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::abs(MultiVectorConstPtr_Type a) {
-    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in abs is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in abs is null.")
     multiVector_->abs( *a->getTpetraMultiVector());
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::dot(MultiVectorConstPtr_Type a, const Teuchos::ArrayView< typename Teuchos::ScalarTraits<SC>::magnitudeType> &dots) const {
-    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in dot is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in dot is null.")
     multiVector_->dot( *a->getTpetraMultiVector(), dots );
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::update( const SC& alpha, const MultiVector_Type& A, const SC& beta) {
-    TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != A.getNumVectors(), std::logic_error,"MultiVectors for update have different number of vectors.");
+    TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != A.getNumVectors(), std::logic_error,"MultiVectors for update have different number of vectors.")
     multiVector_->update( alpha, *A.getTpetraMultiVector(), beta );
-
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::update( const SC& alpha, const MultiVector_Type& A, const SC& beta , const MultiVector_Type& B, const SC& gamma) {
-    TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != A.getNumVectors(), std::logic_error,"MultiVectors for update have different number of vectors.");
+    TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != A.getNumVectors(), std::logic_error,"MultiVectors for update have different number of vectors.")
 
     multiVector_->update( alpha, *A.getTpetraMultiVector(), beta, *B.getTpetraMultiVector(), gamma );
 
@@ -265,7 +253,7 @@ void MultiVector<SC,LO,GO,NO>::multiply(Teuchos::ETransp transA, Teuchos::ETrans
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::importFromVector( MultiVectorConstPtr_Type mvIn, bool reuseImport, std::string combineMode, std::string type) {
         
-    TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != mvIn->getNumVectors(), std::logic_error,"MultiVectors for fillFromVector have different number of vectors.");
+    TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != mvIn->getNumVectors(), std::logic_error,"MultiVectors for fillFromVector have different number of vectors.")
 
     if ( importer_.is_null() || !reuseImport) {
         if (type=="Forward")
@@ -273,11 +261,11 @@ void MultiVector<SC,LO,GO,NO>::importFromVector( MultiVectorConstPtr_Type mvIn, 
         else if(type=="Reverse")
             importer_ = Teuchos::RCP(new Tpetra::Import<LO, GO, NO>(this->getMapTpetra(), mvIn->getMapTpetra() ));
         else
-            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse");
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse")
     }
     else{
-        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getSourceMap()->isSameAs( *mvIn->getMap()->getTpetraMap() ), std::logic_error,"Source maps of Importer and Multivector are not the same.");
-        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getTargetMap()->isSameAs( *this->getMap()->getTpetraMap() ), std::logic_error,"Target maps of Importer and Multivector are not the same.");
+        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getSourceMap()->isSameAs( *mvIn->getMap()->getTpetraMap() ), std::logic_error,"Source maps of Importer and Multivector are not the same.")
+        TEUCHOS_TEST_FOR_EXCEPTION( !importer_->getTargetMap()->isSameAs( *this->getMap()->getTpetraMap() ), std::logic_error,"Target maps of Importer and Multivector are not the same.")
     }
 
         
@@ -287,7 +275,7 @@ void MultiVector<SC,LO,GO,NO>::importFromVector( MultiVectorConstPtr_Type mvIn, 
         else if ( !combineMode.compare("Add") )
             multiVector_->doImport ( *mvIn->getTpetraMultiVector(), *importer_, Tpetra::ADD);
         else
-            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.")
     }
     else if(type=="Reverse"){
         if ( !combineMode.compare("Insert") )
@@ -295,15 +283,15 @@ void MultiVector<SC,LO,GO,NO>::importFromVector( MultiVectorConstPtr_Type mvIn, 
         else if ( !combineMode.compare("Add") )
             multiVector_->doExport ( *mvIn->getTpetraMultiVector(), *importer_, Tpetra::ADD);
         else
-            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.")
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse");
+        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for import. Choose Forward or Reverse")
 }
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::exportFromVector( MultiVectorConstPtr_Type mvIn, bool reuseExport, std::string combineMode, std::string type) {
-    TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != mvIn->getNumVectors(), std::logic_error,"MultiVectors for exportToVector have different number of vectors.");
+    TEUCHOS_TEST_FOR_EXCEPTION( getNumVectors() != mvIn->getNumVectors(), std::logic_error,"MultiVectors for exportToVector have different number of vectors.")
 
     if ( exporter_.is_null() || !reuseExport) {
         if (type=="Forward")
@@ -311,11 +299,11 @@ void MultiVector<SC,LO,GO,NO>::exportFromVector( MultiVectorConstPtr_Type mvIn, 
         else if(type=="Reverse")
             exporter_ =  Teuchos::RCP(new Tpetra::Export<LO, GO, NO>(this->getMapTpetra(), mvIn->getMapTpetra() ));
         else
-            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for export. Choose Forward or Reverse");
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for export. Choose Forward or Reverse")
     }
     else{
-        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getSourceMap()->isSameAs( *this->getMap()->getTpetraMap() ), std::logic_error,"Source maps of Exporter and Multivector are not the same.");
-        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getTargetMap()->isSameAs( *mvIn->getMap()->getTpetraMap() ), std::logic_error,"Target maps of Exporter and Multivector are not the same.");
+        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getSourceMap()->isSameAs( *this->getMap()->getTpetraMap() ), std::logic_error,"Source maps of Exporter and Multivector are not the same.")
+        TEUCHOS_TEST_FOR_EXCEPTION( !exporter_->getTargetMap()->isSameAs( *mvIn->getMap()->getTpetraMap() ), std::logic_error,"Target maps of Exporter and Multivector are not the same.")
     }
     if (type=="Forward") {
         if ( !combineMode.compare("Insert") )
@@ -323,7 +311,7 @@ void MultiVector<SC,LO,GO,NO>::exportFromVector( MultiVectorConstPtr_Type mvIn, 
         else if ( !combineMode.compare("Add") )
             multiVector_->doExport ( *mvIn->getTpetraMultiVector(), *exporter_, Tpetra::ADD);
         else
-            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.")
     }
     else if (type=="Reverse") {
         if ( !combineMode.compare("Insert") )
@@ -331,15 +319,15 @@ void MultiVector<SC,LO,GO,NO>::exportFromVector( MultiVectorConstPtr_Type mvIn, 
         else if ( !combineMode.compare("Add") )
             multiVector_->doImport ( *mvIn->getTpetraMultiVector(), *exporter_, Tpetra::ADD);
         else
-            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.");
+            TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown combine mode.")
     }
     else
-        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for export. Choose Forward or Reverse");
+        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error,"Unknown type for export. Choose Forward or Reverse")
 }
     
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::writeMM(std::string fileName) const{
-    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in writeMM is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in writeMM is null.")
 
     typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
 
@@ -358,7 +346,7 @@ void MultiVector<SC,LO,GO,NO>::writeMM(std::string fileName) const{
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::readMM(std::string fileName) const{
-    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in writeMM is null.");
+    TEUCHOS_TEST_FOR_EXCEPTION( multiVector_.is_null(), std::runtime_error,"MultiVector in writeMM is null.")
 
     typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
     typedef Teuchos::RCP<TpetraCrsMatrix> TpetraCrsMatrixPtr;
@@ -414,7 +402,7 @@ typename MultiVector<SC,LO,GO,NO>::MultiVectorPtr_Type MultiVector<SC,LO,GO,NO>:
 
 template <class SC, class LO, class GO, class NO>
 SC MultiVector<SC,LO,GO,NO>::getMax() const{
-    TEUCHOS_TEST_FOR_EXCEPTION( this->getNumVectors() > 1, std::runtime_error, "numMultiVector>1: max function not implemented!");
+    TEUCHOS_TEST_FOR_EXCEPTION( this->getNumVectors() > 1, std::runtime_error, "numMultiVector>1: max function not implemented!")
     return multiVector_->getVector(0)->normInf();
 }
 

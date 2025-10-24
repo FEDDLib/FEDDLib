@@ -1,52 +1,42 @@
 <ParameterList name="Problem">
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="2"/>
-        <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, P2; velocity -->
-        <Parameter name="Discretization Pressure" type="string" value="P1"/>
-        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
-        <Parameter name="BC Type" type="string" value="partialCFD"/><!-- parabolic, parabolic_benchmark, partialCFD-->
+        <Parameter name="Discretization Velocity" type="string" value="P2"/><!--P1, Q1, Q2 for velocity discretization -->
+        <Parameter name="Discretization Pressure" type="string" value="P1"/> <!--P1, Q1, P1-disc for pressure discretization -->
+        <Parameter name="Mesh Type" type="string" value="structured_ldc"/> <!--structured_bfs for specific BFS mesh-->
+        <Parameter name="BC Type" type="string" value="LDC"/><!-- parabolic (for parabolic like inflow profile), partialCFD, parabolic_benchmark, Richter3D -->
         <Parameter name="Mesh Delimiter" type="string" value=" "/>
-        <Parameter name="H/h" type="int" value="3"/>
-        <Parameter name="Symmetric gradient" type="bool" value="false"/>
-        <Parameter name="Viscosity" type="double" value="1.0e-3"/>
-        <Parameter name="Density" type="double" value="1.0"/>
-        <Parameter name="MaxVelocity" type="double" value="0.3"/>
-        <Parameter name="MeanVelocity" type="double"   value="0.2"/>
-        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
-        <Parameter name="absNonLinTol" type="double" value="1.0e-4"/>
+        <!-- H/h definition -->
+        <Parameter name="H/h" type="int" value="4"/> 
+        <!-- Kinematic Viscosity -->
+        <Parameter name="Viscosity" type="double" value="1.0e-2"/>
+        <!-- Density-->
+        <Parameter name="Density" type="double" value="1.0e-0"/>
+        <!-- Maximum velocity of computed parabolic inflow profile-->
+        <Parameter name="MaxVelocity" type="double" value="1.0"/>
+        <!-- Relative Newton Tolerance-->
+        <Parameter name="relNonLinTol" type="double" value="1.0e-8"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-8"/>
+     	<!-- BUILDING PRECONDITIONER ONLY THE FIRST X (newtonLimit) NEWTON STEP(S) -->
+        <Parameter name="newtonLimit" type="int" value="3"/>
+        <Parameter name="Rebuild Preconditioner every Newton Iteration" type="bool" value="false"/>
+        <!--  -->
+        <!-- Maximum Nonlinear Iterations to be executed-->
         <Parameter name="MaxNonLinIts" type="int" value="10"/>
-        <Parameter name="Set Zeros" type="bool" value="false"/>
-        <Parameter name="Myeps" type="double" value="1.0e-14"/>
+        <!-- Testing Residuals, Or means either abolute or relative tolerance is achieved -->
         <Parameter name="Combo" type="string" value="OR"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
     </ParameterList>
-    <ParameterList name="Mesh Partitioner">
-        
-        <Parameter name="Contiguous" type="bool" value="true"/>
-        
-        <Parameter name="Mesh 1 Name" type="string" value="dfg_fsi_fluid_h004.mesh"/>
-    </ParameterList>
-    <ParameterList name="Exporter">
-        
-        <Parameter name="Export coarse functions" type="bool" value="false"/>
-        
-        <Parameter name="Name coarse functions block1" type="string" value="phiU"/>
-        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
-        
-        <Parameter name="Name coarse functions block1" type="string" value="phiP"/>
-        <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
-        
-    </ParameterList>
-    
     <ParameterList name="General">
-        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+		<!-- Linearization method-->
         <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, NOX-->
-        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <!-- Exporting solution and other things-->
+        <Parameter name="ParaViewExport" type="bool" value="false"/>
         <Parameter name="ParaViewCoarse" type="bool" value="false"/>
         <Parameter name="ParaViewCoarseSum" type="bool" value="false"/>
         <Parameter name="ParaView export subdomain" type="bool" value="false"/>
-        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko -->
-        <Parameter name="Assemble Velocity Mass" type="bool" value="false"/>
-        <Parameter name="Delete P1 Data" type="bool" value="false"/><!-- only for Monolithic and Newton -->
+        <!-- Preconditioning method-->
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko, PCD, LSC, Diagonal, Triangular -->
+
     </ParameterList>
 </ParameterList>

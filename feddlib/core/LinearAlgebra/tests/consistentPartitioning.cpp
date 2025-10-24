@@ -35,8 +35,6 @@ int main(int argc, char *argv[]) {
     int rank = comm->getRank();
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
-    string ulib_str = "Tpetra";
-    myCLP.setOption("ulib",&ulib_str,"Underlying lib");
     GO numGlobalElements1 = 10;
     myCLP.setOption("nge1",&numGlobalElements1,"numGlobalElements1.");
     GO numGlobalElements2 = 20;
@@ -70,8 +68,6 @@ int main(int argc, char *argv[]) {
     typedef BlockMap<LO,GO,NO> BlockMap_Type;
     typedef RCP<BlockMap_Type> BlockMapPtr_Type;
 
-    TEUCHOS_TEST_FOR_EXCEPTION( ulib_str != "Tpetra", std::runtime_error,"Only Tpetra available.");
-
     MapConstPtr_Type map1;
     MapConstPtr_Type map2;
     MapConstPtr_Type map3;
@@ -81,7 +77,7 @@ int main(int argc, char *argv[]) {
     {
         Teuchos::Array<GO> indices(1);
         indices[0] = comm->getRank();
-        map1 = rcp( new Map_Type( ulib_str, (GO) -1, indices(), 0, comm ) );
+        map1 = rcp( new Map_Type( (GO) -1, indices(), 0, comm ) );
         MultiVectorPtr_Type part1 = rcp( new MultiVector_Type( map1 ) );
         part1->putScalar(2.);
         MultiVectorPtr_Type part2 = rcp( new MultiVector_Type( map1 ) );
@@ -95,7 +91,7 @@ int main(int argc, char *argv[]) {
             indices.push_back(0); indices.push_back(1);
         }
         
-        map2 = rcp( new Map_Type( ulib_str, (GO) -1, indices(), 0, comm ) );
+        map2 = rcp( new Map_Type( (GO) -1, indices(), 0, comm ) );
         MultiVectorPtr_Type part1 = rcp( new MultiVector_Type( map2 ) );
         part1->putScalar(2.);
         b->addBlock( part1, 0);
@@ -105,7 +101,7 @@ int main(int argc, char *argv[]) {
         if (rank==1){
             indices.push_back(0); indices.push_back(1);
         }
-        map3 = rcp( new Map_Type( ulib_str, (GO) -1, indices(), 0, comm ) );
+        map3 = rcp( new Map_Type( (GO) -1, indices(), 0, comm ) );
         MultiVectorPtr_Type part2 = rcp( new MultiVector_Type( map3 ) );
         part2->putScalar(3.);
         b->addBlock( part2, 1);
@@ -116,7 +112,7 @@ int main(int argc, char *argv[]) {
 
         indices.push_back(0);
         Teuchos::RCP<const Teuchos::Comm<LO> > commSerial = rcp(new Teuchos::MpiComm<LO>(MPI_COMM_SELF));
-        map4dotRes = rcp( new Map_Type( ulib_str, (GO) -1, indices(), 0, commSerial ) );
+        map4dotRes = rcp( new Map_Type( (GO) -1, indices(), 0, commSerial ) );
     }
 
     Array< ScalarTraits<SC>::magnitudeType> dots(1);

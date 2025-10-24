@@ -52,9 +52,9 @@ class SurfaceElements : public Elements {
     
     const vec_GO_Type& getElementsOfSurfaceGlobal( int i );
     
-    vec2D_GO_Type getElementsOfSurfaceGlobal(){return elementsOfSurfaceGlobal_;};
+    vec2D_GO_Type getElementsOfSurfaceGlobal(){return elementsOfSurfaceGlobal_;}
 
-    vec2D_LO_Type getElementsOfSurfaceLocal(){return elementsOfSurfaceLocal_;}; 
+    vec2D_LO_Type getElementsOfSurfaceLocal(){return elementsOfSurfaceLocal_;}
     
     const vec_int_Type getSurfacesOfElement( int i ); // returns the Surfaces of Element i ( , , )
 

@@ -49,10 +49,10 @@ class AssembleFE_Laplace : public AssembleFE<SC,LO,GO,NO> {
 		\brief Assemble the element Jacobian matrix.
 		@param[in] block ID i
 	*/
-	void assembleJacobianBlock(LO i) override {};
+	void assembleJacobianBlock(LO i) override {}
 
    protected:
-	AssembleFE_Laplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); /// \todo Tupel for Disk Anzahl Knoten, Anzahl Freiheitsgrade
+	AssembleFE_Laplace(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters,   tuple_disk_vec_ptr_Type tuple); /// TODO: Tupel for Disk Anzahl Knoten, Anzahl Freiheitsgrade
 
    private:
 

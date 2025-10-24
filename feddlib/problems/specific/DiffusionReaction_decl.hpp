@@ -63,15 +63,15 @@ public:
 
     virtual void assemble( std::string type = "" ) const;
 
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    virtual void getValuesOfInterest( vec_dbl_Type& values ){}
 
 	MatrixPtr_Type getMassMatrix() const; // new for calculating L2-Error
     
-    virtual void computeValuesOfInterestAndExport() {};
+    virtual void computeValuesOfInterestAndExport() {}
 
     /*void reAssemble( std::string type = "" ) const;
 
-    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
+    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{}
     
     //    virtual int SetupPreconditioner(BMat_ptr_Type systemPrec, ThyraConstLinOpPtr_Type thyraMatrix=Teuchos::null, ThyraPrecPtr_Type thyraPreconditioner = Teuchos::null, LinSolverBuilderPtr_Type linearSolverBuilder = Teuchos::null) const;
 

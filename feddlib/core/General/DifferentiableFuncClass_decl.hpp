@@ -19,7 +19,7 @@ namespace FEDD {
     \tparam SC The scalar type. So far, this is always double, but having it as a template parameter would allow flexibily, e.g., for using complex instead
     \tparam LO The local ordinal type. The is the index type for local indices
     \tparam GO The global ordinal type. The is the index type for global indices
-    @todo This should actually be removed since the class should operate only on element level)
+    TODO: This should actually be removed since the class should operate only on element level)
     \tparam NO The Kokkos Node type. This would allow for performance portibility when using Kokkos. Currently, this is not used.
 
     The material parameters can be provided through a Teuchos::ParameterList object which will contain 
@@ -42,7 +42,7 @@ namespace FEDD {
          @param[in] x input
          @param[in,out] res output
         */
-        virtual void evaluateMapping(ParameterListPtr_Type params, MultiVectorConstPtr_Type input, MultiVectorPtr_Type &output) override { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Not yet implemented for MultiVectorConstPtr_Type"); };
+        virtual void evaluateMapping(ParameterListPtr_Type params, MultiVectorConstPtr_Type input, MultiVectorPtr_Type &output) override { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Not yet implemented for MultiVectorConstPtr_Type") }
 
         /*!
          \brief Computes value of derivative of defined function in evaluateMapping
@@ -50,7 +50,7 @@ namespace FEDD {
          @param[in] x Independent variable
          @param[in,out] res Dependent variable
         */
-        virtual void evaluateDerivative(ParameterListPtr_Type params, MultiVectorConstPtr_Type x, MultiVectorPtr_Type &res) override { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Not yet implemented for MultiVectorConstPtr_Type"); };
+        virtual void evaluateDerivative(ParameterListPtr_Type params, MultiVectorConstPtr_Type x, MultiVectorPtr_Type &res) override { TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Not yet implemented for MultiVectorConstPtr_Type") }
 
        
         /*!

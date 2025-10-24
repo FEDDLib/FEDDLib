@@ -135,12 +135,12 @@ public:
 
     /// @brief Communicator object
     /// @return 
-    CommConstPtrConst_Type getComm(){return comm_;};
+    CommConstPtrConst_Type getComm(){return comm_;}
     
     /// @brief This is done in meshStructured. Maybe we should move it here or delete this.
     /// @param flags 
     /// @return 
-    int setStructuredMeshFlags(int flags){return 0;};
+    int setStructuredMeshFlags(int flags){return 0;}
     
     /// @brief Something for TPM. Can be deprecated soon.
     /// @param type 
@@ -158,13 +158,13 @@ public:
             \brief Get SurfaceElement order
             \return surfaceElementOrder_
     */
-    int getSurfaceElementOrder() { return surfaceElementOrder_; };
+    int getSurfaceElementOrder() { return surfaceElementOrder_; }
 
     /*!
             \brief Get EdgeElement order
             \return edgesElementOrder_
     */
-    int getEdgeElementOrder() { return edgesElementOrder_; };
+    int getEdgeElementOrder() { return edgesElementOrder_; }
 
 
     // Creates an AABBTree from own vertice- and elementlist.
@@ -178,10 +178,10 @@ public:
 
     /// @brief 
     /// @return 
-    tuple_intint_Type getRankRange() const {return rankRange_;};
+    tuple_intint_Type getRankRange() const {return rankRange_;}
     
     /// @brief Deleting surface elements, called after reading input mesh. 
-    void deleteSurfaceElements(){ surfaceElements_.reset(); };
+    void deleteSurfaceElements(){ surfaceElements_.reset(); }
 
     /// @brief Correcting the normal direction of all surface normals set as subelements of volume elements to be outward normals
     void correctNormalDirections();

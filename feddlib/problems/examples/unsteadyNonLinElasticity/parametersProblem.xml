@@ -1,29 +1,32 @@
 <ParameterList name="unsteady nonlinear elasticity">
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="2"/><!--only 3D-->
-        <Parameter name="Discretization" type="string" value="P1"/><!--P1, P2-->
-        <Parameter name="Mesh Type" type="string" value="structured"/> <!--structured, unstructured -->
+        <Parameter name="Discretization" type="string" value="P2"/><!--P1, P2-->
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--structured, unstructured -->
         <Parameter name="Mesh Delimiter" type="string" value=" "/>
-        <Parameter name="BC Type" type="string" value="volumeY"/><!-- volumeY, volumeX-->
-        <Parameter name="BC Placement" type="string" value="standard"/><!-- standard, foamFine-->
-        <Parameter name="Volume force" type="double" value="-.01"/>
-        <Parameter name="H/h" type="int" value="4"/>
+        <Parameter name="Volume force" type="double" value="-0.32"/>
+        <Parameter name="Source Type" type="string"   value="surface"/> <!-- surface, volume -->
+        <Parameter name="H/h" type="int" value="6"/>
 
-        <Parameter name="relNonLinTol" type="double" value="1.0e-4"/>
-        <Parameter name="MaxNonLinIts" type="int" value="6"/>
+        <Parameter name="relNonLinTol" type="double" value="1.0e-8"/>
+        <!-- BUILDING PRECONDITIONER ONLY THE FIRST X NEWTON STEP(S) -->
+        <Parameter name="Rebuild Preconditioner every Newton Iteration" type="bool" value="false"/> <!-- true: Preconditioner is rebuilt each Newton step. false: only up till iteration < 'newtonLimit'  -->
+        <Parameter name="newtonLimit" type="int" value="1"/> <!-- if 'Rebuild ... ' false: only up till iteration < 'newtonLimit' the Preconditioner is rebuilt -->
+        <!--  -->
+        <Parameter name="MaxNonLinIts" type="int" value="10"/>
         <Parameter name="Criterion" type="string" value="Residual"/>
     
         <Parameter name="Material model" type="string" value="Saint Venant-Kirchhoff"/><!--Saint Venant-Kirchhoff,Neo-Hooke, Mooney-Rivlin -->
         <Parameter name="Density" type="double"   value="1."/>
         <!-- Parameters for linear elasticity and Saint Venant-Kirchhoff-->
-        <Parameter name="Poisson Ratio" type="double" value="0.4e-0"/>
-        <Parameter name="Mu" type="double" value="2.0e+6"/>
-        <Parameter name="Mu1" type="double" value="2.0e+6"/>
-        <Parameter name="Mu2" type="double" value="2.0e+8"/>
+        <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
+        <Parameter name="Mu" type="double" value="0.1275"/>
+        <Parameter name="Mu1" type="double" value="0.1275"/>
+        <Parameter name="Mu2" type="double" value="0.1275"/>
         <!-- Parameter for Neo-Hooke and Mooney-Rivlin, additioanlly poisson ratio is used -->
-        <Parameter name="E" type="double"   value="3.0e+6"/>
-        <Parameter name="E1" type="double"   value="1."/>
-        <Parameter name="E2" type="double"   value="1.e+4"/>
+        <Parameter name="E" type="double"   value="0.38"/>
+        <Parameter name="E1" type="double"   value="0.38"/>
+        <Parameter name="E2" type="double"   value="0.38"/>
         
         <!-- Parameter for Mooney-Rivlin-->
         <Parameter name="C" type="double" value="1."/><!-- Mooney-Rivlin parameter -->
@@ -48,7 +51,7 @@
         
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="testFoam2.mesh"/>
+        <Parameter name="Mesh 1 Name" type="string" value="square_solid.mesh"/>
     </ParameterList>
 
     
@@ -64,8 +67,8 @@
         <Parameter name="Class"                                 type="string"		value="Newmark"/> <!--Multistep, Singlestep, Newmark-->
         <Parameter name="BDF"		                    		type="int"		   	value="1"/>
         <Parameter name="Timestepping type"                    	type="string"   	value="non-adaptive"/><!--non-adaptive,adaptive-->
-        <Parameter name="Final time force"	                    type="double"   	value=".02"/>
-        <Parameter name="Final time"	                    	type="double"   	value=".02"/>
+        <Parameter name="Final time force"	                    type="double"   	value="0.00"/>
+        <Parameter name="Final time"	                    	type="double"   	value="0.05"/>
         <Parameter name="dt"			                    	type="double"   	value="0.01"/>
         <Parameter name="beta"			                    	type="double"   	value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma"			                    	type="double"   	value="0.5"/> <!-- newmark method parameter-->

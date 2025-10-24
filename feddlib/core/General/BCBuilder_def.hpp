@@ -7,6 +7,11 @@
 #include <Teuchos_ScalarTraitsDecl.hpp>
 #include <Xpetra_MatrixFactory.hpp>
 
+void dummyFuncBC(double* x, double* res, double t, const double* parameters)
+{
+    return;
+}
+
 /*!
  Definition of BCBuilder
  
@@ -51,6 +56,9 @@ void BCBuilder<SC,LO,GO,NO>::addBC(BC_func_Type funcBC, int flag, int block, con
     vecBC_Parameters_.push_back(dummy);
     MultiVectorConstPtr_Type dummyMV;
     vecExternalSol_.push_back(dummyMV);
+    vecFlowRateBool_.push_back(false);
+    vecBC_func_flowRate_.push_back(dummyFuncBC);
+
     
 }
 
@@ -66,6 +74,8 @@ void BCBuilder<SC,LO,GO,NO>::addBC(BC_func_Type funcBC, int flag, int block, con
     vecBC_Parameters_.push_back(parameter_vec);
     MultiVectorConstPtr_Type dummyMV;
     vecExternalSol_.push_back(dummyMV);
+    vecFlowRateBool_.push_back(false);
+    vecBC_func_flowRate_.push_back(dummyFuncBC);
 
 }
 
@@ -80,9 +90,26 @@ void BCBuilder<SC,LO,GO,NO>::addBC(BC_func_Type funcBC, int flag, int block, con
     vecDofs_.push_back(dofs);
     vecBC_Parameters_.push_back(parameter_vec);
     vecExternalSol_.push_back(externalSol);
-
+    vecFlowRateBool_.push_back(false);
+    vecBC_func_flowRate_.push_back(dummyFuncBC);
 }
 
+template<class SC,class LO,class GO,class NO>
+void BCBuilder<SC,LO,GO,NO>::addBC(BC_func_Type funcBC, int flag, int block, const DomainPtr_Type &domain, 
+                                    std::string type, int dofs, vec_dbl_Type &parameter_vec, MultiVectorConstPtr_Type& externalSol, 
+                                    bool determineFlowRate,BC_func_Type funcBC_flowRate){
+    
+    vecBC_func_.push_back(funcBC);
+    vecFlag_.push_back(flag);
+    vecBlockID_.push_back(block);
+    vecDomain_.push_back(domain);
+    vecBCType_.push_back(type);
+    vecDofs_.push_back(dofs);
+    vecBC_Parameters_.push_back(parameter_vec);
+    vecExternalSol_.push_back(externalSol);
+    vecFlowRateBool_.push_back(true);
+    vecBC_func_flowRate_.push_back(funcBC_flowRate);
+}
 
 template<class SC,class LO,class GO,class NO>
 void BCBuilder<SC,LO,GO,NO>::set(const BlockMatrixPtr_Type &blockMatrix, const BlockMultiVectorPtr_Type &blockMV, double t) const{
@@ -103,7 +130,9 @@ void BCBuilder<SC,LO,GO,NO>::setRHS(const BlockMultiVectorPtr_Type &blockMV, dou
     int loc = 0;
     for (int block = 0; block < blockMV->size(); block++) { // blocks of RHS vector
         if(blockHasDirichletBC(block, loc)){
-                        
+            if (vecFlowRateBool_[loc]) { // we use the external vector here with flowrate
+                this->determineVelocityForFlowrate(loc,t);
+            }      
             vec_int_ptr_Type bcFlags = vecDomain_.at(loc)->getBCFlagUnique();
             vec2D_dbl_ptr_Type vecPoints = vecDomain_.at(loc)->getPointsUnique();
             int dim = vecDomain_.at(loc)->getDimension();
@@ -245,6 +274,9 @@ void BCBuilder<SC,LO,GO,NO>::setBCMinusVector(const BlockMultiVectorPtr_Type &ou
 
     for (int block = 0; block < outBlockMV->size(); block++) { // blocks of RHS vector
         if(blockHasDirichletBC(block, loc)){
+            if (vecFlowRateBool_[loc]) { // we use the external vector here with flowrate
+                this->determineVelocityForFlowrate(loc,t);
+            }
             vec_int_ptr_Type     bcFlags = vecDomain_.at(loc)->getBCFlagUnique();
             vec2D_dbl_ptr_Type     vecPoints = vecDomain_.at(loc)->getPointsUnique();
             int dim = vecDomain_.at(loc)->getDimension();
@@ -360,6 +392,9 @@ void BCBuilder<SC,LO,GO,NO>::setVectorMinusBC(const BlockMultiVectorPtr_Type &ou
     
     for (int block = 0; block < outBlockMV->size(); block++) { // blocks of RHS vector
         if(blockHasDirichletBC(block, loc)){
+            if (vecFlowRateBool_[loc]) { // we use the external vector here with flowrate
+                this->determineVelocityForFlowrate(loc,t);
+            }
             vec_int_ptr_Type     bcFlags = vecDomain_.at(loc)->getBCFlagUnique();
             vec2D_dbl_ptr_Type     vecPoints = vecDomain_.at(loc)->getPointsUnique();
             int dim = vecDomain_.at(loc)->getDimension();
@@ -524,6 +559,49 @@ void BCBuilder<SC,LO,GO,NO>::setAllDirichletZero(const BlockMultiVectorPtr_Type 
     }
 }
 
+// We have the problem, that we want to prescribe a constant flow rate
+// As a boundary condition, we need to prescibe a certain velocity. 
+// In an FSI setting, the flowrate is also influences by the changing 
+// area of the inlet. Consequently, the velocity we prescibe changes depending
+// on the changing area.
+// We follow the following idea: The flowrate Q is given as \int_{Inlet} u * n dA
+// In our case we have a parabolic-like inflow profile, which we can write as u = u_max * vec
+// With the desired flow rate Q, we can determine u_max as follows: 
+// \int_{Inlet} u_max * vec * n dA != Q  
+// <=> u_max * \int_{Inlet} vec * n dA != Q  
+// <=> u_max = Q / \int_{Inlet} vec * n dA
+template<class SC,class LO,class GO,class NO>
+void BCBuilder<SC,LO,GO,NO>::determineVelocityForFlowrate(LO i, double time) const{
+    
+    // Domain of the corresponing boundary condition. Most probably fluid domain
+    DomainPtr_Type domain = vecDomain_.at(i);
+    // A vector containing and desribing the parabolic inflow
+    MultiVectorConstPtr_Type parabolic_unique_const =  vecExternalSol_[i]; // e.g. Laplace soution on inlet
+    MultiVectorPtr_Type parabolic_unique = Teuchos::rcp_const_cast<MultiVector_Type> ( parabolic_unique_const );  // dirty const casting
+
+    MultiVectorPtr_Type parabolic_rep = Teuchos::rcp(new MultiVector_Type ( domain->getMapRepeated() ) );
+    // We normalize the solution and distribute it to the repeated map
+    SC maxValue = parabolic_unique->getMax();
+    parabolic_unique->scale(1./maxValue); // normalizing solution
+    parabolic_rep->importFromVector(parabolic_unique,false,"Insert");
+    // We define an FE Factory
+    FEFacPtr_Type feFactory = Teuchos::rcp( new FEFac_Type() );
+    feFactory->addFE(domain);
+    // We determine the current desired flow rate via the input function 
+    std::vector<SC> funcParameter = vecBC_Parameters_[i];
+    vec_dbl_Type p1 = {1.,1.,1.}; // Dummy vector
+    vec_dbl_Type flowRate = {0.}; //
+    vecBC_func_flowRate_.at(i)( &(p1[0]), &(flowRate[0]), time, &(funcParameter[0])); // Determine Flowrate based on BC function
+    // We assemble the flowrate for parabolic inflow profile. As we have the inflow profile normalized we have: vec* u_max = RB Inlet normally
+    double flowRateParabolic=0.;
+    feFactory->assemblyFlowRate(domain->getDimension(), flowRateParabolic, domain->getFEType(),1, vecFlag_[i] , parabolic_rep);
+    // Then we have \int_{Inlet} vec * n dA * u_max == Q  <=> u_max = Q/\int_{Inlet} vec * n dA, and Q is given as 'desired flowrate' in flowrate
+    double maxVelocity = flowRate[0] / std::fabs(flowRateParabolic);
+    // Then we replace the parameter which contains the maximum velocity with the updated one
+    vecBC_Parameters_[i][0] = maxVelocity;
+
+}
+
     
     
 template<class SC,class LO,class GO,class NO>
@@ -590,6 +668,38 @@ bool BCBuilder<SC,LO,GO,NO>::findFlag(LO flag, int block, int &loc) const{
     return hasFlag;
 }
 
+
+template<class SC,class LO,class GO,class NO>
+void BCBuilder<SC,LO,GO,NO>::setSystemScaled(const BlockMatrixPtr_Type &blockMatrix,double eps) const{
+
+   UN numBlocks = blockMatrix->size();
+    int loc;
+    for (UN blockRow = 0; blockRow < numBlocks; blockRow++) {
+
+#ifdef BCBuilder_TIMER
+        Teuchos::TimeMonitor SetSystemRowMonitor(*SetSystemRowTimer_);
+#endif
+        bool boolBlockHasDirichlet = false;
+        
+        {
+#ifdef BCBuilder_TIMER
+            Teuchos::TimeMonitor BlockRowHasDirichletMonitor(*BlockRowHasDirichletTimer_);
+#endif
+            boolBlockHasDirichlet = blockHasDirichletBC(blockRow,loc);
+        }
+
+        if (boolBlockHasDirichlet){
+            for (UN blockCol = 0; blockCol < numBlocks ; blockCol++) {
+                if ( blockMatrix->blockExists( blockRow, blockCol ) ) {
+                    MatrixPtr_Type matrix = blockMatrix->getBlock( blockRow, blockCol );
+                    setDirichletBCScaled( matrix, loc, blockRow, blockRow==blockCol,eps );
+                }
+            }
+        }
+    }
+}
+
+
 template<class SC,class LO,class GO,class NO>
 void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) const{
 
@@ -622,8 +732,6 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
 
                     // To get the correct domain from vecDomain_ we need to know the index of any (in this case the
                     // first) entry that was done with addBC for this block
-                    const auto it = std::find(this->vecBlockID_.begin(), this->vecBlockID_.end(), blockRow);
-                    std::cout << " loc " << loc << " it - something " << it - this->vecBlockID_.begin() << std::endl;
                     auto matrixMap = this->vecDomain_.at(loc)->getMapUnique();
                     // // Use Xpetra::MatrixFactory to build a matrix with known row and column maps
                     auto tpetraMatrix = Teuchos::rcp(new Tpetra::CrsMatrix<SC,LO,GO,NO>(matrixMap->getTpetraMap(), matrixMap->getTpetraMap(), 1)); // Tpetra::MatrixFactory<SC, LO, GO, NO>::Build(matrixMap->getTpetraMap(), matrixMap->getTpetraMap(), 1);
@@ -646,6 +754,85 @@ void BCBuilder<SC,LO,GO,NO>::setSystem(const BlockMatrixPtr_Type &blockMatrix) c
         }
     }
 }
+
+
+template<class SC,class LO,class GO,class NO>
+void BCBuilder<SC,LO,GO,NO>::setDirichletBCScaled(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock, double eps) const{
+    
+    matrix->resumeFill();
+    bool isDirichlet;
+    UN dofsPerNode = vecDofs_.at(loc);
+    vec_int_ptr_Type bcFlags = vecDomain_.at(loc)->getBCFlagUnique();
+    MapConstPtr_Type nodeMap = vecDomain_.at(loc)->getMapUnique();
+
+    for (LO i=0; i<bcFlags->size(); i++) { // flags are for nodes.
+        int flag = bcFlags->at(i);
+        isDirichlet = false;
+        int locThisFlag;
+
+        if( findFlag(flag, blockRow, locThisFlag) ){
+
+            if( !vecBCType_.at(locThisFlag).compare("Dirichlet") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_X") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_Y") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_Z") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_X_Y") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_X_Z") ||
+                !vecBCType_.at(locThisFlag).compare("Dirichlet_Y_Z") )
+                isDirichlet = true;
+            if (isDirichlet) {
+
+                if (isDiagonalBlock)
+                    setLocalRowEntry(matrix, i, dofsPerNode, locThisFlag,eps );
+                else
+                    setLocalRowZero(matrix, i, dofsPerNode, locThisFlag );
+            }
+        }
+    }
+    matrix->fillComplete( matrix->getMap("domain"), matrix->getMap("range") );
+}
+
+
+template<class SC,class LO,class GO,class NO>
+void BCBuilder<SC,LO,GO,NO>::setLocalRowEntry(const MatrixPtr_Type &matrix, LO localNode, UN dofsPerNode, int loc,double eps) const{
+    
+    Teuchos::ArrayView<const SC> valuesOld;
+    Teuchos::ArrayView<const LO> indices;
+
+    MapConstPtr_Type colMap = matrix->getMap("col");
+    LO localDof = (LO) (dofsPerNode * localNode);
+    for (UN dof=0; dof<dofsPerNode; dof++) {
+        if ( vecBCType_.at(loc) == "Dirichlet" ||
+            (vecBCType_.at(loc) == "Dirichlet_X" && dof==0 ) ||
+            (vecBCType_.at(loc) == "Dirichlet_Y" && dof==1 ) ||
+            (vecBCType_.at(loc) == "Dirichlet_Z" && dof==2 ) ||
+            (vecBCType_.at(loc) == "Dirichlet_X_Y" && dof!=2 )||
+            (vecBCType_.at(loc) == "Dirichlet_X_Z" && dof!=1 )||
+            (vecBCType_.at(loc) == "Dirichlet_Y_Z" && dof!=0 )
+            ) {
+           // cout << " Setting Dirichlet Row 1 for node " << localDof << " of type " << vecBCType_.at(loc)  <<endl;
+            GO globalDof = matrix->getMap()->getGlobalElement( localDof );
+            matrix->getLocalRowView(localDof, indices, valuesOld);
+            double rowSum = 0.;
+            for (UN j=0; j<indices.size(); j++) {
+               rowSum += abs(valuesOld[j]);
+            }
+            Teuchos::Array<SC> values( valuesOld.size(), Teuchos::ScalarTraits<SC>::zero() );
+            bool setOne = false;
+            for (UN j=0; j<indices.size() && !setOne; j++) {
+                if ( colMap->getGlobalElement( indices[j] )  == globalDof ){
+                    values[j] = valuesOld[j]*eps;
+
+                    setOne = true;
+                }
+            }
+            matrix->replaceLocalValues(localDof, indices(), values());
+        }
+        localDof++;
+    }
+    
+}
+
 
 template<class SC,class LO,class GO,class NO>
 void BCBuilder<SC,LO,GO,NO>::setDirichletBC(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock) const{

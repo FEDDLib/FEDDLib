@@ -10,21 +10,13 @@
  Declaration of Navier-Stokes
 
  @brief Navier-Stokes
- @author Christian Hochmuth
+ @authors Christian Hochmuth, Lea Saßmannshausen
  @version 1.0
  @copyright CH
  */
 
 namespace FEDD{
 
-    /*!
-     Declaration of Navier-Stokes
-
-     @brief Navier-Stokes
-     @author Christian Hochmuth
-     @version 1.0
-     @copyright CH
-     */
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class NavierStokes : public NonLinearProblem<SC,LO,GO,NO>  {
@@ -33,8 +25,9 @@ public:
     //! @name Public Types
     //@{
     typedef Problem<SC,LO,GO,NO> Problem_Type;
-    typedef typename Problem_Type::Matrix_Type Matrix_Type;
-    typedef typename Problem_Type::MatrixPtr_Type MatrixPtr_Type;
+    typedef Matrix<SC,LO,GO,NO> Matrix_Type;
+    typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
+    typedef Teuchos::RCP<const MatrixPtr_Type> MatrixConstPtr_Type;
 
     typedef typename Problem_Type::MapConstPtr_Type MapConstPtr_Type;
 
@@ -46,6 +39,8 @@ public:
     typedef typename Problem_Type::MultiVectorConstPtr_Type MultiVectorConstPtr_Type;
     typedef typename Problem_Type::BlockMultiVectorPtr_Type BlockMultiVectorPtr_Type;
 
+    typedef typename Problem_Type::Domain_Type Domain_Type;
+    typedef typename Problem_Type::DomainPtr_Type DomainPtr_Type;
     typedef typename Problem_Type::DomainConstPtr_Type DomainConstPtr_Type;
     typedef typename Problem_Type::CommConstPtr_Type CommConstPtr_Type;
 
@@ -58,6 +53,10 @@ public:
     typedef typename NonLinearProblem_Type::ThyraVec_Type ThyraVec_Type;
     typedef typename NonLinearProblem_Type::ThyraOp_Type ThyraOp_Type;
     typedef Thyra::BlockedLinearOpBase<SC> ThyraBlockOp_Type;
+
+    typedef BCBuilder<SC,LO,GO,NO> BC_Type;
+    typedef Teuchos::RCP<BC_Type> BCPtr_Type;
+    typedef Teuchos::RCP<const BC_Type> BCConstPtr_Type;
 
     typedef typename NonLinearProblem_Type::TpetraOp_Type TpetraOp_Type;
     //@}
@@ -74,10 +73,12 @@ public:
     void assembleConstantMatrices() const;
     
     void assembleDivAndStab() const;
+
+    void updateConvectionDiffusionOperator() const;
     
     void reAssemble( std::string type ) const;
     
-    virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
+    void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const override{}
     
     void reAssembleFSI(std::string type, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const;
     
@@ -88,45 +89,29 @@ public:
     virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const; //standard or reverse
     
     void calculateNonLinResidualVecWithMeshVelo(std::string type, double time, MultiVectorPtr_Type u_minus_w, MatrixPtr_Type P) const;
-//    virtual int ComputeDragLift(vec_dbl_ptr_Type &values);
+    // virtual int ComputeDragLift(vec_dbl_ptr_Type &values);
 
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    void getValuesOfInterest( vec_dbl_Type& values ) override {}
     
-    virtual void computeValuesOfInterestAndExport() {};
+    void computeValuesOfInterestAndExport() override {}
 
-//    virtual void assembleExternal( std::string type ){};
+//    virtual void assembleExternal( std::string type ){}
     /*####################*/
 
     mutable MatrixPtr_Type 	A_;
     vec_int_ptr_Type pressureIDsLoc;
     MultiVectorPtr_Type u_rep_;
-private:
-    mutable bool stokesTekoPrecUsed_; //Help variable to signal that we constructed the initial preconditioner for NOX with the Stokes system and we do not need to compute it if fill_W_prec is called for the first time. However, the preconditioner is only correct if a Stokes system is solved in the first nonlinear iteration. This only affects the block preconditioners of Teko
-    /*####################*/
 
-public:
+    BCPtr_Type bcFactoryPCD_;
+    mutable MatrixPtr_Type 	Mp_;
+    mutable MatrixPtr_Type 	BT_Mp_;
+    mutable MatrixPtr_Type BT_Mp_B_;
+    mutable MatrixPtr_Type 	Ap_;
 
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Monolithic() const;
-#ifdef FEDD_HAVE_TEKO
-    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Block() const;
-#endif
-    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
+    bool augmentedLagrange_=false;
 
 private:
 
-    virtual void evalModelImpl(
-                       const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                       const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
-                       ) const;
-
-    void evalModelImplMonolithic(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                                 const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
-
-#ifdef FEDD_HAVE_TEKO
-    void evalModelImplBlock(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                            const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
-#endif
 
 };
 }

@@ -42,15 +42,15 @@ class FiniteElement {
     
     void setElement( vec_int_Type& localNodeList );
     
-    int getFlag() const {return flag_;};
+    int getFlag() const {return flag_;}
 
 	void setFlag( int elementFlag );
     
-    const vec_LO_Type& getVectorNodeList() const { return localNodeIDs_; };
+    const vec_LO_Type& getVectorNodeList() const { return localNodeIDs_; }
     
-    vec_LO_Type getVectorNodeListNonConst(){ return localNodeIDs_; };
+    vec_LO_Type getVectorNodeListNonConst(){ return localNodeIDs_; }
 
-    int size() { return localNodeIDs_.size(); };    
+    int size() { return localNodeIDs_.size(); }
     
     int getNode( int i ) const;
     
@@ -62,7 +62,7 @@ class FiniteElement {
     
     void addSubElement( FiniteElement& fe );
     
-    ElementsPtr_Type getSubElements(){ return subElements_; };
+    ElementsPtr_Type getSubElements(){ return subElements_; }
     
     void setSubElements( ElementsPtr_Type& subElements );
     
@@ -77,35 +77,35 @@ class FiniteElement {
     
     void print(MapConstPtr_Type mapRepeated=Teuchos::null);
 
-    void setFiniteElementRefinementType( std::string reType ){ refinementType_ = reType; }; // assigning a certain refinement typ, i.e. red, blue, green
+    void setFiniteElementRefinementType( std::string reType ){ refinementType_ = reType; } // assigning a certain refinement typ, i.e. red, blue, green
 
-    std::string getFiniteElementRefinementType( ){ return refinementType_; }; 
+    std::string getFiniteElementRefinementType( ){ return refinementType_; }
 
-	void tagForRefinement(){taggedForRefinement_ = true; }; // assigning simply the information whether element is tagged for refinement
+	void tagForRefinement(){taggedForRefinement_ = true; } // assigning simply the information whether element is tagged for refinement
 	
-	void untagForRefinement(){taggedForRefinement_ = false; }; // untagging previously tagged element
+	void untagForRefinement(){taggedForRefinement_ = false; } // untagging previously tagged element
 
-	bool isTaggedForRefinement(){ return taggedForRefinement_; }; 
+	bool isTaggedForRefinement(){ return taggedForRefinement_; }
 
-	bool isInterfaceElement(){return isInterfaceElement_; };
+	bool isInterfaceElement(){return isInterfaceElement_; }
 
-	void setInterfaceElement( bool interface){ isInterfaceElement_ = interface; };
+	void setInterfaceElement( bool interface){ isInterfaceElement_ = interface; }
 
-    void setPredecessorElement(GO id) {predecessorElement_ = id; };
+    void setPredecessorElement(GO id) {predecessorElement_ = id; }
 
-	GO getPredecessorElement(){return predecessorElement_; };
+	GO getPredecessorElement(){return predecessorElement_; }
 
-	void setRefinementEdge(LO id){refinementEdge_=id;};
+	void setRefinementEdge(LO id){refinementEdge_=id;}
 
-	LO getRefinementEdge(){return refinementEdge_;};
+	LO getRefinementEdge(){return refinementEdge_;}
 
-	void setMarkedEdges(LO id){markedEdges_.push_back(id);};
+	void setMarkedEdges(LO id){markedEdges_.push_back(id);}
 
-	vec_LO_Type getMarkedEdges(){return markedEdges_;};
+	vec_LO_Type getMarkedEdges(){return markedEdges_;}
 
-	void markEdge(){markedEdge_ = true;};
+	void markEdge(){markedEdge_ = true;}
 
-	bool isMarkedEdge(){return markedEdge_;};
+	bool isMarkedEdge(){return markedEdge_;}
 
 private:
     

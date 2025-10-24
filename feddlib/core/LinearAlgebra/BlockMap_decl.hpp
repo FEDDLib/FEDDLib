@@ -3,7 +3,7 @@
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "MultiVector.hpp"
+#include "Map.hpp"
 
 /*!
  Declaration of BlockMap
@@ -73,8 +73,6 @@ public:
 
     void info();
     
-    std::string getUnderlyingLib( ) const;
-        
     /// @brief Getting merged map of block maps
     /// @return mergedMap
     MapConstPtr_Type getMergedMap();
@@ -89,7 +87,7 @@ public:
     
     MapConstPtr_Type getBlock(UN i) const;
     
-    UN size() const { return blockMap_.size(); };
+    UN size() const { return blockMap_.size(); }
 private:
     
     Teuchos::Array<MapPtr_Type> blockMap_;

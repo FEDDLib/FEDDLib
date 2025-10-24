@@ -39,7 +39,7 @@ class AssembleFE_SCI_NH : public AssembleFE<SC,LO,GO,NO> {
          \brief Assemble the element Jacobian matrix.
          @param[in] block ID i
         */
-        void assembleJacobianBlock(LO i) override {};
+        void assembleJacobianBlock(LO i) override {}
 
 		void advanceInTime( double dt) override;
 

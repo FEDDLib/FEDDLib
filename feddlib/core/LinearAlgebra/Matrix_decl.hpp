@@ -13,6 +13,8 @@
 #include <Teuchos_VerboseObject.hpp>
 #include <Xpetra_MatrixMatrix.hpp>
 #include <MatrixMarket_Tpetra.hpp>
+#include <TpetraExt_MatrixMatrix.hpp>
+
 
 #include <Tpetra_CrsMatrix.hpp>
 //#include <Tpetra_MatrixMatrix.hpp>
@@ -188,6 +190,11 @@ public:
     TpetraMatrixConstPtr_Type getTpetraMatrix() const;
     
 	/*!
+		Tpetra Matrix Matrix Multiply
+	*/
+	void Multiply( const MatrixPtr_Type &tpA, bool transposeA , const MatrixPtr_Type  &tpB, bool transposeB, bool fillComplete=true);
+
+	/*!
 		\brief Matrix Vector Operation. Applying MultiVector X to this. Y = alpha * (this)^mode * X + beta * Y. Mode being transposed or not. 
 	*/
     void apply(const MultiVector_Type& X,
@@ -222,17 +229,22 @@ public:
     LO getGlobalMaxNumRowEntries() const;
 
     void insertLocalValues (LO localRow, const Teuchos::ArrayView< const LO > &cols, const Teuchos::ArrayView< const SC > &vals);
-	/* !
+	/*!
 		Matrix Analogue to MultiVector Import. Based on Row Map of Matrix mvIn. 
 	*/
 
     void importFromVector( MatrixPtr_Type mvIn, bool reuseImport = false, std::string combineMode = "Insert", std::string type="Forward" );
 
-	/* !
+	/*!
 		Matrix Analogue to MultiVector Export. Based on Row Map of Matrix mvIn. 
 	*/
     void exportFromVector( MatrixPtr_Type mvIn, bool reuseExport = false, std::string combineMode = "Insert", std::string type="Forward" );
 	
+	/*! 
+		Build Diagonal Inverse of this matrix and return it
+	*/
+	MatrixPtr_Type buildDiagonalInverse( std::string diagonalType);
+
 
 private:
 

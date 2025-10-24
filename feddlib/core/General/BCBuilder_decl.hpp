@@ -113,6 +113,22 @@ public:
     */
     void addBC(BC_func_Type funcBC, int flag, int block, const DomainPtr_Type &domain, std::string type, int dofs, vec_dbl_Type& parameter_vec, MultiVectorConstPtr_Type& externalSol);
     
+    /*! 
+     @brief Adding Boundary Condition with extra parameters and vector values (i.e. when the inflow of a region is computed)
+     @param funcBC function representing bc
+     @param flag flag corresponding to the funcBC
+     @param block diagonal block corresponding to the bc (i.e. in block systems like stokes equation)
+     @param domain finite element space correspong to block 
+     @param type of bc. Dirichlet, Dirichlet_X ...
+     @param dofs degrees of freedom of bc (i.e. 3 for a vector valued problem)
+     @param parameter_vec vector containing different parameters for bc
+     @param externalSol vector with values for bc 
+     @param determineFlowRate We determine the maximum velocity by the flow rate
+
+    */
+    void addBC(BC_func_Type funcBC, int flag, int block, const DomainPtr_Type &domain, std::string type, int dofs, vec_dbl_Type &parameter_vec, MultiVectorConstPtr_Type& externalSol, bool determineFlowRate ,BC_func_Type funcBC_flowRate);
+
+    void determineVelocityForFlowrate(LO i, double time) const;
 
     /// @brief Setting bundary condtions to problem
     /// @param blockMatrix System matrix 
@@ -152,6 +168,19 @@ public:
     /// @param valuesSubstract 
     void setDirichletBoundaryFromExternal(Teuchos::ArrayRCP<SC>& values/*values will be set to this vector*/, LO index, int loc, double time, std::string type, Teuchos::ArrayRCP<SC> valuesSubstract = Teuchos::null ) const;
 
+    /// @brief 
+    /// @param matrix 
+    /// @param loc 
+    /// @param blockRow 
+    /// @param isDiagonalBlock 
+    void setDirichletBCScaled(const MatrixPtr_Type &matrix, int loc, int blockRow, bool isDiagonalBlock, double eps=1.0) const;
+
+    /// @brief 
+    /// @param matrix 
+    /// @param localNode 
+    /// @param dofsPerNode 
+    /// @param loc 
+    void setLocalRowEntry(const MatrixPtr_Type &matrix, LO localNode, UN dofsPerNode, int loc, double eps) const;
     
     /// @brief 
     /// @param blockMV 
@@ -162,8 +191,10 @@ public:
     /// @param blockMatrix 
     void setSystem(const BlockMatrixPtr_Type &blockMatrix) const;
     
-//    void setSystem(const MatrixPtr_Type &matrix) const;
-    
+    /// @brief Set boundary conditions to system
+    /// @param blockMatrix 
+    void setSystemScaled(const BlockMatrixPtr_Type &blockMatrix,double eps=1.0) const;
+        
     /// @brief 
     /// @param matrix 
     /// @param loc 
@@ -213,12 +244,14 @@ public:
 private:
     
     std::vector<BC_func_Type> vecBC_func_;
+    std::vector<BC_func_Type> vecBC_func_flowRate_;
     vec_int_Type vecFlag_;
+    vec_bool_Type vecFlowRateBool_;
     vec_int_Type vecBlockID_;
     std::vector<DomainPtr_Type> vecDomain_;
     std::vector<std::string> vecBCType_;
     vec_int_Type vecDofs_;
-    vec2D_dbl_Type vecBC_Parameters_;
+    mutable vec2D_dbl_Type vecBC_Parameters_;
     std::vector<MultiVectorConstPtr_Type> vecExternalSol_;
     mutable vec_dbl_ptr_Type resultPtr_;
     mutable vec_dbl_ptr_Type pointPtr_;

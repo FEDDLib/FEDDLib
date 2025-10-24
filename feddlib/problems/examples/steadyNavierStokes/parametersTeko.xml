@@ -98,13 +98,6 @@
                                 <Parameter name="Type" type="string"   value="linear"/>
                                 <Parameter name="GatheringSteps" type="int" value="1"/>
                                 <Parameter name="NumProcs" type="int"      value="2"/>
-                                <!-- How to use NumProcs
-                                 -> 0 stands for all processes
-                                 -> 1 stands for 1 process
-                                 -> -1 stands corresponds to MaxProcs -1 from Mumps
-                                 -> n stands for a factor of 1/n
-                                 -> -n stands for the n-th root
-                                 -->
                                 <Parameter name="Factor" type="double"   value="1.0"/>
                                 <!-- NumProcs = Factor * NumProcs -->
                                 <ParameterList name="Zoltan2 Parameter">
@@ -178,13 +171,6 @@
                                 <Parameter name="Type"                                      type="string"   value="linear"/>
                                 <Parameter name="GatheringSteps"                            type="int"      value="1"/>
                                 <Parameter name="NumProcs"                                  type="int"      value="2"/>
-                                <!-- How to use NumProcs
-                                 -> 0 stands for all processes
-                                 -> 1 stands for 1 process
-                                 -> -1 stands corresponds to MaxProcs -1 from Mumps
-                                 -> n stands for a factor of 1/n
-                                 -> -n stands for the n-th root
-                                 -->
                                 <Parameter name="Factor"                                    type="double"   value="1.0"/>
                                 <!-- NumProcs = Factor * NumProcs -->
                                 <ParameterList name="Zoltan2 Parameter">

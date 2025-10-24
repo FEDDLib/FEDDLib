@@ -37,10 +37,14 @@ public:
     typedef typename Problem_Type::Comm_Type Comm_Type;
     typedef typename Problem_Type::CommConstPtr_Type CommConstPtr_Type;
 
+    typedef typename Problem_Type::PreconditionerPtr_Type PreconditionerPtr_Type;
+
     typedef typename Problem_Type::LinSolverBuilderPtr_Type  LinSolverBuilderPtr_Type;
     
     // hasSourceTerm and boolLinearProblem should be irrelevant, as this class should be only used when constructing a precondtioner
     MinPrecProblem(ParameterListPtr_Type pl, CommConstPtr_Type comm);
+
+    MinPrecProblem(ParameterListPtr_Type pl, CommConstPtr_Type comm, PreconditionerPtr_Type prec);
 
     ~MinPrecProblem();
     
@@ -53,15 +57,15 @@ public:
     virtual void info(){
         if ( this->comm_->getRank() )
             std::cout<< "Minimal implementation of Problem. This object has sufficient information for the setup of FROSch." << std::endl;
-    };
+    }
     
-    virtual void assemble( std::string type="" )const {};
+    virtual void assemble( std::string type="" )const {}
     
-    virtual void getValuesOfInterest( vec_dbl_Type& values ){};
+    virtual void getValuesOfInterest( vec_dbl_Type& values ){}
 
-    virtual void computeValuesOfInterestAndExport() {};
+    virtual void computeValuesOfInterestAndExport() {}
 
-//    virtual void assembleExternal( std::string type ){};
+//    virtual void assembleExternal( std::string type ){}
 
 protected:
 

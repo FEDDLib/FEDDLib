@@ -1,6 +1,8 @@
 #ifndef FE_DEF_hpp
 #define FE_DEF_hpp
 
+#include <string>
+#include "feddlib/core/core_config.h"
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 #include <aceinterface.hpp>
 #endif
@@ -1217,7 +1219,6 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 		A->getBlock(0,0)->fillComplete();
 	    A->getBlock(1,0)->fillComplete(domainVec_.at(FElocVel)->getMapVecFieldUnique(),domainVec_.at(FElocPres)->getMapUnique());
 	    A->getBlock(0,1)->fillComplete(domainVec_.at(FElocPres)->getMapUnique(),domainVec_.at(FElocVel)->getMapVecFieldUnique());
-	    A->getBlock(1,1)->fillComplete();
 	}
 
 	if(assembleMode == "Rhs"){
@@ -1343,7 +1344,7 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Ty
 /*!
 
  \brief Adding FEBlock (row,column) to FE Blockmatrix
-@todo column indices pre determine
+TODO: column indices pre determine
 
 @param[in] &A Global Block Matrix
 @param[in] elementMatrix Stiffness matrix of one element
@@ -1482,6 +1483,112 @@ void FE<SC,LO,GO,NO>::assemblyIdentity(MatrixPtr_Type &A){
     for (int i=0; i<A->getNodeNumRows(); i++) {
         index[0] = map->getGlobalElement( i );
         A->insertGlobalValues( index[0], index(), value() );
+    }
+    A->fillComplete();
+}
+
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblySurfaceRobinBC(int dim,
+                                              std::string FETypeP,
+                                              std::string FETypeV,
+                                              MultiVectorPtr_Type u,
+                                              MatrixPtr_Type A,
+                                              std::vector<SC>& funcParameter,
+                                              RhsFunc_Type func,
+                                              ParameterListPtr_Type parameters){
+
+    ElementsPtr_Type elements = domainVec_.at(1)->getElementsC();
+    ElementsPtr_Type elementsV = domainVec_.at(0)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(1)->getPointsRepeated();
+
+    MapConstPtr_Type map = domainVec_.at(1)->getMapRepeated();
+
+    vec2D_dbl_ptr_Type     phi,phiV;
+    vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+   
+    UN extraDeg = Helper::determineDegree( dim-1, FETypeV, Helper::Deriv0);
+    UN deg = Helper::determineDegree( dim-1, FETypeP, Helper::Deriv0)*2 + extraDeg;
+
+
+    Helper::getPhi(phi, weights, dim-1, FETypeP, deg);
+    Helper::getPhi(phiV, weights, dim-1, FETypeV, deg);
+
+    SC detB;
+    SC absDetB;
+    SmallMatrix<SC> B(dim);
+    
+    
+    vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
+    vec_dbl_Type uLocN(  weights->size() , -1. );
+
+    Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
+
+
+    SC elScaling;
+    vec_dbl_Type b(dim);
+       
+    std::vector<double> valueFunc(dim);
+    // The second last entry is a placeholder for the surface element flag. It will be set below
+    SC* paramsFunc = &(funcParameter[0]);
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elementsV->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1){
+                // Setting flag to the placeholder (second last entry). The last entry at (funcParameter.size() - 1) should always be the degree of the surface function
+               
+                vec_int_Type nodeList = feSub.getVectorNodeListNonConst();
+                vec_int_Type nodeListP = elements->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+
+                vec_dbl_Type v_E(dim,1.);
+                double norm_v_E=1.;
+                vec_dbl_Type x(dim,0.); //dummy
+                paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();          
+
+                func( &x[0], &valueFunc[0], paramsFunc);
+                if(valueFunc[0] > 0.){
+                    Helper::computeSurfaceNormal(dim, pointsRep,nodeListP,v_E,norm_v_E);
+
+                    Helper::buildTransformationSurface( nodeListP, pointsRep, B, b, FETypeP);
+
+                    elScaling = B.computeScaling( );
+                    for (int w=0; w<phiV->size(); w++){ //quads points
+                        for (int d=0; d<dim; d++) {
+                            uLoc[d][w] = 0.;
+                            for (int i=0; i < phiV->at(0).size(); i++) {
+                                LO index = dim * nodeList[i] + d;
+                                uLoc[d][w] += uArray[index] * phiV->at(w).at(i);
+                            }
+                        }
+                    }
+                    for (int w=0; w<phiV->size(); w++){ //quads points
+                        uLocN[w] = 0.;
+                        for (int d=0; d<dim; d++) {
+                            uLocN[w] += uLoc[d][w] *v_E[d] / norm_v_E;
+                        }
+                    }
+                    for (UN i=0; i < phi->at(0).size(); i++) {
+                        Teuchos::Array<SC> value( phi->at(0).size(), 0. );
+                        Teuchos::Array<GO> indices( phi->at(0).size(), 0 );
+                        for (UN j=0; j < value.size(); j++) {
+                            for (UN w=0; w<phi->size(); w++) {
+                                value[j] += weights->at(w) * uLocN[w]* (*phi)[w][j] * (*phi)[w][i]  ;
+                            }
+                            value[j] *= elScaling;
+                            indices[j] = GO (  map->getGlobalElement( nodeListP[j] ) );
+                        }
+
+                        GO row = GO ( map->getGlobalElement( nodeListP[i] ) );
+                        A->insertGlobalValues( row, indices(), value() );
+                    }
+                    
+                }
+            }
+        }
     }
     A->fillComplete();
 }
@@ -1903,328 +2010,328 @@ void FE<SC,LO,GO,NO>::applyDiff( vec3D_dbl_Type& dPhiIn,
     }
 }
     
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::assemblyAceGenTPM(    MatrixPtr_Type &A00,
-                                            MatrixPtr_Type &A01,
-                                            MatrixPtr_Type &A10,
-                                            MatrixPtr_Type &A11,
-                                            MultiVectorPtr_Type &F0,
-                                            MultiVectorPtr_Type &F1,
-                                            MapPtr_Type &mapRepeated1,
-                                            MapPtr_Type &mapRepeated2,
-                                            ParameterListPtr_Type parameterList,
-                                            MultiVectorPtr_Type u_repeatedNewton,
-                                            MultiVectorPtr_Type p_repeatedNewton,
-                                            MultiVectorPtr_Type u_repeatedTime,
-                                            MultiVectorPtr_Type p_repeatedTime,
-                                            bool update,
-                                            bool updateHistory)
-{
+// template <class SC, class LO, class GO, class NO>
+// void FE<SC,LO,GO,NO>::assemblyAceGenTPM(    MatrixPtr_Type &A00,
+//                                             MatrixPtr_Type &A01,
+//                                             MatrixPtr_Type &A10,
+//                                             MatrixPtr_Type &A11,
+//                                             MultiVectorPtr_Type &F0,
+//                                             MultiVectorPtr_Type &F1,
+//                                             MapPtr_Type &mapRepeated1,
+//                                             MapPtr_Type &mapRepeated2,
+//                                             ParameterListPtr_Type parameterList,
+//                                             MultiVectorPtr_Type u_repeatedNewton,
+//                                             MultiVectorPtr_Type p_repeatedNewton,
+//                                             MultiVectorPtr_Type u_repeatedTime,
+//                                             MultiVectorPtr_Type p_repeatedTime,
+//                                             bool update,
+//                                             bool updateHistory)
+// {
     
 
-    std::string tpmType = parameterList->sublist("Parameter").get("TPM Type","Biot");
+//     std::string tpmType = parameterList->sublist("Parameter").get("TPM Type","Biot");
     
-    int dim = domainVec_[0]->getDimension();
-    int idata = 1; //= we should init this
-    int ic = -1; int ng = -1;
+//     int dim = domainVec_[0]->getDimension();
+//     int idata = 1; //= we should init this
+//     int ic = -1; int ng = -1;
     
-    //ed.hp:history previous (timestep); previous solution (velocity and acceleration)
-    //ed.ht:? same length as hp
-    ElementsPtr_Type elements1 = domainVec_[0]->getElementsC();
-    ElementsPtr_Type elements2 = domainVec_[1]->getElementsC();
+//     //ed.hp:history previous (timestep); previous solution (velocity and acceleration)
+//     //ed.ht:? same length as hp
+//     ElementsPtr_Type elements1 = domainVec_[0]->getElementsC();
+//     ElementsPtr_Type elements2 = domainVec_[1]->getElementsC();
     
-    int sizeED = 24; /* 2D case for P2 elements:
-                      12 velocities, 12 accelerations (2 dof per P2 node)
-                      */
-    if (dim==3)
-        sizeED = 60;/* 3D case for P2 elements:
-                       30 velocities, 30 accelerations (3 dof per P2 node)
-                    */
-    if (ed_.size()==0){
-        for (UN T=0; T<elements1->numberElements(); T++)
-            ed_.push_back( Teuchos::rcp(new DataElement( sizeED )) );
-    }
+//     int sizeED = 24; /* 2D case for P2 elements:
+//                       12 velocities, 12 accelerations (2 dof per P2 node)
+//                       */
+//     if (dim==3)
+//         sizeED = 60;/* 3D case for P2 elements:
+//                        30 velocities, 30 accelerations (3 dof per P2 node)
+//                     */
+//     if (ed_.size()==0){
+//         for (UN T=0; T<elements1->numberElements(); T++)
+//             ed_.push_back( Teuchos::rcp(new DataElement( sizeED )) );
+//     }
     
-    std::vector<ElementSpec> es_vec( parameterList->sublist("Parameter").get("Number of materials",1) , ElementSpec());
-    vec2D_dbl_Type dataVec( parameterList->sublist("Parameter").get("Number of materials",1), vec_dbl_Type(6,0.) );
+//     std::vector<ElementSpec> es_vec( parameterList->sublist("Parameter").get("Number of materials",1) , ElementSpec());
+//     vec2D_dbl_Type dataVec( parameterList->sublist("Parameter").get("Number of materials",1), vec_dbl_Type(6,0.) );
     
-    for (int i=0; i<dataVec.size(); i++) {
-        if (tpmType == "Biot") {
-            if (dim==2) {
-                dataVec[i][0] = parameterList->sublist("Timestepping Parameter").get("Newmark gamma",0.5);
-                dataVec[i][1] = parameterList->sublist("Timestepping Parameter").get("Newmark beta",0.25);
-                dataVec[i][2] = parameterList->sublist("Parameter").get("initial volume fraction solid material"+std::to_string(i+1),0.5); //do we need this?
-                dataVec[i][3] = parameterList->sublist("Parameter").get("Darcy parameter material"+std::to_string(i+1),1.e-2);
-                dataVec[i][4] = parameterList->sublist("Parameter").get("Youngs modulus material"+std::to_string(i+1),60.e6);
-                dataVec[i][5] = parameterList->sublist("Parameter").get("Poisson ratio material"+std::to_string(i+1),0.3);
-            }
-            else if (dim==3) {
-                dataVec[i].resize(12);
-                dataVec[i][0] = parameterList->sublist("Parameter").get("Youngs modulus material"+std::to_string(i+1),2.e5);
-                dataVec[i][1] = parameterList->sublist("Parameter").get("Poisson ratio material"+std::to_string(i+1),0.3);
-                dataVec[i][2] = 0.; //body force x
-                dataVec[i][3] = 0.; //body force y
-                dataVec[i][4] = parameterList->sublist("Parameter").get("body force z"+std::to_string(i+1),0.);; //body force z
-                dataVec[i][5] = parameterList->sublist("Parameter").get("initial volume fraction solid material"+std::to_string(i+1),0.67);
-                dataVec[i][6] = parameterList->sublist("Parameter").get("Darcy parameter material"+std::to_string(i+1),0.01);
-                dataVec[i][7] = 2000.; //effective density solid
-                dataVec[i][8] = 1000.; //effective density fluid?
-                dataVec[i][9] = 9.81;  // gravity
-                dataVec[i][10] = parameterList->sublist("Timestepping Parameter").get("Newmark gamma",0.5);
-                dataVec[i][11] = parameterList->sublist("Timestepping Parameter").get("Newmark beta",0.25);
-            }
-        }
+//     for (int i=0; i<dataVec.size(); i++) {
+//         if (tpmType == "Biot") {
+//             if (dim==2) {
+//                 dataVec[i][0] = parameterList->sublist("Timestepping Parameter").get("Newmark gamma",0.5);
+//                 dataVec[i][1] = parameterList->sublist("Timestepping Parameter").get("Newmark beta",0.25);
+//                 dataVec[i][2] = parameterList->sublist("Parameter").get("initial volume fraction solid material"+std::to_string(i+1),0.5); //do we need this?
+//                 dataVec[i][3] = parameterList->sublist("Parameter").get("Darcy parameter material"+std::to_string(i+1),1.e-2);
+//                 dataVec[i][4] = parameterList->sublist("Parameter").get("Youngs modulus material"+std::to_string(i+1),60.e6);
+//                 dataVec[i][5] = parameterList->sublist("Parameter").get("Poisson ratio material"+std::to_string(i+1),0.3);
+//             }
+//             else if (dim==3) {
+//                 dataVec[i].resize(12);
+//                 dataVec[i][0] = parameterList->sublist("Parameter").get("Youngs modulus material"+std::to_string(i+1),2.e5);
+//                 dataVec[i][1] = parameterList->sublist("Parameter").get("Poisson ratio material"+std::to_string(i+1),0.3);
+//                 dataVec[i][2] = 0.; //body force x
+//                 dataVec[i][3] = 0.; //body force y
+//                 dataVec[i][4] = parameterList->sublist("Parameter").get("body force z"+std::to_string(i+1),0.);; //body force z
+//                 dataVec[i][5] = parameterList->sublist("Parameter").get("initial volume fraction solid material"+std::to_string(i+1),0.67);
+//                 dataVec[i][6] = parameterList->sublist("Parameter").get("Darcy parameter material"+std::to_string(i+1),0.01);
+//                 dataVec[i][7] = 2000.; //effective density solid
+//                 dataVec[i][8] = 1000.; //effective density fluid?
+//                 dataVec[i][9] = 9.81;  // gravity
+//                 dataVec[i][10] = parameterList->sublist("Timestepping Parameter").get("Newmark gamma",0.5);
+//                 dataVec[i][11] = parameterList->sublist("Timestepping Parameter").get("Newmark beta",0.25);
+//             }
+//         }
         
         
-        else if (tpmType == "Biot-StVK") {
-            dataVec[i][0] = parameterList->sublist("Parameter").get("Youngs modulus material"+std::to_string(i+1),60.e6);
-            dataVec[i][1] = parameterList->sublist("Parameter").get("Poisson ratio material"+std::to_string(i+1),0.3);
-            dataVec[i][2] = parameterList->sublist("Parameter").get("initial volume fraction solid material"+std::to_string(i+1),0.5); //do we need this?
-            dataVec[i][3] = parameterList->sublist("Parameter").get("Darcy parameter material"+std::to_string(i+1),1.e-2);
-            dataVec[i][4] = parameterList->sublist("Timestepping Parameter").get("Newmark gamma",0.5);
-            dataVec[i][5] = parameterList->sublist("Timestepping Parameter").get("Newmark beta",0.25);
-        }
-    }
+//         else if (tpmType == "Biot-StVK") {
+//             dataVec[i][0] = parameterList->sublist("Parameter").get("Youngs modulus material"+std::to_string(i+1),60.e6);
+//             dataVec[i][1] = parameterList->sublist("Parameter").get("Poisson ratio material"+std::to_string(i+1),0.3);
+//             dataVec[i][2] = parameterList->sublist("Parameter").get("initial volume fraction solid material"+std::to_string(i+1),0.5); //do we need this?
+//             dataVec[i][3] = parameterList->sublist("Parameter").get("Darcy parameter material"+std::to_string(i+1),1.e-2);
+//             dataVec[i][4] = parameterList->sublist("Timestepping Parameter").get("Newmark gamma",0.5);
+//             dataVec[i][5] = parameterList->sublist("Timestepping Parameter").get("Newmark beta",0.25);
+//         }
+//     }
     
-    for (int i=0; i<es_vec.size(); i++){
-        if(tpmType == "Biot"){
-            if (dim==2)
-                this->SMTSetElSpecBiot(&es_vec[i] ,&idata, ic, ng, dataVec[i]);
-            else if(dim==3)
-                this->SMTSetElSpecBiot3D(&es_vec[i] ,&idata, ic, ng, dataVec[i]);
-        }
-        else if(tpmType == "Biot-StVK")
-            this->SMTSetElSpecBiotStVK(&es_vec[i] ,&idata, ic, ng, dataVec[i]);
-    }
-    LO elementSizePhase = elements1->nodesPerElement();
-    LO sizePhase = dim * elementSizePhase;
-    LO sizePressure = elements2->nodesPerElement();
-    GO sizePhaseGlobal = A00->getMap()->getMaxAllGlobalIndex()+1;
-    int workingVectorSize;
-    if(tpmType == "Biot"){
-        if (dim==2)
-            workingVectorSize = 5523;
-        else if(dim==3)
-            workingVectorSize = 1817;
-    }
-    else if(tpmType == "Biot-StVK")
-        workingVectorSize = 5223;
+//     for (int i=0; i<es_vec.size(); i++){
+//         if(tpmType == "Biot"){
+//             if (dim==2)
+//                 this->SMTSetElSpecBiot(&es_vec[i] ,&idata, ic, ng, dataVec[i]);
+//             else if(dim==3)
+//                 this->SMTSetElSpecBiot3D(&es_vec[i] ,&idata, ic, ng, dataVec[i]);
+//         }
+//         else if(tpmType == "Biot-StVK")
+//             this->SMTSetElSpecBiotStVK(&es_vec[i] ,&idata, ic, ng, dataVec[i]);
+//     }
+//     LO elementSizePhase = elements1->nodesPerElement();
+//     LO sizePhase = dim * elementSizePhase;
+//     LO sizePressure = elements2->nodesPerElement();
+//     GO sizePhaseGlobal = A00->getMap()->getMaxAllGlobalIndex()+1;
+//     int workingVectorSize;
+//     if(tpmType == "Biot"){
+//         if (dim==2)
+//             workingVectorSize = 5523;
+//         else if(dim==3)
+//             workingVectorSize = 1817;
+//     }
+//     else if(tpmType == "Biot-StVK")
+//         workingVectorSize = 5223;
     
-    double* v = new double [workingVectorSize];
+//     double* v = new double [workingVectorSize];
 
-    // nd sind Nodalwerte, Anzahl an structs in nd sollte den Knoten entsprechen, bei P2-P1 in 2D also 9
-    // In X stehen die Koordinaten, X[0] ist x-Koordinate, X[1] ist y-Koordinate, etc.
-    // nd->X[0]
-    // at ist die Loesung im letzten Newtonschritt.
-    // nd[0]->at[0];
-    // ap ist die Loesung im letzten Zeitschritt.
-    // nd[0]->ap[0]
-    // rdata ist die Zeitschrittweite, RD_TimeIncrement wird in sms.h definiert, entsprechend wird auch die Laenge von rdata dort definiert. Standard 400, aber auch nicht gesetzt. Wert muss selber initialisiert werden; eventuell kuerzer moeglich.
+//     // nd sind Nodalwerte, Anzahl an structs in nd sollte den Knoten entsprechen, bei P2-P1 in 2D also 9
+//     // In X stehen die Koordinaten, X[0] ist x-Koordinate, X[1] ist y-Koordinate, etc.
+//     // nd->X[0]
+//     // at ist die Loesung im letzten Newtonschritt.
+//     // nd[0]->at[0];
+//     // ap ist die Loesung im letzten Zeitschritt.
+//     // nd[0]->ap[0]
+//     // rdata ist die Zeitschrittweite, RD_TimeIncrement wird in sms.h definiert, entsprechend wird auch die Laenge von rdata dort definiert. Standard 400, aber auch nicht gesetzt. Wert muss selber initialisiert werden; eventuell kuerzer moeglich.
 
-    std::vector<double> rdata(RD_TimeIncrement+1, 0.);
+//     std::vector<double> rdata(RD_TimeIncrement+1, 0.);
 
-    rdata[RD_TimeIncrement] = parameterList->sublist("Timestepping Parameter").get("dt",0.01);
+//     rdata[RD_TimeIncrement] = parameterList->sublist("Timestepping Parameter").get("dt",0.01);
     
-    NodeSpec *ns=NULL;//dummy not need in SKR
+//     NodeSpec *ns=NULL;//dummy not need in SKR
         
-    NodeData** nd = new NodeData*[ elementSizePhase + sizePressure ];
+//     NodeData** nd = new NodeData*[ elementSizePhase + sizePressure ];
 
-    for (int i=0; i<elementSizePhase + sizePressure; i++){
-        nd[i] = new NodeData();
-    }
+//     for (int i=0; i<elementSizePhase + sizePressure; i++){
+//         nd[i] = new NodeData();
+//     }
 
-    int numNodes = elementSizePhase + sizePressure;
+//     int numNodes = elementSizePhase + sizePressure;
     
-    vec2D_dbl_Type xFull( numNodes, vec_dbl_Type(dim,0.) );
-    vec2D_dbl_Type atFull( numNodes, vec_dbl_Type(dim,0.) );
-    vec2D_dbl_Type apFull( numNodes, vec_dbl_Type(dim,0.) );
+//     vec2D_dbl_Type xFull( numNodes, vec_dbl_Type(dim,0.) );
+//     vec2D_dbl_Type atFull( numNodes, vec_dbl_Type(dim,0.) );
+//     vec2D_dbl_Type apFull( numNodes, vec_dbl_Type(dim,0.) );
     
-    for (int i=0; i<elementSizePhase + sizePressure; i++) {
-        nd[i]->X = &(xFull[i][0]);
-        nd[i]->at = &(atFull[i][0]);
-        nd[i]->ap = &(apFull[i][0]);
-    }
+//     for (int i=0; i<elementSizePhase + sizePressure; i++) {
+//         nd[i]->X = &(xFull[i][0]);
+//         nd[i]->at = &(atFull[i][0]);
+//         nd[i]->ap = &(apFull[i][0]);
+//     }
     
-    GO offsetMap1 = dim * mapRepeated1->getMaxAllGlobalIndex()+1;
-    vec2D_dbl_ptr_Type pointsRepU = domainVec_.at(0)->getPointsRepeated();
-    vec2D_dbl_ptr_Type pointsRepP = domainVec_.at(1)->getPointsRepeated();
+//     GO offsetMap1 = dim * mapRepeated1->getMaxAllGlobalIndex()+1;
+//     vec2D_dbl_ptr_Type pointsRepU = domainVec_.at(0)->getPointsRepeated();
+//     vec2D_dbl_ptr_Type pointsRepP = domainVec_.at(1)->getPointsRepeated();
     
-    Teuchos::ArrayRCP< const SC > uArrayNewton = u_repeatedNewton->getData(0);
-    Teuchos::ArrayRCP< const SC > pArrayNewton = p_repeatedNewton->getData(0);
-    Teuchos::ArrayRCP< const SC > uArrayTime = u_repeatedTime->getData(0);
-    Teuchos::ArrayRCP< const SC > pArrayTime = p_repeatedTime->getData(0);
+//     Teuchos::ArrayRCP< const SC > uArrayNewton = u_repeatedNewton->getData(0);
+//     Teuchos::ArrayRCP< const SC > pArrayNewton = p_repeatedNewton->getData(0);
+//     Teuchos::ArrayRCP< const SC > uArrayTime = u_repeatedTime->getData(0);
+//     Teuchos::ArrayRCP< const SC > pArrayTime = p_repeatedTime->getData(0);
 
-    double** mat = new double*[sizePhase+sizePressure];
-    for (int i=0; i<sizePhase+sizePressure; i++){
-        mat[i] = new double[sizePhase+sizePressure];
-    }
+//     double** mat = new double*[sizePhase+sizePressure];
+//     for (int i=0; i<sizePhase+sizePressure; i++){
+//         mat[i] = new double[sizePhase+sizePressure];
+//     }
     
-    Teuchos::ArrayRCP<SC> fValues0 = F0->getDataNonConst(0);
-    Teuchos::ArrayRCP<SC> fValues1 = F1->getDataNonConst(0);
+//     Teuchos::ArrayRCP<SC> fValues0 = F0->getDataNonConst(0);
+//     Teuchos::ArrayRCP<SC> fValues1 = F1->getDataNonConst(0);
     
-    // Element loop
+//     // Element loop
 
-    ElementData ed = ElementData();
-    for (UN T=0; T<elements1->numberElements(); T++) {
+//     ElementData ed = ElementData();
+//     for (UN T=0; T<elements1->numberElements(); T++) {
         
-        std::vector<double> tmpHp = ed_[T]->getHp(); // Dies sind die alten Daten
-        std::vector<double> tmpHt = ed_[T]->getHt(); // Dies sind die neuen Daten nachdem das Element aufgerufen wurde, wir hier eigentlich nicht als Variable in ed_ benoetigt.
-        ed.hp = &tmpHp[0];
-        ed.ht = &tmpHt[0];
+//         std::vector<double> tmpHp = ed_[T]->getHp(); // Dies sind die alten Daten
+//         std::vector<double> tmpHt = ed_[T]->getHt(); // Dies sind die neuen Daten nachdem das Element aufgerufen wurde, wir hier eigentlich nicht als Variable in ed_ benoetigt.
+//         ed.hp = &tmpHp[0];
+//         ed.ht = &tmpHt[0];
         
-        int materialFlag = elements1->getElement(T).getFlag();
-        TEUCHOS_TEST_FOR_EXCEPTION( materialFlag>es_vec.size()-1, std::runtime_error, "There are not enought material parameters initialized." ) ;
-        int counter=0;
-        //Newtonloesung at und Zeitschrittloesung ap
-        for (int j=0; j<elementSizePhase; j++) {
-            for (int d=0; d<dim; d++) {
-                LO index = dim * elements1->getElement(T).getNode(j)+d;//dim * elements1->at(T).at( j ) + d;
-                atFull[j][d] = uArrayNewton[index];
-                apFull[j][d] = uArrayTime[index];
-            }
-        }
-        for (int j=0; j<sizePressure; j++) {
-            LO index = elements2->getElement(T).getNode(j);//elements2->at(T).at( j );
-            atFull[elementSizePhase+j][0] = pArrayNewton[index];
-            apFull[elementSizePhase+j][0] = pArrayTime[index];
-        }
+//         int materialFlag = elements1->getElement(T).getFlag();
+//         TEUCHOS_TEST_FOR_EXCEPTION( materialFlag>es_vec.size()-1, std::runtime_error, "There are not enought material parameters initialized." ) ;
+//         int counter=0;
+//         //Newtonloesung at und Zeitschrittloesung ap
+//         for (int j=0; j<elementSizePhase; j++) {
+//             for (int d=0; d<dim; d++) {
+//                 LO index = dim * elements1->getElement(T).getNode(j)+d;//dim * elements1->at(T).at( j ) + d;
+//                 atFull[j][d] = uArrayNewton[index];
+//                 apFull[j][d] = uArrayTime[index];
+//             }
+//         }
+//         for (int j=0; j<sizePressure; j++) {
+//             LO index = elements2->getElement(T).getNode(j);//elements2->at(T).at( j );
+//             atFull[elementSizePhase+j][0] = pArrayNewton[index];
+//             apFull[elementSizePhase+j][0] = pArrayTime[index];
+//         }
         
-        //Nodes
-        for (int j=0; j<elementSizePhase; j++ ) {
-            LO index = elements1->getElement(T).getNode(j);
-            for (int d=0; d<dim; d++) {
-                xFull[j][d] = (*pointsRepU)[index][d];
-            }
-        }
-        for (int j=0; j<sizePressure; j++ ) {
-            LO index = elements2->getElement(T).getNode(j);
-            for (int d=0; d<dim; d++) {
-                xFull[elementSizePhase+j][d] = (*pointsRepP)[index][d];
-            }
-        }
-        vec_dbl_Type p( sizePhase+sizePressure , 0. );
+//         //Nodes
+//         for (int j=0; j<elementSizePhase; j++ ) {
+//             LO index = elements1->getElement(T).getNode(j);
+//             for (int d=0; d<dim; d++) {
+//                 xFull[j][d] = (*pointsRepU)[index][d];
+//             }
+//         }
+//         for (int j=0; j<sizePressure; j++ ) {
+//             LO index = elements2->getElement(T).getNode(j);
+//             for (int d=0; d<dim; d++) {
+//                 xFull[elementSizePhase+j][d] = (*pointsRepP)[index][d];
+//             }
+//         }
+//         vec_dbl_Type p( sizePhase+sizePressure , 0. );
 
-        for (int i=0; i<sizePhase+sizePressure; i++){
-            for (int j=0; j<sizePhase+sizePressure; j++)
-                mat[i][j] = 0.;
-        }
-        // element assembly
-        if(tpmType == "Biot"){
-            if(dim==2)
-                this->SKR_Biot( v, &es_vec[materialFlag], &ed, &ns, nd , &rdata[0], &idata, &p[0], mat  );
-            else if (dim==3)
-                this->SKR_Biot3D( v, &es_vec[materialFlag], &ed, &ns, nd , &rdata[0], &idata, &p[0], mat  );
-        }
-        else if(tpmType == "Biot-StVK")
-            this->SKR_Biot_StVK( v, &es_vec[materialFlag], &ed, &ns, nd , &rdata[0], &idata, &p[0], mat  );
+//         for (int i=0; i<sizePhase+sizePressure; i++){
+//             for (int j=0; j<sizePhase+sizePressure; j++)
+//                 mat[i][j] = 0.;
+//         }
+//         // element assembly
+//         if(tpmType == "Biot"){
+//             if(dim==2)
+//                 this->SKR_Biot( v, &es_vec[materialFlag], &ed, &ns, nd , &rdata[0], &idata, &p[0], mat  );
+//             else if (dim==3)
+//                 this->SKR_Biot3D( v, &es_vec[materialFlag], &ed, &ns, nd , &rdata[0], &idata, &p[0], mat  );
+//         }
+//         else if(tpmType == "Biot-StVK")
+//             this->SKR_Biot_StVK( v, &es_vec[materialFlag], &ed, &ns, nd , &rdata[0], &idata, &p[0], mat  );
         
-        if (updateHistory)
-            ed_[T]->setHp( ed.ht );
+//         if (updateHistory)
+//             ed_[T]->setHp( ed.ht );
         
-        if (update) {
+//         if (update) {
                     
-            // A00 & A01
-            for (UN i=0; i < sizePhase; i++) {
-                Teuchos::Array<SC> value00( sizePhase, 0. );
-                Teuchos::Array<GO> indices00( sizePhase, 0 );
-                for (UN j=0; j < value00.size(); j++) {
+//             // A00 & A01
+//             for (UN i=0; i < sizePhase; i++) {
+//                 Teuchos::Array<SC> value00( sizePhase, 0. );
+//                 Teuchos::Array<GO> indices00( sizePhase, 0 );
+//                 for (UN j=0; j < value00.size(); j++) {
                     
-                    value00[j] = mat[i][j];
+//                     value00[j] = mat[i][j];
                     
-                    LO tmpJ = j/dim;
-                    LO index = elements1->getElement(T).getNode(tmpJ);
-                    if (j%dim==0)
-                        indices00[j] = dim * mapRepeated1->getGlobalElement( index );
-                    else if (j%dim==1)
-                        indices00[j] = dim * mapRepeated1->getGlobalElement( index ) + 1;
-                    else if (j%dim==2)
-                        indices00[j] = dim * mapRepeated1->getGlobalElement( index ) + 2;
-                }
+//                     LO tmpJ = j/dim;
+//                     LO index = elements1->getElement(T).getNode(tmpJ);
+//                     if (j%dim==0)
+//                         indices00[j] = dim * mapRepeated1->getGlobalElement( index );
+//                     else if (j%dim==1)
+//                         indices00[j] = dim * mapRepeated1->getGlobalElement( index ) + 1;
+//                     else if (j%dim==2)
+//                         indices00[j] = dim * mapRepeated1->getGlobalElement( index ) + 2;
+//                 }
                 
-                Teuchos::Array<SC> value01( sizePressure, 0. );
-                Teuchos::Array<GO> indices01( sizePressure, 0 );
+//                 Teuchos::Array<SC> value01( sizePressure, 0. );
+//                 Teuchos::Array<GO> indices01( sizePressure, 0 );
 
-                for (UN j=0; j < value01.size(); j++) {
-                    value01[j] = mat[i][sizePhase+j];
-                    LO index = elements2->getElement(T).getNode(j);
-                    indices01[j] = mapRepeated2->getGlobalElement( index );
-                }
+//                 for (UN j=0; j < value01.size(); j++) {
+//                     value01[j] = mat[i][sizePhase+j];
+//                     LO index = elements2->getElement(T).getNode(j);
+//                     indices01[j] = mapRepeated2->getGlobalElement( index );
+//                 }
                 
-                GO row;
-                LO tmpI = i/dim;
-                LO index = elements1->getElement(T).getNode(tmpI);
-                if (i%dim==0)
-                    row = dim * mapRepeated1->getGlobalElement( index );
-                else if (i%dim==1)
-                    row = dim * mapRepeated1->getGlobalElement( index ) + 1;
-                else if (i%dim==2)
-                    row = dim * mapRepeated1->getGlobalElement( index ) + 2;
+//                 GO row;
+//                 LO tmpI = i/dim;
+//                 LO index = elements1->getElement(T).getNode(tmpI);
+//                 if (i%dim==0)
+//                     row = dim * mapRepeated1->getGlobalElement( index );
+//                 else if (i%dim==1)
+//                     row = dim * mapRepeated1->getGlobalElement( index ) + 1;
+//                 else if (i%dim==2)
+//                     row = dim * mapRepeated1->getGlobalElement( index ) + 2;
                 
-                A00->insertGlobalValues( row, indices00(), value00() );
-                A01->insertGlobalValues( row, indices01(), value01() );
+//                 A00->insertGlobalValues( row, indices00(), value00() );
+//                 A01->insertGlobalValues( row, indices01(), value01() );
                 
-                if (i%dim==0)
-                    fValues0[ dim*index ] += p[ i ];
-                else if (i%dim==1)
-                    fValues0[ dim*index+1 ] += p[ i ];
-                else if (i%dim==2)
-                    fValues0[ dim*index+2 ] += p[ i ];
-            }
-            // A10 & A11
-            for (UN i=0; i < sizePressure; i++) {
-                Teuchos::Array<SC> value10( sizePhase   , 0. );
-                Teuchos::Array<GO> indices10( sizePhase   , 0 );
-                for (UN j=0; j < value10.size(); j++) {
-                    value10[j] = mat[sizePhase+i][j];
+//                 if (i%dim==0)
+//                     fValues0[ dim*index ] += p[ i ];
+//                 else if (i%dim==1)
+//                     fValues0[ dim*index+1 ] += p[ i ];
+//                 else if (i%dim==2)
+//                     fValues0[ dim*index+2 ] += p[ i ];
+//             }
+//             // A10 & A11
+//             for (UN i=0; i < sizePressure; i++) {
+//                 Teuchos::Array<SC> value10( sizePhase   , 0. );
+//                 Teuchos::Array<GO> indices10( sizePhase   , 0 );
+//                 for (UN j=0; j < value10.size(); j++) {
+//                     value10[j] = mat[sizePhase+i][j];
                     
-                    LO tmpJ = j/dim;
-                    LO index = elements1->getElement(T).getNode(tmpJ);
-                    if (j%dim==0)
-                        indices10[j] = dim * mapRepeated1->getGlobalElement( index );
-                    else if (j%dim==1)
-                        indices10[j] = dim * mapRepeated1->getGlobalElement( index ) + 1;
-                    else if (j%dim==2)
-                        indices10[j] = dim * mapRepeated1->getGlobalElement( index ) + 2;
-                }
+//                     LO tmpJ = j/dim;
+//                     LO index = elements1->getElement(T).getNode(tmpJ);
+//                     if (j%dim==0)
+//                         indices10[j] = dim * mapRepeated1->getGlobalElement( index );
+//                     else if (j%dim==1)
+//                         indices10[j] = dim * mapRepeated1->getGlobalElement( index ) + 1;
+//                     else if (j%dim==2)
+//                         indices10[j] = dim * mapRepeated1->getGlobalElement( index ) + 2;
+//                 }
                 
-                Teuchos::Array<SC> value11( sizePressure, 0. );
-                Teuchos::Array<GO> indices11( sizePressure, 0 );
-                for (UN j=0; j < value11.size(); j++) {
-                    value11[j] = mat[sizePhase+i][sizePhase+j];
+//                 Teuchos::Array<SC> value11( sizePressure, 0. );
+//                 Teuchos::Array<GO> indices11( sizePressure, 0 );
+//                 for (UN j=0; j < value11.size(); j++) {
+//                     value11[j] = mat[sizePhase+i][sizePhase+j];
                     
-                    LO index = elements2->getElement(T).getNode(j);
-                    indices11[j] = mapRepeated2->getGlobalElement( index );
-                }
+//                     LO index = elements2->getElement(T).getNode(j);
+//                     indices11[j] = mapRepeated2->getGlobalElement( index );
+//                 }
 
                 
-                LO index2 = elements2->getElement(T).getNode(i);
-                GO row = mapRepeated2->getGlobalElement( index2 );
-                A10->insertGlobalValues( row, indices10(), value10() );
-                A11->insertGlobalValues( row, indices11(), value11() );
+//                 LO index2 = elements2->getElement(T).getNode(i);
+//                 GO row = mapRepeated2->getGlobalElement( index2 );
+//                 A10->insertGlobalValues( row, indices10(), value10() );
+//                 A11->insertGlobalValues( row, indices11(), value11() );
                 
-                fValues1[ index2 ] += p[ sizePhase + i ];
-            }
-        }
-    }
+//                 fValues1[ index2 ] += p[ sizePhase + i ];
+//             }
+//         }
+//     }
     
-    for (int i=0; i<sizePhase+sizePressure; i++)
-        delete [] mat[i];
-    delete [] mat;
+//     for (int i=0; i<sizePhase+sizePressure; i++)
+//         delete [] mat[i];
+//     delete [] mat;
     
-    delete [] v;
+//     delete [] v;
     
-    for (int i=0; i<elementSizePhase+sizePressure; i++)
-        delete nd[i];
+//     for (int i=0; i<elementSizePhase+sizePressure; i++)
+//         delete nd[i];
     
-    delete [] nd;
+//     delete [] nd;
     
     
-    A00->fillComplete( A00->getMap("row"), A00->getMap("row") );
-    A01->fillComplete( A10->getMap("row"), A00->getMap("row") );
-    A10->fillComplete( A00->getMap("row"), A10->getMap("row") );
-    A11->fillComplete( A10->getMap("row"), A10->getMap("row") );
+//     A00->fillComplete( A00->getMap("row"), A00->getMap("row") );
+//     A01->fillComplete( A10->getMap("row"), A00->getMap("row") );
+//     A10->fillComplete( A00->getMap("row"), A10->getMap("row") );
+//     A11->fillComplete( A10->getMap("row"), A10->getMap("row") );
     
-}
+// }
 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyMass(int dim,
@@ -2258,7 +2365,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
         detB = B.computeDet( );
         absDetB = std::fabs(detB);
 
@@ -2336,7 +2443,7 @@ void FE<SC,LO,GO,NO>::assemblyMass(int dim,
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
         detB = B.computeDet( );
         absDetB = std::fabs(detB);
 
@@ -2554,7 +2661,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceVecFieldV2(int dim,
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
         detB = B.computeInverse(Binv);
         absDetB = std::fabs(detB);
 
@@ -2833,7 +2940,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAndStressAceFEM(int dim,
         Teuchos::Array<int> indices(2);
         for (int T=0; T<elements->numberElements(); T++) {
             
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
             
@@ -3028,7 +3135,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAndStressAceFEM(int dim,
         Teuchos::Array<int> indices(3);
         for (int T=0; T<elements->numberElements(); T++) {
             
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
             
@@ -3276,7 +3383,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityJacobianAceFEM(int dim,
         Teuchos::Array<int> indices(3);
         for (int T=0; T<elements->size(); T++) {
 
-            Helper::buildTransformation(elements->at(T), pointsRep, B);
+            Helper::buildTransformation(elements->at(T), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -3483,7 +3590,7 @@ void FE<SC,LO,GO,NO>::assemblyElasticityStressesAceFEM(int dim,
         Teuchos::Array<int> indices(3);
         for (int T=0; T<elements->size(); T++) {
 
-            Helper::buildTransformation(elements->at(T), pointsRep, B);
+            Helper::buildTransformation(elements->at(T), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -3771,6 +3878,93 @@ void FE<SC,LO,GO,NO>::assemblyAdvectionInUVecField(int dim,
         A->fillComplete();
 }
 
+/// Assembly of operator \int ((u_h \cdot \nabla ) p_h)p_h dx 
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyAdvectionVecFieldScalar(int dim,
+                                                  std::string FEType,
+                                                  std::string FETypeV,
+                                                  MatrixPtr_Type &A,
+                                                  MultiVectorPtr_Type u,
+                                                  bool callFillComplete){
+
+    TEUCHOS_TEST_FOR_EXCEPTION( u->getNumVectors()>1, std::logic_error, "Implement for numberMV > 1 ." );
+    TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
+    
+    UN FEloc = checkFE(dim,FEType);
+
+    ElementsPtr_Type elements = domainVec_.at(1)->getElementsC();
+    ElementsPtr_Type elementsVel = domainVec_.at(0)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(1)->getPointsRepeated();
+
+    MapConstPtr_Type map = domainVec_.at(1)->getMapRepeated();
+
+    vec3D_dbl_ptr_Type     dPhi;
+    vec2D_dbl_ptr_Type     phi,phiV;
+    vec_dbl_ptr_Type    weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+    UN degV = Helper::determineDegree( dim, FETypeV, Helper::Deriv0); //Elementwise assembly of u
+    UN degP = Helper::determineDegree( dim, FEType, Helper::Deriv0); //Elementwise assembly of p
+    UN deg = Helper::determineDegree( dim, FEType, Helper::Deriv1) + degV + degP;
+
+    Helper::getDPhi(dPhi, weights, dim, FEType, deg); // Dphi for \nabla p
+    Helper::getPhi(phi, weights, dim, FEType, deg); // phi for u
+    Helper::getPhi(phiV, weights, dim, FETypeV, deg); // phi for p
+
+    SC detB;
+    SC absDetB;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    GO glob_i, glob_j;
+    vec_dbl_Type v_i(dim);
+    vec_dbl_Type v_j(dim);
+
+    vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
+    Teuchos::ArrayRCP< const SC > uArray = u->getData(0);
+
+    for (UN T=0; T<elements->numberElements(); T++) {
+
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
+        detB = B.computeInverse(Binv);
+        absDetB = std::fabs(detB);
+
+        vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
+        applyBTinv( dPhi, dPhiTrans, Binv );
+
+        for (int w=0; w<phiV->size(); w++){ //quads points
+            for (int d=0; d<dim; d++) {
+                uLoc[d][w] = 0.;
+                for (int i=0; i < phiV->at(0).size(); i++) {
+                    LO index = dim * elementsVel->getElement(T).getNode(i) + d;
+                    uLoc[d][w] += uArray[index] * phiV->at(w).at(i);
+                }
+            }
+        }
+
+        for (UN i=0; i < phi->at(0).size(); i++) {
+            Teuchos::Array<SC> value( dPhiTrans[0].size(), 0. );
+            Teuchos::Array<GO> indices( dPhiTrans[0].size(), 0 );
+            for (UN j=0; j < value.size(); j++) {
+                for (UN w=0; w<dPhiTrans.size(); w++) {
+                    for (UN d=0; d<dim; d++){
+                        value[j] += weights->at(w) * uLoc[d][w]* dPhiTrans[w][j][d] * (*phi)[w][i]  ;
+                    }                         
+                }
+                value[j] *= absDetB;
+                indices[j] = GO (  map->getGlobalElement( elements->getElement(T).getNode(j) ) );
+            }
+
+            GO row = GO ( map->getGlobalElement( elements->getElement(T).getNode(i) ) );
+            A->insertGlobalValues( row, indices(), value() );
+            
+        }
+    }
+    
+    
+    if (callFillComplete)
+        A->fillComplete();
+}
+
 /// Assembly of \int q_h (nabla \cdot v_h) dx 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyDivAndDivT( int dim,
@@ -3809,8 +4003,8 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivT( int dim,
 
     Helper::getDPhi(dPhi, weights, dim, FEType1, deg);
 
-    if (FEType2=="P1-disc-global")
-        Helper::getPhiGlobal(phi, weights, dim, FEType2, deg);
+    // if (FEType2=="P1-disc-global")
+    //     Helper::getPhiGlobal(phi, weights, dim, FEType2, deg);
     if (FEType2=="P1-disc" && FEType1=="Q2" )
         Helper::getPhi(phi, weights, dim, FEType2, deg, FEType1);
     else
@@ -3939,8 +4133,8 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivTFast( int dim,
     
     Helper::getDPhi(dPhi, weights, dim, FEType1, deg);
     
-    if (FEType2=="P1-disc-global")
-        Helper::getPhiGlobal(phi, weights, dim, FEType2, deg);
+    // if (FEType2=="P1-disc-global")
+    //     Helper::getPhiGlobal(phi, weights, dim, FEType2, deg);
     if (FEType2=="P1-disc" && FEType1=="Q2" )
         Helper::getPhi(phi, weights, dim, FEType2, deg, FEType1);
     else
@@ -3995,13 +4189,14 @@ void FE<SC,LO,GO,NO>::assemblyDivAndDivTFast( int dim,
     
 }
 
+/// Bochev- Dohrmann Stabilization
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyBDStabilization(int dim,
                                               std::string FEType,
                                               MatrixPtr_Type &A,
                                               bool callFillComplete){
      
-    TEUCHOS_TEST_FOR_EXCEPTION(FEType != "P1",std::logic_error, "Only implemented for P1. Q1 is equivalent but we need to adjust scaling for the reference element.");
+    TEUCHOS_TEST_FOR_EXCEPTION(FEType != "P1" && FEType != "Q1",std::logic_error, "Only implemented for P1, Q1.");
     UN FEloc = checkFE(dim,FEType);
 
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
@@ -4027,20 +4222,29 @@ void FE<SC,LO,GO,NO>::assemblyBDStabilization(int dim,
 
     SC refElementSize;
     SC refElementScale;
-    if (dim==2) {
-        refElementSize = 0.5;
-        refElementScale = 1./9.;
+    if(FEType=="P1"){
+        if (dim==2) {
+            refElementSize = 0.5;
+            refElementScale = 1./9.;
+        }
+        else if(dim==3){
+            refElementSize = 1./6.;
+            refElementScale = 1./16.;
+        }
     }
-    else if(dim==3){
-        refElementSize = 1./6.;
-        refElementScale = 1./16.;
+    else if(FEType=="Q1"){
+        if(dim==3){
+            refElementScale=1./64;
+            refElementSize=8.;
+        }
+        else{
+            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Q1 Only implemented for 3D.");          
+        }
     }
-    else
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Only implemented for 2D and 3D.");
 
     for (UN T=0; T<elements->numberElements(); T++) {
 
-        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
         detB = B.computeDet( );
         absDetB = std::fabs(detB);
 
@@ -4125,7 +4329,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceXDim(int dim,
             distance_mean.at(0) = (distance1 + distance2 + distance3)/3.0; // Mittelwert
             double funcvalue = func(&distance_mean.at(0),parameters);
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -4196,7 +4400,7 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceXDim(int dim,
             distance_mean.at(0) = (distance1 + distance2 + distance3 + distance4)/4.0; //Mittelwert
             double funcvalue = func(&distance_mean.at(0),parameters);
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -4436,7 +4640,7 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -4584,6 +4788,1166 @@ void FE<SC,LO,GO,NO>::assemblyStress(int dim,
 }
 
 
+template <class SC, class LO, class GO, class NO>
+double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundaryPaper(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type u_rep,
+                                              vec_dbl_Type flowRate_vec,
+                                              std::vector<SC>& funcParameter, 
+                                              RhsFunc_Type func, 
+                                              double areaOutlet_init,
+                                              double areaOutlet_T,
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    ElementsPtr_Type elementsPressure = domainVec_.at(FEloc+1)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0);// + 1.0;
+    Helper::getPhi(phi, weights, dim-1, FEType, deg);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, deg, quadPoints, w, FEType);
+    w.reset();
+
+    double poissonRatio=params->sublist("Parameter Fluid").get("Poisson Ratio",0.49); 
+    int flagInlet = params->sublist("General").get("Flag Inlet Fluid", 4);
+    int flagOutlet = params->sublist("General").get("Flag Outlet Fluid", 5);
+
+    double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
+    double E = params->sublist("Parameter Fluid").get("E",12.0); 
+    double wallThickness = params->sublist("Parameter Fluid").get("Wall thickness",0.0006); 
+    double density = params->sublist("Parameter Fluid").get("Density",1000.0); 
+    double p_ref_input = params->sublist("Parameter Fluid").get("Reference fluid pressure",10666.); 
+
+    double rampTime = params->sublist("Parameter Fluid").get("Max Ramp Time",0.1); 
+    double unsteadyStart = params->sublist("Parameter Fluid").get("Unsteady Start",0.2); 
+    double flowRateInput = params->sublist("Parameter Fluid").get("Flowrate",3.0); 
+
+    double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
+
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+       
+    std::vector<double> valueFunc(dim);
+
+    double flowRateOutlet=0.;
+    double flowRateInlet=0.;
+
+    this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
+
+    int isNeg = this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);
+    
+    double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
+
+    double areaOutlet = 0.;
+    this->assemblyArea(dim, areaOutlet, flagOutlet);
+
+    double areaInlet =0.;
+    this->assemblyArea(dim, areaInlet, flagInlet);
+
+    double beta=0.;
+    if(funcParameter[0] < unsteadyStart)
+        beta = ((wallThickness* E)/(1.-pow(poissonRatio,2))) * (M_PI/areaOutlet_init ) ;
+    else
+        beta = ((wallThickness* E)/(1.-pow(poissonRatio,2))) * (M_PI/areaOutlet_T ) ;
+
+    // We determine p_ref via a ramp
+    funcParameter.push_back(p_ref_input);
+    funcParameter.push_back(bcRamp); 
+    funcParameter.push_back(flagOutlet); 
+    SC* paramsFunc = &(funcParameter[0]);
+    vec_dbl_Type x_tmp(dim,0.); //dummy
+    paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+    paramsFunc[ 1 ]  = p_ref_input;
+    func( &x_tmp[0], &valueFunc[0], paramsFunc);
+    double p_ref = valueFunc[0];
+    if(funcParameter[0]+1e-12 >= unsteadyStart){
+        p_ref = p_ref - std::pow( (std::sqrt(density)/(2*std::sqrt(2)) * flowRateInput/areaOutlet_T + std::sqrt(beta*std::sqrt(areaOutlet_T))),2) + beta*std::sqrt(areaOutlet_T);
+
+        if(domainVec_.at(0)->getComm()->getRank()==0){
+            std::cout << " ---------------------------------------------------------- " <<std::endl;
+            std::cout << " ----------------  Start of unsteady phase ---------------- " <<std::endl;
+            std::cout << " Reference pressure adjusted from " << p_ref_input << " to " << p_ref <<std::endl;
+        }
+
+    }
+    // Value of h_x for this timestep
+    double flowRateUse = flowRateOutlet;
+    if(params->sublist("Parameter Fluid").get("Average Flowrate",false) )
+        flowRateUse = flowRateOutletAveraged;
+
+    if(isNeg==1)
+        flowRateUse = 0.;
+
+    double A_bar = 1./((std::sqrt(beta*std::sqrt(areaOutlet_init)+p_ref_input)-std::sqrt(beta*std::sqrt(areaOutlet_init)))*2.*std::sqrt(2.)*(1./std::sqrt(density))*(1./flowRateInput));
+    double h_x = 0.;
+
+    if(funcParameter[0] < unsteadyStart)
+        h_x=  std::pow( (std::sqrt(density)/(2*std::sqrt(2)) * flowRateUse/A_bar + std::sqrt(beta*std::sqrt(areaOutlet_init))),2) - beta*std::sqrt(areaOutlet_init);
+    else
+        h_x=  std::pow( (std::sqrt(density)/(2*std::sqrt(2)) * flowRateUse/areaOutlet + std::sqrt(beta*std::sqrt(areaOutlet_T))),2) - beta*std::sqrt(areaOutlet_T) + p_ref;
+
+    //         h_x=  pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta*sqrt(areaOutlet_init))),2) - beta*sqrt(areaOutlet_init) + p_ref;
+
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " Absorbing Boundary Condition " <<std::endl;
+        std::cout << " Input p_ref: " << p_ref_input <<std::endl;
+        std::cout << " Adjusted p_ref: " << p_ref <<std::endl;
+        std::cout << " Unsteady start time_ " << unsteadyStart <<std::endl;
+        std::cout << " Volmetric flow Inlet: " << flowRateInlet <<std::endl;
+        std::cout << " Volmetric flow Outlet: " << flowRateOutlet <<std::endl;
+        std::cout << " Averaged volmetric flow Outlet: " << flowRateOutletAveraged <<std::endl;
+        std::cout << " beta per Input: " << beta <<std::endl;
+        std::cout << " Area_init outlet: " << areaOutlet_init <<std::endl;
+        std::cout << " Area_init outlet_T: " << areaOutlet_T <<std::endl;
+        std::cout << " Area inlet: " << areaInlet <<std::endl;
+        std::cout << " Area outlet: " << areaOutlet <<std::endl;
+        std::cout << " A_bar: " << A_bar <<std::endl;
+        std::cout << " Flowrate was negative: " << isNeg <<std::endl;
+        std::cout << " Value h_x at outlet: " << h_x <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+
+    }
+    // Second step: use flow rate to determine pressure with resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+               if(feSub.getFlag() == flagOutlet){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
+                    vec2D_dbl_Type nodes;
+                    nodes = getCoordinates(nodeList, pointsRep);
+
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    
+
+                    }
+
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                // Step 1: Quadrature Points on physical surface:
+                    // Resulting Quad Points allways (0.5,0,0) (0.5,0.5,0) (0,0.5,0)
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    //cout <<std::endl;
+
+                    for (UN i=0; i < numNodes_T; i++) {
+        
+                        // 2.   
+                        Teuchos::Array<SC> value(0);                    
+                        value.resize(  dim, 0. );
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {       
+                            for (int j=0; j<dim; j++){
+                                value[j] += weights->at(w) *normalScale*v_E[j]/norm_v_E *h_x*(*phi)[w][i];//valueFunc[0]
+                            }
+                        }             
+
+                        //cout << " Value First component " << value[0] << " " << value[1] << " " << value[2] <<std::endl;
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ i ] + j ] += value[j] * elScaling;
+                    }
+
+               }
+                    
+            }
+        }
+    }
+    double p_out = h_x;
+    return p_out;
+}
+
+template <class SC, class LO, class GO, class NO>
+double FE<SC,LO,GO,NO>::assemblyAbsorbingBoundary(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type u_rep,
+                                              vec_dbl_Type flowRate_vec,
+                                              std::vector<SC>& funcParameter, 
+                                              RhsFunc_Type func, 
+                                              double areaOutlet_init,
+                                              double areaOutlet_T,
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    ElementsPtr_Type elementsPressure = domainVec_.at(FEloc+1)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0);// + 1.0;
+    Helper::getPhi(phi, weights, dim-1, FEType, deg);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, deg, quadPoints, w, FEType);
+    w.reset();
+
+    double poissonRatio=params->sublist("Parameter Fluid").get("Poisson Ratio",0.49); 
+    int flagInlet = params->sublist("General").get("Flag Inlet Fluid", 4);
+    int flagOutlet = params->sublist("General").get("Flag Outlet Fluid", 5);
+
+    double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
+     
+    double density = params->sublist("Parameter Fluid").get("Density",1.0); 
+    double p_ref_input = params->sublist("Parameter Fluid").get("Reference fluid pressure",10666.); 
+
+    double rampTime = params->sublist("Parameter Fluid").get("Max Ramp Time",0.1); 
+    double unsteadyStart = params->sublist("Parameter Fluid").get("Heart Beat Start",0.2); 
+    double flowRateInput = params->sublist("Parameter Fluid").get("Flowrate",3.0e-06); 
+
+    double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
+
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+       
+    std::vector<double> valueFunc(dim);
+
+    double flowRateOutlet=0.;
+    double flowRateInlet=0.;
+
+    this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
+    int isNeg = this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);
+    
+    double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
+
+    double areaOutlet = 0.;
+    this->assemblyArea(dim, areaOutlet, flagOutlet);
+
+    double areaInlet =0.;
+    this->assemblyArea(dim, areaInlet, flagInlet);
+
+    double beta=0.;
+   
+    double E = params->sublist("Parameter Fluid").get("E",12.0); 
+    double wallThickness = params->sublist("Parameter Fluid").get("Wall thickness",0.0006);
+    
+    beta = ((wallThickness* E)/(1.-pow(poissonRatio,2))) * (M_PI/areaOutlet_init ) ;
+    
+
+    funcParameter.push_back(p_ref_input);
+    funcParameter.push_back(bcRamp); 
+    funcParameter.push_back(flagOutlet); 
+    // We determine p_ref via a ramp
+    SC* paramsFunc = &(funcParameter[0]);
+    vec_dbl_Type x_tmp(dim,0.); //dummy
+      // Adding parameters
+
+    // paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+    // paramsFunc[ 1 ]  = p_ref_input;
+    func( &x_tmp[0], &valueFunc[0], paramsFunc);
+    double p_ref = valueFunc[0];
+    //if(funcParameter[0]+1e-12 >= unsteadyStart){
+   
+
+    //}
+    // Value of h_x for this timestep
+    double flowRateUse = flowRateOutlet;
+    if(params->sublist("Parameter Fluid").get("Average Flowrate",false) )
+        flowRateUse = flowRateOutletAveraged;
+
+    if(isNeg==1)
+        flowRateUse = 0.;
+
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " ----------------  computing p_ref ---------------- " <<std::endl;
+        std::cout << " Reference pressure adjusted from " << p_ref_input << " to " << p_ref <<std::endl;
+    }
+    //double A_bar = 1./((sqrt(beta*sqrt(areaOutlet_init)+p_ref_input)-sqrt(beta*sqrt(areaOutlet_init)))*2.*sqrt(2.)*(1./sqrt(density))*(1./flowRateInput));
+    
+    double h_x = pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta*sqrt(areaOutlet_init))),2) - beta*sqrt(areaOutlet_init)+p_ref;
+
+    //         h_x=  pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta*sqrt(areaOutlet_init))),2) - beta*sqrt(areaOutlet_init) + p_ref;
+
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " Absorbing Boundary Condition " <<std::endl;
+        std::cout << " Input p_ref: " << p_ref_input <<std::endl;
+        std::cout << " Adjusted p_ref: " << p_ref <<std::endl;
+        std::cout << " Volmetric flow Inlet: " << flowRateInlet <<std::endl;
+        std::cout << " Volmetric flow Outlet: " << flowRateOutlet <<std::endl;
+        std::cout << " Averaged volmetric flow Outlet: " << flowRateOutletAveraged <<std::endl;
+        std::cout << " beta per Input: " << beta <<std::endl;
+        std::cout << " Area_init outlet: " << areaOutlet_init <<std::endl;
+        std::cout << " Area inlet: " << areaInlet <<std::endl;
+        std::cout << " Area outlet: " << areaOutlet <<std::endl;
+        std::cout << " Value h_x at outlet: " << h_x <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+
+    }
+    // Second step: use flow rate to determine pressure with resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+               if(feSub.getFlag() == flagOutlet){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
+                    vec2D_dbl_Type nodes;
+                    nodes = getCoordinates(nodeList, pointsRep);
+
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    
+
+                    }
+
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    for (UN i=0; i < numNodes_T; i++) {
+        
+                        // 2.   
+                        Teuchos::Array<SC> value(0);                    
+                        value.resize(  dim, 0. );
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {       
+                            for (int j=0; j<dim; j++){
+                                value[j] += weights->at(w) *normalScale*v_E[j]/norm_v_E *h_x*(*phi)[w][i];//valueFunc[0]
+                            }
+                        }             
+
+                        //cout << " Value First component " << value[0] << " " << value[1] << " " << value[2] <<std::endl;
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ i ] + j ] += value[j] * elScaling;
+                    }
+
+               }
+                    
+            }
+        }
+    }
+    double p_out = h_x;
+    return p_out;
+}
+
+
+template <class SC, class LO, class GO, class NO>
+double FE<SC,LO,GO,NO>::assemblyAbsorbingResistanceBoundary(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type u_rep,
+                                              vec_dbl_Type flowRate_vec,
+                                              std::vector<SC>& funcParameter, 
+                                              RhsFunc_Type func, 
+                                              double areaOutlet_init,
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    ElementsPtr_Type elementsPressure = domainVec_.at(FEloc+1)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0);// + 1.0;
+    Helper::getPhi(phi, weights, dim-1, FEType, deg);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, deg, quadPoints, w, FEType);
+    w.reset();
+
+    double poissonRatio=params->sublist("Parameter Fluid").get("Poisson Ratio",0.49); 
+    double viscosity=params->sublist("Parameter Fluid").get("Viscosity",1.0e-06); 
+    int flagInlet = params->sublist("General").get("Flag Inlet Fluid", 4);
+    int flagOutlet = params->sublist("General").get("Flag Outlet Fluid", 5);
+
+    double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
+    double E = params->sublist("Parameter Fluid").get("E",12.0); 
+    double wallThickness = params->sublist("Parameter Fluid").get("Wall thickness",0.001); 
+    double density = params->sublist("Parameter Fluid").get("Density",1000.0); 
+    double p_ref_input = params->sublist("Parameter Fluid").get("Reference fluid pressure",8000.); 
+    double resistanceRamp = params->sublist("Parameter Fluid").get("Resistance Ramp",2.); // Ramp time of fluid
+    double resistance = params->sublist("Parameter Fluid").get("Resistance",1.0); 
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+       
+    std::vector<double> valueFunc(dim);
+
+    double flowRateOutlet=0.;
+    double flowRateInlet=0.;
+
+    this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
+    this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);
+    
+    double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
+
+    double areaOutlet = 0.;
+    this->assemblyArea(dim, areaOutlet, flagOutlet);
+
+    double areaInlet =0.;
+    this->assemblyArea(dim, areaInlet, flagInlet);
+
+    double beta = (((wallThickness* E)/(1-pow(poissonRatio,2))) * M_PI/areaOutlet_init ) *sqrt(areaOutlet_init);
+    // We determine p_ref via a ramp
+    SC* paramsFunc = &(funcParameter[0]);
+    vec_dbl_Type x_tmp(dim,0.); //dummy
+    paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+    //paramsFunc[ 1 ]  = p_ref;
+    //p_ref = valueFunc[0];
+    // Value of h_x for this timestep
+    double flowRateUse = flowRateOutlet;
+    if(params->sublist("Parameter Fluid").get("Average Flowrate",false) )
+        flowRateUse = flowRateOutletAveraged;
+
+    double p_ref = 0.;
+    if(paramsFunc[0] < resistanceRamp){
+        //func( &x_tmp[0], &valueFunc[0], paramsFunc);
+        p_ref = flowRateUse*resistance;
+
+    }
+    else{         
+        paramsFunc[ 1 ]  = p_ref_input;
+        func( &x_tmp[0], &valueFunc[0], paramsFunc);
+        //p_ref = valueFunc[0];
+        p_ref = valueFunc[0];
+
+    }
+
+    double h_x =  pow( (sqrt(density)/(2*sqrt(2)) * flowRateUse/areaOutlet + sqrt(beta)),2) - beta + p_ref;
+
+    
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " ---------------------------------------------------------- " <<std::endl;
+        std::cout << " Absorbing Boundary Condition " <<std::endl;
+        std::cout << " p_ref: " << p_ref <<std::endl;
+        std::cout << " Volmetric flow Inlet: " << flowRateInlet <<std::endl;
+        std::cout << " Volmetric flow Outlet: " << flowRateOutlet <<std::endl;
+        std::cout << " Averaged volmetric flow Outlet: " << flowRateOutletAveraged <<std::endl;
+        std::cout << " beta*sqrt(A_0) per Input: " << beta <<std::endl;
+        std::cout << " Area_init outlet: " << areaOutlet_init <<std::endl;
+        std::cout << " Area inlet: " << areaInlet <<std::endl;
+        std::cout << " Area outlet: " << areaOutlet <<std::endl;
+        std::cout << " Value h_x at outlet: " << h_x <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+        std::cout << " --------------------------------------------------------- " <<std::endl;
+
+    }
+    // Second step: use flow rate to determine pressure with resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+               if(feSub.getFlag() == flagOutlet){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
+                    vec2D_dbl_Type nodes;
+                    nodes = getCoordinates(nodeList, pointsRep);
+
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    
+
+                    }
+
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                // Step 1: Quadrature Points on physical surface:
+                    // Resulting Quad Points allways (0.5,0,0) (0.5,0.5,0) (0,0.5,0)
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    //cout <<std::endl;
+
+                    for (UN i=0; i < numNodes_T; i++) {
+        
+                        // 2.   
+                        Teuchos::Array<SC> value(0);                    
+                        value.resize(  dim, 0. );
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {       
+                            for (int j=0; j<dim; j++){
+                                value[j] += weights->at(w) *normalScale*v_E[j]/norm_v_E *h_x*(*phi)[w][i];//valueFunc[0]
+                            }
+                        }             
+
+                        //cout << " Value First component " << value[0] << " " << value[1] << " " << value[2] <<std::endl;
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ i ] + j ] += value[j] * elScaling;
+                    }
+
+               }
+                    
+            }
+        }
+    }
+    double p_out = h_x;
+    return p_out;
+}
+
+
+template <class SC, class LO, class GO, class NO>
+double FE<SC,LO,GO,NO>::assemblyResistanceBoundary(int dim,
+                                              std::string FEType,
+                                              MultiVectorPtr_Type f,
+                                              MultiVectorPtr_Type u_rep,
+                                              vec_dbl_Type flowRate_vec, 
+                                              std::vector<SC>& funcParameter,
+                                              RhsFunc_Type func,
+                                              ParameterListPtr_Type params,
+                                              int FEloc) {
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    ElementsPtr_Type elementsPressure = domainVec_.at(FEloc+1)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+    vec2D_dbl_ptr_Type phi1;
+
+    vec3D_dbl_ptr_Type 	dPhi;
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+    vec_dbl_ptr_Type weights1 = Teuchos::rcp(new vec_dbl_Type(0));
+
+    UN deg = Helper::determineDegree( dim-1, FEType, Helper::Deriv0);// + 1.0;
+    Helper::getDPhi(dPhi, weights, dim, FEType, deg);
+    Helper::getPhi(phi, weights, dim-1, FEType, deg);
+    Helper::getPhi(phi1, weights1, dim-1, FEType, 2);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, deg, quadPoints, w, FEType);
+    w.reset();
+
+    double viscosity=params->sublist("Parameter").get("Viscosity",0.49); 
+    int flagInlet = params->sublist("General").get("Flag Inlet Fluid", 4);
+    int flagOutlet = params->sublist("General").get("Flag Outlet Fluid", 5);
+
+    double normalScale = params->sublist("Parameter Fluid").get("Normal Scale",1.0); 
+    double resistance = params->sublist("Parameter Fluid").get("Resistance",1.0); 
+    double bcRamp =  params->sublist("Parameter Fluid").get("BC Ramp",0.1);
+
+    double referencePressure =  params->sublist("Parameter Fluid").get("Reference fluid pressure",11.99e1);
+
+
+    SC elScaling;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+    vec_dbl_Type b(dim);
+    f->putScalar(0.);
+    Teuchos::ArrayRCP< SC > valuesF = f->getDataNonConst(0);
+       
+    std::vector<double> valueFunc(dim);
+    
+    // Adding parameters
+    funcParameter.push_back(resistance);
+    funcParameter.push_back(bcRamp); 
+    funcParameter.push_back(flagOutlet); 
+
+    SC* paramsFunc = &(funcParameter[0]);
+    double flowRateInlet=0.;
+    double flowRateOutlet=0.;
+    this->assemblyFlowRate(dim, flowRateInlet, FEType , dim, flagInlet , u_rep);
+    int isNeg = this->assemblyFlowRate(dim, flowRateOutlet, FEType , dim, flagOutlet , u_rep);  
+    
+    double resistanceRef = referencePressure/flowRateInlet; // The resistance based on a reference pressure value and the current inlet flow rate
+
+    double flowRateOutletAveraged = (flowRate_vec[0] + flowRate_vec[1]) / 2.;
+
+    vec_dbl_Type x_tmp(dim,0.); //dummy
+    // paramsFunc[ funcParameter.size() - 1 ] =flagOutlet;          
+
+    func( &x_tmp[0], &valueFunc[0], paramsFunc);
+
+    if(domainVec_.at(0)->getComm()->getRank()==0){
+        std::cout << " ---------------------------------------------------------- " << std::endl;
+        std::cout << " ---------------------------------------------------------- " << std::endl;
+        std::cout << " Resistance Boundary Condition " << std::endl;
+        std::cout << " Volmetric flow Inlet: " << flowRateInlet << std::endl;
+        std::cout << " Volmetric flow Outlet: " << flowRateOutlet << std::endl;
+        std::cout << " Averaged volmetric flow Outlet: " << flowRateOutletAveraged << std::endl;
+        std::cout << " Resistance per Input: " << valueFunc[0] << std::endl;
+        std::cout << " Assumed reference pressure at outlet " << referencePressure<< std::endl;
+        std::cout << " Implicit pressure at outlet with p=R*Q: " << flowRateOutlet*valueFunc[0] << std::endl;
+        std::cout << " Resistance based on (referencePressure)/flowRateInlet at this point would be: " << resistanceRef << std::endl;
+        std::cout << " --------------------------------------------------------- " << std::endl;
+        std::cout << " --------------------------------------------------------- " << std::endl;
+
+    }
+
+    double flowRateUse = flowRateOutlet;
+    if(params->sublist("Parameter Fluid").get("Average Flowrate",false) )
+        flowRateUse = flowRateOutletAveraged;
+
+    if(isNeg==1)
+        flowRateUse = 0.;
+    
+    double p_out = flowRateUse*valueFunc[0];
+
+    // Second step: use flow rate to determine pressure with resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+               
+               // We only need to compute it on the outlet of the geometry
+                if(feSub.getFlag() == flagOutlet){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    vec_int_Type nodeListP = elementsPressure->getElement(T).getSubElements()->getElement(surface).getVectorNodeListNonConst();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, u_rep,dim);
+                    vec2D_dbl_Type nodes;
+                    nodes = getCoordinates(nodeList, pointsRep);
+
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    }
+                    
+                    // vec_dbl_Type x(dim,0.); //dummy
+                    // paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();          
+
+                    // func( &x[0], &valueFunc[0], paramsFunc);
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                    // Step 1: Quadrature Points on physical surface:
+                    vec_dbl_Type quadWeights(dim);
+                    quadWeights[0] = 1/6.;
+                    quadWeights[1] = 1/6.;
+                    quadWeights[2] = 1/6.;
+                    vec2D_dbl_Type quadPoints(quadWeights.size(), vec_dbl_Type(dim));
+
+                    vec_int_Type kn1= elements->getElement(T).getVectorNodeListNonConst();
+
+                    vec2D_dbl_Type quadPointsT1(quadWeights.size(),vec_dbl_Type(dim));
+                    quadPointsT1.push_back({0.5,0.5,0.0});
+                    quadPointsT1.push_back({0.0,0.5,0.0});
+                    quadPointsT1.push_back({0.5,0.0,0.0});
+
+                    SC detB1;
+                    SC absDetB1;
+                    SmallMatrix<SC> B1(dim);
+                    SmallMatrix<SC> Binv1(dim);  
+                    int index0,index;
+
+                    index0 = kn1[0];
+                    for (int s=0; s<dim; s++) {
+                        index = kn1[s+1];
+                        for (int t=0; t<dim; t++) {
+                            B1[t][s] = pointsRep->at(index).at(t) -pointsRep->at(index0).at(t);
+                        }
+                    }
+
+                    detB1 = B1.computeInverse(Binv1);
+                    detB1 = std::fabs(detB1);
+
+                    // Resulting Quad Points allways (0.5,0,0) (0.5,0.5,0) (0,0.5,0)
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                   
+                    //cout <<std::endl;
+
+                    for (UN i=0; i < numNodes_T; i++) {
+       
+                        // 2.   
+                        Teuchos::Array<SC> value(0);                    
+                        value.resize(  dim, 0. );
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {       
+                            for (int d=0; d<dim; d++){
+                                value[d] += weights->at(w) *normalScale*v_E[d]/norm_v_E *flowRateUse*valueFunc[0]*(*phi)[w][i];//valueFunc[0]
+                            }
+                        }             
+
+                        //cout << " Value First component " << value[0] << " " << value[1] << " " << value[2] <<std::endl;
+                        for (int d=0; d<dim; d++)
+                            valuesF[ dim * nodeList[ i ] + d ] += value[d] * elScaling;
+                    }
+                   
+                    // We make the distinction between a gradient jump calculation or a simple jump calculation 
+                    vec_dbl_Type valueSecondComp(dim,0.);
+				   
+                    for (UN t=0; t < numNodes_T; t++) {
+                        Teuchos::Array<SC> value( dim, 0. ); //These are value (W_ix,W_iy,W_iz)
+                        for(int l=0; l< quadWeights.size(); l++){
+                            vec_dbl_Type deriPhi1( dim,0.0)  ;
+                            vec_dbl_ptr_Type valuePhi(new vec_dbl_Type(dim,0.0));
+
+                            auto it1 = find( kn1.begin(), kn1.end() ,nodeList[t] );
+                            int id_in_element = distance( kn1.begin() , it1 );
+
+                            Helper::gradPhi(dim,2,id_in_element,quadPointsT1[l],valuePhi);
+                            for (int j=0; j<3; j++) {
+                                deriPhi1[j] = valuePhi->at(j);
+                            }
+
+                            vec_dbl_Type deriPhiT1(dim,0.);
+                            for(int q=0; q<dim; q++){
+                                for(int s=0; s< dim ; s++)
+                                    deriPhiT1[q] += (deriPhi1[s]*Binv1[s][q]);
+                                
+                            }
+                            // Phi might have other quad points
+                            for (UN d=0; d<dim; d++) {
+                                value[d] += quadWeights[l] *solution_u[t*dim+d] * deriPhi1[d]* v_E[d]/norm_v_E * (*phi)[l][t];
+                            }
+                        }   
+                       // cout << " Value Second component " << value[0] << " " << value[1] << " " << value[2]  <<std::endl;
+                        for (int j=0; j<value.size(); j++)
+                            valuesF[ dim * nodeList[ t ] + j ] -= normalScale*value[j] *elScaling*viscosity;
+                                 
+                    }
+
+
+                }
+                    
+            }
+        }
+    }
+    return p_out; 
+}
+
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyArea(int dim,
+                                    double &area,
+                                    int inflowFlag,
+                                    int FEloc){
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+
+    int inletFlag=inflowFlag; //params->sublist("Parameter Fluid").get("Fluid Flag",4); 
+
+    double areaSurface=0.;
+
+    // Step 0: determie flowrate on inlet to calculate resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                if(feSub.getFlag() == inletFlag){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        areaSurface += norm_v_E;
+
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+
+                        //  A = norm_v_E * 0.5
+                        areaSurface += norm_v_E*0.5;
+    
+                    
+                    }
+                    
+                  
+                    
+                }
+
+
+            }
+        }
+    }
+    reduceAll<int, double> (*domainVec_.at(0)->getComm(), REDUCE_SUM, areaSurface, outArg (areaSurface));
+
+    area = areaSurface;
+
+}
+
+template <class SC, class LO, class GO, class NO>
+int FE<SC,LO,GO,NO>::assemblyFlowRate(int dim,
+                                        double &flowRateParabolic,
+                                        std::string FEType, 
+                                        int dofs,
+                                        int inflowFlag,
+                                        MultiVectorPtr_Type solution_rep,
+                                        int FEloc){
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+   
+    Helper::getPhi(phi, weights, dim-1, FEType, 2);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, 2, quadPoints, w, FEType);
+    w.reset();
+
+    int inletFlag=inflowFlag; //params->sublist("Parameter Fluid").get("Fluid Flag",4); 
+
+   
+    SC elScaling;
+    vec_dbl_Type b(dim);
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+  
+    double flowRateInlet=0.;
+ 
+    vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
+
+    Teuchos::ArrayRCP< const SC > uArray = solution_rep->getData(0);
+    // Step 0: determie flowrate on inlet to calculate resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for (int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                if(feSub.getFlag() == inletFlag){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, solution_rep,dofs);
+
+                    
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+
+                    double norm_v_E = 1.;
+                    if(dim==2){
+                        v_E[0] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        v_E[1] = -(pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0));
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2));	
+                        
+                    }
+                    else if(dim==3){
+
+                        p1[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[1]).at(0);
+                        p1[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[1]).at(1);
+                        p1[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[1]).at(2);
+
+                        p2[0] = pointsRep->at(nodeList[0]).at(0) - pointsRep->at(nodeList[2]).at(0);
+                        p2[1] = pointsRep->at(nodeList[0]).at(1) - pointsRep->at(nodeList[2]).at(1);
+                        p2[2] = pointsRep->at(nodeList[0]).at(2) - pointsRep->at(nodeList[2]).at(2);
+
+                        v_E[0] = p1[1]*p2[2] - p1[2]*p2[1];
+                        v_E[1] = p1[2]*p2[0] - p1[0]*p2[2];
+                        v_E[2] = p1[0]*p2[1] - p1[1]*p2[0];
+                        
+                        norm_v_E = sqrt(pow(v_E[0],2)+pow(v_E[1],2)+pow(v_E[2],2));
+                    
+                       // cout << " Normal Vector " << v_E[0] << " " << v_E[1] << " "<< v_E[2] <<std::endl; 
+                    }
+                    
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                    // Step 1: Quadrature Points on physical surface:    
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    Teuchos::Array<SC> value(0);
+                    value.resize(  numNodes_T, 0. ); // Volumetric flow rate over one surface is a skalar value
+                    // //cout << " Velocity over node ";
+                    // for (int w=0; w<phi->size(); w++){ //quads points
+                    //     for (int d=0; d<dim; d++) {
+                    //         uLoc[d][w] = 0.;
+                    //         for (int i=0; i < phi->at(0).size(); i++) {
+                    //             LO index = dim * nodeList[i] + d;
+                    //             uLoc[d][w] += uArray[index] * phi->at(w).at(i);
+                    //         }
+                    //     }
+                    // }
+
+                    for (UN i=0; i < numNodes_T; i++) {
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {
+                            for (int j=0; j<dim; j++){
+                                if(dofs==1){
+                                    value[i] += weights->at(w) *v_E[j]/norm_v_E *solution_u[i]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+                                else{
+                                    LO index = dim * i + j;
+                                    value[i] += weights->at(w) *v_E[j]/norm_v_E *solution_u[index]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+
+                            }
+                        }             
+                        flowRateInlet +=  value[i] * elScaling;
+    
+                    }
+                }
+
+
+            }
+        }
+    }
+    reduceAll<int, double> (*domainVec_.at(0)->getComm(), REDUCE_SUM, flowRateInlet, outArg (flowRateInlet));
+    // if(flowRateInlet < 0  && domainVec_.at(0)->getComm()->getRank() == 0)
+    //     std::cout << " ###### WARNING: the flow rate you computed is negative. Either the surface normal has the wrong orientation, or your solution is negative. Or both :D. Flowrate:"<< flowRateInlet << " ####### " <<std::endl; 
+    int isNeg=0;
+
+    if(flowRateInlet <0)
+        isNeg = 1;
+    flowRateParabolic = fabs(flowRateInlet);
+
+    return isNeg;
+
+}
+
+
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyAverageVelocity(int dim,
+                                        double &averageVelocity,
+                                        std::string FEType, 
+                                        int dofs,
+                                        int flag,
+                                        MultiVectorPtr_Type solution_rep,
+                                        int FEloc){
+
+    ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
+    
+    vec2D_dbl_ptr_Type phi;
+
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+   
+    Helper::getPhi(phi, weights, dim-1, FEType, 2);
+
+    vec2D_dbl_ptr_Type quadPoints;
+    vec_dbl_ptr_Type w = Teuchos::rcp(new vec_dbl_Type(0));
+    Helper::getQuadratureValues(dim-1, 2, quadPoints, w, FEType);
+    w.reset();
+
+    double area =0.;
+    this->assemblyArea(dim, area, flag);
+   
+    SC elScaling;
+    vec_dbl_Type b(dim);
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    SC detB;
+    SC absDetB;
+  
+    double velocity=0.;
+ 
+    vec2D_dbl_Type uLoc( dim, vec_dbl_Type( weights->size() , -1. ) );
+
+    Teuchos::ArrayRCP< const SC > uArray = solution_rep->getData(0);
+    // Step 0: determie flowrate on inlet to calculate resistance
+    for (UN T=0; T<elements->numberElements(); T++) {
+        FiniteElement fe = elements->getElement( T );
+        ElementsPtr_Type subEl = fe.getSubElements(); // might be null
+        for(int surface=0; surface<fe.numSubElements(); surface++) {
+            FiniteElement feSub = subEl->getElement( surface  );
+            if(subEl->getDimension() == dim-1 ){
+                if(feSub.getFlag() == flag){
+                    vec_int_Type nodeList = feSub.getVectorNodeListNonConst ();
+                    int numNodes_T = nodeList.size();
+                    vec_dbl_Type solution_u = getSolution(nodeList, solution_rep,dofs);
+                    
+                    vec_dbl_Type p1(dim),p2(dim),v_E(dim,1.);
+                    
+                    // Calculating R * Q = R * v * A , A = norm_v_E * 0.5
+                    // Step 1: Quadrature Points on physical surface:    
+                    Helper::buildTransformationSurface( nodeList, pointsRep, B, b, FEType);
+                    elScaling = B.computeScaling( );
+                    
+                    Teuchos::Array<SC> value(0);
+                    value.resize(  numNodes_T, 0. ); // Volumetric flow rate over one surface is a skalar value
+
+                    for (UN i=0; i < numNodes_T; i++) {
+                        // loop over basis functions quadrature points
+                        for (UN w=0; w<phi->size(); w++) {
+                            for (int j=0; j<dim; j++){
+                                if(dofs==1){
+                                    value[i] += weights->at(w)*solution_u[i]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+                                else{
+                                    LO index = dim * i + j;
+                                    value[i] += weights->at(w)*solution_u[index]*(*phi)[w][i]; // valueFunc[0]* = 1.0
+                                }
+
+                            }
+                        }             
+                        velocity +=  value[i] * elScaling;
+                    }
+                }
+            }
+        }
+    }
+    reduceAll<int, double> (*domainVec_.at(0)->getComm(), REDUCE_SUM, velocity, outArg (velocity));
+    velocity = velocity/area;
+    std::cout << " Average Flowvelocity "<< velocity << " ####### " <<std::endl; 
+
+    averageVelocity = velocity;
+}
+
+
 
 template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
@@ -4646,7 +6010,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
             // Compute transformation matrix B for the respective element (2D)
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -4756,7 +6120,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5005,7 +6369,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
             // Compute transformation matrix B for the respective element (2D)
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5118,7 +6482,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5305,7 +6669,7 @@ void FE<SC,LO,GO,NO>::assemblyAdditionalConvection(int dim,
             p2 = pointsRep->at(elements->getElement(T).getNode(1));
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5399,7 +6763,7 @@ void FE<SC,LO,GO,NO>::assemblyAdditionalConvection(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5704,7 +7068,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeVelocity(int dim,
             p2 = pointsRep->at(elements->getElement(T).getNode(1));
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -5999,7 +7363,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeVelocity(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -6521,7 +7885,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
             p2 = pointsRep->at(elements->getElement(T).getNode(1));
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -6620,7 +7984,7 @@ void FE<SC,LO,GO,NO>::assemblyShapeDerivativeDivergence(int dim,
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
             p4 = pointsRep->at(elements->getElement(T).getNode(3));
 
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B);
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType1);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
@@ -7507,1857 +8871,6 @@ void FE<SC,LO,GO,NO>::epsilonTensor(vec_dbl_Type &basisValues, SmallMatrix<SC> &
     }
 }
 
-/*template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::phi(int dim,
-                          int intFE,
-                          int i,
-                          vec_dbl_Type &p,
-                          double* value){
-    
-    if (dim==1) {
-        switch (intFE) {
-            case 0: //P0
-                switch (i) {
-                    case 0:
-                        *value = 1.;
-                        break;
-                }
-                break;
-            case 1://P1
-                switch (i) {
-                    case 0:
-                        *value = ( 1. - p.at(0) );
-                        break;
-                    case 1:
-                        *value = p.at(0);
-                        break;
-                }
-                break;
-            case 2://P2
-                switch (i) {
-                    case 0:
-                        *value = ( 1. - 3. * p[0] + 2. * p[0] *  p[0] );
-                        break;
-                    case 1:
-                        *value = ( - p[0] + 2. * p[0] *  p[0] );
-                        break;
-                    case 2:
-                        *value = ( 4. * p[0] - 4. * p[0] *  p[0] );
-                        break;
-                        
-                }
-                break;
-            default:
-                TEUCHOS_TEST_FOR_EXCEPTION( true, std::runtime_error, "Only P0,P1,P2 1D basis functions available." );
-                break;
-        }
-    }
-    else if (dim==2) {
-        switch (intFE) {
-            case 0://P0
-                switch (i) {
-                    case 0:
-                        *value = 1.;
-                        break;
-                }
-                break;
-            case 1://P1
-                switch (i) {
-                    case 0:
-                        *value = (1. - p.at(0)-p.at(1));
-                        break;
-                    case 1:
-                        *value = p.at(0);
-                        break;
-                    case 2:
-                        *value = p.at(1);
-                        break;
-                }
-                break;
-            case 2://P2
-                switch (i) {
-                    case 0:
-                        *value = -(1. - p.at(0)-p.at(1)) * (1 - 2.*(1-p.at(0) - p.at(1)));
-                        break;
-                    case 1:
-                        *value = -p.at(0) *  (1 - 2*p.at(0));
-                        break;
-                    case 2:
-                        *value = -p.at(1) *  (1 - 2*p.at(1));
-                        break;
-                    case 3:
-                        *value = 4*p.at(0) * (1 - p.at(0)-p.at(1));
-                        break;
-                    case 4:
-                        *value = 4*p.at(0)*p.at(1);
-                        break;
-                    case 5:
-                        *value = 4*p.at(1) * (1 - p.at(0)-p.at(1));
-                        break;
-                }
-                break;
-        }
-    }
-    else if(dim==3){
-        switch (intFE) {
-            case 1://P1
-                switch (i) {
-                    case 0:
-                        *value = (1. - p.at(0)-p.at(1)-p.at(2));
-                        break;
-                    case 1:
-                        *value = p.at(0);
-                        break;
-                    case 2:
-                        *value = p.at(1);
-                        break;
-                    case 3:
-                        *value = p.at(2);
-                        break;
-                }
-                break;
-            case 2: //P2
-                switch (i) {
-                    case 0:
-                        *value = (1. - p.at(0)-p.at(1)-p.at(2)) * (1 - 2*p.at(0) - 2*p.at(1) - 2*p.at(2));
-                        break;
-                    case 1:
-                        *value = p.at(0) * (2*p.at(0) - 1);
-                        break;
-                    case 2:
-                        *value = p.at(1) * (2*p.at(1) - 1);
-                        break;
-                    case 3:
-                        *value = p.at(2) * (2*p.at(2) - 1);
-                        break;
-                    case 4:
-                        *value = 4*p.at(0) * (1 - p.at(0)-p.at(1)-p.at(2));
-                        break;
-                    case 5:
-                        *value = 4*p.at(0)*p.at(1);
-                        break;
-                    case 6:
-                        *value = 4*p.at(1) * (1 - p.at(0)-p.at(1)-p.at(2));
-                        break;
-                    case 7:
-                        *value = 4*p.at(2) * (1 - p.at(0)-p.at(1)-p.at(2));
-                        break;
-                    case 8:
-                        *value = 4*p.at(0)*p.at(2);
-                        break;
-                    case 9:
-                        *value = 4*p.at(1)*p.at(2);
-                        break;
-                }
-                break;
-            case 3: //Q1
-            {
-                double a = 1./8;
-                switch (i) {
-                    case 0:
-                        *value = a * ( 1 - p[0] ) * ( 1 - p[1] ) * ( 1 - p[2] );
-                        break;
-                    case 1:
-                        *value = a * ( 1 + p[0] ) * ( 1 - p[1] ) * ( 1 - p[2] );
-                        break;
-                    case 2:
-                        *value = a * ( 1 + p[0] ) * ( 1 + p[1] ) * ( 1 - p[2] );
-                        break;
-                    case 3:
-                        *value = a * ( 1 - p[0] ) * ( 1 + p[1] ) * ( 1 - p[2] );
-                        break;
-                    case 4:
-                        *value = a * ( 1 - p[0] ) * ( 1 - p[1] ) * ( 1 + p[2] );
-                        break;
-                    case 5:
-                        *value = a * ( 1 + p[0] ) * ( 1 - p[1] ) * ( 1 + p[2] );
-                        break;
-                    case 6:
-                        *value = a * ( 1 + p[0] ) * ( 1 + p[1] ) * ( 1 + p[2] );
-                        break;
-                    case 7:
-                        *value = a * ( 1 - p[0] ) * ( 1 + p[1] ) * ( 1 + p[2] );
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-            case 4: //Q2
-            {
-                double a = 1./8;
-                double b = 1./4;
-                double c = 1./2;
-                switch (i) {
-                    case 0:
-                        *value = 0.125*p[0]*p[0]*p[1]*p[2] + 0.125*p[1]*p[1]*p[0]*p[2] + 0.125*p[2]*p[2]*p[0]*p[1] + -0.125*p[0]*p[0]*p[1]*p[1]*p[2] + -0.125*p[0]*p[0]*p[2]*p[2]*p[1] + -0.125*p[1]*p[1]*p[2]*p[2]*p[0] + -0.125*p[0]*p[1]*p[2] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 1:
-                        *value = 0.125*p[0]*p[0]*p[1]*p[2] + -0.125*p[1]*p[1]*p[0]*p[2] + -0.125*p[2]*p[2]*p[0]*p[1] + -0.125*p[0]*p[0]*p[1]*p[1]*p[2] + -0.125*p[0]*p[0]*p[2]*p[2]*p[1] + 0.125*p[1]*p[1]*p[2]*p[2]*p[0] + 0.125*p[0]*p[1]*p[2] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 2:
-                        *value = -0.125*p[0]*p[0]*p[1]*p[2] + -0.125*p[1]*p[1]*p[0]*p[2] + 0.125*p[2]*p[2]*p[0]*p[1] + -0.125*p[0]*p[0]*p[1]*p[1]*p[2] + 0.125*p[0]*p[0]*p[2]*p[2]*p[1] + 0.125*p[1]*p[1]*p[2]*p[2]*p[0] + -0.125*p[0]*p[1]*p[2] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 3:
-                        *value = -0.125*p[0]*p[0]*p[1]*p[2] + 0.125*p[1]*p[1]*p[0]*p[2] + -0.125*p[2]*p[2]*p[0]*p[1] + -0.125*p[0]*p[0]*p[1]*p[1]*p[2] + 0.125*p[0]*p[0]*p[2]*p[2]*p[1] + -0.125*p[1]*p[1]*p[2]*p[2]*p[0] + 0.125*p[0]*p[1]*p[2] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 4:
-                        *value = -0.125*p[0]*p[0]*p[1]*p[2] + -0.125*p[1]*p[1]*p[0]*p[2] + 0.125*p[2]*p[2]*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2] + -0.125*p[0]*p[0]*p[2]*p[2]*p[1] + -0.125*p[1]*p[1]*p[2]*p[2]*p[0] + 0.125*p[0]*p[1]*p[2] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 5:
-                        *value = -0.125*p[0]*p[0]*p[1]*p[2] + 0.125*p[1]*p[1]*p[0]*p[2] + -0.125*p[2]*p[2]*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2] + -0.125*p[0]*p[0]*p[2]*p[2]*p[1] + 0.125*p[1]*p[1]*p[2]*p[2]*p[0] + -0.125*p[0]*p[1]*p[2] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 6:
-                        *value = 0.125*p[0]*p[0]*p[1]*p[2] + 0.125*p[1]*p[1]*p[0]*p[2] + 0.125*p[2]*p[2]*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2] + 0.125*p[0]*p[0]*p[2]*p[2]*p[1] + 0.125*p[1]*p[1]*p[2]*p[2]*p[0] + 0.125*p[0]*p[1]*p[2] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 7:
-                        *value = 0.125*p[0]*p[0]*p[1]*p[2] + -0.125*p[1]*p[1]*p[0]*p[2] + -0.125*p[2]*p[2]*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2] + 0.125*p[0]*p[0]*p[2]*p[2]*p[1] + -0.125*p[1]*p[1]*p[2]*p[2]*p[0] + -0.125*p[0]*p[1]*p[2] + 0.125*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 8:
-                        *value = 0.250*p[1]*p[2] + -0.250*p[1]*p[1]*p[2] + -0.250*p[2]*p[2]*p[1] + -0.250*p[0]*p[0]*p[1]*p[2] + 0.250*p[0]*p[0]*p[1]*p[1]*p[2] + 0.250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.250*p[1]*p[1]*p[2]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 9:
-                        *value = -0.250*p[0]*p[2] + -0.250*p[0]*p[0]*p[2] + 0.250*p[2]*p[2]*p[0] + 0.250*p[1]*p[1]*p[0]*p[2] + 0.250*p[0]*p[0]*p[1]*p[1]*p[2] + -0.250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[2]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 10:
-                        *value = -0.250*p[1]*p[2] + -0.250*p[1]*p[1]*p[2] + 0.250*p[2]*p[2]*p[1] + 0.250*p[0]*p[0]*p[1]*p[2] + 0.250*p[0]*p[0]*p[1]*p[1]*p[2] + -0.250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.250*p[1]*p[1]*p[2]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 11:
-                        *value = 0.250*p[0]*p[2] + -0.250*p[0]*p[0]*p[2] + -0.250*p[2]*p[2]*p[0] + -0.250*p[1]*p[1]*p[0]*p[2] + 0.250*p[0]*p[0]*p[1]*p[1]*p[2] + 0.250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[2]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 12:
-                        *value = -0.250*p[1]*p[2] + 0.250*p[1]*p[1]*p[2] + -0.250*p[2]*p[2]*p[1] + 0.250*p[0]*p[0]*p[1]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2] + 0.250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.250*p[1]*p[1]*p[2]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 13:
-                        *value = 0.250*p[0]*p[2] + 0.250*p[0]*p[0]*p[2] + 0.250*p[2]*p[2]*p[0] + -0.250*p[1]*p[1]*p[0]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2] + -0.250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[2]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 14:
-                        *value = 0.250*p[1]*p[2] + 0.250*p[1]*p[1]*p[2] + 0.250*p[2]*p[2]*p[1] + -0.250*p[0]*p[0]*p[1]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2] + -0.250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.250*p[1]*p[1]*p[2]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 15:
-                        *value = -0.250*p[0]*p[2] + 0.250*p[0]*p[0]*p[2] + -0.250*p[2]*p[2]*p[0] + 0.250*p[1]*p[1]*p[0]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2] + 0.250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[2]*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 16:
-                        *value = 0.250*p[0]*p[1] + -0.250*p[0]*p[0]*p[1] + -0.250*p[1]*p[1]*p[0] + -0.250*p[2]*p[2]*p[0]*p[1] + 0.250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[1]*p[1] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 17:
-                        *value = -0.250*p[0]*p[1] + -0.250*p[0]*p[0]*p[1] + 0.250*p[1]*p[1]*p[0] + 0.250*p[2]*p[2]*p[0]*p[1] + 0.250*p[0]*p[0]*p[2]*p[2]*p[1] + -0.250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[1]*p[1] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 18:
-                        *value =0.250*p[0]*p[1] + 0.250*p[0]*p[0]*p[1] + 0.250*p[1]*p[1]*p[0] + -0.250*p[2]*p[2]*p[0]*p[1] + -0.250*p[0]*p[0]*p[2]*p[2]*p[1] + -0.250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[1]*p[1] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 19:
-                        *value = -0.250*p[0]*p[1] + 0.250*p[0]*p[0]*p[1] + -0.250*p[1]*p[1]*p[0] + 0.250*p[2]*p[2]*p[0]*p[1] + -0.250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[1]*p[1] + -0.250*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 20:
-                        *value = -0.500*p[1] + 0.500*p[1]*p[1] + 0.500*p[0]*p[0]*p[1] + 0.500*p[2]*p[2]*p[1] + -0.500*p[0]*p[0]*p[2]*p[2]*p[1] + -0.500*p[0]*p[0]*p[1]*p[1] + -0.500*p[1]*p[1]*p[2]*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 21:
-                        *value = 0.500*p[0] + 0.500*p[0]*p[0] + -0.500*p[1]*p[1]*p[0] + -0.500*p[2]*p[2]*p[0] + 0.500*p[1]*p[1]*p[2]*p[2]*p[0] + -0.500*p[0]*p[0]*p[1]*p[1] + -0.500*p[0]*p[0]*p[2]*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 22:
-                        *value = 0.500*p[1] + 0.500*p[1]*p[1] + -0.500*p[0]*p[0]*p[1] + -0.500*p[2]*p[2]*p[1] + 0.500*p[0]*p[0]*p[2]*p[2]*p[1] + -0.500*p[0]*p[0]*p[1]*p[1] + -0.500*p[1]*p[1]*p[2]*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 23:
-                        *value = -0.500*p[0] + 0.500*p[0]*p[0] + 0.500*p[1]*p[1]*p[0] + 0.500*p[2]*p[2]*p[0] + -0.500*p[1]*p[1]*p[2]*p[2]*p[0] + -0.500*p[0]*p[0]*p[1]*p[1] + -0.500*p[0]*p[0]*p[2]*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 24:
-                        *value = -0.500*p[2] + 0.500*p[2]*p[2] + 0.500*p[0]*p[0]*p[2] + 0.500*p[1]*p[1]*p[2] + -0.500*p[0]*p[0]*p[1]*p[1]*p[2] + -0.500*p[0]*p[0]*p[2]*p[2] + -0.500*p[1]*p[1]*p[2]*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 25:
-                        *value = 1.000 + -1.000*p[0]*p[0] + -1.000*p[1]*p[1] + -1.000*p[2]*p[2] + 1.000*p[0]*p[0]*p[1]*p[1] + 1.000*p[0]*p[0]*p[2]*p[2] + 1.000*p[1]*p[1]*p[2]*p[2] + -1.000*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    case 26:
-                        *value = 0.500*p[2] + 0.500*p[2]*p[2] + -0.500*p[0]*p[0]*p[2] + -0.500*p[1]*p[1]*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*p[2] + -0.500*p[0]*p[0]*p[2]*p[2] + -0.500*p[1]*p[1]*p[2]*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*p[2]*p[2];
-                        break;
-                    default:
-                        break;
-                    }
-                    break;
-                }
-            case 5: //Q2-20
-            {
-                switch (i) {
-                    case 0:
-                        *value = -0.0625 + 0.1250*p[0]*p[0]*p[1]*p[2] + 0.1250*p[1]*p[1]*p[0]*p[2] + 0.1250*p[2]*p[2]*p[0]*p[1] + -0.1250*p[0]*p[0]*p[1]*p[1]*p[2] + -0.1250*p[0]*p[0]*p[2]*p[2]*p[1] + -0.1250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.0625*p[0]*p[0]*p[1]*p[1] + 0.0625*p[0]*p[0]*p[2]*p[2] + 0.0625*p[1]*p[1]*p[2]*p[2] + -0.1250*p[0]*p[1]*p[2];
-                        
-                        break;
-                    case 1:
-                        *value = -0.0625 + 0.1250*p[0]*p[0]*p[1]*p[2] + -0.1250*p[1]*p[1]*p[0]*p[2] + -0.1250*p[2]*p[2]*p[0]*p[1] + -0.1250*p[0]*p[0]*p[1]*p[1]*p[2] + -0.1250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.1250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.0625*p[0]*p[0]*p[1]*p[1] + 0.0625*p[0]*p[0]*p[2]*p[2] + 0.0625*p[1]*p[1]*p[2]*p[2] + 0.1250*p[0]*p[1]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 2:
-                        *value = -0.0625 + -0.1250*p[0]*p[0]*p[1]*p[2] + -0.1250*p[1]*p[1]*p[0]*p[2] + 0.1250*p[2]*p[2]*p[0]*p[1] + -0.1250*p[0]*p[0]*p[1]*p[1]*p[2] + 0.1250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.1250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.0625*p[0]*p[0]*p[1]*p[1] + 0.0625*p[0]*p[0]*p[2]*p[2] + 0.0625*p[1]*p[1]*p[2]*p[2] + -0.1250*p[0]*p[1]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 3:
-                        *value = -0.0625 + -0.1250*p[0]*p[0]*p[1]*p[2] + 0.1250*p[1]*p[1]*p[0]*p[2] + -0.1250*p[2]*p[2]*p[0]*p[1] + -0.1250*p[0]*p[0]*p[1]*p[1]*p[2] + 0.1250*p[0]*p[0]*p[2]*p[2]*p[1] + -0.1250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.0625*p[0]*p[0]*p[1]*p[1] + 0.0625*p[0]*p[0]*p[2]*p[2] + 0.0625*p[1]*p[1]*p[2]*p[2] + 0.1250*p[0]*p[1]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 4:
-                        *value = -0.0625 + -0.1250*p[0]*p[0]*p[1]*p[2] + -0.1250*p[1]*p[1]*p[0]*p[2] + 0.1250*p[2]*p[2]*p[0]*p[1] + 0.1250*p[0]*p[0]*p[1]*p[1]*p[2] + -0.1250*p[0]*p[0]*p[2]*p[2]*p[1] + -0.1250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.0625*p[0]*p[0]*p[1]*p[1] + 0.0625*p[0]*p[0]*p[2]*p[2] + 0.0625*p[1]*p[1]*p[2]*p[2] + 0.1250*p[0]*p[1]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 5:
-                        *value = -0.0625 + -0.1250*p[0]*p[0]*p[1]*p[2] + 0.1250*p[1]*p[1]*p[0]*p[2] + -0.1250*p[2]*p[2]*p[0]*p[1] + 0.1250*p[0]*p[0]*p[1]*p[1]*p[2] + -0.1250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.1250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.0625*p[0]*p[0]*p[1]*p[1] + 0.0625*p[0]*p[0]*p[2]*p[2] + 0.0625*p[1]*p[1]*p[2]*p[2] + -0.1250*p[0]*p[1]*p[2];
-                        
-                        
-                        break;
-                    case 6:
-                        *value = -0.0625 + 0.1250*p[0]*p[0]*p[1]*p[2] + 0.1250*p[1]*p[1]*p[0]*p[2] + 0.1250*p[2]*p[2]*p[0]*p[1] + 0.1250*p[0]*p[0]*p[1]*p[1]*p[2] + 0.1250*p[0]*p[0]*p[2]*p[2]*p[1] + 0.1250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.0625*p[0]*p[0]*p[1]*p[1] + 0.0625*p[0]*p[0]*p[2]*p[2] + 0.0625*p[1]*p[1]*p[2]*p[2] + 0.1250*p[0]*p[1]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 7:
-                        *value = -0.0625 + 0.1250*p[0]*p[0]*p[1]*p[2] + -0.1250*p[1]*p[1]*p[0]*p[2] + -0.1250*p[2]*p[2]*p[0]*p[1] + 0.1250*p[0]*p[0]*p[1]*p[1]*p[2] + 0.1250*p[0]*p[0]*p[2]*p[2]*p[1] + -0.1250*p[1]*p[1]*p[2]*p[2]*p[0] + 0.0625*p[0]*p[0]*p[1]*p[1] + 0.0625*p[0]*p[0]*p[2]*p[2] + 0.0625*p[1]*p[1]*p[2]*p[2] + -0.1250*p[0]*p[1]*p[2];
-                        
-                        
-                        break;
-                    case 8:
-                        *value = 0.1250 + 0.2500*p[1]*p[2] + -0.2500*p[1]*p[1]*p[2] + -0.2500*p[2]*p[2]*p[1] + -0.2500*p[0]*p[0]*p[1]*p[2] + 0.2500*p[0]*p[0]*p[1]*p[1]*p[2] + 0.2500*p[0]*p[0]*p[2]*p[2]*p[1] + -0.1250*p[0]*p[0]*p[1]*p[1] + -0.1250*p[0]*p[0]*p[2]*p[2] + 0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 9:
-                        *value = 0.1250 + -0.2500*p[2] + -0.2500*p[0]*p[2] + 0.2500*p[1]*p[1]*p[2] + 0.2500*p[2]*p[2]*p[0] + 0.2500*p[1]*p[1]*p[0]*p[2] + -0.2500*p[1]*p[1]*p[2]*p[2]*p[0] + -0.1250*p[0]*p[0]*p[1]*p[1] + 0.1250*p[0]*p[0]*p[2]*p[2] + -0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 10:
-                        *value = 0.1250 + -0.2500*p[1]*p[2] + -0.2500*p[1]*p[1]*p[2] + 0.2500*p[2]*p[2]*p[1] + 0.2500*p[0]*p[0]*p[1]*p[2] + 0.2500*p[0]*p[0]*p[1]*p[1]*p[2] + -0.2500*p[0]*p[0]*p[2]*p[2]*p[1] + -0.1250*p[0]*p[0]*p[1]*p[1] + -0.1250*p[0]*p[0]*p[2]*p[2] + 0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 11:
-                        *value = 0.1250 + -0.2500*p[2] + 0.2500*p[0]*p[2] + 0.2500*p[1]*p[1]*p[2] + -0.2500*p[2]*p[2]*p[0] + -0.2500*p[1]*p[1]*p[0]*p[2] + 0.2500*p[1]*p[1]*p[2]*p[2]*p[0] + -0.1250*p[0]*p[0]*p[1]*p[1] + 0.1250*p[0]*p[0]*p[2]*p[2] + -0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 12:
-                        *value = 0.1250 + -0.2500*p[1]*p[2] + 0.2500*p[1]*p[1]*p[2] + -0.2500*p[2]*p[2]*p[1] + 0.2500*p[0]*p[0]*p[1]*p[2] + -0.2500*p[0]*p[0]*p[1]*p[1]*p[2] + 0.2500*p[0]*p[0]*p[2]*p[2]*p[1] + -0.1250*p[0]*p[0]*p[1]*p[1] + -0.1250*p[0]*p[0]*p[2]*p[2] + 0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 13:
-                        *value = 0.1250 + 0.2500*p[2] + 0.2500*p[0]*p[2] + -0.2500*p[1]*p[1]*p[2] + 0.2500*p[2]*p[2]*p[0] + -0.2500*p[1]*p[1]*p[0]*p[2] + -0.0000*p[2]*p[2]*p[0]*p[1] + -0.2500*p[1]*p[1]*p[2]*p[2]*p[0] + -0.1250*p[0]*p[0]*p[1]*p[1] + 0.1250*p[0]*p[0]*p[2]*p[2] + -0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 14:
-                        *value = 0.1250 + 0.2500*p[1]*p[2] + 0.2500*p[1]*p[1]*p[2] + 0.2500*p[2]*p[2]*p[1] + -0.2500*p[0]*p[0]*p[1]*p[2] + 0.0000*p[1]*p[1]*p[0]*p[2] + -0.2500*p[0]*p[0]*p[1]*p[1]*p[2] + -0.2500*p[0]*p[0]*p[2]*p[2]*p[1] + -0.1250*p[0]*p[0]*p[1]*p[1] + -0.1250*p[0]*p[0]*p[2]*p[2] + 0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 15:
-                        *value = 0.1250 + 0.2500*p[2] + -0.2500*p[0]*p[2] + -0.2500*p[1]*p[1]*p[2] + -0.2500*p[2]*p[2]*p[0] + -0.0000*p[0]*p[0]*p[1]*p[2] + 0.2500*p[1]*p[1]*p[0]*p[2] + 0.2500*p[1]*p[1]*p[2]*p[2]*p[0] + -0.1250*p[0]*p[0]*p[1]*p[1] + 0.1250*p[0]*p[0]*p[2]*p[2] + -0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 16:
-                        *value = 0.1250 + -0.2500*p[0] + -0.2500*p[1] + 0.2500*p[0]*p[1] + 0.2500*p[2]*p[2]*p[0] + 0.2500*p[2]*p[2]*p[1] + -0.2500*p[2]*p[2]*p[0]*p[1] + 0.1250*p[0]*p[0]*p[1]*p[1] + -0.1250*p[0]*p[0]*p[2]*p[2] + -0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 17:
-                        *value = 0.1250 + 0.2500*p[0] + -0.2500*p[1] + -0.2500*p[0]*p[1] + -0.2500*p[2]*p[2]*p[0] + 0.2500*p[2]*p[2]*p[1] + 0.2500*p[2]*p[2]*p[0]*p[1] + 0.1250*p[0]*p[0]*p[1]*p[1] + -0.1250*p[0]*p[0]*p[2]*p[2] + -0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        
-                        break;
-                    case 18:
-                        *value = 0.1250 + 0.2500*p[0] + 0.2500*p[1] + 0.2500*p[0]*p[1] + -0.2500*p[2]*p[2]*p[0] + -0.2500*p[2]*p[2]*p[1] + -0.2500*p[2]*p[2]*p[0]*p[1] + 0.1250*p[0]*p[0]*p[1]*p[1] + -0.1250*p[0]*p[0]*p[2]*p[2] + -0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        break;
-                    case 19:
-                        *value = 0.1250 + -0.2500*p[0] + 0.2500*p[1] + -0.2500*p[0]*p[1] + 0.2500*p[2]*p[2]*p[0] + -0.2500*p[2]*p[2]*p[1] + 0.2500*p[2]*p[2]*p[0]*p[1] + 0.1250*p[0]*p[0]*p[1]*p[1] + -0.1250*p[0]*p[0]*p[2]*p[2] + -0.1250*p[1]*p[1]*p[2]*p[2];
-                        
-                        
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-                
-        }
-
-    }
-}
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::buildTransformation(const vec_int_Type& element,
-                                          vec2D_dbl_ptr_Type pointsRep,
-                                          SmallMatrix<SC>& B,
-                                          std::string FEType){
-
-    TEUCHOS_TEST_FOR_EXCEPTION( (B.size()<2 || B.size()>3), std::logic_error, "Initialize SmallMatrix for transformation.");
-    UN index;
-    UN index0 = element.at(0);
-    if (FEType[0]=='P') {
-        for (UN j=0; j<B.size(); j++) {
-            index = element.at(j+1);
-            for (UN i=0; i<B.size(); i++) {
-                B[i][j] = pointsRep->at(index).at(i) - pointsRep->at(index0).at(i);
-            }
-        }
-    }
-    else if (FEType[0]=='Q'){
-        TEUCHOS_TEST_FOR_EXCEPTION( B.size()!=3, std::logic_error, "Transformation for quadrilateral elements only in 3D.");
-        std::vector<int> indexVec(3);
-        indexVec[0] = element[1]; indexVec[1] = element[3]; indexVec[2] = element[4];
-        for (UN j=0; j<B.size(); j++) {
-            for (UN i=0; i<B.size(); i++) {
-                B[i][j] = ( pointsRep->at( indexVec[j] ).at(i) - pointsRep->at( index0 ).at(i) ) / 2.;
-            }
-        }
-    }
-}
-    
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::buildTransformation(const vec_int_Type& element,
-                                          vec2D_dbl_ptr_Type pointsRep,
-                                          SmallMatrix<SC>& B,
-                                          vec_dbl_Type& b,
-                                          std::string FEType){
-    
-    TEUCHOS_TEST_FOR_EXCEPTION( (B.size()<2 || B.size()>3), std::logic_error, "Initialize SmallMatrix for transformation.");
-    UN index;
-    UN index0 = element.at(0);
-    if (FEType[0]=='P') {
-        for (UN j=0; j<B.size(); j++) {
-            index = element.at(j+1);
-            for (UN i=0; i<B.size(); i++) {
-                B[i][j] = pointsRep->at(index).at(i) - pointsRep->at(index0).at(i);
-            }
-        }
-        for (UN i=0; i<B.size(); i++)
-            b[i] = pointsRep->at(index0).at(i);
-    }
-    else if (FEType[0]=='Q'){
-        TEUCHOS_TEST_FOR_EXCEPTION( B.size()!=3, std::logic_error, "Transformation for quadrilateral elements only in 3D.");
-        std::vector<int> indexVec(3);
-        indexVec[0] = element[1]; indexVec[1] = element[3]; indexVec[2] = element[4];
-        for (UN j=0; j<B.size(); j++) {
-            for (UN i=0; i<B.size(); i++) {
-                B[i][j] = ( pointsRep->at( indexVec[j] ).at(i) - pointsRep->at( index0 ).at(i) ) / 2.;
-            }
-        }
-        for (UN i=0; i<B.size(); i++)
-            b[i] = pointsRep->at(index0).at(i);
-
-    }
-}
-    
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::buildTransformationSurface(const vec_int_Type& element,
-                                                 vec2D_dbl_ptr_Type pointsRep,
-                                                 SmallMatrix<SC>& B,
-                                                 vec_dbl_Type& b,
-                                                 std::string FEType){
-    // small matrix always square
-    TEUCHOS_TEST_FOR_EXCEPTION( (B.size()<2 || B.size()>3), std::logic_error, "Initialize SmallMatrix for transformation.");
-    UN index;
-    UN index0 = element.at(0);
-    if (FEType[0]=='P') {
-        for (UN j=0; j<B.size()-1; j++) {
-            index = element.at(j+1);
-            for (UN i=0; i<B.size(); i++) { // dimension
-                B[i][j] = pointsRep->at(index).at(i) - pointsRep->at(index0).at(i);
-            }
-        }
-        for (UN i=0; i<B.size(); i++)
-            b[i] = pointsRep->at(index0).at(i);
-    }
-    else if (FEType[0]=='Q'){
-        TEUCHOS_TEST_FOR_EXCEPTION( B.size()!=3, std::logic_error, "No Transformation for surface integrals.");
-    }
-}
-
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::gradPhi(int dim,
-                int intFE,
-                int i,
-                vec_dbl_Type &p,
-                vec_dbl_ptr_Type &value){
-    if (dim==2) {
-        switch (intFE) {
-            case 0://P0
-                switch (i) {
-                    case 0:
-                        value->at(0)= 0.;
-                        value->at(1)= 0.;
-                        break;
-                }
-                break;
-            case 1://P1
-                switch (i) {
-                    case 0:
-                        value->at(0)= -1.;
-                        value->at(1)= -1.;
-                        break;
-                    case 1:
-                        value->at(0)= 1.;
-                        value->at(1)= 0.;
-                        break;
-                    case 2:
-                        value->at(0)= 0.;
-                        value->at(1)= 1.;
-                        break;
-                }
-                break;
-            case 2://P2
-                switch (i) {
-                    case 0:
-                        value->at(0)= 1. - 4.*(1 - p[0] - p[1]);
-                        value->at(1)= 1. - 4.*(1 - p[0] - p[1]);
-                        break;
-                    case 1:
-                        value->at(0)= 4.*p[0] - 1;
-                        value->at(1)= 0.;
-                        break;
-                    case 2:
-                        value->at(0)= 0.;
-                        value->at(1)= 4.*p[1] - 1;
-                        break;
-                    case 3:
-                        value->at(0)= 4 * (1. - 2*p[0] - p[1]);
-                        value->at(1)= -4 * p[0];
-                        break;
-                    case 4:
-                        value->at(0)= 4.*p[1];
-                        value->at(1)= 4.*p[0];
-                        break;
-                    case 5:
-                        value->at(0)= - 4.*p[1];
-                        value->at(1)= 4 * (1. - p[0] - 2*p[1]);
-                        break;
-                }
-                break;
-        }
-    }
-    else if(dim==3) {
-        switch (intFE) {
-            case 0://P0
-                switch (i) {
-                    case 0:
-                    value->at(0)= 0.;
-                    value->at(1)= 0.;
-                    value->at(2)= 0.;
-                    break;
-                }
-                break;
-            case 1://P1
-                switch (i) {
-                    case 0:
-                        value->at(0)= -1.;
-                        value->at(1)= -1.;
-                        value->at(2)= -1.;
-                        break;
-                    case 1:
-                        value->at(0)= 1.;
-                        value->at(1)= 0.;
-                        value->at(2)= 0.;
-                        break;
-                    case 2:
-                        value->at(0)= 0.;
-                        value->at(1)= 1.;
-                        value->at(2)= 0.;
-                        break;
-                    case 3:
-                        value->at(0)= 0.;
-                        value->at(1)= 0.;
-                        value->at(2)= 1.;
-                        break;
-                }
-                break;
-            case 2://P2
-                switch (i) {
-                    case 0:
-                        value->at(0)= -3. + 4.*p[0] + 4.*p[1] + 4.*p[2];
-                        value->at(1)= -3. + 4.*p[0] + 4.*p[1] + 4.*p[2];
-                        value->at(2)= -3. + 4.*p[0] + 4.*p[1] + 4.*p[2];
-                        break;
-                    case 1:
-                        value->at(0)= 4.*p[0] - 1;
-                        value->at(1)= 0.;
-                        value->at(2)= 0.;
-                        break;
-                    case 2:
-                        value->at(0)= 0.;
-                        value->at(1)= 4.*p[1] - 1;
-                        value->at(2)= 0.;
-                        break;
-                    case 3:
-                        value->at(0)= 0.;
-                        value->at(1)= 0.;
-                        value->at(2)= 4.*p[2] - 1;
-                        break;
-                    case 4:
-                        value->at(0)= 4. - 8.*p[0] - 4.*p[1] - 4.*p[2];
-                        value->at(1)= - 4.*p[0];
-                        value->at(2)= - 4.*p[0];
-                        break;
-                    case 5:
-                        value->at(0)= 4.*p[1];
-                        value->at(1)= 4.*p[0];
-                        value->at(2)= 0.;
-                        break;
-                    case 6:
-                        value->at(0)= - 4.*p[1];
-                        value->at(1)= 4. - 4.*p[0] - 8.*p[1] - 4.*p[2];
-                        value->at(2)= - 4.*p[1];
-                        break;
-                    case 7:
-                        value->at(0)= - 4.*p[2];
-                        value->at(1)= - 4.*p[2];
-                        value->at(2)= 4. - 4.*p[0] - 4.*p[1] - 8.*p[2];
-                        break;
-                    case 8:
-                        value->at(0)= 4.*p[2];
-                        value->at(1)= 0.;
-                        value->at(2)= 4.*p[0];
-                        break;
-                    case 9:
-                        value->at(0)= 0.;
-                        value->at(1)= 4.*p[2];
-                        value->at(2)= 4.*p[1];
-                        break;
-                }
-                break;
-            case 3: //Q1
-            {
-                double a = 1./8;
-                switch (i) {
-                    case 0:
-                        value->at(0) = - a * ( 1 - p[1] ) * ( 1 - p[2] );
-                        value->at(1) = - a * ( 1 - p[0] ) * ( 1 - p[2] );
-                        value->at(2) = - a * ( 1 - p[0] ) * ( 1 - p[1] );
-                        break;
-                    case 1:
-                        value->at(0) = a * ( 1 - p[1] ) * ( 1 - p[2] );
-                        value->at(1) = - a * ( 1 + p[0] ) * ( 1 - p[2] );
-                        value->at(2) = - a * ( 1 + p[0] ) * ( 1 - p[1] );
-                        break;
-                    case 2:
-                        value->at(0) = a * ( 1 + p[1] ) * ( 1 - p[2] );
-                        value->at(1) = a * ( 1 + p[0] ) * ( 1 - p[2] );
-                        value->at(2) = - a * ( 1 + p[0] ) * ( 1 + p[1] );
-                        break;
-                    case 3:
-                        value->at(0) = - a * ( 1 + p[1] ) * ( 1 - p[2] );
-                        value->at(1) = a * ( 1 - p[0] ) * ( 1 - p[2] );
-                        value->at(2) = - a * ( 1 - p[0] ) * ( 1 + p[1] );
-                        break;
-                    case 4:
-                        value->at(0) = - a * ( 1 - p[1] ) * ( 1 + p[2] );
-                        value->at(1) = - a * ( 1 - p[0] ) * ( 1 + p[2] );
-                        value->at(2) = a * ( 1 - p[0] ) * ( 1 - p[1] );
-                        break;
-                    case 5:
-                        value->at(0) = a * ( 1 - p[1] ) * ( 1 + p[2] );
-                        value->at(1) = - a * ( 1 + p[0] ) * ( 1 + p[2] );
-                        value->at(2) = a * ( 1 + p[0] ) * ( 1 - p[1] );
-                        break;
-                    case 6:
-                        value->at(0) = a * ( 1 + p[1] ) * ( 1 + p[2] );
-                        value->at(1) = a * ( 1 + p[0] ) * ( 1 + p[2] );
-                        value->at(2) = a * ( 1 + p[0] ) * ( 1 + p[1] );
-                        break;
-                    case 7:
-                        value->at(0) = - a * ( 1 + p[1] ) * ( 1 + p[2] );
-                        value->at(1) = a * ( 1 - p[0] ) * ( 1 + p[2] );
-                        value->at(2) = a * ( 1 - p[0] ) * ( 1 + p[1] );
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-            case 4: //Q2
-            {
-                switch (i) {
-                    case 0:
-                        value->at(0) = 0.125*2*p[0]*p[1]*p[2] + 0.125*p[1]*p[1]*p[2] + 0.125*p[2]*p[2]*p[1] + -0.125*2*p[0]*p[1]*p[1]*p[2] + -0.125*2*p[0]*p[2]*p[2]*p[1] + -0.125*p[1]*p[1]*p[2]*p[2] + -0.125*p[1]*p[2] + 0.125*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.125*p[0]*p[0]*p[2] + 0.125*2*p[1]*p[0]*p[2] + 0.125*p[2]*p[2]*p[0] + -0.125*p[0]*p[0]*2*p[1]*p[2] + -0.125*p[0]*p[0]*p[2]*p[2] + -0.125*2*p[1]*p[2]*p[2]*p[0] + -0.125*p[0]*p[2] + 0.125*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.125*p[0]*p[0]*p[1] + 0.125*p[1]*p[1]*p[0] + 0.125*2*p[2]*p[0]*p[1] + -0.125*p[0]*p[0]*p[1]*p[1] + -0.125*p[0]*p[0]*2*p[2]*p[1] + -0.125*p[1]*p[1]*2*p[2]*p[0] + -0.125*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 1:
-                        value->at(0) = 0.125*2*p[0]*p[1]*p[2] + -0.125*p[1]*p[1]*p[2] + -0.125*p[2]*p[2]*p[1] + -0.125*2*p[0]*p[1]*p[1]*p[2] + -0.125*2*p[0]*p[2]*p[2]*p[1] + 0.125*p[1]*p[1]*p[2]*p[2] + 0.125*p[1]*p[2] + 0.125*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.125*p[0]*p[0]*p[2] + -0.125*2*p[1]*p[0]*p[2] + -0.125*p[2]*p[2]*p[0] + -0.125*p[0]*p[0]*2*p[1]*p[2] + -0.125*p[0]*p[0]*p[2]*p[2] + 0.125*2*p[1]*p[2]*p[2]*p[0] + 0.125*p[0]*p[2] + 0.125*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.125*p[0]*p[0]*p[1] + -0.125*p[1]*p[1]*p[0] + -0.125*2*p[2]*p[0]*p[1] + -0.125*p[0]*p[0]*p[1]*p[1] + -0.125*p[0]*p[0]*2*p[2]*p[1] + 0.125*p[1]*p[1]*2*p[2]*p[0] + 0.125*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 2:
-                        value->at(0) = -0.125*2*p[0]*p[1]*p[2] + -0.125*p[1]*p[1]*p[2] + 0.125*p[2]*p[2]*p[1] + -0.125*2*p[0]*p[1]*p[1]*p[2] + 0.125*2*p[0]*p[2]*p[2]*p[1] + 0.125*p[1]*p[1]*p[2]*p[2] + -0.125*p[1]*p[2] + 0.125*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.125*p[0]*p[0]*p[2] + -0.125*2*p[1]*p[0]*p[2] + 0.125*p[2]*p[2]*p[0] + -0.125*p[0]*p[0]*2*p[1]*p[2] + 0.125*p[0]*p[0]*p[2]*p[2] + 0.125*2*p[1]*p[2]*p[2]*p[0] + -0.125*p[0]*p[2] + 0.125*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.125*p[0]*p[0]*p[1] + -0.125*p[1]*p[1]*p[0] + 0.125*2*p[2]*p[0]*p[1] + -0.125*p[0]*p[0]*p[1]*p[1] + 0.125*p[0]*p[0]*2*p[2]*p[1] + 0.125*p[1]*p[1]*2*p[2]*p[0] + -0.125*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 3:
-                        value->at(0) = -0.125*2*p[0]*p[1]*p[2] + 0.125*p[1]*p[1]*p[2] + -0.125*p[2]*p[2]*p[1] + -0.125*2*p[0]*p[1]*p[1]*p[2] + 0.125*2*p[0]*p[2]*p[2]*p[1] + -0.125*p[1]*p[1]*p[2]*p[2] + 0.125*p[1]*p[2] + 0.125*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.125*p[0]*p[0]*p[2] + 0.125*2*p[1]*p[0]*p[2] + -0.125*p[2]*p[2]*p[0] + -0.125*p[0]*p[0]*2*p[1]*p[2] + 0.125*p[0]*p[0]*p[2]*p[2] + -0.125*2*p[1]*p[2]*p[2]*p[0] + 0.125*p[0]*p[2] + 0.125*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.125*p[0]*p[0]*p[1] + 0.125*p[1]*p[1]*p[0] + -0.125*2*p[2]*p[0]*p[1] + -0.125*p[0]*p[0]*p[1]*p[1] + 0.125*p[0]*p[0]*2*p[2]*p[1] + -0.125*p[1]*p[1]*2*p[2]*p[0] + 0.125*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 4:
-                        value->at(0) = -0.125*2*p[0]*p[1]*p[2] + -0.125*p[1]*p[1]*p[2] + 0.125*p[2]*p[2]*p[1] + 0.125*2*p[0]*p[1]*p[1]*p[2] + -0.125*2*p[0]*p[2]*p[2]*p[1] + -0.125*p[1]*p[1]*p[2]*p[2] + 0.125*p[1]*p[2] + 0.125*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.125*p[0]*p[0]*p[2] + -0.125*2*p[1]*p[0]*p[2] + 0.125*p[2]*p[2]*p[0] + 0.125*p[0]*p[0]*2*p[1]*p[2] + -0.125*p[0]*p[0]*p[2]*p[2] + -0.125*2*p[1]*p[2]*p[2]*p[0] + 0.125*p[0]*p[2] + 0.125*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.125*p[0]*p[0]*p[1] + -0.125*p[1]*p[1]*p[0] + 0.125*2*p[2]*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1] + -0.125*p[0]*p[0]*2*p[2]*p[1] + -0.125*p[1]*p[1]*2*p[2]*p[0] + 0.125*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 5:
-                        value->at(0) = -0.125*2*p[0]*p[1]*p[2] + 0.125*p[1]*p[1]*p[2] + -0.125*p[2]*p[2]*p[1] + 0.125*2*p[0]*p[1]*p[1]*p[2] + -0.125*2*p[0]*p[2]*p[2]*p[1] + 0.125*p[1]*p[1]*p[2]*p[2] + -0.125*p[1]*p[2] + 0.125*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.125*p[0]*p[0]*p[2] + 0.125*2*p[1]*p[0]*p[2] + -0.125*p[2]*p[2]*p[0] + 0.125*p[0]*p[0]*2*p[1]*p[2] + -0.125*p[0]*p[0]*p[2]*p[2] + 0.125*2*p[1]*p[2]*p[2]*p[0] + -0.125*p[0]*p[2] + 0.125*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.125*p[0]*p[0]*p[1] + 0.125*p[1]*p[1]*p[0] + -0.125*2*p[2]*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1] + -0.125*p[0]*p[0]*2*p[2]*p[1] + 0.125*p[1]*p[1]*2*p[2]*p[0] + -0.125*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 6:
-                        value->at(0) = 0.125*2*p[0]*p[1]*p[2] + 0.125*p[1]*p[1]*p[2] + 0.125*p[2]*p[2]*p[1] + 0.125*2*p[0]*p[1]*p[1]*p[2] + 0.125*2*p[0]*p[2]*p[2]*p[1] + 0.125*p[1]*p[1]*p[2]*p[2] + 0.125*p[1]*p[2] + 0.125*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.125*p[0]*p[0]*p[2] + 0.125*2*p[1]*p[0]*p[2] + 0.125*p[2]*p[2]*p[0] + 0.125*p[0]*p[0]*2*p[1]*p[2] + 0.125*p[0]*p[0]*p[2]*p[2] + 0.125*2*p[1]*p[2]*p[2]*p[0] + 0.125*p[0]*p[2] + 0.125*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.125*p[0]*p[0]*p[1] + 0.125*p[1]*p[1]*p[0] + 0.125*2*p[2]*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1] + 0.125*p[0]*p[0]*2*p[2]*p[1] + 0.125*p[1]*p[1]*2*p[2]*p[0] + 0.125*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 7:
-                        value->at(0) = 0.125*2*p[0]*p[1]*p[2] + -0.125*p[1]*p[1]*p[2] + -0.125*p[2]*p[2]*p[1] + 0.125*2*p[0]*p[1]*p[1]*p[2] + 0.125*2*p[0]*p[2]*p[2]*p[1] + -0.125*p[1]*p[1]*p[2]*p[2] + -0.125*p[1]*p[2] + 0.125*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.125*p[0]*p[0]*p[2] + -0.125*2*p[1]*p[0]*p[2] + -0.125*p[2]*p[2]*p[0] + 0.125*p[0]*p[0]*2*p[1]*p[2] + 0.125*p[0]*p[0]*p[2]*p[2] + -0.125*2*p[1]*p[2]*p[2]*p[0] + -0.125*p[0]*p[2] + 0.125*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.125*p[0]*p[0]*p[1] + -0.125*p[1]*p[1]*p[0] + -0.125*2*p[2]*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1] + 0.125*p[0]*p[0]*2*p[2]*p[1] + -0.125*p[1]*p[1]*2*p[2]*p[0] + -0.125*p[0]*p[1] + 0.125*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 8:
-                        value->at(0) = -0.250*2*p[0]*p[1]*p[2] + 0.250*2*p[0]*p[1]*p[1]*p[2] + 0.250*2*p[0]*p[2]*p[2]*p[1] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.250*p[2] + -0.250*2*p[1]*p[2] + -0.250*p[2]*p[2] + -0.250*p[0]*p[0]*p[2] + 0.250*p[0]*p[0]*2*p[1]*p[2] + 0.250*p[0]*p[0]*p[2]*p[2] + 0.250*2*p[1]*p[2]*p[2] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.250*p[1] + -0.250*p[1]*p[1] + -0.250*2*p[2]*p[1] + -0.250*p[0]*p[0]*p[1] + 0.250*p[0]*p[0]*p[1]*p[1] + 0.250*p[0]*p[0]*2*p[2]*p[1] + 0.250*p[1]*p[1]*2*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 9:
-                        value->at(0) = -0.250*p[2] + -0.250*2*p[0]*p[2] + 0.250*p[2]*p[2] + 0.250*p[1]*p[1]*p[2] + 0.250*2*p[0]*p[1]*p[1]*p[2] + -0.250*p[1]*p[1]*p[2]*p[2] + 0.250*2*p[0]*p[2]*p[2] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.250*p[0]*p[0]*p[2] + 0.250*2*p[1]*p[0]*p[2] + 0.250*p[0]*p[0]*2*p[1]*p[2] + -0.250*2*p[1]*p[2]*p[2]*p[0] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.250*p[0] + -0.250*p[0]*p[0] + 0.250*2*p[2]*p[0] + 0.250*p[1]*p[1]*p[0] + 0.250*p[0]*p[0]*p[1]*p[1] + -0.250*p[1]*p[1]*2*p[2]*p[0] + 0.250*p[0]*p[0]*2*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 10:
-                        value->at(0) = 0.250*2*p[0]*p[1]*p[2] + 0.250*2*p[0]*p[1]*p[1]*p[2] + -0.250*2*p[0]*p[2]*p[2]*p[1] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.250*p[2] + -0.250*2*p[1]*p[2] + 0.250*p[2]*p[2] + 0.250*p[0]*p[0]*p[2] + 0.250*p[0]*p[0]*2*p[1]*p[2] + -0.250*p[0]*p[0]*p[2]*p[2] + 0.250*2*p[1]*p[2]*p[2] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.250*p[1] + -0.250*p[1]*p[1] + 0.250*2*p[2]*p[1] + 0.250*p[0]*p[0]*p[1] + 0.250*p[0]*p[0]*p[1]*p[1] + -0.250*p[0]*p[0]*2*p[2]*p[1] + 0.250*p[1]*p[1]*2*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 11:
-                        value->at(0) = 0.250*p[2] + -0.250*2*p[0]*p[2] + -0.250*p[2]*p[2] + -0.250*p[1]*p[1]*p[2] + 0.250*2*p[0]*p[1]*p[1]*p[2] + 0.250*p[1]*p[1]*p[2]*p[2] + 0.250*2*p[0]*p[2]*p[2] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.250*p[0]*p[0]*p[2] + -0.250*2*p[1]*p[0]*p[2] + 0.250*p[0]*p[0]*2*p[1]*p[2] + 0.250*2*p[1]*p[2]*p[2]*p[0] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.250*p[0] + -0.250*p[0]*p[0] + -0.250*2*p[2]*p[0] + -0.250*p[1]*p[1]*p[0] + 0.250*p[0]*p[0]*p[1]*p[1] + 0.250*p[1]*p[1]*2*p[2]*p[0] + 0.250*p[0]*p[0]*2*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 12:
-                        value->at(0) = 0.250*2*p[0]*p[1]*p[2] + -0.250*2*p[0]*p[1]*p[1]*p[2] + 0.250*2*p[0]*p[2]*p[2]*p[1] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.250*p[2] + 0.250*2*p[1]*p[2] + -0.250*p[2]*p[2] + 0.250*p[0]*p[0]*p[2] + -0.250*p[0]*p[0]*2*p[1]*p[2] + 0.250*p[0]*p[0]*p[2]*p[2] + 0.250*2*p[1]*p[2]*p[2] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.250*p[1] + 0.250*p[1]*p[1] + -0.250*2*p[2]*p[1] + 0.250*p[0]*p[0]*p[1] + -0.250*p[0]*p[0]*p[1]*p[1] + 0.250*p[0]*p[0]*2*p[2]*p[1] + 0.250*p[1]*p[1]*2*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 13:
-                        value->at(0) = 0.250*p[2] + 0.250*2*p[0]*p[2] + 0.250*p[2]*p[2] + -0.250*p[1]*p[1]*p[2] + -0.250*2*p[0]*p[1]*p[1]*p[2] + -0.250*p[1]*p[1]*p[2]*p[2] + 0.250*2*p[0]*p[2]*p[2] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.250*p[0]*p[0]*p[2] + -0.250*2*p[1]*p[0]*p[2] + -0.250*p[0]*p[0]*2*p[1]*p[2] + -0.250*2*p[1]*p[2]*p[2]*p[0] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.250*p[0] + 0.250*p[0]*p[0] + 0.250*2*p[2]*p[0] + -0.250*p[1]*p[1]*p[0] + -0.250*p[0]*p[0]*p[1]*p[1] + -0.250*p[1]*p[1]*2*p[2]*p[0] + 0.250*p[0]*p[0]*2*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 14:
-                        value->at(0) = -0.250*2*p[0]*p[1]*p[2] + -0.250*2*p[0]*p[1]*p[1]*p[2] + -0.250*2*p[0]*p[2]*p[2]*p[1] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.250*p[2] + 0.250*2*p[1]*p[2] + 0.250*p[2]*p[2] + -0.250*p[0]*p[0]*p[2] + -0.250*p[0]*p[0]*2*p[1]*p[2] + -0.250*p[0]*p[0]*p[2]*p[2] + 0.250*2*p[1]*p[2]*p[2] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.250*p[1] + 0.250*p[1]*p[1] + 0.250*2*p[2]*p[1] + -0.250*p[0]*p[0]*p[1] + -0.250*p[0]*p[0]*p[1]*p[1] + -0.250*p[0]*p[0]*2*p[2]*p[1] + 0.250*p[1]*p[1]*2*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 15:
-                        value->at(0) = -0.250*p[2] + 0.250*2*p[0]*p[2] + -0.250*p[2]*p[2] + 0.250*p[1]*p[1]*p[2] + -0.250*2*p[0]*p[1]*p[1]*p[2] + 0.250*p[1]*p[1]*p[2]*p[2] + 0.250*2*p[0]*p[2]*p[2] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.250*p[0]*p[0]*p[2] + 0.250*2*p[1]*p[0]*p[2] + -0.250*p[0]*p[0]*2*p[1]*p[2] + 0.250*2*p[1]*p[2]*p[2]*p[0] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.250*p[0] + 0.250*p[0]*p[0] + -0.250*2*p[2]*p[0] + 0.250*p[1]*p[1]*p[0] + -0.250*p[0]*p[0]*p[1]*p[1] + 0.250*p[1]*p[1]*2*p[2]*p[0] + 0.250*p[0]*p[0]*2*p[2] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 16:
-                        value->at(0) = 0.250*p[1] + -0.250*2*p[0]*p[1] + -0.250*p[1]*p[1] + -0.250*p[2]*p[2]*p[1] + 0.250*2*p[0]*p[2]*p[2]*p[1] + 0.250*p[1]*p[1]*p[2]*p[2] + 0.250*2*p[0]*p[1]*p[1] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.250*p[0] + -0.250*p[0]*p[0] + -0.250*2*p[1]*p[0] + -0.250*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[2]*p[2] + 0.250*2*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*2*p[1] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.250*2*p[2]*p[0]*p[1] + 0.250*p[0]*p[0]*2*p[2]*p[1] + 0.250*p[1]*p[1]*2*p[2]*p[0] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 17:
-                        value->at(0) = -0.250*p[1] + -0.250*2*p[0]*p[1] + 0.250*p[1]*p[1] + 0.250*p[2]*p[2]*p[1] + 0.250*2*p[0]*p[2]*p[2]*p[1] + -0.250*p[1]*p[1]*p[2]*p[2] + 0.250*2*p[0]*p[1]*p[1] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.250*p[0] + -0.250*p[0]*p[0] + 0.250*2*p[1]*p[0] + 0.250*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*p[2]*p[2] + -0.250*2*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*2*p[1] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.250*2*p[2]*p[0]*p[1] + 0.250*p[0]*p[0]*2*p[2]*p[1] + -0.250*p[1]*p[1]*2*p[2]*p[0] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 18:
-                        value->at(0) = 0.250*p[1] + 0.250*2*p[0]*p[1] + 0.250*p[1]*p[1] + -0.250*p[2]*p[2]*p[1] + -0.250*2*p[0]*p[2]*p[2]*p[1] + -0.250*p[1]*p[1]*p[2]*p[2] + 0.250*2*p[0]*p[1]*p[1] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.250*p[0] + 0.250*p[0]*p[0] + 0.250*2*p[1]*p[0] + -0.250*p[2]*p[2]*p[0] + -0.250*p[0]*p[0]*p[2]*p[2] + -0.250*2*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*2*p[1] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.250*2*p[2]*p[0]*p[1] + -0.250*p[0]*p[0]*2*p[2]*p[1] + -0.250*p[1]*p[1]*2*p[2]*p[0] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 19:
-                        value->at(0) = -0.250*p[1] + 0.250*2*p[0]*p[1] + -0.250*p[1]*p[1] + 0.250*p[2]*p[2]*p[1] + -0.250*2*p[0]*p[2]*p[2]*p[1] + 0.250*p[1]*p[1]*p[2]*p[2] + 0.250*2*p[0]*p[1]*p[1] + -0.250*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.250*p[0] + 0.250*p[0]*p[0] + -0.250*2*p[1]*p[0] + 0.250*p[2]*p[2]*p[0] + -0.250*p[0]*p[0]*p[2]*p[2] + 0.250*2*p[1]*p[2]*p[2]*p[0] + 0.250*p[0]*p[0]*2*p[1] + -0.250*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.250*2*p[2]*p[0]*p[1] + -0.250*p[0]*p[0]*2*p[2]*p[1] + 0.250*p[1]*p[1]*2*p[2]*p[0] + -0.250*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 20:
-                        value->at(0) = 0.500*2*p[0]*p[1] + -0.500*2*p[0]*p[2]*p[2]*p[1] + -0.500*2*p[0]*p[1]*p[1] + 0.500*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.500 + 0.500*2*p[1] + 0.500*p[0]*p[0] + 0.500*p[2]*p[2] + -0.500*p[0]*p[0]*p[2]*p[2] + -0.500*p[0]*p[0]*2*p[1] + -0.500*2*p[1]*p[2]*p[2] + 0.500*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.500*2*p[2]*p[1] + -0.500*p[0]*p[0]*2*p[2]*p[1] + -0.500*p[1]*p[1]*2*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 21:
-                        value->at(0) = 0.500 + 0.500*2*p[0] + -0.500*p[1]*p[1] + -0.500*p[2]*p[2] + 0.500*p[1]*p[1]*p[2]*p[2] + -0.500*2*p[0]*p[1]*p[1] + -0.500*2*p[0]*p[2]*p[2] + 0.500*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.500*2*p[1]*p[0] + 0.500*2*p[1]*p[2]*p[2]*p[0] + -0.500*p[0]*p[0]*2*p[1] + 0.500*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.500*2*p[2]*p[0] + 0.500*p[1]*p[1]*2*p[2]*p[0] + -0.500*p[0]*p[0]*2*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 22:
-                        value->at(0) = -0.500*2*p[0]*p[1] + 0.500*2*p[0]*p[2]*p[2]*p[1] + -0.500*2*p[0]*p[1]*p[1] + 0.500*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.500 + 0.500*2*p[1] + -0.500*p[0]*p[0] + -0.500*p[2]*p[2] + 0.500*p[0]*p[0]*p[2]*p[2] + -0.500*p[0]*p[0]*2*p[1] + -0.500*2*p[1]*p[2]*p[2] + 0.500*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.500*2*p[2]*p[1] + 0.500*p[0]*p[0]*2*p[2]*p[1] + -0.500*p[1]*p[1]*2*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 23:
-                        value->at(0) = -0.500 + 0.500*2*p[0] + 0.500*p[1]*p[1] + 0.500*p[2]*p[2] + -0.500*p[1]*p[1]*p[2]*p[2] + -0.500*2*p[0]*p[1]*p[1] + -0.500*2*p[0]*p[2]*p[2] + 0.500*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.500*2*p[1]*p[0] + -0.500*2*p[1]*p[2]*p[2]*p[0] + -0.500*p[0]*p[0]*2*p[1] + 0.500*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.500*2*p[2]*p[0] + -0.500*p[1]*p[1]*2*p[2]*p[0] + -0.500*p[0]*p[0]*2*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 24:
-                        value->at(0) = 0.500*2*p[0]*p[2] + -0.500*2*p[0]*p[1]*p[1]*p[2] + -0.500*2*p[0]*p[2]*p[2] + 0.500*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = 0.500*p[0]*p[0]*p[2] + 0.500*2*p[1]*p[2] + -0.500*p[0]*p[0]*2*p[1]*p[2] + -0.500*2*p[1]*p[2]*p[2] + 0.500*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -0.500 + 0.500*2*p[2] + 0.500*p[0]*p[0] + 0.500*p[1]*p[1] + -0.500*p[0]*p[0]*p[1]*p[1] + -0.500*p[0]*p[0]*2*p[2] + -0.500*p[1]*p[1]*2*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 25:
-                        value->at(0) = -1.000*2*p[0] + 1.000*2*p[0]*p[1]*p[1] + 1.000*2*p[0]*p[2]*p[2] + -1.000*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -1.000*2*p[1] + 1.000*p[0]*p[0]*2*p[1] + 1.000*2*p[1]*p[2]*p[2] + -1.000*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = -1.000*2*p[2] + 1.000*p[0]*p[0]*2*p[2] + 1.000*p[1]*p[1]*2*p[2] + -1.000*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    case 26:
-                        value->at(0) = -0.500*2*p[0]*p[2] + 0.500*2*p[0]*p[1]*p[1]*p[2] + -0.500*2*p[0]*p[2]*p[2] + 0.500*2*p[0]*p[1]*p[1]*p[2]*p[2];
-                        value->at(1) = -0.500*p[0]*p[0]*p[2] + -0.500*2*p[1]*p[2] + 0.500*p[0]*p[0]*2*p[1]*p[2] + -0.500*2*p[1]*p[2]*p[2] + 0.500*p[0]*p[0]*2*p[1]*p[2]*p[2];
-                        value->at(2) = 0.500 + 0.500*2*p[2] + -0.500*p[0]*p[0] + -0.500*p[1]*p[1] + 0.500*p[0]*p[0]*p[1]*p[1] + -0.500*p[0]*p[0]*2*p[2] + -0.500*p[1]*p[1]*2*p[2] + 0.500*p[0]*p[0]*p[1]*p[1]*2*p[2];
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-            case 5: //Q2-20
-            {
-                std::cout << "Warning! Q2-20 not working correct!" << std::endl;
-                double a = 1./8;
-                double b = 1./4;
-                switch (i) {
-                    case 0:
-                        (*value)[0] = a * (p[1] - 1) * (p[2] - 1) * (2 * p[0] + p[1] + p[2] + 1);
-                        (*value)[1] = a * (p[0] - 1) * (p[2] - 1) * (p[0] + 2 * p[1] + p[2] + 1);
-                        (*value)[2] = a * (p[0] - 1) * (p[1] - 1) * (p[0] + p[1] + 2 * p[2] + 1);
-                        break;
-                    case 1:
-                        (*value)[0] = - a * ( p[1] - 1 ) * ( p[2] - 1 ) * ( -2*p[0] + p[1] + p[2] + 1);
-                        (*value)[1] = a * ( p[0] + 1 ) * ( p[2] - 1 ) * ( p[0] - 2*p[1] - p[2] - 1);
-                        (*value)[2] = a * ( p[0] + 1 ) * ( p[1] - 1 ) * ( p[0] - p[1] - 2*p[2] - 1);
-                        break;
-                    case 2:
-                        (*value)[0] = a * ( p[1] + 1 ) * ( p[2] - 1 ) * ( -2*p[0] + p[1] - p[2] - 1);
-                        (*value)[1] = - a * ( p[0] - 1 ) * ( p[2] - 1 ) * ( p[0] - 2*p[1] + p[2] + 1);
-                        (*value)[2] = - a * ( p[0] + 1 ) * ( p[1] + 1 ) * ( p[0] + p[1] - 2*p[2] - 1);
-                        break;
-                    case 3:
-                        (*value)[0] = a * (1 + p[1]) * (-1 - 2 * p[0] + p[1] - p[2]) * (-1 + p[2]);
-                        (*value)[1] = - a * ((-1 + p[0]) * (-1 + p[2]) * (1 + p[0] - 2 * p[1] + p[2]));
-                        (*value)[2] = - a * ((-1 + p[0]) * (1 + p[1]) * (1 + p[0] - p[1] + 2 * p[2]));
-                        break;
-                    case 4:
-                        (*value)[0] = -a*(p[1] - 1) * (p[2] + 1) * (2 * p[0] + p[1] - p[2] + 1);
-                        (*value)[1] = -a*(p[0] - 1) * (p[2] + 1) * (p[0] + 2 * p[1] - p[2] + 1);
-                        (*value)[2] = -a*(p[0] - 1) * (p[1] - 1) * (p[0] + p[1] - 2 * p[2] + 1);
-                        break;
-                    case 5:
-                        (*value)[0] = a*(p[1] - 1) * (p[2] + 1) * (-2 * p[0] + p[1] - p[2] + 1);
-                        (*value)[1] = -a*(p[0] + 1) * (p[2] + 1) * (p[0] - 2 * p[1] + p[2] - 1);
-                        (*value)[2] = -a*(p[0] + 1) * (p[1] - 1) * (p[0] - p[1] + 2 * p[2] - 1);
-                        break;
-                    case 6:
-                        (*value)[0] = a*(p[1] + 1) * (p[2] + 1) * (2 * p[0] + p[1] + p[2] - 1);
-                        (*value)[1] = a*(p[0] + 1) * (p[2] + 1) * (p[0] + 2 * p[1] + p[2] - 1);
-                        (*value)[2] = a*(p[0] + 1) * (p[1] + 1) * (p[0] + p[1] + 2 * p[2] - 1);
-                        break;
-                    case 7:
-                        (*value)[0] = -a*(p[1] + 1) * (p[2] + 1) * (-2 * p[0] + p[1] + p[2] - 1);
-                        (*value)[1] = a*(p[0] - 1) * (p[2] + 1) * (p[0] - 2 * p[1] - p[2] + 1);
-                        (*value)[2] = a*(p[0] - 1) * (p[1] + 1) * (p[0] - p[1] - 2 * p[2] + 1);
-                        break;
-                    case 8:
-                        (*value)[0] = -2 * b * p[0] * (p[1] - 1) * (p[2] - 1);
-                        (*value)[1] = -b * (p[0]*p[0] - 1) * (p[2] - 1);
-                        (*value)[2] = -b * (p[0]*p[0] - 1) * (p[1] - 1);
-                        break;
-                    case 9:
-                        (*value)[0] = b * (p[1]*p[1] - 1) * (p[2] - 1);
-                        (*value)[1] = 2 * b * (p[0] + 1) * p[1] * (p[2] - 1);
-                        (*value)[2] = b * (p[0] + 1) * (p[1]*p[1] - 1);
-                        break;
-                    case 10:
-                        (*value)[0] = 2 * b * p[0] * (p[1] + 1) * (p[2] - 1);
-                        (*value)[1] = b * (p[0]*p[0] - 1) * (p[2] - 1);
-                        (*value)[2] = b * (p[0]*p[0] - 1) * (p[1] + 1);
-                        break;
-                    case 11:
-                        (*value)[0] = -b * (p[1]*p[1] - 1) * (p[2] - 1);
-                        (*value)[1] = -2 * b * (p[0] - 1) * p[1] * (p[2] - 1);
-                        (*value)[2] = -b * (p[0] - 1) * (p[1]*p[1] - 1);
-                        break;
-                    case 12:
-                        (*value)[0] = 2* b * p[0] * (p[1] - 1) * (p[2] + 1);
-                        (*value)[1] = b * (p[0]*p[0] - 1) * (p[2] + 1);
-                        (*value)[2] = b * (p[0]*p[0] - 1) * (p[1] - 1);
-                        break;
-                    case 13:
-                        (*value)[0] = -b * (p[1]*p[1] - 1) * (p[2] + 1);
-                        (*value)[1] = -2 * b * (p[0] + 1) * p[1] * (p[2] + 1);
-                        (*value)[2] = -b * (p[0] + 1) * (p[1]*p[1] - 1);
-                        break;
-                    case 14:
-                        (*value)[0] = -2 * b * p[0] * (p[1] + 1) * (p[2] + 1);
-                        (*value)[1] = -b * (p[0]*p[0] - 1) * (p[2] + 1);
-                        (*value)[2] = -b *(p[0]*p[0] - 1) * (p[1] + 1);
-                        break;
-                    case 15:
-                        (*value)[0] = b * (p[1]*p[1] - 1) * (p[2] + 1);
-                        (*value)[1] = 2 * b * (p[0] - 1) * p[1] * (p[2] + 1);
-                        (*value)[2] = b * (p[0] - 1) * (p[1]*p[1] - 1);
-                        break;
-                    case 16:
-                        (*value)[0] = -b * (p[1] - 1) * (p[2]*p[2] - 1);
-                        (*value)[1] = -b * (p[0] - 1) * (p[2]*p[2] - 1);
-                        (*value)[2] = -2 * b * (p[0] - 1) * (p[1] - 1) * p[2];
-                        break;
-                    case 17:
-                        (*value)[0] = b * (p[1] - 1) * (p[2]*p[2] - 1);
-                        (*value)[1] = b * (p[0] + 1) * (p[2]*p[2] - 1);
-                        (*value)[2] = 2 * b * (p[0] + 1) * (p[1] - 1) * p[2];
-                        break;
-                    case 18:
-                        (*value)[0] = -b * (p[1] + 1) * (p[2]*p[2] - 1);
-                        (*value)[1] = -b * (p[0] + 1) * (p[2]*p[2] - 1);
-                        (*value)[0] = -2 * b * (p[0] + 1) * (p[1] + 1) * p[2];
-                        break;
-                    case 19:
-                        (*value)[0] = b * (p[1] + 1) * (p[2]*p[2] - 1);
-                        (*value)[1] = b * (p[0] - 1) * (p[2]*p[2] - 1);
-                        (*value)[2] = 2 * b * (p[0] - 1) * (p[1] + 1) * p[2];
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-        }
-    }
-}
-
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::getQuadratureValues(int dim,
-                                          int Degree,
-                                          vec2D_dbl_ptr_Type &QuadPts,
-                                          vec_dbl_ptr_Type &QuadW,
-                                          std::string FEType){
-    double a, b, c, P1, P2;
-
-    double b1,b2,c1,c2,d,e,f,g,h,i,j;
-    if (dim==1){
-        // points are for interval [0,1]
-        TEUCHOS_TEST_FOR_EXCEPTION(Degree>2, std::runtime_error, "Quadrature rule in 1d only up to degree 3.");
-        switch (Degree) {
-            case 0:
-                QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(1,0.0)));
-                QuadW->resize(1);
-                QuadPts->at(0).at(0) = 0.5;
-                QuadW->at(0) = 1.;
-                break;
-            case 1:
-                QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(1,0.0)));
-                QuadW->resize(1);
-                QuadPts->at(0).at(0) = 0.5;
-                QuadW->at(0) = 1.;
-                break;
-            case 2:
-                QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
-                QuadW->resize(2);
-                QuadPts->at(0).at(0) = - 0.5/std::sqrt(3.)+0.5;
-                QuadPts->at(1).at(0) = 0.5/std::sqrt(3.)+0.5;
-                QuadW->at(0) = .5;
-                QuadW->at(1) = .5;
-                break;
-            case 3:
-                QuadPts.reset(new vec2D_dbl_Type(2,vec_dbl_Type(1,0.0)));
-                QuadW->resize(2);
-                QuadPts->at(0).at(0) = - 0.5/std::sqrt(3.)+0.5;
-                QuadPts->at(1).at(0) = 0.5/std::sqrt(3.)+0.5;
-                QuadW->at(0) = .5;
-                QuadW->at(1) = .5;
-                break;
-            default:
-                break;
-        }
-    }
-    if (dim==2) {
-
-        TEUCHOS_TEST_FOR_EXCEPTION(Degree>7, std::runtime_error, "Quadrature rule in 2d only up to degree 7.");
-        if (Degree==3 || Degree==4)
-            Degree=5;
-
-        if (Degree==6)
-            Degree=7;
-        switch (Degree) {
-            case 1:
-
-                QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(2,0.0)));
-                QuadW->resize(1);
-                QuadPts->at(0).at(0) = 1/3.;
-                QuadPts->at(0).at(1) = 1/3.;
-                QuadW->at(0)	= 1/2.;
-                break;
-
-            case 2:
-
-                QuadPts.reset(new vec2D_dbl_Type(3,vec_dbl_Type(2,0.0)));
-                QuadW->resize(3);
-                a = 1/6.;
-                QuadPts->at(0).at(0) 	= 0.5;
-                QuadPts->at(0).at(1)    = 0.5;
-
-                QuadPts->at(1).at(0) 	= 0.;
-                QuadPts->at(1).at(1) 	= 0.5;
-
-                QuadPts->at(2).at(0) 	= 0.5;
-                QuadPts->at(2).at(1) 	= 0.;
-
-                QuadW->at(0) 		= a;
-                QuadW->at(1)            = a;
-                QuadW->at(2)            = a;
-
-                break;
-
-            case 5:
-                QuadPts.reset(new vec2D_dbl_Type(7,vec_dbl_Type(2,0.0)));
-                QuadW->resize(7);
-                a = 0.470142064105115;
-                b = 0.101286507323456;
-                P1 = 0.066197076394253;
-                P2 = 0.062969590272413;
-
-                QuadPts->at(0).at(0) 	= 1/3.;
-                QuadPts->at(0).at(1)    = 1/3.;
-
-                QuadPts->at(1).at(0) 	= a;
-                QuadPts->at(1).at(1) 	= a;
-
-                QuadPts->at(2).at(0) 	= 1-2.*a;
-                QuadPts->at(2).at(1) 	= a;
-
-                QuadPts->at(3).at(0) 	= a;
-                QuadPts->at(3).at(1) 	= 1-2.*a;
-
-                QuadPts->at(4).at(0) 	= b;
-                QuadPts->at(4).at(1) 	= b;
-
-                QuadPts->at(5).at(0) 	= 1-2.*b;
-                QuadPts->at(5).at(1) 	= b;
-
-                QuadPts->at(6).at(0) 	= b;
-                QuadPts->at(6).at(1) 	= 1-2.*b;
-
-                QuadW->at(0) 			= 9/80.;
-                QuadW->at(1)            = P1;
-                QuadW->at(2)            = P1;
-                QuadW->at(3) 			= P1;
-                QuadW->at(4)            = P2;
-                QuadW->at(5)            = P2;
-                QuadW->at(6)            = P2;
-
-                break;
-            case 7:
-                // 28 Punkte
-                
-                QuadPts.reset(new vec2D_dbl_Type(28,vec_dbl_Type(2,0.0)));
-                QuadW.reset(new vec_dbl_Type(28,0.0));
-                
-                // x punkt
-                QuadPts->at(0).at(0) = 0.777777777777778;
-                QuadPts->at(1).at(0) = 0.111111111111111;
-                QuadPts->at(2).at(0) = 0.111111111111111;
-                QuadPts->at(3).at(0) = 0.666666666666667;
-                QuadPts->at(4).at(0) = 0.222222222222222;
-                QuadPts->at(5).at(0) = 0.111111111111111;
-                QuadPts->at(6).at(0) = 0.222222222222222;
-                QuadPts->at(7).at(0) = 0.111111111111111;
-                QuadPts->at(8).at(0) = 0.666666666666667;
-                QuadPts->at(9).at(0) = 0.555555555555556;
-                QuadPts->at(10).at(0) = 0.333333333333333;
-                QuadPts->at(11).at(0) = 0.111111111111111;
-                QuadPts->at(12).at(0) = 0.333333333333333;
-                QuadPts->at(13).at(0) = 0.111111111111111;
-                QuadPts->at(14).at(0) = 0.555555555555556;
-                QuadPts->at(15).at(0) = 0.555555555555556;
-                QuadPts->at(16).at(0) = 0.222222222222222;
-                QuadPts->at(17).at(0) = 0.222222222222222;
-                QuadPts->at(18).at(0) = 0.444444444444444;
-                QuadPts->at(19).at(0) = 0.444444444444444;
-                QuadPts->at(20).at(0) = 0.111111111111111;
-                QuadPts->at(21).at(0) = 0.444444444444444;
-                QuadPts->at(22).at(0) = 0.333333333333333;
-                QuadPts->at(23).at(0) = 0.222222222222222;
-                QuadPts->at(24).at(0) = 0.333333333333333;
-                QuadPts->at(25).at(0) = 0.222222222222222;
-                QuadPts->at(26).at(0) = 0.444444444444444;
-                QuadPts->at(27).at(0) = 0.333333333333333;
-                
-                // y punkt
-                QuadPts->at(0).at(1) = 0.111111111111111;
-                QuadPts->at(1).at(1) = 0.111111111111111;
-                QuadPts->at(2).at(1) = 0.777777777777778;
-                QuadPts->at(3).at(1) = 0.222222222222222;
-                QuadPts->at(4).at(1) = 0.111111111111111;
-                QuadPts->at(5).at(1) = 0.666666666666667;
-                QuadPts->at(6).at(1) = 0.666666666666667;
-                QuadPts->at(7).at(1) = 0.222222222222222;
-                QuadPts->at(8).at(1) = 0.111111111111111;
-                QuadPts->at(9).at(1) = 0.333333333333333;
-                QuadPts->at(10).at(1) = 0.111111111111111;
-                QuadPts->at(11).at(1) = 0.555555555555556;
-                QuadPts->at(12).at(1) = 0.555555555555556;
-                QuadPts->at(13).at(1) = 0.333333333333333;
-                QuadPts->at(14).at(1) = 0.111111111111111;
-                QuadPts->at(15).at(1) = 0.222222222222222;
-                QuadPts->at(16).at(1) = 0.222222222222222;
-                QuadPts->at(17).at(1) = 0.555555555555556;
-                QuadPts->at(18).at(1) = 0.444444444444444;
-                QuadPts->at(19).at(1) = 0.111111111111111;
-                QuadPts->at(20).at(1) = 0.444444444444444;
-                QuadPts->at(21).at(1) = 0.333333333333333;
-                QuadPts->at(22).at(1) = 0.222222222222222;
-                QuadPts->at(23).at(1) = 0.444444444444444;
-                QuadPts->at(24).at(1) = 0.444444444444444;
-                QuadPts->at(25).at(1) = 0.333333333333333;
-                QuadPts->at(26).at(1) = 0.222222222222222;
-                QuadPts->at(27).at(1) = 0.333333333333333;
-                
-                // Gewichte
-                QuadW->at(0) 			= 0.342410714285714/2.0;
-                QuadW->at(1) 			= 0.342410714285714/2.0;
-                QuadW->at(2) 			= 0.342410714285714/2.0;
-                QuadW->at(3) 			= -0.561160714285714/2.0;
-                QuadW->at(4) 			= -0.561160714285714/2.0;
-                QuadW->at(5) 			= -0.561160714285714/2.0;
-                QuadW->at(6) 			= -0.561160714285714/2.0;
-                QuadW->at(7) 			= -0.561160714285714/2.0;
-                QuadW->at(8) 			= -0.561160714285714/2.0;
-                QuadW->at(9) 			= 1.295089285714286/2.0;
-                QuadW->at(10) 			= 1.295089285714286/2.0;
-                QuadW->at(11) 			= 1.295089285714286/2.0;
-                QuadW->at(12) 			= 1.295089285714286/2.0;
-                QuadW->at(13) 			= 1.295089285714286/2.0;
-                QuadW->at(14) 			= 1.295089285714286/2.0;
-                QuadW->at(15) 			= 0.172767857142857/2.0;
-                QuadW->at(16) 			= 0.172767857142857/2.0;
-                QuadW->at(17) 			= 0.172767857142857/2.0;
-                QuadW->at(18) 			= -1.354910714285714/2.0;
-                QuadW->at(19) 			= -1.354910714285714/2.0;
-                QuadW->at(20) 			= -1.354910714285714/2.0;
-                QuadW->at(21) 			= -0.408482142857143/2.0;
-                QuadW->at(22) 			= -0.408482142857143/2.0;
-                QuadW->at(23) 			= -0.408482142857143/2.0;
-                QuadW->at(24) 			= -0.408482142857143/2.0;
-                QuadW->at(25) 			= -0.408482142857143/2.0;
-                QuadW->at(26) 			= -0.408482142857143/2.0;
-                QuadW->at(27) 			= 1.566517857142857/2.0;
-                
-                break;
-                
-            }
-    }
-    else if(dim==3){
-        if (FEType.at(0)=='P') {
-            if (Degree==2)
-                Degree=3;
-            if (Degree==4)
-                Degree=5;
-
-            TEUCHOS_TEST_FOR_EXCEPTION(Degree>6, std::runtime_error, "Tetrahedron quadrature rules only up to degree 6 available.");
-            
-            switch (Degree) {
-                case 1:
-                    QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(1);
-                    QuadPts->at(0).at(0) 	= 0.25;
-                    QuadPts->at(0).at(1) 	= 0.25;
-                    QuadPts->at(0).at(2) 	= 0.25;
-                    QuadW->at(0)			= 1/6.;
-                    break;
-                    
-                case 3:
-                    QuadPts.reset(new vec2D_dbl_Type(5,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(5);
-                    a = .25;
-                    b = 1./6.;
-                    c = .5;
-                    QuadPts->at(0).at(0) = a;
-                    QuadPts->at(0).at(1) = a;
-                    QuadPts->at(0).at(2) = a;
-                    
-                    QuadPts->at(1).at(0) = b;
-                    QuadPts->at(1).at(1) = b;
-                    QuadPts->at(1).at(2) = b;
-                    
-                    QuadPts->at(2).at(0) = b;
-                    QuadPts->at(2).at(1) = b;
-                    QuadPts->at(2).at(2) = c;
-                    
-                    QuadPts->at(3).at(0) = b;
-                    QuadPts->at(3).at(1) = c;
-                    QuadPts->at(3).at(2) = b;
-                    
-                    QuadPts->at(4).at(0) = c;
-                    QuadPts->at(4).at(1) = b;
-                    QuadPts->at(4).at(2) = b;
-                    
-                    QuadW->at(0)		 = -2./15.;
-                    QuadW->at(1)		 = 3./40.;
-                    QuadW->at(2)		 = 3./40.;
-                    QuadW->at(3)		 = 3./40.;
-                    QuadW->at(4)		 = 3./40.;
-                    break;
-                case 4:
-                    QuadPts.reset(new vec2D_dbl_Type(11,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(11);
-                    
-                    a = .785714285714286;
-                    b = .071428571428571;
-                    c = .100596423833201;
-                    d = .399403576166799;
-                    
-                    QuadPts->at(0).at(0) 	= .25;
-                    QuadPts->at(0).at(1)    = .25;
-                    QuadPts->at(0).at(2)    = .25;
-                    
-                    QuadPts->at(1).at(0) 	= a;
-                    QuadPts->at(1).at(1)    = b;
-                    QuadPts->at(1).at(2)    = b;
-                    
-                    QuadPts->at(2).at(0) 	= b;
-                    QuadPts->at(2).at(1)    = b;
-                    QuadPts->at(2).at(2)    = b;
-                    
-                    QuadPts->at(3).at(0) 	= b;
-                    QuadPts->at(3).at(1)    = b;
-                    QuadPts->at(3).at(2)    = a;
-                    
-                    QuadPts->at(4).at(0) 	= b;
-                    QuadPts->at(4).at(1)    = a;
-                    QuadPts->at(4).at(2)    = b;
-                    
-                    QuadPts->at(5).at(0) 	= c;
-                    QuadPts->at(5).at(1)    = d;
-                    QuadPts->at(5).at(2)    = d;
-                    
-                    QuadPts->at(6).at(0) 	= d;
-                    QuadPts->at(6).at(1)    = c;
-                    QuadPts->at(6).at(2)    = d;
-                    
-                    QuadPts->at(7).at(0) 	= d;
-                    QuadPts->at(7).at(1)    = d;
-                    QuadPts->at(7).at(2)    = c;
-                    
-                    QuadPts->at(8).at(0) 	= d;
-                    QuadPts->at(8).at(1)    = c;
-                    QuadPts->at(8).at(2)    = c;
-                    
-                    QuadPts->at(9).at(0) 	= c;
-                    QuadPts->at(9).at(1)    = d;
-                    QuadPts->at(9).at(2)    = c;
-                    
-                    QuadPts->at(10).at(0) 	= c;
-                    QuadPts->at(10).at(1)   = c;
-                    QuadPts->at(10).at(2)   = d;
-                    
-                    a = -.078933333333333;
-                    b = .045733333333333;
-                    c= .149333333333333;
-                    
-                    
-                    QuadW->at(0) = a;
-                    
-                    QuadW->at(1) = b;
-                    QuadW->at(2) = b;
-                    QuadW->at(3) = b;
-                    QuadW->at(4) = b;
-                    
-                    QuadW->at(5) = c;
-                    QuadW->at(6) = c;
-                    QuadW->at(7) = c;
-                    QuadW->at(8) = c;
-                    QuadW->at(9) = c;
-                    QuadW->at(10) = c;
-                    
-                case 5:
-                    QuadPts.reset(new vec2D_dbl_Type(15,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(15);
-                    a 	= 0.25;
-                    b1 	= (7.+std::sqrt(15.))/34.;
-                    b2 	= (7.-std::sqrt(15.))/34.;
-                    c1 	= (13.-3.*std::sqrt(15.))/34.;
-                    c2 	= (13.+3.*std::sqrt(15.))/34.;
-                    d 	= (5.-std::sqrt(15.))/20.;
-                    e 	= (5.+std::sqrt(15.))/20.;
-                    
-                    QuadPts->at(0).at(0) 	= a;
-                    QuadPts->at(0).at(1)    = a;
-                    QuadPts->at(0).at(2)    = a;
-                    
-                    QuadPts->at(1).at(0) 	= b1;
-                    QuadPts->at(1).at(1)    = b1;
-                    QuadPts->at(1).at(2)    = b1;
-                    
-                    QuadPts->at(2).at(0) 	= b1;
-                    QuadPts->at(2).at(1)    = b1;
-                    QuadPts->at(2).at(2)    = c1;
-                    
-                    QuadPts->at(3).at(0) 	= b1;
-                    QuadPts->at(3).at(1)    = c1;
-                    QuadPts->at(3).at(2)    = b1;
-                    
-                    QuadPts->at(4).at(0) 	= c1;
-                    QuadPts->at(4).at(1)    = b1;
-                    QuadPts->at(4).at(2)    = b1;
-                    
-                    QuadPts->at(5).at(0) 	= b2;
-                    QuadPts->at(5).at(1)    = b2;
-                    QuadPts->at(5).at(2)    = b2;
-                    
-                    QuadPts->at(6).at(0) 	= b2;
-                    QuadPts->at(6).at(1)    = b2;
-                    QuadPts->at(6).at(2)    = c2;
-                    
-                    QuadPts->at(7).at(0) 	= b2;
-                    QuadPts->at(7).at(1)    = c2;
-                    QuadPts->at(7).at(2)    = b2;
-                    
-                    QuadPts->at(8).at(0) 	= c2;
-                    QuadPts->at(8).at(1)    = b2;
-                    QuadPts->at(8).at(2)    = b2;
-                    
-                    QuadPts->at(9).at(0) 	= d;
-                    QuadPts->at(9).at(1)    = d;
-                    QuadPts->at(9).at(2)    = e;
-                    
-                    QuadPts->at(10).at(0) 	= d;
-                    QuadPts->at(10).at(1)   = e;
-                    QuadPts->at(10).at(2)   = d;
-                    
-                    QuadPts->at(11).at(0) 	= e;
-                    QuadPts->at(11).at(1)	= d;
-                    QuadPts->at(11).at(2)	= d;
-                    
-                    QuadPts->at(12).at(0) 	= d;
-                    QuadPts->at(12).at(1)	= e;
-                    QuadPts->at(12).at(2)	= e;
-                    
-                    QuadPts->at(13).at(0) 	= e;
-                    QuadPts->at(13).at(1)	= d;
-                    QuadPts->at(13).at(2)	= e;
-                    
-                    QuadPts->at(14).at(0) 	= e;
-                    QuadPts->at(14).at(1)	= e;
-                    QuadPts->at(14).at(2)	= d;
-                    
-                    
-                    P1 	= (2665.-14.*std::sqrt(15.))/226800.;
-                    P2 	= (2665.+14.*std::sqrt(15.))/226800.;
-                    b	= 5./567.;
-                    
-                    QuadW->at(0) 			= 8./405.;
-                    QuadW->at(1)            = P1;
-                    QuadW->at(2)            = P1;
-                    QuadW->at(3) 			= P1;
-                    QuadW->at(4)            = P1;
-                    
-                    QuadW->at(5)            = P2;
-                    QuadW->at(6)            = P2;
-                    QuadW->at(7)            = P2;
-                    QuadW->at(8)            = P2;
-                    
-                    QuadW->at(9) 			= b;
-                    QuadW->at(10)           = b;
-                    QuadW->at(11)           = b;
-                    QuadW->at(12) 			= b;
-                    QuadW->at(13)           = b;
-                    QuadW->at(14)           = b;
-                    
-                    break;
-                case 6: //Keast
-                    QuadPts.reset(new vec2D_dbl_Type(24,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(24);
-                    a = .356191386222545;
-                    b = .214602871259152;
-                    c = .877978124396166;
-                    d = .040673958534611;
-                    f = .032986329573173;
-                    g = .322337890142276;
-                    h = .269672331458316;
-                    i = .063661001875018;
-                    j = .603005664791649;
-                    
-                    QuadPts->at(0).at(0) 	= a;
-                    QuadPts->at(0).at(1)    = b;
-                    QuadPts->at(0).at(2)    = b;
-
-                    QuadPts->at(1).at(0) 	= b;
-                    QuadPts->at(1).at(1)    = b;
-                    QuadPts->at(1).at(2)    = b;
-
-                    QuadPts->at(2).at(0) 	= b;
-                    QuadPts->at(2).at(1)    = b;
-                    QuadPts->at(2).at(2)    = a;
-
-                    QuadPts->at(3).at(0) 	= b;
-                    QuadPts->at(3).at(1)    = a;
-                    QuadPts->at(3).at(2)    = b;
-
-                    QuadPts->at(4).at(0) 	= c;
-                    QuadPts->at(4).at(1)    = d;
-                    QuadPts->at(4).at(2)    = d;
-                    
-                    QuadPts->at(5).at(0) 	= d;
-                    QuadPts->at(5).at(1)    = d;
-                    QuadPts->at(5).at(2)    = d;
-
-                    QuadPts->at(6).at(0) 	= d;
-                    QuadPts->at(6).at(1)    = d;
-                    QuadPts->at(6).at(2)    = c;
-                    
-                    QuadPts->at(7).at(0) 	= d;
-                    QuadPts->at(7).at(1)    = c;
-                    QuadPts->at(7).at(2)    = d;
-
-                    QuadPts->at(8).at(0) 	= f;
-                    QuadPts->at(8).at(1)    = g;
-                    QuadPts->at(8).at(2)    = g;
-
-                    QuadPts->at(9).at(0) 	= g;
-                    QuadPts->at(9).at(1)    = g;
-                    QuadPts->at(9).at(2)    = g;
-
-                    QuadPts->at(10).at(0) 	= g;
-                    QuadPts->at(10).at(1)   = g;
-                    QuadPts->at(10).at(2)   = f;
-
-                    QuadPts->at(11).at(0) 	= g;
-                    QuadPts->at(11).at(1)   = f;
-                    QuadPts->at(11).at(2)   = g;
-                    
-                    QuadPts->at(12).at(0) 	= h;
-                    QuadPts->at(12).at(1)   = i;
-                    QuadPts->at(12).at(2)   = i;
-                    
-                    QuadPts->at(13).at(0) 	= i;
-                    QuadPts->at(13).at(1)   = h;
-                    QuadPts->at(13).at(2)   = i;
-                    
-                    QuadPts->at(14).at(0) 	= i;
-                    QuadPts->at(14).at(1)   = i;
-                    QuadPts->at(14).at(2)   = h;
-                    
-                    QuadPts->at(15).at(0) 	= j;
-                    QuadPts->at(15).at(1)   = i;
-                    QuadPts->at(15).at(2)   = i;
-
-                    QuadPts->at(16).at(0) 	= i;
-                    QuadPts->at(16).at(1)   = j;
-                    QuadPts->at(16).at(2)   = i;
-
-                    QuadPts->at(17).at(0) 	= i;
-                    QuadPts->at(17).at(1)   = i;
-                    QuadPts->at(17).at(2)   = j;
-                    
-                    QuadPts->at(18).at(0) 	= i;
-                    QuadPts->at(18).at(1)   = h;
-                    QuadPts->at(18).at(2)   = j;
-
-                    QuadPts->at(19).at(0) 	= h;
-                    QuadPts->at(19).at(1)   = j;
-                    QuadPts->at(19).at(2)   = i;
-                    
-                    QuadPts->at(20).at(0) 	= j;
-                    QuadPts->at(20).at(1)   = i;
-                    QuadPts->at(20).at(2)   = h;
-                    
-                    QuadPts->at(21).at(0) 	= i;
-                    QuadPts->at(21).at(1)   = j;
-                    QuadPts->at(21).at(2)   = h;
-
-                    QuadPts->at(22).at(0) 	= h;
-                    QuadPts->at(22).at(1)   = i;
-                    QuadPts->at(22).at(2)   = j;
-                    
-                    QuadPts->at(23).at(0) 	= j;
-                    QuadPts->at(23).at(1)   = h;
-                    QuadPts->at(23).at(2)   = j;
-                    
-                    a = .039922750258168;
-                    b = .010077211055321;
-                    c = .055357181543654;
-                    d = .048214285714286;
-                    
-                    QuadW->at(0)    = a;
-                    QuadW->at(1)    = a;
-                    QuadW->at(2)    = a;
-                    QuadW->at(3)    = a;
-                    QuadW->at(4)    = b;
-                    QuadW->at(5)    = b;
-                    QuadW->at(6)    = b;
-                    QuadW->at(7)    = b;
-                    QuadW->at(8)    = c;
-                    QuadW->at(9)    = c;
-                    QuadW->at(10)   = c;
-                    QuadW->at(11)   = c;
-                    QuadW->at(12)   = d;
-                    QuadW->at(13)   = d;
-                    QuadW->at(14)   = d;
-                    QuadW->at(15)   = d;
-                    QuadW->at(16)   = d;
-                    QuadW->at(17)   = d;
-                    QuadW->at(18)   = d;
-                    QuadW->at(19)   = d;
-                    QuadW->at(20)   = d;
-                    QuadW->at(21)   = d;
-                    QuadW->at(22)   = d;
-                    QuadW->at(23)   = d;
-            }
-        }
-        else if(FEType.at(0)=='Q'){
-            if (Degree<=3)
-                Degree=3;
-            else if(Degree==4 || Degree==5)
-                Degree=5;
-            else if(Degree==6|| Degree==7)
-                Degree=7;
-
-            TEUCHOS_TEST_FOR_EXCEPTION(Degree>7, std::logic_error, "Quadrature rules for degree > 7 not available.");
-            
-            switch (Degree) {
-                case 1: // 1 points in each direction; order 1
-                {
-                    QuadPts.reset(new vec2D_dbl_Type(1,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(1);
-                    QuadW->at(0) = 2.;
-                    break;
-                }
-                case 3: // 2 points in each direction; order 3
-                {
-                    double d = 1./std::sqrt(3);
-                    QuadPts.reset(new vec2D_dbl_Type(8,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(8);
-                    QuadPts->at(0).at(0) 	= -d;
-                    QuadPts->at(0).at(1) 	= -d;
-                    QuadPts->at(0).at(2) 	= -d;
-                    QuadW->at(0)			= 1.;
-                    
-                    QuadPts->at(1).at(0) 	= -d;
-                    QuadPts->at(1).at(1) 	= -d;
-                    QuadPts->at(1).at(2) 	= d;
-                    QuadW->at(1)			= 1.;
-                    
-                    QuadPts->at(2).at(0) 	= -d;
-                    QuadPts->at(2).at(1) 	= d;
-                    QuadPts->at(2).at(2) 	= -d;
-                    QuadW->at(2)			= 1.;
-                    
-                    QuadPts->at(3).at(0) 	= -d;
-                    QuadPts->at(3).at(1) 	= d;
-                    QuadPts->at(3).at(2) 	= d;
-                    QuadW->at(3)			= 1.;
-                    
-                    QuadPts->at(4).at(0) 	= d;
-                    QuadPts->at(4).at(1) 	= -d;
-                    QuadPts->at(4).at(2) 	= -d;
-                    QuadW->at(4)			= 1.;
-                    
-                    QuadPts->at(5).at(0) 	= d;
-                    QuadPts->at(5).at(1) 	= -d;
-                    QuadPts->at(5).at(2) 	= d;
-                    QuadW->at(5)			= 1.;
-                    
-                    QuadPts->at(6).at(0) 	= d;
-                    QuadPts->at(6).at(1) 	= d;
-                    QuadPts->at(6).at(2) 	= -d;
-                    QuadW->at(6)			= 1.;
-                    
-                    QuadPts->at(7).at(0) 	= d;
-                    QuadPts->at(7).at(1) 	= d;
-                    QuadPts->at(7).at(2) 	= d;
-                    QuadW->at(7)			= 1.;
-                    break;
-                }
-                case 5: // 3 points in each direction; order 5
-                {
-                    double a=std::sqrt(3./5);
-                    double b=5./9;
-                    double c=8./9;
-                    std::vector<double> p(3);
-                    p[0] = -a; p[1] = 0.; p[2] = a;
-                    std::vector<double> w(3);
-                    w[0] = b; w[1] = c; w[2] = b;
-                    QuadPts.reset(new vec2D_dbl_Type(27,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(27);
-                    int counter=0;
-                    for (int i=0; i<3; i++) {
-                        for (int j=0; j<3; j++) {
-                            for (int k=0; k<3; k++) {
-                                QuadPts->at(counter)[0] = p[k];
-                                QuadPts->at(counter)[1] = p[j];
-                                QuadPts->at(counter)[2] = p[i];
-                                QuadW->at(counter)      = w[k]*w[j]*w[i];
-                                counter++;
-                            }
-                        }
-                    }
-                    break;
-                }
-                case 7: // 4 points in each direction; order 7
-                {
-                    double aa = 2./7 * std::sqrt(6./5) ;
-                    std::vector<double> p(4);
-                    p[0] = - std::sqrt(3./7 + aa);
-                    p[1] = - std::sqrt(3./7 - aa);
-                    p[2] = -p[1];
-                    p[3] = -p[0];
-                    
-                    double bb = std::sqrt(30.);
-                    std::vector<double> w(4);
-                    w[0] = ( 18. - bb ) / 36;
-                    w[1] = ( 18. + bb ) / 36;
-                    w[2] = w[1];
-                    w[3] = w[0];
-                    
-                    QuadPts.reset(new vec2D_dbl_Type(64,vec_dbl_Type(3,0.0)));
-                    QuadW->resize(64);
-
-                    int counter=0;
-                    for (int i=0; i<4; i++) {
-                        for (int j=0; j<4; j++) {
-                            for (int k=0; k<4; k++) {
-                                QuadPts->at(counter)[0] = p[k];
-                                QuadPts->at(counter)[1] = p[j];
-                                QuadPts->at(counter)[2] = p[i];
-                                QuadW->at(counter)      = w[k]*w[j]*w[i];
-                                counter++;
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-    }
-    
-}
-
-template <class SC, class LO, class GO, class NO>
-int FE<SC,LO,GO,NO>::getPhi(vec2D_dbl_ptr_Type &Phi,
-                            vec_dbl_ptr_Type &weightsPhi,
-                            int dim,
-                            std::string FEType,
-                            int Degree,
-                            std::string FETypeQuadPoints){
-
-    int 			nmbLocElPts;
-    int 			intFE;
-    double  		value;
-    vec2D_dbl_ptr_Type	QuadPts;
-    if (dim==1) {
-        this->getQuadratureValues(dim, Degree, QuadPts, weightsPhi, FEType);
-        if (FEType == "P0") {
-            nmbLocElPts = 1;
-            intFE = 0;
-        }
-        else if (FEType == "P1") {
-            nmbLocElPts = 2;
-            intFE = 1;
-        }
-        else if (FEType == "P2") {
-            nmbLocElPts = 3;
-            intFE = 2;
-        }
-        Phi.reset( new vec2D_dbl_Type( weightsPhi->size(), vec_dbl_Type( nmbLocElPts, 0.0 ) ) );
-        for (int k=0; k<Phi->size(); k++ ){
-            for (int i=0; i<Phi->at(0).size(); i++) {
-                this->phi(dim,intFE,i,QuadPts->at(k),&value);
-                Phi->at(k).at(i) = value;
-            }
-        }
-
-    }
-    else if (dim==2) {
-        this->getQuadratureValues(dim, Degree, QuadPts, weightsPhi, FEType);
-        if (FEType == "P0") {
-            nmbLocElPts = 1;
-            intFE = 0;
-        }
-        else if (FEType == "P1") {
-            nmbLocElPts = 3;
-            intFE = 1;
-        }
-        else if (FEType == "P2") {
-            nmbLocElPts = 6;
-            intFE = 2;
-        }
-
-        Phi.reset(new vec2D_dbl_Type(weightsPhi->size(),vec_dbl_Type(nmbLocElPts,0.0)));
-
-        for (int k=0; k<Phi->size(); k++ ){
-            for (int i=0; i<Phi->at(0).size(); i++) {
-                this->phi(dim,intFE,i,QuadPts->at(k),&value);
-                Phi->at(k).at(i) = value;
-            }
-        }
-    }
-    else if(dim==3){
-        if (FETypeQuadPoints!="")
-            this->getQuadratureValues(dim, Degree, QuadPts, weightsPhi, FETypeQuadPoints);
-        else
-            this->getQuadratureValues(dim, Degree, QuadPts, weightsPhi, FEType);
-        
-        if (FEType == "P0") {
-            nmbLocElPts = 1;
-            intFE = 0;
-        }
-        else if (FEType == "P1") {
-            nmbLocElPts = 4;
-            intFE = 1;
-        }
-        else if (FEType == "P2") {
-            nmbLocElPts = 10;
-            intFE = 2;
-        }
-        else if (FEType == "Q1") {
-            nmbLocElPts = 8;
-            intFE = 3;
-        }
-        else if (FEType == "Q2") {
-            nmbLocElPts = 27;
-            intFE = 4;
-        }
-        else if (FEType == "Q2-20") {
-            nmbLocElPts = 20;
-            intFE = 5;
-        }
-        else if (FEType == "P1-disc") {
-            nmbLocElPts = 4;
-            intFE = 1;
-        }
-        else if (FEType == "P1-disc-global")
-            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "P1-disc-global not implemented yet.");
-        
-
-        Phi.reset(new vec2D_dbl_Type(weightsPhi->size(),vec_dbl_Type(nmbLocElPts,0.0)));
-
-        for (int k=0; k<Phi->size(); k++ ){
-            for (int i=0; i<Phi->at(0).size(); i++) {
-                this->phi(dim,intFE,i,QuadPts->at(k),&value);
-                Phi->at(k).at(i) = value;
-            }
-        }
-    }
-    return intFE;
-}
-template <class SC, class LO, class GO, class NO>
-int FE<SC,LO,GO,NO>::getPhiGlobal(vec2D_dbl_ptr_Type &Phi,
-                            vec_dbl_ptr_Type &weightsPhi,
-                            int dim,
-                            std::string FEType,
-                            int Degree){
-    TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "getPhiGlobal not implemented yet.");
-}
-template <class SC, class LO, class GO, class NO>
-int FE<SC,LO,GO,NO>::getDPhi(vec3D_dbl_ptr_Type &DPhi,
-                             vec_dbl_ptr_Type &weightsDPhi,
-                             int dim,
-                 std::string FEType,
-                 int Degree){
-
-    int 			nmbLocElPts;
-    int 			intFE;
-    vec_dbl_ptr_Type 	value(new vec_dbl_Type(dim,0.0));
-    vec2D_dbl_ptr_Type	QuadPts;
-
-    if (dim==2) {
-        this->getQuadratureValues(dim, Degree, QuadPts, weightsDPhi, FEType);
-        if (FEType == "P0") {
-            nmbLocElPts = 1;
-            intFE = 0;
-        }
-        else if (FEType == "P1") {
-            nmbLocElPts = 3;
-            intFE = 1;
-        }
-        else if (FEType == "P2") {
-            nmbLocElPts = 6;
-            intFE = 2;
-        }
-
-        DPhi.reset(new vec3D_dbl_Type(weightsDPhi->size(),vec2D_dbl_Type(nmbLocElPts,vec_dbl_Type(2,0.0))));
-
-        for (int k=0; k<DPhi->size(); k++ ){
-            for (int i=0; i<DPhi->at(0).size(); i++) {
-                this->gradPhi(dim,intFE,i,QuadPts->at(k),value);
-                for (int j=0; j<2; j++) {
-                    DPhi->at(k).at(i).at(j) = value->at(j);
-                }
-            }
-        }
-    }
-
-    else if(dim==3){
-    	this->getQuadratureValues(dim, Degree, QuadPts, weightsDPhi, FEType);
-        if (FEType == "P0") {
-            nmbLocElPts = 1;
-            intFE = 0;
-        }
-        else if (FEType == "P1") {
-            nmbLocElPts = 4;
-            intFE = 1;
-        }
-        else if (FEType == "P2") {
-            nmbLocElPts = 10;
-            intFE = 2;
-        }
-        else if (FEType == "Q1") {
-            nmbLocElPts = 8;
-            intFE = 3;
-        }
-        else if (FEType == "Q2") {
-            nmbLocElPts = 27;
-            intFE = 4;
-        }
-        else if (FEType == "Q2-20") {
-            nmbLocElPts = 20;
-            intFE = 5;
-        }
-        else if (FEType == "P1-disc") {
-            nmbLocElPts = 4;
-            intFE = 6;
-        }
-        else if (FEType == "P1-disc-global")
-            TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error   ,"grad of P1-disc-global not implemented yet.");
-
-        DPhi.reset( new vec3D_dbl_Type( weightsDPhi->size(), vec2D_dbl_Type( nmbLocElPts, vec_dbl_Type(3,0.0) ) ) );
-        for (int k=0; k<DPhi->size(); k++ ){
-            for (int i=0; i<DPhi->at(0).size(); i++) {
-                this->gradPhi(dim,intFE,i,QuadPts->at(k),value);
-                for (int j=0; j<3; j++) {
-                    DPhi->at(k).at(i).at(j) = value->at(j);
-                }
-            }
-        }
-    }
-
-    return intFE;
-}
-*/
 template <class SC, class LO, class GO, class NO>
 int FE<SC,LO,GO,NO>::checkFE(int dim,
                  std::string FEType){
@@ -10232,2610 +9745,5 @@ void FE<SC,LO,GO,NO>::stvk2d(double* v, double (*lam),double (*mue),double** F
     Amat[1][1][1][1]=(*lam)*v[25]+(*mue)*(2e0*v[25]+v[26]+v[27])+v[32];
 };
 
-    
-/*************************************************************
- * AceGen    6.818 Linux (13 Sep 17)                          *
- *           Co. J. Korelc  2013           21 May 19 12:35:39 *
- **************************************************************
- User     : Full professional version
- Notebook : T2_TPM_up_LE_Iso_Gal
- Evaluation time                 : 6 s     Mode  : Optimal
- Number of formulae              : 324     Method: Automatic
- Subroutine                      : SKR size: 3659
- Subroutine                      : SPP size: 2226
- Total size of Mathematica  code : 5885 subexpressions
- Total size of C code            : 16126 bytes */
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::SMTSetElSpecBiot(ElementSpec *es,int *idata,int ic,int ng, vec_dbl_Type& paraVec)
-{
-    int dim = domainVec_[0]->getDimension();
-    int intc,nd,i;FILE *SMSFile;
-    static int pn[24]={1, 4, 2, 5, 3, 6, 0, 1, 4, 6, -1, 4, 2, 5, -1, 6, 4, 5, -1, 6, 5, 3, -1, 0};
-    static int dof[9]={2, 2, 2, 2, 2, 2, 1, 1, 1};
-    static int nsto[9]={0, 0, 0, 0, 0, 0, 0, 0, 0};
-    
-    static int ndat[9]={0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-    static char *nid[]={"D","D","D","D","D","D",
-        "p","p","p"};
-
-    
-    //Name der Daten in es->Data
-    static char *gdcs[]={   "$[Gamma]$NM -Newmark Parameter",
-                            "$[Beta]$NM -Newmark Parameter",
-                            "ns0s -initial volume fraction solid",
-                            "kL -Darcy parameter",
-                            "E -Youngs modulus",
-                            "$[Nu]$ -Poissons Ratio"};
-        
-    //soll in es->Data
-//    static double defd[]={  gamma,
-//                            beta,
-//                            ns_init_solid,
-//                            darcyPara,
-//                            youngsModulus,
-//                            poissonRatio,
-//                            0e0 /*this is not used*/};
-    static char *gpcs[]={""};
-    static char *npcs[]={"p","u1","u2","u3","$[Sigma]$11","$[Sigma]$22",
-        "$[Sigma]$33","$[Sigma]$12","$[Sigma]$23","$[Sigma]$31","seepage1","seepage2"};
-    static char *sname[]={""};
-    static char *idname[]={""};
-    static int idindex[1];
-    static char *rdname[]={""};
-    static char *cswitch[]={""};
-    static int iswitch[1]={0};
-    static double dswitch[1]={0e0};
-    static int rdindex[1];
-    static int nspecs[9];
-    static double version[3]={6.818,6.818,11.1};
-    static double pnweights[9]={1e0,1e0,1e0,1e0,1e0,1e0,
-        0e0,0e0,0e0};
-    //bestimmt die Koordinaten fuer das Refernezelement
-    static double rnodes[27]={  1e0,0e0,0e0,
-                                0e0,1e0,0e0,
-                                0e0,0e0,0e0,
-                                0.5e0,0e0,0e0,
-                                0.5e0,0.5e0,0e0,
-                                0e0,0.5e0,0e0,
-                                1e0,0e0,0e0,
-                                0e0,1e0,0e0,
-                                0e0,0e0,0e0 };
-    
-    es->ReferenceNodes=rnodes;
-    if(ng==-1) es->Data= &paraVec[0];
-    es->id.NoDomainData=6;
-    es->Code="T2_TPM_up_LE_Iso_Gal";
-    es->Version=version;
-    es->MainTitle="";
-    es->SubTitle="";
-    es->SubSubTitle="";
-    es->Bibliography="";
-    //WorkingVectoSize fehlt hier. Wird fuer v[WorkingVectorSize] benoetigt.
-    es->id.NoDimensions = dim ;
-    es->id.NoDOFGlobal=15; //anpassen
-    es->id.NoDOFCondense=0;
-    es->id.NoNodes=9;//anpassen
-    es->id.NoSegmentPoints=23;//was tut das?
-    es->Segments=pn;
-    es->PostNodeWeights=pnweights;
-    es->id.NoIntSwitch=0;//was tut das?
-    es->IntSwitch=iswitch;//was tut das?
-    es->id.DemoLimitation=0;//was tut das?
-    es->id.NoDoubleSwitch=0;//was tut das?
-    es->DoubleSwitch=dswitch;//was tut das?
-    es->id.NoCharSwitch=0;//was tut das?
-    es->CharSwitch=cswitch;//was tut das?
-    es->DOFGlobal=dof;
-    es->NodeID=nid;
-    es->id.NoGPostData=0;
-    es->id.NoNPostData=12;//was tut das?
-    es->id.SymmetricTangent=0;
-    es->id.CreateDummyNodes=0;
-    es->id.PostIterationCall=0;//was tut das?
-    es->id.DOFScaling=0;//was tut das?
-    es->Topology="XX";
-    es->DomainDataNames=gdcs;//warum? dies sind die Parameter
-    es->GPostNames=gpcs;
-    es->NPostNames=npcs;
-    es->AdditionalNodes="{}&";
-    es->AdditionalGraphics="{}&";
-    es->MMAInitialisation=MMAInitialisationCode;
-    es->MMANextStep="";
-    es->MMAStepBack="";
-    es->MMAPreIteration="";
-    es->IDataNames=idname;
-    es->IDataIndex=idindex;
-    es->RDataNames=rdname;
-    es->RDataIndex=rdindex;
-    es->id.NoIData=0;
-    es->id.NoRData=0;
-    es->id.ShapeSensitivity=0;
-    es->id.EBCSensitivity=0;
-    es->id.SensitivityOrder=0;
-    es->id.NoSensNames=0;
-    es->SensitivityNames=sname;
-    es->NodeSpecs=nspecs;
-    //es->user.SPP=SPP; //not used atm
-//    es->user.SKR=SKR; //do we need this?
-    
-    es->id.DefaultIntegrationCode=35;
-    if(ic==-1){intc=35;} else {intc=ic;};
-    es->id.IntCode=intc;
-    // we should know the suitable length of idata
-    es->IntPoints = SMTMultiIntPoints(&intc,idata,&es->id.NoIntPoints,
-                      &es->id.NoIntPointsA,&es->id.NoIntPointsB,&es->id.NoIntPointsC,1);
-    es->id.NoAdditionalData=(int)(0);
-    //Laenge von NoTimeStorage muss zu hp bzw. ht passen, siehe ed->hp und ed->ht in SKR
-    es->id.NoTimeStorage=(int)(24);
-    es->id.NoElementData=(int)(0);
-    
-    es->NoNodeStorage=nsto;es->NoNodeData=ndat;
-    
-};
-
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::SMTSetElSpecBiotStVK(ElementSpec *es,int *idata,int ic,int ng, vec_dbl_Type& paraVec)
-{
-    
-  int intc,nd,i;FILE *SMSFile;
-
-  static int pn[9]={1, 2, 3, 0, 1, 2, 3, -1, 0};
-  static int dof[9]={2, 2, 2, 2, 2, 2, 1, 1, 1};
-  static int nsto[9]={0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-  static int ndat[9]={0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-  static char *nid[]={"D","D","D","D","D","D",
-                       "p","p","p"};
-  static char *gdcs[]={ "E -Youngs modulus",
-                        "$[Nu]$ -Poissons Ratio",
-                        "ns0s -initial volume fraction solid",
-                        "kL -Darcy parameter",
-                        "$[Gamma]$NM -Newmark Parameter",
-                        "$[Beta]$NM -Newmark Parameter"};
-  
-  static char *gpcs[]={"p","u1","u2","u3","$[Sigma]$11","$[Sigma]$22",
-                       "$[Sigma]$33","$[Sigma]$12","$[Sigma]$23","$[Sigma]$31","seepage1","seepage2"};
-  static char *npcs[]={""};
-  static char *sname[]={""};
-  static char *idname[]={""};
-  static int idindex[1];
-  static char *rdname[]={""};
-  static char *cswitch[]={""};
-  static int iswitch[1]={0};
-  static double dswitch[1]={0e0};
-  static int rdindex[1];
-  static int nspecs[9];
-  static double version[3]={6.818,6.818,11.1};
-  static double pnweights[9]={1e0,1e0,1e0,0e0,0e0,0e0,
-  0e0,0e0,0e0};
-  static double rnodes[27]={1e0,0e0,0e0,0e0,1e0,0e0,
-  0e0,0e0,0e0,0.5e0,0e0,0e0,
-  0.5e0,0.5e0,0e0,0e0,0.5e0,0e0,
-  1e0,0e0,0e0,0e0,1e0,0e0,
-  0e0,0e0,0e0};
-  es->ReferenceNodes=rnodes;
-  if(ng==-1) es->Data= &paraVec[0];
-  es->id.NoDomainData=6;
-  es->Code="T2T1_up_nichtlinear_iso_gal_2020_02_05";es->Version=version;
-  es->MainTitle="";
-  es->SubTitle="";
-  es->SubSubTitle="";
-  es->Bibliography="";
-  es->id.NoDimensions=2;es->id.NoDOFGlobal=15;es->id.NoDOFCondense=0;es->id.NoNodes=9;
-  es->id.NoSegmentPoints=8;es->Segments=pn;es->PostNodeWeights=pnweights;
-  es->id.NoIntSwitch=0;es->IntSwitch=iswitch;es->id.DemoLimitation=0;
-  es->id.NoDoubleSwitch=0;es->DoubleSwitch=dswitch;
-  es->id.NoCharSwitch=0;es->CharSwitch=cswitch;
-  es->DOFGlobal=dof;es->NodeID=nid;es->id.NoGPostData=12;es->id.NoNPostData=0;
-  es->id.SymmetricTangent=0;es->id.CreateDummyNodes=0;es->id.PostIterationCall=0;es->id.DOFScaling=0;
-  es->Topology="XX";es->DomainDataNames=gdcs;es->GPostNames=gpcs;es->NPostNames=npcs;
-  es->AdditionalNodes="{}&";
-  es->AdditionalGraphics="{}&";
-  es->MMAInitialisation=MMAInitialisationCode;
-  es->MMANextStep="";
-  es->MMAStepBack="";
-  es->MMAPreIteration="";
-  es->IDataNames=idname;es->IDataIndex=idindex;es->RDataNames=rdname;es->RDataIndex=rdindex;
-  es->id.NoIData=0;es->id.NoRData=0;
-  es->id.ShapeSensitivity=0; es->id.EBCSensitivity=0;es->id.SensitivityOrder=0;
-  es->id.NoSensNames=0;es->SensitivityNames=sname;es->NodeSpecs=nspecs;
-//  es->user.SPP=SPP;
-//    es->user.SKR=SKR;
-
-  es->id.DefaultIntegrationCode=35;
-  if(ic==-1){intc=35;} else {intc=ic;};
-  es->id.IntCode=intc;
-  es->IntPoints = SMTMultiIntPoints(&intc,idata,&es->id.NoIntPoints,
-                      &es->id.NoIntPointsA,&es->id.NoIntPointsB,&es->id.NoIntPointsC,1);
-
-  es->id.NoAdditionalData=(int)(0);
-  es->id.NoTimeStorage=(int)(24);
-  es->id.NoElementData=(int)(0);
-
-  es->NoNodeStorage=nsto;es->NoNodeData=ndat;
-
-};
-
-/*************************************************************
-* AceGen    7.114 Linux (9 Jul 20)                           *
-*           Co. J. Korelc  2020           4 Sep 20 16:26:52  *
-**************************************************************
-User     : Full professional version
-Notebook : O2O1_up_lin_el_iso_gal_Newmark_mesh_koeln_1D_Ehlers_2020_09_04
-Evaluation time                 : 23 s    Mode  : Optimal
-Number of formulae              : 521     Method: Automatic
-Subroutine                      : SKR size: 7982
-Subroutine                      : SPP size: 2615
-Total size of Mathematica  code : 10597 subexpressions
-Total size of C code            : 31924 bytes */
-//Added 07.09.2020 CH
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::SMTSetElSpecBiot3D(ElementSpec *es,int *idata,int ic,int ng, vec_dbl_Type& paraVec)
-{
-    int intc,nd,i;FILE *SMSFile;
-    static int pn[33]={1, 2, 4, 0, 1, 4, 3, 0, 1, 2, 3, 0, 2, 3, 4, 0, 1, 2, 4, -1, 1, 4, 3, -2, 1, 2, 3, -3, 2, 3, 4, -4, 0};
-    static int dof[14]={3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1};
-    static int nsto[14]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    
-    static int ndat[14]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    
-    //static int esdat[1]={0}; only used in new release
-    
-    static char *nid[]={"D","D","D","D","D","D",
-        "D","D","D","D","p","p",
-        "p","p"};
-    static char *gdcs[]={"E -Youngs modulus","$[Nu]$ -Poissons Ratio","bx -body force","by -body force","bz -body force","ns0s -initial volume fraction solid",
-        "kL -Darcy parameter","$[Rho]$SR -effective density solid","$[Rho]$FR -effective density solid","g -gravity","$[Gamma]$NM -Newmark Parameter","$[Beta]$NM -Newmark Parameter"};
-    static double defd[]={200e0,0e0,0e0,0e0,0e0,0.67e0,
-        0.1e-3,2000e0,1000e0,0.9810000000000001e1,0.5e0,0.25e0,
-        0e0};
-    static char *gpcs[]={"p","u1","u2","u3","$[Sigma]$11","$[Sigma]$22",
-        "$[Sigma]$33","$[Sigma]$12","$[Sigma]$23","$[Sigma]$31","seepage1","seepage2",
-        "seepage3"};
-    static char *npcs[]={""};
-    static char *sname[]={""};
-    static char *idname[]={""};
-    static int idindex[1];
-    static char *rdname[]={""};
-    static char *cswitch[]={""};
-    static int iswitch[1]={0};
-    static double dswitch[1]={0e0};
-    static int rdindex[1];
-    static int nspecs[14];
-    static double version[3]={7.114,7.114,11.1};
-    static double pnweights[14]={1e0,1e0,1e0,1e0,0e0,0e0,
-        0e0,0e0,0e0,0e0,0e0,0e0,
-        0e0,0e0};
-    static double rnodes[42]={1e0,0e0,0e0,0e0,1e0,0e0,
-        0e0,0e0,1e0,0e0,0e0,0e0,
-        0.5e0,0.5e0,0e0,0e0,0.5e0,0.5e0,
-        0.5e0,0e0,0.5e0,0.5e0,0e0,0e0,
-        0e0,0.5e0,0e0,0e0,0e0,0.5e0,
-        1e0,0e0,0e0,0e0,1e0,0e0,
-        0e0,0e0,1e0,0e0,0e0,0e0};
-    es->ReferenceNodes=rnodes;
-    
-    if(ng==-1)
-        es->Data=&paraVec[0];
-    //es->Data=defd;
-    es->id.NoDomainData=12;
-    es->Code="O2O1_up_lin_el_iso_gal_Newmark_mesh_koeln_1D_Ehlers_2020_09_04";es->Version=version;
-    es->MainTitle="";
-    es->SubTitle="";
-    es->SubSubTitle="";
-    es->Bibliography="";
-    es->id.NoDimensions=3;es->id.NoDOFGlobal=34;es->id.NoDOFCondense=0;es->id.NoNodes=14;
-    es->id.NoSegmentPoints=32;es->Segments=pn;es->PostNodeWeights=pnweights;
-    es->id.NoIntSwitch=0;es->IntSwitch=iswitch;
-    //es->id.LocalReKe=0; LocalReKe is new and had a different name before (see sms.h(pp)). Was changed with new AceGen/AceFEM release.
-    es->id.NoDoubleSwitch=0;es->DoubleSwitch=dswitch;
-    es->id.NoCharSwitch=0;es->id.WorkingVectorSize=1817;es->CharSwitch=cswitch;
-    es->DOFGlobal=dof;es->NodeID=nid;es->id.NoGPostData=13;es->id.NoNPostData=0;
-    es->id.SymmetricTangent=0;es->id.PostIterationCall=0;es->id.DOFScaling=0;
-    es->Topology="XX";es->DomainDataNames=gdcs;es->GPostNames=gpcs;es->NPostNames=npcs;
-    es->AdditionalNodes="{}&";
-    es->AdditionalGraphics="{Null,Null,Null}";
-    es->MMAInitialisation=MMAInitialisationCode;
-    es->MMANextStep="";
-    es->MMAStepBack="";
-    es->MMAPreIteration="";
-    es->IDataNames=idname;es->IDataIndex=idindex;es->RDataNames=rdname;es->RDataIndex=rdindex;
-    es->id.NoIData=0;es->id.NoRData=0;
-    es->id.ShapeSensitivity=0; es->id.EBCSensitivity=0;es->id.SensitivityOrder=0;
-    es->id.NoSensNames=0;es->SensitivityNames=sname;es->NodeSpecs=nspecs;
-//    es->user.SPP=SPP;
-//    es->user.SKR=SKR;
-    
-    es->id.DefaultIntegrationCode=40;
-    if(ic==-1){intc=40;} else {intc=ic;};
-    es->id.IntCode=intc;
-    es->IntPoints = SMTMultiIntPoints(&intc,idata,&es->id.NoIntPoints,
-                      &es->id.NoIntPointsA,&es->id.NoIntPointsB,&es->id.NoIntPointsC,1);
-    es->id.NoAdditionalData=(int)(0);
-    es->id.NoTimeStorage=(int)(60);
-    es->id.NoElementData=(int)(0);
-    
-    
-    es->NoNodeStorage=nsto;es->NoNodeData=ndat;
-    
-    //es->ExtraSensitivityData=esdat;
-    //ExtraSensitivityData is new. Was introduced with new AceGen/AceFEM release.
-};
-
-
-
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::SKR_Biot(double* v,ElementSpec *es,ElementData *ed,NodeSpec **ns
-                               ,NodeData **nd,double *rdata,int *idata,double *p,double **s)
-{
-    int i107,i109,i215,i230;
-    v[5162]=0e0;
-    v[5163]=0e0;
-    v[5164]=0e0;
-    v[5165]=0e0;
-    v[5166]=0e0;
-    v[5167]=0e0;
-    v[5168]=0e0;
-    v[5169]=1e0;
-    v[5170]=0e0;
-    v[5171]=-1e0;
-    v[5172]=0e0;
-    v[5173]=0e0;
-    v[5174]=0e0;
-    v[5175]=0e0;
-    v[5176]=0e0;
-    v[5132]=0e0;
-    v[5133]=0e0;
-    v[5134]=0e0;
-    v[5135]=0e0;
-    v[5136]=0e0;
-    v[5137]=0e0;
-    v[5138]=0e0;
-    v[5139]=1e0;
-    v[5140]=0e0;
-    v[5141]=0e0;
-    v[5142]=0e0;
-    v[5143]=-1e0;
-    v[5144]=0e0;
-    v[5145]=0e0;
-    v[5146]=0e0;
-    v[5102]=0e0;
-    v[5103]=0e0;
-    v[5104]=0e0;
-    v[5105]=0e0;
-    v[5106]=0e0;
-    v[5107]=0e0;
-    v[5108]=1e0;
-    v[5109]=0e0;
-    v[5110]=-1e0;
-    v[5111]=0e0;
-    v[5112]=0e0;
-    v[5113]=0e0;
-    v[5114]=0e0;
-    v[5115]=0e0;
-    v[5116]=0e0;
-    v[5072]=0e0;
-    v[5073]=0e0;
-    v[5074]=0e0;
-    v[5075]=0e0;
-    v[5076]=0e0;
-    v[5077]=0e0;
-    v[5078]=1e0;
-    v[5079]=0e0;
-    v[5080]=0e0;
-    v[5081]=0e0;
-    v[5082]=-1e0;
-    v[5083]=0e0;
-    v[5084]=0e0;
-    v[5085]=0e0;
-    v[5086]=0e0;
-    v[5057]=0e0;
-    v[5058]=0e0;
-    v[5059]=0e0;
-    v[5060]=0e0;
-    v[5061]=0e0;
-    v[5062]=0e0;
-    v[5063]=0e0;
-    v[5064]=0e0;
-    v[5065]=0e0;
-    v[5066]=0e0;
-    v[5067]=0e0;
-    v[5068]=0e0;
-    v[5069]=1e0;
-    v[5070]=0e0;
-    v[5071]=-1e0;
-    v[5042]=0e0;
-    v[5043]=0e0;
-    v[5044]=0e0;
-    v[5045]=0e0;
-    v[5046]=0e0;
-    v[5047]=0e0;
-    v[5048]=0e0;
-    v[5049]=0e0;
-    v[5050]=0e0;
-    v[5051]=0e0;
-    v[5052]=0e0;
-    v[5053]=0e0;
-    v[5054]=0e0;
-    v[5055]=1e0;
-    v[5056]=-1e0;
-    
-    //es->Data sind Materialparameter
-    v[191]=es->Data[5];
-    v[194]=es->Data[4]/(2e0*(1e0+v[191]));
-    v[192]=(2e0*v[191]*v[194])/(1e0-2e0*v[191]);
-    v[186]=es->Data[3];
-    v[183]=es->Data[2];
-    // nd sind Nodalwerte, Anzahl an structs in nd sollte den Knoten entsprechen, bei P2-P1 in 2D also 9
-    // In X stehen die Koordinaten, X[0] ist x-Koordinate, X[1] ist y-Koordinate, etc.
-    v[1]=nd[0]->X[0];
-    v[2]=nd[0]->X[1];
-    v[3]=nd[1]->X[0];
-    v[4]=nd[1]->X[1];
-    v[5]=nd[2]->X[0];
-    v[6]=nd[2]->X[1];
-    v[7]=nd[3]->X[0];
-    v[8]=nd[3]->X[1];
-    v[9]=nd[4]->X[0];
-    v[10]=nd[4]->X[1];
-    v[11]=nd[5]->X[0];
-    v[12]=nd[5]->X[1];
-    // at ist die Loesung im letzten Newtonschritt.
-    v[19]=nd[0]->at[0];
-    v[20]=nd[0]->at[1];
-    v[21]=nd[1]->at[0];
-    v[22]=nd[1]->at[1];
-    v[23]=nd[2]->at[0];
-    v[24]=nd[2]->at[1];
-    v[25]=nd[3]->at[0];
-    v[26]=nd[3]->at[1];
-    v[27]=nd[4]->at[0];
-    v[28]=nd[4]->at[1];
-    v[29]=nd[5]->at[0];
-    v[30]=nd[5]->at[1];
-    v[31]=nd[6]->at[0];
-    v[32]=nd[7]->at[0];
-    v[33]=nd[8]->at[0];
-    v[172]=v[32]-v[33];
-    v[171]=v[31]-v[33];
-    // ap ist die Loesung im letzten Zeitschritt.
-    v[490]=-nd[0]->ap[0]+v[19];
-    v[497]=-nd[0]->ap[1]+v[20];
-    v[492]=-nd[1]->ap[0]+v[21];
-    v[498]=-nd[1]->ap[1]+v[22];
-    v[493]=-nd[2]->ap[0]+v[23];
-    v[499]=-nd[2]->ap[1]+v[24];
-    v[494]=-nd[3]->ap[0]+v[25];
-    v[500]=-nd[3]->ap[1]+v[26];
-    v[495]=-nd[4]->ap[0]+v[27];
-    v[501]=-nd[4]->ap[1]+v[28];
-    v[496]=-nd[5]->ap[0]+v[29];
-    v[488]=-nd[5]->ap[1]+v[30];
-    //rdata ist die Zeitschrittweite, RD_TimeIncrement wird in sms.h definiert, entsprechend wird auch die Laenge von rdata dort definiert. Standard 400, aber auch nicht gesetzt. Wert muss selber initialisiert werden; eventuell kuerzer moeglich.
-    v[49]=rdata[RD_TimeIncrement];
-    //hp:history previous (timestep); previous solution
-    v[50]=ed->hp[0];
-    v[51]=ed->hp[1];
-    v[52]=ed->hp[2];
-    v[53]=ed->hp[3];
-    v[54]=ed->hp[4];
-    v[55]=ed->hp[5];
-    v[56]=ed->hp[6];
-    v[57]=ed->hp[7];
-    v[58]=ed->hp[8];
-    v[59]=ed->hp[9];
-    v[60]=ed->hp[10];
-    v[61]=ed->hp[11];
-    v[62]=ed->hp[12];
-    v[63]=ed->hp[13];
-    v[64]=ed->hp[14];
-    v[65]=ed->hp[15];
-    v[66]=ed->hp[16];
-    v[67]=ed->hp[17];
-    v[68]=ed->hp[18];
-    v[69]=ed->hp[19];
-    v[70]=ed->hp[20];
-    v[71]=ed->hp[21];
-    v[72]=ed->hp[22];
-    v[73]=ed->hp[23];
-    v[75]=es->Data[1];
-    v[489]=1e0/(Power(v[49],2)*v[75]);
-    v[491]=-((v[49]*v[49])*(0.5e0-v[75]));
-    v[79]=es->Data[0]/(v[49]*v[75]);
-    v[486]=-(v[49]*v[79]);
-    v[487]=(1e0+v[486]/2e0)*v[49];
-    v[77]=1e0+v[486];
-    v[76]=v[487]*v[62]+v[50]*v[77]+v[490]*v[79];
-    v[80]=v[487]*v[68]+v[56]*v[77]+v[497]*v[79];
-    v[81]=v[487]*v[63]+v[51]*v[77]+v[492]*v[79];
-    v[82]=v[487]*v[69]+v[57]*v[77]+v[498]*v[79];
-    v[83]=v[487]*v[64]+v[52]*v[77]+v[493]*v[79];
-    v[84]=v[487]*v[70]+v[58]*v[77]+v[499]*v[79];
-    v[85]=v[487]*v[65]+v[53]*v[77]+v[494]*v[79];
-    v[86]=v[487]*v[71]+v[59]*v[77]+v[500]*v[79];
-    v[87]=v[487]*v[66]+v[54]*v[77]+v[495]*v[79];
-    v[88]=v[487]*v[72]+v[60]*v[77]+v[501]*v[79];
-    v[89]=v[487]*v[67]+v[55]*v[77]+v[496]*v[79];
-    v[90]=v[487]*v[73]+v[61]*v[77]+v[488]*v[79];
-    
-    ed->ht[0]=v[76];
-    ed->ht[1]=v[81];
-    ed->ht[2]=v[83];
-    ed->ht[3]=v[85];
-    ed->ht[4]=v[87];
-    ed->ht[5]=v[89];
-    ed->ht[6]=v[80];
-    ed->ht[7]=v[82];
-    ed->ht[8]=v[84];
-    ed->ht[9]=v[86];
-    ed->ht[10]=v[88];
-    ed->ht[11]=v[90];
-    ed->ht[12]=v[489]*(v[490]-v[49]*v[50]+v[491]*v[62]);
-    ed->ht[13]=v[489]*(v[492]-v[49]*v[51]+v[491]*v[63]);
-    ed->ht[14]=v[489]*(v[493]-v[49]*v[52]+v[491]*v[64]);
-    ed->ht[15]=v[489]*(v[494]-v[49]*v[53]+v[491]*v[65]);
-    ed->ht[16]=v[489]*(v[495]-v[49]*v[54]+v[491]*v[66]);
-    ed->ht[17]=v[489]*(v[496]-v[49]*v[55]+v[491]*v[67]);
-    ed->ht[18]=v[489]*(v[497]-v[49]*v[56]+v[491]*v[68]);
-    ed->ht[19]=v[489]*(v[498]-v[49]*v[57]+v[491]*v[69]);
-    ed->ht[20]=v[489]*(v[499]-v[49]*v[58]+v[491]*v[70]);
-    ed->ht[21]=v[489]*(v[500]-v[49]*v[59]+v[491]*v[71]);
-    ed->ht[22]=v[489]*(v[501]-v[49]*v[60]+v[491]*v[72]);
-    ed->ht[23]=v[489]*(v[488]-v[49]*v[61]+v[491]*v[73]);
-    //es->id.NoIntPoints wird in SMTSetElSpec gesetzt
-    for(i107=1;i107<=es->id.NoIntPoints;i107++){
-        i109=4*(-1+i107);
-        v[108]=es->IntPoints[i109];
-        v[137]=4e0*v[108];
-        v[132]=-1e0+v[137];
-        v[110]=es->IntPoints[1+i109];
-        v[136]=4e0*v[110];
-        v[133]=-1e0+v[136];
-        v[119]=-1e0+v[108]+v[110];
-        v[5192]=0e0;
-        v[5193]=0e0;
-        v[5194]=0e0;
-        v[5195]=0e0;
-        v[5196]=0e0;
-        v[5197]=0e0;
-        v[5198]=0e0;
-        v[5199]=0e0;
-        v[5200]=0e0;
-        v[5201]=0e0;
-        v[5202]=0e0;
-        v[5203]=0e0;
-        v[5204]=-v[108];
-        v[5205]=-v[110];
-        v[5206]=v[119];
-        v[139]=-4e0*v[119];
-        v[140]=-v[137]+v[139];
-        v[138]=-v[136]+v[139];
-        v[135]=-1e0+2e0*v[108]+2e0*v[110]+2e0*v[119];
-        v[5177]=0e0;
-        v[5178]=v[132];
-        v[5179]=0e0;
-        v[5180]=0e0;
-        v[5181]=0e0;
-        v[5182]=v[135];
-        v[5183]=0e0;
-        v[5184]=0e0;
-        v[5185]=0e0;
-        v[5186]=0e0;
-        v[5187]=0e0;
-        v[5188]=v[140];
-        v[5189]=0e0;
-        v[5190]=0e0;
-        v[5191]=0e0;
-        v[5147]=0e0;
-        v[5148]=0e0;
-        v[5149]=0e0;
-        v[5150]=v[133];
-        v[5151]=0e0;
-        v[5152]=v[135];
-        v[5153]=0e0;
-        v[5154]=0e0;
-        v[5155]=0e0;
-        v[5156]=v[138];
-        v[5157]=0e0;
-        v[5158]=0e0;
-        v[5159]=0e0;
-        v[5160]=0e0;
-        v[5161]=0e0;
-        v[5117]=v[132];
-        v[5118]=0e0;
-        v[5119]=0e0;
-        v[5120]=0e0;
-        v[5121]=v[135];
-        v[5122]=0e0;
-        v[5123]=0e0;
-        v[5124]=0e0;
-        v[5125]=0e0;
-        v[5126]=0e0;
-        v[5127]=v[140];
-        v[5128]=0e0;
-        v[5129]=0e0;
-        v[5130]=0e0;
-        v[5131]=0e0;
-        v[5087]=0e0;
-        v[5088]=0e0;
-        v[5089]=v[133];
-        v[5090]=0e0;
-        v[5091]=v[135];
-        v[5092]=0e0;
-        v[5093]=0e0;
-        v[5094]=0e0;
-        v[5095]=v[138];
-        v[5096]=0e0;
-        v[5097]=0e0;
-        v[5098]=0e0;
-        v[5099]=0e0;
-        v[5100]=0e0;
-        v[5101]=0e0;
-        v[164]=v[135]*v[84];
-        v[161]=v[135]*v[83];
-        v[153]=v[135]*v[24];
-        v[154]=v[153]+v[133]*v[22]+v[138]*v[28]+v[137]*(v[26]-v[30]);
-        v[152]=v[153]+v[132]*v[20]+v[136]*(v[26]-v[28])+v[140]*v[30];
-        v[150]=v[135]*v[23];
-        v[151]=v[150]+v[133]*v[21]+v[138]*v[27]+v[137]*(v[25]-v[29]);
-        v[149]=v[150]+v[132]*v[19]+v[136]*(v[25]-v[27])+v[140]*v[29];
-        v[145]=v[135]*v[6];
-        v[146]=v[10]*v[138]+v[145]+v[133]*v[4]+v[137]*(-v[12]+v[8]);
-        v[144]=v[12]*v[140]+v[145]+v[132]*v[2]+v[136]*(-v[10]+v[8]);
-        v[142]=v[135]*v[5];
-        v[143]=v[142]+v[133]*v[3]+v[137]*(-v[11]+v[7])+v[138]*v[9];
-        v[141]=v[1]*v[132]+v[11]*v[140]+v[142]+v[136]*(v[7]-v[9]);
-        v[155]=-(v[143]*v[144])+v[141]*v[146];
-        v[525]=-(v[143]/v[155]);
-        v[529]=v[140]*v[525];
-        v[524]=v[141]/v[155];
-        v[527]=v[138]*v[524];
-        v[523]=v[146]/v[155];
-        v[528]=v[140]*v[523];
-        v[522]=-(v[144]/v[155]);
-        v[526]=v[138]*v[522];
-        v[519]=1e0/Power(v[155],2);
-        v[503]=v[137]/v[155];
-        v[502]=v[136]/v[155];
-        v[267]=v[143]*v[502];
-        v[266]=v[141]*v[503];
-        v[263]=v[146]*v[502];
-        v[262]=v[144]*v[503];
-        v[148]=es->IntPoints[3+i109]*std::fabs(v[155]);
-        v[176]=(v[146]*v[149]-v[144]*v[151])/v[155];
-        v[179]=(-(v[143]*v[152])+v[141]*v[154])/v[155];
-        v[195]=v[176]+v[179];
-        v[505]=v[192]*v[195]-v[108]*v[31]-v[110]*v[32]+v[119]*v[33];
-        v[185]=1e0-v[183]*(1e0+v[195]);
-        v[504]=v[186]/(v[155]*v[185]);
-        v[510]=v[185]*v[504];
-        v[198]=-(((v[143]*v[149]-v[141]*v[151]-v[146]*v[152]+v[144]*v[154])*v[194])/v[155]);
-        v[204]=2e0*v[176]*v[194]+v[505];
-        v[205]=2e0*v[179]*v[194]+v[505];
-        v[208]=(-(v[144]*(v[161]+v[133]*v[81]+v[137]*v[85]+v[138]*v[87]-v[137]*v[89]))+v[146]*(v[161]
-                                                                                               +v[132]*v[76]+v[136]*v[85]-v[136]*v[87]+v[140]*v[89])+v[141]*(v[164]+v[133]*v[82]+v[137]*v[86]
-                                                                                                                                                             +v[138]*v[88]-v[137]*v[90])-v[143]*(v[164]+v[132]*v[80]+v[136]*v[86]-v[136]*v[88]+v[140]*v[90]))
-        /v[155];
-        v[210]=(-(v[146]*v[171])+v[144]*v[172])*v[185]*v[504];
-        v[211]=(v[143]*v[171]-v[141]*v[172])*v[185]*v[504];
-        v[217]=(v[146]*v[198]-v[143]*v[205])/v[155];
-        v[225]=v[136]*v[217];
-        v[218]=(-(v[144]*v[198])+v[141]*v[205])/v[155];
-        v[226]=v[137]*v[218];
-        v[219]=(-(v[143]*v[198])+v[146]*v[204])/v[155];
-        v[223]=v[136]*v[219];
-        v[220]=(v[141]*v[198]-v[144]*v[204])/v[155];
-        v[224]=v[137]*v[220];
-        v[221]=(v[146]*v[210]-v[143]*v[211])/v[155];
-        v[222]=(-(v[144]*v[210])+v[141]*v[211])/v[155];
-        v[5023]=v[132]*v[219];
-        v[5024]=v[132]*v[217];
-        v[5025]=v[133]*v[220];
-        v[5026]=v[133]*v[218];
-        v[5027]=v[135]*(v[219]+v[220]);
-        v[5028]=v[135]*(v[217]+v[218]);
-        v[5029]=v[223]+v[224];
-        v[5030]=v[225]+v[226];
-        v[5031]=v[138]*v[220]-v[223];
-        v[5032]=v[138]*v[218]-v[225];
-        v[5033]=v[140]*v[219]-v[224];
-        v[5034]=v[140]*v[217]-v[226];
-        v[5035]=-(v[108]*v[208])+v[221];
-        v[5036]=-(v[110]*v[208])+v[222];
-        v[5037]=v[119]*v[208]-v[221]-v[222];
-//        for(i215=1;i215<=15;i215++){
-//        
-//            for(i230=1;i230<=15;i230++){
-//                std::cout << " pre s[i215-1][i230-1]:"<< s[i215-1][i230-1] << std::endl;
-//            }
-//            
-//        }
-        
-        for(i215=1;i215<=15;i215++){
-            v[233]=v[5041+i215];
-            v[234]=v[5056+i215];
-            v[509]=v[5191+i215]*v[79];
-            v[261]=v[135]*v[509];
-            v[260]=v[509]/v[155];
-            v[246]=((v[141]*v[233]-v[143]*v[234])*v[510])/v[155];
-            v[247]=((-(v[144]*v[233])+v[146]*v[234])*v[510])/v[155];
-            v[238]=v[137]*v[5071+i215]+v[5086+i215];
-            v[239]=v[136]*v[5101+i215]+v[5116+i215];
-            v[240]=(-(v[144]*v[238])+v[146]*v[239])/v[155];
-            v[241]=v[137]*v[5131+i215]+v[5146+i215];
-            v[242]=v[136]*v[5161+i215]+v[5176+i215];
-            v[243]=(v[141]*v[241]-v[143]*v[242])/v[155];
-            
-            v[256]=v[194]*(v[141]*v[238]-v[143]*v[239]-v[144]*v[241]+v[146]*v[242])*v[519];
-            v[245]=v[143]*v[246]-v[146]*v[247];
-            v[248]=-(v[141]*v[246])+v[144]*v[247];
-            v[249]=-v[240]-v[243];
-            v[252]=-(v[192]*v[249]);
-            v[520]=(2e0*v[194]*v[243]+v[252])/v[155];
-            v[521]=(2e0*v[194]*v[240]+v[252])/v[155];
-            v[255]=v[146]*v[256]-v[143]*v[520];
-            v[268]=v[136]*v[255];
-            v[257]=-(v[144]*v[256])+v[141]*v[520];
-            v[269]=v[137]*v[257];
-            v[258]=-(v[143]*v[256])+v[146]*v[521];
-            v[264]=v[136]*v[258];
-            v[259]=v[141]*v[256]-v[144]*v[521];
-            v[265]=v[137]*v[259];
-            
-            v[5207]=v[132]*(v[258]+v[146]*v[260]);
-            v[5208]=v[132]*(v[255]-v[143]*v[260]);
-
-            v[5209]=v[133]*(v[259]-v[144]*v[260]);
-            v[5210]=v[133]*(v[257]+v[141]*v[260]);
-            v[5211]=v[135]*(v[258]+v[259])+v[261]*(v[522]+v[523]);
-            v[5212]=v[135]*(v[255]+v[257])+v[261]*(v[524]+v[525]);
-            v[5213]=v[264]+v[265]+(-v[262]+v[263])*v[509];
-            v[5214]=v[268]+v[269]+(v[266]-v[267])*v[509];
-            v[5215]=v[138]*v[259]-v[264]+v[509]*(-v[263]+v[526]);
-            v[5216]=v[138]*v[257]-v[268]+v[509]*(v[267]+v[527]);
-            v[5217]=v[140]*v[258]-v[265]+v[509]*(v[262]+v[528]);
-            v[5218]=v[140]*v[255]-v[269]+v[509]*(-v[266]+v[529]);
-            v[5219]=v[245]+v[108]*v[249];
-            v[5220]=v[248]+v[110]*v[249];
-            v[5221]=-v[245]-v[248]-v[119]*v[249];
-            p[i215-1]+=v[148]*v[5022+i215];
-            for(i230=1;i230<=15;i230++){
-                s[i215-1][i230-1]+=v[148]*v[5206+i230];
-
-            };/* end for */
-        };/* end for */
-    };/* end for */
-};
-
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::SKR_Biot_StVK(double* v,ElementSpec *es,ElementData *ed,NodeSpec **ns
-                                    ,NodeData **nd,double *rdata,int *idata,double *p,double **s)
-{
-    int i114,i116,i233,i250,b297;
-    FILE *SMSFile;
-    v[5132]=0e0;
-    v[5133]=0e0;
-    v[5134]=0e0;
-    v[5135]=0e0;
-    v[5136]=0e0;
-    v[5137]=0e0;
-    v[5138]=0e0;
-    v[5139]=1e0;
-    v[5140]=0e0;
-    v[5141]=-1e0;
-    v[5142]=0e0;
-    v[5143]=0e0;
-    v[5144]=0e0;
-    v[5145]=0e0;
-    v[5146]=0e0;
-    v[5102]=0e0;
-    v[5103]=0e0;
-    v[5104]=0e0;
-    v[5105]=0e0;
-    v[5106]=0e0;
-    v[5107]=0e0;
-    v[5108]=0e0;
-    v[5109]=1e0;
-    v[5110]=0e0;
-    v[5111]=0e0;
-    v[5112]=0e0;
-    v[5113]=-1e0;
-    v[5114]=0e0;
-    v[5115]=0e0;
-    v[5116]=0e0;
-    v[5072]=0e0;
-    v[5073]=0e0;
-    v[5074]=0e0;
-    v[5075]=0e0;
-    v[5076]=0e0;
-    v[5077]=0e0;
-    v[5078]=1e0;
-    v[5079]=0e0;
-    v[5080]=-1e0;
-    v[5081]=0e0;
-    v[5082]=0e0;
-    v[5083]=0e0;
-    v[5084]=0e0;
-    v[5085]=0e0;
-    v[5086]=0e0;
-    v[5042]=0e0;
-    v[5043]=0e0;
-    v[5044]=0e0;
-    v[5045]=0e0;
-    v[5046]=0e0;
-    v[5047]=0e0;
-    v[5048]=1e0;
-    v[5049]=0e0;
-    v[5050]=0e0;
-    v[5051]=0e0;
-    v[5052]=-1e0;
-    v[5053]=0e0;
-    v[5054]=0e0;
-    v[5055]=0e0;
-    v[5056]=0e0;
-    v[5177]=0e0;
-    v[5178]=0e0;
-    v[5179]=0e0;
-    v[5180]=0e0;
-    v[5181]=0e0;
-    v[5182]=0e0;
-    v[5183]=0e0;
-    v[5184]=0e0;
-    v[5185]=0e0;
-    v[5186]=0e0;
-    v[5187]=0e0;
-    v[5188]=0e0;
-    v[5189]=1e0;
-    v[5190]=0e0;
-    v[5191]=-1e0;
-    v[5162]=0e0;
-    v[5163]=0e0;
-    v[5164]=0e0;
-    v[5165]=0e0;
-    v[5166]=0e0;
-    v[5167]=0e0;
-    v[5168]=0e0;
-    v[5169]=0e0;
-    v[5170]=0e0;
-    v[5171]=0e0;
-    v[5172]=0e0;
-    v[5173]=0e0;
-    v[5174]=0e0;
-    v[5175]=1e0;
-    v[5176]=-1e0;
-    v[1]=nd[0]->X[0];
-    v[2]=nd[0]->X[1];
-    v[3]=nd[1]->X[0];
-    v[4]=nd[1]->X[1];
-    v[5]=nd[2]->X[0];
-    v[6]=nd[2]->X[1];
-    v[7]=nd[3]->X[0];
-    v[8]=nd[3]->X[1];
-    v[9]=nd[4]->X[0];
-    v[10]=nd[4]->X[1];
-    v[11]=nd[5]->X[0];
-    v[12]=nd[5]->X[1];
-    v[19]=nd[0]->at[0];
-    v[20]=nd[0]->at[1];
-    v[21]=nd[1]->at[0];
-    v[22]=nd[1]->at[1];
-    v[23]=nd[2]->at[0];
-    v[24]=nd[2]->at[1];
-    v[25]=nd[3]->at[0];
-    v[26]=nd[3]->at[1];
-    v[27]=nd[4]->at[0];
-    v[28]=nd[4]->at[1];
-    v[29]=nd[5]->at[0];
-    v[30]=nd[5]->at[1];
-    v[31]=nd[6]->at[0];
-    v[32]=nd[7]->at[0];
-    v[33]=nd[8]->at[0];
-    v[179]=v[32]-v[33];
-    v[178]=v[31]-v[33];
-    v[34]=nd[0]->ap[0];
-    v[574]=v[19]-v[34];
-    v[35]=nd[0]->ap[1];
-    v[576]=v[20]-v[35];
-    v[36]=nd[1]->ap[0];
-    v[578]=v[21]-v[36];
-    v[37]=nd[1]->ap[1];
-    v[579]=v[22]-v[37];
-    v[38]=nd[2]->ap[0];
-    v[580]=v[23]-v[38];
-    v[39]=nd[2]->ap[1];
-    v[581]=v[24]-v[39];
-    v[40]=nd[3]->ap[0];
-    v[582]=v[25]-v[40];
-    v[41]=nd[3]->ap[1];
-    v[583]=v[26]-v[41];
-    v[42]=nd[4]->ap[0];
-    v[584]=v[27]-v[42];
-    v[43]=nd[4]->ap[1];
-    v[585]=v[28]-v[43];
-    v[44]=nd[5]->ap[0];
-    v[586]=v[29]-v[44];
-    v[45]=nd[5]->ap[1];
-    v[587]=v[30]-v[45];
-    v[49]=es->Data[0];
-    v[50]=es->Data[1];
-    v[571]=v[49]/(1e0+v[50]);
-    v[51]=(v[50]*v[571])/(1e0-2e0*v[50]);
-    v[53]=v[571]/2e0;
-    v[54]=es->Data[2];
-    v[55]=es->Data[3];
-    v[56]=rdata[RD_TimeIncrement];
-    v[57]=ed->hp[0];
-    v[58]=ed->hp[1];
-    v[59]=ed->hp[2];
-    v[60]=ed->hp[3];
-    v[61]=ed->hp[4];
-    v[62]=ed->hp[5];
-    v[63]=ed->hp[6];
-    v[64]=ed->hp[7];
-    v[65]=ed->hp[8];
-    v[66]=ed->hp[9];
-    v[67]=ed->hp[10];
-    v[68]=ed->hp[11];
-    v[69]=ed->hp[12];
-    v[70]=ed->hp[13];
-    v[71]=ed->hp[14];
-    v[72]=ed->hp[15];
-    v[73]=ed->hp[16];
-    v[74]=ed->hp[17];
-    v[75]=ed->hp[18];
-    v[76]=ed->hp[19];
-    v[77]=ed->hp[20];
-    v[78]=ed->hp[21];
-    v[79]=ed->hp[22];
-    v[80]=ed->hp[23];
-    v[82]=es->Data[5];
-    v[575]=1e0/(Power(v[56],2)*v[82]);
-    v[577]=-((v[56]*v[56])*(0.5e0-v[82]));
-    v[86]=es->Data[4]/(v[56]*v[82]);
-    v[572]=-(v[56]*v[86]);
-    v[573]=v[56]*(1e0+v[572]/2e0);
-    v[84]=1e0+v[572];
-    v[83]=v[573]*v[69]+v[57]*v[84]+v[574]*v[86];
-    v[87]=v[573]*v[75]+v[63]*v[84]+v[576]*v[86];
-    v[88]=v[573]*v[70]+v[58]*v[84]+v[578]*v[86];
-    v[89]=v[573]*v[76]+v[64]*v[84]+v[579]*v[86];
-    v[90]=v[573]*v[71]+v[59]*v[84]+v[580]*v[86];
-    v[91]=v[573]*v[77]+v[65]*v[84]+v[581]*v[86];
-    v[92]=v[573]*v[72]+v[60]*v[84]+v[582]*v[86];
-    v[93]=v[573]*v[78]+v[66]*v[84]+v[583]*v[86];
-    v[94]=v[573]*v[73]+v[61]*v[84]+v[584]*v[86];
-    v[95]=v[573]*v[79]+v[67]*v[84]+v[585]*v[86];
-    v[96]=v[573]*v[74]+v[62]*v[84]+v[586]*v[86];
-    v[97]=v[573]*v[80]+v[68]*v[84]+v[587]*v[86];
-    v[98]=v[575]*(-(v[56]*v[57])+v[574]+v[577]*v[69]);
-    v[102]=v[575]*(v[576]-v[56]*v[63]+v[577]*v[75]);
-    v[103]=v[575]*(v[578]-v[56]*v[58]+v[577]*v[70]);
-    v[104]=v[575]*(v[579]-v[56]*v[64]+v[577]*v[76]);
-    v[105]=v[575]*(v[580]-v[56]*v[59]+v[577]*v[71]);
-    v[106]=v[575]*(v[581]-v[56]*v[65]+v[577]*v[77]);
-    v[107]=v[575]*(v[582]-v[56]*v[60]+v[577]*v[72]);
-    v[108]=v[575]*(v[583]-v[56]*v[66]+v[577]*v[78]);
-    v[109]=v[575]*(v[584]-v[56]*v[61]+v[577]*v[73]);
-    v[110]=v[575]*(v[585]-v[56]*v[67]+v[577]*v[79]);
-    v[111]=v[575]*(v[586]-v[56]*v[62]+v[577]*v[74]);
-    v[112]=v[575]*(v[587]-v[56]*v[68]+v[577]*v[80]);
-    ed->ht[0]=v[83];
-    ed->ht[1]=v[88];
-    ed->ht[2]=v[90];
-    ed->ht[3]=v[92];
-    ed->ht[4]=v[94];
-    ed->ht[5]=v[96];
-    ed->ht[6]=v[87];
-    ed->ht[7]=v[89];
-    ed->ht[8]=v[91];
-    ed->ht[9]=v[93];
-    ed->ht[10]=v[95];
-    ed->ht[11]=v[97];
-    ed->ht[12]=v[98];
-    ed->ht[13]=v[103];
-    ed->ht[14]=v[105];
-    ed->ht[15]=v[107];
-    ed->ht[16]=v[109];
-    ed->ht[17]=v[111];
-    ed->ht[18]=v[102];
-    ed->ht[19]=v[104];
-    ed->ht[20]=v[106];
-    ed->ht[21]=v[108];
-    ed->ht[22]=v[110];
-    ed->ht[23]=v[112];
-    for(i114=1;i114<=es->id.NoIntPoints;i114++){
-     i116=4*(-1+i114);
-     v[115]=es->IntPoints[i116];
-     v[144]=4e0*v[115];
-     v[139]=-1e0+v[144];
-     v[117]=es->IntPoints[1+i116];
-     v[143]=4e0*v[117];
-     v[140]=-1e0+v[143];
-     v[126]=-1e0+v[115]+v[117];
-     v[5192]=0e0;
-     v[5193]=0e0;
-     v[5194]=0e0;
-     v[5195]=0e0;
-     v[5196]=0e0;
-     v[5197]=0e0;
-     v[5198]=0e0;
-     v[5199]=0e0;
-     v[5200]=0e0;
-     v[5201]=0e0;
-     v[5202]=0e0;
-     v[5203]=0e0;
-     v[5204]=-v[115];
-     v[5205]=-v[117];
-     v[5206]=v[126];
-     v[146]=-4e0*v[126];
-     v[147]=-v[144]+v[146];
-     v[145]=-v[143]+v[146];
-     v[142]=-1e0+2e0*v[115]+2e0*v[117]+2e0*v[126];
-     v[5147]=0e0;
-     v[5148]=v[139];
-     v[5149]=0e0;
-     v[5150]=0e0;
-     v[5151]=0e0;
-     v[5152]=v[142];
-     v[5153]=0e0;
-     v[5154]=0e0;
-     v[5155]=0e0;
-     v[5156]=0e0;
-     v[5157]=0e0;
-     v[5158]=v[147];
-     v[5159]=0e0;
-     v[5160]=0e0;
-     v[5161]=0e0;
-     v[5117]=0e0;
-     v[5118]=0e0;
-     v[5119]=0e0;
-     v[5120]=v[140];
-     v[5121]=0e0;
-     v[5122]=v[142];
-     v[5123]=0e0;
-     v[5124]=0e0;
-     v[5125]=0e0;
-     v[5126]=v[145];
-     v[5127]=0e0;
-     v[5128]=0e0;
-     v[5129]=0e0;
-     v[5130]=0e0;
-     v[5131]=0e0;
-     v[5087]=v[139];
-     v[5088]=0e0;
-     v[5089]=0e0;
-     v[5090]=0e0;
-     v[5091]=v[142];
-     v[5092]=0e0;
-     v[5093]=0e0;
-     v[5094]=0e0;
-     v[5095]=0e0;
-     v[5096]=0e0;
-     v[5097]=v[147];
-     v[5098]=0e0;
-     v[5099]=0e0;
-     v[5100]=0e0;
-     v[5101]=0e0;
-     v[5057]=0e0;
-     v[5058]=0e0;
-     v[5059]=v[140];
-     v[5060]=0e0;
-     v[5061]=v[142];
-     v[5062]=0e0;
-     v[5063]=0e0;
-     v[5064]=0e0;
-     v[5065]=v[145];
-     v[5066]=0e0;
-     v[5067]=0e0;
-     v[5068]=0e0;
-     v[5069]=0e0;
-     v[5070]=0e0;
-     v[5071]=0e0;
-     v[171]=v[142]*v[91];
-     v[168]=v[142]*v[90];
-     v[160]=v[142]*v[24];
-     v[161]=v[160]+v[140]*v[22]+v[145]*v[28]+v[144]*(v[26]-v[30]);
-     v[159]=v[160]+v[139]*v[20]+v[143]*(v[26]-v[28])+v[147]*v[30];
-     v[157]=v[142]*v[23];
-     v[158]=v[157]+v[140]*v[21]+v[145]*v[27]+v[144]*(v[25]-v[29]);
-     v[156]=v[157]+v[139]*v[19]+v[143]*(v[25]-v[27])+v[147]*v[29];
-     v[152]=v[142]*v[6];
-     v[153]=v[10]*v[145]+v[152]+v[140]*v[4]+v[144]*(-v[12]+v[8]);
-     v[151]=v[12]*v[147]+v[152]+v[139]*v[2]+v[143]*(-v[10]+v[8]);
-     v[149]=v[142]*v[5];
-     v[150]=v[149]+v[140]*v[3]+v[144]*(-v[11]+v[7])+v[145]*v[9];
-     v[148]=v[1]*v[139]+v[11]*v[147]+v[149]+v[143]*(v[7]-v[9]);
-     v[162]=-(v[150]*v[151])+v[148]*v[153];
-     v[610]=-(v[150]/v[162]);
-     v[614]=v[147]*v[610];
-     v[609]=v[148]/v[162];
-     v[612]=v[145]*v[609];
-     v[608]=v[153]/v[162];
-     v[613]=v[147]*v[608];
-     v[607]=-(v[151]/v[162]);
-     v[611]=v[145]*v[607];
-     v[589]=v[144]/v[162];
-     v[588]=v[143]/v[162];
-     v[292]=v[150]*v[588];
-     v[291]=v[148]*v[589];
-     v[288]=v[153]*v[588];
-     v[287]=v[151]*v[589];
-     v[155]=es->IntPoints[3+i116]*std::fabs(v[162]);
-     v[163]=(v[153]*v[156]-v[151]*v[158])/v[162];
-     v[164]=(-(v[150]*v[156])+v[148]*v[158])/v[162];
-     v[165]=(v[153]*v[159]-v[151]*v[161])/v[162];
-     v[166]=(-(v[150]*v[159])+v[148]*v[161])/v[162];
-     v[190]=1e0-v[163];
-     v[191]=1e0-v[166];
-     v[195]=0.5e0*(-1e0+(v[165]*v[165])+(v[190]*v[190]));
-     v[200]=0.5e0*(-1e0+(v[164]*v[164])+(v[191]*v[191]));
-     v[591]=-(v[115]*v[31])-v[117]*v[32]+v[126]*v[33]+(v[195]+v[200])*v[51];
-     v[206]=1e0-(1e0+v[163]+v[166])*v[54];
-     v[590]=v[55]/(v[162]*v[206]);
-     v[604]=v[206]*v[590];
-     v[222]=2e0*v[195]*v[53]+v[591];
-     v[223]=2e0*v[200]*v[53]+v[591];
-     v[226]=(-(v[151]*(v[168]+v[140]*v[88]+v[144]*v[92]+v[145]*v[94]-v[144]*v[96]))+v[153]*(v[168]
-      +v[139]*v[83]+v[143]*v[92]-v[143]*v[94]+v[147]*v[96])+v[148]*(v[171]+v[140]*v[89]+v[144]*v[93]
-      +v[145]*v[95]-v[144]*v[97])-v[150]*(v[171]+v[139]*v[87]+v[143]*v[93]-v[143]*v[95]+v[147]*v[97]))
-      /v[162];
-     v[228]=(-(v[153]*v[178])+v[151]*v[179])*v[206]*v[590];
-     v[229]=(v[150]*v[178]-v[148]*v[179])*v[206]*v[590];
-     v[236]=-1e0*(v[164]*v[190]+v[165]*v[191])*v[53];
-     v[237]=(v[153]*v[228]-v[150]*v[229])/v[162];
-     v[238]=(-(v[151]*v[228])+v[148]*v[229])/v[162];
-     v[239]=(-(v[150]*v[223])+v[153]*v[236])/v[162];
-     v[245]=v[143]*v[239];
-     v[240]=(v[148]*v[223]-v[151]*v[236])/v[162];
-     v[246]=v[144]*v[240];
-     v[241]=(v[153]*v[222]-v[150]*v[236])/v[162];
-     v[243]=v[143]*v[241];
-     v[242]=(-(v[151]*v[222])+v[148]*v[236])/v[162];
-     v[244]=v[144]*v[242];
-     v[5023]=v[139]*v[241];
-     v[5024]=v[139]*v[239];
-     v[5025]=v[140]*v[242];
-     v[5026]=v[140]*v[240];
-     v[5027]=v[142]*(v[241]+v[242]);
-     v[5028]=v[142]*(v[239]+v[240]);
-     v[5029]=v[243]+v[244];
-     v[5030]=v[245]+v[246];
-     v[5031]=v[145]*v[242]-v[243];
-     v[5032]=v[145]*v[240]-v[245];
-     v[5033]=v[147]*v[241]-v[244];
-     v[5034]=v[147]*v[239]-v[246];
-     v[5035]=-(v[115]*v[226])+v[237];
-     v[5036]=-(v[117]*v[226])+v[238];
-     v[5037]=v[126]*v[226]-v[237]-v[238];
-     for(i233=1;i233<=15;i233++){
-      v[253]=v[5161+i233];
-      v[254]=v[5176+i233];
-      v[595]=v[5191+i233]*v[86];
-      v[286]=v[142]*v[595];
-      v[285]=v[595]/v[162];
-      v[256]=v[144]*v[5041+i233]+v[5056+i233];
-      v[257]=v[143]*v[5071+i233]+v[5086+i233];
-      v[258]=(-(v[151]*v[256])+v[153]*v[257])/v[162];
-      v[259]=v[144]*v[5101+i233]+v[5116+i233];
-      v[260]=v[143]*v[5131+i233]+v[5146+i233];
-      v[261]=(v[148]*v[259]-v[150]*v[260])/v[162];
-      v[269]=((v[148]*v[253]-v[150]*v[254])*v[604])/v[162];
-      v[270]=((-(v[151]*v[253])+v[153]*v[254])*v[604])/v[162];
-      v[264]=(2e0*(v[148]*v[256]-v[150]*v[257]-v[151]*v[259]+v[153]*v[260])*v[53])/v[162];
-      v[606]=0.5e0*v[264];
-      v[605]=0.5e0*v[264];
-      v[268]=v[150]*v[269]-v[153]*v[270];
-      v[271]=-(v[148]*v[269])+v[151]*v[270];
-      v[272]=v[258]+v[261];
-      v[274]=v[272]*v[51];
-      v[273]=v[274]+2e0*v[261]*v[53];
-      v[275]=v[274]+2e0*v[258]*v[53];
-      v[276]=1e0*v[165]*v[275]-v[191]*v[605];
-      v[277]=1e0*v[164]*v[273]-v[190]*v[606];
-      v[278]=-1e0*v[191]*v[273]+v[165]*v[605];
-      v[280]=-1e0*v[190]*v[275]+v[164]*v[606];
-      v[281]=(v[153]*v[276]-v[150]*v[278])/v[162];
-      v[293]=v[143]*v[281];
-      v[282]=(-(v[151]*v[276])+v[148]*v[278])/v[162];
-      v[294]=v[144]*v[282];
-      v[283]=(-(v[150]*v[277])+v[153]*v[280])/v[162];
-      v[289]=v[143]*v[283];
-      v[284]=(v[148]*v[277]-v[151]*v[280])/v[162];
-      v[290]=v[144]*v[284];
-      v[5207]=v[139]*(v[283]+v[153]*v[285]);
-      v[5208]=v[139]*(v[281]-v[150]*v[285]);
-      v[5209]=v[140]*(v[284]-v[151]*v[285]);
-      v[5210]=v[140]*(v[282]+v[148]*v[285]);
-      v[5211]=v[142]*(v[283]+v[284])+v[286]*(v[607]+v[608]);
-      v[5212]=v[142]*(v[281]+v[282])+v[286]*(v[609]+v[610]);
-      v[5213]=v[289]+v[290]+(-v[287]+v[288])*v[595];
-      v[5214]=v[293]+v[294]+(v[291]-v[292])*v[595];
-      v[5215]=v[145]*v[284]-v[289]+v[595]*(-v[288]+v[611]);
-      v[5216]=v[145]*v[282]-v[293]+v[595]*(v[292]+v[612]);
-      v[5217]=v[147]*v[283]-v[290]+v[595]*(v[287]+v[613]);
-      v[5218]=v[147]*v[281]-v[294]+v[595]*(-v[291]+v[614]);
-      v[5219]=v[268]-v[115]*v[272];
-      v[5220]=v[271]-v[117]*v[272];
-      v[5221]=-v[268]-v[271]+v[126]*v[272];
-      p[i233-1]+=v[155]*v[5022+i233];
-      for(i250=1;i250<=15;i250++){
-       s[i233-1][i250-1]+=v[155]*v[5206+i250];
-      };/* end for */
-     };/* end for */
-    };/* end for */
-    if(idata[ID_CurrentElement]==1e0){
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","ElementNumber: ",(double)idata[ID_CurrentElement]
-      ,"   Time: ",(double)rdata[RD_Time],"   TimeSteps: ",(double)idata[ID_Step],"   IterationSteps: ",
-      (double)idata[ID_Iteration]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g ","Emodul: ",(double)v[49],"   Poissonsratio: ",(double)v[50]
-      ,"   InitialSolidVolumeFraction: ",(double)v[54]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g ","TimeIncrement :",(double)rdata[RD_TimeIncrement]
-      ,"   LoadIncrement: ",(double)rdata[RD_MultiplierIncrement]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[0],"  CoorX: ",(double
-      )nd[0]->X[0],"  CoorY: ",(double)nd[0]->X[1],"  NumberDOF: ",(double)nd[0]->id.NoDOF);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[0]->DOF[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[0]->DOF[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[1],"  CoorX: ",(double
-      )nd[1]->X[0],"  CoorY: ",(double)nd[1]->X[1],"  NumberDOF: ",(double)nd[1]->id.NoDOF);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[1]->DOF[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[1]->DOF[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[2],"  CoorX: ",(double
-      )nd[2]->X[0],"  CoorY: ",(double)nd[2]->X[1],"  NumberDOF: ",(double)nd[2]->id.NoDOF);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[2]->DOF[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[2]->DOF[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[3],"  CoorX: ",(double
-      )nd[3]->X[0],"  CoorY: ",(double)nd[3]->X[1],"  NumberDOF: ",(double)nd[3]->id.NoDOF);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[3]->DOF[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[3]->DOF[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[4],"  CoorX: ",(double
-      )nd[4]->X[0],"  CoorY: ",(double)nd[4]->X[1],"  NumberDOF: ",(double)nd[4]->id.NoDOF);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[4]->DOF[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[4]->DOF[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[5],"  CoorX: ",(double
-      )nd[5]->X[0],"  CoorY: ",(double)nd[5]->X[1],"  NumberDOF: ",(double)nd[5]->id.NoDOF);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[5]->DOF[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[5]->DOF[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[6],"  CoorX: ",(double
-      )nd[6]->X[0],"  CoorY: ",(double)nd[6]->X[1],"  NumberDOF: ",(double)nd[6]->id.NoDOF);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[6]->DOF[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[7],"  CoorX: ",(double
-      )nd[7]->X[0],"  CoorY: ",(double)nd[7]->X[1],"  NumberDOF: ",(double)nd[7]->id.NoDOF);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[7]->DOF[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[8],"  CoorX: ",(double
-      )nd[8]->X[0],"  CoorY: ",(double)nd[8]->X[1],"  NumberDOF: ",(double)nd[8]->id.NoDOF);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g ","DOFposition: ",(double)nd[8]->DOF[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g "
-      ,"hp or h1 field: ",(double)v[57],(double)v[58],(double)v[59],(double)v[60],(double)v[61],(double
-      )v[62],(double)v[63],(double)v[64],(double)v[65],(double)v[66],(double)v[67],(double)v[68],(double
-      )v[69],(double)v[70],(double)v[71],(double)v[72],(double)v[73],(double)v[74],(double)v[75],(double
-      )v[76],(double)v[77],(double)v[78],(double)v[79],(double)v[80]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g "
-      ,"ht or h2 field: ",(double)v[83],(double)v[88],(double)v[90],(double)v[92],(double)v[94],(double
-      )v[96],(double)v[87],(double)v[89],(double)v[91],(double)v[93],(double)v[95],(double)v[97],(double
-      )v[98],(double)v[103],(double)v[105],(double)v[107],(double)v[109],(double)v[111],(double)v[102],
-      (double)v[104],(double)v[106],(double)v[108],(double)v[110],(double)v[112]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g ","ap or up field: ",(double
-      )v[34],(double)v[35],(double)v[36],(double)v[37],(double)v[38],(double)v[39],(double)v[40],(double
-      )v[41],(double)v[42],(double)v[43],(double)v[44],(double)v[45],(double)nd[6]->ap[0],(double)nd[7]
-      ->ap[0],(double)nd[8]->ap[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g ","at or ul field: ",(double
-      )v[19],(double)v[20],(double)v[21],(double)v[22],(double)v[23],(double)v[24],(double)v[25],(double
-      )v[26],(double)v[27],(double)v[28],(double)v[29],(double)v[30],(double)v[31],(double)v[32],(double
-      )v[33]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[0],"  Ux: ",(double)nd[0]
-      ->at[0],"  Uy: ",(double)nd[0]->at[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[1],"  Ux: ",(double)nd[1]
-      ->at[0],"  Uy: ",(double)nd[1]->at[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[2],"  Ux: ",(double)nd[2]
-      ->at[0],"  Uy: ",(double)nd[2]->at[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[3],"  Ux: ",(double)nd[3]
-      ->at[0],"  Uy: ",(double)nd[3]->at[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[4],"  Ux: ",(double)nd[4]
-      ->at[0],"  Uy: ",(double)nd[4]->at[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g %s %g ","Nodes: ",(double)ed->Nodes[5],"  Ux: ",(double)nd[5]
-      ->at[0],"  Uy: ",(double)nd[5]->at[1]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g ","Nodes: ",(double)ed->Nodes[6],"  p: ",(double)nd[6]->at[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g ","Nodes: ",(double)ed->Nodes[7],"  p: ",(double)nd[7]->at[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s %g %s %g ","Nodes: ",(double)ed->Nodes[8],"  p: ",(double)nd[8]->at[0]);
-     fclose(SMSFile);};};
-     ++idata[ID_NoMessages];
-     if(1){SMSFile=fopen("myoutput.dat","a");if(SMSFile!=NULL){
-     fprintf(SMSFile,"\n%s ","%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-     fclose(SMSFile);};};
-    } else {
-    };
-};
-
-
-// Added 07.09.2020 CH
-template <class SC, class LO, class GO, class NO>
-void FE<SC,LO,GO,NO>::SKR_Biot3D(double* v, ElementSpec *es, ElementData *ed, NodeSpec **ns, NodeData **nd, double *rdata, int *idata, double *p, double **s)
-{
-    int i254,i256,i438,i455;
-    v[1514]=0e0;
-    v[1515]=0e0;
-    v[1516]=0e0;
-    v[1517]=0e0;
-    v[1518]=0e0;
-    v[1519]=0e0;
-    v[1520]=0e0;
-    v[1521]=0e0;
-    v[1522]=0e0;
-    v[1523]=0e0;
-    v[1524]=0e0;
-    v[1525]=0e0;
-    v[1526]=0e0;
-    v[1527]=0e0;
-    v[1528]=0e0;
-    v[1529]=0e0;
-    v[1530]=0e0;
-    v[1531]=0e0;
-    v[1532]=0e0;
-    v[1533]=0e0;
-    v[1534]=0e0;
-    v[1535]=0e0;
-    v[1536]=0e0;
-    v[1537]=0e0;
-    v[1538]=0e0;
-    v[1539]=0e0;
-    v[1540]=0e0;
-    v[1541]=0e0;
-    v[1542]=0e0;
-    v[1543]=0e0;
-    v[1544]=1e0;
-    v[1545]=0e0;
-    v[1546]=0e0;
-    v[1547]=-1e0;
-    v[1480]=0e0;
-    v[1481]=0e0;
-    v[1482]=0e0;
-    v[1483]=0e0;
-    v[1484]=0e0;
-    v[1485]=0e0;
-    v[1486]=0e0;
-    v[1487]=0e0;
-    v[1488]=0e0;
-    v[1489]=0e0;
-    v[1490]=0e0;
-    v[1491]=0e0;
-    v[1492]=0e0;
-    v[1493]=0e0;
-    v[1494]=0e0;
-    v[1495]=0e0;
-    v[1496]=0e0;
-    v[1497]=0e0;
-    v[1498]=0e0;
-    v[1499]=0e0;
-    v[1500]=0e0;
-    v[1501]=0e0;
-    v[1502]=0e0;
-    v[1503]=0e0;
-    v[1504]=0e0;
-    v[1505]=0e0;
-    v[1506]=0e0;
-    v[1507]=0e0;
-    v[1508]=0e0;
-    v[1509]=0e0;
-    v[1510]=0e0;
-    v[1511]=1e0;
-    v[1512]=0e0;
-    v[1513]=-1e0;
-    v[1446]=0e0;
-    v[1447]=0e0;
-    v[1448]=0e0;
-    v[1449]=0e0;
-    v[1450]=0e0;
-    v[1451]=0e0;
-    v[1452]=0e0;
-    v[1453]=0e0;
-    v[1454]=0e0;
-    v[1455]=0e0;
-    v[1456]=0e0;
-    v[1457]=0e0;
-    v[1458]=0e0;
-    v[1459]=0e0;
-    v[1460]=0e0;
-    v[1461]=0e0;
-    v[1462]=0e0;
-    v[1463]=0e0;
-    v[1464]=0e0;
-    v[1465]=0e0;
-    v[1466]=0e0;
-    v[1467]=0e0;
-    v[1468]=0e0;
-    v[1469]=0e0;
-    v[1470]=0e0;
-    v[1471]=0e0;
-    v[1472]=0e0;
-    v[1473]=0e0;
-    v[1474]=0e0;
-    v[1475]=0e0;
-    v[1476]=0e0;
-    v[1477]=0e0;
-    v[1478]=1e0;
-    v[1479]=-1e0;
-    v[1]=nd[0]->X[0];
-    v[2]=nd[0]->X[1];
-    v[3]=nd[0]->X[2];
-    v[4]=nd[1]->X[0];
-    v[5]=nd[1]->X[1];
-    v[6]=nd[1]->X[2];
-    v[7]=nd[2]->X[0];
-    v[8]=nd[2]->X[1];
-    v[9]=nd[2]->X[2];
-    v[10]=nd[3]->X[0];
-    v[11]=nd[3]->X[1];
-    v[12]=nd[3]->X[2];
-    v[13]=nd[4]->X[0];
-    v[14]=nd[4]->X[1];
-    v[15]=nd[4]->X[2];
-    v[16]=nd[5]->X[0];
-    v[17]=nd[5]->X[1];
-    v[18]=nd[5]->X[2];
-    v[19]=nd[6]->X[0];
-    v[20]=nd[6]->X[1];
-    v[21]=nd[6]->X[2];
-    v[22]=nd[7]->X[0];
-    v[23]=nd[7]->X[1];
-    v[24]=nd[7]->X[2];
-    v[25]=nd[8]->X[0];
-    v[26]=nd[8]->X[1];
-    v[27]=nd[8]->X[2];
-    v[28]=nd[9]->X[0];
-    v[29]=nd[9]->X[1];
-    v[30]=nd[9]->X[2];
-    v[43]=nd[0]->at[0];
-    v[44]=nd[0]->at[1];
-    v[45]=nd[0]->at[2];
-    v[46]=nd[1]->at[0];
-    v[47]=nd[1]->at[1];
-    v[48]=nd[1]->at[2];
-    v[49]=nd[2]->at[0];
-    v[50]=nd[2]->at[1];
-    v[51]=nd[2]->at[2];
-    v[52]=nd[3]->at[0];
-    v[53]=nd[3]->at[1];
-    v[54]=nd[3]->at[2];
-    v[55]=nd[4]->at[0];
-    v[56]=nd[4]->at[1];
-    v[57]=nd[4]->at[2];
-    v[58]=nd[5]->at[0];
-    v[59]=nd[5]->at[1];
-    v[60]=nd[5]->at[2];
-    v[61]=nd[6]->at[0];
-    v[62]=nd[6]->at[1];
-    v[63]=nd[6]->at[2];
-    v[64]=nd[7]->at[0];
-    v[65]=nd[7]->at[1];
-    v[66]=nd[7]->at[2];
-    v[67]=nd[8]->at[0];
-    v[68]=nd[8]->at[1];
-    v[69]=nd[8]->at[2];
-    v[70]=nd[9]->at[0];
-    v[71]=nd[9]->at[1];
-    v[72]=nd[9]->at[2];
-    v[73]=nd[10]->at[0];
-    v[74]=nd[11]->at[0];
-    v[75]=nd[12]->at[0];
-    v[76]=nd[13]->at[0];
-    v[388]=v[75]-v[76];
-    v[387]=v[74]-v[76];
-    v[386]=v[73]-v[76];
-    v[112]=es->Data[1];
-    v[962]=es->Data[0]/(1e0+v[112]);
-    v[113]=(v[112]*v[962])/(1e0-2e0*v[112]);
-    v[115]=v[962]/2e0;
-    v[116]=es->Data[2];
-    v[117]=es->Data[3];
-    v[118]=es->Data[4];
-    v[119]=es->Data[5];
-    v[121]=es->Data[7];
-    v[122]=es->Data[8];
-    v[1012]=v[121]-v[122];
-    v[971]=es->Data[6]/(es->Data[9]*v[122]);
-    v[433]=-(v[122]*v[971]);
-    v[995]=v[118]*v[433];
-    v[994]=v[117]*v[433];
-    v[993]=v[116]*v[433];
-    v[963]=-(es->Data[10]/es->Data[11]);
-    v[190]=1e0+v[963];
-    v[127]=rdata[RD_TimeIncrement];
-    v[964]=v[127]*(1e0+v[963]/2e0);
-    v[189]=-(v[963]/v[127]);
-    v[188]=ed->hp[0]*v[190]+v[189]*(-nd[0]->ap[0]+v[43])+ed->hp[30]*v[964];
-    v[192]=ed->hp[10]*v[190]+v[189]*(-nd[0]->ap[1]+v[44])+ed->hp[40]*v[964];
-    v[193]=ed->hp[20]*v[190]+v[189]*(-nd[0]->ap[2]+v[45])+ed->hp[50]*v[964];
-    v[194]=ed->hp[1]*v[190]+v[189]*(-nd[1]->ap[0]+v[46])+ed->hp[31]*v[964];
-    v[195]=ed->hp[11]*v[190]+v[189]*(-nd[1]->ap[1]+v[47])+ed->hp[41]*v[964];
-    v[196]=ed->hp[21]*v[190]+v[189]*(-nd[1]->ap[2]+v[48])+ed->hp[51]*v[964];
-    v[197]=ed->hp[2]*v[190]+v[189]*(-nd[2]->ap[0]+v[49])+ed->hp[32]*v[964];
-    v[198]=ed->hp[12]*v[190]+v[189]*(-nd[2]->ap[1]+v[50])+ed->hp[42]*v[964];
-    v[199]=ed->hp[22]*v[190]+v[189]*(-nd[2]->ap[2]+v[51])+ed->hp[52]*v[964];
-    v[200]=ed->hp[3]*v[190]+v[189]*(-nd[3]->ap[0]+v[52])+ed->hp[33]*v[964];
-    v[201]=ed->hp[13]*v[190]+v[189]*(-nd[3]->ap[1]+v[53])+ed->hp[43]*v[964];
-    v[202]=ed->hp[23]*v[190]+v[189]*(-nd[3]->ap[2]+v[54])+ed->hp[53]*v[964];
-    v[203]=ed->hp[4]*v[190]+v[189]*(-nd[4]->ap[0]+v[55])+ed->hp[34]*v[964];
-    v[204]=ed->hp[14]*v[190]+v[189]*(-nd[4]->ap[1]+v[56])+ed->hp[44]*v[964];
-    v[205]=ed->hp[24]*v[190]+v[189]*(-nd[4]->ap[2]+v[57])+ed->hp[54]*v[964];
-    v[206]=ed->hp[5]*v[190]+v[189]*(-nd[5]->ap[0]+v[58])+ed->hp[35]*v[964];
-    v[207]=ed->hp[15]*v[190]+v[189]*(-nd[5]->ap[1]+v[59])+ed->hp[45]*v[964];
-    v[208]=ed->hp[25]*v[190]+v[189]*(-nd[5]->ap[2]+v[60])+ed->hp[55]*v[964];
-    v[209]=ed->hp[6]*v[190]+v[189]*(-nd[6]->ap[0]+v[61])+ed->hp[36]*v[964];
-    v[210]=ed->hp[16]*v[190]+v[189]*(-nd[6]->ap[1]+v[62])+ed->hp[46]*v[964];
-    v[211]=ed->hp[26]*v[190]+v[189]*(-nd[6]->ap[2]+v[63])+ed->hp[56]*v[964];
-    v[212]=ed->hp[7]*v[190]+v[189]*(-nd[7]->ap[0]+v[64])+ed->hp[37]*v[964];
-    v[213]=ed->hp[17]*v[190]+v[189]*(-nd[7]->ap[1]+v[65])+ed->hp[47]*v[964];
-    v[214]=ed->hp[27]*v[190]+v[189]*(-nd[7]->ap[2]+v[66])+ed->hp[57]*v[964];
-    v[215]=ed->hp[8]*v[190]+v[189]*(-nd[8]->ap[0]+v[67])+ed->hp[38]*v[964];
-    v[216]=ed->hp[18]*v[190]+v[189]*(-nd[8]->ap[1]+v[68])+ed->hp[48]*v[964];
-    v[217]=ed->hp[28]*v[190]+v[189]*(-nd[8]->ap[2]+v[69])+ed->hp[58]*v[964];
-    v[218]=ed->hp[9]*v[190]+v[189]*(-nd[9]->ap[0]+v[70])+ed->hp[39]*v[964];
-    v[219]=ed->hp[19]*v[190]+v[189]*(-nd[9]->ap[1]+v[71])+ed->hp[49]*v[964];
-    v[220]=ed->hp[29]*v[190]+v[189]*(-nd[9]->ap[2]+v[72])+ed->hp[59]*v[964];
-    for(i254=1;i254<=es->id.NoIntPoints;i254++){
-     i256=4*(-1+i254);
-     v[255]=es->IntPoints[i256];
-     v[286]=4e0*v[255];
-     v[374]=-(v[214]*v[286]);
-     v[367]=-(v[213]*v[286]);
-     v[360]=-(v[212]*v[286]);
-     v[281]=-1e0+v[286];
-     v[257]=es->IntPoints[1+i256];
-     v[285]=4e0*v[257];
-     v[333]=-(v[285]*v[69]);
-     v[326]=-(v[285]*v[68]);
-     v[319]=-(v[285]*v[67]);
-     v[310]=-(v[27]*v[285]);
-     v[303]=-(v[26]*v[285]);
-     v[296]=-(v[25]*v[285]);
-     v[282]=-1e0+v[285];
-     v[258]=es->IntPoints[2+i256];
-     v[287]=4e0*v[258];
-     v[371]=-(v[220]*v[287]);
-     v[364]=-(v[219]*v[287]);
-     v[357]=-(v[218]*v[287]);
-     v[331]=-(v[287]*v[72]);
-     v[324]=-(v[287]*v[71]);
-     v[317]=-(v[287]*v[70]);
-     v[308]=-(v[287]*v[30]);
-     v[301]=-(v[287]*v[29]);
-     v[294]=-(v[28]*v[287]);
-     v[283]=-1e0+v[287];
-     v[260]=v[255]*(-1e0+2e0*v[255]);
-     v[261]=v[257]*(-1e0+2e0*v[257]);
-     v[262]=v[258]*(-1e0+2e0*v[258]);
-     v[263]=1e0-v[255]-v[257]-v[258];
-     v[1548]=0e0;
-     v[1549]=0e0;
-     v[1550]=0e0;
-     v[1551]=0e0;
-     v[1552]=0e0;
-     v[1553]=0e0;
-     v[1554]=0e0;
-     v[1555]=0e0;
-     v[1556]=0e0;
-     v[1557]=0e0;
-     v[1558]=0e0;
-     v[1559]=0e0;
-     v[1560]=0e0;
-     v[1561]=0e0;
-     v[1562]=0e0;
-     v[1563]=0e0;
-     v[1564]=0e0;
-     v[1565]=0e0;
-     v[1566]=0e0;
-     v[1567]=0e0;
-     v[1568]=0e0;
-     v[1569]=0e0;
-     v[1570]=0e0;
-     v[1571]=0e0;
-     v[1572]=0e0;
-     v[1573]=0e0;
-     v[1574]=0e0;
-     v[1575]=0e0;
-     v[1576]=0e0;
-     v[1577]=0e0;
-     v[1578]=v[255];
-     v[1579]=v[257];
-     v[1580]=v[258];
-     v[1581]=v[263];
-     v[288]=-4e0*v[263];
-     v[291]=-v[287]-v[288];
-     v[290]=-v[285]-v[288];
-     v[289]=-v[286]-v[288];
-     v[284]=1e0+v[288];
-     v[1412]=0e0;
-     v[1413]=0e0;
-     v[1414]=v[281];
-     v[1415]=0e0;
-     v[1416]=0e0;
-     v[1417]=0e0;
-     v[1418]=0e0;
-     v[1419]=0e0;
-     v[1420]=0e0;
-     v[1421]=0e0;
-     v[1422]=0e0;
-     v[1423]=v[284];
-     v[1424]=0e0;
-     v[1425]=0e0;
-     v[1426]=v[285];
-     v[1427]=0e0;
-     v[1428]=0e0;
-     v[1429]=0e0;
-     v[1430]=0e0;
-     v[1431]=0e0;
-     v[1432]=v[287];
-     v[1433]=0e0;
-     v[1434]=0e0;
-     v[1435]=v[289];
-     v[1436]=0e0;
-     v[1437]=0e0;
-     v[1438]=-v[285];
-     v[1439]=0e0;
-     v[1440]=0e0;
-     v[1441]=-v[287];
-     v[1442]=0e0;
-     v[1443]=0e0;
-     v[1444]=0e0;
-     v[1445]=0e0;
-     v[1378]=0e0;
-     v[1379]=0e0;
-     v[1380]=0e0;
-     v[1381]=0e0;
-     v[1382]=0e0;
-     v[1383]=v[282];
-     v[1384]=0e0;
-     v[1385]=0e0;
-     v[1386]=0e0;
-     v[1387]=0e0;
-     v[1388]=0e0;
-     v[1389]=v[284];
-     v[1390]=0e0;
-     v[1391]=0e0;
-     v[1392]=v[286];
-     v[1393]=0e0;
-     v[1394]=0e0;
-     v[1395]=v[287];
-     v[1396]=0e0;
-     v[1397]=0e0;
-     v[1398]=0e0;
-     v[1399]=0e0;
-     v[1400]=0e0;
-     v[1401]=-v[286];
-     v[1402]=0e0;
-     v[1403]=0e0;
-     v[1404]=v[290];
-     v[1405]=0e0;
-     v[1406]=0e0;
-     v[1407]=-v[287];
-     v[1408]=0e0;
-     v[1409]=0e0;
-     v[1410]=0e0;
-     v[1411]=0e0;
-     v[1344]=0e0;
-     v[1345]=0e0;
-     v[1346]=0e0;
-     v[1347]=0e0;
-     v[1348]=0e0;
-     v[1349]=0e0;
-     v[1350]=0e0;
-     v[1351]=0e0;
-     v[1352]=v[283];
-     v[1353]=0e0;
-     v[1354]=0e0;
-     v[1355]=v[284];
-     v[1356]=0e0;
-     v[1357]=0e0;
-     v[1358]=0e0;
-     v[1359]=0e0;
-     v[1360]=0e0;
-     v[1361]=v[285];
-     v[1362]=0e0;
-     v[1363]=0e0;
-     v[1364]=v[286];
-     v[1365]=0e0;
-     v[1366]=0e0;
-     v[1367]=-v[286];
-     v[1368]=0e0;
-     v[1369]=0e0;
-     v[1370]=-v[285];
-     v[1371]=0e0;
-     v[1372]=0e0;
-     v[1373]=v[291];
-     v[1374]=0e0;
-     v[1375]=0e0;
-     v[1376]=0e0;
-     v[1377]=0e0;
-     v[1310]=0e0;
-     v[1311]=v[281];
-     v[1312]=0e0;
-     v[1313]=0e0;
-     v[1314]=0e0;
-     v[1315]=0e0;
-     v[1316]=0e0;
-     v[1317]=0e0;
-     v[1318]=0e0;
-     v[1319]=0e0;
-     v[1320]=v[284];
-     v[1321]=0e0;
-     v[1322]=0e0;
-     v[1323]=v[285];
-     v[1324]=0e0;
-     v[1325]=0e0;
-     v[1326]=0e0;
-     v[1327]=0e0;
-     v[1328]=0e0;
-     v[1329]=v[287];
-     v[1330]=0e0;
-     v[1331]=0e0;
-     v[1332]=v[289];
-     v[1333]=0e0;
-     v[1334]=0e0;
-     v[1335]=-v[285];
-     v[1336]=0e0;
-     v[1337]=0e0;
-     v[1338]=-v[287];
-     v[1339]=0e0;
-     v[1340]=0e0;
-     v[1341]=0e0;
-     v[1342]=0e0;
-     v[1343]=0e0;
-     v[1276]=0e0;
-     v[1277]=0e0;
-     v[1278]=0e0;
-     v[1279]=0e0;
-     v[1280]=v[282];
-     v[1281]=0e0;
-     v[1282]=0e0;
-     v[1283]=0e0;
-     v[1284]=0e0;
-     v[1285]=0e0;
-     v[1286]=v[284];
-     v[1287]=0e0;
-     v[1288]=0e0;
-     v[1289]=v[286];
-     v[1290]=0e0;
-     v[1291]=0e0;
-     v[1292]=v[287];
-     v[1293]=0e0;
-     v[1294]=0e0;
-     v[1295]=0e0;
-     v[1296]=0e0;
-     v[1297]=0e0;
-     v[1298]=-v[286];
-     v[1299]=0e0;
-     v[1300]=0e0;
-     v[1301]=v[290];
-     v[1302]=0e0;
-     v[1303]=0e0;
-     v[1304]=-v[287];
-     v[1305]=0e0;
-     v[1306]=0e0;
-     v[1307]=0e0;
-     v[1308]=0e0;
-     v[1309]=0e0;
-     v[1242]=0e0;
-     v[1243]=0e0;
-     v[1244]=0e0;
-     v[1245]=0e0;
-     v[1246]=0e0;
-     v[1247]=0e0;
-     v[1248]=0e0;
-     v[1249]=v[283];
-     v[1250]=0e0;
-     v[1251]=0e0;
-     v[1252]=v[284];
-     v[1253]=0e0;
-     v[1254]=0e0;
-     v[1255]=0e0;
-     v[1256]=0e0;
-     v[1257]=0e0;
-     v[1258]=v[285];
-     v[1259]=0e0;
-     v[1260]=0e0;
-     v[1261]=v[286];
-     v[1262]=0e0;
-     v[1263]=0e0;
-     v[1264]=-v[286];
-     v[1265]=0e0;
-     v[1266]=0e0;
-     v[1267]=-v[285];
-     v[1268]=0e0;
-     v[1269]=0e0;
-     v[1270]=v[291];
-     v[1271]=0e0;
-     v[1272]=0e0;
-     v[1273]=0e0;
-     v[1274]=0e0;
-     v[1275]=0e0;
-     v[1208]=v[281];
-     v[1209]=0e0;
-     v[1210]=0e0;
-     v[1211]=0e0;
-     v[1212]=0e0;
-     v[1213]=0e0;
-     v[1214]=0e0;
-     v[1215]=0e0;
-     v[1216]=0e0;
-     v[1217]=v[284];
-     v[1218]=0e0;
-     v[1219]=0e0;
-     v[1220]=v[285];
-     v[1221]=0e0;
-     v[1222]=0e0;
-     v[1223]=0e0;
-     v[1224]=0e0;
-     v[1225]=0e0;
-     v[1226]=v[287];
-     v[1227]=0e0;
-     v[1228]=0e0;
-     v[1229]=v[289];
-     v[1230]=0e0;
-     v[1231]=0e0;
-     v[1232]=-v[285];
-     v[1233]=0e0;
-     v[1234]=0e0;
-     v[1235]=-v[287];
-     v[1236]=0e0;
-     v[1237]=0e0;
-     v[1238]=0e0;
-     v[1239]=0e0;
-     v[1240]=0e0;
-     v[1241]=0e0;
-     v[1174]=0e0;
-     v[1175]=0e0;
-     v[1176]=0e0;
-     v[1177]=v[282];
-     v[1178]=0e0;
-     v[1179]=0e0;
-     v[1180]=0e0;
-     v[1181]=0e0;
-     v[1182]=0e0;
-     v[1183]=v[284];
-     v[1184]=0e0;
-     v[1185]=0e0;
-     v[1186]=v[286];
-     v[1187]=0e0;
-     v[1188]=0e0;
-     v[1189]=v[287];
-     v[1190]=0e0;
-     v[1191]=0e0;
-     v[1192]=0e0;
-     v[1193]=0e0;
-     v[1194]=0e0;
-     v[1195]=-v[286];
-     v[1196]=0e0;
-     v[1197]=0e0;
-     v[1198]=v[290];
-     v[1199]=0e0;
-     v[1200]=0e0;
-     v[1201]=-v[287];
-     v[1202]=0e0;
-     v[1203]=0e0;
-     v[1204]=0e0;
-     v[1205]=0e0;
-     v[1206]=0e0;
-     v[1207]=0e0;
-     v[1140]=0e0;
-     v[1141]=0e0;
-     v[1142]=0e0;
-     v[1143]=0e0;
-     v[1144]=0e0;
-     v[1145]=0e0;
-     v[1146]=v[283];
-     v[1147]=0e0;
-     v[1148]=0e0;
-     v[1149]=v[284];
-     v[1150]=0e0;
-     v[1151]=0e0;
-     v[1152]=0e0;
-     v[1153]=0e0;
-     v[1154]=0e0;
-     v[1155]=v[285];
-     v[1156]=0e0;
-     v[1157]=0e0;
-     v[1158]=v[286];
-     v[1159]=0e0;
-     v[1160]=0e0;
-     v[1161]=-v[286];
-     v[1162]=0e0;
-     v[1163]=0e0;
-     v[1164]=-v[285];
-     v[1165]=0e0;
-     v[1166]=0e0;
-     v[1167]=v[291];
-     v[1168]=0e0;
-     v[1169]=0e0;
-     v[1170]=0e0;
-     v[1171]=0e0;
-     v[1172]=0e0;
-     v[1173]=0e0;
-     v[370]=v[202]*v[284];
-     v[977]=-(v[217]*v[285])+v[370];
-     v[363]=v[201]*v[284];
-     v[976]=-(v[216]*v[285])+v[363];
-     v[356]=v[200]*v[284];
-     v[975]=-(v[215]*v[285])+v[356];
-     v[330]=v[284]*v[54];
-     v[965]=v[330]-v[286]*v[66];
-     v[335]=v[333]+v[283]*v[51]+v[285]*v[60]+v[286]*v[63]+v[291]*v[72]+v[965];
-     v[332]=v[331]+v[282]*v[48]+v[286]*v[57]+v[287]*v[60]+v[290]*v[69]+v[965];
-     v[329]=v[330]+v[331]+v[333]+v[281]*v[45]+v[285]*v[57]+v[287]*v[63]+v[289]*v[66];
-     v[323]=v[284]*v[53];
-     v[966]=v[323]-v[286]*v[65];
-     v[328]=v[326]+v[283]*v[50]+v[285]*v[59]+v[286]*v[62]+v[291]*v[71]+v[966];
-     v[325]=v[324]+v[282]*v[47]+v[286]*v[56]+v[287]*v[59]+v[290]*v[68]+v[966];
-     v[322]=v[323]+v[324]+v[326]+v[281]*v[44]+v[285]*v[56]+v[287]*v[62]+v[289]*v[65];
-     v[316]=v[284]*v[52];
-     v[967]=v[316]-v[286]*v[64];
-     v[321]=v[319]+v[283]*v[49]+v[285]*v[58]+v[286]*v[61]+v[291]*v[70]+v[967];
-     v[318]=v[317]+v[282]*v[46]+v[286]*v[55]+v[287]*v[58]+v[290]*v[67]+v[967];
-     v[315]=v[316]+v[317]+v[319]+v[281]*v[43]+v[285]*v[55]+v[287]*v[61]+v[289]*v[64];
-     v[307]=v[12]*v[284];
-     v[968]=-(v[24]*v[286])+v[307];
-     v[312]=v[18]*v[285]+v[21]*v[286]+v[291]*v[30]+v[310]+v[283]*v[9]+v[968];
-     v[309]=v[15]*v[286]+v[18]*v[287]+v[27]*v[290]+v[308]+v[282]*v[6]+v[968];
-     v[306]=v[15]*v[285]+v[21]*v[287]+v[24]*v[289]+v[281]*v[3]+v[307]+v[308]+v[310];
-     v[300]=v[11]*v[284];
-     v[969]=-(v[23]*v[286])+v[300];
-     v[305]=v[17]*v[285]+v[20]*v[286]+v[29]*v[291]+v[303]+v[283]*v[8]+v[969];
-     v[302]=v[14]*v[286]+v[17]*v[287]+v[26]*v[290]+v[301]+v[282]*v[5]+v[969];
-     v[340]=-(v[305]*v[309])+v[302]*v[312];
-     v[299]=v[2]*v[281]+v[14]*v[285]+v[20]*v[287]+v[23]*v[289]+v[300]+v[301]+v[303];
-     v[342]=-(v[302]*v[306])+v[299]*v[309];
-     v[341]=v[305]*v[306]-v[299]*v[312];
-     v[293]=v[10]*v[284];
-     v[970]=-(v[22]*v[286])+v[293];
-     v[298]=v[16]*v[285]+v[19]*v[286]+v[28]*v[291]+v[296]+v[283]*v[7]+v[970];
-     v[295]=v[13]*v[286]+v[16]*v[287]+v[25]*v[290]+v[294]+v[282]*v[4]+v[970];
-     v[348]=-(v[298]*v[302])+v[295]*v[305];
-     v[344]=v[298]*v[309]-v[295]*v[312];
-     v[292]=v[1]*v[281]+v[13]*v[285]+v[19]*v[287]+v[22]*v[289]+v[293]+v[294]+v[296];
-     v[350]=-(v[295]*v[299])+v[292]*v[302];
-     v[349]=v[298]*v[299]-v[292]*v[305];
-     v[346]=v[295]*v[306]-v[292]*v[309];
-     v[345]=-(v[298]*v[306])+v[292]*v[312];
-     v[336]=v[292]*v[340]+v[295]*v[341]+v[298]*v[342];
-     v[981]=v[115]/(v[336]*v[336]);
-     v[972]=v[115]/v[336];
-     v[480]=v[971]/v[336];
-     v[521]=v[350]/v[336];
-     v[520]=v[349]/v[336];
-     v[1027]=v[520]+v[521];
-     v[1021]=v[287]*v[520]+v[285]*v[521];
-     v[519]=v[348]/v[336];
-     v[1030]=v[519]+v[521];
-     v[1024]=v[287]*v[519]+v[286]*v[521];
-     v[1018]=v[285]*v[519]+v[286]*v[520];
-     v[985]=v[519]+v[520];
-     v[1015]=v[521]+v[985];
-     v[518]=v[346]/v[336];
-     v[517]=v[345]/v[336];
-     v[1026]=v[517]+v[518];
-     v[1020]=v[287]*v[517]+v[285]*v[518];
-     v[516]=v[344]/v[336];
-     v[1029]=v[516]+v[518];
-     v[1023]=v[287]*v[516]+v[286]*v[518];
-     v[1017]=v[285]*v[516]+v[286]*v[517];
-     v[984]=v[516]+v[517];
-     v[1014]=v[518]+v[984];
-     v[515]=v[342]/v[336];
-     v[514]=v[341]/v[336];
-     v[1025]=v[514]+v[515];
-     v[1019]=v[287]*v[514]+v[285]*v[515];
-     v[513]=v[340]/v[336];
-     v[1028]=v[513]+v[515];
-     v[1022]=v[287]*v[513]+v[286]*v[515];
-     v[1016]=v[285]*v[513]+v[286]*v[514];
-     v[983]=v[513]+v[514];
-     v[1013]=v[515]+v[983];
-     v[264]=v[263]*(-1e0+2e0*v[263]);
-     v[265]=4e0*v[255]*v[257];
-     v[266]=4e0*v[257]*v[258];
-     v[267]=4e0*v[255]*v[258];
-     v[268]=4e0*v[255]*v[263];
-     v[269]=4e0*v[257]*v[263];
-     v[270]=4e0*v[258]*v[263];
-     v[1582]=0e0;
-     v[1583]=0e0;
-     v[1584]=v[260];
-     v[1585]=0e0;
-     v[1586]=0e0;
-     v[1587]=v[261];
-     v[1588]=0e0;
-     v[1589]=0e0;
-     v[1590]=v[262];
-     v[1591]=0e0;
-     v[1592]=0e0;
-     v[1593]=v[264];
-     v[1594]=0e0;
-     v[1595]=0e0;
-     v[1596]=v[265];
-     v[1597]=0e0;
-     v[1598]=0e0;
-     v[1599]=v[266];
-     v[1600]=0e0;
-     v[1601]=0e0;
-     v[1602]=v[267];
-     v[1603]=0e0;
-     v[1604]=0e0;
-     v[1605]=v[268];
-     v[1606]=0e0;
-     v[1607]=0e0;
-     v[1608]=v[269];
-     v[1609]=0e0;
-     v[1610]=0e0;
-     v[1611]=v[270];
-     v[1612]=0e0;
-     v[1613]=0e0;
-     v[1614]=0e0;
-     v[1615]=0e0;
-     v[1616]=0e0;
-     v[1617]=v[260];
-     v[1618]=0e0;
-     v[1619]=0e0;
-     v[1620]=v[261];
-     v[1621]=0e0;
-     v[1622]=0e0;
-     v[1623]=v[262];
-     v[1624]=0e0;
-     v[1625]=0e0;
-     v[1626]=v[264];
-     v[1627]=0e0;
-     v[1628]=0e0;
-     v[1629]=v[265];
-     v[1630]=0e0;
-     v[1631]=0e0;
-     v[1632]=v[266];
-     v[1633]=0e0;
-     v[1634]=0e0;
-     v[1635]=v[267];
-     v[1636]=0e0;
-     v[1637]=0e0;
-     v[1638]=v[268];
-     v[1639]=0e0;
-     v[1640]=0e0;
-     v[1641]=v[269];
-     v[1642]=0e0;
-     v[1643]=0e0;
-     v[1644]=v[270];
-     v[1645]=0e0;
-     v[1646]=0e0;
-     v[1647]=0e0;
-     v[1648]=0e0;
-     v[1649]=0e0;
-     v[1650]=v[260];
-     v[1651]=0e0;
-     v[1652]=0e0;
-     v[1653]=v[261];
-     v[1654]=0e0;
-     v[1655]=0e0;
-     v[1656]=v[262];
-     v[1657]=0e0;
-     v[1658]=0e0;
-     v[1659]=v[264];
-     v[1660]=0e0;
-     v[1661]=0e0;
-     v[1662]=v[265];
-     v[1663]=0e0;
-     v[1664]=0e0;
-     v[1665]=v[266];
-     v[1666]=0e0;
-     v[1667]=0e0;
-     v[1668]=v[267];
-     v[1669]=0e0;
-     v[1670]=0e0;
-     v[1671]=v[268];
-     v[1672]=0e0;
-     v[1673]=0e0;
-     v[1674]=v[269];
-     v[1675]=0e0;
-     v[1676]=0e0;
-     v[1677]=v[270];
-     v[1678]=0e0;
-     v[1679]=0e0;
-     v[1680]=0e0;
-     v[1681]=0e0;
-     v[1682]=0e0;
-     v[1683]=0e0;
-     v[314]=es->IntPoints[3+i256]*std::fabs(v[336]);
-     v[393]=(v[315]*v[340]+v[318]*v[341]+v[321]*v[342])/v[336];
-     v[396]=(v[322]*v[344]+v[325]*v[345]+v[328]*v[346])/v[336];
-     v[398]=(v[329]*v[348]+v[332]*v[349]+v[335]*v[350])/v[336];
-     v[974]=v[393]+v[396]+v[398];
-     v[973]=-(v[255]*v[73])-v[257]*v[74]-v[258]*v[75]-v[263]*v[76]+v[113]*v[974];
-     v[402]=(v[322]*v[340]+v[325]*v[341]+v[328]*v[342]+v[315]*v[344]+v[318]*v[345]+v[321]*v[346]
-      )*v[972];
-     v[403]=(v[329]*v[340]+v[332]*v[341]+v[335]*v[342]+v[315]*v[348]+v[318]*v[349]+v[321]*v[350]
-      )*v[972];
-     v[406]=(v[329]*v[344]+v[332]*v[345]+v[335]*v[346]+v[322]*v[348]+v[325]*v[349]+v[328]*v[350]
-      )*v[972];
-     v[408]=2e0*v[115]*v[393]+v[973];
-     v[409]=2e0*v[115]*v[396]+v[973];
-     v[410]=2e0*v[115]*v[398]+v[973];
-     v[417]=-(v[119]*(-1e0+v[974]));
-     v[426]=v[122]*(-1e0+v[417])-v[121]*v[417];
-     v[425]=v[116]*v[426];
-     v[427]=v[117]*v[426];
-     v[428]=v[118]*v[426];
-     v[430]=(v[341]*(v[194]*v[282]+v[203]*v[286]+v[206]*v[287]+v[215]*v[290]+v[356]+v[357]+v[360])
-      +v[345]*(v[195]*v[282]+v[204]*v[286]+v[207]*v[287]+v[216]*v[290]+v[363]+v[364]+v[367])+v[349]*
-      (v[196]*v[282]+v[205]*v[286]+v[208]*v[287]+v[217]*v[290]+v[370]+v[371]+v[374])+v[340]*
-      (v[188]*v[281]+v[203]*v[285]+v[209]*v[287]+v[212]*v[289]+v[357]+v[975])+v[342]*(v[197]*v[283]
-      +v[206]*v[285]+v[209]*v[286]+v[218]*v[291]+v[360]+v[975])+v[344]*(v[192]*v[281]+v[204]*v[285]
-      +v[210]*v[287]+v[213]*v[289]+v[364]+v[976])+v[346]*(v[198]*v[283]+v[207]*v[285]+v[210]*v[286]
-      +v[219]*v[291]+v[367]+v[976])+v[348]*(v[193]*v[281]+v[205]*v[285]+v[211]*v[287]+v[214]*v[289]
-      +v[371]+v[977])+v[350]*(v[199]*v[283]+v[208]*v[285]+v[211]*v[286]+v[220]*v[291]+v[374]+v[977]))
-      /v[336];
-     v[432]=(v[340]*v[386]+v[341]*v[387]+v[342]*v[388])*v[480]+v[993];
-     v[434]=(v[344]*v[386]+v[345]*v[387]+v[346]*v[388])*v[480]+v[994];
-     v[435]=(v[348]*v[386]+v[349]*v[387]+v[350]*v[388])*v[480]+v[995];
-     v[440]=(v[340]*v[432]+v[344]*v[434]+v[348]*v[435])/v[336];
-     v[441]=(v[341]*v[432]+v[345]*v[434]+v[349]*v[435])/v[336];
-     v[442]=(v[342]*v[432]+v[346]*v[434]+v[350]*v[435])/v[336];
-     v[443]=(v[340]*v[403]+v[344]*v[406]+v[348]*v[410])/v[336];
-     v[444]=(v[341]*v[403]+v[345]*v[406]+v[349]*v[410])/v[336];
-     v[445]=(v[342]*v[403]+v[346]*v[406]+v[350]*v[410])/v[336];
-     v[980]=v[444]+v[445];
-     v[446]=(v[340]*v[402]+v[348]*v[406]+v[344]*v[409])/v[336];
-     v[447]=(v[341]*v[402]+v[349]*v[406]+v[345]*v[409])/v[336];
-     v[448]=(v[342]*v[402]+v[350]*v[406]+v[346]*v[409])/v[336];
-     v[979]=v[447]+v[448];
-     v[449]=(v[344]*v[402]+v[348]*v[403]+v[340]*v[408])/v[336];
-     v[450]=(v[345]*v[402]+v[349]*v[403]+v[341]*v[408])/v[336];
-     v[451]=(v[346]*v[402]+v[350]*v[403]+v[342]*v[408])/v[336];
-     v[978]=v[450]+v[451];
-     v[1102]=v[260]*v[425]+v[281]*v[449];
-     v[1103]=v[260]*v[427]+v[281]*v[446];
-     v[1104]=v[260]*v[428]+v[281]*v[443];
-     v[1105]=v[261]*v[425]+v[282]*v[450];
-     v[1106]=v[261]*v[427]+v[282]*v[447];
-     v[1107]=v[261]*v[428]+v[282]*v[444];
-     v[1108]=v[262]*v[425]+v[283]*v[451];
-     v[1109]=v[262]*v[427]+v[283]*v[448];
-     v[1110]=v[262]*v[428]+v[283]*v[445];
-     v[1111]=v[264]*v[425]+v[284]*(v[449]+v[978]);
-     v[1112]=v[264]*v[427]+v[284]*(v[446]+v[979]);
-     v[1113]=v[264]*v[428]+v[284]*(v[443]+v[980]);
-     v[1114]=v[265]*v[425]+v[285]*v[449]+v[286]*v[450];
-     v[1115]=v[265]*v[427]+v[285]*v[446]+v[286]*v[447];
-     v[1116]=v[265]*v[428]+v[285]*v[443]+v[286]*v[444];
-     v[1117]=v[266]*v[425]+v[287]*v[450]+v[285]*v[451];
-     v[1118]=v[266]*v[427]+v[287]*v[447]+v[285]*v[448];
-     v[1119]=v[266]*v[428]+v[287]*v[444]+v[285]*v[445];
-     v[1120]=v[267]*v[425]+v[287]*v[449]+v[286]*v[451];
-     v[1121]=v[267]*v[427]+v[287]*v[446]+v[286]*v[448];
-     v[1122]=v[267]*v[428]+v[287]*v[443]+v[286]*v[445];
-     v[1123]=v[268]*v[425]+v[289]*v[449]-v[286]*v[978];
-     v[1124]=v[268]*v[427]+v[289]*v[446]-v[286]*v[979];
-     v[1125]=v[268]*v[428]+v[289]*v[443]-v[286]*v[980];
-     v[1126]=v[269]*v[425]+v[290]*v[450]-v[285]*(v[449]+v[451]);
-     v[1127]=v[269]*v[427]+v[290]*v[447]-v[285]*(v[446]+v[448]);
-     v[1128]=v[269]*v[428]+v[290]*v[444]-v[285]*(v[443]+v[445]);
-     v[1129]=v[270]*v[425]-v[287]*(v[449]+v[450])+v[291]*v[451];
-     v[1130]=v[270]*v[427]-v[287]*(v[446]+v[447])+v[291]*v[448];
-     v[1131]=v[270]*v[428]-v[287]*(v[443]+v[444])+v[291]*v[445];
-     v[1132]=v[255]*v[430]+v[440];
-     v[1133]=v[257]*v[430]+v[441];
-     v[1134]=v[258]*v[430]+v[442];
-     v[1135]=v[263]*v[430]-v[440]-v[441]-v[442];
-     for(i438=1;i438<=34;i438++){
-      v[458]=v[1139+i438];
-      v[459]=v[1173+i438];
-      v[460]=v[1207+i438];
-      v[461]=v[1241+i438];
-      v[462]=v[1275+i438];
-      v[463]=v[1309+i438];
-      v[464]=v[1343+i438];
-      v[465]=v[1377+i438];
-      v[466]=v[1411+i438];
-      v[467]=v[1445+i438];
-      v[468]=v[1479+i438];
-      v[469]=v[1513+i438];
-      v[470]=v[1547+i438];
-      v[992]=-(v[287]*v[470]);
-      v[991]=-(v[285]*v[470]);
-      v[988]=-(v[286]*v[470]);
-      v[986]=v[189]*v[470];
-      v[512]=v[284]*v[986];
-      v[511]=v[470]*v[521];
-      v[510]=v[470]*v[518];
-      v[509]=v[470]*v[515];
-      v[508]=v[470]*v[520];
-      v[507]=v[470]*v[517];
-      v[506]=v[470]*v[514];
-      v[505]=v[470]*v[519];
-      v[504]=v[470]*v[516];
-      v[503]=v[470]*v[513];
-      v[471]=(v[342]*v[458]+v[341]*v[459]+v[340]*v[460])/v[336];
-      v[472]=(v[346]*v[461]+v[345]*v[462]+v[344]*v[463])/v[336];
-      v[497]=(v[346]*v[458]+v[345]*v[459]+v[344]*v[460]+v[342]*v[461]+v[341]*v[462]+v[340]*v[463]
-       )*v[981];
-      v[474]=(v[350]*v[464]+v[349]*v[465]+v[348]*v[466])/v[336];
-      v[492]=(v[350]*v[461]+v[349]*v[462]+v[348]*v[463]+v[346]*v[464]+v[345]*v[465]+v[344]*v[466]
-       )*v[981];
-      v[493]=(v[350]*v[458]+v[349]*v[459]+v[348]*v[460]+v[342]*v[464]+v[341]*v[465]+v[340]*v[466]
-       )*v[981];
-      v[477]=(v[350]*v[467]+v[349]*v[468]+v[348]*v[469])/v[336];
-      v[478]=(v[346]*v[467]+v[345]*v[468]+v[344]*v[469])/v[336];
-      v[479]=(v[342]*v[467]+v[341]*v[468]+v[340]*v[469])/v[336];
-      v[481]=(v[348]*v[477]+v[344]*v[478]+v[340]*v[479])*v[480];
-      v[482]=(v[349]*v[477]+v[345]*v[478]+v[341]*v[479])*v[480];
-      v[483]=(v[350]*v[477]+v[346]*v[478]+v[342]*v[479])*v[480];
-      v[485]=v[471]+v[472]+v[474];
-      v[982]=v[1012]*v[119]*(v[118]*v[1581+i438]+v[117]*v[1615+i438]+v[116]*v[1649+i438])
-       +v[113]*v[485];
-      v[486]=2e0*v[115]*v[474]+v[982];
-      v[489]=2e0*v[115]*v[472]+v[982];
-      v[490]=2e0*v[115]*v[471]+v[982];
-      v[491]=v[344]*v[492]+v[340]*v[493]+v[486]*v[519];
-      v[494]=v[345]*v[492]+v[341]*v[493]+v[486]*v[520];
-      v[495]=v[346]*v[492]+v[342]*v[493]+v[486]*v[521];
-      v[990]=v[494]+v[495];
-      v[496]=v[348]*v[492]+v[340]*v[497]+v[489]*v[516];
-      v[498]=v[349]*v[492]+v[341]*v[497]+v[489]*v[517];
-      v[499]=v[350]*v[492]+v[342]*v[497]+v[489]*v[518];
-      v[989]=v[498]+v[499];
-      v[500]=v[348]*v[493]+v[344]*v[497]+v[490]*v[513];
-      v[501]=v[349]*v[493]+v[345]*v[497]+v[490]*v[514];
-      v[502]=v[350]*v[493]+v[346]*v[497]+v[490]*v[515];
-      v[987]=v[501]+v[502];
-      v[1684]=v[281]*(v[500]+v[189]*v[503]);
-      v[1685]=v[281]*(v[496]+v[189]*v[504]);
-      v[1686]=v[281]*(v[491]+v[189]*v[505]);
-      v[1687]=v[282]*(v[501]+v[189]*v[506]);
-      v[1688]=v[282]*(v[498]+v[189]*v[507]);
-      v[1689]=v[282]*(v[494]+v[189]*v[508]);
-      v[1690]=v[283]*(v[502]+v[189]*v[509]);
-      v[1691]=v[283]*(v[499]+v[189]*v[510]);
-      v[1692]=v[283]*(v[495]+v[189]*v[511]);
-      v[1693]=v[1013]*v[512]+v[284]*(v[500]+v[987]);
-      v[1694]=v[1014]*v[512]+v[284]*(v[496]+v[989]);
-      v[1695]=v[1015]*v[512]+v[284]*(v[491]+v[990]);
-      v[1696]=v[285]*v[500]+v[286]*v[501]+v[1016]*v[986];
-      v[1697]=v[285]*v[496]+v[286]*v[498]+v[1017]*v[986];
-      v[1698]=v[285]*v[491]+v[286]*v[494]+v[1018]*v[986];
-      v[1699]=v[287]*v[501]+v[285]*v[502]+v[1019]*v[986];
-      v[1700]=v[287]*v[498]+v[285]*v[499]+v[1020]*v[986];
-      v[1701]=v[287]*v[494]+v[285]*v[495]+v[1021]*v[986];
-      v[1702]=v[287]*v[500]+v[286]*v[502]+v[1022]*v[986];
-      v[1703]=v[287]*v[496]+v[286]*v[499]+v[1023]*v[986];
-      v[1704]=v[287]*v[491]+v[286]*v[495]+v[1024]*v[986];
-      v[1705]=v[289]*v[500]-v[286]*v[987]+v[189]*(v[289]*v[503]+v[1025]*v[988]);
-      v[1706]=v[289]*v[496]+v[189]*(v[289]*v[504]+v[1026]*v[988])-v[286]*v[989];
-      v[1707]=v[289]*v[491]+v[189]*(v[289]*v[505]+v[1027]*v[988])-v[286]*v[990];
-      v[1708]=v[290]*v[501]-v[285]*(v[500]+v[502])+v[189]*(v[290]*v[506]+v[1028]*v[991]);
-      v[1709]=v[290]*v[498]-v[285]*(v[496]+v[499])+v[189]*(v[290]*v[507]+v[1029]*v[991]);
-      v[1710]=v[290]*v[494]-v[285]*(v[491]+v[495])+v[189]*(v[290]*v[508]+v[1030]*v[991]);
-      v[1711]=-(v[287]*(v[500]+v[501]))+v[291]*v[502]+v[189]*(v[291]*v[509]+v[983]*v[992]);
-      v[1712]=-(v[287]*(v[496]+v[498]))+v[291]*v[499]+v[189]*(v[291]*v[510]+v[984]*v[992]);
-      v[1713]=-(v[287]*(v[491]+v[494]))+v[291]*v[495]+v[189]*(v[291]*v[511]+v[985]*v[992]);
-      v[1714]=v[481]-v[255]*v[485];
-      v[1715]=v[482]-v[257]*v[485];
-      v[1716]=v[483]-v[258]*v[485];
-      v[1717]=-v[481]-v[482]-v[483]-v[263]*v[485];
-      p[i438-1]+=v[1101+i438]*v[314];
-      for(i455=1;i455<=34;i455++){
-       s[i438-1][i455-1]+=v[1683+i455]*v[314];
-      };/* end for */
-     };/* end for */
-    };/* end for */
-    };
-
-    /******************* S U B R O U T I N E *********************/
-    void SPP(double v[1817],ElementSpec *es,ElementData *ed,NodeSpec **ns
-         ,NodeData **nd,double *rdata,int *idata,double **gpost,double **npost)
-    {
-    int i777,i779;
-    v[524]=nd[0]->X[0];
-    v[525]=nd[0]->X[1];
-    v[526]=nd[0]->X[2];
-    v[527]=nd[1]->X[0];
-    v[528]=nd[1]->X[1];
-    v[529]=nd[1]->X[2];
-    v[530]=nd[2]->X[0];
-    v[531]=nd[2]->X[1];
-    v[532]=nd[2]->X[2];
-    v[533]=nd[3]->X[0];
-    v[534]=nd[3]->X[1];
-    v[535]=nd[3]->X[2];
-    v[536]=nd[4]->X[0];
-    v[537]=nd[4]->X[1];
-    v[538]=nd[4]->X[2];
-    v[539]=nd[5]->X[0];
-    v[540]=nd[5]->X[1];
-    v[541]=nd[5]->X[2];
-    v[542]=nd[6]->X[0];
-    v[543]=nd[6]->X[1];
-    v[544]=nd[6]->X[2];
-    v[545]=nd[7]->X[0];
-    v[546]=nd[7]->X[1];
-    v[547]=nd[7]->X[2];
-    v[548]=nd[8]->X[0];
-    v[549]=nd[8]->X[1];
-    v[550]=nd[8]->X[2];
-    v[551]=nd[9]->X[0];
-    v[552]=nd[9]->X[1];
-    v[553]=nd[9]->X[2];
-    v[566]=nd[0]->at[0];
-    v[567]=nd[0]->at[1];
-    v[568]=nd[0]->at[2];
-    v[569]=nd[1]->at[0];
-    v[570]=nd[1]->at[1];
-    v[571]=nd[1]->at[2];
-    v[572]=nd[2]->at[0];
-    v[573]=nd[2]->at[1];
-    v[574]=nd[2]->at[2];
-    v[575]=nd[3]->at[0];
-    v[576]=nd[3]->at[1];
-    v[577]=nd[3]->at[2];
-    v[578]=nd[4]->at[0];
-    v[579]=nd[4]->at[1];
-    v[580]=nd[4]->at[2];
-    v[581]=nd[5]->at[0];
-    v[582]=nd[5]->at[1];
-    v[583]=nd[5]->at[2];
-    v[584]=nd[6]->at[0];
-    v[585]=nd[6]->at[1];
-    v[586]=nd[6]->at[2];
-    v[587]=nd[7]->at[0];
-    v[588]=nd[7]->at[1];
-    v[589]=nd[7]->at[2];
-    v[590]=nd[8]->at[0];
-    v[591]=nd[8]->at[1];
-    v[592]=nd[8]->at[2];
-    v[593]=nd[9]->at[0];
-    v[594]=nd[9]->at[1];
-    v[595]=nd[9]->at[2];
-    v[596]=nd[10]->at[0];
-    v[597]=nd[11]->at[0];
-    v[598]=nd[12]->at[0];
-    v[599]=nd[13]->at[0];
-    v[911]=v[598]-v[599];
-    v[910]=v[597]-v[599];
-    v[909]=v[596]-v[599];
-    v[635]=es->Data[1];
-    v[1031]=es->Data[0]/(1e0+v[635]);
-    v[636]=(v[1031]*v[635])/(1e0-2e0*v[635]);
-    v[638]=v[1031]/2e0;
-    v[642]=es->Data[5];
-    v[643]=es->Data[6];
-    for(i777=1;i777<=es->id.NoIntPoints;i777++){
-     i779=4*(-1+i777);
-     v[778]=es->IntPoints[i779];
-     v[809]=4e0*v[778];
-     v[804]=-1e0+v[809];
-     v[780]=es->IntPoints[1+i779];
-     v[808]=4e0*v[780];
-     v[856]=-(v[592]*v[808]);
-     v[849]=-(v[591]*v[808]);
-     v[842]=-(v[590]*v[808]);
-     v[833]=-(v[550]*v[808]);
-     v[826]=-(v[549]*v[808]);
-     v[819]=-(v[548]*v[808]);
-     v[805]=-1e0+v[808];
-     v[781]=es->IntPoints[2+i779];
-     v[810]=4e0*v[781];
-     v[854]=-(v[595]*v[810]);
-     v[847]=-(v[594]*v[810]);
-     v[840]=-(v[593]*v[810]);
-     v[831]=-(v[553]*v[810]);
-     v[824]=-(v[552]*v[810]);
-     v[817]=-(v[551]*v[810]);
-     v[806]=-1e0+v[810];
-     v[783]=v[778]*(-1e0+2e0*v[778]);
-     v[784]=v[780]*(-1e0+2e0*v[780]);
-     v[785]=v[781]*(-1e0+2e0*v[781]);
-     v[786]=1e0-v[778]-v[780]-v[781];
-     v[811]=-4e0*v[786];
-     v[814]=-v[810]-v[811];
-     v[813]=-v[808]-v[811];
-     v[812]=-v[809]-v[811];
-     v[807]=1e0+v[811];
-     v[853]=v[577]*v[807];
-     v[1032]=-(v[589]*v[809])+v[853];
-     v[858]=v[1032]+v[574]*v[806]+v[583]*v[808]+v[586]*v[809]+v[595]*v[814]+v[856];
-     v[855]=v[1032]+v[571]*v[805]+v[580]*v[809]+v[583]*v[810]+v[592]*v[813]+v[854];
-     v[852]=v[568]*v[804]+v[580]*v[808]+v[586]*v[810]+v[589]*v[812]+v[853]+v[854]+v[856];
-     v[846]=v[576]*v[807];
-     v[1033]=-(v[588]*v[809])+v[846];
-     v[851]=v[1033]+v[573]*v[806]+v[582]*v[808]+v[585]*v[809]+v[594]*v[814]+v[849];
-     v[848]=v[1033]+v[570]*v[805]+v[579]*v[809]+v[582]*v[810]+v[591]*v[813]+v[847];
-     v[845]=v[567]*v[804]+v[579]*v[808]+v[585]*v[810]+v[588]*v[812]+v[846]+v[847]+v[849];
-     v[839]=v[575]*v[807];
-     v[1034]=-(v[587]*v[809])+v[839];
-     v[844]=v[1034]+v[572]*v[806]+v[581]*v[808]+v[584]*v[809]+v[593]*v[814]+v[842];
-     v[841]=v[1034]+v[569]*v[805]+v[578]*v[809]+v[581]*v[810]+v[590]*v[813]+v[840];
-     v[838]=v[566]*v[804]+v[578]*v[808]+v[584]*v[810]+v[587]*v[812]+v[839]+v[840]+v[842];
-     v[830]=v[535]*v[807];
-     v[1035]=-(v[547]*v[809])+v[830];
-     v[835]=v[1035]+v[532]*v[806]+v[541]*v[808]+v[544]*v[809]+v[553]*v[814]+v[833];
-     v[832]=v[1035]+v[529]*v[805]+v[538]*v[809]+v[541]*v[810]+v[550]*v[813]+v[831];
-     v[829]=v[526]*v[804]+v[538]*v[808]+v[544]*v[810]+v[547]*v[812]+v[830]+v[831]+v[833];
-     v[823]=v[534]*v[807];
-     v[1036]=-(v[546]*v[809])+v[823];
-     v[828]=v[1036]+v[531]*v[806]+v[540]*v[808]+v[543]*v[809]+v[552]*v[814]+v[826];
-     v[825]=v[1036]+v[528]*v[805]+v[537]*v[809]+v[540]*v[810]+v[549]*v[813]+v[824];
-     v[863]=-(v[828]*v[832])+v[825]*v[835];
-     v[822]=v[525]*v[804]+v[537]*v[808]+v[543]*v[810]+v[546]*v[812]+v[823]+v[824]+v[826];
-     v[865]=-(v[825]*v[829])+v[822]*v[832];
-     v[864]=v[828]*v[829]-v[822]*v[835];
-     v[816]=v[533]*v[807];
-     v[1037]=-(v[545]*v[809])+v[816];
-     v[821]=v[1037]+v[530]*v[806]+v[539]*v[808]+v[542]*v[809]+v[551]*v[814]+v[819];
-     v[818]=v[1037]+v[527]*v[805]+v[536]*v[809]+v[539]*v[810]+v[548]*v[813]+v[817];
-     v[871]=-(v[821]*v[825])+v[818]*v[828];
-     v[867]=v[821]*v[832]-v[818]*v[835];
-     v[815]=v[524]*v[804]+v[536]*v[808]+v[542]*v[810]+v[545]*v[812]+v[816]+v[817]+v[819];
-     v[873]=-(v[818]*v[822])+v[815]*v[825];
-     v[872]=v[821]*v[822]-v[815]*v[828];
-     v[869]=v[818]*v[829]-v[815]*v[832];
-     v[868]=-(v[821]*v[829])+v[815]*v[835];
-     v[859]=v[815]*v[863]+v[818]*v[864]+v[821]*v[865];
-     v[1048]=v[873]/v[859];
-     v[1047]=v[872]/v[859];
-     v[1046]=v[871]/v[859];
-     v[1045]=v[869]/v[859];
-     v[1044]=v[868]/v[859];
-     v[1043]=v[867]/v[859];
-     v[1042]=v[865]/v[859];
-     v[1041]=v[864]/v[859];
-     v[1040]=v[863]/v[859];
-     v[787]=v[786]*(-1e0+2e0*v[786]);
-     v[788]=4e0*v[778]*v[780];
-     v[789]=4e0*v[780]*v[781];
-     v[790]=4e0*v[778]*v[781];
-     v[791]=4e0*v[778]*v[786];
-     v[792]=4e0*v[780]*v[786];
-     v[793]=4e0*v[781]*v[786];
-     v[803]=v[596]*v[778]+v[597]*v[780]+v[598]*v[781]+v[599]*v[786];
-     v[916]=(v[838]*v[863]+v[841]*v[864]+v[844]*v[865])/v[859];
-     v[919]=(v[845]*v[867]+v[848]*v[868]+v[851]*v[869])/v[859];
-     v[921]=(v[852]*v[871]+v[855]*v[872]+v[858]*v[873])/v[859];
-     v[1038]=v[916]+v[919]+v[921];
-     v[1039]=v[1038]*v[636]-v[803];
-     v[1049]=-(v[643]/(1e0+(-1e0+v[1038])*v[642]));
-     gpost[i777-1][0]=v[803];
-     gpost[i777-1][1]=v[566]*v[783]+v[569]*v[784]+v[572]*v[785]+v[575]*v[787]+v[578]*v[788]
-      +v[581]*v[789]+v[584]*v[790]+v[587]*v[791]+v[590]*v[792]+v[593]*v[793];
-     gpost[i777-1][2]=v[567]*v[783]+v[570]*v[784]+v[573]*v[785]+v[576]*v[787]+v[579]*v[788]
-      +v[582]*v[789]+v[585]*v[790]+v[588]*v[791]+v[591]*v[792]+v[594]*v[793];
-     gpost[i777-1][3]=v[568]*v[783]+v[571]*v[784]+v[574]*v[785]+v[577]*v[787]+v[580]*v[788]
-      +v[583]*v[789]+v[586]*v[790]+v[589]*v[791]+v[592]*v[792]+v[595]*v[793];
-     gpost[i777-1][4]=v[1039]+v[1031]*v[916];
-     gpost[i777-1][5]=v[1039]+2e0*v[638]*v[919];
-     gpost[i777-1][6]=v[1039]+v[1031]*v[921];
-     gpost[i777-1][7]=v[638]*(v[1043]*v[838]+v[1044]*v[841]+v[1045]*v[844]+v[1040]*v[845]
-      +v[1041]*v[848]+v[1042]*v[851]);
-     gpost[i777-1][8]=v[638]*(v[1046]*v[845]+v[1047]*v[848]+v[1048]*v[851]+v[1043]*v[852]
-      +v[1044]*v[855]+v[1045]*v[858]);
-     gpost[i777-1][9]=v[638]*(v[1046]*v[838]+v[1047]*v[841]+v[1048]*v[844]+v[1040]*v[852]
-      +v[1041]*v[855]+v[1042]*v[858]);
-     gpost[i777-1][10]=v[1049]*(v[1040]*v[909]+v[1041]*v[910]+v[1042]*v[911]);
-     gpost[i777-1][11]=v[1049]*(v[1043]*v[909]+v[1044]*v[910]+v[1045]*v[911]);
-     gpost[i777-1][12]=v[1049]*(v[1046]*v[909]+v[1047]*v[910]+v[1048]*v[911]);
-    };/* end for */
-};
 }
 #endif

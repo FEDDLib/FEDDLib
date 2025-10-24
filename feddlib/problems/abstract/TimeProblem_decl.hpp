@@ -191,7 +191,7 @@ public:
         
     bool hasSourceTerm() const;
     
-    CommConstPtr_Type getComm() const{return  comm_;};
+    CommConstPtr_Type getComm() const{return  comm_;}
 
     LinSolverBuilderPtr_Type getLinearSolverBuilder() const;
 
@@ -199,7 +199,7 @@ public:
 
     void computeValuesOfInterestAndExport();
     
-    void updateTime( double time ){ time_ = time;};
+    void updateTime( double time ){ time_ = time;}
 
     void addToRhs(BlockMultiVectorPtr_Type x);
     

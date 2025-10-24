@@ -2,11 +2,19 @@
 #define NAVIERSTOKES_def_hpp
 #include "NavierStokes_decl.hpp"
 
+#ifndef NAVIER_STOKES_START
+#define NAVIER_STOKES_START(A,S) Teuchos::RCP<Teuchos::TimeMonitor> A = Teuchos::rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer(std::string("Assemble Navier-Stokes:") + std::string(S))));
+#endif
+
+#ifndef NAVIER_STOKES_STOP
+#define NAVIER_STOKES_STOP(A) A.reset();
+#endif
+
 /*!
  Definition of Navier-Stokes
 
  @brief Navier-Stokes
- @author Christian Hochmuth
+ @authors Christian Hochmuth, Lea Saßmannshausen
  @version 1.0
  @copyright CH
  */
@@ -30,9 +38,27 @@ void sDummyFunc(double* x, double* res, double t, double* parameter){
     return;
 }
 
+void zeroDirichletBC(double* x, double* res, double t, const double* parameters){
+
+    res[0] = 0.;
+
+    return;
+}
+
 double OneFunction(double* x, int* parameter)
 {
     return 1.0;
+}
+
+void dummyFuncRhs(double* x, double* res, double* parameters){
+
+    // parameters[1] contains the surface flag, parameter[0] contains the inlet flag
+    if(parameters[1]==parameters[0])
+        res[0]=1;
+    else
+        res[0] = 0.;
+
+    return;
 }
 
 namespace FEDD {
@@ -100,6 +126,26 @@ u_rep_()
         }
     }
 
+    if(!this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD")
+        || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")
+        || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
+        || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("LSC-Pressure-Laplace") )
+    { 
+
+        int flagOutlet = this->parameterList_->sublist("General").get("Flag Outlet Fluid", 3);
+        int flagInterface = this->parameterList_->sublist("General").get("Flag Interface", 6);
+
+        this->bcFactoryPCD_.reset(new BCBuilder<SC,LO,GO,NO>( ));
+        this->bcFactoryPCD_->addBC(zeroDirichletBC, flagOutlet, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
+        // this->bcFactoryPCD_->addBC(zeroDirichletBC, flagInterface, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
+        // this->bcFactoryPCD_->addBC(zeroDirichletBC, 9, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
+        // this->bcFactoryPCD_->addBC(zeroDirichletBC, 10, 0, Teuchos::rcp_const_cast<Domain_Type>( domainPressure ), "Dirichlet", 1);
+
+    } 
+
+    if(this->parameterList_->sublist("General").get("Augmented Lagrange",false))  
+        augmentedLagrange_ = true;
+
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -120,6 +166,12 @@ void NavierStokes<SC,LO,GO,NO>::assemble( std::string type ) const{
         if (this->verbose_)
             std::cout << "done -- " << std::endl;
     }
+    else if(type=="UpdateTime"){
+        this->newtonStep_ = 0;
+        // timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
+    }
+    else if(type =="UpdateConvectionDiffusionOperator")
+        this->updateConvectionDiffusionOperator();
     else
         reAssemble( type );
 
@@ -157,19 +209,137 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
     this->system_->addBlock( A_, 0, 0 );
     assembleDivAndStab();
     
+
 #ifdef FEDD_HAVE_TEKO
-    if ( !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Teko") ) {
-        if (!this->parameterList_->sublist("General").get("Assemble Velocity Mass",false)) {
+    if ( !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Teko") 
+    || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD")
+    || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")) {
+
+        // ###############################################
+        // LSC Preconditioner
+        // Constructing velocity mass matrix
+        // If the Velocity Mass Matrix is the identity matrix, 
+        // it results in the BFBt preconditioner
+        if (!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","None").compare("LSC")
+         || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","None").compare("LSC-Pressure-Laplace")
+         || !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","None").compare("SIMPLE")
+         || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC")) {
+                        
             MatrixPtr_Type Mvelocity(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
-            //
-            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true );
-            //
+            // Constructing velocity mass matrix
+            if(this->parameterList_->sublist("Parameter").get("BFBT",false)){
+                if(this->verbose_)
+                    std::cout << "\n Setting M_u to be the identity Matrix to use BFBT preconditioner " << std::endl;
+
+                this->feFactory_->assemblyIdentity( Mvelocity );
+            }
+            else{ 
+                this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true );
+            }
+            // Adding the velocity mass matrix Mu to the preconditioner
             this->getPreconditionerConst()->setVelocityMassMatrix( Mvelocity );
-            if (this->verbose_)
-                std::cout << "\nVelocity mass matrix for LSC block preconditioner is assembled." << std::endl;
-        } else {
-            if (this->verbose_)
-                std::cout << "\nVelocity mass matrix for LSC block preconditioner not assembled." << std::endl;
+
+           if (this->verbose_)
+                std::cout << "\n Velocity mass matrix for LSC block preconditioner is assembled and used for the preconditioner." << std::endl;
+
+            // For LSC-Pressure-Laplace approach we add also the Laplaian on the pressure space to the preconditioner
+            if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("LSC-Pressure-Laplace")
+                || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("LSC"))
+            {
+                MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+                this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );
+                
+                BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
+                bcBlockMatrix->addBlock(Lp,0,0);
+                bcFactoryPCD_->setSystemScaled(bcBlockMatrix); // Setting boundary information where the Diagonal entry is kept 
+
+                this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp);
+            }
+        } 
+        // ###############################################
+        // PCD Preconditioner
+        // For the PCD preconditioner we additionally need 
+        // assemble the pressure mass matrix, the pressure
+        // Laplacian and the pressure convection diffusion
+        // opertor.
+        else if(!this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
+        || !this->parameterList_->sublist("General").get("Preconditioner Method","Diagonal").compare("PCD") ){
+            
+            // ###############################################
+            // Velocity mass matrix: Currently this is set to not have an error in preconditioner. PLEASE FIX
+            MatrixPtr_Type Mvelocity(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
+            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(0), "Vector", Mvelocity, true );
+            this->getPreconditionerConst()->setVelocityMassMatrix( Mvelocity );
+            // ###############################################
+
+
+            // Pressure mass matrix
+            MatrixPtr_Type Mpressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+            this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true ); 
+            Mp_= Mpressure;
+            this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
+            // --------------------------------------------------------------------------------------------
+
+            // --------------------------------------------------------------------------------------------
+            // Pressure Laplace matrix
+            SC density = this->parameterList_->sublist("Parameter").get("Density",1.); // Ap need to be scaled with viscosity
+
+            MatrixPtr_Type Lp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+            this->feFactory_->assemblyLaplace( this->dim_, this->domain_FEType_vec_.at(1), 2, Lp, true );
+            // Lp->resumeFill();
+            // Lp->scale(density);
+            // Lp->fillComplete();
+            Ap_.reset(new Matrix_Type(Lp)); // Setting Ap_ as Lp without any BC
+            
+            // Adding boundary information to pressure Laplace operator
+            BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
+            bcBlockMatrix->addBlock(Lp,0,0);
+
+            bcFactoryPCD_->setSystemScaled(bcBlockMatrix); // Setting boundary information where the Diagonal entry is kept 
+            this->getPreconditionerConst()->setPressureLaplaceMatrix( Lp);   // Adding pressure laplacian to preconditioner
+            // --------------------------------------------------------------------------------------------
+
+            // --------------------------------------------------------------------------------------------
+            // Pressure convection diffusion operator 
+            MatrixPtr_Type Kp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+            // --------------------------------------------------------------------------------------------
+            // Advection component
+            MatrixPtr_Type AdvPressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+            this->feFactory_->assemblyAdvectionVecFieldScalar( this->dim_, this->domain_FEType_vec_.at(1), this->domain_FEType_vec_.at(0),AdvPressure, u_rep_, true ); 
+           
+            // Diffusion component: \nu * \Delta
+            MatrixPtr_Type Ap2(new Matrix_Type( Ap_) );
+
+            SC kinVisco = this->parameterList_->sublist("Parameter").get("Viscosity",1.); // Ap need to be scaled with viscosity
+
+            Ap2->resumeFill();
+            Ap2->scale(kinVisco);
+            // Ap2->scale(density);
+            Ap2->fillComplete(); 
+            
+            
+            MatrixPtr_Type K_robin(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
+            int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 2);
+
+            vec_dbl_Type funcParameter(1,flagInlet);
+            funcParameter.push_back(0.0); // Dummy for flag
+            this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,K_robin, funcParameter, dummyFuncRhs,this->parameterList_);
+            K_robin->addMatrix(-1.,Kp,1.); // adding robin boundary condition to to Kp
+            
+            // Adding laplace and convetion-diffusion operator to Kp
+            Ap2->addMatrix(1.,Kp,1.); // adding advection to diffusion
+            AdvPressure->addMatrix(1.,Kp,1.); // adding advection to diffusion
+            
+            // Kp->scale(density);
+            Kp->fillComplete();
+
+            bcBlockMatrix->addBlock(Kp,0,0);
+            bcFactoryPCD_->setSystemScaled(bcBlockMatrix);
+
+            // Adding Kp to the preconditioner
+            this->getPreconditionerConst()->setPCDOperator( Kp );  
+            // --------------------------------------------------------------------------------------------
+
         }
     }
 #endif
@@ -179,7 +349,14 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         
         this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mpressure, true );
         SC kinVisco = this->parameterList_->sublist("Parameter").get("Viscosity",1.);
-        Mpressure->scale(-1./kinVisco);
+
+        if(augmentedLagrange_){
+            double gamma = this->parameterList_->sublist("General").get("Gamma",1.0);
+            Mpressure->scale(-1./(kinVisco+gamma));
+        }
+        else{
+            Mpressure->scale(-1./kinVisco);
+        }
         this->getPreconditionerConst()->setPressureMassMatrix( Mpressure );
     }
 
@@ -196,14 +373,88 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
     
 };
     
+
+template<class SC,class LO,class GO,class NO>
+void NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() const{
+
+    if ( !this->parameterList_->sublist("Teko Parameters").sublist("Preconditioner Types").sublist("Teko").get("Inverse Type","SIMPLE").compare("PCD") 
+                || !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("PCD")) 
+    {
+        std::cout << "NavierStokes<SC,LO,GO,NO>::updateConvectionDiffusionOperator() set to TRUE" << std::endl;
+        NAVIER_STOKES_START(ReassemblePCD," Reassembling Matrix for PCD ");
+      
+        MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
+        u_rep_->importFromVector(u, true);
+
+        // PCD Operator  
+        MatrixPtr_Type Fp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+        // --------------------------------------------------------------------------------------------
+        // Advection component
+        MatrixPtr_Type AdvPressure(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+        this->feFactory_->assemblyAdvectionVecFieldScalar( this->dim_, this->domain_FEType_vec_.at(1), this->domain_FEType_vec_.at(0),AdvPressure, u_rep_, true ); 
+        
+        // Diffusion component: \nu * \Delta
+        MatrixPtr_Type Ap2(new Matrix_Type( Ap_ ) ); // We use A_p which we already stored
+        SC kinVisco = this->parameterList_->sublist("Parameter").get("Viscosity",1.);
+        SC density = this->parameterList_->sublist("Parameter").get("Density",1.);
+
+        Ap2->resumeFill();
+        Ap2->scale(kinVisco);
+        Ap2->fillComplete();
+
+        // ---------------------
+        // Robin boundary
+        MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow()*2 ) );          
+        int flagInlet =this->parameterList_->sublist("General").get("Flag Inlet Fluid", 2);
+        vec_dbl_Type funcParameter(1,flagInlet);
+        funcParameter.push_back(0.0); // Dummy for flag
+
+        this->feFactory_->assemblySurfaceRobinBC(this->dim_, this->getDomain(1)->getFEType(),this->getDomain(0)->getFEType(),u_rep_,Kext, funcParameter, dummyFuncRhs,this->parameterList_);
+        Kext->addMatrix(-1.,Fp,1.); // adding advection to diffusion
+        
+        // Adding laplace an convection together
+        Ap2->addMatrix(1.,Fp,1.); // adding advection to diffusion
+        AdvPressure->addMatrix(1.,Fp,1.); // adding advection to diffusion
+
+        // Finally if we deal with a transient problem we additionally add the Mass term 1/delta t M_p
+        ///TODO: Extract parameters from timestepping tool.
+        if(this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.)> -1 ){ // In case we have a timeproblem
+            MatrixPtr_Type Mp2(new Matrix_Type( Mp_ ) );
+            double dt = this->parameterList_->sublist("Timestepping Parameter").get("dt",-1.);
+            Mp2->resumeFill();
+            if(this->parameterList_->sublist("Timestepping Parameter").get("BDF",1) == 1) // BDF 1
+                Mp2->scale(1./dt);
+            else if(this->parameterList_->sublist("Timestepping Parameter").get("BDF",1) == 2) // BDF 1
+                Mp2->scale(3./(2.*dt));
+            else
+                TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "PCD operator for transient problems only defined for BDF-1 and BDF-2.");
+
+            // Mp2->scale(density);
+            Mp2->fillComplete();
+            Mp2->addMatrix(1.,Fp,1.);
+        }
+        // Fp->scale(1./density);
+        Fp->fillComplete();
+
+        BlockMatrixPtr_Type bcBlockMatrix(new BlockMatrix_Type (1));
+
+        bcBlockMatrix->addBlock(Fp,0,0);   
+        bcFactoryPCD_->setSystemScaled(bcBlockMatrix); // We set the boundary conditions into Fp. Both Ap and Fp have Dirichlet zero bc on the outlet
+                                                       // Addionally, a robin bc is applied to the inlet bc for Fp. 
+                                                       // Note, if no surfaces are available, the matrix Kext, containg the robin bc is zero,
+                                                       // so no robin bc is applied.
+
+        this->getPreconditionerConst()->setPCDOperator( Fp );      
+
+        NAVIER_STOKES_STOP(ReassemblePCD);       
+    }
+}
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
     
     double viscosity = this->parameterList_->sublist("Parameter").get("Viscosity",1.);
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
     
-    // Egal welcher Wert, da OneFunction nicht von parameter abhaengt
-
     MatrixPtr_Type BT(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(1)->getDimension() * this->getDomain(1)->getApproxEntriesPerRow() ) );
     
     MapConstPtr_Type pressureMap;
@@ -230,21 +481,47 @@ void NavierStokes<SC,LO,GO,NO>::assembleDivAndStab() const{
     this->system_->addBlock( BT, 0, 1 );
     this->system_->addBlock( B, 1, 0 );
     
-    if ( !this->getFEType(0).compare("P1") ) {
+    if ( !this->getFEType(0).compare("P1") ||  !this->getFEType(0).compare("Q1") ) {
         C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-        this->feFactory_->assemblyBDStabilization( this->dim_, "P1", C, true);
+        this->feFactory_->assemblyBDStabilization( this->dim_, this->getFEType(0), C, true);
         C->resumeFill();
-        C->scale( -1. / ( viscosity * density ) );
+        C->scale( -1. / ( viscosity * density ) ); // scaled with dynamic viscosity with mu = nu*rho
         C->fillComplete( pressureMap, pressureMap );
         
         this->system_->addBlock( C, 1, 1 );
     }
-    //else 
-    //    C.reset(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
-    //    this->feFactory_->assemblyEmptyMatrix(C);
-               
-        //this->system_->addBlock( C, 1, 1 );
 
+    // Implementation of augmented lagrange. This works in theory, but the resulting matrix changes the nnz pattern and has a wider FE Stenciln than before. This can present an issue for the algebraic overlap.
+    // Compare for example to 'ANALYSIS OF AUGMENTED LAGRANGIAN-BASED PRECONDITIONERS FOR THE STEADY INCOMPRESSIBLE NAVIER–STOKES EQUATIONS, MICHELE BENZI AND ZHEN WANG' for the theory behind this.
+    // In augmented lagrange, the term \gamma B^T M_p^{-1} B is added to the velocity-velocity block, where M_p is the pressure mass matrix.
+    if(augmentedLagrange_){
+        NAVIER_STOKES_START(AssembleAugmentedLagrangianComponent,"AssembleDivAndStab: AL - Assemble BT Mp B");
+
+        double gamma = this->parameterList_->sublist("General").get("Gamma",1.0);
+
+        MatrixPtr_Type Mp(new Matrix_Type( this->getDomain(1)->getMapUnique(), this->getDomain(1)->getApproxEntriesPerRow() ) );
+        this->feFactory_->assemblyMass( this->dim_, this->domain_FEType_vec_.at(1), "Scalar", Mp, true ); 
+
+        MatrixPtr_Type MpInv = Mp->buildDiagonalInverse("Diagonal");
+
+        MpInv->resumeFill();
+        MpInv->scale(gamma);
+        MpInv->fillComplete();
+
+
+        MatrixPtr_Type BT_M(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension()*this->getDomain(0)->getApproxEntriesPerRow() ) );
+        BT_M->Multiply(BT,false,MpInv,false);
+
+        BT_Mp_ = BT_M;
+
+        MatrixPtr_Type BT_M_B(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension()*this->getDomain(0)->getApproxEntriesPerRow() ) );
+        BT_M_B->Multiply(BT_M,false,B,false);
+
+        BT_Mp_B_ = BT_M_B;
+
+        NAVIER_STOKES_STOP(AssembleAugmentedLagrangianComponent);
+    }
+   
 };
 
 template<class SC,class LO,class GO,class NO>
@@ -293,13 +570,17 @@ void NavierStokes<SC,LO,GO,NO>::reAssembleFSI(std::string type, MultiVectorPtr_T
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
-    
+   
     if (this->verbose_)
         std::cout << "-- Reassembly Navier-Stokes ("<< type <<") ... " << std::flush;
     
     double density = this->parameterList_->sublist("Parameter").get("Density",1.);
-    
-    MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+
+    // If we use augmented lagrange, the matrix fe-stencil increases and we need to allocate more nnz entries
+    int allocationFactor = 1;
+    if(augmentedLagrange_)
+        allocationFactor = 3;
+    MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), allocationFactor*this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
     if (type=="FixedPoint") {
         
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
@@ -314,8 +595,10 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         
         A_->addMatrix(1.,ANW,0.);
         N->addMatrix(1.,ANW,1.);
+
     }
     else if(type=="Newton"){ // We assume that reAssmble("FixedPoint") was already called for the current iterate
+        
         MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
         this->feFactory_->assemblyAdvectionInUVecField( this->dim_, this->domain_FEType_vec_.at(0), W, u_rep_, true );
         W->resumeFill();
@@ -323,11 +606,16 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         W->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
         this->system_->getBlock( 0, 0 )->addMatrix(1.,ANW,0.);
         W->addMatrix(1.,ANW,1.);
+        
     }
+    
+    if(augmentedLagrange_)
+        BT_Mp_B_->addMatrix(1.,ANW,1.);
+
     ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
-    
+
     this->system_->addBlock( ANW, 0, 0 );
-    
+ 
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
 }
@@ -482,269 +770,12 @@ void NavierStokes<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray
 //}
 
 template<class SC,class LO,class GO,class NO>
-void NavierStokes<SC,LO,GO,NO>::evalModelImpl(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                                              const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
-                                              ) const
-{
-    std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-    if ( !type.compare("Monolithic"))
-        evalModelImplMonolithic( inArgs, outArgs );
-    else if ( !type.compare("Teko")){
-#ifdef FEDD_HAVE_TEKO
-        evalModelImplBlock( inArgs, outArgs );
-#else
-        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Teko not found! Build Trilinos with Teko.");
-#endif
-    }
-    else
-        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Unkown preconditioner/solver type.");
-}
-
-/*!
-	\brief Monolithic Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution.
-		   ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver.
-*/
-template<class SC,class LO,class GO,class NO>
-void NavierStokes<SC,LO,GO,NO>::evalModelImplMonolithic(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                                                        const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
-{
-
-
-    using Teuchos::RCP;
-    using Teuchos::rcp;
-    using Teuchos::rcp_dynamic_cast;
-    using Teuchos::rcp_const_cast;
-    using Teuchos::ArrayView;
-    using Teuchos::Array;
-    RCP<Teuchos::FancyOStream> fancy = Teuchos::fancyOStream(Teuchos::rcpFromRef(std::cout));
-    TEUCHOS_TEST_FOR_EXCEPTION( inArgs.get_x().is_null(), std::logic_error, "inArgs.get_x() is null.");
-
-    RCP< const Thyra::VectorBase< SC > > vecThyra = inArgs.get_x();
-    RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
-
-    RCP< Thyra::VectorBase< SC > > vecThyraNonConst = rcp_const_cast<Thyra::VectorBase< SC > >(vecThyra);
-
-    this->solution_->fromThyraMultiVector(vecThyraNonConst);
-
-    const RCP<Thyra::MultiVectorBase<SC> > f_out = outArgs.get_f();
-    const RCP<Thyra::LinearOpBase<SC> > W_out = outArgs.get_W_op();
-    const RCP<Thyra::PreconditionerBase<SC> > W_prec_out = outArgs.get_W_prec();
-
-    typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> tpetra_extract;
-    typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
-    typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
-    typedef RCP<const TpetraMatrix_Type> TpetraMatrixConstPtr_Type;
- 
-    const bool fill_f = nonnull(f_out);
-    const bool fill_W = nonnull(W_out);
-    const bool fill_W_prec = nonnull(W_prec_out);
-
-
-    if ( fill_f || fill_W || fill_W_prec ) {
-
-        // ****************
-        // Get the underlying xpetra objects
-        // ****************
-        if (fill_f) {
-
-            this->calculateNonLinResidualVec("standard"); // Calculating residual Vector
-
-			// Changing the residualVector into a ThyraMultivector
-
-            Teuchos::RCP<Thyra::MultiVectorBase<SC> > f_thyra = this->getResidualVector()->getThyraMultiVector();
-            f_out->assign(*f_thyra);
-        }
-
-        TpetraMatrixPtr_Type W;
-        if (fill_W) {
-            this->reAssemble("Newton"); // ReAssembling matrices with updated u  in this class
-
-            this->setBoundariesSystem(); // setting boundaries to the system
-
-			Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
-            Teuchos::RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
-            
-            TpetraMatrixConstPtr_Type W_systemTpetra = this->getSystem()->getMergedMatrix()->getTpetraMatrix();           
-            TpetraMatrixPtr_Type W_systemTpetraNonConst = rcp_const_cast<TpetraMatrix_Type>(W_systemTpetra);
-            
-            //Tpetra::CrsMatrixWrap<SC,LO,GO,NO>& crsOp = dynamic_cast<Xpetra::CrsMatrixWrap<SC,LO,GO,NO>&>(*W_systemXpetraNonConst);
-            //Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>& xTpetraMat = dynamic_cast<Xpetra::TpetraCrsMatrix<SC,LO,GO,NO>&>(*crsOp.getCrsMatrix());
-            
-            Teuchos::RCP<TpetraMatrix_Type> tpetraMatTpetra = W_systemTpetraNonConst; //xTpetraMat.getTpetra_CrsMatrixNonConst();
-            
-            W_tpetraMat->resumeFill();
-
-            for (auto i=0; i<tpetraMatTpetra->getMap()->getLocalNumElements(); i++) {
-                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
-                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;
-                tpetraMatTpetra->getLocalRowView( i, indices, values);
-                W_tpetraMat->replaceLocalValues( i, indices, values);
-            }
-            W_tpetraMat->fillComplete();
-
-        }
-
-        if (fill_W_prec) {
-            this->setupPreconditioner( "Monolithic" );
-
-            // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
-            // If this is the case, we need to pre apply the coarse level to the residual(f_out).
-
-            std::string levelCombination = this->parameterList_->sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive");
-            if (!levelCombination.compare("Multiplicative")) {
-                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Multiplicative Level Combination is not supported for NOX.");
-//                ParameterListPtr_Type solverPList = this->getLinearSolverBuilder()->getNonconstParameterList();
-//
-//                solverPList->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",true);
-//
-//                Teuchos::RCP<const Thyra::LinearOpBase<SC> > thyra_linOp = this->getPreconditionerConst()->getThyraPrecConst()->getUnspecifiedPrecOp();
-//
-//                f_out->describe(*out,Teuchos::VERB_EXTREME);
-//                vecThyraNonConst->describe(*out,Teuchos::VERB_EXTREME);
-//                Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *f_out, vecThyraNonConst.ptr() );
-//                solverPList->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
-            }
-
-        }
-    }
-}
-/*!
-	\brief Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution.
-		   ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver.
-
-
-
-*/
-#ifdef FEDD_HAVE_TEKO
-template<class SC,class LO,class GO,class NO>
-void NavierStokes<SC,LO,GO,NO>::evalModelImplBlock(const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                                                   const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
-{
-
-
-    using Teuchos::RCP;
-    using Teuchos::rcp;
-    using Teuchos::rcp_dynamic_cast;
-    using Teuchos::rcp_const_cast;
-    using Teuchos::ArrayView;
-    using Teuchos::Array;
-
-    RCP<Teuchos::FancyOStream> fancy = Teuchos::fancyOStream(Teuchos::rcpFromRef(std::cout));
-    TEUCHOS_TEST_FOR_EXCEPTION( inArgs.get_x().is_null(), std::logic_error, "inArgs.get_x() is null.");
-
-    RCP< const Thyra::VectorBase< SC > > vecThyra = inArgs.get_x();
-    RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
-
-    RCP< Thyra::VectorBase< SC > > vecThyraNonConst = rcp_const_cast<Thyra::VectorBase< SC > >(vecThyra);
-
-    RCP< Thyra::ProductVectorBase< SC > > vecThyraBlock = rcp_dynamic_cast<Thyra::ProductVectorBase< SC > > (vecThyraNonConst);
-
-    this->solution_->getBlockNonConst(0)->fromThyraMultiVector( vecThyraBlock->getNonconstVectorBlock(0) );
-    this->solution_->getBlockNonConst(1)->fromThyraMultiVector( vecThyraBlock->getNonconstVectorBlock(1) );
-
-    const RCP<Thyra::MultiVectorBase<SC> > f_out = outArgs.get_f();
-    const RCP<Thyra::LinearOpBase<SC> > W_out = outArgs.get_W_op();
-    const RCP<Thyra::PreconditionerBase<SC> > W_prec_out = outArgs.get_W_prec();
-
-    typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> tpetra_extract;
-    typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
-    typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
-    typedef RCP<const TpetraMatrix_Type> TpetraMatrixConstPtr_Type;
-
-    const bool fill_f = nonnull(f_out);
-    const bool fill_W = nonnull(W_out);
-    const bool fill_W_prec = nonnull(W_prec_out);
-
-    if ( fill_f || fill_W || fill_W_prec ) {
-
-        // ****************
-        // Get the underlying xpetra objects
-        // ****************
-        if (fill_f) {
-
-            this->calculateNonLinResidualVec("standard");
-
-            Teko::MultiVector f0;
-            Teko::MultiVector f1;
-            f0 = this->getResidualVector()->getBlockNonConst(0)->getThyraMultiVector();
-            f1 = this->getResidualVector()->getBlockNonConst(1)->getThyraMultiVector();
-
-            std::vector<Teko::MultiVector> f_vec; f_vec.push_back(f0); f_vec.push_back(f1);
-
-            Teko::MultiVector f = Teko::buildBlockedMultiVector(f_vec);
-
-            f_out->assign(*f);
-        }
-
-        TpetraMatrixPtr_Type W;
-        if (fill_W) {
-
-            typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
-
-            this->reAssemble("Newton");
-
-            this->setBoundariesSystem();
-
-            RCP<ThyraBlockOp_Type> W_blocks = rcp_dynamic_cast<ThyraBlockOp_Type>(W_out);
-            RCP<const ThyraOp_Type> W_block00 = W_blocks->getBlock(0,0);
-            RCP<ThyraOp_Type> W_block00NonConst = rcp_const_cast<ThyraOp_Type>( W_block00 );
-            RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator( W_block00NonConst );
-
-            RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
-
-            TpetraMatrixConstPtr_Type W_matrixTpetra = this->getSystem()->getBlock(0,0)->getTpetraMatrix();
-            TpetraMatrixPtr_Type W_matrixTpetraNonConst = rcp_const_cast<TpetraMatrix_Type>(W_matrixTpetra);
-            RCP<TpetraMatrix_Type> tpetraMatTpetra = W_matrixTpetraNonConst;
-
-            W_tpetraMat->resumeFill();
-
-            for (auto i=0; i<tpetraMatTpetra->getMap()->getLocalNumElements(); i++) {
-                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::local_inds_host_view_type indices;  //ArrayView< const LO > indices
-                typename Tpetra::CrsMatrix<SC,LO,GO,NO>::values_host_view_type values;
-                tpetraMatTpetra->getLocalRowView( i, indices, values);
-                W_tpetraMat->replaceLocalValues( i, indices, values);
-            }
-            W_tpetraMat->fillComplete();
-
-        }
-
-        if (fill_W_prec) {
-            if (stokesTekoPrecUsed_){
-                this->setupPreconditioner( "Teko" );
-            }
-            else
-                stokesTekoPrecUsed_ = true;
-
-            // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
-            // If this is the case, we need to pre apply the coarse level to the residual(f_out).
-
-            ParameterListPtr_Type tmpSubList = sublist( sublist( sublist( sublist( this->parameterList_, "Teko Parameters" ) , "Preconditioner Types" ) , "Teko" ) , "Inverse Factory Library" );
-
-            std::string levelCombination1 = tmpSubList->sublist( "FROSch-Velocity" ).get("Level Combination","Additive");
-            std::string levelCombination2 = tmpSubList->sublist( "FROSch-Pressure" ).get("Level Combination","Additive");
-
-            if ( !levelCombination1.compare("Multiplicative") || !levelCombination2.compare("Multiplicative") ) {
-
-                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Multiplicative Level Combination is not supported for NOX.");
-                ParameterListPtr_Type solverPList = this->getLinearSolverBuilder()->getNonconstParameterList();
-
-//                    pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",true);
-//
-//                    Teuchos::RCP<const Thyra::LinearOpBase<SC> > thyra_linOp = this->getPreconditioner()->getThyraPrec()->getUnspecifiedPrecOp();
-//                    Thyra::apply( *thyra_linOp, Thyra::NOTRANS, *thyraB, thyraX.ptr() );
-//                    pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",false);
-
-
-            }
-        }
-    }
-}
-#endif
-
-template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time) const{
+    
+    if (this->verbose_)
+        std::cout << "-- NavierStokes::calculateNonLinResidualVec ("<< type <<") ... " << std::flush;
+    
     this->reAssemble("FixedPoint");
-
     // We need to account for different parameters of time discretizations here
     // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson - might be ok now for CN
     if (this->coeff_.size() == 0)
@@ -752,18 +783,21 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, dou
     else
         this->system_->apply( *this->solution_, *this->residualVec_, this->coeff_ );
     
+    // The additional component needs to be acconted for in residual as well due to augmented lagrange
+    if(augmentedLagrange_){
+        MultiVectorPtr_Type rhsAL = Teuchos::rcp( new MultiVector_Type( this->residualVec_->getBlock(0) ) );
+        BT_Mp_->apply( *this->residualVec_->getBlock(1), *rhsAL );
+        this->residualVec_->getBlockNonConst(0)->update(1.,*rhsAL,1.);
+
+    }
     if (!type.compare("standard")){
         this->residualVec_->update(-1.,*this->rhs_,1.);
-//        if ( !this->sourceTerm_.is_null() )
-//            this->residualVec_->update(-1.,*this->sourceTerm_,1.);
         // this might be set again by the TimeProblem after addition of M*u
         this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
         
     }
     else if(!type.compare("reverse")){
         this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
-//        if ( !this->sourceTerm_.is_null() )
-//            this->residualVec_->update(1.,*this->sourceTerm_,1.);
         // this might be set again by the TimeProblem after addition of M*u
         this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );    
     }
@@ -795,83 +829,9 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std::stri
     
     // this might be set again by the TimeProblem after addition of M*u
     this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-    
-//    this->residualVec_->getBlock(0)->writeMM("b_Ax.mm");
-    
+        
 }
 
-    
-template<class SC,class LO,class GO,class NO>
-Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op() const
-{
-    std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-    if ( !type.compare("Monolithic"))
-        return create_W_op_Monolithic( );
-    else if ( !type.compare("Teko")){
-#ifdef FEDD_HAVE_TEKO
-        return create_W_op_Block( );
-#else
-        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Teko not found! Build Trilinos with Teko.");
-#endif
-    }
-    else
-        TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Unkown preconditioner/solver type.");
-}
-
-template<class SC,class LO,class GO,class NO>
-Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op_Monolithic() const
-{
-    Teuchos::RCP<const Thyra::LinearOpBase<SC> > W_opConst = this->system_->getThyraLinOp();
-    Teuchos::RCP<Thyra::LinearOpBase<SC> > W_op = Teuchos::rcp_const_cast<Thyra::LinearOpBase<SC> >(W_opConst);
-    return W_op;
-}
-
-#ifdef FEDD_HAVE_TEKO
-template<class SC,class LO,class GO,class NO>
-Teuchos::RCP<Thyra::LinearOpBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_op_Block() const
-{
-
-    Teko::LinearOp thyraF = this->system_->getBlock(0,0)->getThyraLinOp();
-    Teko::LinearOp thyraBT = this->system_->getBlock(0,1)->getThyraLinOp();
-    Teko::LinearOp thyraB = this->system_->getBlock(1,0)->getThyraLinOp();
-
-    if (!this->system_->blockExists(1,1)){
-        MatrixPtr_Type dummy = Teuchos::rcp( new Matrix_Type( this->system_->getBlock(1,0)->getMap(), 1 ) );
-        dummy->fillComplete();
-        this->system_->addBlock( dummy, 1, 1 );
-    }
-
-    Teko::LinearOp thyraC = this->system_->getBlock(1,1)->getThyraLinOp();
-
-    Teuchos::RCP<const Thyra::LinearOpBase<SC> > W_opConst = Thyra::block2x2(thyraF,thyraBT,thyraB,thyraC);
-    Teuchos::RCP<Thyra::LinearOpBase<SC> > W_op = Teuchos::rcp_const_cast<Thyra::LinearOpBase<SC> >(W_opConst);
-    return W_op;
-}
-#endif
-
-template<class SC,class LO,class GO,class NO>
-Teuchos::RCP<Thyra::PreconditionerBase<SC> > NavierStokes<SC,LO,GO,NO>::create_W_prec() const
-{
-    this->initializeSolverBuilder();
-
-    std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-    this->setBoundariesSystem();
-
-    if (!type.compare("Teko")) { //
-        this->setupPreconditioner( type );
-        stokesTekoPrecUsed_ = false;
-    }
-    else{
-        this->setupPreconditioner( type ); // initializePreconditioner( type );
-    }
-    
-
-    Teuchos::RCP<const Thyra::PreconditionerBase<SC> > thyraPrec =  this->getPreconditionerConst()->getThyraPrecConst();
-    Teuchos::RCP<Thyra::PreconditionerBase<SC> > thyraPrecNonConst = Teuchos::rcp_const_cast<Thyra::PreconditionerBase<SC> >(thyraPrec);
-
-    return thyraPrecNonConst;
-
-}
 }
 
 #endif

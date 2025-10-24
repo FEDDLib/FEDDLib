@@ -58,6 +58,7 @@ public:
     typedef Tpetra::CrsMatrix<SC, LO, GO, NO> TpetraMatrix_Type;
     typedef Thyra::LinearOpBase<SC> ThyraOp_Type;
     typedef Tpetra::Operator<SC,LO,GO,NO> TpetraOp_Type;
+    typedef Thyra::BlockedLinearOpBase<SC> ThyraBlockOp_Type;
 
     NonLinearProblem(CommConstPtr_Type comm);
 
@@ -100,7 +101,7 @@ public:
     
     BlockMultiVectorPtr_Type getResidualVector() const;
     
-    BlockMultiVectorPtr_Type getPreviousSolution() const{ return previousSolution_; };
+    BlockMultiVectorPtr_Type getPreviousSolution() const{ return previousSolution_; }
 
     virtual Thyra::ModelEvaluatorBase::InArgs<SC> getNominalValues() const;
 
@@ -118,8 +119,8 @@ public:
 
     void initVectorSpacesBlock( );
 
-    virtual void evalModelImpl(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                               const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const = 0;
+    // virtual void evalModelImpl(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
+                            //    const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const = 0;
 
     virtual ::Thyra::ModelEvaluatorBase::OutArgs<SC> createOutArgsImpl() const;
     
@@ -128,7 +129,22 @@ public:
     mutable BlockMultiVectorPtr_Type    residualVec_;
     SmallMatrix<double> coeff_;// coefficients for a time-dependent problem
 
+    mutable int newtonStep_;
+
+    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
+    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Monolithic() const;
+#ifdef FEDD_HAVE_TEKO
+    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Block() const;
+#endif
+    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
+
+
 private:
+    mutable bool precInitOnly_; //Help variable to signal that we constructed the initial preconditioner 
+                                // for NOX already and we do not need to compute it if fill_W_prec is 
+                                // called for the first time. However, the preconditioner is only correct 
+                                // if a linear system is solved in the first nonlinear iteration. 
+
 
     Thyra::ModelEvaluatorBase::InArgs<SC> nominalValues_;
 
@@ -139,6 +155,19 @@ private:
     Teuchos::RCP<const ThyraVecSpace_Type> fSpace_;
 
     Teuchos::RCP<ThyraVec_Type> x0_;
+
+    virtual void evalModelImpl(
+                       const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
+                       const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs
+                       ) const;
+
+    void evalModelImplMonolithic(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
+                                 const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
+
+#ifdef FEDD_HAVE_TEKO
+    void evalModelImplBlock(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
+                            const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const;
+#endif
 
 
 

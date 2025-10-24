@@ -6,7 +6,6 @@
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/problems/specific/LinElas.hpp"
-#include "feddlib/problems/specific/LinElasAssFE.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Xpetra_DefaultPlatform.hpp>
 
@@ -173,37 +172,11 @@ int main(int argc, char *argv[])
         bcFactory->addBC(zeroDirichlet2D, 9, 0, domain, "Dirichlet_X_Z", dim);
             
         // ----------------------------------------
-        // Building object of original linear elasticity class
+        // Building object from AceGen Interface 
         parameterListAll->sublist("Parameter").set("Source Type","surface"); // Here, we always have a surface force
-
-        LinElas<SC,LO,GO,NO> LinElas( domain, FEType, parameterListAll );
-      
-        LinElas.addBoundaries(bcFactory); 
-
-        LinElas.addRhsFunction( rhsYZ ); // 3D Surface function
-
         double force = parameterListAll->sublist("Parameter").get("Surface force",0.);
-        
-        LinElas.addParemeterRhs( force );
-        // ######################
-        // Assembly + BC
-        // ######################
-        LinElas.initializeProblem();
-        LinElas.assemble();                
-        LinElas.setBoundaries(); // In der Klasse Problem
-        if (verbose) {
-            cout << "###############################################################" <<endl;
-            cout << "############ Solving original Linear Elasticity ...############" <<endl;
-            cout << "###############################################################" <<endl;
-        }
-        // Solve
-        int its = LinElas.solve();
-        // ----------------------------------------
 
-        
-        // ----------------------------------------
-        // Building linear elasticity from AceGen Interface
-        LinElasAssFE<SC,LO,GO,NO> LinElasAssFE( domain, FEType, parameterListAll );
+        LinElas<SC,LO,GO,NO> LinElasAssFE( domain, FEType, parameterListAll );
 
         LinElasAssFE.addBoundaries(bcFactory); // Dem Problem RW hinzufuegen
     
@@ -222,6 +195,35 @@ int main(int argc, char *argv[])
             cout << "###############################################################" <<endl;
         }
         int itsAssFE = LinElasAssFE.solve();
+
+       
+        // ----------------------------------------
+
+        
+        // ----------------------------------------
+        // Building original linear elasticity class
+        parameterListAll->sublist("Parameter").set("Use AceGen Interface",false); 
+
+        LinElas<SC,LO,GO,NO> LinElas( domain, FEType, parameterListAll );
+      
+        LinElas.addBoundaries(bcFactory); 
+
+        LinElas.addRhsFunction( rhsYZ ); // 3D Surface function
+        
+        LinElas.addParemeterRhs( force );
+        // ######################
+        // Assembly + BC
+        // ######################
+        LinElas.initializeProblem();
+        LinElas.assemble();                
+        LinElas.setBoundaries(); // In der Klasse Problem
+        if (verbose) {
+            cout << "###############################################################" <<endl;
+            cout << "############ Solving original Linear Elasticity ...############" <<endl;
+            cout << "###############################################################" <<endl;
+        }
+        // Solve
+        int its = LinElas.solve();
 
         
 		if(comm->getRank() ==0){

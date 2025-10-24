@@ -298,7 +298,7 @@ void Mesh<SC,LO,GO,NO>::moveMesh( MultiVectorPtr_Type displacementUnique, MultiV
             // und anschliessend mit [] auf den Wert des Arrays.
             // Beachte falls x ein Array ist (also z.B. double *), dann ist x[i] := *(x+i)!!!
             // Liefert also direkt den Wert und keinen Pointer auf einen double.
-            // Achtung: MultiVector[] liefert double* wohingegen MultiVector() Epetra_Vector* zurueck liefert
+            // Achtung: MultiVector[] liefert double* wohingegen MultiVector() Tpetra_Vector* zurueck liefert
             pointsUni_->at(i).at(j) = pointsUniRef_->at(i).at(j) + values[dim_*i+j];
         }
     }
@@ -528,7 +528,6 @@ void Mesh<SC,LO,GO,NO>::correctElementOrientation(){
             flipElement(elementsC_,T); 
 
     }
-    std::cout << " Finished " << std::endl;
     Teuchos::reduceAll<int, int> (*this->getComm(), Teuchos::REDUCE_SUM, negDet, Teuchos::outArg (negDet));
     Teuchos::reduceAll<int, int> (*this->getComm(), Teuchos::REDUCE_SUM, posDet, Teuchos::outArg (posDet));
 

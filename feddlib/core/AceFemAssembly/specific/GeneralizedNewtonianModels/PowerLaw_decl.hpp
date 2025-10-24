@@ -110,7 +110,7 @@ For our viscosity models we define our derivative function "computeDerivative" t
        \brief Get the current viscosity value
        \return the scalar value of viscosity
        */
-      double getViscosity() { return viscosity_; };
+      double getViscosity() { return viscosity_; }
 
       /*!
 

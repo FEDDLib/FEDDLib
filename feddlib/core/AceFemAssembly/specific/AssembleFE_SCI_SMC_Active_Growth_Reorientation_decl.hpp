@@ -54,11 +54,11 @@ class AssembleFE_SCI_SMC_Active_Growth_Reorientation : public AssembleFE<SC,LO,G
 	    \brief Assemble block parts of the element Jacobian matrix.
 	    \return the element Jacobian matrix of block i 
 	    */
-		void assembleJacobianBlock(LO i) override{};
+		void assembleJacobianBlock(LO i) override{}
 
 		void advanceInTime(double dt) override;
 
-        void getMassMatrix(SmallMatrixPtr_Type &massMatrix ){massMatrix=massMatrix_;};
+        void getMassMatrix(SmallMatrixPtr_Type &massMatrix ){massMatrix=massMatrix_;}
 
     protected:
         AssembleFE_SCI_SMC_Active_Growth_Reorientation(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple);

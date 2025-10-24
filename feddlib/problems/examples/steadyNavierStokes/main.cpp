@@ -11,6 +11,9 @@
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
 
+#include <Teuchos_GlobalMPISession.hpp>
+#include <Xpetra_DefaultPlatform.hpp>
+#include <Teuchos_StackedTimer.hpp>
 
 
 /*!
@@ -125,7 +128,11 @@ void inflow3DRichter(double* x, double* res, double t, const double* parameters)
     
     return;
 }
-void dummyFunc(double* x, double* res, double t, const double* parameters){
+void dummyFunc(double* x, double* res, double* parameters){
+    if(parameters[0]==2)
+        res[0]=1;
+    else
+        res[0] = 0.;
 
     return;
 }
@@ -136,6 +143,7 @@ typedef default_sc SC;
 typedef default_lo LO;
 typedef default_go GO;
 typedef default_no NO;
+using namespace Teuchos;
 
 using namespace FEDD;
 
@@ -167,10 +175,11 @@ int main(int argc, char *argv[]) {
     myCLP.setOption("precfile",&xmlPrecFile,".xml file with Inputparameters.");
     string xmlSolverFile = "parametersSolver.xml";
     myCLP.setOption("solverfile",&xmlSolverFile,".xml file with Inputparameters.");
-
     string xmlTekoPrecFile = "parametersTeko.xml";
     myCLP.setOption("tekoprecfile",&xmlTekoPrecFile,".xml file with Inputparameters.");
-
+    string xmlBlockPrecFile = "parametersPrecBlock.xml";
+    myCLP.setOption("blockprecfile",&xmlBlockPrecFile,".xml file with Inputparameters.");
+   
     double length = 4.;
     myCLP.setOption("length",&length,"length of domain.");
 
@@ -181,6 +190,9 @@ int main(int argc, char *argv[]) {
         return EXIT_SUCCESS;
     }
 
+    Teuchos::RCP<StackedTimer> stackedTimer =  rcp(new StackedTimer("Steady Navier-Stokes",true));
+    TimeMonitor::setStackedTimer(stackedTimer);
+
     {
         ParameterListPtr_Type parameterListProblem = Teuchos::getParametersFromXmlFile(xmlProblemFile);
 
@@ -189,6 +201,8 @@ int main(int argc, char *argv[]) {
         ParameterListPtr_Type parameterListSolver = Teuchos::getParametersFromXmlFile(xmlSolverFile);
 
         ParameterListPtr_Type parameterListPrecTeko = Teuchos::getParametersFromXmlFile(xmlTekoPrecFile);
+
+        ParameterListPtr_Type parameterListPrecBlock = Teuchos::getParametersFromXmlFile(xmlBlockPrecFile);
 
         int 		dim				= parameterListProblem->sublist("Parameter").get("Dimension",3);
 
@@ -209,8 +223,10 @@ int main(int argc, char *argv[]) {
         ParameterListPtr_Type parameterListAll(new Teuchos::ParameterList(*parameterListProblem)) ;
         if (!precMethod.compare("Monolithic"))
             parameterListAll->setParameters(*parameterListPrec);
-        else
+        else if(precMethod == "Teko")
             parameterListAll->setParameters(*parameterListPrecTeko);
+        else if(precMethod == "Diagonal" || precMethod == "Triangular" || precMethod == "PCD" || precMethod == "LSC")
+            parameterListAll->setParameters(*parameterListPrecBlock);
 
         parameterListAll->setParameters(*parameterListSolver);    
         
@@ -319,7 +335,7 @@ int main(int argc, char *argv[]) {
                             domainVelocity = domainPressure;
                     }
                 }
-
+                domainVelocity->preProcessMesh(true,false);
                 std::vector<double> parameter_vec(1, parameterListProblem->sublist("Parameter").get("MaxVelocity",1.));
 
                 // ####################
@@ -392,21 +408,21 @@ int main(int argc, char *argv[]) {
                     Teuchos::TimeMonitor solveTimeMonitor(*solveTime);
 
                     navierStokes.addBoundaries(bcFactory);
+ 
+                    navierStokes.addRhsFunction( dummyFunc );
+
                     navierStokes.initializeProblem();
                     navierStokes.assemble();
 
                     navierStokes.setBoundariesRHS();
 
-					//navierStokes.getSystem()->getBlock(1,1)->print();
                     std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization","FixedPoint");
                     NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
                     nlSolver.solve( navierStokes );
                     comm->barrier();
+
+                    navierStokes.infoParameter();
                 }
-    //            if (saveVector>0) {
-    //                string outName = "vector_RE_" + to_string(RE) + "_" + to_string(dim) + "D_N_" + to_string(Size) +".h5";
-    //                navierStokes.GetSystem()->WriteMultiVectorHDF5(*navierStokes.GetSolution(), outName, "vector");
-    //            }
 
 
                 if ( parameterListAll->sublist("General").get("ParaViewExport",false) ) {
@@ -415,10 +431,6 @@ int main(int argc, char *argv[]) {
 
                     Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = navierStokes.getSolution()->getBlock(0);
                     Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = navierStokes.getSolution()->getBlock(1);
-
-
-//                    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = navierStokes.getRhs()->getBlock(0);
-//                    Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = navierStokes.getRhs()->getBlock(1);
 
                     DomainPtr_Type dom = domainVelocity;
 
@@ -440,7 +452,11 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
     Teuchos::TimeMonitor::report(cout);
+    stackedTimer->stop("Steady Navier-Stokes");
+	StackedTimer::OutputOptions options;
+	options.output_fraction = options.output_histogram = options.output_minmax = true;
+	stackedTimer->report((std::cout),comm,options);
+
     return(EXIT_SUCCESS);
 }

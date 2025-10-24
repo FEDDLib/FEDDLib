@@ -57,13 +57,13 @@ public:
 
     GO getGlobalID( LO i ) const;
     
-    void setFiniteElementType( std::string feType ){ FEType_ = feType; };
+    void setFiniteElementType( std::string feType ){ FEType_ = feType; }
 
-    std::string getFiniteElementType( ){ return FEType_; };
+    std::string getFiniteElementType( ){ return FEType_; }
     
-    void setDimension( int dim ){ dim_ = dim; };
+    void setDimension( int dim ){ dim_ = dim; }
     
-    int getDimension() {return dim_;};
+    int getDimension() {return dim_;}
     
     int nodesPerElement();
     

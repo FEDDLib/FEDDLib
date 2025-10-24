@@ -99,7 +99,6 @@ void TimeProblem<SC,LO,GO,NO>::reAssembleAndFill( BlockMatrixPtr_Type bMat, std:
 
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::combineSystems() const{
-    //std::cout << "combineSystems is called" << std::endl;
     BlockMatrixPtr_Type tmpSystem = problem_->getSystem();
     int size = tmpSystem->size();
     systemCombined_.reset( new BlockMatrix_Type ( size ) );
@@ -921,7 +920,6 @@ Teuchos::RCP<Thyra::LinearOpBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_op_Blo
 template<class SC,class LO,class GO,class NO>
 Teuchos::RCP<Thyra::PreconditionerBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_prec()
 {
- 
     NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
     TEUCHOS_TEST_FOR_EXCEPTION(nonLinProb.is_null(), std::runtime_error, "Nonlinear problem is null.");
     
@@ -931,13 +929,14 @@ Teuchos::RCP<Thyra::PreconditionerBase<SC> > TimeProblem<SC,LO,GO,NO>::create_W_
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
         this->setBoundariesSystem();
         
-        if ( type == "Teko" || type == "FaCSI-Teko" || type =="Diagonal" ) { //we need to construct the whole preconditioner if Teko is used
-            nonLinProb->setupPreconditioner( type );
-            precInitOnly_ = false;
-        }
-        else{
+        // if ( type == "Teko" || type == "FaCSI-Teko" || || type == "FaCSI-Block" || type =="Diagonal" ) { //we need to construct the whole preconditioner if Teko is used
+        //     nonLinProb->setupPreconditioner( type );
+        //     precInitOnly_ = false;
+        // }
+        // else{
             nonLinProb->setupPreconditioner( type ); //nonLinProb->initializePreconditioner( type );
-        }
+            precInitOnly_ = false;
+        // }
     }
     
     Teuchos::RCP<const Thyra::PreconditionerBase<SC> > thyraPrec =  nonLinProb->getPreconditionerConst()->getThyraPrecConst();
@@ -1042,15 +1041,24 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
         }
         
         if (fill_W_prec) {
-            this->problem_->setupPreconditioner( "Monolithic" );
-            
-            // ch 26.04.19: After each setup of the preconditioner we check if we use a two-level precondtioner with multiplicative combination between the levels.
-            // If this is the case, we need to pre apply the coarse level to the residual(f_out).
-            
-            std::string levelCombination = this->parameterList_->sublist("ThyraPreconditioner").sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive");
-            if (!levelCombination.compare("Multiplicative")) {
-                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Multiplicative Level Combination is not supported for NOX.");
+            int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
+            NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
+
+            if (precInitOnly_){
+
+                if(nonLinProb->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
+                {
+                    this->problem_->setupPreconditioner( "Monolithic" );
+                }
+                else{
+                    if (this->verbose_)
+                        std::cout << " \t\t TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic: Skipping preconditioner reconstruction" << std::endl;
+                }
             }
+            else
+                precInitOnly_ = true; // If a Monolithic preconditioner was constructed for the first time this variable is false. Because the preconditioner was not only initialized but already constructed. We can now set this variable to true to always setup all following preconditioners in the above if case
+           
+            nonLinProb->newtonStep_++;
             
         }
     }
@@ -1061,7 +1069,6 @@ template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
                                                    const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
 {
-    
     
     using Teuchos::RCP;
     using Teuchos::rcp;
@@ -1164,11 +1171,24 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBa
         
         if (fill_W_prec) {
             std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
-            if (precInitOnly_)
-                this->problem_->setupPreconditioner( type );
+            NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
+
+            if (precInitOnly_){
+                int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
+
+                if(nonLinProb->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
+                {
+                    this->problem_->setupPreconditioner( type );
+                }
+                else{
+                    if (this->verbose_)
+                        std::cout << " \t\t TimeProblem<SC,LO,GO,NO>::evalModelImplBlock Skipping preconditioner reconstruction" << std::endl;
+                }
+            }
             else
                 precInitOnly_ = true; // If a Teko preconditioner was constructed for the first time this variable is false. Because the preconditioner was not only initialized but already constructed. We can now set this variable to true to always setup all following preconditioners in the above if case
             
+            nonLinProb->newtonStep_++;
         }
     }
 }
