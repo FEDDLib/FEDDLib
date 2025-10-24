@@ -295,7 +295,6 @@ int main(int argc, char *argv[])
         int m = parameterListProblem->sublist("Parameter").get("H/h", 5);
         string linearization = parameterListProblem->sublist("General").get("Linearization", "FixedPoint");
 
-        bool linearization_SwitchToNewton_ = parameterListProblem->sublist("General").get("Linearization_SwitchToNewton", false);
         string precMethod = parameterListProblem->sublist("General").get("Preconditioner Method", "Monolithic");
         int mixedFPIts = parameterListProblem->sublist("General").get("MixedFPIts", 1);
         int n;
