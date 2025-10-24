@@ -1,4 +1,4 @@
-SET(LinearAlgebra_HEADERS
+set(LinearAlgebra_HEADERS
 LinearAlgebra/BlockMap_decl.hpp
 LinearAlgebra/BlockMap_def.hpp
 LinearAlgebra/BlockMap.hpp
@@ -22,7 +22,7 @@ LinearAlgebra/MultiVector_def.hpp
 LinearAlgebra/MultiVector.hpp
 CACHE INTERNAL "")
 
-SET(LinearAlgebra_SOURCES
+set(LinearAlgebra_SOURCES
 LinearAlgebra/BlockMap.cpp
 LinearAlgebra/BlockMatrix.cpp
 LinearAlgebra/BlockMultiVector.cpp
@@ -33,14 +33,8 @@ LinearAlgebra/MultiVector.cpp
 CACHE INTERNAL "")
 
 
-SET(LOCAL_HEADERS)
-FOREACH(INC ${LinearAlgebra_HEADERS})
-  STRING(REPLACE "LinearAlgebra/" "" LOCAL_INC ${INC})
-  SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
-ENDFOREACH()
-
-INSTALL(
-  FILES ${LOCAL_HEADERS}
-  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/feddlib/core/LinearAlgebra"
-  COMPONENT ${PACKAGE_NAME}
-)
+set(LOCAL_HEADERS)
+foreach(INC ${LinearAlgebra_HEADERS})
+  string(REPLACE "LinearAlgebra/" "" LOCAL_INC ${INC})
+  append_set(LOCAL_HEADERS ${LOCAL_INC})
+endforeach()

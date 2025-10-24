@@ -8,10 +8,7 @@
 #include "MultiVector.hpp"
 #include "BlockMultiVector.hpp"
 
-#include <Xpetra_MatrixFactory.hpp>
-#include <Xpetra_ThyraUtils.hpp>
 #include <Teuchos_VerboseObject.hpp>
-#include <Xpetra_MatrixMatrix.hpp>
 #include <MatrixMarket_Tpetra.hpp>
 #include <TpetraExt_MatrixMatrix.hpp>
 
@@ -38,14 +35,6 @@ public:
     typedef Matrix<SC,LO,GO,NO> Matrix_Type;
     typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
 
-    /*typedef Xpetra::Matrix<SC,LO,GO,NO> XpetraMatrix_Type;
-    typedef Teuchos::RCP<XpetraMatrix_Type> XpetraMatrixPtr_Type;
-    typedef Teuchos::RCP<const XpetraMatrix_Type> XpetraMatrixConstPtr_Type;
-    typedef const Teuchos::RCP<XpetraMatrixConstPtr_Type> XpetraMatrixConstPtrConst_Type;
-
-    typedef Xpetra::MultiVector<SC,LO,GO,NO> XpetraMV_Type;
-    typedef Teuchos::RCP<XpetraMV_Type> XpetraMVPtr_Type;*/
-
     typedef Map<LO,GO,NO> Map_Type;
     typedef Teuchos::RCP<Map_Type> MapPtr_Type;
     typedef Teuchos::RCP<const Map_Type> MapConstPtr_Type;
@@ -66,7 +55,6 @@ public:
 
     typedef Tpetra::Export<LO,GO,NO> TpetraExport_Type;
     typedef Teuchos::RCP<TpetraExport_Type> TpetraExportPtr_Type;
-
 
 	// -----------------------
     typedef Tpetra::Map<LO,GO,NO> TpetraMap_Type;
@@ -117,7 +105,7 @@ public:
     MapConstPtr_Type getMap(std::string map_string="") const;
 
 	/*!
-		\brief Return map in Xpetra Format of type " ".
+		\brief Return map in Tpetra Format of type " ".
 	*/
     TpetraMapConstPtr_Type getMapTpetra(std::string map_string="");
 
@@ -185,7 +173,7 @@ public:
     void replaceLocalValues(LO localRow, const Teuchos::ArrayView< const LO > &indices, const Teuchos::ArrayView< const SC > &values);
 
 	/*!
-		\brief Return matrix in Xpetra Format of type " ".
+		\brief Return matrix in Tpetra Format.
 	*/
     TpetraMatrixConstPtr_Type getTpetraMatrix() const;
     

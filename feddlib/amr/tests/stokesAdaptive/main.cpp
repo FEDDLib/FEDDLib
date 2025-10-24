@@ -19,7 +19,7 @@
 
 #include <Teuchos_TestForException.hpp>
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
+#include <Tpetra_Core.hpp>
 
 #include "feddlib/problems/abstract/Problem.hpp"
 
@@ -469,7 +469,7 @@ int main(int argc, char *argv[]) {
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
     
-    Teuchos::RCP<const Teuchos::Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
     bool verbose (comm->getRank() == 0);
     if (verbose) {
         cout << "#################################################" <<endl;

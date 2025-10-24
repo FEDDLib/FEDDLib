@@ -965,22 +965,24 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
     
     
     using Teuchos::RCP;
-    using Teuchos::rcp;
+    // using Teuchos::rcp;
     using Teuchos::rcp_dynamic_cast;
     using Teuchos::rcp_const_cast;
     using Teuchos::ArrayView;
     using Teuchos::Array;
 
+    // Testing input arguments
     TEUCHOS_TEST_FOR_EXCEPTION( inArgs.get_x().is_null(), std::logic_error, "inArgs.get_x() is null.");
     
     RCP< const Thyra::VectorBase< SC > > vecThyra = inArgs.get_x();
-    
     RCP< Thyra::VectorBase< SC > > vecThyraNonConst = rcp_const_cast<Thyra::VectorBase< SC > >(vecThyra);
     
+    // Output arguments f and preconditioner
     BlockMultiVectorConstPtr_Type solConst = this->getSolutionConst();
     BlockMultiVectorPtr_Type sol = rcp_const_cast<BlockMultiVector_Type >(solConst);
-    sol->fromThyraMultiVector(vecThyraNonConst);
+    sol->fromThyraMultiVector(vecThyraNonConst); // Setting solution to be the input vector inArgs
     
+    // Typedefs for Tpetra objects
     const RCP<Thyra::MultiVectorBase<SC> > f_out = outArgs.get_f();
     const RCP<Thyra::LinearOpBase<SC> > W_out = outArgs.get_W_op();
     const RCP<Thyra::PreconditionerBase<SC> > W_prec_out = outArgs.get_W_prec();
@@ -990,6 +992,7 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
     typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
     typedef RCP<const TpetraMatrix_Type> TpetraMatrixConstPtr_Type;
     
+    // Determine operations to be done
     const bool fill_f = nonnull(f_out);
     const bool fill_W = nonnull(W_out);
     const bool fill_W_prec = nonnull(W_prec_out);
@@ -997,25 +1000,28 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
     if ( fill_f || fill_W || fill_W_prec ) {
         
         // ****************
-        // Get the underlying xpetra objects
+        // Get the underlying tpetra objects
         // ****************
+        // 1) Calculate residual vector f
+
         if (fill_f) {
             
-            this->calculateNonLinResidualVec( "standard", time_ );
+            this->calculateNonLinResidualVec( "standard", time_ );  // Calculating residual Vector
                         
             BlockMultiVectorConstPtr_Type resConst = this->getResidualConst();
             BlockMultiVectorPtr_Type res = rcp_const_cast<BlockMultiVector_Type >(resConst);
             
+            // Changing the residualVector into a ThyraMultivector
             Teuchos::RCP<Thyra::MultiVectorBase<SC> > f_thyra = res->getThyraMultiVector();
             f_out->assign(*f_thyra);
         }
-        
+        // 2) Calculate Newton tangent W 
         TpetraMatrixPtr_Type W;
         if (fill_W) {
             
-            this->assemble("Newton");
+            this->assemble("Newton"); // ReAssembling matrices with updated u in this class
+            this->setBoundariesSystem(); // setting boundaries to the system
 
-            this->setBoundariesSystem();
             
             Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
             Teuchos::RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
@@ -1039,8 +1045,9 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
             W_tpetraMat->fillComplete();
             
         }
-        
+        // 3) Compute preconditioner W_prec if needed
         if (fill_W_prec) {
+            // We have the option to reuse the preconditioner after the first X Newtonsteps
             int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
             NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
 
@@ -1064,19 +1071,23 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
     }
 }
 
-
+/*!
+    \brief Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution.
+    ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver.
+*/
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
                                                    const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
 {
     
     using Teuchos::RCP;
-    using Teuchos::rcp;
+    // using Teuchos::rcp;
     using Teuchos::rcp_dynamic_cast;
     using Teuchos::rcp_const_cast;
     using Teuchos::ArrayView;
     using Teuchos::Array;
     
+    // Testing input arguments
     TEUCHOS_TEST_FOR_EXCEPTION( inArgs.get_x().is_null(), std::logic_error, "inArgs.get_x() is null.");
     
     RCP< const Thyra::VectorBase< SC > > vecThyra = inArgs.get_x();
@@ -1089,10 +1100,12 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBa
     for (int i=0; i<sol->size(); i++)
         sol->getBlockNonConst(i)->fromThyraMultiVector( vecThyraBlock->getNonconstVectorBlock(i) );
     
+    // Output arguments f and preconditioner
     const RCP<Thyra::MultiVectorBase<SC> > f_out = outArgs.get_f();
     const RCP<Thyra::LinearOpBase<SC> > W_out = outArgs.get_W_op();
     const RCP<Thyra::PreconditionerBase<SC> > W_prec_out = outArgs.get_W_prec();
   
+    // Typedefs for Tpetra objects
     typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> tpetra_extract;
     typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
     typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
@@ -1105,11 +1118,12 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBa
     if ( fill_f || fill_W || fill_W_prec ) {
         
         // ****************
-        // Get the underlying xpetra objects
+        // Get the underlying tpetra objects
         // ****************
+        // 1) Calculate residual vector f
         if (fill_f) {
             
-            this->calculateNonLinResidualVec("standard" , time_);
+            this->calculateNonLinResidualVec("standard" , time_); // Calculating residual Vector
             
             RCP< Thyra::ProductMultiVectorBase<SC> > f_outBlocks
                 = rcp_dynamic_cast< Thyra::ProductMultiVectorBase<SC> > ( f_out );
@@ -1125,15 +1139,15 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBa
                 f_i->assign(*res_i);
             }
         }
-        
+        // 2) Calculate Newton tangent W 
         TpetraMatrixPtr_Type W;
         if (fill_W) {
             
             typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
 
-            this->assemble("Newton");
-            
-            this->setBoundariesSystem();
+            this->assemble("Newton"); // ReAssembling matrices with updated u in this class
+            this->setBoundariesSystem(); // setting boundaries to the system
+
             
             RCP<ThyraBlockOp_Type> W_blocks = rcp_dynamic_cast<ThyraBlockOp_Type>(W_out);
 
@@ -1168,12 +1182,13 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplBlock( const Thyra::ModelEvaluatorBa
                 }
             }
         }
-        
+        // 3) Compute preconditioner W_prec if needed
         if (fill_W_prec) {
             std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
             NonLinProbPtr_Type nonLinProb = Teuchos::rcp_dynamic_cast<NonLinProb_Type>(problem_);
 
             if (precInitOnly_){
+                 // We have the option to reuse the preconditioner after the first X Newtonsteps
                 int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
 
                 if(nonLinProb->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )

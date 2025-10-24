@@ -1,21 +1,9 @@
-SET(IO_HEADERS
+set(IO_HEADERS
 	IO/IO_ParameterList_decl.hpp
 CACHE INTERNAL "")
 
-# SET(General_SOURCES
-# 	General/BCBuilder.cpp
-#     General/ExporterParaView.cpp
-#     General/ExporterTxt.cpp
-# CACHE INTERNAL "")
-
-SET(LOCAL_HEADERS)
-FOREACH(INC ${IO_HEADERS})
-  STRING(REPLACE "IO/" "" LOCAL_INC ${INC})
-  SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
-ENDFOREACH()
-
-INSTALL(
-  FILES ${LOCAL_HEADERS}
-  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/feddlib/core/IO"
-  COMPONENT ${PACKAGE_NAME}
-)
+set(LOCAL_HEADERS)
+foreach(INC ${IO_HEADERS})
+  string(REPLACE "IO/" "" LOCAL_INC ${INC})
+  append_set(LOCAL_HEADERS ${LOCAL_INC})
+endforeach()

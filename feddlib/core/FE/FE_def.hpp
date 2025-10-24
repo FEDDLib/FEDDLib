@@ -1358,7 +1358,7 @@ void FE<SC,LO,GO,NO>::addFeBlockMv(BlockMultiVectorPtr_Type &res, vec_dbl_ptr_Ty
 /*!
 
  \brief Adding FEBlock (row,column) to FE Blockmatrix
-@todo column indices pre determine
+TODO: column indices pre determine
 
 @param[in] &A Global Block Matrix
 @param[in] elementMatrix Stiffness matrix of one element
@@ -5974,7 +5974,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     int FEloc = this->checkFE(dim,FEType);
 
-    // Hole Elemente und Knotenliste
+    // Get elements and node lists
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
     MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
@@ -5985,11 +5985,11 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
 
     UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
 
-    // Hole die grad_phi, hier DPhi
+    // Get gradient(phi)
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi,FEType);
 
-    // Definiere die Basisfunktion \phi_i bzw. \phi_j
+    // Define basisfunctions \phi_i and \phi_j
     // vec_dbl_Type basisValues_i(dim,0.), basisValues_j(dim,0.);
 
     // SC = double, GO = long, UN = int
@@ -5999,40 +5999,39 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
     SmallMatrix<SC> Binv(dim);
     GO glob_i, glob_j;
 
-    // Fuer Zwischenergebniss
+    // for intermediate results
     SC res;
 
-    // Fuer die Berechnung der Spur
+    // for the computation of the trace
     double res_trace_i, res_trace_j;    
     
     if (dim == 2)
     {
 
         double v11, v12, v21, v22;
-        // Setzte Vektoren der Groesse 2 und initialisiere mit 0.0 (double)
+        // Initialize vectors of size 2 with 0.0 (double)
         vec_dbl_Type p1(2,0.0), p2(2,0.0), p3(2,0.0);
 
-        // Matrizen der Groesse (2x2) in denen die einzelnen Epsilon-Tensoren berechnet werden.
-        // Siehe unten fuer mehr.
+        // Matrices of size 2x2, in which the individual epsilon tensors are computed; see below for more.
         SmallMatrix<double> epsilonValuesMat1_i(dim), epsilonValuesMat2_i(dim),
         epsilonValuesMat1_j(dim), epsilonValuesMat2_j(dim);
 
         for (int T = 0; T < elements->numberElements(); T++)
         {
-            // Hole die Eckknoten des Dreiecks
+            // Get vertices of the triangle
             p1 = pointsRep->at(elements->getElement(T).getNode(0));
             p2 = pointsRep->at(elements->getElement(T).getNode(1));
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
-            // Berechne die Transormationsmatrix B fuer das jeweilige Element (2D)
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
+            // Compute transformation matrix B for the respective element (2D)
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
-            // dPhiTrans sind die transformierten Basifunktionen, also B^(-T) * \grad_phi bzw. \grad_phi^T * B^(-1).
-            // Also \hat{grad_phi}.
+            // dPhiTrans are the transformed basisfunctions, i.e., B^(-T) * \grad_phi and \grad_phi^T * B^(-1).
+            // So \hat{grad_phi}.
             vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
-            applyBTinv( dPhi, dPhiTrans, Binv ); //dPhiTrans berechnen
+            applyBTinv( dPhi, dPhiTrans, Binv ); // compute dPhiTrans
 
             for (int i = 0; i < dPhi->at(0).size(); i++)
             {
@@ -6047,27 +6046,27 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
                     v11 = 0.0; v12 = 0.0; v21 = 0.0; v22 = 0.0;
                     for (int k = 0; k < dPhi->size(); k++)
                     {
-                        // In epsilonValuesMat1_i (2x2 Matrix) steht fuer die Ansatzfunktion i bzw. \phi_i
-                        // der epsilonTensor fuer eine skalare Ansatzfunktion fuer die Richtung 1 (vgl. Mat1).
-                        // Also in Mat1_i wird dann also phi_i = (phi_scalar_i, 0) gesetzt und davon \eps berechnet.
+                        // In epsilonValuesMat1_i (2x2 matrix), epsilonTensor is contained for a scalar shape function for the direction 1 (cf. Mat1) 
+                        // corresponding to shape function i, i.e., \phi_i.
+                        // Thus, in Mat1_i we have \eps of phi_i = (phi_scalar_i, 0).
 
-                        // Stelle \hat{grad_phi_i} = basisValues_i auf, also B^(-T)*grad_phi_i
+                        // Compute \hat{grad_phi_i} = basisValues_i, i.e., B^(-T)*grad_phi_i
                         // GradPhiOnRef( dPhi->at(k).at(i), b_T_inv, basisValues_i );
 
                         // \eps(v) = \eps(phi_i)
-                        epsilonTensor( dPhiTrans.at(k).at(i), epsilonValuesMat1_i, 0); // x-Richtung
-                        epsilonTensor( dPhiTrans.at(k).at(i), epsilonValuesMat2_i, 1); // y-Richtung
+                        epsilonTensor( dPhiTrans.at(k).at(i), epsilonValuesMat1_i, 0); // x direction
+                        epsilonTensor( dPhiTrans.at(k).at(i), epsilonValuesMat2_i, 1); // y direction
 
-                        // Siehe oben, nur fuer j
+                        // See above, here carried out for j
                         // GradPhiOnRef( DPhi->at(k).at(j), b_T_inv, basisValues_j );
 
                         // \eps(u) = \eps(phi_j)
-                        epsilonTensor( dPhiTrans.at(k).at(j), epsilonValuesMat1_j, 0); // x-Richtung
-                        epsilonTensor( dPhiTrans.at(k).at(j), epsilonValuesMat2_j, 1); // y-Richtung
+                        epsilonTensor( dPhiTrans.at(k).at(j), epsilonValuesMat1_j, 0); // x direction
+                        epsilonTensor( dPhiTrans.at(k).at(j), epsilonValuesMat2_j, 1); // y direction
 
-                        // Nun berechnen wir \eps(u):\eps(v) = \eps(phi_j):\eps(phi_i).
-                        // Das Ergebniss steht in res.
-                        // Berechne zudem noch die Spur der Epsilon-Tensoren tr(\eps(u)) (j) und tr(\eps(v)) (i)
+                        // Now we compute \eps(u):\eps(v) = \eps(phi_j):\eps(phi_i).
+                        // The result wil be stored in res.
+                        // Compute the trace of the epsilon tensors tr(\eps(u)) (j) and tr(\eps(v)) (i)
                         epsilonValuesMat1_i.innerProduct(epsilonValuesMat1_j, res); // x-x
                         epsilonValuesMat1_i.trace(res_trace_i);
                         epsilonValuesMat1_j.trace(res_trace_j);
@@ -6090,7 +6089,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
 
 
                     }
-                    // Noch mit der abs(det(B)) skalieren
+                    // Scale with abs(det(B))
                     v11 = absDetB * v11;
                     v12 = absDetB * v12;
                     v21 = absDetB * v21;
@@ -6101,7 +6100,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDim(int dim,
                     value21[0] = v21;
                     value22[0] = v22;
 
-                    // Hole die globale Zeile und Spalte in der die Eintraege hingeschrieben werden sollen
+                    // Get the global row and column to which the entries need to be written.
                     glob_j = dim * map->getGlobalElement(elements->getElement(T).getNode(j));
                     glob_i = dim * map->getGlobalElement(elements->getElement(T).getNode(i));
                     indices[0] = glob_j;
@@ -6329,7 +6328,8 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
 {
     TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
     int FEloc = this->checkFE(dim,FEType);
-    // Hole Elemente und Knotenliste
+
+    // Get elements and node lists
     ElementsPtr_Type elements = domainVec_.at(FEloc)->getElementsC();
     vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FEloc)->getPointsRepeated();
     MapConstPtr_Type map = domainVec_.at(FEloc)->getMapRepeated();
@@ -6340,7 +6340,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
 
     UN deg = 2*Helper::determineDegree( dim, FEType, Helper::Deriv1);
 
-    // Hole die grad_phi, hier DPhi
+    // Get gradient(phi)
     Helper::getDPhi(dPhi, weightsDPhi, dim, FEType, deg);
     Helper::getQuadratureValues(dim, deg, quadPts, weightsDPhi,FEType);
 
@@ -6350,10 +6350,10 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
     SmallMatrix<SC> Binv(dim);
     GO glob_i, glob_j;
 
-    // Fuer Zwischenergebniss
+    // for intermediate results
     SC res;
 
-    // Fuer die Berechnung der Spur
+    // for the computation of the trace
     double res_trace_i, res_trace_j;    
     
     Teuchos::ArrayRCP< const SC > E = eModVec->getData(0);
@@ -6364,11 +6364,10 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
     {
 
         double v11, v12, v21, v22;
-        // Setzte Vektoren der Groesse 2 und initialisiere mit 0.0 (double)
+        // Initialize vectors of size 2 with 0.0 (double)
         vec_dbl_Type p1(2,0.0), p2(2,0.0), p3(2,0.0);
 
-        // Matrizen der Groesse (2x2) in denen die einzelnen Epsilon-Tensoren berechnet werden.
-        // Siehe unten fuer mehr.
+        // Matrices of size 2x2, in which the individual epsilon tensors are computed; see below for more.
         SmallMatrix<double> epsilonValuesMat1_i(dim), epsilonValuesMat2_i(dim),
         epsilonValuesMat1_j(dim), epsilonValuesMat2_j(dim);
 
@@ -6378,20 +6377,20 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
             lambda = E[T]* nu / ((1.+nu)*(1.-2.*nu));
             mu = E[T] / (2.*(1.+nu));
 
-            // Hole die Eckknoten des Dreiecks
+            // Get vertices of the triangle
             p1 = pointsRep->at(elements->getElement(T).getNode(0));
             p2 = pointsRep->at(elements->getElement(T).getNode(1));
             p3 = pointsRep->at(elements->getElement(T).getNode(2));
 
-            // Berechne die Transormationsmatrix B fuer das jeweilige Element (2D)
-            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B,FEType);
+            // Compute transformation matrix B for the respective element (2D)
+            Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
             detB = B.computeInverse(Binv);
             absDetB = std::fabs(detB);
 
-            // dPhiTrans sind die transformierten Basifunktionen, also B^(-T) * \grad_phi bzw. \grad_phi^T * B^(-1).
-            // Also \hat{grad_phi}.
+            // dPhiTrans are the transformed basisfunctions, i.e., B^(-T) * \grad_phi and \grad_phi^T * B^(-1).
+            // So \hat{grad_phi}.
             vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
-            applyBTinv( dPhi, dPhiTrans, Binv ); //dPhiTrans berechnen
+            applyBTinv( dPhi, dPhiTrans, Binv ); // compute dPhiTrans
 
             for (int i = 0; i < dPhi->at(0).size(); i++)
             {
@@ -6406,27 +6405,27 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
                     v11 = 0.0; v12 = 0.0; v21 = 0.0; v22 = 0.0;
                     for (int k = 0; k < dPhi->size(); k++)
                     {
-                        // In epsilonValuesMat1_i (2x2 Matrix) steht fuer die Ansatzfunktion i bzw. \phi_i
-                        // der epsilonTensor fuer eine skalare Ansatzfunktion fuer die Richtung 1 (vgl. Mat1).
-                        // Also in Mat1_i wird dann also phi_i = (phi_scalar_i, 0) gesetzt und davon \eps berechnet.
+                        // In epsilonValuesMat1_i (2x2 matrix), epsilonTensor is contained for a scalar shape function for the direction 1 (cf. Mat1) 
+                        // corresponding to shape function i, i.e., \phi_i.
+                        // Thus, in Mat1_i we have \eps of phi_i = (phi_scalar_i, 0).
 
-                        // Stelle \hat{grad_phi_i} = basisValues_i auf, also B^(-T)*grad_phi_i
+                        // Compute \hat{grad_phi_i} = basisValues_i, i.e., B^(-T)*grad_phi_i
                         // GradPhiOnRef( dPhi->at(k).at(i), b_T_inv, basisValues_i );
 
                         // \eps(v) = \eps(phi_i)
-                        epsilonTensor( dPhiTrans.at(k).at(i), epsilonValuesMat1_i, 0); // x-Richtung
-                        epsilonTensor( dPhiTrans.at(k).at(i), epsilonValuesMat2_i, 1); // y-Richtung
+                        epsilonTensor( dPhiTrans.at(k).at(i), epsilonValuesMat1_i, 0); // x direction
+                        epsilonTensor( dPhiTrans.at(k).at(i), epsilonValuesMat2_i, 1); // y direction
 
-                        // Siehe oben, nur fuer j
+                        // See above, here carried out for j
                         // GradPhiOnRef( DPhi->at(k).at(j), b_T_inv, basisValues_j );
 
                         // \eps(u) = \eps(phi_j)
-                        epsilonTensor( dPhiTrans.at(k).at(j), epsilonValuesMat1_j, 0); // x-Richtung
-                        epsilonTensor( dPhiTrans.at(k).at(j), epsilonValuesMat2_j, 1); // y-Richtung
+                        epsilonTensor( dPhiTrans.at(k).at(j), epsilonValuesMat1_j, 0); // x direction
+                        epsilonTensor( dPhiTrans.at(k).at(j), epsilonValuesMat2_j, 1); // y direction
 
-                        // Nun berechnen wir \eps(u):\eps(v) = \eps(phi_j):\eps(phi_i).
-                        // Das Ergebniss steht in res.
-                        // Berechne zudem noch die Spur der Epsilon-Tensoren tr(\eps(u)) (j) und tr(\eps(v)) (i)
+                        // Now we compute \eps(u):\eps(v) = \eps(phi_j):\eps(phi_i).
+                        // The result wil be stored in res.
+                        // Compute the trace of the epsilon tensors tr(\eps(u)) (j) and tr(\eps(v)) (i)
                         epsilonValuesMat1_i.innerProduct(epsilonValuesMat1_j, res); // x-x
                         epsilonValuesMat1_i.trace(res_trace_i);
                         epsilonValuesMat1_j.trace(res_trace_j);
@@ -6449,7 +6448,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
 
 
                     }
-                    // Noch mit der abs(det(B)) skalieren
+                    // Scale with abs(det(B))
                     v11 = absDetB * v11;
                     v12 = absDetB * v12;
                     v21 = absDetB * v21;
@@ -6460,7 +6459,7 @@ void FE<SC,LO,GO,NO>::assemblyLinElasXDimE(int dim,
                     value21[0] = v21;
                     value22[0] = v22;
 
-                    // Hole die globale Zeile und Spalte in der die Eintraege hingeschrieben werden sollen
+                    // Get the global row and column to which the entries need to be written.
                     glob_j = dim * map->getGlobalElement(elements->getElement(T).getNode(j));
                     glob_i = dim * map->getGlobalElement(elements->getElement(T).getNode(i));
                     indices[0] = glob_j;
@@ -8306,7 +8305,6 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
     }
     //f->scale(-1.);
     Kext->fillComplete(domainVec_.at(FEloc)->getMapVecFieldUnique(),domainVec_.at(FEloc)->getMapVecFieldUnique());
-    // Kext->writeMM("K_ext1");
 }
 
 /// Compute Surface Normal based on surface nodes,

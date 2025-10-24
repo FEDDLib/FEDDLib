@@ -1,21 +1,17 @@
-INCLUDE(TribitsCopyFilesToBinaryDir)
-INCLUDE(TribitsAddExecutableAndTest)
-INCLUDE(AddSubdirectories)
-
 ### neumannBC
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 neumannBC
 SOURCES neumannBC.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 neumannBC
 NAME neumannBC
 ARGS
 NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_bc_2dSquare
+tribits_copy_files_to_binary_dir(data_bc_2dSquare
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
 	SOURCE_FILES square.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -24,19 +20,19 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_bc_2dSquare
 )
 
 ### Write and Read File HDF5
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 writeRead
 SOURCES write_read.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 writeRead
 NAME writeRead
 ARGS
 NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_writeRead
+tribits_copy_files_to_binary_dir(data_writeRead
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
 	SOURCE_FILES square.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

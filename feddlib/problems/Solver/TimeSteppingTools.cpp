@@ -491,7 +491,9 @@ double TimeSteppingTools::getInformationBDF(int i){
 }
 
 void TimeSteppingTools::setInformationBDF(){
+    // Solving Ordinary Differential Equations I - E. Hairer, S. P. Nørsett, G. Wanner  Equation (5.14) -> BDF 2 Formula
     BDFInformation_.reset(new vec_dbl_Type(BDFNmb_+2));
+    double omega_n = dt_ / dt_prev_;
     switch (BDFNmb_) {
         case 1: //implicit;
             BDFInformation_->at(0) = 1.; //Mun+1/dt
@@ -499,14 +501,16 @@ void TimeSteppingTools::setInformationBDF(){
             BDFInformation_->at(2) = 1.; //Mun/dt
             break;
         case 2:
-            // BDFInformation_->at(0) = 3.; //Mun+2/dt
-            // BDFInformation_->at(1) = 2.; //Aun+2
-            // BDFInformation_->at(2) = 4.; //Mun+1/dt
-            // BDFInformation_->at(3) = -1.; //Mun
-            BDFInformation_->at(0) = 1.5; //Mun+2/dt
-            BDFInformation_->at(1) = 1.0; //Aun+2
-            BDFInformation_->at(2) = 2.0; //Mun+1/dt
-            BDFInformation_->at(3) = -0.5; //Mun/dt
+            // BDFInformation_->at(0) = 1.5; //Mun+2/dt
+            // BDFInformation_->at(1) = 1.0; //Aun+2
+            // BDFInformation_->at(2) = 2.0; //Mun+1/dt
+            // BDFInformation_->at(3) = -0.5; //Mun/dt
+            // Implementing the coefficient for varying time step size
+            BDFInformation_->at(0) = (1.+2.*omega_n)/(1.+omega_n);
+            BDFInformation_->at(1) = 1.;
+            BDFInformation_->at(2) = 1+omega_n ; // BDFInformation_->at(0) *  (1.+omega_n) * (1.+omega_n)/ (1.+2.*omega_n);
+            BDFInformation_->at(3) = - omega_n * omega_n / (1+omega_n) ; // BDFInformation_->at(0) * (omega_n * omega_n) / (1.+2.*omega_n);
+            // std::cout << " BDF2 with variable time step size: " << BDFInformation_->at(0) << " " << BDFInformation_->at(1) << " " << BDFInformation_->at(2) << " " << BDFInformation_->at(3) << std::endl;
             break;
         default:
             break;

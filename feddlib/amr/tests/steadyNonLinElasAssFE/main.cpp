@@ -8,9 +8,12 @@
 #include "feddlib/problems/specific/LinElas.hpp"
 #include "feddlib/problems/specific/NonLinElasticity.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
+
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/amr/AdaptiveMeshRefinement.hpp"
+
+#include <Tpetra_Core.hpp>
+
 
 void zeroDirichlet(double* x, double* res, double t, const double* parameters)
 {
@@ -143,7 +146,7 @@ int main(int argc, char *argv[])
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    Teuchos::RCP<const Teuchos::Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;

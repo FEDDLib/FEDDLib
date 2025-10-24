@@ -1,4 +1,4 @@
-SET(problems_specific_HEADERS
+set(problems_specific_HEADERS
     specific/Geometry_decl.hpp
     specific/Geometry_def.hpp
     specific/Geometry.hpp
@@ -34,7 +34,7 @@ SET(problems_specific_HEADERS
     specific/FSI.hpp
 CACHE INTERNAL "")
 
-SET(problems_specific_SOURCES
+set(problems_specific_SOURCES
     specific/Geometry.cpp
 	specific/Laplace.cpp
 	specific/LaplaceBlocks.cpp
@@ -49,14 +49,8 @@ SET(problems_specific_SOURCES
 CACHE INTERNAL "")
 
 
-SET(LOCAL_HEADERS)
-FOREACH(INC ${Problems_HEADERS})
-  STRING(REPLACE "specific/" "" LOCAL_INC ${INC})
-  SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
-ENDFOREACH()
-
-INSTALL(
-  FILES ${LOCAL_HEADERS}
-  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/feddlib/core/problems/specific"
-  COMPONENT ${PACKAGE_NAME}
-)
+set(LOCAL_HEADERS)
+foreach(INC ${Problems_HEADERS})
+  string(REPLACE "specific/" "" LOCAL_INC ${INC})
+  append_set(LOCAL_HEADERS ${LOCAL_INC})
+endforeach()

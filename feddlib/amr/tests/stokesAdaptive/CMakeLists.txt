@@ -1,9 +1,9 @@
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	stokesAdaptive
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	stokesAdaptive
 	NAME stokesAdaptive
 	ARGS
@@ -11,7 +11,7 @@ TRIBITS_ADD_TEST(
 	NUM_MPI_PROCS 2
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_stokesAdaptive
+tribits_copy_files_to_binary_dir(data_stokesAdaptive
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml parametersPrecBlock.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -19,7 +19,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_stokesAdaptive
 	EXEDEPS stokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_stokesAdaptive3D1
+tribits_copy_files_to_binary_dir(mesh_stokesAdaptive3D1
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES BFS3dC.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -27,7 +27,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_stokesAdaptive3D1
 	EXEDEPS stokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_stokesAdaptive3D2
+tribits_copy_files_to_binary_dir(mesh_stokesAdaptive3D2
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES ldc3D.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -35,7 +35,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_stokesAdaptive3D2
 	EXEDEPS stokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_stokesAdaptive2D1
+tribits_copy_files_to_binary_dir(mesh_stokesAdaptive2D1
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES Verfuerth2.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -43,7 +43,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_stokesAdaptive2D1
 	EXEDEPS stokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_stokesAdaptive2D2
+tribits_copy_files_to_binary_dir(mesh_stokesAdaptive2D2
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES circle.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

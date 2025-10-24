@@ -18,13 +18,14 @@
 #include "feddlib/problems/specific/Laplace.hpp"
 #include "feddlib/problems/abstract/Problem.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"
 #include "feddlib/core/Mesh/Mesh.hpp"
 #include "feddlib/core/Mesh/MeshInterface.hpp"
 #include "feddlib/core/Mesh/MeshFileReader.hpp"
 #include "feddlib/amr/AdaptiveMeshRefinement.hpp"
+#include <Tpetra_Core.hpp>
+
 
 #include <boost/function.hpp>
 #include <chrono> 
@@ -245,7 +246,7 @@ int main(int argc, char *argv[]) {
     Teuchos::oblackholestream blackhole;
     Teuchos::GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    Teuchos::RCP<const Teuchos::Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
 
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;

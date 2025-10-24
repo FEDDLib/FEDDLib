@@ -1,49 +1,28 @@
-INCLUDE(TribitsPackageMacros)
-INCLUDE(TribitsAddOptionAndDefine)
-INCLUDE(TribitsLibraryMacros)
-
 #
 # A) Define the package
 #
 
-TRIBITS_PACKAGE(amr)
-SET(${PACKAGE_NAME}_VERSION "1.0.0")
+tribits_package(amr)
+set(${PACKAGE_NAME}_VERSION "1.0.0")
 
 #
 # B) Set up package-specific options
 #
 
-TRIBITS_ADD_SHOW_DEPRECATED_WARNINGS_OPTION()
+tribits_add_debug_option()
 
-#FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-#    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Ifpack2")
-#        SET(FEDD_HAVE_IFPACK2 TRUE)
-#    ENDIF()
-#ENDFOREACH()
+tribits_add_show_deprecated_warnings_option()
 
-FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "NOX")
-        SET(FEDD_HAVE_NOX TRUE)
-    ENDIF()
-ENDFOREACH()
+tribits_configure_file(${PACKAGE_NAME}_config.h)
 
-FOREACH(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    IF(${TRILINOS_PACKAGE_NAME} STREQUAL "Teko")
-        SET(FEDD_HAVE_TEKO TRUE)
-    ENDIF()
-ENDFOREACH()
+set(HEADERS "")
+set(SOURCES "")
 
-
-TRIBITS_CONFIGURE_FILE(${PACKAGE_NAME}_config.h)
-
-SET(HEADERS "")
-SET(SOURCES "")
-
-SET(HEADERS ${HEADERS}
+append_set(HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_config.h
 )
 
-SET(HEADERS ${HEADERS} 
+append_set(HEADERS
 	AdaptiveMeshRefinement.hpp
 	AdaptiveMeshRefinement_decl.hpp
 	AdaptiveMeshRefinement_def.hpp
@@ -56,46 +35,29 @@ SET(HEADERS ${HEADERS}
 	ExporterParaViewAMR.hpp
 	ExporterParaViewAMR_decl.hpp
 	ExporterParaViewAMR_def.hpp
-CACHE INTERNAL "")
+)
 
-SET(SOURCES ${SOURCES} 
+append_set(SOURCES
 	AdaptiveMeshRefinement.cpp
 	RefinementFactory.cpp
 	ErrorEstimation.cpp
 	ExporterParaViewAMR.cpp
-CACHE INTERNAL "")
-	
-#SET(LOCAL_HEADERS)
-#FOREACH(INC ${AMR_HEADERS})
-#  STRING(REPLACE "amr/ " "" LOCAL_INC ${INC})
-#  SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
-#ENDFOREACH()
+)
 
-#INSTALL(
-#  FILES ${LOCAL_HEADERS}
-#  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/feddlib/amr"
-#  COMPONENT ${PACKAGE_NAME}
-#)
-
-TRIBITS_EXCLUDE_AUTOTOOLS_FILES()
 # This is the list of files excluded from the tarball
-TRIBITS_EXCLUDE_FILES()
+tribits_exclude_files()
 
 # Add library target
-TRIBITS_ADD_LIBRARY(
+tribits_add_library(
 amr
 HEADERS ${HEADERS}
 SOURCES ${SOURCES}
 )
 
-TRIBITS_ADD_TEST_DIRECTORIES(tests)
-
-
-#TRIBITS_ADD_EXAMPLE_DIRECTORIES(examples)
+tribits_add_test_directories(tests)
 
 #
 # Do standard postprocessing
 #
 
-TRIBITS_PACKAGE_POSTPROCESS()
-
+tribits_package_postprocess()

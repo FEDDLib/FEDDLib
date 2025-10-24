@@ -60,47 +60,75 @@ public:
     typedef Tpetra::Operator<SC,LO,GO,NO> TpetraOp_Type;
     typedef Thyra::BlockedLinearOpBase<SC> ThyraBlockOp_Type;
 
+    /// @brief Constructor
+    /// @param comm 
     NonLinearProblem(CommConstPtr_Type comm);
 
+    /// @brief Constructor with parameterlist
+    /// @param parameterList 
+    /// @param comm 
     NonLinearProblem(ParameterListPtr_Type &parameterList, CommConstPtr_Type comm);
 
     ~NonLinearProblem();
 
     virtual void info() = 0;
 
+    /// @brief Information about the non-linear problem
     void infoNonlinProblem();
 
+    /// @brief Initialisation of the non-linear problem with system, vectors, and Thyra vector spaces for NOX
+    /// @param nmbVectors 
     void initializeProblem(int nmbVectors=1);
     
+    /// @brief assemble of type exectuted by the derived specific non-linear problem classes
+    /// @param type for example Newton
     virtual void assemble( std::string type = "" ) const = 0;
 
+    /// @brief  Virtual class to extract values of interest that are computed during the solve
+    /// @param values 
     virtual void getValuesOfInterest( vec_dbl_Type& values ) = 0;
     
+    /// @brief Solving the non-linear problem and updating the solution
+    /// @param criterion Update or Residual
+    /// @param criterionValue The actual value of the criterion
+    /// @return number of linear iterations
     int solveAndUpdate( const std::string& criterion , double& criterionValue );
 
+    /// @brief This is where the linear solve specifically happens
+    /// @return Number of linear iterations
     int solveUpdate( );
 
-//    virtual void reAssemble(std::string type="FixedPoint") const = 0;
 
+    /// @brief Reassemble with previous solution. I think it is not used anymore. @TODO: Look into this.
+    /// @param previousSolution 
     virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const = 0;
     
     void reAssembleAndFill( BlockMatrixPtr_Type bMat, std::string type="FixedPoint" );
 
     virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions) = 0;
-    //MultiVector_ptr_vec_ptr_Type allPreviousSolutions
-//    virtual int ComputeDragLift(vec_dbl_ptr_Type &values) = 0;    
 
+    /// @brief Initialisation of the non-linear vectors like residual and previous solution
+    /// @param nmbVectors 
     void initializeVectorsNonLinear(int nmbVectors=1);
 
+    /// @brief Calculate the 2-norm of the residual vector
+    /// @return Value of the norm of the residual
     double calculateResidualNorm() const;
 
+    /// @brief Virtual function which is implemented in the specific non-linear problem classes to calculate the non-linear residual vector
+    /// @param type standard or reverse depending on Newton formulation, e.g. as in NOX or FEDDLib-Newton
+    /// @param time current timestep
     virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const = 0; //type=standard or reverse
 
-    // if used for timeproblem
+    /// @brief Calculate the non-linear residual vector with given coefficients for time-dependent problems (if used for timeproblem)
     virtual void calculateNonLinResidualVec(SmallMatrix<double>& coeff, std::string type="standard", double time=0.); //type=standard or reverse
     
+    /// @brief Get the residual vector
+    /// @return residual vector
     BlockMultiVectorPtr_Type getResidualVector() const;
     
+    /// @brief Get previous solution. Needed for time-dependent problems
+    /// @return 
     BlockMultiVectorPtr_Type getPreviousSolution() const{ return previousSolution_; }
 
     virtual Thyra::ModelEvaluatorBase::InArgs<SC> getNominalValues() const;
@@ -118,9 +146,6 @@ public:
     void initVectorSpacesMonolithic( );
 
     void initVectorSpacesBlock( );
-
-    // virtual void evalModelImpl(const ::Thyra::ModelEvaluatorBase::InArgs<SC> &inArgs,
-                            //    const ::Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs) const = 0;
 
     virtual ::Thyra::ModelEvaluatorBase::OutArgs<SC> createOutArgsImpl() const;
     
@@ -148,8 +173,8 @@ private:
 
     Thyra::ModelEvaluatorBase::InArgs<SC> nominalValues_;
 
-    ::Thyra::ModelEvaluatorBase::InArgs<SC> prototypeInArgs_;
-    ::Thyra::ModelEvaluatorBase::OutArgs<SC> prototypeOutArgs_;
+    Thyra::ModelEvaluatorBase::InArgs<SC> prototypeInArgs_;
+    Thyra::ModelEvaluatorBase::OutArgs<SC> prototypeOutArgs_;
 
     Teuchos::RCP<const ThyraVecSpace_Type> xSpace_;
     Teuchos::RCP<const ThyraVecSpace_Type> fSpace_;

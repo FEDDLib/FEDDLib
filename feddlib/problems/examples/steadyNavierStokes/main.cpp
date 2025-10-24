@@ -12,7 +12,6 @@
 #include "feddlib/problems/specific/NavierStokes.hpp"
 
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
 #include <Teuchos_StackedTimer.hpp>
 
 

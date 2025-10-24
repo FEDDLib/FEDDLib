@@ -3,13 +3,13 @@
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "Map.hpp"
+#include "MultiVector.hpp"
 
 /*!
  Declaration of BlockMap
  
  @brief  BlockMap
- @author Christian Hochmuth
+ @author Christian Hochmuth Lea Saßmannshausen
  @version 1.0
  @copyright CH
  */

@@ -319,30 +319,35 @@ namespace FEDD
                                                             const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
     {
         using Teuchos::RCP;
-        using Teuchos::rcp;
+        // using Teuchos::rcp;
         using Teuchos::rcp_dynamic_cast;
         using Teuchos::rcp_const_cast;
         using Teuchos::ArrayView;
         using Teuchos::Array;
-        RCP<Teuchos::FancyOStream> fancy = Teuchos::fancyOStream(Teuchos::rcpFromRef(std::cout));
+        // For output of xpetra/tpetra vectors
+        // RCP<Teuchos::FancyOStream> fancy = Teuchos::fancyOStream(Teuchos::rcpFromRef(std::cout));
+        // RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
+
+        // Testing input arguments
         TEUCHOS_TEST_FOR_EXCEPTION( inArgs.get_x().is_null(), std::logic_error, "inArgs.get_x() is null.");
 
         RCP< const Thyra::VectorBase< SC > > vecThyra = inArgs.get_x();
-        RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
-
         RCP< Thyra::VectorBase< SC > > vecThyraNonConst = rcp_const_cast<Thyra::VectorBase< SC > >(vecThyra);
 
-        this->solution_->fromThyraMultiVector(vecThyraNonConst);
+        this->solution_->fromThyraMultiVector(vecThyraNonConst); // Setting solution to be the input vector inArgs
 
+        // Output arguments f and preconditioner
         const RCP<Thyra::MultiVectorBase<SC> > f_out = outArgs.get_f();
         const RCP<Thyra::LinearOpBase<SC> > W_out = outArgs.get_W_op();
         const RCP<Thyra::PreconditionerBase<SC> > W_prec_out = outArgs.get_W_prec();
 
+        // Typedefs for Tpetra objects
         typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> tpetra_extract;
         typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
         typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
         typedef RCP<const TpetraMatrix_Type> TpetraMatrixConstPtr_Type;
     
+        // Determine operations to be done
         const bool fill_f = nonnull(f_out);
         const bool fill_W = nonnull(W_out);
         const bool fill_W_prec = nonnull(W_prec_out);
@@ -353,6 +358,7 @@ namespace FEDD
             // ****************
             // Get the underlying xpetra objects
             // ****************
+            // 1) Calculate residual vector f
             if (fill_f) {
 
                 this->calculateNonLinResidualVec("standard"); // Calculating residual Vector
@@ -363,12 +369,13 @@ namespace FEDD
                 f_out->assign(*f_thyra);
             }
 
+            // 2) Calculate Newton tangent W 
             TpetraMatrixPtr_Type W;
             if (fill_W) {
-                this->assemble("Newton"); // ReAssembling matrices with updated u  in this class
-
+                this->assemble("Newton"); // ReAssembling matrices with updated u in this class
                 this->setBoundariesSystem(); // setting boundaries to the system
 
+                // Cast reassembles matrix to tpetra operator/matrix
                 Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
                 Teuchos::RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
                 
@@ -391,16 +398,17 @@ namespace FEDD
                 W_tpetraMat->fillComplete();
 
             }
-
+            // 3) Compute preconditioner W_prec if needed
             if (fill_W_prec) {
                 
                 if (precInitOnly_){
+                    // We have the option to reuse the preconditioner after the first X Newtonsteps
                     int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
                     if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
                     {
-                        this->setupPreconditioner( "Monolithic" );
+                        this->setupPreconditioner( "Monolithic" ); // Rebuilding preconditioner
                     }
-                    else{
+                    else{ // Reusing preconditioner
                         if (this->verbose_)
                             std::cout << " NonLinearProblem<SC,LO,GO,NO>::evalModelImplMonolithic:: Skipping preconditioner reconstruction" << std::endl;
                     }
@@ -431,17 +439,20 @@ namespace FEDD
                                                     const Thyra::ModelEvaluatorBase::OutArgs<SC> &outArgs ) const
     {
         using Teuchos::RCP;
-        using Teuchos::rcp;
+        // using Teuchos::rcp;
         using Teuchos::rcp_dynamic_cast;
         using Teuchos::rcp_const_cast;
         using Teuchos::ArrayView;
         using Teuchos::Array;
 
-        RCP<Teuchos::FancyOStream> fancy = Teuchos::fancyOStream(Teuchos::rcpFromRef(std::cout));
+        // For output of xpetra/tpetra vectors
+        // RCP<Teuchos::FancyOStream> fancy = Teuchos::fancyOStream(Teuchos::rcpFromRef(std::cout));
+        // RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
+
+        // Testing input arguments
         TEUCHOS_TEST_FOR_EXCEPTION( inArgs.get_x().is_null(), std::logic_error, "inArgs.get_x() is null.");
 
         RCP< const Thyra::VectorBase< SC > > vecThyra = inArgs.get_x();
-        RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
 
         RCP< Thyra::VectorBase< SC > > vecThyraNonConst = rcp_const_cast<Thyra::VectorBase< SC > >(vecThyra);
 
@@ -450,27 +461,31 @@ namespace FEDD
         this->solution_->getBlockNonConst(0)->fromThyraMultiVector( vecThyraBlock->getNonconstVectorBlock(0) );
         this->solution_->getBlockNonConst(1)->fromThyraMultiVector( vecThyraBlock->getNonconstVectorBlock(1) );
 
+        // Output arguments f and preconditioner
         const RCP<Thyra::MultiVectorBase<SC> > f_out = outArgs.get_f();
         const RCP<Thyra::LinearOpBase<SC> > W_out = outArgs.get_W_op();
         const RCP<Thyra::PreconditionerBase<SC> > W_prec_out = outArgs.get_W_prec();
 
+        // Typedefs for Tpetra objects
         typedef Thyra::TpetraOperatorVectorExtraction<SC,LO,GO,NO> tpetra_extract;
         typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraMatrix_Type;
         typedef RCP<TpetraMatrix_Type> TpetraMatrixPtr_Type;
         typedef RCP<const TpetraMatrix_Type> TpetraMatrixConstPtr_Type;
 
-        const bool fill_f = nonnull(f_out);
+        // Determine operations to be done
+        const bool fill_f = nonnull(f_out); 
         const bool fill_W = nonnull(W_out);
         const bool fill_W_prec = nonnull(W_prec_out);
 
         if ( fill_f || fill_W || fill_W_prec ) {
 
             // ****************
-            // Get the underlying xpetra objects
+            // Get the underlying tpetra objects
             // ****************
+            // 1) Calculate residual vector f
             if (fill_f) {
 
-                this->calculateNonLinResidualVec("standard");
+                this->calculateNonLinResidualVec("standard"); // Calculating residual Vector
 
                 Teko::MultiVector f0;
                 Teko::MultiVector f1;
@@ -484,15 +499,16 @@ namespace FEDD
                 f_out->assign(*f);
             }
 
+            // 2) Calculate Newton tangent W 
             TpetraMatrixPtr_Type W;
             if (fill_W) {
 
                 typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
 
-                this->assemble("Newton");
+                this->assemble("Newton"); // ReAssembling matrices with updated u in this class
+                this->setBoundariesSystem(); // setting boundaries to the system
 
-                this->setBoundariesSystem();
-
+                // Cast reassembles matrix to tpetra operator/matrix
                 RCP<ThyraBlockOp_Type> W_blocks = rcp_dynamic_cast<ThyraBlockOp_Type>(W_out);
                 RCP<const ThyraOp_Type> W_block00 = W_blocks->getBlock(0,0);
                 RCP<ThyraOp_Type> W_block00NonConst = rcp_const_cast<ThyraOp_Type>( W_block00 );
@@ -515,10 +531,11 @@ namespace FEDD
                 W_tpetraMat->fillComplete();
 
             }
-
+            // 3) Compute preconditioner W_prec if needed
             if (fill_W_prec) {
                 std::string type = this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic");
                 if (precInitOnly_){
+                    // We have the option to reuse the preconditioner after the first X Newtonsteps
                     int newtonLimit = this->parameterList_->sublist("Parameter").get("newtonLimit",2);
                     if(this->newtonStep_ < newtonLimit || this->parameterList_->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
                     {

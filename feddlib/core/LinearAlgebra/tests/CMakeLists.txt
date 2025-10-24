@@ -1,27 +1,10 @@
-INCLUDE(TribitsCopyFilesToBinaryDir)
-INCLUDE(TribitsAddExecutableAndTest)
-INCLUDE(AddSubdirectories)
-
-### BlockViews
-#TRIBITS_ADD_EXECUTABLE(
-#	blockView
-#	SOURCES blockView.cpp
-#)
-
-#TRIBITS_ADD_TEST(
-#	blockView
-#    NAME blockView
-#    ARGS
-#    NUM_MPI_PROCS 2
-#)
-
 ### Map
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	map
 	SOURCES map.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	map
     NAME map
     ARGS
@@ -29,12 +12,12 @@ TRIBITS_ADD_TEST(
 )
 
 ### Map Tpetra
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	map_tpetra
 	SOURCES map_tpetra.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	map_tpetra
     NAME map_tpetra
     ARGS
@@ -42,12 +25,12 @@ TRIBITS_ADD_TEST(
 )
 
 ### Matrix
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	matrix
 	SOURCES matrix.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	matrix
     NAME matrix
     ARGS
@@ -56,12 +39,12 @@ TRIBITS_ADD_TEST(
 
 
 ### Matrix
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
     blockMatrixPtrAccess
     SOURCES blockMatrixPtrAccess.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
     blockMatrixPtrAccess
     NAME blockMatrixPtrAccess
     ARGS
@@ -70,12 +53,12 @@ TRIBITS_ADD_TEST(
 
 
 ### Matrix assembly
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	matrix_assembly
 	SOURCES matrix_assembly.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	matrix_assembly
     NAME matrix_assembly
     ARGS
@@ -84,36 +67,14 @@ TRIBITS_ADD_TEST(
 
 
 ### MultiVector
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 multivector
 SOURCES multivector.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 multivector
 NAME multivector
 ARGS
 NUM_MPI_PROCS 4
 )
-
-#TRIBITS_COPY_FILES_TO_BINARY_DIR(data_matrix
-#	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-#	SOURCE_FILES
-#	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-#	DEST_FILES
-#	EXEDEPS matrix
-#)
-
-
-### Consistent Partitioning
-#TRIBITS_ADD_EXECUTABLE(
-#consistentPartitioning
-#SOURCES consistentPartitioning.cpp
-#)
-
-#TRIBITS_ADD_TEST(
-#consistentPartitioning
-#NAME consistentPartitioning
-#ARGS
-#NUM_MPI_PROCS 2
-#)

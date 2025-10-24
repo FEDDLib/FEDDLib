@@ -1,16 +1,16 @@
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	laplace
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	laplace
     NAME laplace
     ARGS
     NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_laplace
+tribits_copy_files_to_binary_dir(data_laplace
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrec.xml  parametersProblem.xml parametersSolver.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -18,7 +18,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_laplace
 	EXEDEPS laplace
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_laplace
+tribits_copy_files_to_binary_dir(mesh_laplace
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
 	SOURCE_FILES square.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

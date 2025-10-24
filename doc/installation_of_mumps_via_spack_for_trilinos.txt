@@ -1,0 +1,76 @@
+2025-10: Goal: Install Trilinos on RAMSES with Mumps support.
+
+Content: Load modules and use Spack to install Mumps on RAMSES. OpenMP support is disabled. GCC and OpenMPI are used.
+
+Guide:
+
+Clone GitHub repository of Spack and add Spack to the path evironment variable (adjust path to your setup):
+. ~/opt/spack/share/spack/setup-env.sh
+Load GCC compiler and OpenMPI with
+   module load ***
+For the following, GCC will be loaded in version 13.3.0.
+Spack needs to be aware of installed compilers.
+   spack compiler find
+To check which compilers are available to Spack, run
+   spack compiler list
+Find a Mumps package in Spack:
+   spack list mumps
+List the dependency tree of Spack
+   spack spec -Il mumps %gcc@13.3.0
+ Symbols at the very left of the output:
+* A minus sign: package is not installed.
+* [e] means external (not even mentioned in the documentation ...)
+* [+] means installed
+* [^] installed in an upstream package of the dependency tree
+* [-] missing dependency of installed package.
+In my case, the dependency tree had the following header:
+   mumps@5.8.1~blr_mt+complex+double+float~incfort~int64~metis+mpi+openmp~parmetis~ptscotch~scotch+shared build_system=generic patches:=14f0694 platform=linux os=rhel9 target=zen4 %c,fortran=gcc@13.3.0
+We remove most things from this configuration to concentrate on OpenMPI, since, as of now, it will install OpenMPI and not use the preinstalled version. First, we find our external OpenMPI installation and then show the specification output again: 
+   spack external find openmpi
+   spack spec -Il mumps@5.8.1+mpi~openmp %c,fortran=gcc@13.3.0
+The plus sign means that MPI support will be enabled, the tilde means that  OpenMP support will be disabled. c and Fortran are used from GCC 13.3.0. The new output of the last command should show an [e] in front of GCC and OpenMPI; i.e., they are externally available packages that will be used during Mumps setup.
+We load OpenBLAS as a module.
+   module load ***
+Note that I later had issues with Trilinos, which did not like the preinstalled OpenBLAS version, which was compiled with OpenMP support. I replaced it with a self-compiled OpenBLAS version that did not have OpenMP support. However, I did not have to reinstall Mumps with the self-compiled OpenBLAS version. If, however, you have/want to do this, you need to search how to tell Spack where your OpenBLAS installation is.
+   spack external find openblas
+   spack spec -Il mumps@5.8.1+mpi~openmp %c,fortran=gcc@13.3.0
+The output should now show that the external OpenBLAS installation is used.
+Next, we enable METIS and ParMETIS, which completes the specifications for Mumps.
+   spack spec -Il mumps@5.8.1~blr_mt+complex+double+float~incfort~int64+metis+mpi~openmp+parmetis~ptscotch~scotch+shared build_system=generic patches:=14f0694 platform=linux os=rhel9 target=zen4 %c,fortran=gcc@13.3.0
+This gave me an error (by what I understand from a GitHub issue, this is a bug in parsing the parameters), so I remove the default parameters but keep the important ones for us:
+   spack spec -Il mumps@5.8.1+metis+mpi~openmp+parmetis %c,fortran=gcc@13.3.0
+Note that I did not use my self-compiled repository METIS and ParMETIS versions, as they don't have a version number and might lead to a conflict. Furthermore, they are not very big. So I suppose, it is better to let Spack install METIS and ParMETIS instead of installing it yourself.
+   spack install mumps@5.8.1~blr_mt+complex+double+float~incfort~int64+metis+mpi~openmp+parmetis~ptscotch~scotch+shared build_system=generic patches:=14f0694 platform=linux os=rhel9 target=zen4 %c,fortran=gcc@13.3.0
+I get the same error as before, so instead I use again the following shortened command:
+spack install mumps@5.8.1+metis+mpi~openmp+parmetis %c,fortran=gcc@13.3.0
+To see a list of installed packages:
+   spack find -I
+In my case, the packages are installed in ~/opt/spack/opt/spack/linux-zen4/
+To load the installed packages:
+   spack load metis parmetis mumps
+
+----------------------------------
+Issue:
+
+For the configure script that I was using to install Trilinos for FEDDLib, I had to set in 
+   packages/thyra/cmake/Dependencies.cmake
+EpetraAdapters and EpetraExtAdapters to REQUIRED (from OPTIONAL). This will certainly change, since Epetra is deprecated.
+----------------------------------
+
+In the Trilinos cmake configure script, add
+   -D Amesos2_ENABLE_MUMPS:BOOL=ON \
+   -D Amesos2_ENABLE_MUMPS:BOOL=ON \
+   -D Amesos2_ENABLE_TESTS:BOOL=ON \
+and
+   -D Tpetra_INST_INT_LONG_LONG:BOOL=OFF \
+   -D Tpetra_INST_INT_INT:BOOL=ON \
+As of now, the opposite (INT_LONG_LONG is on, INT_INT is off) also works, which may be preferably to you.
+See sampleConfigureScripts/configure-on-CentOS-Linux-8.sh for a sample Trilinos configure script.
+To the FEDDLib configure script add
+   -D HAVE_XPETRA_EPETRA
+as a compiler flag. Test installation in FEDDLib with
+   feddlib/problems/examples/laplace
+Adjust  parametersPrec.xml: Change coarse solver klu to MUMPS:
+   <Parameter name="Solver" type="string" value="MUMPS"/>
+Execute program and check output:
+   mpirun -np 4 ./problems_laplace.exe

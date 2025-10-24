@@ -1,43 +1,13 @@
 # @HEADER
-# ************************************************************************
-#
+# *****************************************************************************
 #            TriBITS: Tribal Build, Integrate, and Test System
-#                    Copyright 2013 Sandia Corporation
 #
-# Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-# the U.S. Government retains certain rights in this software.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-# 1. Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright
-# notice, this list of conditions and the following disclaimer in the
-# documentation and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the Corporation nor the names of the
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY SANDIA CORPORATION "AS IS" AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SANDIA CORPORATION OR THE
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# ************************************************************************
+# Copyright 2013-2016 NTESS and the TriBITS contributors.
+# SPDX-License-Identifier: BSD-3-Clause
+# *****************************************************************************
 # @HEADER
 
-INCLUDE(GlobalSet)
+include(GlobalSet)
 
 # Function that defines variables describing the Fortran name mangling
 # convention
@@ -55,49 +25,49 @@ INCLUDE(GlobalSet)
 #    appended.
 #
 # FC_FUNC_DEFAULT
-#    The default mange mangling for Fortran functions
+#    The default mangling for Fortran functions
 #    that do not contain an underscore.
 #
 # FC_FUNC__DEFAULT
-#    The default mange mangling for Fortran functions
+#    The default mangling for Fortran functions
 #    that do contain an underscore.
 #
 #  The Fortran 2003 name binding facilities and ISO_C_BINDING module
 #  should be preferred over cpp macro trickery whenever possible.
 #
-FUNCTION(FORTRAN_MANGLING)
+function(fortran_mangling)
 
-  IF(NOT DEFINED FC_FN_CASE)
+  if(NOT DEFINED FC_FN_CASE)
 
-    IF (${PROJECT_NAME}_VERBOSE_CONFIGURE)
-      MESSAGE("FORTRAN_MANGLING: Testing name Mangling Schemes!\n")
-    ENDIF()
+    if (${PROJECT_NAME}_VERBOSE_CONFIGURE)
+      message("FORTRAN_MANGLING: Testing name Mangling Schemes!\n")
+    endif()
 
-    FIND_FILE(_fcmakelists fmangle/ ${CMAKE_MODULE_PATH})
-    IF (NOT _fcmakelists)
-      MESSAGE(STATUS "Error, the directory fmangle could not be found so we can not determine Fortran name mangling!")
-      RETURN()
-    ENDIF()
+    find_file(_fcmakelists fmangle/ ${CMAKE_MODULE_PATH})
+    if (NOT _fcmakelists)
+      message(STATUS "Error, the directory fmangle could not be found so we can not determine Fortran name mangling!")
+      return()
+    endif()
 
-    SET(_fcmangledir ${PROJECT_BINARY_DIR}/CMakeFiles/CMakeTmp/fmangle)
-    FILE(MAKE_DIRECTORY ${_fcmangledir})
+    set(_fcmangledir ${PROJECT_BINARY_DIR}/CMakeFiles/CMakeTmp/fmangle)
+    file(MAKE_DIRECTORY ${_fcmangledir})
 
-    FOREACH(cdef LOWER UPPER)
+    foreach(cdef LOWER UPPER)
 
-      FOREACH(udef UNDER NO_UNDER SECOND_UNDER)
+      foreach(udef UNDER NO_UNDER SECOND_UNDER)
 
-        IF (${PROJECT_NAME}_VERBOSE_CONFIGURE)
-          MESSAGE("FORTRAN_MANGLING: Testing ${cdef} ${udef}\n\n")
-        ENDIF()
+        if (${PROJECT_NAME}_VERBOSE_CONFIGURE)
+          message("FORTRAN_MANGLING: Testing ${cdef} ${udef}\n\n")
+        endif()
 
-        SET(_fcmangledir_case "${_fcmangledir}/${cdef}/${udef}")
-        FILE(MAKE_DIRECTORY "${_fcmangledir}/${cdef}")
-        FILE(MAKE_DIRECTORY ${_fcmangledir_case})
+        set(_fcmangledir_case "${_fcmangledir}/${cdef}/${udef}")
+        file(MAKE_DIRECTORY "${_fcmangledir}/${cdef}")
+        file(MAKE_DIRECTORY ${_fcmangledir_case})
 
-        SET(COMMON_DEFS -DFC_FN_${cdef} -DFC_FN_${udef})
-        SET(C_FLAGS "${CMAKE_C_FLAGS} ${${PROJECT_NAME}_EXTRA_LINK_FLAGS}")
-        SET(F_FLAGS "${CMAKE_Fortran_FLAGS} ${${PROJECT_NAME}_EXTRA_LINK_FLAGS}")
-        TRY_COMPILE(_fcmngl ${_fcmangledir_case} ${_fcmakelists} fmangle
+        set(COMMON_DEFS -DFC_FN_${cdef} -DFC_FN_${udef})
+        set(C_FLAGS "${CMAKE_C_FLAGS} ${${PROJECT_NAME}_EXTRA_LINK_FLAGS}")
+        set(F_FLAGS "${CMAKE_Fortran_FLAGS} ${${PROJECT_NAME}_EXTRA_LINK_FLAGS}")
+        try_compile(_fcmngl ${_fcmangledir_case} ${_fcmakelists} fmangle
           CMAKE_FLAGS
             "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_C_FLAGS:STRING=${C_FLAGS}"
@@ -107,55 +77,55 @@ FUNCTION(FORTRAN_MANGLING)
             "-DCOMMON_DEFS=${COMMON_DEFS}"
           OUTPUT_VARIABLE _fcmngl_output
           )
-        IF (${PROJECT_NAME}_VERBOSE_CONFIGURE)
-          MESSAGE("${_fcmngl_output}\n\n")
-        ENDIF()
+        if (${PROJECT_NAME}_VERBOSE_CONFIGURE)
+          message("${_fcmngl_output}\n\n")
+        endif()
 
-        IF(_fcmngl)
-          IF (${PROJECT_NAME}_VERBOSE_CONFIGURE)
-            MESSAGE("FORTRAN_MANGLING: Bingo!  ${cdef} ${udef} is the correct fortran name mangling!\n")
-          ENDIF()
-          GLOBAL_SET(FC_FN_CASE ${cdef})
-          GLOBAL_SET(FC_FN_UNDERSCORE ${udef})
-          BREAK()
-        ENDIF()
+        if(_fcmngl)
+          if (${PROJECT_NAME}_VERBOSE_CONFIGURE)
+            message("FORTRAN_MANGLING: Bingo!  ${cdef} ${udef} is the correct fortran name mangling!\n")
+          endif()
+          global_set(FC_FN_CASE ${cdef})
+          global_set(FC_FN_UNDERSCORE ${udef})
+          break()
+        endif()
 
-      ENDFOREACH()
+      endforeach()
 
-      IF(_fcmngl)
-        BREAK()
-      ENDIF()
+      if(_fcmngl)
+        break()
+      endif()
 
-    ENDFOREACH()
+    endforeach()
 
-    IF(_fcmngl)
-      MESSAGE(STATUS "Fortran name mangling: ${FC_FN_CASE} ${FC_FN_UNDERSCORE}")
-    ELSE()
-      MESSAGE(STATUS "Warning, cannot automatically determine Fortran mangling.")
-    ENDIF()
+    if(_fcmngl)
+      message(STATUS "Fortran name mangling: ${FC_FN_CASE} ${FC_FN_UNDERSCORE}")
+    else()
+      message(STATUS "Warning, cannot automatically determine Fortran mangling.")
+    endif()
 
-  ENDIF()
+  endif()
 
-  IF (FC_FN_CASE STREQUAL LOWER)
-    SET(FC_NAME_NAME name)
-  ELSEIF (FC_FN_CASE STREQUAL UPPER)
-    SET(FC_NAME_NAME NAME)
-  ENDIF()
+  if (FC_FN_CASE STREQUAL LOWER)
+    set(FC_NAME_NAME name)
+  elseif (FC_FN_CASE STREQUAL UPPER)
+    set(FC_NAME_NAME NAME)
+  endif()
 
-  IF (FC_FN_UNDERSCORE)
-    IF(FC_FN_UNDERSCORE STREQUAL "UNDER")
-      SET(FC_FUNC_DEFAULT "(name,NAME) ${FC_NAME_NAME} ## _" CACHE INTERNAL "")
-      SET(FC_FUNC__DEFAULT "(name,NAME) ${FC_NAME_NAME} ## _" CACHE INTERNAL "")
-    ELSEIF(FC_FN_UNDERSCORE STREQUAL "SECOND_UNDER")
-      SET(FC_FUNC_DEFAULT "(name,NAME) ${FC_NAME_NAME} ## _" CACHE INTERNAL "")
-      SET(FC_FUNC__DEFAULT "(name,NAME) ${FC_NAME_NAME} ## __" CACHE INTERNAL "")
-    ELSE()
-      SET(FC_FUNC_DEFAULT "(name,NAME) ${FC_NAME_NAME}" CACHE INTERNAL "")
-      SET(FC_FUNC__DEFAULT "(name,NAME) ${FC_NAME_NAME}" CACHE INTERNAL "")
-    ENDIF()
-  ENDIF()
+  if (FC_FN_UNDERSCORE)
+    if(FC_FN_UNDERSCORE STREQUAL "UNDER")
+      set(FC_FUNC_DEFAULT "(name,NAME) ${FC_NAME_NAME} ## _" CACHE INTERNAL "")
+      set(FC_FUNC__DEFAULT "(name,NAME) ${FC_NAME_NAME} ## _" CACHE INTERNAL "")
+    elseif(FC_FN_UNDERSCORE STREQUAL "SECOND_UNDER")
+      set(FC_FUNC_DEFAULT "(name,NAME) ${FC_NAME_NAME} ## _" CACHE INTERNAL "")
+      set(FC_FUNC__DEFAULT "(name,NAME) ${FC_NAME_NAME} ## __" CACHE INTERNAL "")
+    else()
+      set(FC_FUNC_DEFAULT "(name,NAME) ${FC_NAME_NAME}" CACHE INTERNAL "")
+      set(FC_FUNC__DEFAULT "(name,NAME) ${FC_NAME_NAME}" CACHE INTERNAL "")
+    endif()
+  endif()
 
-ENDFUNCTION()
+endfunction()
 
 
 # 2008/10/26: rabartl: Below, these were macros that were also present in the
@@ -163,7 +133,7 @@ ENDFUNCTION()
 # (for now)
 
 ## - Guess if the Fortran compiler returns REAL in C doubles.
-##  FORTRAN_FLOATRET()
+##  fortran_floatret()
 ##
 ## If the Fortran compiler follows the f2c convention of
 ## returning REALs in C doubles, routines like SLAMCH can
@@ -176,36 +146,36 @@ ENDFUNCTION()
 ## The REAL kinds in Fortran 2003's ISO_C_BINDING module should
 ## be used instead of this test whenever possible.
 ##
-#MACRO(FORTRAN_FLOATRET)
-#  IF(NOT DEFINED FC_FN_FLOATRET)
+#macro(fortran_floatret)
+#  if(NOT DEFINED FC_FN_FLOATRET)
 #    # Find inputs
-#    FIND_FILE(_fcindir floatret/ ${CMAKE_MODULE_PATH})
-#    SET(_fcdir ${PROJECT_BINARY_DIR}/CMakeFiles/CMakeTmp/floatret)
-#    FILE(MAKE_DIRECTORY ${_fcdir})
-#    TRY_COMPILE(_fccrv ${_fcdir} ${_fcindir} floatret
+#    find_file(_fcindir floatret/ ${CMAKE_MODULE_PATH})
+#    set(_fcdir ${PROJECT_BINARY_DIR}/CMakeFiles/CMakeTmp/floatret)
+#    file(MAKE_DIRECTORY ${_fcdir})
+#    try_compile(_fccrv ${_fcdir} ${_fcindir} floatret
 #      CMAKE_FLAGS "-DFC_FN_DEFS:STRING=${FC_FN_DEFS}")
-#    IF(_fccrv)
-#      EXECUTE_PROCESS(COMMAND ${_fcdir}/ctst
+#    if(_fccrv)
+#      execute_process(COMMAND ${_fcdir}/ctst
 #        WORKING_DIRECTORY ${_fcdir}
 #        RESULT_VARIABLE _fcrrv)
-#    ENDIF(_fccrv)
-#    IF(_fcrrv EQUAL 0)
-#      SET(_fc_fn_floatret 0)
-#    ELSE(_fcrrv EQUAL 0)
-#      SET(_fc_fn_floatret 1)
-#    ENDIF(_fcrrv EQUAL 0)
-#    SET(FC_FN_FLOATRET ${_fc_fn_floatret} CACHE BOOL
+#    endif(_fccrv)
+#    if(_fcrrv EQUAL 0)
+#      set(_fc_fn_floatret 0)
+#    else(_fcrrv EQUAL 0)
+#      set(_fc_fn_floatret 1)
+#    endif(_fcrrv EQUAL 0)
+#    set(FC_FN_FLOATRET ${_fc_fn_floatret} CACHE BOOL
 #      "Fortran returns REAL in double.")
-#    MESSAGE(STATUS "Fortran returns REAL in double: ${FC_FN_FLOATRET}")
-#  ENDIF(NOT DEFINED FC_FN_FLOATRET)
-#ENDMACRO()
+#    message(STATUS "Fortran returns REAL in double: ${FC_FN_FLOATRET}")
+#  endif(NOT DEFINED FC_FN_FLOATRET)
+#endmacro()
 #
 #
 ## - Guess the convention for passing strings from C to Fortran.
-##  FORTRAN_STRINGARG()
+##  fortran_stringarg()
 ##
 ## If string lengths are directly appended to each variable, e.g.
-## CALL FOO('bar', 1.0) becomes foo({'b','a','r'}, 3, 1.0), then
+## CALL foo('bar', 1.0) becomes foo({'b','a','r'}, 3, 1.0), then
 ## FC_FN_STRINGARG is set to PAIRED.  If the lengths are appended
 ## to the call, e.g. foo({'b','a','r'}, 1.0, 3), FC_FN_STRINGARG
 ## is set to TRAILING.
@@ -217,33 +187,33 @@ ENDFUNCTION()
 ## The string kinds in Fortran 2003's ISO_C_BINDING module should
 ## be used instead of these conventions whenever possible.
 ##
-#SET(FC_FN_STRINGARG_TYPES "PAIRED" "TRAILING")
-#MACRO(FORTRAN_STRINGARG)
-#  IF(NOT DEFINED FC_FN_STRINGARG)
+#set(FC_FN_STRINGARG_TYPES "PAIRED" "TRAILING")
+#macro(fortran_stringarg)
+#  if(NOT DEFINED FC_FN_STRINGARG)
 #    # Find inputs
-#    FIND_FILE(_fcstrindir fstrings/ ${CMAKE_MODULE_PATH})
-#    SET(_fcstrdir ${PROJECT_BINARY_DIR}/CMakeFiles/CMakeTmp/fstrings)
-#    FOREACH(argtype ${FC_FN_STRINGARG_TYPES})
-#      FILE(MAKE_DIRECTORY ${_fcstrdir})
-#      TRY_COMPILE(_fcstrcrv ${_fcstrdir} ${_fcstrindir} fstrings
+#    find_file(_fcstrindir fstrings/ ${CMAKE_MODULE_PATH})
+#    set(_fcstrdir ${PROJECT_BINARY_DIR}/CMakeFiles/CMakeTmp/fstrings)
+#    foreach(argtype ${FC_FN_STRINGARG_TYPES})
+#      file(MAKE_DIRECTORY ${_fcstrdir})
+#      try_compile(_fcstrcrv ${_fcstrdir} ${_fcstrindir} fstrings
 #        CMAKE_FLAGS "-DFC_FN_DEFS:STRING=${FC_FN_DEFS}" "-Dargtype:STRING=${argtype}")
-#      IF(_fcstrcrv)
-#        EXECUTE_PROCESS(COMMAND ${_fcstrdir}/ccheck
+#      if(_fcstrcrv)
+#        execute_process(COMMAND ${_fcstrdir}/ccheck
 #          WORKING_DIRECTORY ${_fcstrdir}
 #          RESULT_VARIABLE _fcstrrrv)
-#        IF(_fcstrrrv EQUAL 0)
-#          SET(_fcstr ${argtype})
-#          BREAK()
-#        ENDIF(_fcstrrrv EQUAL 0)
-#      ENDIF(_fcstrcrv)
-#      FILE(REMOVE_RECURSE ${_fcstrdir})
-#    ENDFOREACH(argtype)
-#    IF(DEFINED _fcstr)
-#      SET(FC_FN_STRINGARG ${_fcstr} CACHE STRING
+#        if(_fcstrrrv EQUAL 0)
+#          set(_fcstr ${argtype})
+#          break()
+#        endif(_fcstrrrv EQUAL 0)
+#      endif(_fcstrcrv)
+#      file(REMOVE_RECURSE ${_fcstrdir})
+#    endforeach(argtype)
+#    if(DEFINED _fcstr)
+#      set(FC_FN_STRINGARG ${_fcstr} CACHE STRING
 #        "How Fortran accepts string arguments.")
-#      MESSAGE(STATUS "Fortran string passing: ${FC_FN_STRINGARG}")
-#    ELSE(DEFINED _fcstr)
-#      MESSAGE(STATUS "Cannot determine Fortran string passing.")
-#    ENDIF(DEFINED _fcstr)
-#  ENDIF(NOT DEFINED FC_FN_STRINGARG)
-#ENDMACRO()
+#      message(STATUS "Fortran string passing: ${FC_FN_STRINGARG}")
+#    else(DEFINED _fcstr)
+#      message(STATUS "Cannot determine Fortran string passing.")
+#    endif(DEFINED _fcstr)
+#  endif(NOT DEFINED FC_FN_STRINGARG)
+#endmacro()
