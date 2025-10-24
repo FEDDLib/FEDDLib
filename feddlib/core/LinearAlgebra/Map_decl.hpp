@@ -106,7 +106,6 @@ public:
 private:
     
     TpetraMapConstPtr_Type map_;
-    // XpetraMapConstPtr_Type mapX_;
 
 };
 }

@@ -71,17 +71,17 @@ NUM_MPI_PROCS 8
 )
 
 ### mesh_structured_3DCR
-#TRIBITS_ADD_EXECUTABLE(
+# TRIBITS_ADD_EXECUTABLE(
 #    mesh_structured_3DCR
 #    SOURCES mesh_structured_3DCR.cpp
-#)
+# )
 
-#TRIBITS_ADD_TEST(
+# TRIBITS_ADD_TEST(
 #    mesh_structured_3DCR
 #    NAME mesh_structured_3DCR
 #    ARGS
 #    NUM_MPI_PROCS 1
-#)
+# )
 
 ### mesh_structured_3DCR_BFS
 #TRIBITS_ADD_EXECUTABLE(
