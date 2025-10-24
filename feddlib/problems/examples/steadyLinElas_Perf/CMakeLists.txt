@@ -1,6 +1,6 @@
-IF(${MPI_EXEC_MAX_NUMPROCS} LESS 8)
-    MESSAGE("  The performace test steadyLinElas_Perf requires MPI_EXEC_MAX_NUMPROCS >= 8. The test will not be performed.")
-ENDIF()
+if(${MPI_EXEC_MAX_NUMPROCS} LESS 8)
+    message("  The performace test steadyLinElas_Perf requires MPI_EXEC_MAX_NUMPROCS >= 8. The test will not be performed.")
+endif()
 
 tribits_add_executable(
 	steadyLinElas_Perf

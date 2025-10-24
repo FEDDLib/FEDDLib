@@ -1,5 +1,3 @@
-INCLUDE(AddSubdirectories)
-
 ### neumannBC
 tribits_add_executable(
 neumannBC

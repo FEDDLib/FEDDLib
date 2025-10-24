@@ -3,7 +3,7 @@
 #
 
 tribits_package(problems)
-SET(${PACKAGE_NAME}_VERSION "1.0.0")
+set(${PACKAGE_NAME}_VERSION "1.0.0")
 
 #
 # B) Set up package-specific options
@@ -15,22 +15,22 @@ tribits_add_show_deprecated_warnings_option()
 
 tribits_configure_file(${PACKAGE_NAME}_config.h)
 
-SET(HEADERS "")
-SET(SOURCES "")
+set(HEADERS "")
+set(SOURCES "")
 
 append_set(HEADERS
 ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}_config.h
 )
 
-ADD_SUBDIRECTORY(abstract)
+add_subdirectory(abstract)
 append_set(HEADERS ${problems_abstract_HEADERS})
 append_set(SOURCES ${problems_abstract_SOURCES})
 
-ADD_SUBDIRECTORY(Solver)
+add_subdirectory(Solver)
 append_set(HEADERS ${Solver_HEADERS})
 append_set(SOURCES ${Solver_SOURCES})
 
-ADD_SUBDIRECTORY(specific)
+add_subdirectory(specific)
 append_set(HEADERS ${problems_specific_HEADERS})
 append_set(SOURCES ${problems_specific_SOURCES})
 
@@ -53,4 +53,3 @@ tribits_add_example_directories(examples)
 #
 
 tribits_package_postprocess()
-

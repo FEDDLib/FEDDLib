@@ -1,3 +1,1 @@
-INCLUDE(AddSubdirectories)
-ADD_SUBDIRECTORIES( laplaceAdaptive stokesAdaptive steadyNavierStokesAdaptive flagTest unsteadyReactionDiffusion steadyNonLinElasAssFE )
-
+add_subdirectories( laplaceAdaptive stokesAdaptive steadyNavierStokesAdaptive flagTest unsteadyReactionDiffusion steadyNonLinElasAssFE )

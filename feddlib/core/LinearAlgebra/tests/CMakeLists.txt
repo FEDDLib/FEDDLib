@@ -1,18 +1,3 @@
-INCLUDE(AddSubdirectories)
-
-### BlockViews
-#tribits_add_executable(
-#	blockView
-#	SOURCES blockView.cpp
-#)
-
-#tribits_add_test(
-#	blockView
-#    NAME blockView
-#    ARGS
-#    NUM_MPI_PROCS 2
-#)
-
 ### Map
 tribits_add_executable(
 	map
@@ -93,25 +78,3 @@ NAME multivector
 ARGS
 NUM_MPI_PROCS 4
 )
-
-#tribits_copy_files_to_binary_dir(data_matrix
-#	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-#	SOURCE_FILES
-#	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-#	DEST_FILES
-#	EXEDEPS matrix
-#)
-
-
-### Consistent Partitioning
-#tribits_add_executable(
-#consistentPartitioning
-#SOURCES consistentPartitioning.cpp
-#)
-
-#tribits_add_test(
-#consistentPartitioning
-#NAME consistentPartitioning
-#ARGS
-#NUM_MPI_PROCS 2
-#)

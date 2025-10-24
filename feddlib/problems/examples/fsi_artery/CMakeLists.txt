@@ -1,9 +1,9 @@
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	fsi_artery
     SOURCES main.cpp
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fsiArtery
+tribits_copy_files_to_binary_dir(data_fsiArtery
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrecGE.xml parametersPrecGI.xml parametersPrecGeometry.xml parametersProblemFSI.xml parametersSolverFSI.xml parametersSolverGeometry.xml parametersPrecFluidMono.xml parametersPrecFluidTeko.xml parametersPrecFluidBlock.xml parametersPrecStructure.xml laplace_parabolic_artery_P1.h5 laplace_parabolic_artery_P2.h5
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -11,7 +11,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fsiArtery
 	EXEDEPS fsi_artery
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_fsiArtery
+tribits_copy_files_to_binary_dir(meshes_fsiArtery
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
     SOURCE_FILES fluid_artery_res2.mesh solid_artery_res2.mesh fluid_straightTube.mesh solid_straightTube.mesh arterie_with_plaque_initma_media_adventitia_fluid_fine.mesh arterie_with_plaque_initma_media_adventitia_solid_fine.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

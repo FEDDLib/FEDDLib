@@ -1,4 +1,4 @@
-INCLUDE(AddSubdirectories)
+include(AddSubdirectories)
 
 ### FE LAPLACE
 tribits_add_executable(

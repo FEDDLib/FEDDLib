@@ -5,7 +5,7 @@
 #
 tribits_package(core)
 # Set the package version - this is used for packaging and versioning
-SET(${PACKAGE_NAME}_VERSION "1.0.0")
+set(${PACKAGE_NAME}_VERSION "1.0.0")
 
 #
 # B) Set up package-specific options
@@ -25,8 +25,8 @@ tribits_configure_file(${PACKAGE_NAME}_config.h)
 
 # Initialize empty lists for headers and sources
 # These will be populated by the subdirectories
-SET(HEADERS "")
-SET(SOURCES "")
+set(HEADERS "")
+set(SOURCES "")
 
 # Add the generated configuration header to the headers list
 append_set(HEADERS
@@ -37,35 +37,35 @@ append_set(HEADERS
 append_set(HEADERS FEDDCore.hpp)
 
 # Add headers/sources from all subfolders
-ADD_SUBDIRECTORY(FE)
+add_subdirectory(FE)
 append_set(HEADERS ${FE_HEADERS})
 append_set(SOURCES ${FE_SOURCES})
 
-ADD_SUBDIRECTORY(General)
+add_subdirectory(General)
 append_set(HEADERS ${General_HEADERS})
 append_set(SOURCES ${General_SOURCES})
 
-ADD_SUBDIRECTORY(IO)
+add_subdirectory(IO)
 append_set(HEADERS ${IO_HEADERS})
 append_set(SOURCES ${IO_SOURCES})
 
-ADD_SUBDIRECTORY(LinearAlgebra)
+add_subdirectory(LinearAlgebra)
 append_set(HEADERS ${LinearAlgebra_HEADERS})
 append_set(SOURCES ${LinearAlgebra_SOURCES})
 
-ADD_SUBDIRECTORY(Mesh)
+add_subdirectory(Mesh)
 append_set(HEADERS ${Mesh_HEADERS})
 append_set(SOURCES ${Mesh_SOURCES})
 
-ADD_SUBDIRECTORY(AceFemAssembly)
+add_subdirectory(AceFemAssembly)
 append_set(HEADERS ${AceFemAssembly_HEADERS})
 append_set(SOURCES ${AceFemAssembly_SOURCES})
 
-ADD_SUBDIRECTORY(AceFemAssembly/specific)
+add_subdirectory(AceFemAssembly/specific)
 append_set(HEADERS ${AceFemAssemblySpecific_HEADERS})
 append_set(SOURCES ${AceFemAssemblySpecific_SOURCES})
 
-ADD_SUBDIRECTORY(AceFemAssembly/AceInterface)
+add_subdirectory(AceFemAssembly/AceInterface)
 append_set(HEADERS ${AceFemAssemblyAceInterface_HEADERS})
 append_set(SOURCES ${AceFemAssemblyAceInterface_SOURCES})
 

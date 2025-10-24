@@ -1,5 +1,3 @@
-INCLUDE(AddSubdirectories)
-
 ### AABBTree
 tribits_add_executable(
 AABBTree

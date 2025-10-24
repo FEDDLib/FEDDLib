@@ -1,5 +1,3 @@
-INCLUDE(AddSubdirectories)
-
 ### Domain
 tribits_add_executable(
 domain
