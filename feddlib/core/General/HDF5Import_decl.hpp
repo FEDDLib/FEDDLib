@@ -21,6 +21,8 @@
 
 #include <EpetraExt_HDF5.h>
 #include <hdf5.h>
+#include "HDF5Toolbox_decl.hpp"
+
 
 /*!
  Importing a HDF5 file
@@ -38,15 +40,16 @@ class HDF5Import {
 public:
     typedef Teuchos::RCP<Epetra_Map> EpetraMapPtr_Type;
 
-    typedef EpetraExt::HDF5 HDF5_Type;
+    typedef HDF5Toolbox<SC,LO,GO,NO> HDF5_Type;
     typedef Teuchos::RCP<HDF5_Type> HDF5Ptr_Type;
-    
+
     typedef Teuchos::Comm<int> Comm_Type;
     typedef Teuchos::RCP<const Comm_Type> CommConstPtr_Type;
     
     typedef Map<LO,GO,NO> Map_Type;
     typedef Teuchos::RCP<const Map_Type> MapConstPtr_Type;
-    
+    typedef Teuchos::RCP<Map_Type> MapPtr_Type;
+
     typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
     typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
 
@@ -77,7 +80,7 @@ public:
     /// @brief Name of input file
     std::string inputFilename_; 
     /// @brief Name of Map of import multivector
-    EpetraMapPtr_Type  readMap_;
+    MapPtr_Type  readMap_;
     /// @brief Imported MultiVector in Epetra format
     Epetra_MultiVector* u_import_Epetra_;
     /// @brief Imported file in Xpetra format

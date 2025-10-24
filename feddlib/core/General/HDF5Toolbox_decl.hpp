@@ -1,0 +1,111 @@
+#ifndef HDF5TOOLBOX_hpp
+#define HDF5TOOLBOX_hpp
+
+#include <hdf5.h>
+#include <Tpetra_Core.hpp>
+#include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include "feddlib/core/LinearAlgebra/MultiVector.hpp"
+#include "feddlib/core/LinearAlgebra/Map_decl.hpp"
+
+/*!
+ Declaration of HDF5Toolbox
+ 
+ @brief  HDF5Toolbox
+ @author Lea Saßmannshausen
+ @version 1.0
+ @copyright LS
+ */
+
+namespace FEDD {
+     /*!
+    \class HDF5Toolbox
+    \brief This class contains the features we use from EpteraExt::HDF5, but we transition it to Tpetra
+
+    */
+template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
+class HDF5Toolbox{
+    
+    public:
+        typedef Teuchos::Comm<int> Comm_Type;
+        typedef Teuchos::RCP<Comm_Type> CommPtr_Type;
+        typedef Teuchos::RCP<const Comm_Type> CommConstPtr_Type;
+
+        typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
+        typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
+        typedef Teuchos::RCP<const MultiVector_Type> MultiVectorConstPtr_Type;
+
+        typedef Map<LO,GO,NO> Map_Type;
+        typedef Teuchos::RCP<Map_Type> MapPtr_Type;
+
+        HDF5Toolbox(CommConstPtr_Type Comm);
+
+        /// @brief Write/export a vector X to the HDF5 file under the group name GroupName
+        /// @param GroupName 
+        /// @param X 
+        void write(const std::string &GroupName, const MultiVectorPtr_Type X);
+
+        bool isContained(std::string Name, std::string GroupName = "");
+
+        void createGroup(const std::string &GroupName);
+
+        void write(const std::string &GroupName, const std::string &DataSetName, double what);
+
+        void write(const std::string &GroupName, const std::string &DataSetName, int what);
+
+        void write(const std::string &GroupName, const std::string &DataSetName, const std::string &data);
+
+        ~HDF5Toolbox() 
+        {
+        if (isOpen())
+            close();
+        }
+
+        void read(const std::string &GroupName, const MapPtr_Type Map, MultiVectorPtr_Type X);
+
+        void readIntVectorProperties(const std::string &GroupName, int &GlobalLength);
+
+        void read(const std::string &GroupName, const std::string &DataSetName, int MySize, int GlobalSize, const hid_t type, void *data);
+
+        void read(const std::string &GroupName, const std::string &DataSetName, int &data);
+
+        void read(const std::string &GroupName, const std::string &DataSetName, std::string &data);
+
+        void tpetraScanSum(const Teuchos::RCP<const Teuchos::Comm<int>> &comm, const GO *sendbuf, GO *recvbuf, int count);
+
+        //! Create a new file.
+        void create(const std::string FileName);
+
+        //! Open specified file with given access type.
+        void open(const std::string FileName, int AccessType = H5F_ACC_RDWR);
+
+        //! Close the file.
+        void close()
+        {
+            H5Fclose(file_id_);
+            isOpen_ = false;
+        }
+
+        //! Flush the content to the file
+        void flush()
+        {
+            H5Fflush(file_id_, H5F_SCOPE_GLOBAL);
+        }
+
+        //! Return \c true if a file has already been opened using Open()/Create()
+        bool isOpen() const
+        {
+        return(isOpen_);
+        }
+            
+    private:
+        bool isOpen_; // Flag if file is open
+        CommConstPtr_Type comm_;
+        hid_t       file_id_;
+        hid_t	plist_id_;
+        herr_t	status;
+        std::string FileName_;
+};
+
+}
+
+#endif
