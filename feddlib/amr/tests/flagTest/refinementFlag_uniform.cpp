@@ -9,7 +9,6 @@
 #include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Teuchos_GlobalMPISession.hpp>
 
 /*!
  Mesh Element Flags test
