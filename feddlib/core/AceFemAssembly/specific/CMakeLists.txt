@@ -59,6 +59,6 @@ CACHE INTERNAL "")
 
 set(LOCAL_HEADERS)
 foreach(INC ${AceFemAssemblySpecific_HEADERS})
-  string(REPLACE "specific/" "" LOCAL_INC ${INC})
+  string(REPLACE "AceFemAssembly/specific/" "" LOCAL_INC ${INC})
   append_set(LOCAL_HEADERS ${LOCAL_INC})
 endforeach()

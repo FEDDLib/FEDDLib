@@ -35,12 +35,6 @@ CACHE INTERNAL "")
 
 set(LOCAL_HEADERS)
 foreach(INC ${AceFemAssemblyAceInterface_HEADERS})
-  string(REPLACE "AceInterface/" "" LOCAL_INC ${INC})
+  string(REPLACE "AceFemAssembly/AceInterface/" "" LOCAL_INC ${INC})
   append_set(LOCAL_HEADERS ${LOCAL_INC})
 endforeach()
-
-install(
-  FILES ${LOCAL_HEADERS}
-  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/feddlib/core/AceFemAssembly/AceInterface"
-  COMPONENT ${PACKAGE_NAME}
-)
