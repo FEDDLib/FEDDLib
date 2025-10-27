@@ -89,24 +89,24 @@ class HDF5Toolbox{
                     << "] HDF5 objects still open before H5Fclose: " << nopen << std::endl;
                 H5Fget_obj_count(file_id_, H5F_OBJ_ALL);
                 H5Fget_obj_ids(file_id_, H5F_OBJ_ALL, 0, nullptr);
-            }
+            
 
-            ssize_t num = H5Fget_obj_count(file_id_, H5F_OBJ_ALL);
-            std::vector<hid_t> ids(num);
-            H5Fget_obj_ids(file_id_, H5F_OBJ_ALL, num, ids.data());
+                ssize_t num = H5Fget_obj_count(file_id_, H5F_OBJ_ALL);
+                std::vector<hid_t> ids(num);
+                H5Fget_obj_ids(file_id_, H5F_OBJ_ALL, num, ids.data());
 
-            for (auto id : ids) {
-            unsigned int type = H5Iget_type(id);
-            const char* tname =
-                (type == H5I_FILE)      ? "file" :
-                (type == H5I_GROUP)     ? "group" :
-                (type == H5I_DATASET)   ? "dataset" :
-                (type == H5I_DATASPACE) ? "dataspace" :
-                (type == H5I_DATATYPE)  ? "datatype" :
-                (type == H5I_ATTR)      ? "attribute" : "unknown";
+                for (auto id : ids) {
+                unsigned int type = H5Iget_type(id);
+                const char* tname =
+                    (type == H5I_GROUP)     ? "group" :
+                    (type == H5I_DATASET)   ? "dataset" :
+                    (type == H5I_DATASPACE) ? "dataspace" :
+                    (type == H5I_DATATYPE)  ? "datatype" :
+                    (type == H5I_ATTR)      ? "attribute" : "unknown";
 
-            std::cout << "[Rank " << comm_->getRank() << "] Still open: " << tname
-                        << " (id=" << id << ")\n";
+                std::cout << "[Rank " << comm_->getRank() << "] Still open: " << tname
+                            << " (id=" << id << ")\n";
+                }
             }
 
             H5Fclose(file_id_);

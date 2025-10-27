@@ -224,8 +224,8 @@ void HDF5Toolbox<SC, LO, GO, NO>::readIntVectorProperties(const std::string& Gro
   read(GroupName, "__type__", Label);
 
   std::cout << " Label " << Label << std::endl;
-  if (Label != "Tpetra_MultiVector")
-      TEUCHOS_TEST_FOR_EXCEPTION(true,std::runtime_error, "requested group " + GroupName + " is not an Tpetra_MultiVector");
+  // if (Label != "Tpetra_MultiVector")
+  //     TEUCHOS_TEST_FOR_EXCEPTION(true,std::runtime_error, "requested group " + GroupName + " is not an Tpetra_MultiVector");
 
                     
   read(GroupName, "GlobalLength", GlobalLength);
