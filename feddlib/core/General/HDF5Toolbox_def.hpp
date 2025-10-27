@@ -39,11 +39,7 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
   linearX = Teuchos::rcp(new MultiVector_Type(linearMap, X->getNumVectors()));
   // Epetra_Import Importer(LinearMap, X.Map());
   linearX->importFromVector(X);
-  
-  // X->getMap()->print();
-  // linearMap->print();
 
-  // X->print();
 
   int NumVectors = X->getNumVectors();
   int GlobalLength = X->getMap()->getGlobalNumElements(); //X.GlobalLength();
@@ -194,13 +190,12 @@ void HDF5Toolbox<SC, LO, GO, NO>::read(const std::string& GroupName, const MapPt
   // linearMap->print();
 
   read(GroupName, "Values", linearMap->getNodeNumElements(), linearMap->getGlobalNumElements(),
-        H5T_NATIVE_INT, linearX->getDataNonConst(0).get());
+        H5T_NATIVE_DOUBLE, linearX->getDataNonConst(0).get());
 
   // Epetra_Import Importer(Map, LinearMap);
   // X = new Epetra_IntVector(Map);
   X->importFromVector(linearX);
-  linearX->print();
-  X->print();
+
 }
 
 // ==========================================================================
@@ -336,10 +331,6 @@ H5Gclose(group_id);
 comm_->barrier();
 std::cout.flush();
 std::cerr.flush();
-  H5Sclose(mem_dataspace);
-  H5Gclose(group_id);
-  //H5Sclose(space_id);
-  H5Dclose(dataset_id);
 //  H5Dclose(filespace_id);
 }
 
@@ -553,6 +544,9 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName,
 
   H5Dwrite(dataset_id, atype, H5S_ALL, H5S_ALL,H5P_DEFAULT, data.c_str());
   
+  // Close/release resources.
+  H5Dclose(dataset_id);
+  H5Gclose(group_id);
 }
 // ==========================================================================
 // ==========================================================================

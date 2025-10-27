@@ -140,7 +140,8 @@ int main(int argc, char *argv[]) {
         // Exporting as HDF5 Type
         HDF5Export<SC,LO,GO,NO> exporter(domain->getMapUnique(), "exportVector"); //  Map and file name
         exporter.writeVariablesHDF5("Test",aUniqueConst); // VariableName and Variable
-
+        exporter.closeExporter();
+        
         HDF5Import<SC,LO,GO,NO> importer(domain->getMapUnique(),"exportVector"); // Import Map and  file name to read
         MultiVectorPtr_Type aImported = importer.readVariablesHDF5("Test"); // VariableName 
         
