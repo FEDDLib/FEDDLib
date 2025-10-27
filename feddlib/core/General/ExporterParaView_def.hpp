@@ -181,7 +181,7 @@ void ExporterParaView<SC,LO,GO,NO>::setup(std::string filename,
         }
     }
     Teuchos::ArrayView<GO> globalMapIDs = Teuchos::arrayViewFromVector( nodeElementListInteger);
-    MapPtr_Type	mapElements = Teuchos::rcp( new Map_Type((int) (nmbPointsPerElement_*nmbElementsGlob_), globalMapIDs,elementMap()->getIndexBase()*nmbPointsPerElement_, comm_));
+    MapPtr_Type	mapElements = Teuchos::rcp( new Map_Type((int) (nmbPointsPerElement_*nmbElementsGlob_), globalMapIDs,elementMap->getIndexBase()*nmbPointsPerElement_, comm_));
     // if (nodeElementListInteger.size()>0)
         // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), &nodeElementListInteger[0],1, 0, *commEpetra_));
     // else

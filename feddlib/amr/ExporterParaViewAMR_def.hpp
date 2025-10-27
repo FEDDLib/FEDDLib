@@ -36,23 +36,23 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
     // Where the map tells us which IDs belong to which element
     MapConstPtr_Type elementMap = mesh->getElementMap();
     Teuchos::ArrayView<const GO> nodeElementList = elementMap->getNodeElementList(); // Global Ids on this processor
-    vec_GO_Type nodeElementListInteger( nmbPointsPerElement_ * nodeElementList.size() );
+    vec_GO_Type nodeElementListInteger( this->nmbPointsPerElement_ * nodeElementList.size() );
     int counter=0;
     for (int i=0; i<nodeElementList.size(); i++) { // Number of elements
-        for (int j=0; j<nmbPointsPerElement_; j++){ // number of points per element
-            nodeElementListInteger[counter] = (int) nmbPointsPerElement_*nodeElementList[i] + j;
+        for (int j=0; j<this->nmbPointsPerElement_; j++){ // number of points per element
+            nodeElementListInteger[counter] = (int) this->nmbPointsPerElement_*nodeElementList[i] + j;
             counter++; // from 0 ... to nmbPointsPerElement_*localElements
         }
     }
     Teuchos::ArrayView<GO> globalMapIDs = Teuchos::arrayViewFromVector( nodeElementListInteger);
-    MapPtr_Type	mapElements = Teuchos::rcp( new Map_Type((int) (nmbPointsPerElement_*nmbElementsGlob_), globalMapIDs,elementMap()->getIndexBase()*nmbPointsPerElement_, comm_));
+    MapPtr_Type	mapElements = Teuchos::rcp( new Map_Type((int) (this->nmbPointsPerElement_*nmbElementsGlob_), globalMapIDs,elementMap->getIndexBase()*nmbPointsPerElement_, comm_));
     // if (nodeElementListInteger.size()>0)
         // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), &nodeElementListInteger[0],1, 0, *commEpetra_));
     // else
         // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), NULL,1, 0, *commEpetra_));
     
     // They contain global IDs of nodes corresponding to 'elements'
-    elementsHDF_.reset(new MultiVector_Type(mapElements,1));
+    this->elementsHDF_.reset(new MultiVector_Type(mapElements,1));
     
     ElementsPtr_Type elements = mesh->getElementsC();
     counter = 0;
@@ -73,7 +73,7 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
     // EpetraMapPtr_Type mapEpetra = Teuchos::rcp(new Epetra_Map((int)nmbPointsGlob_,indices.size(),intGlobIDs,0,*commEpetra_));
     // delete [] intGlobIDs;
     
-    pointsHDF_.reset(new MultiVector_Type(mesh->getMapUnique(),dim_));
+    this->pointsHDF_.reset(new MultiVector_Type(mesh->getMapUnique(),dim_));
 
     updatePoints();
 
