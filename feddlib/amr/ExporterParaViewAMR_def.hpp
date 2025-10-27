@@ -45,7 +45,7 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
         }
     }
     Teuchos::ArrayView<GO> globalMapIDs = Teuchos::arrayViewFromVector( nodeElementListInteger);
-    MapPtr_Type	mapElements = Teuchos::rcp( new Map_Type((int) (this->nmbPointsPerElement_*nmbElementsGlob_), globalMapIDs,elementMap->getIndexBase()*nmbPointsPerElement_, comm_));
+    MapPtr_Type	mapElements = Teuchos::rcp( new Map_Type((int) (this->nmbPointsPerElement_*this->nmbElementsGlob_), globalMapIDs,elementMap->getIndexBase()*this->nmbPointsPerElement_, this->comm_));
     // if (nodeElementListInteger.size()>0)
         // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), &nodeElementListInteger[0],1, 0, *commEpetra_));
     // else
@@ -73,7 +73,7 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
     // EpetraMapPtr_Type mapEpetra = Teuchos::rcp(new Epetra_Map((int)nmbPointsGlob_,indices.size(),intGlobIDs,0,*commEpetra_));
     // delete [] intGlobIDs;
     
-    this->pointsHDF_.reset(new MultiVector_Type(mesh->getMapUnique(),dim_));
+    this->pointsHDF_.reset(new MultiVector_Type(mesh->getMapUnique(),this->dim_));
 
     updatePoints();
 
