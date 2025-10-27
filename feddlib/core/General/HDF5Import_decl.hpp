@@ -7,19 +7,19 @@
 // Trilinos
 #include <Teuchos_Array.hpp>
 
-#include <Epetra_ConfigDefs.h>
+// #include <Epetra_ConfigDefs.h>
 #ifdef HAVE_MPI
 #include <mpi.h>
-#include <Epetra_MpiComm.h>
-#include <Epetra_SerialComm.h>
+// #include <Epetra_MpiComm.h>
+// #include <Epetra_SerialComm.h>
 #else
 #include <Epetra_SerialComm.h>
 #endif
 
-#include <Epetra_Map.h>
-#include <Epetra_MultiVector.h>
+// #include <Epetra_Map.h>
+// #include <Epetra_MultiVector.h>
 
-#include <EpetraExt_HDF5.h>
+// #include <EpetraExt_HDF5.h>
 #include <hdf5.h>
 #include "HDF5Toolbox_decl.hpp"
 
@@ -38,7 +38,7 @@ namespace FEDD {
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class HDF5Import {
 public:
-    typedef Teuchos::RCP<Epetra_Map> EpetraMapPtr_Type;
+    // typedef Teuchos::RCP<Epetra_Map> EpetraMapPtr_Type;
 
     typedef HDF5Toolbox<SC,LO,GO,NO> HDF5_Type;
     typedef Teuchos::RCP<HDF5_Type> HDF5Ptr_Type;
@@ -72,7 +72,7 @@ public:
     /// @brief HDF5 importer based on EpetraExt HDF5 importer
     HDF5Ptr_Type hdf5importer_; 
     CommConstPtr_Type comm_;
-    Teuchos::RCP<Epetra_MpiComm> commEpetra_;
+    // Teuchos::RCP<Epetra_MpiComm> commEpetra_;
     
     // ------------------------
     // READ 
@@ -82,7 +82,7 @@ public:
     /// @brief Name of Map of import multivector
     MapPtr_Type  readMap_;
     /// @brief Imported MultiVector in Epetra format
-    Epetra_MultiVector* u_import_Epetra_;
+    // Epetra_MultiVector* u_import_Epetra_;
     /// @brief Imported file in Xpetra format
     MultiVectorPtr_Type u_import_Tpetra_;
 

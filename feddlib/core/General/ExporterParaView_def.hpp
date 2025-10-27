@@ -17,7 +17,7 @@ template<class SC,class LO,class GO,class NO>
 ExporterParaView<SC,LO,GO,NO>::ExporterParaView():
 hdf5exporter_(),
 comm_(),
-commEpetra_(),
+// commEpetra_(),
 closingLinesPosition_(),
 closingLinesPositionTimes_(),
 closingLines_(),
@@ -72,7 +72,7 @@ void ExporterParaView<SC,LO,GO,NO>::setup(std::string filename,
     comm_ = mesh->getComm();
     verbose_ = (comm_->getRank() == 0);
     Teuchos::RCP<const Teuchos::MpiComm<int> > mpiComm = Teuchos::rcp_dynamic_cast<const Teuchos::MpiComm<int> >( mesh->getComm() );
-    commEpetra_.reset( new Epetra_MpiComm( *mpiComm->getRawMpiComm() ) );
+    // commEpetra_.reset( new Epetra_MpiComm( *mpiComm->getRawMpiComm() ) );
     filename_ = filename;
     outputFilename_ = filename_ + ".h5";
     FEType_ = FEType;
@@ -164,44 +164,52 @@ void ExporterParaView<SC,LO,GO,NO>::setup(std::string filename,
     
     timeIndex_ = 0;
     
+    // Something different happens to the element List and the elements
+    // Probably the hafe the following form:
+    // ElementMap :   0     1       2       3       4       5  
+    // ->            0 1 2  3 4 5   6 7 8   ...
+    // Element GIDs:  0 1 2 3 ...
+    // Where the map tells us which IDs belong to which element
     MapConstPtr_Type elementMap = mesh->getElementMap();
-    Teuchos::ArrayView<const GO> nodeElementList = elementMap->getNodeElementList();
-    vec_int_Type nodeElementListInteger( nmbPointsPerElement_ * nodeElementList.size() );
+    Teuchos::ArrayView<const GO> nodeElementList = elementMap->getNodeElementList(); // Global Ids on this processor
+    vec_GO_Type nodeElementListInteger( nmbPointsPerElement_ * nodeElementList.size() );
     int counter=0;
-    for (int i=0; i<nodeElementList.size(); i++) {
-        for (int j=0; j<nmbPointsPerElement_; j++){
+    for (int i=0; i<nodeElementList.size(); i++) { // Number of elements
+        for (int j=0; j<nmbPointsPerElement_; j++){ // number of points per element
             nodeElementListInteger[counter] = (int) nmbPointsPerElement_*nodeElementList[i] + j;
-            counter++;
+            counter++; // from 0 ... to nmbPointsPerElement_*localElements
         }
     }
-    Teuchos::RCP<Epetra_BlockMap> 	mapElements;
-    if (nodeElementListInteger.size()>0)
-        mapElements.reset(new Epetra_BlockMap( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), &nodeElementListInteger[0],1, 0, *commEpetra_));
-    else
-        mapElements.reset(new Epetra_BlockMap( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), NULL,1, 0, *commEpetra_));
+    Teuchos::ArrayView<GO> globalMapIDs = Teuchos::arrayViewFromVector( nodeElementListInteger);
+    MapPtr_Type	mapElements = Teuchos::rcp( new Map_Type((int) (nmbPointsPerElement_*nmbElementsGlob_), globalMapIDs,elementMap()->getIndexBase()*nmbPointsPerElement_, comm_));
+    // if (nodeElementListInteger.size()>0)
+        // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), &nodeElementListInteger[0],1, 0, *commEpetra_));
+    // else
+        // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), NULL,1, 0, *commEpetra_));
     
-    elementsHDF_.reset(new Epetra_IntVector(*mapElements));
+    // They contain global IDs of nodes corresponding to 'elements'
+    elementsHDF_.reset(new MultiVector_Type(mapElements,1));
     
     ElementsPtr_Type elements = mesh->getElementsC();
     counter = 0;
     for (int i=0; i<elements->numberElements(); i++) {
         for (int j=0; j<nmbPointsPerElement_; j++) {
             int globalIndex = (int) mesh->getMapRepeated()->getGlobalElement( elements->getElement(i).getNode(j) );
-            (*elementsHDF_)[counter] = globalIndex;
+            (elementsHDF_->getDataNonConst(0))[counter] = globalIndex;
             counter++;
         }
     }
 
-    Teuchos::ArrayView< const GO > indices = mesh->getMapUnique()->getNodeElementList();
-    int* intGlobIDs = new int[indices.size()];
-    for (int i=0; i<indices.size(); i++) {
-        intGlobIDs[i] = (int) indices[i];
-    }
+    // Teuchos::ArrayView< const GO > indices = mesh->getMapUnique()->getNodeElementList();
+    // int* intGlobIDs = new int[indices.size()];
+    // for (int i=0; i<indices.size(); i++) {
+    //     intGlobIDs[i] = (int) indices[i];
+    // }
     
-    EpetraMapPtr_Type mapEpetra = Teuchos::rcp(new Epetra_Map((int)nmbPointsGlob_,indices.size(),intGlobIDs,0,*commEpetra_));
-    delete [] intGlobIDs;
+    // EpetraMapPtr_Type mapEpetra = Teuchos::rcp(new Epetra_Map((int)nmbPointsGlob_,indices.size(),intGlobIDs,0,*commEpetra_));
+    // delete [] intGlobIDs;
     
-    pointsHDF_.reset(new Epetra_MultiVector(*mapEpetra,dim_));
+    pointsHDF_.reset(new MultiVector_Type(mesh->getMapUnique(),dim_));
 
     updatePoints();
     
@@ -230,16 +238,16 @@ void ExporterParaView<SC,LO,GO,NO>::addVariable(MultiVecConstPtr_Type &u,
 
 
 
-    Teuchos::ArrayView< const GO > indices = mapUnique->getNodeElementList();
-    int* intGlobIDs = new int[indices.size()];
-    for (int i=0; i<indices.size(); i++) {
-        intGlobIDs[i] = (int) indices[i];
-    }
+    // Teuchos::ArrayView< const GO > indices = mapUnique->getNodeElementList();
+    // int* intGlobIDs = new int[indices.size()];
+    // for (int i=0; i<indices.size(); i++) {
+    //     intGlobIDs[i] = (int) indices[i];
+    // }
 
-    EpetraMapPtr_Type mapToStore = Teuchos::rcp(new Epetra_Map( (int) mapUnique->getGlobalNumElements(), indices.size(), intGlobIDs,0, *commEpetra_ ) );
+    // EpetraMapPtr_Type mapToStore = Teuchos::rcp(new Epetra_Map( (int) mapUnique->getGlobalNumElements(), indices.size(), intGlobIDs,0, *commEpetra_ ) );
 
-    uniqueMaps_.push_back(mapToStore);
-    delete [] intGlobIDs;
+    uniqueMaps_.push_back(mapUnique);
+    // delete [] intGlobIDs;
 
 }
 
@@ -298,7 +306,7 @@ void ExporterParaView<SC,LO,GO,NO>::save(double time, double dt){
 template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::closeExporter(){
 
-    hdf5exporter_->Close();
+    hdf5exporter_->close();
     xmf_out_.close();
     if (writeDt_) {
         xmf_times_out_.close();
@@ -309,8 +317,8 @@ void ExporterParaView<SC,LO,GO,NO>::closeExporter(){
 template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::initHDF5(){
 
-    hdf5exporter_.reset( new HDF5_Type(*commEpetra_) );
-    hdf5exporter_->Create(outputFilename_);
+    hdf5exporter_.reset( new HDF5_Type(comm_) );
+    hdf5exporter_->create(outputFilename_);
     std::string nameConn = "Connections";
 
     writeMeshElements(nameConn);
@@ -352,9 +360,9 @@ void ExporterParaView<SC,LO,GO,NO>::writeMeshPointsHDF5(){
 template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::writeMeshElements( std::string nameConn ){
     //Triangle/Tetrahedron Connections
-    hdf5exporter_->CreateGroup(nameConn);
+    hdf5exporter_->createGroup(nameConn);
 
-    hdf5exporter_->Write(nameConn,*elementsHDF_);
+    hdf5exporter_->write(nameConn,elementsHDF_);
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -364,17 +372,17 @@ void ExporterParaView<SC,LO,GO,NO>::writeMeshPoints(std::string nameP_X,
 
 
 
-    hdf5exporter_->CreateGroup(nameP_X);
-    hdf5exporter_->CreateGroup(nameP_Y);
+    hdf5exporter_->createGroup(nameP_X);
+    hdf5exporter_->createGroup(nameP_Y);
 
-    hdf5exporter_->Write(nameP_X,*(*pointsHDF_)(0));
-    hdf5exporter_->Write(nameP_Y,*(*pointsHDF_)(1));
+    hdf5exporter_->write(nameP_X,pointsHDF_->getVector(0));
+    hdf5exporter_->write(nameP_Y,pointsHDF_->getVector(1));
 
     if (dim_ == 3) {
-        hdf5exporter_->CreateGroup(nameP_Z);
-        hdf5exporter_->Write(nameP_Z,*(*pointsHDF_)(2));
+        hdf5exporter_->createGroup(nameP_Z);
+        hdf5exporter_->write(nameP_Z,pointsHDF_->getVector(2));
     }
-    hdf5exporter_->Flush();
+    hdf5exporter_->flush();
 
 }
 
@@ -386,7 +394,7 @@ void ExporterParaView<SC,LO,GO,NO>::updatePoints(){
 
     for (int i=0; i<pointsUnique_->size(); i++) {
         for (int j = 0; j < dim; j++) {
-            pointsHDF_->ReplaceMyValue(i,j,(*pointsUnique_)[i][j]);
+            pointsHDF_->getDataNonConst(j)[i] = (*pointsUnique_)[i][j];
         }
     }
 }
@@ -397,24 +405,24 @@ void ExporterParaView<SC,LO,GO,NO>::writeVariablesHDF5(){
     for (int i=0; i<variables_.size(); i++) {
 
         if (varTypes_.at(i)=="Vector") {
-            EpetraMVPtr_Type u_export(new Epetra_MultiVector(*(uniqueMaps_.at(i)),3)); // ParaView always uses 3D Data. for 2D Data the last entries (for the 3rd Dim) are all zero.
+            MultiVectorPtr_Type u_export(new MultiVector_Type(uniqueMaps_.at(i),3)); // ParaView always uses 3D Data. for 2D Data the last entries (for the 3rd Dim) are all zero.
 
-            hdf5exporter_->CreateGroup(varNames_[i]+postfix_);
+            hdf5exporter_->createGroup(varNames_[i]+postfix_);
 
             prepareVectorField(variables_.at(i),u_export, varDofPerNode_.at(i));
 
-            hdf5exporter_->Write(varNames_[i]+postfix_,*u_export,true);
+            hdf5exporter_->write(varNames_[i]+postfix_,u_export,true);
         }
         else if(varTypes_.at(i)=="Scalar"){
-            EpetraMVPtr_Type u_export(new Epetra_MultiVector(*(uniqueMaps_.at(i)),1));
+            MultiVectorPtr_Type u_export(new MultiVector_Type(uniqueMaps_.at(i),1)); // ParaView always uses 3D Data. for 2D Data the last entries (for the 3rd Dim) are all zero.
 
-            hdf5exporter_->CreateGroup(varNames_[i]+postfix_);
+            hdf5exporter_->createGroup(varNames_[i]+postfix_);
 
             prepareScalar(variables_.at(i),u_export); //conversion to int
 
-            hdf5exporter_->Write(varNames_[i]+postfix_,*u_export);
+            hdf5exporter_->write(varNames_[i]+postfix_,u_export);
         }
-        hdf5exporter_->Flush();
+        hdf5exporter_->flush();
     }
 
 }
@@ -806,29 +814,28 @@ void ExporterParaView<SC,LO,GO,NO>::writeXmfTime(double time, double dt){
 
 template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::prepareVectorField(MultiVecConstPtr_Type &u,
-                                                          EpetraMVPtr_Type &u_export,
+                                                          MultiVectorPtr_Type &u_export,
                                                           int dof) const{
 
     TEUCHOS_TEST_FOR_EXCEPTION(u->getNumVectors()!=1, std::logic_error, "Can only export single vector");
 
+    Teuchos::ArrayRCP<const SC> tmpData = u->getData(0);
     for (int i=0; i<(u->getLocalLength()/dof); i++) {
         for (int j=0; j < dof; j++) {
-            Teuchos::ArrayRCP<const SC> tmpData = u->getData(0);
-            u_export->ReplaceMyValue( i, j, tmpData[ dof * i + j ] );
+            u_export->getDataNonConst(j)[i] =  tmpData[ dof * i + j ];
         }
     }
 }
 
 template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::prepareScalar(MultiVecConstPtr_Type &u,
-                                                     EpetraMVPtr_Type &u_export) const{
+                                                  MultiVectorPtr_Type &u_export) const{
 
     TEUCHOS_TEST_FOR_EXCEPTION(u->getNumVectors()!=1, std::logic_error, "Can only export single vector");
 
     Teuchos::ArrayRCP<const SC> tmpData = u->getData(0);
     for (int i=0; i<tmpData.size(); i++) {
-
-        u_export->ReplaceMyValue( i, 0, tmpData[ i ] );
+        u_export->getDataNonConst(0)[i] =  tmpData[  i];
     }
 
 }

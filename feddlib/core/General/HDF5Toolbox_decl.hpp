@@ -42,7 +42,7 @@ class HDF5Toolbox{
         /// @brief Write/export a vector X to the HDF5 file under the group name GroupName
         /// @param GroupName 
         /// @param X 
-        void write(const std::string &GroupName, const MultiVectorPtr_Type X);
+        void write(const std::string &GroupName, const MultiVectorPtr_Type X, bool writeTranspose = false);
 
         bool isContained(std::string Name, std::string GroupName = "");
 
@@ -81,35 +81,37 @@ class HDF5Toolbox{
         //! Close the file.
         void close()
         {
+
+            ssize_t nopen = H5Fget_obj_count(file_id_, H5F_OBJ_ALL);
+            
+            if (nopen > 0) {
+                std::cout << "[Rank " << comm_->getRank()
+                    << "] HDF5 objects still open before H5Fclose: " << nopen << std::endl;
+                H5Fget_obj_count(file_id_, H5F_OBJ_ALL);
+                H5Fget_obj_ids(file_id_, H5F_OBJ_ALL, 0, nullptr);
+            }
+
+            ssize_t num = H5Fget_obj_count(file_id_, H5F_OBJ_ALL);
+            std::vector<hid_t> ids(num);
+            H5Fget_obj_ids(file_id_, H5F_OBJ_ALL, num, ids.data());
+
+            for (auto id : ids) {
+            unsigned int type = H5Iget_type(id);
+            const char* tname =
+                (type == H5I_FILE)      ? "file" :
+                (type == H5I_GROUP)     ? "group" :
+                (type == H5I_DATASET)   ? "dataset" :
+                (type == H5I_DATASPACE) ? "dataspace" :
+                (type == H5I_DATATYPE)  ? "datatype" :
+                (type == H5I_ATTR)      ? "attribute" : "unknown";
+
+            std::cout << "[Rank " << comm_->getRank() << "] Still open: " << tname
+                        << " (id=" << id << ")\n";
+            }
+
             H5Fclose(file_id_);
             isOpen_ = false;
 
-            // ssize_t nopen = H5Fget_obj_count(file_id_, H5F_OBJ_ALL);
-            // std::cout << "[Rank " << comm_->getRank()
-            //         << "] HDF5 objects still open before H5Fclose: " << nopen << std::endl;
-
-            // if (nopen > 0) {
-            //     H5Fget_obj_count(file_id_, H5F_OBJ_ALL);
-            //     H5Fget_obj_ids(file_id_, H5F_OBJ_ALL, 0, nullptr);
-            // }
-
-            // ssize_t num = H5Fget_obj_count(file_id_, H5F_OBJ_ALL);
-            // std::vector<hid_t> ids(num);
-            // H5Fget_obj_ids(file_id_, H5F_OBJ_ALL, num, ids.data());
-
-            // for (auto id : ids) {
-            // unsigned int type = H5Iget_type(id);
-            // const char* tname =
-            //     (type == H5I_FILE)      ? "file" :
-            //     (type == H5I_GROUP)     ? "group" :
-            //     (type == H5I_DATASET)   ? "dataset" :
-            //     (type == H5I_DATASPACE) ? "dataspace" :
-            //     (type == H5I_DATATYPE)  ? "datatype" :
-            //     (type == H5I_ATTR)      ? "attribute" : "unknown";
-
-            // std::cout << "[Rank " << comm_->getRank() << "] Still open: " << tname
-            //             << " (id=" << id << ")\n";
-            // }
         }
 
         //! Flush the content to the file

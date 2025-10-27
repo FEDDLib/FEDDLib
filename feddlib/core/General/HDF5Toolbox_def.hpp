@@ -22,7 +22,7 @@ HDF5Toolbox<SC, LO, GO, NO>::HDF5Toolbox(CommConstPtr_Type comm):
 // ----------------------------------------------------------------
 /// @brief Write/export a vector X to the HDF5 file under the group name GroupName
 template <class SC, class LO, class GO, class NO>
-void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const MultiVectorPtr_Type X)
+void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const MultiVectorPtr_Type X, bool writeTranspose)
 {
 
   TEUCHOS_TEST_FOR_EXCEPTION(!isOpen(),std::runtime_error,"HDF5Toolbox:: no file open yet");
@@ -50,7 +50,7 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
   // handled by one of the components of q_dimsf, offset and count.
   // They are determined by indexT
   int indexT(0);
-  // if (writeTranspose) indexT = 1; // We are not doing transposed write here
+  if (writeTranspose) indexT = 1;  // if (writeTranspose) indexT = 1; // We are not doing transposed write here
 
   hsize_t q_dimsf[] = {static_cast<hsize_t>(GlobalLength), static_cast<hsize_t>(GlobalLength)};
   q_dimsf[indexT] = NumVectors;

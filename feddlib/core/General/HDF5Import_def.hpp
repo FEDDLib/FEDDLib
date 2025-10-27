@@ -18,8 +18,8 @@ namespace FEDD {
 template<class SC,class LO,class GO,class NO>
 HDF5Import<SC,LO,GO,NO>::HDF5Import(MapConstPtr_Type readMap, std::string inputFilename):
 hdf5importer_(),
-comm_(),
-commEpetra_()
+comm_()
+// commEpetra_()
 {
     Teuchos::RCP<const Teuchos::MpiComm<int> > mpiComm = Teuchos::rcp_dynamic_cast<const Teuchos::MpiComm<int> >( readMap->getComm() );
     comm_ = mpiComm;
