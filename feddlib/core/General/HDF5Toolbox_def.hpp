@@ -13,6 +13,21 @@
 
 namespace FEDD {
 
+struct FindDataset_t
+{
+  std::string name;
+  bool found;
+};
+
+static herr_t FindDataset(hid_t loc_id, const char *name, void *opdata)
+{
+  std::string& token = ((FindDataset_t*)opdata)->name;
+  if (token == name)
+    ((FindDataset_t*)opdata)->found = true;
+
+  return(0);
+}
+
 template <class SC, class LO, class GO, class NO>
 HDF5Toolbox<SC, LO, GO, NO>::HDF5Toolbox(CommConstPtr_Type comm):
   comm_(comm),
@@ -458,20 +473,7 @@ void HDF5Toolbox<SC, LO, GO, NO>::createGroup(const std::string& GroupName)
 }
 // -------------------------------------------------------------------------
 
-struct FindDataset_t
-{
-  std::string name;
-  bool found;
-};
 
-static herr_t FindDataset(hid_t loc_id, const char *name, void *opdata)
-{
-  std::string& token = ((FindDataset_t*)opdata)->name;
-  if (token == name)
-    ((FindDataset_t*)opdata)->found = true;
-
-  return(0);
-}
 
 // ==========================================================================
 // ==========================================================================
