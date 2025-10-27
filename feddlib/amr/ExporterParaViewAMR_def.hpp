@@ -57,9 +57,9 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
     ElementsPtr_Type elements = mesh->getElementsC();
     counter = 0;
     for (int i=0; i<elements->numberElements(); i++) {
-        for (int j=0; j<nmbPointsPerElement_; j++) {
+        for (int j=0; j<this->nmbPointsPerElement_; j++) {
             int globalIndex = (int) mesh->getMapRepeated()->getGlobalElement( elements->getElement(i).getNode(j) );
-            (elementsHDF_->getDataNonConst(0))[counter] = globalIndex;
+            (this->elementsHDF_->getDataNonConst(0))[counter] = globalIndex;
             counter++;
         }
     }
