@@ -82,9 +82,7 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
 
   // Create property list for collective dataset write.
   plist_id_ = H5Pcreate(H5P_DATASET_XFER);
-#ifdef HAVE_MPI
   H5Pset_dxpl_mpio(plist_id_, H5FD_MPIO_COLLECTIVE);
-#endif
 
 
   // Select hyperslab in the file.
@@ -614,7 +612,6 @@ void HDF5Toolbox<SC, LO, GO, NO>::open(const std::string FileName, int AccessTyp
   // Set up file access property list with parallel I/O access
   plist_id_ = H5Pcreate(H5P_FILE_ACCESS);
 
-#ifdef HAVE_MPI
   MPI_Comm mpiComm = MPI_COMM_WORLD;
 
   Teuchos::RCP<const Teuchos::MpiComm<int>> mpiWrapper =
@@ -625,7 +622,6 @@ void HDF5Toolbox<SC, LO, GO, NO>::open(const std::string FileName, int AccessTyp
   }
 
   H5Pset_fapl_mpio(plist_id_, mpiComm, MPI_INFO_NULL);
-#endif
 
   // create the file collectively and release property list identifier.
   file_id_ = H5Fopen(FileName.c_str(), AccessType, plist_id_);
@@ -642,7 +638,6 @@ void HDF5Toolbox<SC, LO, GO, NO>::tpetraScanSum(const Teuchos::RCP<const Teuchos
                    GO* recvbuf,
                    int count)
 {
-#ifdef HAVE_MPI
   // Try to downcast to MPI communicator
   Teuchos::RCP<const Teuchos::MpiComm<int>> mpiComm =
     Teuchos::rcp_dynamic_cast<const Teuchos::MpiComm<int>>(comm, false);
@@ -653,7 +648,6 @@ void HDF5Toolbox<SC, LO, GO, NO>::tpetraScanSum(const Teuchos::RCP<const Teuchos
     MPI_Scan(sendbuf, recvbuf, count, MPI_INT, MPI_SUM, rawComm);
     return;
   }
-#endif
 
   // 🔹 Serial (or non-MPI) fallback
   for (int i = 0; i < count; ++i) {

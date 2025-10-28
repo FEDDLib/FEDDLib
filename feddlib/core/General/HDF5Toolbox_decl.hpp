@@ -2,9 +2,7 @@
 #define HDF5TOOLBOX_hpp
 
 #include "hdf5.h"
-#ifdef HAVE_MPI
 #include "H5FDmpio.h"
-#endif
 #include <Tpetra_Core.hpp>
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
