@@ -16,17 +16,17 @@ INCLUDE(AddSubdirectories)
 #)
 
 ### Map
-TRIBITS_ADD_EXECUTABLE(
-	map
-	SOURCES map.cpp
-)
+# TRIBITS_ADD_EXECUTABLE(
+# 	map
+# 	SOURCES map.cpp
+# )
 
-TRIBITS_ADD_TEST(
-	map
-    NAME map
-    ARGS
-    NUM_MPI_PROCS 4
-)
+# TRIBITS_ADD_TEST(
+# 	map
+#     NAME map
+#     ARGS
+#     NUM_MPI_PROCS 4
+# )
 
 ### Map Tpetra
 TRIBITS_ADD_EXECUTABLE(
