@@ -227,12 +227,7 @@ domainsP1_(0)
 }
 template <class SC, class LO, class GO, class NO>
 AdaptiveMeshRefinement<SC,LO,GO,NO>::~AdaptiveMeshRefinement(){
-	if(exporterSol_->isOpen())
-		exporterSol_->closeExporter();
-	if(exporterSol_->isOpen())
-		exporterSolP_->closeExporter();
-	if(exporterSol_->isOpen())
-		exporterError_->closeExporter();
+	
 }
 /*!
 \brief Initializing problem if only a certain area should be refined. 
