@@ -3,7 +3,7 @@
 
 #include "hdf5.h"
 #ifdef HAVE_MPI
-#  include "H5FDmpio.h"
+#include "H5FDmpio.h"
 #endif
 #include <Tpetra_Core.hpp>
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
