@@ -2,7 +2,7 @@ TRIBITS_REPOSITORY_DEFINE_TPLS(
     MPI             "${${PROJECT_NAME}_TRIBITS_DIR}/core/std_tpls/"     PT
     Trilinos        "cmake/TPLs/"                                       PT
     AceGENInterface "cmake/TPLs/FindTPLAceGENInterface.cmake"           PT
-    HDF5          "cmake/TPLs/FindTPLHDF5.cmake"                      PT
+    HDF5          "cmake/TPLs/FindTPLHDF5.cmake"                        PT
 )
 
 # NOTES:
