@@ -62,7 +62,7 @@ list (APPEND XLib_OPTIONAL_Trilinos_PKGS
 
 # Required packages (to be moved outside, like REQUIRED COMPONENTS ...)
 list (APPEND XLib_REQUIRED_Trilinos_PKGS
-  "Belos" "Epetra" "EpetraExt" "ShyLU_DDFROSch" "Stratimikos" "Teko" "Teuchos" "Thyra" "Tpetra" "Xpetra")
+  "Belos" "ShyLU_DDFROSch" "Stratimikos" "Teko" "Teuchos" "Thyra" "Tpetra" "Xpetra")
 
 # Start scanning Trilinos configuration
 foreach (TYPE IN ITEMS "OPTIONAL" "REQUIRED")

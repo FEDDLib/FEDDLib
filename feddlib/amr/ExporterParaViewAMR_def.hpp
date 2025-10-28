@@ -27,15 +27,16 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
     this->nmbElementsGlob_ = this->mesh_->getNumElementsGlobal();
     this->pointsUnique_ = this->mesh_->getPointsUnique();
     this->nmbPointsGlob_ = this->mesh_->getMapUnique()->getGlobalNumElements();
-   
-   // Something different happens to the element List and the elements
+    std::cout << "Re-Setup ExporterParaViewAMR for new mesh with " << this->nmbElementsGlob_ << " elements and " << this->nmbPointsGlob_ << " points." <<std::endl;
+    // Something different happens to the element List and the elements
     // Probably the hafe the following form:
     // ElementMap :   0     1       2       3       4       5  
     // ->            0 1 2  3 4 5   6 7 8   ...
     // Element GIDs:  0 1 2 3 ...
     // Where the map tells us which IDs belong to which element
-    MapConstPtr_Type elementMap = mesh->getElementMap();
+    MapConstPtr_Type elementMap = this->mesh_->getElementMap();
     Teuchos::ArrayView<const GO> nodeElementList = elementMap->getNodeElementList(); // Global Ids on this processor
+    std::cout << " Re-Setup ExporterParaViewAMR: element map has " << nodeElementList.size() << " entries on this processor." << std::endl;
     vec_GO_Type nodeElementListInteger( this->nmbPointsPerElement_ * nodeElementList.size() );
     int counter=0;
     for (int i=0; i<nodeElementList.size(); i++) { // Number of elements
@@ -54,11 +55,11 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
     // They contain global IDs of nodes corresponding to 'elements'
     this->elementsHDF_.reset(new MultiVector_Type(mapElements,1));
     
-    ElementsPtr_Type elements = mesh->getElementsC();
+    ElementsPtr_Type elements = this->mesh_->getElementsC();
     counter = 0;
     for (int i=0; i<elements->numberElements(); i++) {
         for (int j=0; j<this->nmbPointsPerElement_; j++) {
-            int globalIndex = (int) mesh->getMapRepeated()->getGlobalElement( elements->getElement(i).getNode(j) );
+            int globalIndex = (int) this->mesh_->getMapRepeated()->getGlobalElement( elements->getElement(i).getNode(j) );
             (this->elementsHDF_->getDataNonConst(0))[counter] = globalIndex;
             counter++;
         }
@@ -73,15 +74,14 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
     // EpetraMapPtr_Type mapEpetra = Teuchos::rcp(new Epetra_Map((int)nmbPointsGlob_,indices.size(),intGlobIDs,0,*commEpetra_));
     // delete [] intGlobIDs;
     
-    this->pointsHDF_.reset(new MultiVector_Type(mesh->getMapUnique(),this->dim_));
+    this->pointsHDF_.reset(new MultiVector_Type(this->mesh_->getMapUnique(),this->dim_));
 
-    updatePoints();
+    this->updatePoints();
 
 	this->redo_=true;
     std::string nameConn = "Connections" + std::to_string(this->timeIndex_);
-   	this->writeMeshElements(nameConn);
+  	this->writeMeshElements(nameConn);
 
-	
 }
 
 template<class SC,class LO,class GO,class NO>

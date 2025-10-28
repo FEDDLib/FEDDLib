@@ -392,6 +392,7 @@ void ExporterParaView<SC,LO,GO,NO>::updatePoints(){
     if (pointsUnique_->size()>0)
         dim = pointsUnique_->at(0).size();
 
+    std::cout << " Points Size " << pointsUnique_->size() << std::endl;
     for (int i=0; i<pointsUnique_->size(); i++) {
         for (int j = 0; j < dim; j++) {
             pointsHDF_->getDataNonConst(j)[i] = (*pointsUnique_)[i][j];
