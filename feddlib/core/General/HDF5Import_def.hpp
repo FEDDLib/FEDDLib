@@ -8,7 +8,7 @@
 
  @brief  HDF5Import
  
- Now, we use the HDF5Toolbox as HDF5 export/import toolbox. It is popssible to import a HDF5 file with the command 'read'.
+ Now, we use the HDF5Toolbox as HDF5 export/import toolbox. It is possible to import a HDF5 file with the command 'read'.
  The use must provide the corresponding map, to distribute the vector and the correct file and variable name.
  
  */
