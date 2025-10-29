@@ -163,7 +163,7 @@ void ExporterParaView<SC,LO,GO,NO>::setup(std::string filename,
     timeIndex_ = 0;
     
     // Something different happens to the element List and the elements
-    // Probably the hafe the following form:
+    // Probably they have the following form:
     // ElementMap :   0     1       2       3       4       5  
     // ->            0 1 2  3 4 5   6 7 8   ...
     // Element GIDs:  0 1 2 3 ...
