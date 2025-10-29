@@ -213,7 +213,7 @@ void ExporterParaView<SC,LO,GO,NO>::addVariable(MultiVecConstPtr_Type &u,
                                                   std::string varName,
                                                   std::string varType,
                                                   int dofPerNode,
-                                                  MapConstPtr_Type& mapUnique){
+                                                  MapConstPtrConst_Type& mapUnique){
 
     variables_.push_back(u);
     varNames_.push_back(varName);
