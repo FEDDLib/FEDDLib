@@ -170,7 +170,7 @@ protected:
     
     
     std::vector<MultiVecConstPtr_Type> variables_;
-    std::vector<MapPtr_Type >   uniqueMaps_;
+    std::vector<MapConstPtr_Type >   uniqueMaps_;
     std::vector<std::string>   		varNames_;
     std::vector<std::string>   		varTypes_;
     std::vector<int> 				varDofPerNode_;
