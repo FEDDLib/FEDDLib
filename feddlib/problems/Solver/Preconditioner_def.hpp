@@ -1034,14 +1034,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerFaCSI( std::string type )
     // The we cast the timeproblem to original Navier-Stokes problem and use it to build preconditioner
     Teuchos::RCP< NavierStokes<SC,LO,GO,NO> > fluidProblemSteady = Teuchos::rcp_dynamic_cast<NavierStokes<SC,LO,GO,NO> >(fluidProblem->getUnderlyingProblem());
 
-    // f->writeMM("F_fromFSI");
-    // faCSIBCFactory_->setSystem( fluidSystem );
-    // f->writeMM("F_fromFSI_withBC");
-
     faCSIBCFactory_->setSystem( fluidProblem->getSystemCombined() );
-    // fluidProblem->getSystemCombined()->getBlock(0,0)->writeMM("F_from_Fluid_withBC");
-
-    // probFluid_->initializeSystem( fluidSystem );
 
     fluidProblemSteady->setupPreconditioner( precTypeFluid );
     precFluid_ = fluidProblemSteady->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();

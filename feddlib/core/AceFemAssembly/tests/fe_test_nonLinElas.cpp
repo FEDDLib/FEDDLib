@@ -6,9 +6,9 @@
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
+#include <Tpetra_Core.hpp>
 
 // #######################################################
 // Execute programm: make, then ./core_fe_test_linElas.exe 
@@ -48,8 +48,8 @@ int main(int argc, char *argv[]) {
     oblackholestream blackhole;
     GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    RCP<const Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
-
+    Tpetra::ScopeGuard tpetraScope (&argc, &argv); // initializes MPI
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
     // Command Line Parameters
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemNonLinElas.xml");
     Teuchos::CommandLineProcessor myCLP;

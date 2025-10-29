@@ -146,6 +146,10 @@ u_rep_()
     if(this->parameterList_->sublist("General").get("Augmented Lagrange",false))  
         augmentedLagrange_ = true;
 
+    // Establish the non zero pattern of the system matrix in (0,0) block
+    NNZ_A_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    establishNNZPattern();
+
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -361,12 +365,15 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
     }
 
     if (this->verbose_)
-        std::cout << " Call Reassemble FixedPoint and Newton to allocate the Matrix pattern " << std::endl;
+        std::cout << " Allocate the Matrix pattern " << std::endl;
     
-    // This was moved here from 'create_W_op'.
-    // Here it will definetly be called before create_W_op and create_W_prec is called.
-    this->reAssemble("FixedPoint");
-    this->reAssemble("Newton");
+    // After the constant matrices are assembled, we establish the matrix pattern for the (0,0) block for the advection term
+    MatrixPtr_Type A_withNNZ = Teuchos::rcp( new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    A_->addMatrix(1.,A_withNNZ,0.); // We add the previously computed laplacian
+    NNZ_A_->addMatrix(1.,A_withNNZ,1.); // We add the zero matrix containing the nnz pattern
+
+    A_withNNZ->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
+    this->system_->addBlock( A_withNNZ, 0, 0 ); // We replace the (0,0) block with the new matrix containing the laplacian and the nnz pattern for the advection term
 
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
@@ -620,6 +627,41 @@ void NavierStokes<SC,LO,GO,NO>::reAssemble(std::string type) const {
         std::cout << "done -- " << std::endl;
 }
 
+// This function assembles only the non zero pattern of the block (0,0) of the system matrix
+// This is done by using a zero solution vector zeroVec
+// Then, the advection matrices are assembled and added to an empty matrix ANW
+// The resulting matrix ANW contains then the non zero pattern 
+// This is then stored as NNZ_A_
+template<class SC,class LO,class GO,class NO>
+void NavierStokes<SC,LO,GO,NO>::establishNNZPattern() const {
+
+   
+    if (this->verbose_)
+        std::cout << "-- Establish NNZ Pattern Navier-Stokes ... " << std::flush;
+    
+    MatrixPtr_Type ANW = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+        
+    MultiVectorPtr_Type zeroVec = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated(), 1 ) );
+    zeroVec->putScalar(0.0);
+
+    MatrixPtr_Type N = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    this->feFactory_->assemblyAdvectionVecField( this->dim_, this->domain_FEType_vec_.at(0), N, zeroVec, true );
+    
+    N->addMatrix(1.,ANW,0.);
+     
+    MatrixPtr_Type W = Teuchos::rcp(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
+    this->feFactory_->assemblyAdvectionInUVecField( this->dim_, this->domain_FEType_vec_.at(0), W, zeroVec, true );
+ 
+    W->addMatrix(1.,ANW,1.);
+    
+    ANW->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique() );
+
+    NNZ_A_= ANW;
+ 
+    if (this->verbose_)
+        std::cout << "done -- " << std::endl;
+}
+
 template<class SC,class LO,class GO,class NO>
 void NavierStokes<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions){
 
@@ -711,8 +753,7 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std::stri
     // This is ok for bdf with 1.0 scaling of the system. Would be wrong for Crank-Nicolson
     
     this->system_->apply( *this->solution_, *this->residualVec_ );
-//    this->residualVec_->getBlock(0)->writeMM("Ax.mm");
-//    this->rhs_->getBlock(0)->writeMM("nsRHS.mm");
+
     if (!type.compare("standard")){
         this->residualVec_->update(-1.,*this->rhs_,1.);
         if ( !this->sourceTerm_.is_null() )

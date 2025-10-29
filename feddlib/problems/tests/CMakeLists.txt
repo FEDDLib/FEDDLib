@@ -1,5 +1,1 @@
-INCLUDE(TribitsCopyFilesToBinaryDir)
-INCLUDE(TribitsAddExecutableAndTest)
-INCLUDE(AddSubdirectories)
-ADD_SUBDIRECTORIES(steadyNavierStokesAssFE unsteadyNavierStokesAssFE steadyLinElasAssFE unsteadyLinElasAssFE steadyNonLinElasAssFE UnitTest)
-
+add_subdirectories(steadyNavierStokesAssFE unsteadyNavierStokesAssFE steadyLinElasAssFE unsteadyLinElasAssFE steadyNonLinElasAssFE UnitTest)

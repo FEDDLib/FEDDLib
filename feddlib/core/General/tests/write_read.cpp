@@ -3,7 +3,6 @@
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/problems/abstract/Problem.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/core/General/HDF5Import.hpp"
 #include "feddlib/core/General/HDF5Export.hpp"
 
@@ -66,8 +65,8 @@ int main(int argc, char *argv[]) {
     oblackholestream blackhole;
     GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    RCP<const Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
-
+    Tpetra::ScopeGuard tpetraScope (&argc, &argv); // initializes MPI
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
     int intFEType = 1;

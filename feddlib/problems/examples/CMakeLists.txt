@@ -1,7 +1,1 @@
-INCLUDE(TribitsCopyFilesToBinaryDir)
-INCLUDE(TribitsAddExecutableAndTest)
-INCLUDE(AddSubdirectories)
-
-ADD_SUBDIRECTORIES( fsi  fsi_artery fsi_arteryBenchmark geometry laplace steadyLinElas steadyLinElas_Perf unsteadyReactionDiffusion steadyNavierStokes steadyGeneralizedNewtonian_PowerLaw stokes unsteadyLinElas unsteadyNavierStokes unsteadyNonLinElasticity) 
-
-
+add_subdirectories( fsi  fsi_artery fsi_arteryBenchmark geometry laplace steadyLinElas steadyLinElas_Perf unsteadyReactionDiffusion steadyNavierStokes steadyGeneralizedNewtonian_PowerLaw stokes unsteadyLinElas unsteadyNavierStokes unsteadyNonLinElasticity) 

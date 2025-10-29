@@ -1,16 +1,16 @@
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	steadyNavierStokes
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	steadyNavierStokes
 	NAME steadyNavierStokes
 	ARGS
 	NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNavierStokes
+tribits_copy_files_to_binary_dir(data_steadyNavierStokes
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml parametersPrecBlock.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -18,7 +18,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNavierStokes
 	EXEDEPS steadyNavierStokes
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokes
+tribits_copy_files_to_binary_dir(mesh_steadyNavierStokes
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
 	SOURCE_FILES dfg_fsi_fluid_h004.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

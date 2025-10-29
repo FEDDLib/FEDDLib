@@ -64,7 +64,9 @@ In the Trilinos cmake configure script, add
 and
    -D Tpetra_INST_INT_LONG_LONG:BOOL=OFF \
    -D Tpetra_INST_INT_INT:BOOL=ON \
-As of now, the opposite (INT_LONG_LONG is on, INT_INT is off) also works, which may be preferably to you.
+According to packages/amesos2/CMakeLists.txt, INST_INT_INT must be ON:
+   MESSAGE(WARNING "*****Amesos2 will not provide MUMPS Support with Tpetra_INST_INT_INT OFF.*****")
+
 See sampleConfigureScripts/configure-on-CentOS-Linux-8.sh for a sample Trilinos configure script.
 To the FEDDLib configure script add
    -D HAVE_XPETRA_EPETRA

@@ -1,4 +1,4 @@
-SET(AceFemAssemblySpecific_HEADERS
+set(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/AssembleFE_Laplace_decl.hpp
 	AceFemAssembly/specific/AssembleFE_Laplace_def.hpp
 	AceFemAssembly/specific/AssembleFE_Laplace.hpp
@@ -40,7 +40,7 @@ SET(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/GeneralizedNewtonianModels/Dimless_Carreau.hpp
 CACHE INTERNAL "")
 
-SET(AceFemAssemblySpecific_SOURCES
+set(AceFemAssemblySpecific_SOURCES
 	AceFemAssembly/specific/AssembleFE_Laplace.cpp
   AceFemAssembly/specific/AssembleFENonLinLaplace.cpp
 	AceFemAssembly/specific/AssembleFENavierStokes.cpp
@@ -57,14 +57,8 @@ SET(AceFemAssemblySpecific_SOURCES
 CACHE INTERNAL "")
 
 
-SET(LOCAL_HEADERS)
-FOREACH(INC ${AceFemAssemblySpecific_HEADERS})
-  STRING(REPLACE "specific/" "" LOCAL_INC ${INC})
-  SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
-ENDFOREACH()
-
-INSTALL(
-  FILES ${LOCAL_HEADERS}
-  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/feddlib/core/AceFemAssembly/specific"
-  COMPONENT ${PACKAGE_NAME}
-)
+set(LOCAL_HEADERS)
+foreach(INC ${AceFemAssemblySpecific_HEADERS})
+  string(REPLACE "specific/" "" LOCAL_INC ${INC})
+  append_set(LOCAL_HEADERS ${LOCAL_INC})
+endforeach()

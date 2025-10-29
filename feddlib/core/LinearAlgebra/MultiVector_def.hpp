@@ -145,7 +145,6 @@ void MultiVector<SC,LO,GO,NO>::print(Teuchos::EVerbosityLevel verbLevel) const{
 
 template <class SC, class LO, class GO, class NO>
 Teuchos::RCP<Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThyraMultiVector( ) {
-   // Teuchos::RCP<Thyra::MultiVectorBase<SC> > mv = Teuchos::rcp_const_cast<Thyra::MultiVectorBase<SC> >(Xpetra::ThyraUtils<SC,LO,GO,NO>::toThyraMultiVector(multiVector_));
 
     auto thyTpMap = Thyra::tpetraVectorSpace<SC,LO,GO,NO>(multiVector_->getMap()); //Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Teuchos::rcp_dynamic_cast<const TpetraMap_Type>(multiVector_->getMap())->getTpetraMap());
     Teuchos::RCP<Tpetra::MultiVector<SC,LO,GO,NO>> tpMV = multiVector_;
@@ -160,8 +159,6 @@ Teuchos::RCP<Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThyraMult
 template <class SC, class LO, class GO, class NO>
 Teuchos::RCP<const Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThyraMultiVectorConst( ) const{
 
-    //Teuchos::RCP<Thyra::MultiVectorBase<SC> > mv;
-    //return Xpetra::ThyraUtils<SC,LO,GO,NO>::toThyraMultiVector( multiVector_ );
     auto thyTpMap = Thyra::tpetraVectorSpace<SC,LO,GO,NO>(multiVector_->getMap()); //Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Teuchos::rcp_dynamic_cast<const TpetraMap_Type>(multiVector_->getMap())->getTpetraMap());
     Teuchos::RCP<Tpetra::MultiVector<SC,LO,GO,NO>> tpMV = multiVector_;
     auto thyDomMap =Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Tpetra::createLocalMapWithNode<LO,GO,NO>(multiVector_->getNumVectors(), multiVector_->getMap()->getComm()));
@@ -331,13 +328,6 @@ void MultiVector<SC,LO,GO,NO>::writeMM(std::string fileName) const{
 
     typedef Tpetra::CrsMatrix<SC,LO,GO,NO> TpetraCrsMatrix;
 
-    /*typedef Tpetra::MultiVector<SC,LO,GO,NO> TpetraMultiVector;
-    typedef Teuchos::RCP<TpetraMultiVector> TpetraMultiVectorPtr;
-
-    const Xpetra::TpetraMultiVector<SC,LO,GO,NO>& xTpetraMultiVector = dynamic_cast<const Xpetra::TpetraMultiVector<SC,LO,GO,NO> &>(*multiVector_);
-
-    TpetraMultiVectorPtr tpetraMultiVector = xTpetraMultiVector.getTpetra_MultiVector();*/
-
     Tpetra::MatrixMarket::Writer< TpetraCrsMatrix > tpetraWriter;
 
     tpetraWriter.writeDenseFile(fileName, multiVector_, "multivector", "");
@@ -359,7 +349,6 @@ void MultiVector<SC,LO,GO,NO>::readMM(std::string fileName) const{
 
     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
 
-   // Xpetra::TpetraMultiVector<SC,LO,GO,NO>& xTpetraMultiVector = dynamic_cast<Xpetra::TpetraMultiVector<SC,LO,GO,NO> &>(*multiVector_);
     TpetraMultiVectorPtr tpetraMultiVector = multiVector_; //xTpetraMultiVector.getTpetra_MultiVector();
 
     Teuchos::RCP<const Tpetra::Map<LO,GO,NO> > tpetraMap = tpetraMultiVector->getMap();

@@ -1,9 +1,9 @@
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	steadyNavierStokesAdaptive
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	steadyNavierStokesAdaptive
 	NAME steadyNavierStokesAdaptive
 	ARGS
@@ -11,7 +11,7 @@ TRIBITS_ADD_TEST(
 	NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNavierStokesAdaptive
+tribits_copy_files_to_binary_dir(data_steadyNavierStokesAdaptive
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrec.xml parametersProblem.xml parametersSolver.xml parametersTeko.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -19,7 +19,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNavierStokesAdaptive
 	EXEDEPS steadyNavierStokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveBFS
+tribits_copy_files_to_binary_dir(mesh_steadyNavierStokesAdaptiveBFS
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES bfs.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -27,7 +27,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveBFS
 	EXEDEPS steadyNavierStokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveBFS3D
+tribits_copy_files_to_binary_dir(mesh_steadyNavierStokesAdaptiveBFS3D
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES bfs3D.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -35,7 +35,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveBFS3D
 	EXEDEPS steadyNavierStokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveLDC
+tribits_copy_files_to_binary_dir(mesh_steadyNavierStokesAdaptiveLDC
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES ldc2D2.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -43,7 +43,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveLDC
 	EXEDEPS steadyNavierStokesAdaptive
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNavierStokesAdaptiveLDC3D
+tribits_copy_files_to_binary_dir(mesh_steadyNavierStokesAdaptiveLDC3D
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/Adaptive
 	SOURCE_FILES ldc3D.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

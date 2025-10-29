@@ -5,7 +5,8 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "Map.hpp"
 #include <Thyra_LinearOpBase_decl.hpp>
-#include <Xpetra_ThyraUtils.hpp>
+#include <Thyra_DefaultProductVectorSpace.hpp>
+#include <Thyra_TpetraThyraWrappers.hpp>
 #include <Teuchos_VerboseObject.hpp>
 #include <MatrixMarket_Tpetra.hpp>
 
@@ -33,10 +34,6 @@ template <class SC = default_sc, class LO = default_lo, class GO = default_go, c
 class MultiVector {
 
 public:
-   /*typedef Xpetra::Map<LO,GO,NO> XpetraMap_Type;
-    typedef Teuchos::RCP<XpetraMap_Type> XpetraMapPtr_Type;
-    typedef Teuchos::RCP<const XpetraMap_Type> XpetraMapConstPtr_Type;
-    typedef const XpetraMapConstPtr_Type XpetraMapConstPtrConst_Type;*/
 
     typedef MultiVector<SC,LO,GO,NO> MultiVector_Type;
     typedef Teuchos::RCP<MultiVector_Type> MultiVectorPtr_Type;
@@ -46,17 +43,6 @@ public:
     typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
     typedef Teuchos::RCP<const BlockMultiVector_Type> BlockMultiVectorConstPtr_Type;
     
-   // typedef Xpetra::MultiVector<SC,LO,GO,NO> XpetraMultiVector_Type;
-   // typedef Teuchos::RCP<XpetraMultiVector_Type> XpetraMultiVectorPtr_Type;
-   // typedef Teuchos::RCP<const XpetraMultiVector_Type> XpetraMultiVectorConstPtr_Type;
-   // typedef const XpetraMultiVectorConstPtr_Type XpetraMultiVectorConstPtrConst_Type;
-
-
-   // typedef Xpetra::Import<LO,GO,NO> XpetraImport_Type;
-   // typedef Teuchos::RCP<XpetraImport_Type> XpetraImportPtr_Type;
-
-   // typedef Xpetra::Export<LO,GO,NO> XpetraExport_Type;
-   // typedef Teuchos::RCP<XpetraExport_Type> XpetraExportPtr_Type;
     
     typedef Teuchos::Comm<int> Comm_Type;
     typedef Teuchos::RCP<Comm_Type> CommPtr_Type;    

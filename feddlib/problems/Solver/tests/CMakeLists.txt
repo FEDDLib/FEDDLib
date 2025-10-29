@@ -1,14 +1,10 @@
-INCLUDE(TribitsCopyFilesToBinaryDir)
-INCLUDE(TribitsAddExecutableAndTest)
-INCLUDE(AddSubdirectories)
-
 ### Domain
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 facsi
 SOURCES facsi.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 facsi
 NAME facsi
 ARGS

@@ -6,9 +6,9 @@
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
+#include <Tpetra_Core.hpp>
 
 // #######################################################
 // Execute programm: make, then ./core_fe_test_linElas.exe 
@@ -49,8 +49,8 @@ int main(int argc, char *argv[]) {
     oblackholestream blackhole;
     GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    RCP<const Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
-
+    Tpetra::ScopeGuard tpetraScope (&argc, &argv); // initializes MPI
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
     // Command Line Parameters
 	ParameterListPtr_Type params = Teuchos::getParametersFromXmlFile("parametersProblemLinElas.xml");
     Teuchos::CommandLineProcessor myCLP;
@@ -117,7 +117,6 @@ int main(int argc, char *argv[]) {
     {
 		fe.assemblyLinElasXDim( dim, domain->getFEType(), A, lambda, mu );
     }
-    A->writeMM("A");
 	// Class for assembling linear Elasticity via Acefem implementation
  	FE<SC,LO,GO,NO> fe_test;
     fe_test.addFE(domain);
@@ -133,7 +132,6 @@ int main(int argc, char *argv[]) {
     {
         fe_test.assemblyLinearElasticity(dim, FEType, 2,dofs, d_rep, system, resVec, params,true, " ",true/*call fillComplete*/);
     }
-	//A_test->writeMM("A_ACE");
 
 
     // Comparing matrices

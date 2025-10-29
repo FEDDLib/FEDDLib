@@ -1,4 +1,4 @@
-SET(Mesh_HEADERS
+set(Mesh_HEADERS
     Mesh/gmsh_io.hpp
 	Mesh/Mesh.hpp
     Mesh/Mesh_decl.hpp
@@ -21,7 +21,7 @@ SET(Mesh_HEADERS
     Mesh/AABBTree_def.hpp
 CACHE INTERNAL "")
 
-SET(Mesh_SOURCES
+set(Mesh_SOURCES
     Mesh/gmsh_io.cpp
     Mesh/Mesh.cpp
     Mesh/MeshPartitioner.cpp
@@ -33,14 +33,8 @@ SET(Mesh_SOURCES
 CACHE INTERNAL "")
 
 
-SET(LOCAL_HEADERS)
-FOREACH(INC ${Mesh_HEADERS})
-  STRING(REPLACE "Mesh/" "" LOCAL_INC ${INC})
-  SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
-ENDFOREACH()
-
-INSTALL(
-  FILES ${LOCAL_HEADERS}
-  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/feddlib/core/Mesh"
-  COMPONENT ${PACKAGE_NAME}
-)
+set(LOCAL_HEADERS)
+foreach(INC ${Mesh_HEADERS})
+  string(REPLACE "Mesh/" "" LOCAL_INC ${INC})
+  append_set(LOCAL_HEADERS ${LOCAL_INC})
+endforeach()

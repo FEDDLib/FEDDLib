@@ -1,16 +1,16 @@
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
 	steadyNonLinElasAssFE
 	SOURCES main.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	steadyNonLinElasAssFE
 	NAME steadyNonLinElasAssFE
 	ARGS
 	NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNonLinElasAssFE
+tribits_copy_files_to_binary_dir(data_steadyNonLinElasAssFE
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersPrec.xml  parametersProblem.xml parametersSolver.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -18,7 +18,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_steadyNonLinElasAssFE
 	EXEDEPS steadyNonLinElasAssFE
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_steadyNonLinElasAssFE
+tribits_copy_files_to_binary_dir(mesh_steadyNonLinElasAssFE
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
 	SOURCE_FILES cube_h_1.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

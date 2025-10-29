@@ -3,7 +3,7 @@
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/problems/abstract/Problem.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
+#include <Tpetra_Core.hpp>
 
 
 void fScalar(double* x, double* res, double* parameters){
@@ -99,8 +99,8 @@ int main(int argc, char *argv[]) {
     oblackholestream blackhole;
     GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    RCP<const Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
-
+    Tpetra::ScopeGuard tpetraScope (&argc, &argv); // initializes MPI
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
     string type = "unstructured";

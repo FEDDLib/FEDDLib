@@ -5,7 +5,7 @@
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
-#include <Xpetra_DefaultPlatform.hpp>
+#include <Tpetra_Core.hpp>
 
 /*!
  MeshStructured 3D CR
@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
     oblackholestream blackhole;
     GlobalMPISession mpiSession(&argc,&argv,&blackhole);
 
-    RCP<const Comm<int> > comm = Xpetra::DefaultPlatform::getDefaultPlatform().getComm();
-
+    Tpetra::ScopeGuard tpetraScope (&argc, &argv); // initializes MPI
+    Teuchos::RCP<const Teuchos::Comm<int> > comm = Tpetra::getDefaultComm();
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
 
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     int numProcsCoarseSolve = 0;
     int n;
     int size = comm->getSize();
-    bool boolExportMesh = false;
+    bool boolExportMesh = true;
     RCP<MeshStructured<SC,LO,GO,NO> > meshStr;
     if (dim == 3) {
         n = (int) (std::pow(size,1/3.) + 100.*ScalarTraits< SC >::eps()); // 1/H
@@ -67,15 +67,15 @@ int main(int argc, char *argv[]) {
     if (boolExportMesh) {
         RCP<ExporterParaView<SC,LO,GO,NO> > exPara(new ExporterParaView<SC,LO,GO,NO>());
         
-        typedef Xpetra::MultiVector<SC,LO,GO,NO> XpetraMV_Type;
-        typedef RCP<XpetraMV_Type> XpetraMVPtr_Type;
+        typedef Tpetra::MultiVector<SC,LO,GO,NO> TpetraMultiVector_Type;
+        typedef RCP<TpetraMultiVector_Type> TpetraMultiVectorPtr_Type;
         
-        XpetraMVPtr_Type xMV = Xpetra::MultiVectorFactory<SC,LO,GO,NO>::Build(meshStr->getMapUnique()->getXpetraMap(), 1);
+        TpetraMultiVectorPtr_Type tMV = RCP( new TpetraMultiVector_Type( meshStr->getMapUnique()->getTpetraMap(), 1));
 
-        RCP<const MultiVector<SC,LO,GO,NO> > exportDummy = rcp(new MultiVector<SC,LO,GO,NO>(xMV));
+        RCP<const MultiVector<SC,LO,GO,NO> > exportDummy = rcp(new MultiVector<SC,LO,GO,NO>(tMV));
         
-        exPara->setup(meshStr->getDimension(), meshStr->getNumElementsGlobal(), meshStr->getElements(), meshStr->getPointsUnique(), meshStr->getMapUnique(), meshStr->getMapRepeated(), FEType, "u",1,comm);
-        
+        exPara->setup("u_p2_CR", meshStr, FEType);
+
         exPara->addVariable(exportDummy, "u", "Scalar", 1, meshStr->getMapUnique());
         
         exPara->save(0.0);

@@ -18,8 +18,8 @@ cmake \
     -D MPI_BIN_DIR="/opt/local/bin/" \
     -D MPI_EXEC:FILEPATH="mpirun" \
     -D MPI_EXEC_PRE_NUMPROCS_FLAGS="--oversubscribe" \
-    -D FEDDlib_ENABLE_ALL_PACKAGES:BOOL=ON \
-    -D FEDDlib_ENABLE_TESTS:BOOL=ON \
+    -D FEDDLib_ENABLE_ALL_PACKAGES:BOOL=ON \
+    -D FEDDLib_ENABLE_TESTS:BOOL=ON \
     -D TPL_FIND_SHARED_LIBS:BOOL=ON \
     -D TPL_ENABLE_MPI:BOOL=ON \
     -D TPL_ENABLE_Trilinos:BOOL=ON \

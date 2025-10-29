@@ -1,15 +1,15 @@
 ### mesh_nodeFlagsP2
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
     refinementFlag_uniform
     SOURCES refinementFlag_uniform.cpp
 )
 
-TRIBITS_ADD_EXECUTABLE(
+tribits_add_executable(
     refinementFlag_area
     SOURCES refinementFlag_area.cpp
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	refinementFlag_uniform
     NAME refinementFlagsTestUniform
     ARGS 
@@ -17,7 +17,7 @@ TRIBITS_ADD_TEST(
     NUM_MPI_PROCS 4
 )
 
-TRIBITS_ADD_TEST(
+tribits_add_test(
 	refinementFlag_area
     NAME refinementFlagsTestArea
     ARGS 
@@ -25,7 +25,7 @@ TRIBITS_ADD_TEST(
     NUM_MPI_PROCS 4
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(data_refinementFlag
+tribits_copy_files_to_binary_dir(data_refinementFlag
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES parametersProblem.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
@@ -33,7 +33,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_refinementFlag
 	EXEDEPS refinementFlag_uniform
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(mesh_refinementFlag
+tribits_copy_files_to_binary_dir(mesh_refinementFlag
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
     SOURCE_FILES meshNodeTestP23D_2.mesh
     DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}

@@ -68,7 +68,6 @@ public:
 
     typedef NonLinearProblem<SC,LO,GO,NO> NonLinProb_Type;
     typedef Teuchos::RCP<NonLinProb_Type> NonLinProbPtr_Type;
-//    typedef LinearProblem<SC,LO,GO,NO> LinearProblem_Type;
 
     typedef typename Problem_Type::Preconditioner_Type Preconditioner_Type;
     typedef typename Problem_Type::PreconditionerPtr_Type PreconditionerPtr_Type;
