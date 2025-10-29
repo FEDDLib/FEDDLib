@@ -1,0 +1,17 @@
+Ubuntu: Run docker commands under root, e.g., "sudo ./build-image.sh" or "sudo docker ps -a".
+
+If you encounter issues during compilation, look at the dockerfile_feddlib. Individual commands can be commented out and run manually in the container to find & fix issues. Note that RUN commands always start a new shell, such that you have to load environment paths each time. If they are simple paths, you can use ENV to add them. But, for example, you need to run "spack load" every time you use "RUN".
+
+1) Build an image with build-image.sh.
+2) Create a new container for the created image with new-container.sh. The container will have a fixed name, so you cannot create more than one container from the image with the script. If you want to change that, look into new-container.sh.
+3) Start the newly created container with start-container.sh. If you have changed the name of the container, look at start-container.sh for the command to run.
+4) Delete a container with "sudo docker rm CONTAINER_NAME", where the name can be found with "sudo docker ps -a". Use delete-container.sh to delete the container created by new-container.sh.
+5) Delete the image created by build-image.sh with delete-image.sh.
+
+* Get an overview over images and containers:
+sudo docker images
+sudo docker ps -a --size
+
+* Copy a file from host to container and vice versa:
+Use the shared-files folder or the "docker cp" command. 
+If you copy a file from the Docker container to the shared-files directory, the file will have the owner of the docker container, i.e., root. So you cannot edit the file under your current user. An easy fix is to regain ownership via "sudo chown -R $USER:$USER the_file".
