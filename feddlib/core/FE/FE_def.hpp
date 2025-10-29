@@ -1241,6 +1241,20 @@ void FE<SC,LO,GO,NO>::assemblyNavierStokes(int dim,
 
 
 /*!
+ \brief  Method to loop over all assembleFESpecific elements and set the defined linearization 
+@param[in] string linearization e.g. "Picard" or "Newton"
+*/
+template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::changeLinearizationFE(std::string linearization)
+{
+    for (UN T=0; T<assemblyFEElements_.size(); T++) // For each assembledFEElement change Linearization
+    {	
+        assemblyFEElements_[T]->changeLinearization(linearization);
+    }
+}
+
+
+/*!
  \brief Postprocessing: Using a converged velocity solution -> compute averaged viscosity inside an element at center of mass
 @param[in] dim Dimension
 @param[in] FEType FE Discretization

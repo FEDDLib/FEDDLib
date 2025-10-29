@@ -218,6 +218,11 @@ namespace FEDD {
         vec_dbl_Type getLocalconstOutputField() {return constOutputField_;}
 
 
+         /*!
+         \brief Switch e.g. from FixedPoint assembly to Newton method during runtime
+            @param[in] linearization string defining the linearization type e.g. "FixedPoint
+        */
+        void changeLinearization(std::string linearization) {this->linearization_ = linearization;};
     protected:
 
         /*!
@@ -258,6 +263,7 @@ namespace FEDD {
         double timeIncrement_;
         GO globalElementID_;
 
+        std::string linearization_; // Store in here which linearization e.g. FixedPoint or Newton is used -> Relevant for assembleFEElement-Specific construction of Jacobian in NavierStokes
 
         // This can be any postprocessing output field ddefined inside an element using converged solution
         vec_dbl_Type constOutputField_ ; // can be a vector with values on P1/ P2 nodes or just averaged element value

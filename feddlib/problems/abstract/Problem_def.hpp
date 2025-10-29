@@ -559,6 +559,16 @@ namespace FEDD
         linearSolverBuilder_->setParameterList(pListThyraPrec);
     }
 
+
+
+    // Calls the FE Factory to change the linearization of all FE objects
+    template <class SC, class LO, class GO, class NO>
+    void Problem<SC, LO, GO, NO>::changeAssFELinearization(std::string linearization)
+    {
+      this->feFactory_->changeLinearizationFE(linearization);
+    }
+
+
     // Functions that return the H1 and L2 Norm of a given Vector. The Norms being defined as:
     // || mv ||_L2 = mv^T * M * mv
     // || mv ||_H1 = mv^T * K * mv

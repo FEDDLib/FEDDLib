@@ -208,6 +208,7 @@ public:
     
     void addParemeterRhs(double para){ parasSourceFunc_.push_back( para ); }
     
+    void changeAssFELinearization(std::string linearization); // Function in order to be able to change e.g. from FixedPoint to Newton linearization on element level
 
 	double calculateH1Norm(MultiVectorConstPtr_Type mv, int blockId1=0, int blockId2=0, int domainInd=0); // Function that calculates H1 Error in the 'mv * K * mv' sense, with K beeing the Stiffness Matrix
 

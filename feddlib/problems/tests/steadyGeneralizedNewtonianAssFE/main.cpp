@@ -20,26 +20,19 @@
 #include "feddlib/problems/specific/NavierStokesAssFE.hpp"
 
 
+#include <boost/function.hpp>
+
 /*!
  Main of steady-state Generalized Newtonian fluid flow problem with generalized Newtonian shear stress tensor assumption
- where we use the Power-law viscosity model
- eta( gamma_dot) = K* gamma_dot(n-1)
+ where we use, for example, the Power-law viscosity model eta( gamma_dot) = K* gamma_dot(n-1)
 
 ***********************************************************************************************
 
 
- Here two simple test cases to see correctness of code are:
-    1. Set exponent n=1 in Power-Law - Then viscosity model gives eta = K so a constant viscosity - Compare results from Newtonian solver using K as viscosity with results obtained from generalized-Newtonian assembly
-       The solution should only differ in the outlet region due to the different natural boundary conditions obtained from using the conventional formulation (Laplace operator) and stress-divergence formulation
-    2. Add for a plane 2D-Flow in a rectangular channel an additional boundary integral term to obtain same outlet condition for both formulation then results should not differ from each other
-    3. For Poiseuille-Flow set the analytical velocity profile for a Power-Law fluid and see if correct pressure gradient is recovered
+ Rectangular grid present for Poiseuille-Flow using, e.g., a Power-Law GNF model: Set the analytical velocity profile for a Power-Law fluid and see if correct pressure gradient is recovered
 
-@IMPORTANT
- Here we have to check that IF we want to compute a comparison between Navier-Stokes and
- Power-Law Model that K has to correspond to kinematicViscosity*density
- If not we are not comparing the same flow
 
- @brief steady-state generalized-Newtonian Flow of power-law fluid main
+ @brief steady-state generalized-Newtonian Flow main
  @author Natalie Kubicki
  @version 1.0
  @copyright NK
@@ -152,21 +145,6 @@ void inflowPowerLaw2D(double *x, double *res, double t, const double *parameters
     return;
 }
 
-// Same as above but for inflow in y-direction
-void inflowPowerLaw2D_y(double *x, double *res, double t, const double *parameters)
-{
-
-    double K = parameters[0]; //
-    double n = parameters[1]; // For n=1.0 we have parabolic inflow profile (Newtonian case)
-    double H = parameters[2];
-    double dp = parameters[3];
-
-    res[1] = (n / (n + 1.0)) * std::pow(dp / (K), 1.0 / n) * (std::pow(H / (2.0), (n + 1.0) / n) - std::pow(std::abs((H / 2.0) - x[0]), (n + 1.0) / n));
-    res[0] = 0.;
-
-    return;
-}
-
 void inflowParabolic2D(double *x, double *res, double t, const double *parameters)
 {
 
@@ -192,31 +170,100 @@ void inflowParabolic3D(double *x, double *res, double t, const double *parameter
     return;
 }
 
-void inflowParabolic3D_Old(double *x, double *res, double t, const double *parameters)
-{
-    double H = parameters[2];
-    res[0] = 16 * parameters[0] * x[1] * (H - x[1]) * x[2] * (H - x[2]) / (H * H * H * H);
-    res[1] = 0.;
-    res[2] = 0.;
-
-    return;
-}
-void inflow3DRichter(double *x, double *res, double t, const double *parameters)
-{
-
-    double H = parameters[1];
-
-    res[0] = 9. / 8 * parameters[0] * x[1] * (H - x[1]) * (H * H - x[2] * x[2]) / (H * H * (H / 2.) * (H / 2.));
-    res[1] = 0.;
-    res[2] = 0.;
-
-    return;
-}
 void dummyFunc(double *x, double *res, double t, const double *parameters)
 {
 
     return;
 }
+
+
+
+// Add here predefined switching strategies for FixedPoint-Newtons Method
+
+// Simple switch to the other linearization method after a defined number of nonlinear iterations
+bool switchingAfterMaxIter(std::string& linearization, int nlIts, double criterionValue, ParameterListPtr_Type parameterList )
+{
+    if (nlIts == parameterList->get("MaximumIteration_Switch", 1) )
+    {
+        if( (parameterList->get("Initial_Linearization", "FixedPoint") == "FixedPoint") && (linearization == "FixedPoint") )   
+        {
+            linearization = "Newton";
+            return true;
+        }
+        else if(parameterList->get("Initial_Linearization", "FixedPoint")  == "Newton" && (linearization == "Newton") )
+        {
+            linearization = "FixedPoint";
+            return true;
+        }
+        else
+        {
+            // Linearization not changed
+            return false;
+        }
+    }
+    else // Stay with the current linearization if number of iterations to switch not yet reached
+    {
+        return false;
+    }
+}
+
+// Switch to the other linearization method if the nonlinear criterion value is below a certain tolerance
+bool switchingAfterNonlinearTolerance(std::string& linearization, int nlIts, double criterionValue, ParameterListPtr_Type parameterList)
+{
+    // Switch to Newtons Method if relative residual is below a certain value
+    if (criterionValue < parameterList->get("NonlinearTolerance_Switch", 0.1))
+    {
+        if( (parameterList->get("Initial_Linearization", "FixedPoint") == "FixedPoint") && (linearization == "FixedPoint") )   
+        {
+            linearization = "Newton";
+            return true;
+        }
+        else if(parameterList->get("Initial_Linearization", "FixedPoint")  == "Newton" && (linearization == "Newton") )
+        {
+            linearization = "FixedPoint";
+            return true;
+        }
+        else
+        {
+            // Linearization not changed
+            return false;
+        }
+    }
+    else // Stay with the current linearization if tolerance not yet reached
+    {
+        return false;
+    }
+}
+
+
+// Switch linearization method after every iteration
+bool switchingAlternating(std::string& linearization, int nlIts, double criterionValue, ParameterListPtr_Type parameterList)
+{
+    if (nlIts > 0) // Switch only after first iteration, because one solution step should be done with the initial linearization strategy
+    {
+        if (linearization == "FixedPoint")
+        {
+            linearization = "Newton";
+            return true;
+        }
+        else if (linearization == "Newton")
+        {
+            linearization = "FixedPoint";
+            return true;
+        }
+        else
+        {
+            std::cerr << "Error: Current Linearization not FixedPoint or Newton - Staying with current one!" << std::endl;
+            return false;
+        }
+    }
+    else
+    {
+        return false; // Do not change in first iteration, because we want to start one computation with the initial linearization strategy
+    }
+}
+
+
 
 typedef unsigned UN;
 typedef default_sc SC;
@@ -236,6 +283,10 @@ int main(int argc, char *argv[])
     typedef Matrix<SC, LO, GO, NO> Matrix_Type;
     typedef Teuchos::RCP<Matrix_Type> MatrixPtr_Type;
 
+    // boost function type for switching strategy: 
+    typedef boost::function<bool( std::string& , int, double, ParameterListPtr_Type)> SwitchingStrategyFunc;
+
+    
     // MPI boilerplate
     Tpetra::ScopeGuard tpetraScope (&argc, &argv); // initializes MPI
     {
@@ -253,7 +304,7 @@ int main(int argc, char *argv[])
     // Command Line Parameters
     Teuchos::CommandLineProcessor myCLP;
 
-    string xmlProblemFile = "parametersProblem.xml";
+    string xmlProblemFile = "parametersProblem_PicardNewton.xml";
     myCLP.setOption("problemfile", &xmlProblemFile, ".xml file with Inputparameters.");
 
     string xmlPrecFile = "parametersPrec.xml";
@@ -345,13 +396,42 @@ int main(int argc, char *argv[])
             // We can here differentiate between different problem cases and boundary conditions
 
             /***** For boundary condition read parameter values */
-            // So parameter[0] is K, [1] is n, ...
+            // So parameter[0] is K, [1] is n, [2] is H, [3] is dp/dx
             /*******************************************************************************/
             std::vector<double> parameter_vec(1, parameterListProblem->sublist("Material").get("PowerLawParameter K", 0.));
             parameter_vec.push_back(parameterListProblem->sublist("Material").get("PowerLaw index n", 1.));
             parameter_vec.push_back(parameterListProblem->sublist("Parameter").get("Height Inflow", 1.));
             parameter_vec.push_back(parameterListProblem->sublist("Parameter").get("Constant Pressure Gradient", 1.));
             parameter_vec.push_back(parameterListProblem->sublist("Parameter").get("MaxVelocity", 1.));
+
+
+            /*** Switching Strategy Parameters ******************************************************************************************************************************/
+            // Define switching strategy function based on user input -  <Parameter name="SwitchingStrategy" type="string" value="AfterMaxIter"/>  Predefined switching strategies are: AfterMaxIter, AfterResidual -->
+            std::string switchingStrategyType = parameterListProblem->sublist("General").get("SwitchingStrategy", "AfterMaxIter"); // Default is AfterMaxIter
+            SwitchingStrategyFunc switchingStrategy = []( std::string& currentLinearization , int nlIts, double criterionValue, ParameterListPtr_Type parameterList ) {return false;};
+            if (switchingStrategyType == "AfterMaxIter")
+            {
+                if (verbose) std::cout << "Selected Switching Strategy for FixedPointNewton: " << switchingStrategyType << std::endl;
+                switchingStrategy = switchingAfterMaxIter;
+            }
+            else if (switchingStrategyType == "Alternating")
+            {
+                if (verbose) std::cout << "Selected Switching Strategy for FixedPointNewton: " << switchingStrategyType << std::endl;
+                switchingStrategy = switchingAlternating;
+            }
+            else if (switchingStrategyType == "AfterResidual")
+            {
+                if (verbose) std::cout << "Selected Switching Strategy for FixedPointNewton: " << switchingStrategyType << std::endl;
+                switchingStrategy = switchingAfterNonlinearTolerance;
+            }
+            else
+            {
+                if (verbose) std::cerr << "Error: Selected Switching Strategy for FixedPointNewton not recognized - No switching will be performed!" << std::endl;
+            }
+
+
+
+            /*******************************************************************************/
 
             Teuchos::RCP<BCBuilder<SC, LO, GO, NO>> bcFactory(new BCBuilder<SC, LO, GO, NO>());
 
@@ -374,11 +454,7 @@ int main(int argc, char *argv[])
             else if (dim == 3)
             {
 
-                // Flags for straight circular tube inside this folder
-                //
-                //
-                //
-                //
+
             }
 
             //          **********************  CALL SOLVER ***********************************
@@ -393,7 +469,11 @@ int main(int argc, char *argv[])
                 navierStokesAssFE.setBoundariesRHS();
 
                 std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization", "FixedPoint");
+
                 NonLinearSolver<SC, LO, GO, NO> nlSolverAssFE(nlSolverType);
+
+                nlSolverAssFE.addSwitchingStrategyFunction( switchingStrategy); // Add switching strategy function of NonLinearSolver to User defined one
+
                 nlSolverAssFE.solve(navierStokesAssFE); // jumps into NonLinearSolver_def.hpp
 
                 MAIN_TIMER_STOP(NavierStokesAssFE);
@@ -419,7 +499,7 @@ int main(int argc, char *argv[])
                 exParaViscsoity->setup("viscosity", domV->getMesh(), "P0"); // Viscosity averaged therefore P0 value
                 exParaViscsoity->addVariable(exportSolutionViscosityAssFE, "viscosityAssFE", "Scalar", 1, domV->getElementMap());
                 exParaViscsoity->save(0.0);
-		exParaViscsoity->closeExporter();
+		        exParaViscsoity->closeExporter();
             }
 
             //****************************************************************************************
@@ -442,23 +522,9 @@ int main(int argc, char *argv[])
             exParaVelocity->save(0.0);
             exParaPressure->save(0.0);
 
-	    exParaVelocity->closeExporter();
-	    exParaPressure->closeExporter();
+	        exParaVelocity->closeExporter();
+	        exParaPressure->closeExporter();
 
-            //*************************** FLAGS *************************************
-            Teuchos::RCP<ExporterParaView<SC, LO, GO, NO>> exParaF(new ExporterParaView<SC, LO, GO, NO>());
-            Teuchos::RCP<MultiVector<SC, LO, GO, NO>> exportSolution(new MultiVector<SC, LO, GO, NO>(domainVelocity->getMapUnique()));
-            vec_int_ptr_Type BCFlags = domainVelocity->getBCFlagUnique();
-            Teuchos::ArrayRCP<SC> entries = exportSolution->getDataNonConst(0);
-            for (int i = 0; i < entries.size(); i++)
-            {
-                entries[i] = BCFlags->at(i);
-            }
-            Teuchos::RCP<const MultiVector<SC, LO, GO, NO>> exportSolutionConst = exportSolution;
-            exParaF->setup("Flags", domainVelocity->getMesh(), domainVelocity->getFEType());
-            exParaF->addVariable(exportSolutionConst, "Flags", "Scalar", 1, domainVelocity->getMapUnique());
-            exParaF->save(0.0);
-	    exParaF->closeExporter();
 
             //**************************** Plot Subdomains without overlap ****************************************
             if (parameterListAll->sublist("General").get("ParaView export subdomains", false))
@@ -488,143 +554,6 @@ int main(int argc, char *argv[])
                 }
             }
 
-            //*********************************************************************************************************
-            //*********************************************************************************************************
-            //*********************  POST-PROCESSING - COMPARISON BETWEEN NON-NEWTONIAN POWER-LAW FLOW FOR n=1 with NAVIER STOKES SOLVER ***********************************
-            // So basically they should give same results for n=1.0 as then Power-Law reduces to constant viscosity case
-
-            // BUT as the Navier-Stokes equations are implemented in the conventional formulation with the laplacian operator the outlet boudary condition
-            // and therefore the solution at the outlet will differ -> if we want to have the exactly same formulation we have to consider the addiional boundary integral
-            if ( (parameterListProblem->sublist("Material").get("Newtonian", true)) == false &&  (parameterListProblem->sublist("Material").get("compareNavierStokes", false)) == true && (parameterListProblem->sublist("Material").get("PowerLaw index n", 1.) == 1.) && (parameterListProblem->sublist("Material").get("ShearThinningModel", "") == "Power-Law"))
-            {
-                parameterListAll->sublist("Material").set("Newtonian", true);
-
-                if (verbose)
-                {
-                    cout << "###############################################################" << endl;
-                    cout << "##################### Start Navier-Stokes Newtonian Solver ####################" << endl;
-                    cout << "###############################################################" << endl;
-                }
-
-
-                NavierStokesAssFE<SC, LO, GO, NO> navierStokesAssFEModel2(domainVelocity, discVelocity, domainPressure, discPressure, parameterListAll);
-                {
-                    MAIN_TIMER_START(NavierStokesAssFE, " AssFE:   Assemble System and solve");
-                    navierStokesAssFEModel2.addBoundaries(bcFactory);
-                    navierStokesAssFEModel2.initializeProblem();
-                    navierStokesAssFEModel2.assemble();
-                    navierStokesAssFEModel2.setBoundariesRHS();
-                    std::string nlSolverType = parameterListProblem->sublist("General").get("Linearization", "FixedPoint");
-                    NonLinearSolver<SC, LO, GO, NO> nlSolverAssFE(nlSolverType);
-                    nlSolverAssFE.solve(navierStokesAssFEModel2); // jumps into NonLinearSolver_def.hpp
-                    MAIN_TIMER_STOP(NavierStokesAssFE);
-                    comm->barrier();
-                }
-
-                // **********************  POST-PROCESSING NS Solver comparison ***********************************
-                Teuchos::RCP<ExporterParaView<SC, LO, GO, NO>> exParaVelocityModel2(new ExporterParaView<SC, LO, GO, NO>());
-                Teuchos::RCP<ExporterParaView<SC, LO, GO, NO>> exParaPressureModel2(new ExporterParaView<SC, LO, GO, NO>());
-                Teuchos::RCP<const MultiVector<SC, LO, GO, NO>> exportSolutionVAssFEModel2 = navierStokesAssFEModel2.getSolution()->getBlock(0);
-                Teuchos::RCP<const MultiVector<SC, LO, GO, NO>> exportSolutionPAssFEModel2 = navierStokesAssFEModel2.getSolution()->getBlock(1);
-                dom = domainVelocity;
-                exParaVelocityModel2->setup("velocity_Newtonian_and_error", dom->getMesh(), dom->getFEType());
-                exParaVelocityModel2->addVariable(exportSolutionVAssFEModel2, "uAssFE_newtonian", "Vector", dofsPerNode, dom->getMapUnique());
-
-                dom = domainPressure;
-                exParaPressureModel2->setup("pressure_Newtonian_and_error", dom->getMesh(), dom->getFEType());
-                exParaPressureModel2->addVariable(exportSolutionPAssFEModel2, "pAssFE_newtonian", "Scalar", 1, dom->getMapUnique());
-
-                // Compute error between Navier-Stokes Solver and Power-Law Solver (only reasonable if n=1 in Power-Law!)
-                // Calculating the error per node
-                Teuchos::RCP<MultiVector<SC, LO, GO, NO>> errorValues = Teuchos::rcp(new MultiVector<SC, LO, GO, NO>(navierStokesAssFE.getSolution()->getBlock(0)->getMap()));
-                // this = alpha*A + beta*B + gamma*this
-                errorValues->update(1., exportSolutionVAssFE, -1., exportSolutionVAssFEModel2, 0.);
-                // Taking abs norm
-                Teuchos::RCP<const MultiVector<SC, LO, GO, NO>> errorValuesAbsV = errorValues;
-                errorValues->abs(errorValuesAbsV);
-                dom = domainVelocity;
-                exParaVelocityModel2->addVariable(errorValuesAbsV, "u_pl_u_n", "Vector", dofsPerNode, dom->getMapUnique());
-
-                // Calculating the error per node
-                Teuchos::RCP<MultiVector<SC, LO, GO, NO>> errorValuesP = Teuchos::rcp(new MultiVector<SC, LO, GO, NO>(navierStokesAssFE.getSolution()->getBlock(1)->getMap()));
-                // this = alpha*A + beta*B + gamma*this
-                errorValuesP->update(1., exportSolutionPAssFE, -1., exportSolutionPAssFEModel2, 0.);
-
-                // Taking abs norm
-                Teuchos::RCP<const MultiVector<SC, LO, GO, NO>> errorValuesAbsP = errorValuesP;
-
-                errorValuesP->abs(errorValuesAbsP);
-                dom = domainPressure;
-                exParaPressureModel2->addVariable(errorValuesAbsP, "p_pl_p_n", "Scalar", 1, dom->getMapUnique());
-
-                exParaVelocityModel2->save(0.0);
-                exParaPressureModel2->save(0.0);
-
-		exParaVelocityModel2->closeExporter();
-		exParaPressureModel2->closeExporter();
-
-                // Error comparison
-                Teuchos::Array<SC> norm(1);
-                errorValues->norm2(norm); // const Teuchos::ArrayView<typename Teuchos::ScalarTraits<SC>::magnitudeType> &norms);
-                double res = norm[0];
-                if (comm->getRank() == 0)
-                    cout << " Inf Norm of Error of Solutions:" << res << endl;
-                double twoNormError = res;
-
-                navierStokesAssFE.getSolution()->norm2(norm);
-                res = norm[0];
-                if (comm->getRank() == 0)
-                    cout << " 2 rel. Norm of solutions n=1 power law:" << twoNormError / res << endl;
-                navierStokesAssFEModel2.getSolution()->norm2(norm);
-                res = norm[0];
-                if (comm->getRank() == 0)
-                    cout << " 2 rel. Norm of solutions navier stokes assemFE:" << twoNormError / res << endl;
-
-                // Get Block A
-                MatrixPtr_Type Sum2 = Teuchos::rcp(new Matrix_Type(domainVelocity->getMapVecFieldUnique(), domainVelocity->getDimension() * domainVelocity->getApproxEntriesPerRow()));
-                navierStokesAssFEModel2.getSystem()->getBlock(0, 0)->addMatrix(1, Sum2, 1);
-                navierStokesAssFE.getSystem()->getBlock(0, 0)->addMatrix(-1, Sum2, 1);
-                Teuchos::ArrayView<const GO> indices;
-                Teuchos::ArrayView<const SC> values;
-                res = 0.;
-                for (UN i = 0; i < domainVelocity->getMapUnique()->getMaxLocalIndex() + 1; i++)
-                {
-                    for (int d = 0; d < dim; d++)
-                    {
-                        GO row = dim * domainVelocity->getMapUnique()->getGlobalElement(i) + d;
-                        Sum2->getGlobalRowView(row, indices, values);
-
-                        for (int j = 0; j < values.size(); j++)
-                        {
-                            if (std::fabs(values[j]) > res)
-                                res = std::fabs(values[j]);
-                        }
-                    }
-                }
-                res = std::fabs(res);
-                reduceAll<int, double>(*comm, REDUCE_MAX, res, outArg(res));
-                if (comm->getRank() == 0)
-                    cout << "Inf Norm of Difference between Block A: " << res << endl;
-
-                // Get Block B
-                MatrixPtr_Type Sum1 = Teuchos::rcp(new Matrix_Type(domainPressure->getMapUnique(), domainVelocity->getDimension() * domainVelocity->getApproxEntriesPerRow()));
-                navierStokesAssFEModel2.getSystem()->getBlock(1, 0)->addMatrix(1, Sum1, 1);
-                navierStokesAssFE.getSystem()->getBlock(1, 0)->addMatrix(-1, Sum1, 1);
-                res = 0.;
-                for (UN i = 0; i < domainPressure->getMapUnique()->getMaxLocalIndex() + 1; i++)
-                {
-                    GO row = domainPressure->getMapUnique()->getGlobalElement(i);
-                    Sum1->getGlobalRowView(row, indices, values);
-                    for (int j = 0; j < values.size(); j++)
-                    {
-                        res += std::fabs(values[j]);
-                    }
-                }
-                res = std::fabs(res);
-                reduceAll<int, double>(*comm, REDUCE_SUM, res, outArg(res));
-                if (comm->getRank() == 0)
-                    cout << " Norm of Difference between Block B: " << res << endl;
-            }
         }
     }
     Teuchos::TimeMonitor::report(cout);

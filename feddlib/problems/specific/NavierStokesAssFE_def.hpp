@@ -237,8 +237,9 @@ void NavierStokesAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
    if (type=="Rhs") {
 
    		this->system_->addBlock(ANW,0,0);
-
-        this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_, this->residualVec_,this->coeff_,this->parameterList_, true, "FixedPoint",  true);  // We can also change that to "Jacobian"     
+        /* The next code line was unnecessary work load in solveNewton as it was also called but rewritten by assemble("Newton"), so instead we comment this out and call 
+           in solveFixedPoint the assemble("FixedPoint") function, and here in "RHS" only F*current_solution is computed necessary for computing the residual vector */
+        //this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_, this->residualVec_,this->coeff_,this->parameterList_, true, "FixedPoint",  true);      
  		this->feFactory_->assemblyNavierStokes(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(1)->getFEType(), 2, this->dim_,1,u_rep_,p_rep_,this->system_, this->residualVec_,this->coeff_,this->parameterList_, true, "Rhs",  true);
 
     }
