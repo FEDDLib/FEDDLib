@@ -4,10 +4,7 @@
 #include "HDF5Toolbox_decl.hpp"
 
 /*
-  Shotcommings:
-    - non-transposed write no enabled (I don't know if we need it)
-    - The linear map concept is unclear, we always construct the linear map
-
+  
 
 */
 
