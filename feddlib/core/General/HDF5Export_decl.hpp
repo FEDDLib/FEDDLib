@@ -15,7 +15,7 @@
 
  @brief  HDF5Export
  
- Now, we use the HDF5Toolbox as HDF5 export/import toolbox. It is popssible to export a HDF5 file with the command 'write'.
+ Now, we use the HDF5Toolbox as HDF5 export/import toolbox. It is possible to export a HDF5 file with the command 'write'.
  The user must provide the corresponding writemap, to correctly store the (parallely distributed) vector and the file and variable name to store it in.
  
  The Structure is as follows:
