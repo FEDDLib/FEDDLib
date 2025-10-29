@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
             error += std::abs((aUniqueConst->getData(0))[i] - (aImported->getData(0))[i]);
         
         TEUCHOS_TEST_FOR_EXCEPTION( error>1e-13, std::runtime_error, "Error between written and read vector is too great: " << error); // Checking if error between solutions is to great
-
+        TEUCHOS_TEST_FOR_EXCEPTION( error>1e-13, std::runtime_error, "Error between written and read vector is too great: " << error); // Checking if error between solutions is too great
     }
     
     
