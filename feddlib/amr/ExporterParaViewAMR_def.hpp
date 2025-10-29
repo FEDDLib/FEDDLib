@@ -29,7 +29,7 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
     this->nmbPointsGlob_ = this->mesh_->getMapUnique()->getGlobalNumElements();
 
     // Something different happens to the element List and the elements
-    // Probably the hafe the following form:
+    // Probably have the following form:
     // ElementMap :   0     1       2       3       4       5  
     // ->            0 1 2  3 4 5   6 7 8   ...
     // Element GIDs:  0 1 2 3 ...
