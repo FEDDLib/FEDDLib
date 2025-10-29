@@ -105,7 +105,7 @@ public:
                      std::string varName,
                      std::string varType,
                      int dofPerNode,
-                     MapConstPtrConst_Type& mapUnique=Teuchos::null);
+                     MapConstPtr_Type& mapUnique=Teuchos::null);
     
     void save(double time);
     
