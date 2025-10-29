@@ -236,18 +236,7 @@ void ExporterParaView<SC,LO,GO,NO>::addVariable(MultiVecConstPtr_Type &u,
 
     nmbExportValuesGlob_ = mapUnique->getGlobalNumElements();
 
-
-
-    // Teuchos::ArrayView< const GO > indices = mapUnique->getNodeElementList();
-    // int* intGlobIDs = new int[indices.size()];
-    // for (int i=0; i<indices.size(); i++) {
-    //     intGlobIDs[i] = (int) indices[i];
-    // }
-
-    // EpetraMapPtr_Type mapToStore = Teuchos::rcp(new Epetra_Map( (int) mapUnique->getGlobalNumElements(), indices.size(), intGlobIDs,0, *commEpetra_ ) );
-
     uniqueMaps_.push_back(mapUnique);
-    // delete [] intGlobIDs;
 
 }
 
@@ -392,7 +381,6 @@ void ExporterParaView<SC,LO,GO,NO>::updatePoints(){
     if (pointsUnique_->size()>0)
         dim = pointsUnique_->at(0).size();
 
-    std::cout << " Points Size " << pointsUnique_->size() << std::endl;
     for (int i=0; i<pointsUnique_->size(); i++) {
         for (int j = 0; j < dim; j++) {
             pointsHDF_->getDataNonConst(j)[i] = (*pointsUnique_)[i][j];

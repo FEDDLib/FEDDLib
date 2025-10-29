@@ -50,22 +50,18 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
   MultiVectorPtr_Type linearX;
 
   MapPtr_Type linearMap = Teuchos::rcp(new Map_Type(X->getMap()->getGlobalNumElements(),X->getMap()->getNodeNumElements(), X->getMap()->getIndexBase(), X->getMap()->getComm()));
-  // Epetra_Map LinearMap(X.GlobalLength(), X.Map().IndexBase(), Comm_);
   linearX = Teuchos::rcp(new MultiVector_Type(linearMap, X->getNumVectors()));
-  // Epetra_Import Importer(LinearMap, X.Map());
   linearX->importFromVector(X);
 
 
   int NumVectors = X->getNumVectors();
   int GlobalLength = X->getMap()->getGlobalNumElements(); //X.GlobalLength();
 
-  // std::cout << " HDF5Toolbox:: Writing MultiVector of global length " << GlobalLength
-            // << " with " << NumVectors << " vectors to group " << GroupName << " on processor " << comm_->getRank() <<  std::endl;
   // Whether or not we do writeTranspose or not is
   // handled by one of the components of q_dimsf, offset and count.
   // They are determined by indexT
   int indexT(0);
-  if (writeTranspose) indexT = 1;  // if (writeTranspose) indexT = 1; // We are not doing transposed write here
+  if (writeTranspose) indexT = 1; 
 
   hsize_t q_dimsf[] = {static_cast<hsize_t>(GlobalLength), static_cast<hsize_t>(GlobalLength)};
   q_dimsf[indexT] = NumVectors;
@@ -94,12 +90,7 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
   hsize_t count[] = {static_cast<hsize_t>(linearX->getLocalLength()),
                      static_cast<hsize_t>(linearX->getLocalLength())};
   hsize_t block[] = {1, 1};
-  // std::cout << " Rank " << comm_->getRank()
-  //           << " writing offset=" << offset[0] << " " << offset[1] 
-  //           << " count=" << count[0] << " " << count[1]
-  //           << " || Global element 0 " << linearX->getMap()->getGlobalElement(0)
-  //           << " || Index base " << linearX->getMap()->getGlobalElement(0) << std::endl;
- 
+  
   for (int n = 0; n < NumVectors; ++n)
   {
     // Select hyperslab in the file
@@ -107,13 +98,13 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
     count [indexT] = 1;
 
     // Print local info before selecting hyperslab
-    std::cout << "[Rank " << comm_->getRank() << "] "
-              << "Writing vector " << n
-              << " | file offset = (" << offset[0] << ", " << offset[1] << ")"
-              << " | file count = (" << count[0] << ", " << count[1] << ")"
-              << " | local length = " << linearX->getLocalLength()
-              << " | global length = " << 1
-              << std::endl;
+    // std::cout << "[Rank " << comm_->getRank() << "] "
+    //           << "Writing vector " << n
+    //           << " | file offset = (" << offset[0] << ", " << offset[1] << ")"
+    //           << " | file count = (" << count[0] << ", " << count[1] << ")"
+    //           << " | local length = " << linearX->getLocalLength()
+    //           << " | global length = " << 1
+    //           << std::endl;
 
     // Get the dataset's file dataspace and select the correct hyperslab
     filespace_id = H5Dget_space(dset_id);
@@ -139,11 +130,11 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
     }
 
     // Print detailed info before writing
-    std::cout << "[Rank " << comm_->getRank() << "] "
-              << "Calling H5Dwrite for vector " << n
-              << " | memspace dims = " << dimsm[0]
-              << " | plist_id = " << plist_id_
-              << std::endl;
+    // std::cout << "[Rank " << comm_->getRank() << "] "
+    //           << "Calling H5Dwrite for vector " << n
+    //           << " | memspace dims = " << dimsm[0]
+    //           << " | plist_id = " << plist_id_
+    //           << std::endl;
 
     // Perform the write
     herr_t writeStatus = H5Dwrite(
@@ -164,15 +155,15 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
   hid_t filespace = H5Dget_space(dset_id);
   hsize_t totalElems = H5Sget_simple_extent_npoints(filespace);
 
-  std::cout << "[Rank " << comm_->getRank()
-          << "] Dataset total elements = " << totalElems << std::endl;
+  // std::cout << "[Rank " << comm_->getRank()
+  //         << "] Dataset total elements = " << totalElems << std::endl;
 
   hssize_t fileCount = H5Sget_select_npoints(filespace_id);
   hssize_t memCount  = H5Sget_select_npoints(memspace_id);
 
-  std::cout << "[Rank " << comm_->getRank() << "] "
-          << "Hyperslab file selection = " << fileCount
-          << ", memory selection = " << memCount << std::endl;
+  // std::cout << "[Rank " << comm_->getRank() << "] "
+  //         << "Hyperslab file selection = " << fileCount
+  //         << ", memory selection = " << memCount << std::endl;
           
   H5Gclose(group_id);
   H5Sclose(filespace_id);
@@ -191,7 +182,6 @@ template <class SC, class LO, class GO, class NO>
 void HDF5Toolbox<SC, LO, GO, NO>::read(const std::string& GroupName, const MapPtr_Type Map,
                         MultiVectorPtr_Type X)
 {
-  std::cout << "----------------------- READ ---------------------- " << std::endl;
   // gets the length of the std::vector
   int GlobalLength;
   readIntVectorProperties(GroupName, GlobalLength);
@@ -202,13 +192,9 @@ void HDF5Toolbox<SC, LO, GO, NO>::read(const std::string& GroupName, const MapPt
   // then import it to the actual nonlinear map
   MultiVectorPtr_Type linearX = Teuchos::rcp(new MultiVector_Type(linearMap, X->getNumVectors()));
 
-  // linearMap->print();
-
   read(GroupName, "Values", linearMap->getNodeNumElements(), linearMap->getGlobalNumElements(),
         H5T_NATIVE_DOUBLE, linearX->getDataNonConst(0).get());
 
-  // Epetra_Import Importer(Map, LinearMap);
-  // X = new Epetra_IntVector(Map);
   X->importFromVector(linearX);
 
 }
@@ -222,11 +208,6 @@ void HDF5Toolbox<SC, LO, GO, NO>::readIntVectorProperties(const std::string& Gro
 
   std::string Label;
   read(GroupName, "__type__", Label);
-
-  // std::cout << " Label " << Label << std::endl;
-  // if (Label != "Tpetra_MultiVector")
-  //     TEUCHOS_TEST_FOR_EXCEPTION(true,std::runtime_error, "requested group " + GroupName + " is not an Tpetra_MultiVector");
-
                     
   read(GroupName, "GlobalLength", GlobalLength);
 }
@@ -249,11 +230,11 @@ tpetraScanSum(comm_, &MySize, &itmp, 1);
 hsize_t Offset_t = static_cast<hsize_t>(itmp - MySize);
 
 // === DEBUG OUTPUT ===
-std::cout << "[Rank " << comm_->getRank() << "] "
-          << "Preparing to read dataset '" << DataSetName << "' in group '" << GroupName << "'\n"
-          << "  local size (MySize)     = " << MySize << "\n"
-          << "  computed offset (Offset)= " << Offset_t << "\n"
-          << "  total elements (sum)    = " << itmp << std::endl;
+// std::cout << "[Rank " << comm_->getRank() << "] "
+//           << "Preparing to read dataset '" << DataSetName << "' in group '" << GroupName << "'\n"
+//           << "  local size (MySize)     = " << MySize << "\n"
+//           << "  computed offset (Offset)= " << Offset_t << "\n"
+//           << "  total elements (sum)    = " << itmp << std::endl;
 
 // Open group and dataset
 hid_t group_id = H5Gopen(file_id_, GroupName.c_str(), H5P_DEFAULT);
@@ -280,10 +261,6 @@ hsize_t count [2] = { 1, MySize_t };  // one vector, 29 elements
 
 herr_t selStatus = H5Sselect_hyperslab(filespace_id, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-
-// herr_t selStatus = H5Sselect_hyperslab(
-//     filespace_id, H5S_SELECT_SET, &Offset_t, NULL, &MySize_t, NULL);
-
 if (selStatus < 0) {
   std::cerr << "[Rank " << comm_->getRank()
             << "] ERROR selecting hyperslab: offset=" << Offset_t
@@ -302,11 +279,11 @@ if (mem_dataspace < 0) {
 }
 
 // Print before reading
-std::cout << "[Rank " << comm_->getRank()
-          << "] Reading from file hyperslab offset=" << Offset_t
-          << " count=" << MySize_t
-          << " into local buffer at " << static_cast<void*>(data)
-          << std::endl;
+// std::cout << "[Rank " << comm_->getRank()
+//           << "] Reading from file hyperslab offset=" << Offset_t
+//           << " count=" << MySize_t
+//           << " into local buffer at " << static_cast<void*>(data)
+//           << std::endl;
 
 // Perform the read
 herr_t status = H5Dread(dataset_id, type, mem_dataspace, filespace_id,
@@ -325,16 +302,16 @@ if (status < 0) {
 hid_t filespace = H5Dget_space(dataset_id);
 hsize_t totalElems = H5Sget_simple_extent_npoints(filespace);
 
-std::cout << "[Rank " << comm_->getRank()
-        << "] Dataset total elements = " << totalElems << std::endl;
+// std::cout << "[Rank " << comm_->getRank()
+//         << "] Dataset total elements = " << totalElems << std::endl;
 
 
 hssize_t fileCount = H5Sget_select_npoints(filespace_id);
 hssize_t memCount  = H5Sget_select_npoints(mem_dataspace);
 
-std::cout << "[Rank " << comm_->getRank() << "] "
-          << "Hyperslab file selection = " << fileCount
-          << ", memory selection = " << memCount << std::endl;
+// std::cout << "[Rank " << comm_->getRank() << "] "
+//           << "Hyperslab file selection = " << fileCount
+//           << ", memory selection = " << memCount << std::endl;
 
 // Close resources
 H5Sclose(mem_dataspace);
@@ -578,8 +555,6 @@ void HDF5Toolbox<SC, LO, GO, NO>::read(const std::string& GroupName,
                            const std::string& DataSetName,
                            std::string& data)
 {
-  std::cout << " Reading string from HDF5 for Groupname " << GroupName << " and dataset name " << DataSetName << std::endl;
-
   TEUCHOS_TEST_FOR_EXCEPTION(!isContained(GroupName),std::runtime_error, "requested group " + GroupName + " not found");
 
   hid_t group_id = H5Gopen(file_id_, GroupName.c_str(), H5P_DEFAULT);
@@ -597,8 +572,6 @@ void HDF5Toolbox<SC, LO, GO, NO>::read(const std::string& GroupName,
   H5Dread(dataset_id, datatype_id, H5S_ALL, H5S_ALL,H5P_DEFAULT, data2) ;                
 
   data = data2;
-
-  std::cout << " Data 2: " << data2 << std::endl;
 
   H5Dclose(dataset_id);
   H5Gclose(group_id);
@@ -648,14 +621,14 @@ void HDF5Toolbox<SC, LO, GO, NO>::tpetraScanSum(const Teuchos::RCP<const Teuchos
     Teuchos::rcp_dynamic_cast<const Teuchos::MpiComm<int>>(comm, false);
 
   if (!mpiComm.is_null()) {
-    // 🔹 Use MPI_Scan directly
+    // Use MPI_Scan directly
     MPI_Comm rawComm = *(mpiComm->getRawMpiComm());
     MPI_Scan(sendbuf, recvbuf, count, MPI_INT, MPI_SUM, rawComm);
     return;
   }
 #endif
 
-  // 🔹 Serial (or non-MPI) fallback
+  // Serial (or non-MPI) fallback
   for (int i = 0; i < count; ++i) {
     recvbuf[i] = sendbuf[i];
   }
