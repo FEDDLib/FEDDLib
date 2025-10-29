@@ -146,6 +146,11 @@ void MultiVector<SC,LO,GO,NO>::print(Teuchos::EVerbosityLevel verbLevel) const{
 template <class SC, class LO, class GO, class NO>
 Teuchos::RCP<Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThyraMultiVector( ) {
 
+    static_assert(
+        !std::is_same<SC, int>::value,
+        "Error in MultiVector<SC,LO,GO,NO>::getThyraMultiVector(): SC (Scalar) type 'int' is not supported for Thyra:TpetraMultiVector! Use double instead."
+    );
+
     auto thyTpMap = Thyra::tpetraVectorSpace<SC,LO,GO,NO>(multiVector_->getMap()); //Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Teuchos::rcp_dynamic_cast<const TpetraMap_Type>(multiVector_->getMap())->getTpetraMap());
     Teuchos::RCP<Tpetra::MultiVector<SC,LO,GO,NO>> tpMV = multiVector_;
     auto thyDomMap =Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Tpetra::createLocalMapWithNode<LO,GO,NO>(multiVector_->getNumVectors(), multiVector_->getMap()->getComm()));
@@ -159,6 +164,10 @@ Teuchos::RCP<Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThyraMult
 template <class SC, class LO, class GO, class NO>
 Teuchos::RCP<const Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThyraMultiVectorConst( ) const{
 
+    static_assert(
+        !std::is_same<SC, int>::value,
+        "Error in MultiVector<SC,LO,GO,NO>::getThyraMultiVectorConst(): SC (Scalar) type 'int' is not supported for Thyra:TpetraMultiVector! Use double instead."
+    );
     auto thyTpMap = Thyra::tpetraVectorSpace<SC,LO,GO,NO>(multiVector_->getMap()); //Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Teuchos::rcp_dynamic_cast<const TpetraMap_Type>(multiVector_->getMap())->getTpetraMap());
     Teuchos::RCP<Tpetra::MultiVector<SC,LO,GO,NO>> tpMV = multiVector_;
     auto thyDomMap =Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Tpetra::createLocalMapWithNode<LO,GO,NO>(multiVector_->getNumVectors(), multiVector_->getMap()->getComm()));

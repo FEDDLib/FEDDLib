@@ -6,6 +6,7 @@
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Tpetra_Core.hpp>
+#include <Thyra_DefaultZeroLinearOp_decl.hpp>
 
 /*!
  MultiVector test
@@ -47,7 +48,24 @@ int main(int argc, char *argv[]) {
         mpiSession.~GlobalMPISession();
         return 0;
     }
+    std::cout << "SC = " << typeid(SC).name() << std::endl;
+    std::cout << "LO = " << typeid(LO).name() << std::endl;
+    std::cout << "GO = " << typeid(GO).name() << std::endl;
+    std::cout << "NO = " << typeid(NO).name() << std::endl;
 
+    auto demangle = [](const char* name){
+      int st;
+      std::unique_ptr<char, void(*)(void*)> res{
+        abi::__cxa_demangle(name, nullptr, nullptr, &st),
+        std::free
+      };
+      return std::string(st == 0 ? res.get() : name);
+    };
+
+    std::cout << "Default SC = " << demangle(typeid(SC).name()) << "\n";
+    std::cout << "Default LO = " << demangle(typeid(LO).name()) << "\n";
+    std::cout << "Default GO = " << demangle(typeid(GO).name()) << "\n";
+    std::cout << "Default NO = " << demangle(typeid(NO).name()) << "\n";
 
     typedef Map<LO,GO,NO> Map_Type;
     typedef RCP<Map_Type> MapPtr_Type;
@@ -78,5 +96,17 @@ int main(int argc, char *argv[]) {
     mvRep->exportFromVector(mvUni);
     mvRep->print();
     
+    // Scalar Type tests
+    typedef MultiVector<LO,LO,GO,NO> MVLO_Type;
+    typedef RCP<MVLO_Type> MVLOPtr_Type;
+    
+    MVLOPtr_Type mvLO = rcp( new MVLO_Type( mapUnique,1 ) );
+    mvLO->putScalar( rank + 1 );
+    mvLO->print();
+	Teuchos::ArrayRCP< SC > flagExportEntries  = mvLO->getDataNonConst(0);
+    // 
+
+
+
     return(EXIT_SUCCESS);
 }

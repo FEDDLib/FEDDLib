@@ -31,6 +31,8 @@ namespace FEDD {
 template <class SC, class LO, class GO, class NO>
 class BlockMultiVector;
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
+// template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
+
 class MultiVector {
 
 public:
