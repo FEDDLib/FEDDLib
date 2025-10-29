@@ -377,7 +377,7 @@ void HDF5Toolbox<SC, LO, GO, NO>::create(const std::string FileName)
     // By this point, mpiComm should be something other than
     // MPI_COMM_NULL.  Otherwise, Comm_ wraps MPI_COMM_NULL.
     if (mpiComm == MPI_COMM_NULL) {
-      const char* const errMsg = "TpetraExt::HDF5::Create: The Epetra_Comm "
+      const char* const errMsg = "TpetraExt::HDF5::Create: The Tpetra_Comm "
         "object with which this HDF5 instance was created wraps MPI_COMM_NULL, "
         "which is an invalid MPI communicator.  HDF5 requires a valid MPI "
         "communicator.";

@@ -13,20 +13,6 @@ comm_()
 {
 
     Teuchos::RCP<const Teuchos::MpiComm<int> > mpiComm = Teuchos::rcp_dynamic_cast<const Teuchos::MpiComm<int> >( writeMap->getComm() );
-    // commEpetra_.reset( new Epetra_MpiComm( *mpiComm->getRawMpiComm() ) );
-
-    // We convert the current map to an eptra map
-    // Teuchos::ArrayView< const GO > indices = writeMap->getNodeElementList();
-    // int* intGlobIDs = new int[indices.size()];
-    // for (int i=0; i<indices.size(); i++) {
-    //     intGlobIDs[i] = (int) indices[i];
-    // }
-
-    // int nmbPointsGlob = writeMap->getGlobalNumElements(); // Number of global points
-
-    // EpetraMapPtr_Type mapEpetra = Teuchos::rcp(new Epetra_Map((int)nmbPointsGlob,indices.size(),intGlobIDs,0,*commEpetra_));
-
-    // writeMap_ = mapEpetra; // Defining the read map. All different variables that might be written to the .h5 file have the same map
 
     hdf5exporter_.reset( new HDF5_Type(mpiComm) ); // Building HDF5 Exporter
 
@@ -37,16 +23,6 @@ comm_()
 
 template<class SC,class LO,class GO,class NO>
 void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(std::string varName, const MultiVectorPtr_Type writeVector){
-
-    // EpetraMVPtr_Type u_export(new Epetra_MultiVector(*(writeMap_),1)); // Epetra export vector
-
-    // TEUCHOS_TEST_FOR_EXCEPTION( std::abs(writeMap_->NumMyElements() - writeVector->getLocalLength()) > 1e-12, std::logic_error, " The local length of map does not match the local mv length. Map and MultiVector are not compatible");
-
-    // // We need to write the contents of the writeVector into the Epetra export vector: Convert Xpetra -> Epetra
-    // Teuchos::ArrayRCP<const SC> tmpData = writeVector->getData(0);
-    // for (int i=0; i<writeVector->getLocalLength(); i++) {
-    //     u_export->ReplaceMyValue( i, 0, tmpData[i] );
-    // }
 
     hdf5exporter_->write(varName,writeVector); // Writing u_export as variable 'varName' in file
     

@@ -46,11 +46,7 @@ void ExporterParaViewAMR<SC,LO,GO,NO>::reSetup(MeshPtr_Type mesh){
     }
     Teuchos::ArrayView<GO> globalMapIDs = Teuchos::arrayViewFromVector( nodeElementListInteger);
     MapPtr_Type	mapElements = Teuchos::rcp( new Map_Type((int) (this->nmbPointsPerElement_*this->nmbElementsGlob_), globalMapIDs,elementMap->getIndexBase()*this->nmbPointsPerElement_, this->comm_));
-    // if (nodeElementListInteger.size()>0)
-        // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), &nodeElementListInteger[0],1, 0, *commEpetra_));
-    // else
-        // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), NULL,1, 0, *commEpetra_));
-    
+  
     // They contain global IDs of nodes corresponding to 'elements'
     this->elementsHDF_.reset(new MultiVector_Type(mapElements,1));
     

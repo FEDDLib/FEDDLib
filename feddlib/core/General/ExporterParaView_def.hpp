@@ -17,7 +17,6 @@ template<class SC,class LO,class GO,class NO>
 ExporterParaView<SC,LO,GO,NO>::ExporterParaView():
 hdf5exporter_(),
 comm_(),
-// commEpetra_(),
 closingLinesPosition_(),
 closingLinesPositionTimes_(),
 closingLines_(),
@@ -72,7 +71,6 @@ void ExporterParaView<SC,LO,GO,NO>::setup(std::string filename,
     comm_ = mesh->getComm();
     verbose_ = (comm_->getRank() == 0);
     Teuchos::RCP<const Teuchos::MpiComm<int> > mpiComm = Teuchos::rcp_dynamic_cast<const Teuchos::MpiComm<int> >( mesh->getComm() );
-    // commEpetra_.reset( new Epetra_MpiComm( *mpiComm->getRawMpiComm() ) );
     filename_ = filename;
     outputFilename_ = filename_ + ".h5";
     FEType_ = FEType;
@@ -182,11 +180,7 @@ void ExporterParaView<SC,LO,GO,NO>::setup(std::string filename,
     }
     Teuchos::ArrayView<GO> globalMapIDs = Teuchos::arrayViewFromVector( nodeElementListInteger);
     MapPtr_Type	mapElements = Teuchos::rcp( new Map_Type((int) (nmbPointsPerElement_*nmbElementsGlob_), globalMapIDs,elementMap->getIndexBase()*nmbPointsPerElement_, comm_));
-    // if (nodeElementListInteger.size()>0)
-        // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), &nodeElementListInteger[0],1, 0, *commEpetra_));
-    // else
-        // mapElements.reset(new Map_Type( (int) (nmbPointsPerElement_*nmbElementsGlob_), (int) nodeElementListInteger.size(), NULL,1, 0, *commEpetra_));
-    
+
     // They contain global IDs of nodes corresponding to 'elements'
     elementsHDF_.reset(new MultiVector_Type(mapElements,1));
     
@@ -200,14 +194,6 @@ void ExporterParaView<SC,LO,GO,NO>::setup(std::string filename,
         }
     }
 
-    // Teuchos::ArrayView< const GO > indices = mesh->getMapUnique()->getNodeElementList();
-    // int* intGlobIDs = new int[indices.size()];
-    // for (int i=0; i<indices.size(); i++) {
-    //     intGlobIDs[i] = (int) indices[i];
-    // }
-    
-    // EpetraMapPtr_Type mapEpetra = Teuchos::rcp(new Epetra_Map((int)nmbPointsGlob_,indices.size(),intGlobIDs,0,*commEpetra_));
-    // delete [] intGlobIDs;
     
     pointsHDF_.reset(new MultiVector_Type(mesh->getMapUnique(),dim_));
 
