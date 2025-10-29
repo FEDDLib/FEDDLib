@@ -37,13 +37,14 @@ class HDF5Toolbox{
 
         typedef Map<LO,GO,NO> Map_Type;
         typedef Teuchos::RCP<Map_Type> MapPtr_Type;
+        typedef Teuchos::RCP<const Map_Type> MapConstPtr_Type;
 
         HDF5Toolbox(CommConstPtr_Type Comm);
 
         /// @brief Write/export a vector X to the HDF5 file under the group name GroupName
         /// @param GroupName 
         /// @param X 
-        void write(const std::string &GroupName, const MultiVectorPtr_Type X, bool writeTranspose = false);
+        void write(const std::string &GroupName, const MultiVectorConstPtr_Type X, bool writeTranspose = false);
 
         bool isContained(std::string Name, std::string GroupName = "");
 
@@ -61,11 +62,11 @@ class HDF5Toolbox{
             close();
         }
 
-        void read(const std::string &GroupName, const MapPtr_Type Map, MultiVectorPtr_Type X);
+        void read(const std::string &GroupName, const MapConstPtr_Type Map, MultiVectorPtr_Type X);
 
         void readIntVectorProperties(const std::string &GroupName, int &GlobalLength);
 
-        void read(const std::string &GroupName, const std::string &DataSetName, int MySize, int GlobalSize, const hid_t type, void *data);
+        void read(const std::string &GroupName, const std::string &DataSetName, GO MySize, int GlobalSize, const hid_t type, void *data);
 
         void read(const std::string &GroupName, const std::string &DataSetName, int &data);
 

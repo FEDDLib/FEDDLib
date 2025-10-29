@@ -22,7 +22,7 @@ comm_()
 }
 
 template<class SC,class LO,class GO,class NO>
-void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(std::string varName, const MultiVectorPtr_Type writeVector){
+void HDF5Export<SC,LO,GO,NO>::writeVariablesHDF5(std::string varName, const MultiVectorConstPtr_Type writeVector){
 
     hdf5exporter_->write(varName,writeVector); // Writing u_export as variable 'varName' in file
     

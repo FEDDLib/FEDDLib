@@ -65,7 +65,7 @@ public:
     /// @brief Name of input file
     std::string inputFilename_; 
     /// @brief Name of Map of import multivector
-    MapPtr_Type  readMap_;
+    MapConstPtr_Type  readMap_;
     /// @brief Imported file in Tpetra format
     MultiVectorPtr_Type u_import_Tpetra_;
 

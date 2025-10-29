@@ -50,7 +50,7 @@ public:
     /// @brief Exporting MultiVector writeVector as HDF5 File with the variable name varName
     /// @param varName Variable name of MultiVector
     /// @param writeVector Vector to be exported, corresponding to writeMap_ 
-    void writeVariablesHDF5(std::string varName,const MultiVectorPtr_Type writeVector);
+    void writeVariablesHDF5(std::string varName,const MultiVectorConstPtr_Type writeVector);
 
      /// @brief Closing Exporter
     void closeExporter();

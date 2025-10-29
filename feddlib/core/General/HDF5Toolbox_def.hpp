@@ -34,7 +34,7 @@ HDF5Toolbox<SC, LO, GO, NO>::HDF5Toolbox(CommConstPtr_Type comm):
 // ----------------------------------------------------------------
 /// @brief Write/export a vector X to the HDF5 file under the group name GroupName
 template <class SC, class LO, class GO, class NO>
-void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const MultiVectorPtr_Type X, bool writeTranspose)
+void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const MultiVectorConstPtr_Type X, bool writeTranspose)
 {
 
   TEUCHOS_TEST_FOR_EXCEPTION(!isOpen(),std::runtime_error,"HDF5Toolbox:: no file open yet");
@@ -176,7 +176,7 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
 // ---------------------------------------------------------
 // ==========================================================================
 template <class SC, class LO, class GO, class NO>
-void HDF5Toolbox<SC, LO, GO, NO>::read(const std::string& GroupName, const MapPtr_Type Map,
+void HDF5Toolbox<SC, LO, GO, NO>::read(const std::string& GroupName, const MapConstPtr_Type Map,
                         MultiVectorPtr_Type X)
 {
   // gets the length of the std::vector
@@ -211,7 +211,7 @@ void HDF5Toolbox<SC, LO, GO, NO>::readIntVectorProperties(const std::string& Gro
 
 template <class SC, class LO, class GO, class NO>
 void HDF5Toolbox<SC, LO, GO, NO>::read(const std::string& GroupName, const std::string& DataSetName,
-                        int MySize, int GlobalSize,
+                        GO MySize, int GlobalSize,
                         const hid_t type, void* data)
 {
   TEUCHOS_TEST_FOR_EXCEPTION(!isOpen(),std::runtime_error,"HDF5Toolbox:: no file open yet");
@@ -220,7 +220,7 @@ void HDF5Toolbox<SC, LO, GO, NO>::read(const std::string& GroupName, const std::
 hsize_t MySize_t = MySize;
 
 // Compute the prefix sum across ranks to get the global offset
-int itmp = 0;
+GO itmp = 0;
 tpetraScanSum(comm_, &MySize, &itmp, 1);
 
 // Exclusive prefix (start index for this rank)
