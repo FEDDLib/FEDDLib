@@ -7,6 +7,7 @@ var classFEDD_1_1AssembleFE =
     [ "assembleJacobian", "classFEDD_1_1AssembleFE.html#af48b450dfdf6cea7beeb24feef7dc10f", null ],
     [ "assembleJacobianBlock", "classFEDD_1_1AssembleFE.html#a0fb539f74560c15fed3d2d806723150a", null ],
     [ "assembleRHS", "classFEDD_1_1AssembleFE.html#a43f18446faadb45bb4e2eae4f82ba9ba", null ],
+    [ "changeLinearization", "classFEDD_1_1AssembleFE.html#ac7a184424bb4f1f8176853849e25a6ad", null ],
     [ "checkParameters", "classFEDD_1_1AssembleFE.html#a9d471f89532703a619e8a1545cab4602", null ],
     [ "computeLocalconstOutputField", "classFEDD_1_1AssembleFE.html#a4cda1a8bd9023adfa517598769c76d4b", null ],
     [ "getDim", "classFEDD_1_1AssembleFE.html#a35ada89164c74b433340733c01f30f4b", null ],

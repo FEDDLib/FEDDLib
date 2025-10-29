@@ -128,6 +128,9 @@ typedef Problem_Type::MatrixPtr_Type&#160;</td><td class="memItemRight" valign="
 <tr class="memitem:a74af12b6362471f5be8d61a68eb98b9b" id="r_a74af12b6362471f5be8d61a68eb98b9b"><td class="memItemLeft" align="right" valign="top"><a id="a74af12b6362471f5be8d61a68eb98b9b" name="a74af12b6362471f5be8d61a68eb98b9b"></a>
 typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1ExporterTxt.html">ExporterTxt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ExporterTxtPtr_Type</b></td></tr>
 <tr class="separator:a74af12b6362471f5be8d61a68eb98b9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0315cf4fc5743e4ffddc44e1fc910ce1" id="r_a0315cf4fc5743e4ffddc44e1fc910ce1"><td class="memItemLeft" align="right" valign="top"><a id="a0315cf4fc5743e4ffddc44e1fc910ce1" name="a0315cf4fc5743e4ffddc44e1fc910ce1"></a>
+typedef boost::function&lt; bool(std::string &amp;, int, double, ParameterListPtr_Type parameterList)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>SwitchingStrategyFunc</b></td></tr>
+<tr class="separator:a0315cf4fc5743e4ffddc44e1fc910ce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -145,8 +148,46 @@ Public Member Functions</h2></td></tr>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>getNonLinIts</b> ()</td></tr>
 <tr class="memdesc:a38595db2209fcff9472b635d8493a6d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the number of nonlinear iterations needed <br /></td></tr>
 <tr class="separator:a38595db2209fcff9472b635d8493a6d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa81ae95c8a0d42347a47c486dde03881" id="r_aa81ae95c8a0d42347a47c486dde03881"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa81ae95c8a0d42347a47c486dde03881">addSwitchingStrategyFunction</a> (SwitchingStrategyFunc switchingStrategy)</td></tr>
+<tr class="memdesc:aa81ae95c8a0d42347a47c486dde03881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a switching strategy function for the FixedPointNewton method.  <br /></td></tr>
+<tr class="separator:aa81ae95c8a0d42347a47c486dde03881"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="aa81ae95c8a0d42347a47c486dde03881" name="aa81ae95c8a0d42347a47c486dde03881"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa81ae95c8a0d42347a47c486dde03881">&#9670;&#160;</a></span>addSwitchingStrategyFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1NonLinearSolver.html">FEDD::NonLinearSolver</a>&lt; SC, LO, GO, NO &gt;::addSwitchingStrategyFunction </td>
+          <td>(</td>
+          <td class="paramtype">SwitchingStrategyFunc</td>          <td class="paramname"><span class="paramname"><em>switchingStrategy</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Add a switching strategy function for the FixedPointNewton method. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">switchingStrategy</td><td>function which decides whether to switch the linearization or not and outputs a boolean value whether linearization was switched or not </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ae60cba66ce05ae5f37e6787114b1906c" name="ae60cba66ce05ae5f37e6787114b1906c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae60cba66ce05ae5f37e6787114b1906c">&#9670;&#160;</a></span>solve() <span class="overload">[1/2]</span></h2>
 

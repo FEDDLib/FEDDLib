@@ -208,6 +208,9 @@ GO&#160;</td><td class="memItemRight" valign="bottom"><b>getGlobalElementID</b> 
 <tr class="memitem:af87de74856df7bcf0d7d872240599efb" id="r_af87de74856df7bcf0d7d872240599efb"><td class="memItemLeft" align="right" valign="top">vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af87de74856df7bcf0d7d872240599efb">getLocalconstOutputField</a> ()</td></tr>
 <tr class="memdesc:af87de74856df7bcf0d7d872240599efb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Obtain value of resulting postprocessing field at nodes/ inside an element.  <br /></td></tr>
 <tr class="separator:af87de74856df7bcf0d7d872240599efb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7a184424bb4f1f8176853849e25a6ad" id="r_ac7a184424bb4f1f8176853849e25a6ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac7a184424bb4f1f8176853849e25a6ad">changeLinearization</a> (std::string linearization)</td></tr>
+<tr class="memdesc:ac7a184424bb4f1f8176853849e25a6ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switch e.g. from FixedPoint assembly to Newton method during runtime.  <br /></td></tr>
+<tr class="separator:ac7a184424bb4f1f8176853849e25a6ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -269,6 +272,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>timeIncrement_</b><
 <tr class="memitem:a48cecbc7fdb9436b25a9be32ddb89213" id="r_a48cecbc7fdb9436b25a9be32ddb89213"><td class="memItemLeft" align="right" valign="top"><a id="a48cecbc7fdb9436b25a9be32ddb89213" name="a48cecbc7fdb9436b25a9be32ddb89213"></a>
 GO&#160;</td><td class="memItemRight" valign="bottom"><b>globalElementID_</b></td></tr>
 <tr class="separator:a48cecbc7fdb9436b25a9be32ddb89213"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a50c18cc465dfdf5f8fb7d44605e9c3" id="r_a9a50c18cc465dfdf5f8fb7d44605e9c3"><td class="memItemLeft" align="right" valign="top"><a id="a9a50c18cc465dfdf5f8fb7d44605e9c3" name="a9a50c18cc465dfdf5f8fb7d44605e9c3"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>linearization_</b></td></tr>
+<tr class="separator:a9a50c18cc465dfdf5f8fb7d44605e9c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac749eb90559fe5787d2c78cf220a6371" id="r_ac749eb90559fe5787d2c78cf220a6371"><td class="memItemLeft" align="right" valign="top"><a id="ac749eb90559fe5787d2c78cf220a6371" name="ac749eb90559fe5787d2c78cf220a6371"></a>
 vec_dbl_Type&#160;</td><td class="memItemRight" valign="bottom"><b>constOutputField_</b></td></tr>
 <tr class="separator:ac749eb90559fe5787d2c78cf220a6371"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -564,6 +570,41 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
 <p>Assemble the element right hand side vector. </p>
 
 <p>Implemented in <a class="el" href="classFEDD_1_1AssembleFE__Laplace.html#aaf26b3221339fd015ee90fa2da2802ac">FEDD::AssembleFE_Laplace&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFE__LinElas.html#ac6b6d5b7251a83a2bc4850b18ee0a421">FEDD::AssembleFE_LinElas&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFE__NonLinElas2.html#a719bc0bfc532b1c1e1bf97b3f6302dad">FEDD::AssembleFE_NonLinElas2&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFE__NonLinElas.html#a5264a2ac65e04c30da603b742b197941">FEDD::AssembleFE_NonLinElas&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFE__SCI__NH.html#a448f0e9c909f280ba8b7d193ce611979">FEDD::AssembleFE_SCI_NH&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFE__SCI__SMC__Active__Growth__Reorientation.html#aeaa03f5a06dd5f8669af08dce300a8cb">FEDD::AssembleFE_SCI_SMC_Active_Growth_Reorientation&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFE__SCI__SMC__Active__Growth__Reorientation.html#aeaa03f5a06dd5f8669af08dce300a8cb">FEDD::AssembleFE_SCI_SMC_Active_Growth_Reorientation&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFE__SCI__SMC__Active__Growth__Reorientation.html#aeaa03f5a06dd5f8669af08dce300a8cb">FEDD::AssembleFE_SCI_SMC_Active_Growth_Reorientation&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFE__SCI__SMC__MLCK.html#afc7fb7d18edca24c21d1120007f4e1e3">FEDD::AssembleFE_SCI_SMC_MLCK&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFEBlock.html#a77490e8ec2e51fa1951254e372370809">FEDD::AssembleFEBlock&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFEBlock.html#a77490e8ec2e51fa1951254e372370809">FEDD::AssembleFEBlock&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFEBlock.html#a77490e8ec2e51fa1951254e372370809">FEDD::AssembleFEBlock&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a05530e76c5d7995cd52b24110d17413c">FEDD::AssembleFEGeneralizedNewtonian&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a05530e76c5d7995cd52b24110d17413c">FEDD::AssembleFEGeneralizedNewtonian&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a05530e76c5d7995cd52b24110d17413c">FEDD::AssembleFEGeneralizedNewtonian&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFENavierStokes.html#ab3dfe0c3a4f8e3ca9eb9b7414419a982">FEDD::AssembleFENavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFENavierStokes.html#ab3dfe0c3a4f8e3ca9eb9b7414419a982">FEDD::AssembleFENavierStokes&lt; default_sc, default_lo, default_go, default_no &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFENavierStokes.html#ab3dfe0c3a4f8e3ca9eb9b7414419a982">FEDD::AssembleFENavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1AssembleFENavierStokes.html#ab3dfe0c3a4f8e3ca9eb9b7414419a982">FEDD::AssembleFENavierStokes&lt; SC, LO, GO, NO &gt;</a>, and <a class="el" href="classFEDD_1_1AssembleFENonLinLaplace.html#a1326743f2955d6790520a9e18c1a03d4">FEDD::AssembleFENonLinLaplace&lt; SC, LO, GO, NO &gt;</a>.</p>
+
+</div>
+</div>
+<a id="ac7a184424bb4f1f8176853849e25a6ad" name="ac7a184424bb4f1f8176853849e25a6ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7a184424bb4f1f8176853849e25a6ad">&#9670;&#160;</a></span>changeLinearization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1AssembleFE.html">FEDD::AssembleFE</a>&lt; SC, LO, GO, NO &gt;::changeLinearization </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>linearization</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Switch e.g. from FixedPoint assembly to Newton method during runtime. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">linearization</td><td>string defining the linearization type e.g. "FixedPoint </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

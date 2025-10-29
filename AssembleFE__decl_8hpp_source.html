@@ -184,48 +184,50 @@ $(function(){initNavTree('AssembleFE__decl_8hpp_source.html',''); initResizable(
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span></div>
 <div class="line"><a id="l00218" name="l00218"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFE.html#af87de74856df7bcf0d7d872240599efb">  218</a></span>        vec_dbl_Type <a class="code hl_function" href="classFEDD_1_1AssembleFE.html#af87de74856df7bcf0d7d872240599efb">getLocalconstOutputField</a>() {<span class="keywordflow">return</span> constOutputField_;}</div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span></div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFE.html#a5ff56b610942ec92cc1b1e0ac1e07ce4">  230</a></span>        <a class="code hl_function" href="classFEDD_1_1AssembleFE.html#a5ff56b610942ec92cc1b1e0ac1e07ce4">AssembleFE</a>(<span class="keywordtype">int</span> flag,</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>                   vec2D_dbl_Type nodesRefConfig,</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                   ParameterListPtr_Type parameters,</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>                tuple_disk_vec_ptr_Type tuple);</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        <span class="comment">//void readTuple(); /// TODO: To have tuple information in basis class as well?</span></div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="comment">//tuple_disk_vec_ptr_Type getTuple();  </span></div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        SmallMatrixPtr_Type jacobian_;</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        SmallMatrixPtr_Type jacobianBlock_;</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        vec_dbl_ptr_Type rhsVec_;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFE.html#ac7a184424bb4f1f8176853849e25a6ad">  225</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1AssembleFE.html#ac7a184424bb4f1f8176853849e25a6ad">changeLinearization</a>(std::string linearization) {this-&gt;linearization_ = linearization;};</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span></div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFE.html#a5ff56b610942ec92cc1b1e0ac1e07ce4">  235</a></span>        <a class="code hl_function" href="classFEDD_1_1AssembleFE.html#a5ff56b610942ec92cc1b1e0ac1e07ce4">AssembleFE</a>(<span class="keywordtype">int</span> flag,</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                   vec2D_dbl_Type nodesRefConfig,</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                   ParameterListPtr_Type parameters,</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>                tuple_disk_vec_ptr_Type tuple);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <span class="comment">//void readTuple(); /// TODO: To have tuple information in basis class as well?</span></div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="comment">//tuple_disk_vec_ptr_Type getTuple();  </span></div>
 <div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        RhsFunc_Type rhsFunc_;</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        <span class="keywordtype">int</span> dim_;</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        tuple_disk_vec_ptr_Type diskTuple_;</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        tuple_sd_vec_ptr_Type elementIntormation_;</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFE.html#ab2892bff598d5a4f784d4f30ddf4836c">  250</a></span>        vec2D_dbl_Type <a class="code hl_variable" href="classFEDD_1_1AssembleFE.html#ab2892bff598d5a4f784d4f30ddf4836c">nodesRefConfig_</a>;</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        <span class="keywordtype">bool</span> timeProblem_;</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        <span class="keywordtype">int</span> flag_;</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        <span class="keywordtype">double</span> timeStep_ ; </div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keywordtype">int</span> newtonStep_ ;</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        ParameterListPtr_Type paramsMaterial_;</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        ParameterListPtr_Type params_;</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        vec_dbl_ptr_Type solution_ ;</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordtype">double</span> timeIncrement_;</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        GO globalElementID_;</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="comment">// This can be any postprocessing output field ddefined inside an element using converged solution</span></div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        vec_dbl_Type constOutputField_ ; <span class="comment">// can be a vector with values on P1/ P2 nodes or just averaged element value</span></div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1AssembleFEFactory.html">AssembleFEFactory</a>&lt;SC,LO,GO,NO&gt;;</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    };</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        SmallMatrixPtr_Type jacobian_;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        SmallMatrixPtr_Type jacobianBlock_;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        vec_dbl_ptr_Type rhsVec_;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        RhsFunc_Type rhsFunc_;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="keywordtype">int</span> dim_;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        tuple_disk_vec_ptr_Type diskTuple_;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        tuple_sd_vec_ptr_Type elementIntormation_;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFE.html#ab2892bff598d5a4f784d4f30ddf4836c">  255</a></span>        vec2D_dbl_Type <a class="code hl_variable" href="classFEDD_1_1AssembleFE.html#ab2892bff598d5a4f784d4f30ddf4836c">nodesRefConfig_</a>;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <span class="keywordtype">bool</span> timeProblem_;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="keywordtype">int</span> flag_;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordtype">double</span> timeStep_ ; </div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordtype">int</span> newtonStep_ ;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        ParameterListPtr_Type paramsMaterial_;</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        ParameterListPtr_Type params_;</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        vec_dbl_ptr_Type solution_ ;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="keywordtype">double</span> timeIncrement_;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        GO globalElementID_;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        std::string linearization_; <span class="comment">// Store in here which linearization e.g. FixedPoint or Newton is used -&gt; Relevant for assembleFEElement-Specific construction of Jacobian in NavierStokes</span></div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span> </div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        <span class="comment">// This can be any postprocessing output field ddefined inside an element using converged solution</span></div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        vec_dbl_Type constOutputField_ ; <span class="comment">// can be a vector with values on P1/ P2 nodes or just averaged element value</span></div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1AssembleFEFactory.html">AssembleFEFactory</a>&lt;SC,LO,GO,NO&gt;;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    };</div>
 </div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>}</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>}</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassFEDD_1_1AssembleFEFactory_html"><div class="ttname"><a href="classFEDD_1_1AssembleFEFactory.html">FEDD::AssembleFEFactory</a></div><div class="ttdoc">This class allows for constructing AssembleFE objects.</div><div class="ttdef"><b>Definition</b> AssembleFEFactory_decl.hpp:37</div></div>
 <div class="ttc" id="aclassFEDD_1_1AssembleFE_html_a0fb539f74560c15fed3d2d806723150a"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#a0fb539f74560c15fed3d2d806723150a">FEDD::AssembleFE::assembleJacobianBlock</a></div><div class="ttdeci">virtual void assembleJacobianBlock(LO i)=0</div><div class="ttdoc">Assemble the element Jacobian matrix.</div></div>
 <div class="ttc" id="aclassFEDD_1_1AssembleFE_html_a25ec8e43f61bf7d8c13dbda54a8023b5"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#a25ec8e43f61bf7d8c13dbda54a8023b5">FEDD::AssembleFE::getJacobianBlock</a></div><div class="ttdeci">SmallMatrixPtr_Type getJacobianBlock(LO i)</div><div class="ttdoc">Get the currently assembled element Jacobian matrix.</div><div class="ttdef"><b>Definition</b> AssembleFE_decl.hpp:104</div></div>
@@ -247,7 +249,8 @@ $(function(){initNavTree('AssembleFE__decl_8hpp_source.html',''); initResizable(
 <div class="ttc" id="aclassFEDD_1_1AssembleFE_html_a9d471f89532703a619e8a1545cab4602"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#a9d471f89532703a619e8a1545cab4602">FEDD::AssembleFE::checkParameters</a></div><div class="ttdeci">virtual void checkParameters()</div><div class="ttdoc">Check the input parameters from the constructor and the ParameterList for completeness and consistenc...</div><div class="ttdef"><b>Definition</b> AssembleFE_def.hpp:64</div></div>
 <div class="ttc" id="aclassFEDD_1_1AssembleFE_html_a9eea5124c4b385c2807ad8b20614d050"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#a9eea5124c4b385c2807ad8b20614d050">FEDD::AssembleFE::addRHSFunc</a></div><div class="ttdeci">void addRHSFunc(RhsFunc_Type rhsFunc)</div><div class="ttdef"><b>Definition</b> AssembleFE_decl.hpp:191</div></div>
 <div class="ttc" id="aclassFEDD_1_1AssembleFE_html_aa291b30d2a3f78705b2a7722a1a04d96"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#aa291b30d2a3f78705b2a7722a1a04d96">FEDD::AssembleFE::advanceInTime</a></div><div class="ttdeci">virtual void advanceInTime(double dt)</div><div class="ttdoc">This function is called every time the FEDDLib proceeds from one to the next time step....</div><div class="ttdef"><b>Definition</b> AssembleFE_def.hpp:77</div></div>
-<div class="ttc" id="aclassFEDD_1_1AssembleFE_html_ab2892bff598d5a4f784d4f30ddf4836c"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#ab2892bff598d5a4f784d4f30ddf4836c">FEDD::AssembleFE&lt; SC, LO, GO, NO &gt;::nodesRefConfig_</a></div><div class="ttdeci">vec2D_dbl_Type nodesRefConfig_</div><div class="ttdef"><b>Definition</b> AssembleFE_decl.hpp:250</div></div>
+<div class="ttc" id="aclassFEDD_1_1AssembleFE_html_ab2892bff598d5a4f784d4f30ddf4836c"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#ab2892bff598d5a4f784d4f30ddf4836c">FEDD::AssembleFE&lt; SC, LO, GO, NO &gt;::nodesRefConfig_</a></div><div class="ttdeci">vec2D_dbl_Type nodesRefConfig_</div><div class="ttdef"><b>Definition</b> AssembleFE_decl.hpp:255</div></div>
+<div class="ttc" id="aclassFEDD_1_1AssembleFE_html_ac7a184424bb4f1f8176853849e25a6ad"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#ac7a184424bb4f1f8176853849e25a6ad">FEDD::AssembleFE::changeLinearization</a></div><div class="ttdeci">void changeLinearization(std::string linearization)</div><div class="ttdoc">Switch e.g. from FixedPoint assembly to Newton method during runtime.</div><div class="ttdef"><b>Definition</b> AssembleFE_decl.hpp:225</div></div>
 <div class="ttc" id="aclassFEDD_1_1AssembleFE_html_af11bbb371048522d35ecb1f4f2584a8a"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#af11bbb371048522d35ecb1f4f2584a8a">FEDD::AssembleFE::getNewtonStep</a></div><div class="ttdeci">int getNewtonStep()</div><div class="ttdoc">Get the time state of the object.</div><div class="ttdef"><b>Definition</b> AssembleFE_def.hpp:96</div></div>
 <div class="ttc" id="aclassFEDD_1_1AssembleFE_html_af48b450dfdf6cea7beeb24feef7dc10f"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#af48b450dfdf6cea7beeb24feef7dc10f">FEDD::AssembleFE::assembleJacobian</a></div><div class="ttdeci">virtual void assembleJacobian()=0</div><div class="ttdoc">Compute everything.</div></div>
 <div class="ttc" id="aclassFEDD_1_1AssembleFE_html_af7fb8c5ae1f77eca6e8c7e887ea761ec"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#af7fb8c5ae1f77eca6e8c7e887ea761ec">FEDD::AssembleFE::getJacobian</a></div><div class="ttdeci">SmallMatrixPtr_Type getJacobian()</div><div class="ttdoc">Get the currently assembled element Jacobian matrix.</div><div class="ttdef"><b>Definition</b> AssembleFE_decl.hpp:98</div></div>

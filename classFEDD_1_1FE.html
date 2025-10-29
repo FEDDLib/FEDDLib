@@ -410,6 +410,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>checkMeshOrientation<
 <tr class="memitem:a931c77e130f7e45af53f1b63b71953f4" id="r_a931c77e130f7e45af53f1b63b71953f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a931c77e130f7e45af53f1b63b71953f4">computeSteadyViscosityFE_CM</a> (int dim, std::string FETypeVelocity, std::string FETypePressure, int dofsVelocity, int dofsPressure, MultiVectorPtr_Type u_rep, MultiVectorPtr_Type p_rep, ParameterListPtr_Type params)</td></tr>
 <tr class="memdesc:a931c77e130f7e45af53f1b63b71953f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Postprocessing: Using a converged velocity solution -&gt; compute averaged viscosity inside an element at center of mass.  <br /></td></tr>
 <tr class="separator:a931c77e130f7e45af53f1b63b71953f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a289407a528df2100cd029c399bb27a98" id="r_a289407a528df2100cd029c399bb27a98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a289407a528df2100cd029c399bb27a98">changeLinearizationFE</a> (std::string linearization)</td></tr>
+<tr class="memdesc:a289407a528df2100cd029c399bb27a98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to loop over all assembleFESpecific elements and set the defined linearization.  <br /></td></tr>
+<tr class="separator:a289407a528df2100cd029c399bb27a98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -1784,6 +1787,51 @@ Here is the caller graph for this function:</div>
 <map name="aclassFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_icgraph" id="aclassFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_icgraph">
 <area shape="rect" title="Assembling Pressure Integral to determine pressure mean value." alt="" coords="5,29,196,70"/>
 <area shape="poly" title=" " alt="" coords="131,16,120,10,100,8,83,10,72,15,68,20,69,28,64,29,62,19,68,10,81,5,101,3,121,5,134,11"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a289407a528df2100cd029c399bb27a98" name="a289407a528df2100cd029c399bb27a98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a289407a528df2100cd029c399bb27a98">&#9670;&#160;</a></span>changeLinearizationFE()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1FE.html">FEDD::FE</a>&lt; SC, LO, GO, NO &gt;::changeLinearizationFE </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>linearization</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Method to loop over all assembleFESpecific elements and set the defined linearization. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">string</td><td>linearization e.g. "Picard" or "Newton" </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1FE_a289407a528df2100cd029c399bb27a98_cgraph.png" border="0" usemap="#aclassFEDD_1_1FE_a289407a528df2100cd029c399bb27a98_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1FE_a289407a528df2100cd029c399bb27a98_cgraph" id="aclassFEDD_1_1FE_a289407a528df2100cd029c399bb27a98_cgraph">
+<area shape="rect" title="Method to loop over all assembleFESpecific elements and set the defined linearization." alt="" coords="5,29,220,55"/>
+<area shape="poly" title=" " alt="" coords="77,31,70,21,74,11,89,5,113,3,139,5,152,12,150,17,137,10,112,8,90,10,78,15,75,20,81,27"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1FE_a289407a528df2100cd029c399bb27a98_icgraph.png" border="0" usemap="#aclassFEDD_1_1FE_a289407a528df2100cd029c399bb27a98_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1FE_a289407a528df2100cd029c399bb27a98_icgraph" id="aclassFEDD_1_1FE_a289407a528df2100cd029c399bb27a98_icgraph">
+<area shape="rect" title="Method to loop over all assembleFESpecific elements and set the defined linearization." alt="" coords="5,29,220,55"/>
+<area shape="poly" title=" " alt="" coords="150,17,137,10,112,8,90,10,78,15,75,20,81,27,77,31,70,21,74,11,89,5,113,3,139,5,152,12"/>
 </map>
 </div>
 
