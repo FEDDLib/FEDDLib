@@ -17,3 +17,4 @@
     You could, for example, include a test that checks whether the rules integrate "exactly" for the appropriate polynomial degree. 
   - Idea: We do sample testing and don't require a unit test for every function.
 * Add minor todos in code via "TODO: might be more efficient if ..." or "TODO: [JK] ..." where in the brackets are your initials. For major or important todos, use the Doxygen command @todo, e.g., "@todo [JK] Bug in quadrature formula." Please also open an issue if suitable.
+* Adding a new test: Please add the Trilinos and FEDDLib Commit IDs that were used to generate the reference data.
