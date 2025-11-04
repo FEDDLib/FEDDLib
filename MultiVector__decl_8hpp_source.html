@@ -103,169 +103,207 @@ $(function(){initNavTree('MultiVector__decl_8hpp_source.html',''); initResizable
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef MULTIVECTOR_DECL_hpp</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define MULTIVECTOR_DECL_hpp</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;feddlib/core/FEDDCore.hpp&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;feddlib/core/General/DefaultTypeDefs.hpp&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;Map.hpp&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;Thyra_LinearOpBase_decl.hpp&gt;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;Thyra_DefaultProductVectorSpace.hpp&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;Thyra_TpetraThyraWrappers.hpp&gt;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;Teuchos_VerboseObject.hpp&gt;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;MatrixMarket_Tpetra.hpp&gt;</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;Tpetra_MultiVector.hpp&gt;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;Tpetra_Map.hpp&gt;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;Tpetra_MultiVector.hpp&gt;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;Tpetra_Vector.hpp&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;Tpetra_Export.hpp&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;Tpetra_Import.hpp&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment"> We need to remove some functions from the MultiVector class that are</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment"> only supported for a scalar type (SC) of double. To achieve this is</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment"> simple using concepts in C++20. But for backwards compatibility, we</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment"> offer a C++17 alternative. This alternative is based on SFINAE. A new</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment"> function template parameter is introduced, which is necessary to make</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment"> use of SFINAE. We cannot use substitution failure directly on the</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment"> class template parameters, as this would lead to a compilation error.</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"> On the function level, if substitution fails, the corresponding</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment"> function is removed. Thus, we can keep SC = double and remove all</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"> other possibilities. Since the function now has a new template</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment"> parameter, it must be explicitly instantiated if this is done for</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> the class as well. The problematic functions, for which only</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> SC = double is supported, are functions that return a Thyra vector.</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> A Thyra vector does not exist for SC = int, for example.</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> TODO: The C++17 compatible code is quite difficult to read.</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">       I suggest to remove it rather sooner than later when C++17</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">       compatibility can be dropped.</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#if __cplusplus &gt;= 202002L </span><span class="comment">// &gt;= C++20</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">    #include &lt;concepts&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#else </span><span class="comment">// &lt;= C++17</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">    #include &lt;type_traits&gt;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">// Forward Declaration of BlockMultiVector to avoid circular includes (BlockMultiVector includes MultiVector) and speed up compilation time.</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1BlockMultiVector.html">BlockMultiVector</a>;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC = default_sc, <span class="keyword">class</span> LO = default_lo, <span class="keyword">class</span> GO = default_go, <span class="keyword">class</span> NO = default_no&gt;</div>
-<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html">   34</a></span><span class="keyword">class </span>MultiVector {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &quot;feddlib/core/FEDDCore.hpp&quot;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &quot;feddlib/core/General/DefaultTypeDefs.hpp&quot;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &quot;Map.hpp&quot;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &lt;Thyra_LinearOpBase_decl.hpp&gt;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &lt;Thyra_DefaultProductVectorSpace.hpp&gt;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &lt;Thyra_TpetraThyraWrappers.hpp&gt;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &lt;Teuchos_VerboseObject.hpp&gt;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &lt;MatrixMarket_Tpetra.hpp&gt;</span></div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">typedef</span> MultiVector&lt;SC,LO,GO,NO&gt; MultiVector_Type;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;MultiVector_Type&gt; MultiVectorPtr_Type;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const MultiVector_Type&gt; MultiVectorConstPtr_Type;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMultiVector.html">BlockMultiVector&lt;SC,LO,GO,NO&gt;</a> BlockMultiVector_Type;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMultiVector_Type&gt; BlockMultiVectorPtr_Type;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const BlockMultiVector_Type&gt; BlockMultiVectorConstPtr_Type;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">typedef</span> Teuchos::Comm&lt;int&gt; Comm_Type;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Comm_Type&gt; CommPtr_Type;    </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Comm_Type&gt; CommConstPtr_Type;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">// -------------</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Map.html">Map&lt;LO,GO,NO&gt;</a> Map_Type;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Map_Type&gt; MapPtr_Type;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Map_Type&gt; MapConstPtr_Type;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">typedef</span> Tpetra::Map&lt;LO,GO,NO&gt; TpetraMap_Type;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;TpetraMap_Type&gt; TpetraMapPtr_Type;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const TpetraMap_Type&gt; TpetraMapConstPtr_Type;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">typedef</span> <span class="keyword">const</span> TpetraMapConstPtr_Type TpetraMapConstPtrConst_Type;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &lt;Tpetra_MultiVector.hpp&gt;</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#include &lt;Tpetra_Map.hpp&gt;</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#include &lt;Tpetra_MultiVector.hpp&gt;</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &lt;Tpetra_Vector.hpp&gt;</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">#include &lt;Tpetra_Export.hpp&gt;</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#include &lt;Tpetra_Import.hpp&gt;</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment">// Forward Declaration of BlockMultiVector to avoid circular includes (BlockMultiVector includes MultiVector) and speed up compilation time.</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1BlockMultiVector.html">BlockMultiVector</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC = default_sc, <span class="keyword">class</span> LO = default_lo, <span class="keyword">class</span> GO = default_go, <span class="keyword">class</span> NO = default_no&gt;</div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html">   59</a></span><span class="keyword">class </span>MultiVector {</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">typedef</span> Tpetra::MultiVector&lt;SC,LO,GO,NO&gt; TpetraMultiVector_Type;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;TpetraMultiVector_Type&gt; TpetraMultiVectorPtr_Type;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const TpetraMultiVector_Type&gt; TpetraMultiVectorConstPtr_Type;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">typedef</span> <span class="keyword">const</span> TpetraMultiVectorConstPtr_Type TpetraMultiVectorConstPtrConst_Type;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">typedef</span> Tpetra::Import&lt;LO,GO,NO&gt; TpetraImport_Type;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;TpetraImport_Type&gt; TpetraImportPtr_Type;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">typedef</span> Tpetra::Export&lt;LO,GO,NO&gt; TpetraExport_Type;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;TpetraExport_Type&gt; TpetraExportPtr_Type;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    MultiVector();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">typedef</span> MultiVector&lt;SC,LO,GO,NO&gt; MultiVector_Type;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;MultiVector_Type&gt; MultiVectorPtr_Type;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const MultiVector_Type&gt; MultiVectorConstPtr_Type;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMultiVector.html">BlockMultiVector&lt;SC,LO,GO,NO&gt;</a> BlockMultiVector_Type;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMultiVector_Type&gt; BlockMultiVectorPtr_Type;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const BlockMultiVector_Type&gt; BlockMultiVectorConstPtr_Type;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">typedef</span> Teuchos::Comm&lt;int&gt; Comm_Type;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Comm_Type&gt; CommPtr_Type;    </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Comm_Type&gt; CommConstPtr_Type;</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#ad230b8fcfecbbfd9dfbd0b9d929cb013">   80</a></span>    <a class="code hl_function" href="classFEDD_1_1MultiVector.html#ad230b8fcfecbbfd9dfbd0b9d929cb013">MultiVector</a>( MapConstPtr_Type map, UN nmbVectors=1 );</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a2699448caa6dba8872aca8e8dafb22b3">   84</a></span>    <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a2699448caa6dba8872aca8e8dafb22b3">MultiVector</a>( TpetraMultiVectorPtr_Type&amp; TpetraMVPtrIn );</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a53c267add0e1f3b90b696f653db672c2">   88</a></span>    <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a53c267add0e1f3b90b696f653db672c2">MultiVector</a>( MultiVectorConstPtr_Type mvIn );</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a9446bc749df2f0f0484d68c5fae8a719">   91</a></span>    <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a9446bc749df2f0f0484d68c5fae8a719">~MultiVector</a>();</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span></div>
-<div class="foldopen" id="foldopen00099" data-start="{" data-end="}">
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a8503f858dff173f63f2701e3aefb9ea1">   99</a></span>    MultiVector_Type&amp; <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a8503f858dff173f63f2701e3aefb9ea1">operator= </a>(<span class="keyword">const</span> MultiVector_Type&amp; rhs) {</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        Tpetra::deep_copy&lt;SC,LO,GO,NO&gt;(*multiVector_,*rhs.getTpetraMultiVector()); <span class="comment">// (destination, source)</span></div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    }</div>
-</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span></div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a4eead56562530b5f87b1d48466ca3b29">  105</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a4eead56562530b5f87b1d48466ca3b29">is_null</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="comment">// -------------</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Map.html">Map&lt;LO,GO,NO&gt;</a> Map_Type;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Map_Type&gt; MapPtr_Type;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Map_Type&gt; MapConstPtr_Type;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">typedef</span> Tpetra::Map&lt;LO,GO,NO&gt; TpetraMap_Type;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;TpetraMap_Type&gt; TpetraMapPtr_Type;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const TpetraMap_Type&gt; TpetraMapConstPtr_Type;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">typedef</span> <span class="keyword">const</span> TpetraMapConstPtr_Type TpetraMapConstPtrConst_Type;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">typedef</span> Tpetra::MultiVector&lt;SC,LO,GO,NO&gt; TpetraMultiVector_Type;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;TpetraMultiVector_Type&gt; TpetraMultiVectorPtr_Type;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const TpetraMultiVector_Type&gt; TpetraMultiVectorConstPtr_Type;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">typedef</span> <span class="keyword">const</span> TpetraMultiVectorConstPtr_Type TpetraMultiVectorConstPtrConst_Type;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">typedef</span> Tpetra::Import&lt;LO,GO,NO&gt; TpetraImport_Type;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;TpetraImport_Type&gt; TpetraImportPtr_Type;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">typedef</span> Tpetra::Export&lt;LO,GO,NO&gt; TpetraExport_Type;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;TpetraExport_Type&gt; TpetraExportPtr_Type;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    MultiVector();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#ad230b8fcfecbbfd9dfbd0b9d929cb013">  105</a></span>    <a class="code hl_function" href="classFEDD_1_1MultiVector.html#ad230b8fcfecbbfd9dfbd0b9d929cb013">MultiVector</a>( MapConstPtr_Type map, UN nmbVectors=1 );</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span></div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a74b763081017b98d9867a5e069a30839">  109</a></span>    MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a74b763081017b98d9867a5e069a30839">getMap</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a69f553f2314e94cc5fe96c7526296af2">  113</a></span>    MapPtr_Type <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a69f553f2314e94cc5fe96c7526296af2">getMapNonConst</a>();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a2699448caa6dba8872aca8e8dafb22b3">  109</a></span>    <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a2699448caa6dba8872aca8e8dafb22b3">MultiVector</a>( TpetraMultiVectorPtr_Type&amp; TpetraMVPtrIn );</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a53c267add0e1f3b90b696f653db672c2">  113</a></span>    <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a53c267add0e1f3b90b696f653db672c2">MultiVector</a>( MultiVectorConstPtr_Type mvIn );</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span></div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a7e93601bc8410a0a4a8cbee997e24050">  117</a></span>    TpetraMapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a7e93601bc8410a0a4a8cbee997e24050">getMapTpetra</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span></div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a898f91848ee7a237d4691818ed3f8b03">  125</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a898f91848ee7a237d4691818ed3f8b03">replaceGlobalValue</a> (GO globalRow, UN vectorIndex, <span class="keyword">const</span> SC &amp;value);</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span></div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a0c4f103d9b266f06c0800b5de0ff8954">  132</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a0c4f103d9b266f06c0800b5de0ff8954">replaceLocalValue</a> (LO localRow, UN vectorIndex, <span class="keyword">const</span> SC &amp;value);</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span></div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a8b6e3c804e9f8bedbb3339f2b762b53a">  144</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a8b6e3c804e9f8bedbb3339f2b762b53a">sumIntoGlobalValue</a> (GO globalRow, UN vectorIndex, <span class="keyword">const</span> SC &amp;value);</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    LO getLocalLength() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span></div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a31139344af1f6e205b99378a9b3b56a6">  151</a></span>    Teuchos::ArrayRCP&lt; const SC &gt;  <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a31139344af1f6e205b99378a9b3b56a6">getData</a>(UN i) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span></div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a44fd4131c2363d1e9381a922c89aaad7">  156</a></span>    Teuchos::ArrayRCP&lt; SC &gt; <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a44fd4131c2363d1e9381a922c89aaad7">getDataNonConst</a>(UN i) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#ab82c4e052062ac4693eab539549d1c4d">  159</a></span>    UN <a class="code hl_function" href="classFEDD_1_1MultiVector.html#ab82c4e052062ac4693eab539549d1c4d">getNumVectors</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span></div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#ae7016d4462351c4734003f47994a4f9f">  162</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#ae7016d4462351c4734003f47994a4f9f">print</a>(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    TpetraMultiVectorConstPtr_Type getTpetraMultiVector() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    TpetraMultiVectorPtr_Type getTpetraMultiVectorNonConst();</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    Teuchos::RCP&lt; Thyra::MultiVectorBase&lt;SC&gt; &gt; getThyraMultiVector( );</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    Teuchos::RCP&lt;const Thyra::MultiVectorBase&lt;SC&gt; &gt; getThyraMultiVectorConst( ) <span class="keyword">const</span>; </div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordtype">void</span> fromThyraMultiVector( Teuchos::RCP&lt; Thyra::MultiVectorBase&lt;SC&gt; &gt; thyraMV); </div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordtype">void</span> norm2(<span class="keyword">const</span> Teuchos::ArrayView&lt;<span class="keyword">typename</span> Teuchos::ScalarTraits&lt;SC&gt;::magnitudeType&gt; &amp;norms) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordtype">void</span> normInf(<span class="keyword">const</span> Teuchos::ArrayView&lt;<span class="keyword">typename</span> Teuchos::ScalarTraits&lt;SC&gt;::magnitudeType&gt; &amp;norms) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordtype">void</span> dot(MultiVectorConstPtr_Type a, <span class="keyword">const</span> Teuchos::ArrayView&lt;<span class="keyword">typename</span> Teuchos::ScalarTraits&lt;SC&gt;::magnitudeType&gt; &amp;dots) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="comment">// Calculate absolute value of Multivector</span></div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordtype">void</span> abs(MultiVectorConstPtr_Type a);</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="comment">//this = alpha*A + beta*this</span></div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordtype">void</span> update( <span class="keyword">const</span> SC&amp; alpha, <span class="keyword">const</span> MultiVector_Type&amp; A, <span class="keyword">const</span> SC&amp; beta );</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="comment">//this = alpha*A + beta*B + gamma*this</span></div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordtype">void</span> update( <span class="keyword">const</span> SC&amp; alpha, <span class="keyword">const</span> MultiVector_Type&amp; A, <span class="keyword">const</span> SC&amp; beta , <span class="keyword">const</span> MultiVector_Type&amp; B, <span class="keyword">const</span> SC&amp; gamma);</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="comment">// Matrix-matrix multiplication: this = beta*this + alpha*op(A)*op(B).</span></div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordtype">void</span> multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, <span class="keyword">const</span> SC &amp;alpha, MultiVectorConstPtr_Type &amp;A, MultiVectorConstPtr_Type &amp;B, <span class="keyword">const</span> SC &amp;beta);</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">void</span> multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, <span class="keyword">const</span> SC &amp;alpha, BlockMultiVectorConstPtr_Type &amp;A, BlockMultiVectorConstPtr_Type &amp;B, <span class="keyword">const</span> SC &amp;beta);</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    </div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordtype">void</span> putScalar( <span class="keyword">const</span> SC&amp; alpha );</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">void</span> scale( <span class="keyword">const</span> SC&amp; alpha );</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordtype">void</span> importFromVector( MultiVectorConstPtr_Type mvIn, <span class="keywordtype">bool</span> reuseImport = <span class="keyword">false</span>, std::string combineMode = <span class="stringliteral">&quot;Insert&quot;</span>, std::string type=<span class="stringliteral">&quot;Forward&quot;</span> );</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    </div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordtype">void</span> exportFromVector( MultiVectorConstPtr_Type mvIn, <span class="keywordtype">bool</span> reuseExport = <span class="keyword">false</span>, std::string combineMode = <span class="stringliteral">&quot;Insert&quot;</span>, std::string type=<span class="stringliteral">&quot;Forward&quot;</span> );</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    </div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordtype">void</span> writeMM(std::string fileName=<span class="stringliteral">&quot;mv.mm&quot;</span>) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordtype">void</span> readMM(std::string fileName) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    MultiVectorConstPtr_Type getVector( <span class="keywordtype">int</span> i ) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    MultiVectorPtr_Type sumColumns() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    SC getMax() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    </div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    TpetraMultiVectorPtr_Type multiVector_;</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    MapConstPtr_Type map_;</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    TpetraImportPtr_Type importer_;</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    TpetraExportPtr_Type exporter_;</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>};</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a9446bc749df2f0f0484d68c5fae8a719">  116</a></span>    <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a9446bc749df2f0f0484d68c5fae8a719">~MultiVector</a>();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span></div>
+<div class="foldopen" id="foldopen00124" data-start="{" data-end="}">
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a8503f858dff173f63f2701e3aefb9ea1">  124</a></span>    MultiVector_Type&amp; <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a8503f858dff173f63f2701e3aefb9ea1">operator= </a>(<span class="keyword">const</span> MultiVector_Type&amp; rhs) {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        Tpetra::deep_copy&lt;SC,LO,GO,NO&gt;(*multiVector_,*rhs.getTpetraMultiVector()); <span class="comment">// (destination, source)</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
 </div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>}</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a4eead56562530b5f87b1d48466ca3b29">  130</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a4eead56562530b5f87b1d48466ca3b29">is_null</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a74b763081017b98d9867a5e069a30839">  134</a></span>    MapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a74b763081017b98d9867a5e069a30839">getMap</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a69f553f2314e94cc5fe96c7526296af2">  138</a></span>    MapPtr_Type <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a69f553f2314e94cc5fe96c7526296af2">getMapNonConst</a>();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a7e93601bc8410a0a4a8cbee997e24050">  142</a></span>    TpetraMapConstPtr_Type <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a7e93601bc8410a0a4a8cbee997e24050">getMapTpetra</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a898f91848ee7a237d4691818ed3f8b03">  150</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a898f91848ee7a237d4691818ed3f8b03">replaceGlobalValue</a> (GO globalRow, UN vectorIndex, <span class="keyword">const</span> SC &amp;value);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a0c4f103d9b266f06c0800b5de0ff8954">  157</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a0c4f103d9b266f06c0800b5de0ff8954">replaceLocalValue</a> (LO localRow, UN vectorIndex, <span class="keyword">const</span> SC &amp;value);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a8b6e3c804e9f8bedbb3339f2b762b53a">  169</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a8b6e3c804e9f8bedbb3339f2b762b53a">sumIntoGlobalValue</a> (GO globalRow, UN vectorIndex, <span class="keyword">const</span> SC &amp;value);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    LO getLocalLength() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a31139344af1f6e205b99378a9b3b56a6">  176</a></span>    Teuchos::ArrayRCP&lt; const SC &gt;  <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a31139344af1f6e205b99378a9b3b56a6">getData</a>(UN i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#a44fd4131c2363d1e9381a922c89aaad7">  181</a></span>    Teuchos::ArrayRCP&lt; SC &gt; <a class="code hl_function" href="classFEDD_1_1MultiVector.html#a44fd4131c2363d1e9381a922c89aaad7">getDataNonConst</a>(UN i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#ab82c4e052062ac4693eab539549d1c4d">  184</a></span>    UN <a class="code hl_function" href="classFEDD_1_1MultiVector.html#ab82c4e052062ac4693eab539549d1c4d">getNumVectors</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span></div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="classFEDD_1_1MultiVector.html#ae7016d4462351c4734003f47994a4f9f">  187</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1MultiVector.html#ae7016d4462351c4734003f47994a4f9f">print</a>(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    TpetraMultiVectorConstPtr_Type getTpetraMultiVector() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    TpetraMultiVectorPtr_Type getTpetraMultiVectorNonConst();</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="preprocessor">#if __cplusplus &gt;= 202002L </span><span class="comment">// &gt;= C++20</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    Teuchos::RCP&lt; Thyra::MultiVectorBase&lt;SC&gt; &gt; getThyraMultiVector( ) <span class="keyword">requires</span> std::same_as&lt;SC,<span class="keywordtype">double</span>&gt;;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    Teuchos::RCP&lt;const Thyra::MultiVectorBase&lt;SC&gt; &gt; getThyraMultiVectorConst( ) const requires std::same_as&lt;SC,<span class="keywordtype">double</span>&gt;;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="preprocessor">#else </span><span class="comment">// &lt;= C++17</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> SCALAR = SC, <span class="keyword">typename</span> = std::enable_if_t&lt;std::is_same_v&lt;SCALAR,<span class="keywordtype">double</span>&gt;&gt;&gt;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    Teuchos::RCP&lt; Thyra::MultiVectorBase&lt;SCALAR&gt; &gt; getThyraMultiVector( );</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> SCALAR = SC, <span class="keyword">typename</span> = std::enable_if_t&lt;std::is_same_v&lt;SCALAR,<span class="keywordtype">double</span>&gt;&gt;&gt;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    Teuchos::RCP&lt;const Thyra::MultiVectorBase&lt;SCALAR&gt; &gt; getThyraMultiVectorConst( ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordtype">void</span> fromThyraMultiVector( Teuchos::RCP&lt; Thyra::MultiVectorBase&lt;SC&gt; &gt; thyraMV); </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordtype">void</span> norm2(<span class="keyword">const</span> Teuchos::ArrayView&lt;<span class="keyword">typename</span> Teuchos::ScalarTraits&lt;SC&gt;::magnitudeType&gt; &amp;norms) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordtype">void</span> normInf(<span class="keyword">const</span> Teuchos::ArrayView&lt;<span class="keyword">typename</span> Teuchos::ScalarTraits&lt;SC&gt;::magnitudeType&gt; &amp;norms) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordtype">void</span> dot(MultiVectorConstPtr_Type a, <span class="keyword">const</span> Teuchos::ArrayView&lt;<span class="keyword">typename</span> Teuchos::ScalarTraits&lt;SC&gt;::magnitudeType&gt; &amp;dots) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="comment">// Calculate absolute value of Multivector</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordtype">void</span> abs(MultiVectorConstPtr_Type a);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="comment">//this = alpha*A + beta*this</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">void</span> update( <span class="keyword">const</span> SC&amp; alpha, <span class="keyword">const</span> MultiVector_Type&amp; A, <span class="keyword">const</span> SC&amp; beta );</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="comment">//this = alpha*A + beta*B + gamma*this</span></div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordtype">void</span> update( <span class="keyword">const</span> SC&amp; alpha, <span class="keyword">const</span> MultiVector_Type&amp; A, <span class="keyword">const</span> SC&amp; beta , <span class="keyword">const</span> MultiVector_Type&amp; B, <span class="keyword">const</span> SC&amp; gamma);</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="comment">// Matrix-matrix multiplication: this = beta*this + alpha*op(A)*op(B).</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordtype">void</span> multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, <span class="keyword">const</span> SC &amp;alpha, MultiVectorConstPtr_Type &amp;A, MultiVectorConstPtr_Type &amp;B, <span class="keyword">const</span> SC &amp;beta);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span><span class="preprocessor">#if __cplusplus &gt;= 202002L </span><span class="comment">// &gt;= C++20</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordtype">void</span> multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, <span class="keyword">const</span> SC &amp;alpha, BlockMultiVectorConstPtr_Type &amp;A, BlockMultiVectorConstPtr_Type &amp;B, <span class="keyword">const</span> SC &amp;beta) <span class="keyword">requires</span> std::same_as&lt;SC,double&gt;;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span><span class="preprocessor">#else </span><span class="comment">// &lt;= C++17</span></div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> SCALAR = SC, <span class="keyword">typename</span> = std::enable_if_t&lt;std::is_same_v&lt;SCALAR,<span class="keywordtype">double</span>&gt;&gt;&gt;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordtype">void</span> multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, <span class="keyword">const</span> SCALAR &amp;alpha, BlockMultiVectorConstPtr_Type &amp;A, BlockMultiVectorConstPtr_Type &amp;B, <span class="keyword">const</span> SCALAR &amp;beta);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keywordtype">void</span> putScalar( <span class="keyword">const</span> SC&amp; alpha );</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keywordtype">void</span> scale( <span class="keyword">const</span> SC&amp; alpha );</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordtype">void</span> importFromVector( MultiVectorConstPtr_Type mvIn, <span class="keywordtype">bool</span> reuseImport = <span class="keyword">false</span>, std::string combineMode = <span class="stringliteral">&quot;Insert&quot;</span>, std::string type=<span class="stringliteral">&quot;Forward&quot;</span> );</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    </div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keywordtype">void</span> exportFromVector( MultiVectorConstPtr_Type mvIn, <span class="keywordtype">bool</span> reuseExport = <span class="keyword">false</span>, std::string combineMode = <span class="stringliteral">&quot;Insert&quot;</span>, std::string type=<span class="stringliteral">&quot;Forward&quot;</span> );</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordtype">void</span> writeMM(std::string fileName=<span class="stringliteral">&quot;mv.mm&quot;</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordtype">void</span> readMM(std::string fileName) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    </div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    MultiVectorConstPtr_Type getVector( <span class="keywordtype">int</span> i ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    MultiVectorPtr_Type sumColumns() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    </div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    SC getMax() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    TpetraMultiVectorPtr_Type multiVector_;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    MapConstPtr_Type map_;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    TpetraImportPtr_Type importer_;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    TpetraExportPtr_Type exporter_;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>};</div>
+</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>}</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassFEDD_1_1BlockMultiVector_html"><div class="ttname"><a href="classFEDD_1_1BlockMultiVector.html">FEDD::BlockMultiVector</a></div><div class="ttdef"><b>Definition</b> BlockMultiVector_decl.hpp:25</div></div>
 <div class="ttc" id="aclassFEDD_1_1Map_html"><div class="ttname"><a href="classFEDD_1_1Map.html">FEDD::Map</a></div><div class="ttdef"><b>Definition</b> Map_decl.hpp:30</div></div>
 <div class="ttc" id="aclassFEDD_1_1MultiVector_html_a0c4f103d9b266f06c0800b5de0ff8954"><div class="ttname"><a href="classFEDD_1_1MultiVector.html#a0c4f103d9b266f06c0800b5de0ff8954">FEDD::MultiVector::replaceLocalValue</a></div><div class="ttdeci">void replaceLocalValue(LO localRow, UN vectorIndex, const SC &amp;value)</div><div class="ttdef"><b>Definition</b> MultiVector_def.hpp:99</div></div>
@@ -277,7 +315,7 @@ $(function(){initNavTree('MultiVector__decl_8hpp_source.html',''); initResizable
 <div class="ttc" id="aclassFEDD_1_1MultiVector_html_a69f553f2314e94cc5fe96c7526296af2"><div class="ttname"><a href="classFEDD_1_1MultiVector.html#a69f553f2314e94cc5fe96c7526296af2">FEDD::MultiVector::getMapNonConst</a></div><div class="ttdeci">MapPtr_Type getMapNonConst()</div><div class="ttdoc">Return non constant version of underlying map.</div><div class="ttdef"><b>Definition</b> MultiVector_def.hpp:76</div></div>
 <div class="ttc" id="aclassFEDD_1_1MultiVector_html_a74b763081017b98d9867a5e069a30839"><div class="ttname"><a href="classFEDD_1_1MultiVector.html#a74b763081017b98d9867a5e069a30839">FEDD::MultiVector::getMap</a></div><div class="ttdeci">MapConstPtr_Type getMap() const</div><div class="ttdoc">Return underlying map.</div><div class="ttdef"><b>Definition</b> MultiVector_def.hpp:71</div></div>
 <div class="ttc" id="aclassFEDD_1_1MultiVector_html_a7e93601bc8410a0a4a8cbee997e24050"><div class="ttname"><a href="classFEDD_1_1MultiVector.html#a7e93601bc8410a0a4a8cbee997e24050">FEDD::MultiVector::getMapTpetra</a></div><div class="ttdeci">TpetraMapConstPtr_Type getMapTpetra() const</div><div class="ttdoc">Return direct tpetra map of underlying map.</div><div class="ttdef"><b>Definition</b> MultiVector_def.hpp:81</div></div>
-<div class="ttc" id="aclassFEDD_1_1MultiVector_html_a8503f858dff173f63f2701e3aefb9ea1"><div class="ttname"><a href="classFEDD_1_1MultiVector.html#a8503f858dff173f63f2701e3aefb9ea1">FEDD::MultiVector::operator=</a></div><div class="ttdeci">MultiVector_Type &amp; operator=(const MultiVector_Type &amp;rhs)</div><div class="ttdoc">Copy assignment operator. This does a deep copy of the rhs into *this. The Xpetra::MultiVector copy a...</div><div class="ttdef"><b>Definition</b> MultiVector_decl.hpp:99</div></div>
+<div class="ttc" id="aclassFEDD_1_1MultiVector_html_a8503f858dff173f63f2701e3aefb9ea1"><div class="ttname"><a href="classFEDD_1_1MultiVector.html#a8503f858dff173f63f2701e3aefb9ea1">FEDD::MultiVector::operator=</a></div><div class="ttdeci">MultiVector_Type &amp; operator=(const MultiVector_Type &amp;rhs)</div><div class="ttdoc">Copy assignment operator. This does a deep copy of the rhs into *this. The Xpetra::MultiVector copy a...</div><div class="ttdef"><b>Definition</b> MultiVector_decl.hpp:124</div></div>
 <div class="ttc" id="aclassFEDD_1_1MultiVector_html_a898f91848ee7a237d4691818ed3f8b03"><div class="ttname"><a href="classFEDD_1_1MultiVector.html#a898f91848ee7a237d4691818ed3f8b03">FEDD::MultiVector::replaceGlobalValue</a></div><div class="ttdeci">void replaceGlobalValue(GO globalRow, UN vectorIndex, const SC &amp;value)</div><div class="ttdoc">Replace global value in mv.</div><div class="ttdef"><b>Definition</b> MultiVector_def.hpp:94</div></div>
 <div class="ttc" id="aclassFEDD_1_1MultiVector_html_a8b6e3c804e9f8bedbb3339f2b762b53a"><div class="ttname"><a href="classFEDD_1_1MultiVector.html#a8b6e3c804e9f8bedbb3339f2b762b53a">FEDD::MultiVector::sumIntoGlobalValue</a></div><div class="ttdeci">void sumIntoGlobalValue(GO globalRow, UN vectorIndex, const SC &amp;value)</div><div class="ttdoc">Update (+=) a value in host memory, using global row index.</div><div class="ttdef"><b>Definition</b> MultiVector_def.hpp:104</div></div>
 <div class="ttc" id="aclassFEDD_1_1MultiVector_html_a9446bc749df2f0f0484d68c5fae8a719"><div class="ttname"><a href="classFEDD_1_1MultiVector.html#a9446bc749df2f0f0484d68c5fae8a719">FEDD::MultiVector::~MultiVector</a></div><div class="ttdeci">~MultiVector()</div><div class="ttdoc">Destructor.</div><div class="ttdef"><b>Definition</b> MultiVector_def.hpp:66</div></div>

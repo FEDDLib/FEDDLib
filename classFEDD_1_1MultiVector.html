@@ -242,12 +242,14 @@ TpetraMultiVectorConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom
 <tr class="memitem:a7c28ce52f1b5d194241337667c2fcd95" id="r_a7c28ce52f1b5d194241337667c2fcd95"><td class="memItemLeft" align="right" valign="top"><a id="a7c28ce52f1b5d194241337667c2fcd95" name="a7c28ce52f1b5d194241337667c2fcd95"></a>
 TpetraMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>getTpetraMultiVectorNonConst</b> ()</td></tr>
 <tr class="separator:a7c28ce52f1b5d194241337667c2fcd95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49918727ed6c5aae5fc4f6c6de02d1fb" id="r_a49918727ed6c5aae5fc4f6c6de02d1fb"><td class="memItemLeft" align="right" valign="top"><a id="a49918727ed6c5aae5fc4f6c6de02d1fb" name="a49918727ed6c5aae5fc4f6c6de02d1fb"></a>
-Teuchos::RCP&lt; Thyra::MultiVectorBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getThyraMultiVector</b> ()</td></tr>
-<tr class="separator:a49918727ed6c5aae5fc4f6c6de02d1fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a765eb3cfe7bb5c1a1f52df67cfd898e2" id="r_a765eb3cfe7bb5c1a1f52df67cfd898e2"><td class="memItemLeft" align="right" valign="top"><a id="a765eb3cfe7bb5c1a1f52df67cfd898e2" name="a765eb3cfe7bb5c1a1f52df67cfd898e2"></a>
-Teuchos::RCP&lt; const Thyra::MultiVectorBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getThyraMultiVectorConst</b> () const</td></tr>
-<tr class="separator:a765eb3cfe7bb5c1a1f52df67cfd898e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8adaebfb1d1e49f722088f19d837baa9" id="r_a8adaebfb1d1e49f722088f19d837baa9"><td class="memTemplParams" colspan="2"><a id="a8adaebfb1d1e49f722088f19d837baa9" name="a8adaebfb1d1e49f722088f19d837baa9"></a>
+template&lt;typename SCALAR = SC, typename = std::enable_if_t&lt;std::is_same_v&lt;SCALAR,double&gt;&gt;&gt; </td></tr>
+<tr class="memitem:a8adaebfb1d1e49f722088f19d837baa9"><td class="memTemplItemLeft" align="right" valign="top">Teuchos::RCP&lt; Thyra::MultiVectorBase&lt; SCALAR &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getThyraMultiVector</b> ()</td></tr>
+<tr class="separator:a8adaebfb1d1e49f722088f19d837baa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78b58dfa58dc124970c17205d9985902" id="r_a78b58dfa58dc124970c17205d9985902"><td class="memTemplParams" colspan="2"><a id="a78b58dfa58dc124970c17205d9985902" name="a78b58dfa58dc124970c17205d9985902"></a>
+template&lt;typename SCALAR = SC, typename = std::enable_if_t&lt;std::is_same_v&lt;SCALAR,double&gt;&gt;&gt; </td></tr>
+<tr class="memitem:a78b58dfa58dc124970c17205d9985902"><td class="memTemplItemLeft" align="right" valign="top">Teuchos::RCP&lt; const Thyra::MultiVectorBase&lt; SCALAR &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>getThyraMultiVectorConst</b> () const</td></tr>
+<tr class="separator:a78b58dfa58dc124970c17205d9985902"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a650649623c06a2f7867bd77b8c7222b8" id="r_a650649623c06a2f7867bd77b8c7222b8"><td class="memItemLeft" align="right" valign="top"><a id="a650649623c06a2f7867bd77b8c7222b8" name="a650649623c06a2f7867bd77b8c7222b8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>fromThyraMultiVector</b> (Teuchos::RCP&lt; Thyra::MultiVectorBase&lt; SC &gt; &gt; thyraMV)</td></tr>
 <tr class="separator:a650649623c06a2f7867bd77b8c7222b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -272,9 +274,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (const SC 
 <tr class="memitem:a43a5c81720ed2ceffb89560fb6470892" id="r_a43a5c81720ed2ceffb89560fb6470892"><td class="memItemLeft" align="right" valign="top"><a id="a43a5c81720ed2ceffb89560fb6470892" name="a43a5c81720ed2ceffb89560fb6470892"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>multiply</b> (Teuchos::ETransp transA, Teuchos::ETransp transB, const SC &amp;alpha, MultiVectorConstPtr_Type &amp;A, MultiVectorConstPtr_Type &amp;B, const SC &amp;beta)</td></tr>
 <tr class="separator:a43a5c81720ed2ceffb89560fb6470892"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6497bfd8d497fb33db58668d6f5c724b" id="r_a6497bfd8d497fb33db58668d6f5c724b"><td class="memItemLeft" align="right" valign="top"><a id="a6497bfd8d497fb33db58668d6f5c724b" name="a6497bfd8d497fb33db58668d6f5c724b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>multiply</b> (Teuchos::ETransp transA, Teuchos::ETransp transB, const SC &amp;alpha, BlockMultiVectorConstPtr_Type &amp;A, BlockMultiVectorConstPtr_Type &amp;B, const SC &amp;beta)</td></tr>
-<tr class="separator:a6497bfd8d497fb33db58668d6f5c724b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a404cb7fc2f31467baed11544eb90f3d5" id="r_a404cb7fc2f31467baed11544eb90f3d5"><td class="memTemplParams" colspan="2"><a id="a404cb7fc2f31467baed11544eb90f3d5" name="a404cb7fc2f31467baed11544eb90f3d5"></a>
+template&lt;typename SCALAR = SC, typename = std::enable_if_t&lt;std::is_same_v&lt;SCALAR,double&gt;&gt;&gt; </td></tr>
+<tr class="memitem:a404cb7fc2f31467baed11544eb90f3d5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>multiply</b> (Teuchos::ETransp transA, Teuchos::ETransp transB, const SCALAR &amp;alpha, BlockMultiVectorConstPtr_Type &amp;A, BlockMultiVectorConstPtr_Type &amp;B, const SCALAR &amp;beta)</td></tr>
+<tr class="separator:a404cb7fc2f31467baed11544eb90f3d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2c034b1f6d87f6806436551b469ab99" id="r_ae2c034b1f6d87f6806436551b469ab99"><td class="memItemLeft" align="right" valign="top"><a id="ae2c034b1f6d87f6806436551b469ab99" name="ae2c034b1f6d87f6806436551b469ab99"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>putScalar</b> (const SC &amp;alpha)</td></tr>
 <tr class="separator:ae2c034b1f6d87f6806436551b469ab99"><td class="memSeparator" colspan="2">&#160;</td></tr>
