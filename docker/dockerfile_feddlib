@@ -1,0 +1,64 @@
+# @maintainer: Update Trilinos commit ID under "Install Trilinos" below. Ideally, this should coincide with the selected commit in the Trilinos submodule of the FEDDLib (https://github.com/FEDDLib/FEDDLib).
+
+# https://hub.docker.com/_/ubuntu/tags?name=latest
+# Delete image: "docker image rm ubuntu:latest"
+FROM ubuntu:latest AS base
+
+SHELL ["/bin/bash", "-c"]
+
+# Update Ubuntu
+RUN apt update
+RUN apt -y upgrade
+
+# Install basic packages
+RUN apt -y install less nano git lbzip2 xz-utils
+# lbzip2, xzutils: Without these, spack failed with an error installing Boost and HDF5.
+# I replaced the Spack installation of HDF5 with the apt installation. But since xz-utils is required to extract xz files, I leave this here.
+
+# Install build tools
+RUN apt -y install gcc g++ gfortran libc6-dev make cmake openmpi-bin libopenmpi-dev
+# MPI will complain about root user. We can ignore this in the Docker container.
+ENV OMPI_ALLOW_RUN_AS_ROOT=1
+ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+
+# Install Spack
+# Suppress interactive configuration prompts during python3 installation.
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt install -y python3
+RUN git clone --depth=2 https://github.com/spack/spack.git ~/opt/spack
+# Add spack to environment paths of container (while building the image, we still have to add spack to PATH every time we execute a RUN statement).
+RUN echo -e "\nsource ~/opt/spack/share/spack/setup-env.sh\n" >> ~/.bashrc
+
+# Install TPLs
+RUN apt -y install libhdf5-openmpi-dev
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack compiler find"
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack compiler list"
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack external find cmake"
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack external find openmpi"
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack install boost"
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack install openblas"
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack install metis@5.1.0"
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack install parmetis@4.0.3"
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack install suite-sparse"
+RUN echo -e "spack load openmpi boost openblas metis parmetis suite-sparse" >> ~/.bashrc
+# Spack populates $PKG_CONFIG_PATH and $CMAKE_PREFIX_PATH. This can then be used by CMake to find the library paths automatically.
+
+# Install Trilinos
+RUN mkdir -p ~/opt/trilinos/build
+RUN mkdir -p ~/opt/trilinos/install
+COPY ./config-trilinos.sh /root/opt/trilinos/config-trilinos.sh
+RUN git clone https://github.com/trilinos/Trilinos.git ~/opt/trilinos/src
+RUN /bin/bash -l -c "cd ~/opt/trilinos/src && git checkout 7aeedcc"
+# Build, install, and remove build in same RUN command to avoid increasing the image size by the build folder size.
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack load openmpi boost openblas metis parmetis suite-sparse && cd ~/opt/trilinos/build && ../config-trilinos.sh && make -j2 && make install && cd .. && rm -rf build"
+
+# Install FEDDLib
+# Trilinos installs the libraries to install/lib or install/lib64. I don't know which folder is used when. Both contain 64 bit libraries. Currently, in this Ubuntu image, a lib folder is created. If the FEDDLib cannot find Trilinos libraries, check whether this has changed.
+RUN mkdir -p ~/dev/feddlib/build
+COPY ./config-feddlib.sh /root/dev/feddlib/config-feddlib.sh
+RUN git clone https://github.com/FEDDLib/FEDDLib.git ~/dev/feddlib/src
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack load openmpi boost openblas metis parmetis suite-sparse && cd ~/dev/feddlib/build && ../config-feddlib.sh && make -j2"
+
+# Test FEDDLib
+RUN /bin/bash -l -c "cd ~/dev/feddlib/build && ctest"
+RUN /bin/bash -l -c "source ~/opt/spack/share/spack/setup-env.sh && spack load openmpi && cd ~/dev/feddlib/build/feddlib/problems/examples/steadyNavierStokes && mpirun -np 2 ./problems_steadyNavierStokes.exe"
