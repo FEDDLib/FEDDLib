@@ -15,9 +15,7 @@
 #include <limits>
 #include <chrono> 
 
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "feddlib/core/core_config.h"
-#include "feddlib/core/General/SmallMatrix.hpp"
+#include <boost/function.hpp>
 
 #include <Teuchos_RCPDecl.hpp>
 #include <Teuchos_RCPBoostSharedPtrConversions.hpp>
@@ -26,7 +24,17 @@
 #include <Teuchos_TimeMonitor.hpp>
 #include <Teuchos_CommandLineProcessor.hpp>
 
-#include <boost/function.hpp>
+#include <Thyra_LinearOpBase_decl.hpp>
+#include <Thyra_VectorSpaceBase_decl.hpp>
+#include <Thyra_VectorBase.hpp>
+
+#include <Tpetra_CrsMatrix.hpp>
+#include <Tpetra_Operator.hpp>
+
+#include "feddlib/core/core_config.h"
+#include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include "feddlib/core/General/SmallMatrix.hpp"
+
 namespace FEDD {
 //    template<class SC, class LO, class GO, class NO>
 //    class InterfaceEntity;
@@ -127,7 +135,20 @@ typedef boost::function<double(double* x, int* parameters)>                     
 typedef boost::function<double(double* x, double* parameters)>                          CoeffFuncDbl_Type;
 typedef boost::function<void(double* x, double* res, double* parameters)>               RhsFunc_Type;
 typedef boost::function<void(double* x, double* res, double t, double* parameters)>     GeneralFunc_Type;        
-typedef boost::function<void(double* x, double* res)>     								Func_Type;          
-    
+typedef boost::function<void(double* x, double* res)>                                   Func_Type;
+
+template <typename SC>
+struct ThyraTypedefs {
+using ThyraOp_Type = Thyra::LinearOpBase<SC>;
+using ThyraVecSpace_Type = Thyra::VectorSpaceBase<SC>;
+using ThyraVec_Type = Thyra::VectorBase<SC>;
+};
+
+template <typename SC, typename LO, typename GO, typename NO>
+struct TpetraTypedefs {
+using TpetraMatrix_Type = Tpetra::CrsMatrix<SC, LO, GO, NO>;
+using TpetraOp_Type = Tpetra::Operator<SC, LO, GO, NO>;
+};
+
 }
 #endif

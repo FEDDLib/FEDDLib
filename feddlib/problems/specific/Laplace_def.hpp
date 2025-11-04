@@ -1,6 +1,6 @@
 #ifndef LAPLACE_def_hpp
 #define LAPLACE_def_hpp
-#include "Laplace_decl.hpp"
+
 /*!
  Definition of Laplace
  
@@ -9,6 +9,9 @@
  @version 1.0
  @copyright CH
  */
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/FE/FE.hpp"
 
 namespace FEDD {
 

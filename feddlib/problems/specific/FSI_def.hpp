@@ -1,6 +1,18 @@
 #ifndef FSI_def_hpp
 #define FSI_def_hpp
-#include "FSI_decl.hpp"
+
+#include "feddlib/problems/abstract/TimeProblem.hpp"
+#include "feddlib/problems/specific/NavierStokes.hpp"
+#include "feddlib/problems/specific/LinElas.hpp"
+#include "feddlib/problems/specific/NonLinElasticity.hpp"
+#include "feddlib/problems/specific/Geometry.hpp"
+#include "feddlib/core/Mesh/MeshUnstructured.hpp"
+#include "feddlib/core/General/ExporterParaView.hpp"
+#include "feddlib//core/FE/FE.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
+
+
+// TODO: [JK] Why are all these functions in the global namespace?
 
 double OneFunc(double* x, int* parameter)
 {

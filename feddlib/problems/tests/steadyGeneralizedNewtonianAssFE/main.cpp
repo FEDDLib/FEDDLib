@@ -9,7 +9,6 @@
 #include <Tpetra_Core.hpp>
 
 #include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
 
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/FE/Domain.hpp"
@@ -18,6 +17,7 @@
 
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokesAssFE.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
 
 
 #include <boost/function.hpp>

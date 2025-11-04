@@ -3,8 +3,8 @@
 
 #include "NavierStokesAssFE_decl.hpp"
 
-// #ifndef HAVE_EXPLICIT_INSTANTIATION
-// #include "NavierStokes_def.hpp"
-// #endif
+#ifndef HAVE_EXPLICIT_INSTANTIATION
+    #include "NavierStokesAssFE_def.hpp"
+#endif
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef LinearSolver_DEF_hpp
 #define LinearSolver_DEF_hpp
-#include "LinearSolver_decl.hpp"
+
+#include "feddlib/problems/abstract/TimeProblem.hpp"
+#include "feddlib/problems/Solver/Preconditioner.hpp"
+#include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
+
 /*!
  Definition of LinearSolver
 

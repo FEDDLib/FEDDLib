@@ -1,8 +1,6 @@
 #ifndef AssembleFEGeneralizedNewtonian_DEF_hpp
 #define AssembleFEGeneralizedNewtonian_DEF_hpp
 
-#include "AssembleFENavierStokes_decl.hpp"
-
 namespace FEDD
 {
     // All important things are so far defined in AssembleFENavierStokes. Please check there.

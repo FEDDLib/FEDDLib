@@ -1,15 +1,16 @@
 #ifndef AABBTree_decl_hpp
 #define AABBTree_decl_hpp
 
+#include <list>
+#include <map>
+#include <tuple>
 
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/core/FE/Elements.hpp"
 
-#include <list>
-#include <map>
-#include <tuple>
+
 /*!
 Declaration of AABBTree
 

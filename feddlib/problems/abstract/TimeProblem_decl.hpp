@@ -3,11 +3,10 @@
 
 #include "feddlib/problems/problems_config.h"
 #include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "feddlib/problems/Solver/Preconditioner.hpp"
-#include "NonLinearProblem.hpp"
-//#include "LinearProblem.hpp"
+#include "Problem.hpp"
+
 #include <Thyra_StateFuncModelEvaluatorBase.hpp>
+
 /*!
  Declaration of TimeProblem
 
@@ -24,11 +23,10 @@
  */
 namespace FEDD {
 template<class SC_, class LO_, class GO_, class NO_>
-class NonLinearProblem;
-template<class SC_, class LO_, class GO_, class NO_>
-//class LinearProblem;
-//template<class SC_, class LO_, class GO_, class NO_>
 class Preconditioner;
+template<class SC_, class LO_, class GO_, class NO_>
+class NonLinearProblem;
+
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class TimeProblem: public Thyra::StateFuncModelEvaluatorBase<SC>  {
 
@@ -74,14 +72,16 @@ public:
 
     typedef typename Problem_Type::LinSolverBuilderPtr_Type LinSolverBuilderPtr_Type;
 
-    typedef typename NonLinProb_Type::TpetraMatrix_Type TpetraMatrix_Type;
-    
-    typedef typename NonLinProb_Type::ThyraVecSpace_Type ThyraVecSpace_Type;
-    typedef typename NonLinProb_Type::ThyraVec_Type ThyraVec_Type;
-    typedef typename NonLinProb_Type::ThyraOp_Type ThyraOp_Type;
+    using TpetraTypes = TpetraTypedefs<SC,LO,GO,NO>;
+    using TpetraMatrix_Type = typename TpetraTypes::TpetraMatrix_Type;
+    using TpetraOp_Type = typename TpetraTypes::TpetraOp_Type;
+
+    using ThyraTypes = ThyraTypedefs<SC>;
+    using ThyraVecSpace_Type = typename ThyraTypes::ThyraVecSpace_Type;
+    using ThyraVec_Type = typename ThyraTypes::ThyraVec_Type;
     typedef Thyra::BlockedLinearOpBase<SC> ThyraBlockOp_Type;
-    
-    typedef typename NonLinProb_Type::TpetraOp_Type TpetraOp_Type;
+
+    using ThyraOp_Type = typename ThyraTypes::ThyraOp_Type;    
         
     TimeProblem(Problem_Type& problem, CommConstPtr_Type comm);
     

@@ -1,8 +1,6 @@
 #ifndef ASSEMBLEFE_LAPLACE_DEF_hpp
 #define ASSEMBLEFE_LAPLACE_DEF_hpp
 
-#include "AssembleFE_Laplace_decl.hpp"
-
 namespace FEDD {
 
 

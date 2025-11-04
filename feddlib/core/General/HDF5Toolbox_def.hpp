@@ -1,8 +1,6 @@
 #ifndef HDF5TOOLBOX_DEF_hpp
 #define HDF5TOOLBOX_DEF_hpp
 
-#include "HDF5Toolbox_decl.hpp"
-
 /*
   
 

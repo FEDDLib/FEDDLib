@@ -1,4 +1,6 @@
 #include "TimeSteppingTools.hpp"
+#include "feddlib/core/General/ExporterParaView.hpp"
+
 /*!
  Definition of TimeSteppingTools
  

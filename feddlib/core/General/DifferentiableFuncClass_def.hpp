@@ -1,8 +1,6 @@
 #ifndef DIFFERENTIABLEFUNCCLASS_DEF_hpp
 #define DIFFERENTIABLEFUNCCLASS_DEF_hpp
 
-#include "DifferentiableFuncClass_decl.hpp"
-
 namespace FEDD {
 
 

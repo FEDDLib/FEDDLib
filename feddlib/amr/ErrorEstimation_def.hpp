@@ -9,8 +9,7 @@
 #define MESH_TIMER_STOP(A) A.reset();
 #endif
 
-#include "ErrorEstimation_decl.hpp"
-#include "feddlib/core/LinearAlgebra/MultiVector_def.hpp"
+#include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include <chrono> 
 /*!
  Definition of ErrorEstimation

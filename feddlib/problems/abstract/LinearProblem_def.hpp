@@ -1,6 +1,5 @@
 #ifndef LINEARPROBLEM_DEF_hpp
 #define LINEARPROBLEM_DEF_hpp
-#include "LinearProblem_decl.hpp"
 
 /*!
  Definition of LinearProblem

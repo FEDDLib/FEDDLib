@@ -1,6 +1,10 @@
 #ifndef LINELAS_def_hpp
 #define LINELAS_def_hpp
-#include "LinElas_decl.hpp"
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/FE/FE.hpp"
+
+
 namespace FEDD {
 // Funktion fuer den homogenen Dirichletrand
 // void ZeroDirichlet(double* x, double* result, double t, double* parameters)

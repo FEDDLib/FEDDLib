@@ -1,6 +1,5 @@
 #ifndef PreconditionerOperator_DEF_hpp
 #define PreconditionerOperator_DEF_hpp
-#include "PreconditionerOperator_decl.hpp"
 
 
 /*!
@@ -13,7 +12,6 @@
  */
 
 namespace FEDD {
-using namespace Thyra;
         
 // Constructors
 
@@ -48,8 +46,8 @@ void PreconditionerOperator<SC, LO, GO, NO>::beginBlockFill(
 
 template<class SC, class LO, class GO, class NO>
 void PreconditionerOperator<SC, LO, GO, NO>::beginBlockFill(
-                                                    const RCP<const ProductVectorSpaceBase<SC> > &new_productRange
-                                                    ,const RCP<const ProductVectorSpaceBase<SC> > &new_productDomain
+                                                    const Teuchos::RCP<const Thyra::ProductVectorSpaceBase<SC> > &new_productRange
+                                                    ,const Teuchos::RCP<const Thyra::ProductVectorSpaceBase<SC> > &new_productDomain
                                                     )
 {
     TEUCHOS_TEST_FOR_EXCEPTION(true,std::runtime_error,"beginBlockFill is used but not implemented!");
@@ -77,7 +75,7 @@ bool PreconditionerOperator<SC, LO, GO, NO>::acceptsBlock(
 template<class SC, class LO, class GO, class NO>
 void PreconditionerOperator<SC, LO, GO, NO>::setNonconstBlock(
                                                       const int i, const int j
-                                                      ,const RCP<LinearOpBase<SC> > &block
+                                                      ,const Teuchos::RCP<Thyra::LinearOpBase<SC> > &block
                                                       )
 {
     setBlockImpl(i, j, block);
@@ -87,7 +85,7 @@ void PreconditionerOperator<SC, LO, GO, NO>::setNonconstBlock(
 template<class SC, class LO, class GO, class NO>
 void PreconditionerOperator<SC, LO, GO, NO>::setBlock(
                                               const int i, const int j
-                                              ,const RCP<const LinearOpBase<SC> > &block
+                                              ,const Teuchos::RCP<const Thyra::LinearOpBase<SC> > &block
                                               )
 {
     setBlockImpl(i, j, block);
@@ -191,7 +189,7 @@ void PreconditionerOperator<SC, LO, GO, NO>::uninitialize()
 
 
 template<class SC, class LO, class GO, class NO>
-Teuchos::RCP<const ProductVectorSpaceBase<SC> >
+Teuchos::RCP<const Thyra::ProductVectorSpaceBase<SC> >
 PreconditionerOperator<SC, LO, GO, NO>::productRange() const
 {
     return productRange_;
@@ -199,7 +197,7 @@ PreconditionerOperator<SC, LO, GO, NO>::productRange() const
 
 
 template<class SC, class LO, class GO, class NO>
-Teuchos::RCP<const ProductVectorSpaceBase<SC> >
+Teuchos::RCP<const Thyra::ProductVectorSpaceBase<SC> >
 PreconditionerOperator<SC, LO, GO, NO>::productDomain() const
 {
     return productDomain_;
@@ -232,7 +230,7 @@ bool PreconditionerOperator<SC, LO, GO, NO>::blockIsConst(
 
 
 template<class SC, class LO, class GO, class NO>
-Teuchos::RCP<LinearOpBase<SC> >
+Teuchos::RCP<Thyra::LinearOpBase<SC> >
 PreconditionerOperator<SC, LO, GO, NO>::getNonconstBlock(const int i, const int j)
 {
 #ifdef TEUCHOS_DEBUG
@@ -245,7 +243,7 @@ PreconditionerOperator<SC, LO, GO, NO>::getNonconstBlock(const int i, const int 
 
 
 template<class SC, class LO, class GO, class NO>
-Teuchos::RCP<const LinearOpBase<SC> >
+Teuchos::RCP<const Thyra::LinearOpBase<SC> >
 PreconditionerOperator<SC, LO, GO, NO>::getBlock(const int i, const int j) const
 {
 #ifdef TEUCHOS_DEBUG
@@ -261,7 +259,7 @@ PreconditionerOperator<SC, LO, GO, NO>::getBlock(const int i, const int j) const
 
 
 template<class SC, class LO, class GO, class NO>
-Teuchos::RCP< const VectorSpaceBase<SC> >
+Teuchos::RCP< const Thyra::VectorSpaceBase<SC> >
 PreconditionerOperator<SC, LO, GO, NO>::range() const
 {
     return productRange_;
@@ -269,7 +267,7 @@ PreconditionerOperator<SC, LO, GO, NO>::range() const
 
 
 template<class SC, class LO, class GO, class NO>
-Teuchos::RCP< const VectorSpaceBase<SC> >
+Teuchos::RCP< const Thyra::VectorSpaceBase<SC> >
 PreconditionerOperator<SC, LO, GO, NO>::domain() const
 {
     return productDomain_;
@@ -277,7 +275,7 @@ PreconditionerOperator<SC, LO, GO, NO>::domain() const
 
 
 template<class SC, class LO, class GO, class NO>
-Teuchos::RCP<const LinearOpBase<SC> >
+Teuchos::RCP<const Thyra::LinearOpBase<SC> >
 PreconditionerOperator<SC, LO, GO, NO>::clone() const
 {
     return Teuchos::null; // ToDo: Implement this when needed!
@@ -311,7 +309,7 @@ void PreconditionerOperator<SC, LO, GO, NO>::describe(
     using Teuchos::FancyOStream;
     using Teuchos::OSTab;
     assertBlockFillIsActive(false);
-    RCP<FancyOStream> out = rcpFromRef(out_arg);
+    Teuchos::RCP<FancyOStream> out = rcpFromRef(out_arg);
     OSTab tab1(out);
     switch(verbLevel) {
         case Teuchos::VERB_DEFAULT:
@@ -337,7 +335,7 @@ void PreconditionerOperator<SC, LO, GO, NO>::describe(
             for( int i = 0; i < numRowBlocks_; ++i ) {
                 for( int j = 0; j < numColBlocks_; ++j ) {
                     *out << "Op["<<i<<","<<j<<"] = ";
-                    RCP<const LinearOpBase<SC> >
+                    Teuchos::RCP<const Thyra::LinearOpBase<SC> >
                     block_i_j = getBlock(i,j);
                     if(block_i_j.get())
                         *out << Teuchos::describe(*getBlock(i,j),verbLevel);
@@ -360,12 +358,12 @@ void PreconditionerOperator<SC, LO, GO, NO>::describe(
 
 
 template<class SC, class LO, class GO, class NO>
-bool PreconditionerOperator<SC, LO, GO, NO>::opSupportedImpl(EOpTransp M_trans) const
+bool PreconditionerOperator<SC, LO, GO, NO>::opSupportedImpl(Thyra::EOpTransp M_trans) const
 {
     bool supported = true;
     for( int i = 0; i < numRowBlocks_; ++i ) {
         for( int j = 0; j < numColBlocks_; ++j ) {
-            RCP<const LinearOpBase<SC> >
+            Teuchos::RCP<const Thyra::LinearOpBase<SC> >
             block_i_j = getBlock(i,j);
             if( block_i_j.get() && !Thyra::opSupported(*block_i_j,M_trans) )
                 supported = false;
@@ -441,7 +439,7 @@ void PreconditionerOperator<SC, LO, GO, NO>::assertBlockRowCol(
 
 template<class SC, class LO, class GO, class NO>
 void PreconditionerOperator<SC, LO, GO, NO>::setBlockSpaces(
-                                                    const int i, const int j, const LinearOpBase<SC> &block
+                                                    const int i, const int j, const Thyra::LinearOpBase<SC> &block
                                                     )
 {
     using Teuchos::toString;
@@ -452,7 +450,7 @@ void PreconditionerOperator<SC, LO, GO, NO>::setBlockSpaces(
     // compatible with the block that is being set.
     if( i < numRowBlocks_ && j < numColBlocks_ ) {
 #ifdef TEUCHOS_DEBUG
-        RCP<const VectorSpaceBase<SC> >
+        Teuchos::RCP<const Thyra::VectorSpaceBase<SC> >
         rangeBlock = (
                       productRange_.get()
                       ? productRange_->getBlock(i)
@@ -512,7 +510,7 @@ template<class SC, class LO, class GO, class NO>
 template<class LinearOpType>
 void PreconditionerOperator<SC, LO, GO, NO>::setBlockImpl(
                                                   const int i, const int j,
-                                                  const RCP<LinearOpType> &block
+                                                  const Teuchos::RCP<LinearOpType> &block
                                                   )
 {
     setBlockSpaces(i, j, *block);
@@ -561,12 +559,12 @@ void PreconditionerOperator<SC, LO, GO, NO>::adjustBlockSpaces()
     // Adjust blocks in the range space
     for (int i = 0; i < numRowBlocks_; ++i) {
         for (int j = 0; j < numColBlocks_; ++j) {
-            const RCP<const LinearOpBase<SC> >
+            const Teuchos::RCP<const Thyra::LinearOpBase<SC> >
             op_i_j = Ops_[numRowBlocks_*j+i];
             if (is_null(op_i_j))
                 continue;
-            const RCP<const VectorSpaceBase<SC> > range_i_j = op_i_j->range();
-            if (is_null(productVectorSpaceBase<SC>(range_i_j, false))) {
+            const Teuchos::RCP<const Thyra::VectorSpaceBase<SC> > range_i_j = op_i_j->range();
+            if (is_null(Thyra::productVectorSpaceBase<SC>(range_i_j, false))) {
                 rangeBlocks_[i] = range_i_j;
                 break;
             }
@@ -576,13 +574,13 @@ void PreconditionerOperator<SC, LO, GO, NO>::adjustBlockSpaces()
     // Adjust blocks in the domain space
     for (int j = 0; j < numColBlocks_; ++j) {
         for (int i = 0; i < numRowBlocks_; ++i) {
-            const RCP<const LinearOpBase<SC> >
+            const Teuchos::RCP<const Thyra::LinearOpBase<SC> >
             op_i_j = Ops_[numRowBlocks_*j+i];
             if (is_null(op_i_j))
                 continue;
-            const RCP<const VectorSpaceBase<SC> >
+            const Teuchos::RCP<const Thyra::VectorSpaceBase<SC> >
             domain_i_j = op_i_j->domain();
-            if (is_null(productVectorSpaceBase<SC>(domain_i_j, false))) {
+            if (is_null(Thyra::productVectorSpaceBase<SC>(domain_i_j, false))) {
                 domainBlocks_[j] = domain_i_j;
                 break;
             }

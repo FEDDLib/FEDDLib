@@ -6,8 +6,13 @@
 #define MAIN_TIMER_STOP(A) A.reset();
 #endif
 
+#include <Tpetra_Core.hpp>
+#include <Teuchos_GlobalMPISession.hpp>
+#include <boost/function.hpp>
+#include <chrono> 
+
 #include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/FE/FiniteElement.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
@@ -17,19 +22,12 @@
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/problems/specific/Laplace.hpp"
 #include "feddlib/problems/abstract/Problem.hpp"
-#include <Teuchos_GlobalMPISession.hpp>
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"
 #include "feddlib/core/Mesh/Mesh.hpp"
 #include "feddlib/core/Mesh/MeshInterface.hpp"
 #include "feddlib/core/Mesh/MeshFileReader.hpp"
 #include "feddlib/amr/AdaptiveMeshRefinement.hpp"
-#include <Tpetra_Core.hpp>
-
-
-#include <boost/function.hpp>
-#include <chrono> 
-
 
 /*!
  main of Laplace problem

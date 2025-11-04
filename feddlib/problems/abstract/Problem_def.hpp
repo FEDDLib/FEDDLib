@@ -1,6 +1,13 @@
 #ifndef PROBLEM_DEF_hpp
 #define PROBLEM_DEF_hpp
-#include "Problem_decl.hpp"
+
+#include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/FE/FE.hpp"
+#include "feddlib/problems/Solver/Preconditioner.hpp"
+#include "feddlib/problems/Solver/LinearSolver.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
+#include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"
 
 /*!
  Definition of Problem
@@ -10,10 +17,6 @@
  @copyright CH
  */
 
-using Teuchos::outArg;
-using Teuchos::REDUCE_MAX;
-using Teuchos::REDUCE_SUM;
-using Teuchos::reduceAll;
 
 namespace FEDD
 {
@@ -594,7 +597,7 @@ namespace FEDD
         {
             result += vector[i] * outputVector[i];
         }
-        reduceAll<int, double>(*comm_, REDUCE_SUM, result, outArg(result));
+        Teuchos::reduceAll<int, double>(*comm_, Teuchos::REDUCE_SUM, result, Teuchos::outArg(result));
 
         return result;
     }
@@ -616,7 +619,7 @@ namespace FEDD
         {
             result += vector[i] * outputVector[i];
         }
-        reduceAll<int, double>(*comm_, REDUCE_SUM, result, outArg(result));
+        Teuchos::reduceAll<int, double>(*comm_, Teuchos::REDUCE_SUM, result, Teuchos::outArg(result));
 
         return result;
     }

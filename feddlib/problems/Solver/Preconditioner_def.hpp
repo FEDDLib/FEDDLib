@@ -8,11 +8,24 @@
 
 #ifndef Preconditioner_DEF_hpp
 #define Preconditioner_DEF_hpp
-#include "Preconditioner_decl.hpp"
 #include <Thyra_DefaultZeroLinearOp_decl.hpp>
 #ifdef FEDD_HAVE_IFPACK2
 #include <Thyra_Ifpack2PreconditionerFactory_def.hpp>
 #endif
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
+
+#include "feddlib/problems/abstract/MinPrecProblem.hpp"
+#include "feddlib/problems/abstract/Problem.hpp"
+#include "feddlib/problems/abstract/TimeProblem.hpp"
+#include "feddlib/problems/specific/NavierStokes.hpp"
+#include "feddlib/problems/specific/NonLinElasticity.hpp"
+#include "feddlib/problems/specific/LinElas.hpp"
+#include "feddlib/problems/specific/Geometry.hpp"
+#include "feddlib/problems/specific/FSI.hpp"
+#include "feddlib/problems/Solver/PrecOpFaCSI.hpp"
+#include "feddlib/problems/Solver/PrecBlock2x2.hpp"
 
 /*!
  Definition of Preconditioner

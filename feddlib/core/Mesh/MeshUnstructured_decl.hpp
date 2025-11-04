@@ -9,6 +9,8 @@
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "feddlib/core/FE/TriangleElements.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
+#include "feddlib/core/LinearAlgebra/MultiVector.hpp"
+
 /*!
  Declaration of MeshUnstructured
  

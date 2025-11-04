@@ -1,8 +1,6 @@
 #ifndef HDF5IMPORT_DEF_hpp
 #define HDF5IMPORT_DEF_hpp
 
-#include "HDF5Import_decl.hpp"
-
 /*!
  Importing a HDF5 file
 

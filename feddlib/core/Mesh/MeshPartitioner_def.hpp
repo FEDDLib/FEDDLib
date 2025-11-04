@@ -1,8 +1,6 @@
 #ifndef MeshPartitioner_def_hpp
 #define MeshPartitioner_def_hpp
 
-#include "MeshPartitioner_decl.hpp"
-
 /*!
  Definition of MeshPartitioner
  

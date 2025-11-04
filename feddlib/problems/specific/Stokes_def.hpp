@@ -1,6 +1,6 @@
 #ifndef STOKES_def_hpp
 #define STOKES_def_hpp
-#include "Stokes_decl.hpp"
+
 /*!
  Definition of Stokes
  
@@ -9,6 +9,10 @@
  @version 1.0
  @copyright CH
  */
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib//core/FE/FE.hpp"
+#include "feddlib/problems/Solver/Preconditioner.hpp"
 
 namespace FEDD {
 void ZeroDirichlet(double* x, double* res, double t, double* parameters){

@@ -1,6 +1,7 @@
 #ifndef MinPrecProblem_DEF_hpp
 #define MinPrecProblem_DEF_hpp
-#include "MinPrecProblem_decl.hpp"
+
+#include "feddlib/problems/Solver/Preconditioner.hpp"
 
 /*!
  Definition of MinPrecProblem

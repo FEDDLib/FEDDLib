@@ -1,6 +1,6 @@
 #ifndef DIFFUSIONREACTION_def_hpp
 #define DIFFUSIONREACTION_def_hpp
-#include "DiffusionReaction_decl.hpp"
+
 /*!
  Definition of Diffusion Reaction Equation
  
@@ -9,6 +9,10 @@
  @version 1.0
  @copyright LS
  */
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/FE/FE.hpp"
+
 
 namespace FEDD {
 

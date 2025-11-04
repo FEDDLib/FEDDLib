@@ -3,8 +3,8 @@
 
 #include "DAESolverInTime_decl.hpp"
 
-// #ifndef HAVE_EXPLICIT_INSTANTIATION
-// #include "DAESolverInTime_def.hpp"
-// #endif
+#ifndef HAVE_EXPLICIT_INSTANTIATION
+    #include "DAESolverInTime_def.hpp"
+#endif
 
 #endif

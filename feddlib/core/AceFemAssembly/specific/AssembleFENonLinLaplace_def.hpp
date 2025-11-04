@@ -1,7 +1,6 @@
 #ifndef ASSEMBLEFENONLINLAPLACE_DEF_hpp
 #define ASSEMBLEFENONLINLAPLACE_DEF_hpp
 
-#include "AssembleFENonLinLaplace_decl.hpp"
 #include "feddlib/core/FEDDCore.hpp"
 #include <Teuchos_Array.hpp>
 #include <Teuchos_ScalarTraitsDecl.hpp>

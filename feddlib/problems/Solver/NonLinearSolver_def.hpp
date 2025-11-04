@@ -1,6 +1,6 @@
 #ifndef NONLINEARSOLVER_DEF_hpp
 #define NONLINEARSOLVER_DEF_hpp
-#include "NonLinearSolver_decl.hpp"
+
 /*!
  Definition of NonLinearSolver
 

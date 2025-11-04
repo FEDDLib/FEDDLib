@@ -1,7 +1,11 @@
 #ifndef DAESOLVERINTIME_DEF_hpp
 #define DAESOLVERINTIME_DEF_hpp
-#include "DAESolverInTime_decl.hpp"
 
+
+#include "feddlib/problems/specific/FSI.hpp"
+#include "feddlib/core/Mesh/MeshUnstructured.hpp"
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/FE/FE.hpp"
 
 /*!
  Definition of DAESolverInTime

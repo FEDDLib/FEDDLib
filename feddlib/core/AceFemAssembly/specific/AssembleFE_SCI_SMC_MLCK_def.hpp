@@ -1,8 +1,6 @@
 #ifndef AssembleFE_SCI_SMC_MLCK_DEF_hpp
 #define AssembleFE_SCI_SMC_MLCK_DEF_hpp
 
-#include "AssembleFE_SCI_SMC_MLCK_decl.hpp"
-
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 #include <aceinterface.hpp>
 #endif

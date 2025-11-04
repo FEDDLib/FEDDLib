@@ -1,8 +1,10 @@
 #include <Tpetra_Core.hpp>
 
-#include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include <Teuchos_GlobalMPISession.hpp>
+#include <Teuchos_StackedTimer.hpp>
 
+#include "feddlib/core/FEDDCore.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
@@ -10,10 +12,6 @@
 
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
-
-#include <Teuchos_GlobalMPISession.hpp>
-#include <Teuchos_StackedTimer.hpp>
-
 
 /*!
  main of steady-state Navier-Stokes problem

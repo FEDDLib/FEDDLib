@@ -1,8 +1,6 @@
 #ifndef InputToOutputMappingClass_DEF_hpp
 #define InputToOutputMappingClass_DEF_hpp
 
-#include "InputToOutputMappingClass_decl.hpp"
-
 namespace FEDD {
 
 

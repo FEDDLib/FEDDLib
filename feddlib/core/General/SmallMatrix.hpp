@@ -1,8 +1,6 @@
 #ifndef SMALLMATRIX_hpp
 #define SMALLMATRIX_hpp
 
-#include "feddlib/core/FEDDCore.hpp"
-
 /*!
  Declaration of SmallMatrix
  
@@ -78,7 +76,7 @@ private:
 
 
 
-#include "SmallMatrix.hpp"
+
 
 template<class T>
 SmallMatrix<T>::SmallMatrix():

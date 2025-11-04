@@ -1,18 +1,23 @@
 #include <Tpetra_Core.hpp>
 
 #include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/General/HDF5Import.hpp"
-
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
 
 #include "feddlib/problems/specific/FSI.hpp"
 #include "feddlib/problems/specific/Laplace.hpp"
+#include "feddlib/problems/specific/NavierStokes.hpp"
+#include "feddlib/problems/specific/LinElas.hpp"
+#include "feddlib/problems/specific/NonLinElasticity.hpp"
+#include "feddlib/problems/specific/Geometry.hpp"
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
+#include "feddlib/problems/Solver/Preconditioner.hpp"
+
 
 /*! Test case for specific artery geometrie or straight tube geometry. Inflow depends on inflow region
 	-> straight tube: Inflow in (0,0,z)*laplaceInflow direction

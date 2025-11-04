@@ -17,22 +17,19 @@ namespace FEDD{
         Teuchos::RCP<Teuchos::ParameterList> parseParameterList(const std::string &fileName,
                                                                 const std::string &type         = "yaml")
         {
-            using std::logic_error;
-            using namespace Teuchos;
-
-            RCP<ParameterList> parameterList;
+            Teuchos::RCP<Teuchos::ParameterList> parameterList;
 
             if (!type.compare("yaml"))
             {
-                parameterList = getParametersFromYamlFile(fileName);
+                parameterList = Teuchos::getParametersFromYamlFile(fileName);
             }
             else if (!type.compare("xml"))
             {
-                parameterList = getParametersFromXmlFile(fileName);
+                parameterList = Teuchos::getParametersFromXmlFile(fileName);
             }
             else
             {
-                TEUCHOS_TEST_FOR_EXCEPTION(true,logic_error,"File type not supported.");
+                TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"File type not supported.");
             }
 
             return parameterList;
@@ -50,12 +47,8 @@ namespace FEDD{
                                                                      const std::string                      &nameName       = "ParameterLists File Names",
                                                                      const std::string                      &pathName       = "ParameterLists File Paths",
                                                                      const std::string                      &typeName       = "ParameterLists File Types")
-        {        
-            using std::string;
-            using std::logic_error;
-            using Teuchos::Array;
-            
-            Array<string> names(1,""), filePaths(1,""), fileTypes(1,"");
+        {                    
+            Teuchos::Array<std::string> names(1,""), filePaths(1,""), fileTypes(1,"");
             if (parameterList->isParameter(pathName))
             {
                 filePaths = parameterList->get(pathName,filePaths);
@@ -63,17 +56,17 @@ namespace FEDD{
                 if (parameterList->isParameter(nameName))
                 {
                     names = parameterList->get(nameName,names);
-                    TEUCHOS_TEST_FOR_EXCEPTION(names.size()!=filePaths.size(),logic_error,"names.size()!=filePaths.size()");
+                    TEUCHOS_TEST_FOR_EXCEPTION(names.size()!=filePaths.size(),std::logic_error,"names.size()!=filePaths.size()");
                 } else {
-                    TEUCHOS_TEST_FOR_EXCEPTION(true,logic_error,"ParameterLists File Names are not specified.");
+                    TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"ParameterLists File Names are not specified.");
                 }
 
                 if (parameterList->isParameter(typeName))
                 {
                     fileTypes = parameterList->get(typeName,fileTypes);
-                    TEUCHOS_TEST_FOR_EXCEPTION(fileTypes.size()!=filePaths.size(),logic_error,"fileTypes.size()!=filePaths.size()");
+                    TEUCHOS_TEST_FOR_EXCEPTION(fileTypes.size()!=filePaths.size(),std::logic_error,"fileTypes.size()!=filePaths.size()");
                 } else {
-                    TEUCHOS_TEST_FOR_EXCEPTION(true,logic_error,"ParameterLists File Types are not specified.");
+                    TEUCHOS_TEST_FOR_EXCEPTION(true,std::logic_error,"ParameterLists File Types are not specified.");
                 }
 
                 int i = 0;

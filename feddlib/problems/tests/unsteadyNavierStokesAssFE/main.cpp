@@ -11,13 +11,13 @@
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/problems/specific/NavierStokes.hpp"
 #include "feddlib/problems/specific/NavierStokesAssFE.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
 
 /*!
  main of time-dependent Navier-Stokes problem

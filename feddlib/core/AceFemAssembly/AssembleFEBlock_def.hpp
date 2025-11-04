@@ -1,8 +1,6 @@
 #ifndef AssembleFEBLOCK_DEF_hpp
 #define AssembleFEBLOCK_DEF_hpp
 
-#include "AssembleFEBlock_decl.hpp"
-
 namespace FEDD {
 
 

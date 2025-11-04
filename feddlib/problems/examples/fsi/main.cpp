@@ -1,18 +1,21 @@
 #include <Tpetra_Core.hpp>
 
 #include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
-
+#include "feddlib/core/General/BCBuilder.hpp"
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/core/General/HDF5Import.hpp"
-
+#include "feddlib/problems/specific/Geometry.hpp"
+#include "feddlib/problems/Solver/Preconditioner.hpp"
 
 #include "feddlib/problems/specific/FSI.hpp"
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
+#include "feddlib/problems/specific/NavierStokes.hpp"
+#include "feddlib/problems/specific/LinElas.hpp"
+#include "feddlib/problems/specific/NonLinElasticity.hpp"
 
 void rhsDummy2D(double* x, double* res, double* parameters){
     // parameters[0] is the time, not needed here

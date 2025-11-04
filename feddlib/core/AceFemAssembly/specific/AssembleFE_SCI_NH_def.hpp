@@ -1,7 +1,6 @@
 #ifndef ASSEMBLEFE_SCI_NH_DEF_hpp
 #define ASSEMBLEFE_SCI_NH_DEF_hpp
 
-#include "AssembleFE_SCI_NH_decl.hpp"
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 #include <aceinterface.hpp>
 #endif

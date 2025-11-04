@@ -1,13 +1,6 @@
 #ifndef MATRIX_DECL_hpp
 #define MATRIX_DECL_hpp
 
-#include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
-
-#include "Map.hpp"
-#include "MultiVector.hpp"
-#include "BlockMultiVector.hpp"
-
 #include <Teuchos_VerboseObject.hpp>
 #include <MatrixMarket_Tpetra.hpp>
 #include <TpetraExt_MatrixMatrix.hpp>
@@ -16,6 +9,12 @@
 #include <Tpetra_CrsMatrix.hpp>
 //#include <Tpetra_MatrixMatrix.hpp>
 #include <MatrixMarket_Tpetra.hpp>
+
+#include "feddlib/core/FEDDCore.hpp"
+#include "Map.hpp"
+#include "MultiVector.hpp"
+#include "BlockMultiVector.hpp"
+
 
 /*!
  Declaration of Matrix

@@ -3,10 +3,12 @@
 
 #include "feddlib/problems/problems_config.h"
 #include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/problems/abstract/TimeProblem.hpp"
+#include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"
 
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_DefaultZeroLinearOp_decl.hpp>
+#include <Thyra_BlockedLinearOpBase.hpp>
+
 /*!
  Declaration of LinearSolver
  

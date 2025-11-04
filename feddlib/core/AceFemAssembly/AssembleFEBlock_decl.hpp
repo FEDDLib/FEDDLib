@@ -1,4 +1,3 @@
-
 #ifndef AssembleFEBlock_DECL_hpp
 #define AssembleFEBlock_DECL_hpp
 

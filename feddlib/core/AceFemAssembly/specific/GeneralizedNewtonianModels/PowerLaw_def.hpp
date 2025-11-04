@@ -1,8 +1,6 @@
 #ifndef POWERLAW_DEF_hpp
 #define POWERLAW_DEF_hpp
 
-#include "PowerLaw_decl.hpp"
-
 namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>

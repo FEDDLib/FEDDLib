@@ -9,8 +9,9 @@
 // Trilinos
 #include <Teuchos_Array.hpp>
 
-#include "HDF5Toolbox_decl.hpp"
 #include <hdf5.h>
+#include "feddlib/core/General/HDF5Toolbox.hpp"
+
 
 /*!
  Declaration of ExporterParaView

@@ -1,6 +1,16 @@
 #ifndef TIMEPROBLEM_DEF_hpp
 #define TIMEPROBLEM_DEF_hpp
-#include "TimeProblem_decl.hpp"
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/FE/FE.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
+
+#include "NonLinearProblem.hpp"
+#include "feddlib/problems/Solver/Preconditioner.hpp"
+#include "feddlib/problems/Solver/LinearSolver.hpp"
+#include "feddlib/problems/specific/FSI.hpp"
+
+
 /*!
  Definition of TimeProblem
 

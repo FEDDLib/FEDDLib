@@ -3,7 +3,7 @@
 #include "feddlib/problems/problems_config.h"
 #include "feddlib/problems/abstract/NonLinearProblem.hpp"
 #include "feddlib/problems/abstract/TimeProblem.hpp"
-
+#include "feddlib/core/General/ExporterTxt.hpp"
 
 #include <boost/function.hpp>
 

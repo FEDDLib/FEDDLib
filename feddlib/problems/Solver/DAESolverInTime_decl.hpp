@@ -1,13 +1,10 @@
 #ifndef DAESOLVERINTIME_DECL_hpp
 #define DAESOLVERINTIME_DECL_hpp
 
-#include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/problems/problems_config.h"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/General/ExporterTxt.hpp"
-
-
 
 #include "NonLinearSolver.hpp"
 #include "TimeSteppingTools.hpp"
@@ -22,6 +19,13 @@
  */
 
 namespace FEDD {
+
+template <class SC, class LO, class GO, class NO>
+class FSI;
+template <class SC, class LO, class GO, class NO>
+class MeshUnstructured;
+template <class SC, class LO, class GO, class NO>
+class Domain;
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class DAESolverInTime {

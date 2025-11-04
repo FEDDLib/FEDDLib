@@ -3,8 +3,8 @@
 
 #include "LinElas_decl.hpp"
 
-// #ifndef HAVE_EXPLICIT_INSTANTIATION
-// #include "LinElas_def.hpp"
-// #endif
+#ifndef HAVE_EXPLICIT_INSTANTIATION
+    #include "LinElas_def.hpp"
+#endif
 
 #endif

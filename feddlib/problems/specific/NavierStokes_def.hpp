@@ -1,6 +1,5 @@
 #ifndef NAVIERSTOKES_def_hpp
 #define NAVIERSTOKES_def_hpp
-#include "NavierStokes_decl.hpp"
 
 #ifndef NAVIER_STOKES_START
 #define NAVIER_STOKES_START(A,S) Teuchos::RCP<Teuchos::TimeMonitor> A = Teuchos::rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer(std::string("Assemble Navier-Stokes:") + std::string(S))));
@@ -9,6 +8,10 @@
 #ifndef NAVIER_STOKES_STOP
 #define NAVIER_STOKES_STOP(A) A.reset();
 #endif
+
+#include "feddlib/core/LinearAlgebra/Matrix.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
+#include "feddlib/problems/Solver/Preconditioner.hpp"
 
 /*!
  Definition of Navier-Stokes

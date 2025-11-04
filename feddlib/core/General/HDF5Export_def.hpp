@@ -1,9 +1,6 @@
 #ifndef HDF5EXPORT_DEF_hpp
 #define HDF5EXPORT_DEF_hpp
 
-#include "HDF5Export_decl.hpp"
-
-
 namespace FEDD {
  
 template<class SC,class LO,class GO,class NO>

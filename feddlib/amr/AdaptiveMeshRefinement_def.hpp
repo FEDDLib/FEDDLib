@@ -9,7 +9,6 @@
 #define MESH_TIMER_STOP(A) A.reset();
 #endif
 
-#include "AdaptiveMeshRefinement_decl.hpp"
 #include <chrono> 
 #include <iomanip>
 /*!

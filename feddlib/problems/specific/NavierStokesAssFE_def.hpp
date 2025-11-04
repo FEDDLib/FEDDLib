@@ -1,6 +1,5 @@
 #ifndef NAVIERSTOKESASSFE_def_hpp
 #define NAVIERSTOKESASSFE_def_hpp
-#include "NavierStokesAssFE_decl.hpp"
 
 /*!
  Definition of Navier-Stokes
@@ -10,6 +9,12 @@
  @version 1.0
  @copyright CH
  */
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib//core/FE/FE.hpp"
+#include "feddlib/problems/Solver/Preconditioner.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
+
 
 /*void sxOne2D(double* x, double* res, double t, double* parameter){
 

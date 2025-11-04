@@ -12,8 +12,8 @@
 #include "Helper.hpp"
 #include "sms.hpp"
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
-#include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation_decl.hpp"
-#include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokes_decl.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokes.hpp"
 
 #include "feddlib/core/AceFemAssembly/AssembleFEFactory.hpp"
 

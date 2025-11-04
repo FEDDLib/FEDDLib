@@ -1,8 +1,6 @@
 #ifndef ExporterParaView_DEF_hpp
 #define ExporterParaView_DEF_hpp
 
-#include "ExporterParaView_decl.hpp"
-
 /*!
  Definition of ExporterParaView
 

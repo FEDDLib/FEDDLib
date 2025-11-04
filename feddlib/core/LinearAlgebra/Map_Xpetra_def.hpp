@@ -1,6 +1,5 @@
 #ifndef MAP_XPETRA_DEF_hpp
 #define MAP_XPETRA_DEF_hpp
-#include "Map_Xpetra_decl.hpp"
 
 /*!
  Declaration of Map

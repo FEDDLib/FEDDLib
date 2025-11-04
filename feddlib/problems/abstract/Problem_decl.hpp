@@ -1,26 +1,18 @@
 #ifndef PROBLEM_DECL_hpp
 #define PROBLEM_DECL_hpp
 
-#include "feddlib/problems/problems_config.h"
-#include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/FE/FE.hpp"
-#include "feddlib/core/FE/Domain.hpp"
-#include "feddlib/core/General/BCBuilder.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "feddlib/problems/Solver/Preconditioner.hpp"
-#include "feddlib/core/LinearAlgebra/BlockMultiVector.hpp"
-#include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
-#include "feddlib/problems/Solver/LinearSolver.hpp"
-
 #include <Stratimikos_DefaultLinearSolverBuilder.hpp>
 #include <Thyra_PreconditionerBase.hpp>
-#include <Thyra_LinearOpBase_decl.hpp>
 
 #include "git_version.h"
 
 #ifdef FEDD_HAVE_TEKO
 #include <Teko_StratimikosFactory.hpp>
 #endif
+
+#include "feddlib/problems/problems_config.h"
+#include "feddlib/core/FEDDCore.hpp"
+#include "feddlib/core/LinearAlgebra/Matrix.hpp"
 
 /*!
  Declaration of Problem
@@ -33,6 +25,16 @@
 
 
 namespace FEDD {
+template<class SC_, class LO_, class GO_, class NO_>
+class BlockMultiVector;
+template<class SC_, class LO_, class GO_, class NO_>
+class BCBuilder;
+template<class SC_, class LO_, class GO_, class NO_>
+class BlockMatrix;
+template<class SC_, class LO_, class GO_, class NO_>
+class Domain;
+template<class SC_, class LO_, class GO_, class NO_>
+class FE;
 template<class SC_, class LO_, class GO_, class NO_>
 class Preconditioner;
 
@@ -91,8 +93,9 @@ public:
     typedef std::vector<std::string> string_vec_Type;
 
     typedef Teuchos::RCP<Thyra::PreconditionerBase<SC> > ThyraPrecPtr_Type;
-    typedef Teuchos::RCP<Thyra::LinearOpBase<SC> > ThyraLinOpPtr_Type;
-    
+    using ThyraTypes = ThyraTypedefs<SC>;
+    using ThyraLinOpPtr_Type = Teuchos::RCP<typename ThyraTypes::ThyraOp_Type>;
+
     Problem(CommConstPtr_Type comm);
 
     Problem(ParameterListPtr_Type &parameterList, CommConstPtr_Type comm);

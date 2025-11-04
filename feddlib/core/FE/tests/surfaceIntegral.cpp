@@ -2,6 +2,7 @@
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/problems/abstract/Problem.hpp"
+#include "feddlib/core/FE/FE.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include <Tpetra_Core.hpp>
 

@@ -1,13 +1,14 @@
 #ifndef FSI_decl_hpp
 #define FSI_decl_hpp
-#include "feddlib/problems/abstract/TimeProblem.hpp"
-#include "feddlib/problems/specific/NavierStokes.hpp"
-#include "feddlib/problems/specific/LinElas.hpp"
-#include "feddlib/problems/specific/NonLinElasticity.hpp"
-#include "feddlib/problems/specific/Geometry.hpp"
+
+#include "feddlib/problems/abstract/Problem.hpp"
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/problems/abstract/NonLinearProblem.hpp"
 #include "feddlib/problems/Solver/TimeSteppingTools.hpp"
+
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_ModelEvaluatorBase_decl.hpp>
+
 namespace FEDD{
 
 template <class SC , class LO , class GO , class NO >
@@ -20,6 +21,10 @@ template <class SC , class LO , class GO , class NO >
 class LinElas;
 template <class SC , class LO , class GO , class NO >
 class NonLinElasticity;
+template <class SC , class LO , class GO , class NO >
+class MeshUnstructured;
+template <class SC , class LO , class GO , class NO >
+class ExporterParaView;
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class FSI : public NonLinearProblem<SC,LO,GO,NO>  {

@@ -3,8 +3,8 @@
 
 #include "FSI_decl.hpp"
 
-// #ifndef HAVE_EXPLICIT_INSTANTIATION
-// #include "FSI_def.hpp"
-// #endif
+#ifndef HAVE_EXPLICIT_INSTANTIATION
+    #include "FSI_def.hpp"
+#endif
 
 #endif

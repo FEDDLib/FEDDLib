@@ -1,9 +1,12 @@
 #ifndef NONLINEARPROBLEM_DECL_hpp
 #define NONLINEARPROBLEM_DECL_hpp
 
-#include "Problem.hpp"
 #include <Thyra_StateFuncModelEvaluatorBase.hpp>
+#include <Thyra_ProductVectorBase.hpp>
+#include <Teko_Utilities.hpp>
 
+#include "feddlib/core/FEDDCore.hpp"
+#include "feddlib/problems/abstract/Problem.hpp"
 
 /*!
  Declaration of NonLinearProblem
@@ -15,10 +18,8 @@
  */
 
 namespace FEDD{
-template<class SC_, class LO_, class GO_, class NO_>
-class Problem;
-template<class SC_, class LO_, class GO_, class NO_>
-class TimeProblem;
+template<class LO_, class GO_, class NO_>
+class BlockMap;
 
 template <class SC = default_sc,
           class LO = default_lo,
@@ -55,12 +56,14 @@ public:
     typedef Teuchos::RCP<const BlockMap_Type> BlockMapConstPtr_Type;
     typedef Teuchos::Array<BlockMultiVectorPtr_Type> BlockMultiVectorPtrArray_Type;
 
-    typedef Thyra::VectorSpaceBase<SC> ThyraVecSpace_Type;
+    using ThyraTypes = ThyraTypedefs<SC>;
+    using TpetraTypes = TpetraTypedefs<SC,LO,GO,NO>;
+    using ThyraVecSpace_Type = typename ThyraTypes::ThyraVecSpace_Type;
     typedef Teuchos::RCP<const ThyraVecSpace_Type> ThyraVecSpaceConstPtr_Type;
-    typedef Thyra::VectorBase<SC> ThyraVec_Type;
-    typedef Tpetra::CrsMatrix<SC, LO, GO, NO> TpetraMatrix_Type;
-    typedef Thyra::LinearOpBase<SC> ThyraOp_Type;
-    typedef Tpetra::Operator<SC,LO,GO,NO> TpetraOp_Type;
+    using ThyraVec_Type = typename ThyraTypes::ThyraVec_Type;
+    using TpetraMatrix_Type = typename TpetraTypes::TpetraMatrix_Type;
+    using ThyraOp_Type = typename ThyraTypes::ThyraOp_Type;
+    using TpetraOp_Type = typename TpetraTypes::TpetraOp_Type;
     typedef Thyra::BlockedLinearOpBase<SC> ThyraBlockOp_Type;
 
     /// @brief Constructor

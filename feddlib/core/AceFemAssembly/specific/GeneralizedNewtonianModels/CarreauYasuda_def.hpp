@@ -1,8 +1,6 @@
 #ifndef CARREAUYASUDA_DEF_hpp
 #define CARREAUYASUDA_DEF_hpp
 
-#include "CarreauYasuda_decl.hpp"
-
 namespace FEDD
 {
 

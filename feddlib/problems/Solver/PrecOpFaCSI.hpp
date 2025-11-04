@@ -2,8 +2,8 @@
 #define PrecOpFaCSI_hpp
 
 #include "PrecOpFaCSI_decl.hpp"
-// #ifndef HAVE_EXPLICIT_INSTANTIATION
-// #include "Preconditioner_def.hpp"
-// #endif
+#ifndef HAVE_EXPLICIT_INSTANTIATION
+    #include "PrecOpFaCSI_def.hpp"
+#endif
 
-#endif // PRECONDMANAGERFORSCH_hpp
+#endif

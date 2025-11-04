@@ -1,5 +1,7 @@
 #ifndef DIFFUSION_decl_hpp
 #define DIFFUSION_decl_hpp
+
+#include "feddlib/problems/abstract/Problem.hpp"
 #include "feddlib/problems/abstract/NonLinearProblem.hpp"
 #include <Thyra_ProductVectorBase.hpp>
 #include <Thyra_PreconditionerBase.hpp>

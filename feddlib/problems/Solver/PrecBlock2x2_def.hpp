@@ -1,6 +1,6 @@
 #ifndef PrecBlock2x2_DEF_hpp
 #define PrecBlock2x2_DEF_hpp
-#include "PrecBlock2x2_decl.hpp"
+
 #include <Thyra_TpetraMultiVector_decl.hpp>
 #include <Teuchos_VerboseObject.hpp>
 /*!
@@ -15,7 +15,6 @@
 
 
 namespace FEDD {
-using namespace Thyra;
         
 // Constructors
 
@@ -165,9 +164,9 @@ void PrecBlock2x2<SC,LO,GO,NO>::initialize(){
 
 template<class SC, class LO, class GO, class NO>
 void PrecBlock2x2<SC,LO,GO,NO>::applyIt(
-                                         const EOpTransp M_trans,
-                                         const MultiVectorBase<SC> &X_in,
-                                         const Ptr<MultiVectorBase<SC> > &Y_inout,
+                                         const Thyra::EOpTransp M_trans,
+                                         const Thyra::MultiVectorBase<SC> &X_in,
+                                         const Thyra::Ptr<Thyra::MultiVectorBase<SC> > &Y_inout,
                                          const SC alpha,
                                          const SC beta
                                          ) const
@@ -186,9 +185,9 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyIt(
 
 template<class SC, class LO, class GO, class NO>
 void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
-                                   const EOpTransp M_trans,
-                                   const MultiVectorBase<SC> &X_in,
-                                   const Ptr<MultiVectorBase<SC> > &Y_inout,
+                                   const Thyra::EOpTransp M_trans,
+                                   const Thyra::MultiVectorBase<SC> &X_in,
+                                   const Thyra::Ptr<Thyra::MultiVectorBase<SC> > &Y_inout,
                                    const SC alpha,
                                    const SC beta
                                    ) const
@@ -196,44 +195,43 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
     // alpha and beta are ignored!
     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
     
-    using Teuchos::rcpFromRef;
     typedef Teuchos::ScalarTraits<SC> ST;
-    typedef RCP<MultiVectorBase<SC> > MultiVectorPtr;
-    typedef RCP<const MultiVectorBase<SC> > ConstMultiVectorPtr;
-    typedef RCP<const LinearOpBase<SC> > ConstLinearOpPtr;
+    typedef Teuchos::RCP<Thyra::MultiVectorBase<SC> > MultiVectorPtr;
+    typedef Teuchos::RCP<const Thyra::MultiVectorBase<SC> > ConstMultiVectorPtr;
+    typedef Teuchos::RCP<const Thyra::LinearOpBase<SC> > ConstLinearOpPtr;
 
     int rank = comm_->getRank();
         
     Teuchos::RCP<const Thyra::ProductMultiVectorBase<SC> > X
-        = Teuchos::rcp_dynamic_cast<const Thyra::ProductMultiVectorBase<SC> > ( rcpFromRef(X_in) );
+        = Teuchos::rcp_dynamic_cast<const Thyra::ProductMultiVectorBase<SC> > ( Teuchos::rcpFromRef(X_in) );
     
     Teuchos::RCP< Thyra::ProductMultiVectorBase<SC> > Y
         = Teuchos::rcp_dynamic_cast< Thyra::ProductMultiVectorBase<SC> > ( rcpFromPtr(Y_inout) );
 
     // First component correspondig to velocity block
-    Teuchos::RCP< const MultiVectorBase< SC > > X_0 = X->getMultiVectorBlock(0); 
-    Teuchos::RCP< MultiVectorBase< SC > > Y_0 = Y->getNonconstMultiVectorBlock(0);
+    Teuchos::RCP< const Thyra::MultiVectorBase< SC > > X_0 = X->getMultiVectorBlock(0); 
+    Teuchos::RCP< Thyra::MultiVectorBase< SC > > Y_0 = Y->getNonconstMultiVectorBlock(0);
 
     // Second component corresponding to pressure block
-    Teuchos::RCP< const MultiVectorBase< SC > > X_1 = X->getMultiVectorBlock(1);
-    Teuchos::RCP< MultiVectorBase< SC > > Y_1 = Y->getNonconstMultiVectorBlock(1);
+    Teuchos::RCP< const Thyra::MultiVectorBase< SC > > X_1 = X->getMultiVectorBlock(1);
+    Teuchos::RCP< Thyra::MultiVectorBase< SC > > Y_1 = Y->getNonconstMultiVectorBlock(1);
     
     // We distinguish between the different preconditioning types here
     if (type_ == "Diagonal"){
-        velocityInv_->apply(NOTRANS, *X_0, Y_0.ptr(), 1., 0.); // Apply input vector to fluid inverse approximation
+        velocityInv_->apply(Thyra::NOTRANS, *X_0, Y_0.ptr(), 1., 0.); // Apply input vector to fluid inverse approximation
 
-        pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.); // Apply input vector to Schur complement inverse approximation
+        pressureInv_->apply(Thyra::NOTRANS, *X_1, Y_1.ptr(), 1., 0.); // Apply input vector to Schur complement inverse approximation
                                                                // Here: 1/nu Mp
     }
     else if (type_ == "Triangular"){
 
-        pressureInv_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.); // Apply input vector pressure component to Schur complement inverse approximation
+        pressureInv_->apply(Thyra::NOTRANS, *X_1, Y_1.ptr(), 1., 0.); // Apply input vector pressure component to Schur complement inverse approximation
         
-        Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
+        Teuchos::RCP< Thyra::MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
         
-        BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
+        BT_->apply(Thyra::NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
         
-        velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);
+        velocityInv_->apply(Thyra::NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);
                         
     }
     else if (type_ == "PCD"){
@@ -245,25 +243,25 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
         // X_1->describe(*out,Teuchos::VERB_EXTREME); // Examplary print 
 
         // Apply input vector to Schur complement inverse approximation
-        massMatrixInverse_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.);  // 1. pressure mass matrix inverse approximation
+        massMatrixInverse_->apply(Thyra::NOTRANS, *X_1, Y_1.ptr(), 1., 0.);  // 1. pressure mass matrix inverse approximation
 
-        convectionDiffusionOperator_->apply(NOTRANS, *Y_1, Y_1.ptr(), 1., 0.); // 2. pressure convection-diffusion operator
+        convectionDiffusionOperator_->apply(Thyra::NOTRANS, *Y_1, Y_1.ptr(), 1., 0.); // 2. pressure convection-diffusion operator
 
-        laplaceInverse_->apply(NOTRANS, *Y_1, Y_1.ptr(), 1., 0.);  // 3. pressure laplace inverse approximation
+        laplaceInverse_->apply(Thyra::NOTRANS, *Y_1, Y_1.ptr(), 1., 0.);  // 3. pressure laplace inverse approximation
 
         // Alternative option to use the Laplace constructed via B M_v B^T
         // else{ // We operate in different dimensions here
         //     Teuchos::RCP< MultiVectorBase< SC > > X_res_0 = X_0->clone_mv();
-        //     BT_->apply(NOTRANS, *Y_1, X_res_0.ptr(), 1., 0.); //BT*y
-        //     massMatrixVInverse_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
-        //     BT_->apply(TRANS, *X_res_0, Y_1.ptr(), 1., 0.);  
+        //     BT_->apply(Thyra::NOTRANS, *Y_1, X_res_0.ptr(), 1., 0.); //BT*y
+        //     massMatrixVInverse_->apply(Thyra::NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
+        //     BT_->apply(Thyra::TRANS, *X_res_0, Y_1.ptr(), 1., 0.);  
         // }
 
-        Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
+        Teuchos::RCP< Thyra::MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
         
-        BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= - BT*Y1 + X0
+        BT_->apply(Thyra::NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= - BT*Y1 + X0
         
-        velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.); // Apply input vector to fluid inverse approximation
+        velocityInv_->apply(Thyra::NOTRANS, *Z_0, Y_0.ptr(), 1., 0.); // Apply input vector to fluid inverse approximation
             
     }
     else if (type_ == "LSC"){
@@ -271,22 +269,22 @@ void PrecBlock2x2<SC,LO,GO,NO>::applyImpl(
         TEUCHOS_TEST_FOR_EXCEPTION(laplaceInverse_.is_null(), std::runtime_error,"laplaceInverse_ not set.");
         TEUCHOS_TEST_FOR_EXCEPTION(massMatrixVInverse_.is_null(), std::runtime_error,"massMatrixVInverse_ not set.");
         
-        laplaceInverse_->apply(NOTRANS, *X_1, Y_1.ptr(), 1., 0.);   // 1. pressure laplace inverse approximation
+        laplaceInverse_->apply(Thyra::NOTRANS, *X_1, Y_1.ptr(), 1., 0.);   // 1. pressure laplace inverse approximation
 
         // 2. Component: B (M_v^-1) F (M_v^-1) B^T 
-        Teuchos::RCP< MultiVectorBase< SC > > X_res_0 = X_0->clone_mv();
-        BT_->apply(NOTRANS, *Y_1, X_res_0.ptr(), 1., 0.);
-        massMatrixVInverse_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
-        F_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
-        massMatrixVInverse_->apply(NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
-        BT_->apply(TRANS, *X_res_0, Y_1.ptr(), 1., 0.);
+        Teuchos::RCP< Thyra::MultiVectorBase< SC > > X_res_0 = X_0->clone_mv();
+        BT_->apply(Thyra::NOTRANS, *Y_1, X_res_0.ptr(), 1., 0.);
+        massMatrixVInverse_->apply(Thyra::NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
+        F_->apply(Thyra::NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
+        massMatrixVInverse_->apply(Thyra::NOTRANS, *X_res_0, X_res_0.ptr(), 1., 0.);
+        BT_->apply(Thyra::TRANS, *X_res_0, Y_1.ptr(), 1., 0.);
 
-        laplaceInverse_->apply(NOTRANS, *Y_1, Y_1.ptr(), -1., 0.);  // 3. pressure laplace inverse approximation
+        laplaceInverse_->apply(Thyra::NOTRANS, *Y_1, Y_1.ptr(), -1., 0.);  // 3. pressure laplace inverse approximation
  
-        Teuchos::RCP< MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
-        BT_->apply(NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
+        Teuchos::RCP< Thyra::MultiVectorBase< SC > > Z_0 = X_0->clone_mv();
+        BT_->apply(Thyra::NOTRANS, *Y_1, Z_0.ptr(), -1., 1.); //Z0= BT*Y1 + X0
         
-        velocityInv_->apply(NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);
+        velocityInv_->apply(Thyra::NOTRANS, *Z_0, Y_0.ptr(), 1., 0.);
             
     }
     else{

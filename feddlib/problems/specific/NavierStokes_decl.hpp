@@ -1,9 +1,13 @@
 #ifndef NAVIERSTOKES_decl_hpp
 #define NAVIERSTOKES_decl_hpp
-#include "feddlib/problems/abstract/NonLinearProblem.hpp"
+
 #include <Thyra_ProductVectorBase.hpp>
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_ModelEvaluatorBase_decl.hpp>
+
+#include "feddlib/problems/abstract/NonLinearProblem.hpp"
+
+
 /*!
  Declaration of Navier-Stokes
 
@@ -14,7 +18,10 @@
  */
 
 namespace FEDD{
-
+template <class SC, class LO, class GO, class NO>
+class Matrix;
+template <class SC, class LO, class GO, class NO>
+class BCBuilder;
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class NavierStokes : public NonLinearProblem<SC,LO,GO,NO>  {

@@ -1,6 +1,6 @@
 #ifndef LaplaceBlocks_def_hpp
 #define LaplaceBlocks_def_hpp
-#include "LaplaceBlocks_decl.hpp"
+
 /*!
  Definition of LaplaceBlocks
  
@@ -9,6 +9,10 @@
  @version 1.0
  @copyright CH
  */
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/FE/FE.hpp"
+
 
 namespace FEDD {
 

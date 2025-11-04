@@ -1,12 +1,12 @@
-#include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include <Teuchos_GlobalMPISession.hpp>
 
+#include "feddlib/core/FEDDCore.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/problems/specific/DiffusionReaction.hpp"
-#include <Teuchos_GlobalMPISession.hpp>
 #include "feddlib/problems/Solver/DAESolverInTime.hpp"
 #include "feddlib/amr/AdaptiveMeshRefinement.hpp"
 

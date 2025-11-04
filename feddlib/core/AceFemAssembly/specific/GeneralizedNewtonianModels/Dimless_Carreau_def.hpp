@@ -1,8 +1,6 @@
 #ifndef DIMLESS_CARREAU_DEF_hpp
 #define DIMLESS_CARREAU_DEF_hpp
 
-#include "Dimless_Carreau_decl.hpp"
-
 namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>

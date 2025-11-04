@@ -7,8 +7,6 @@
 #include <aceinterface.hpp>
 #endif
 
-#include "FE_decl.hpp"
-
 /*!
  Definition of FE
 

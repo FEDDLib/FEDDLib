@@ -1,6 +1,9 @@
 #ifndef AdaptiveMeshRefinement_decl_hpp
 #define AdaptiveMeshRefinement_decl_hpp
 
+#include <Tpetra_CrsMatrix.hpp>
+#include <boost/function.hpp>
+
 #include "feddlib/core/Utils/FEDDUtils.hpp"
 #include "feddlib/core/Mesh/Mesh.hpp"
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
@@ -10,14 +13,14 @@
 #include "feddlib/core/FE/TriangleElements.hpp"
 #include "feddlib/core/FE/EdgeElements.hpp"
 #include "feddlib/core/FE/Domain.hpp"
-#include <Tpetra_CrsMatrix.hpp>
 #include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
 #include "feddlib/core/Mesh/MeshStructured.hpp"
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
-#include  <boost/function.hpp>
+#include "feddlib/core/General/ExporterTxt.hpp"
+
 #include "feddlib/problems/abstract/Problem.hpp"
+
 #include "feddlib/amr/ExporterParaViewAMR.hpp"
 #include "feddlib/amr/ErrorEstimation.hpp"
 #include "feddlib/amr/RefinementFactory.hpp"

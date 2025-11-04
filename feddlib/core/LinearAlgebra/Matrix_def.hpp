@@ -1,6 +1,5 @@
 #ifndef MATRIX_DEF_hpp
 #define MATRIX_DEF_hpp
-#include "Matrix_decl.hpp"
 
 /*!
  Defintion of Matrix
@@ -12,7 +11,7 @@
  */
 
 namespace FEDD {
-//using namespace Teuchos;
+
 template <class SC, class LO, class GO, class NO>
 Matrix<SC,LO,GO,NO>::Matrix():
 	matrix_()

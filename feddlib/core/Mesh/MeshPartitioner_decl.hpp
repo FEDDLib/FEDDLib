@@ -1,10 +1,6 @@
 #ifndef MeshPartitioner_decl_hpp
 #define MeshPartitioner_decl_hpp
 
-#include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
-#include "feddlib/core/FE/Domain.hpp"
-
 #define FEDD_HAVE_METIS
 #define FEDD_HAVE_PARMETIS
 
@@ -14,6 +10,10 @@
 #ifdef FEDD_HAVE_PARMETIS
 #include <parmetis.h>
 #endif
+
+#include "feddlib/core/FEDDCore.hpp"
+#include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include "feddlib/core/FE/Domain.hpp"
 
 /*!
  Definition of MeshPartitioner

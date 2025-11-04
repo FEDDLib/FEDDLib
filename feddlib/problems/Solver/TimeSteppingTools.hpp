@@ -1,9 +1,9 @@
 #ifndef TIMESTEPPINGTOOLS_hpp
 #define TIMESTEPPINGTOOLS_hpp
 
-#include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/problems/problems_config.h"
-#include "feddlib/core/General/ExporterParaView.hpp"
+#include "feddlib/core/FEDDCore.hpp"
+
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include "feddlib/core/General/ExporterTxt.hpp"
 

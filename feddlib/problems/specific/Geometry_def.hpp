@@ -1,6 +1,9 @@
 #ifndef GEOMETRY_def_hpp
 #define GEOMETRY_def_hpp
-#include "Geometry_decl.hpp"
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/FE/FE.hpp"
+
 namespace FEDD {
 // Funktion fuer die rechte Seite der DGL in 2D
 void ZeroFErhsFunc2D(double* x, double* result, double* parameters)

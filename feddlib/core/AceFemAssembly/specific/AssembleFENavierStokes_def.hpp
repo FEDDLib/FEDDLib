@@ -1,8 +1,6 @@
 #ifndef ASSEMBLEFENAVIERSTOKES_DEF_hpp
 #define ASSEMBLEFENAVIERSTOKES_DEF_hpp
 
-#include "AssembleFENavierStokes_decl.hpp"
-
 namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>

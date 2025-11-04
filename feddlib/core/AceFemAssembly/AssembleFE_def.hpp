@@ -1,8 +1,6 @@
 #ifndef ASSEMBLEFE_DEF_hpp
 #define ASSEMBLEFE_DEF_hpp
 
-#include "AssembleFE_decl.hpp"
-
 namespace FEDD {
 
 

@@ -3,8 +3,8 @@
 
 #include "Geometry_decl.hpp"
 
-// #ifndef HAVE_EXPLICIT_INSTANTIATION
-// #include "Geometry_def.hpp"
-// #endif
+#ifndef HAVE_EXPLICIT_INSTANTIATION
+    #include "Geometry_def.hpp"
+#endif
 
 #endif

@@ -1,6 +1,5 @@
 #ifndef MESHINTERFACE_def_hpp
 #define MESHINTERFACE_def_hpp
-#include "MeshInterface_decl.hpp"
 
 /*!
  Definition of MeshInterface

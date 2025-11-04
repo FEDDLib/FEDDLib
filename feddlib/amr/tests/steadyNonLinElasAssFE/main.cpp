@@ -1,18 +1,16 @@
-#include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
+#include <Tpetra_Core.hpp>
+#include <Teuchos_GlobalMPISession.hpp>
 
+#include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 #include "feddlib/problems/specific/LinElas.hpp"
 #include "feddlib/problems/specific/NonLinElasticity.hpp"
-#include <Teuchos_GlobalMPISession.hpp>
-
 #include "feddlib/problems/Solver/NonLinearSolver.hpp"
 #include "feddlib/amr/AdaptiveMeshRefinement.hpp"
-
-#include <Tpetra_Core.hpp>
 
 
 void zeroDirichlet(double* x, double* res, double t, const double* parameters)

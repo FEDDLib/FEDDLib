@@ -2,8 +2,8 @@
 #define BCBuilder_hpp
 
 #include "BCBuilder_decl.hpp"
-// #ifndef HAVE_EXPLICIT_INSTANTIATION
-// #include "BCBuilder_def.hpp"
-// #endif
+#ifndef HAVE_EXPLICIT_INSTANTIATION
+    #include "BCBuilder_def.hpp"
+#endif
 
-#endif // PRECONDMANAGERFORSCH_hpp
+#endif

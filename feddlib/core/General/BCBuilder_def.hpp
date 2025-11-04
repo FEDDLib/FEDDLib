@@ -1,11 +1,10 @@
 #ifndef BCBuilder_def_hpp
 #define BCBuilder_def_hpp
 
-#include "BCBuilder_decl.hpp"
 #include "feddlib/core/Utils/FEDDUtils.hpp"
 #include <Teuchos_RCPDecl.hpp>
 #include <Teuchos_ScalarTraitsDecl.hpp>
-#include <Xpetra_MatrixFactory.hpp>
+
 
 void dummyFuncBC(double* x, double* res, double t, const double* parameters)
 {

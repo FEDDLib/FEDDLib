@@ -1,12 +1,7 @@
 #ifndef MAP_DECL_hpp
 #define MAP_DECL_hpp
 
-#include "feddlib/core/FEDDCore.hpp"
-#include "feddlib/core/General/DefaultTypeDefs.hpp"
-
 #include <Teuchos_VerboseObject.hpp>
-#include <Thyra_VectorSpaceBase_decl.hpp>
-
 #include <Tpetra_Map.hpp>
 #include <Tpetra_MultiVector.hpp>
 #include <Tpetra_Vector.hpp>
@@ -16,6 +11,11 @@
 #include <Thyra_TpetraVector.hpp>
 #include <Thyra_TpetraMultiVector.hpp>
 #include <Thyra_TpetraVectorSpace.hpp>
+#include <Thyra_VectorSpaceBase_decl.hpp>
+
+#include "feddlib/core/FEDDCore.hpp"
+
+
 /*!
  Declaration of Map
  

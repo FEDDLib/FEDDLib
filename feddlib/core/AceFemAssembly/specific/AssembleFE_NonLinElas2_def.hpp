@@ -1,7 +1,6 @@
 #ifndef  AssembleFE_NonLinElas2_DEF_hpp
 #define  AssembleFE_NonLinElas2_DEF_hpp
 
-#include "AssembleFE_NonLinElas2_decl.hpp"
 #include "feddlib/core/AceFemAssembly/AceInterface/NeoHookQuadraticTets3.hpp"
 #include <vector>
 #include <iostream>

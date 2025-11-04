@@ -1,6 +1,6 @@
 #ifndef BlockMap_DEF_hpp
 #define BlockMap_DEF_hpp
-#include "BlockMap_decl.hpp"
+
 /*!
  Definition of BlockMap
  

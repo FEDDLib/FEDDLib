@@ -1,6 +1,6 @@
 #ifndef NonLinElasticity_def_hpp
 #define NonLinElasticity_def_hpp
-#include "NonLinElasticity_decl.hpp"
+
 /*!
  Definition of NonLinElasticity
  
@@ -9,6 +9,10 @@
  @version 1.0
  @copyright CH
  */
+
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib//core/FE/FE.hpp"
+#include "feddlib/core/General/BCBuilder.hpp"
 
 
 namespace FEDD {

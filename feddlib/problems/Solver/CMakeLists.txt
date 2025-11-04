@@ -2,9 +2,9 @@ set(Solver_HEADERS
     Solver/DAESolverInTime_decl.hpp
     Solver/DAESolverInTime_def.hpp
     Solver/DAESolverInTime.hpp
+	Solver/LinearSolver.hpp
 	Solver/LinearSolver_decl.hpp
 	Solver/LinearSolver_def.hpp
-	Solver/LinearSolver.hpp
     Solver/NonLinearSolver.hpp
     Solver/NonLinearSolver_decl.hpp
     Solver/NonLinearSolver_def.hpp

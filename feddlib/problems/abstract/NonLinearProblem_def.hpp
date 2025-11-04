@@ -1,7 +1,11 @@
 #ifndef NONLINEARPROBLEM_DEF_hpp
 #define NONLINEARPROBLEM_DEF_hpp
-#include "NonLinearProblem_decl.hpp"
-#include "TimeProblem.hpp"
+
+#include "Problem.hpp"
+#include "feddlib/core/LinearAlgebra/BlockMap.hpp"
+#include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
+#include "feddlib/core/FE/Domain.hpp"
+#include "feddlib/problems/Solver/Preconditioner.hpp"
 
 /*!
  Definition of NonLinearProblem

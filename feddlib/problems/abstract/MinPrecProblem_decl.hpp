@@ -22,6 +22,7 @@ template <class SC , class LO , class GO , class NO >
 class Problem;
 template <class SC , class LO , class GO , class NO >
 class Preconditioner;
+
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class MinPrecProblem : public Problem<SC,LO,GO,NO> {
 

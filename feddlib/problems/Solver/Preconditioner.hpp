@@ -2,8 +2,8 @@
 #define Preconditioner_hpp
 
 #include "Preconditioner_decl.hpp"
-// #ifndef HAVE_EXPLICIT_INSTANTIATION
-// #include "Preconditioner_def.hpp"
-// #endif
+#ifndef HAVE_EXPLICIT_INSTANTIATION
+    #include "Preconditioner_def.hpp"
+#endif
 
-#endif // PRECONDMANAGERFORSCH_hpp
+#endif
