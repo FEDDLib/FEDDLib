@@ -87,7 +87,7 @@ void LinElas<SC,LO,GO,NO>::assemble( std::string type ) const
     // Assembliere die Steifigkeitsmatrix. Die 2 gibt degree an, d.h. die Ordnung der Quadraturformel, die benutzt werden soll.
 #ifdef FEDD_HAVE_ACEGENINTERFACE
     bool useInterface = this->parameterList_->sublist("Parameter").get("Use AceGen Interface", true);
-    if(this->getFEType(0) =="P2" && useInterface){
+    if(this->getFEType(0) =="P2" && useInterface && this->dim_==3){
         MultiVectorConstPtr_Type d = this->solution_->getBlock(0);
         d_rep_->importFromVector(d, true);
 
