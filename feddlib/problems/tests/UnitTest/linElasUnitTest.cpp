@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
         parameterListAll->sublist("Parameter").set("Density",1.0);
         parameterListAll->sublist("Parameter").set("Poisson Ratio",0.4);
         parameterListAll->sublist("Parameter").set("Mu",3.0e0);
- 
+        parameterListAll->sublist("Parameter").set("Use AceGen Interface", false); // We don't want to use AceGen here
 
         LinElas<SC,LO,GO,NO> linElas( domain, FEType, parameterListAll );
 
