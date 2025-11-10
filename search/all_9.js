@@ -18,6 +18,8 @@ var searchData=
   ['inputtooutputmappingclass_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_15',['InputToOutputMappingClass&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1InputToOutputMappingClass.html',1,'FEDD']]],
   ['insertglobalvalues_16',['insertGlobalValues',['../classFEDD_1_1Matrix.html#a8a15f253461212f52905c75c37c7aaf7',1,'FEDD::Matrix']]],
   ['is_5fnull_17',['is_null',['../classFEDD_1_1MultiVector.html#a4eead56562530b5f87b1d48466ca3b29',1,'FEDD::MultiVector']]],
-  ['isfillcomplete_18',['isFillComplete',['../classFEDD_1_1Matrix.html#a95c7c48f147c7be5246e02aa362e4766',1,'FEDD::Matrix']]],
-  ['iterationhistorystruct_19',['IterationHistoryStruct',['../structIterationHistoryStruct.html',1,'']]]
+  ['iscontained_18',['isContained',['../classFEDD_1_1HDF5Toolbox.html#a8b1113ac9d058c6903d312347b1391b2',1,'FEDD::HDF5Toolbox']]],
+  ['isfillcomplete_19',['isFillComplete',['../classFEDD_1_1Matrix.html#a95c7c48f147c7be5246e02aa362e4766',1,'FEDD::Matrix']]],
+  ['isopen_20',['isOpen',['../classFEDD_1_1HDF5Toolbox.html#afeb18550a98fda99c2d529f1d612187a',1,'FEDD::HDF5Toolbox']]],
+  ['iterationhistorystruct_21',['IterationHistoryStruct',['../structIterationHistoryStruct.html',1,'']]]
 ];

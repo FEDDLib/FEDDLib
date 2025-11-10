@@ -108,14 +108,11 @@ $(function(){initNavTree('classFEDD_1_1HDF5Import.html',''); initResizable(true)
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a5a8dc09d4e9277229b2cf581aacff8a9" id="r_a5a8dc09d4e9277229b2cf581aacff8a9"><td class="memItemLeft" align="right" valign="top"><a id="a5a8dc09d4e9277229b2cf581aacff8a9" name="a5a8dc09d4e9277229b2cf581aacff8a9"></a>
-typedef Teuchos::RCP&lt; Epetra_Map &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>EpetraMapPtr_Type</b></td></tr>
-<tr class="separator:a5a8dc09d4e9277229b2cf581aacff8a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40e03c90d986ada73569015cb8b4d4af" id="r_a40e03c90d986ada73569015cb8b4d4af"><td class="memItemLeft" align="right" valign="top"><a id="a40e03c90d986ada73569015cb8b4d4af" name="a40e03c90d986ada73569015cb8b4d4af"></a>
-typedef EpetraExt::HDF5&#160;</td><td class="memItemRight" valign="bottom"><b>HDF5_Type</b></td></tr>
-<tr class="separator:a40e03c90d986ada73569015cb8b4d4af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51a08a0475d547f52fc6631a89797d80" id="r_a51a08a0475d547f52fc6631a89797d80"><td class="memItemLeft" align="right" valign="top"><a id="a51a08a0475d547f52fc6631a89797d80" name="a51a08a0475d547f52fc6631a89797d80"></a>
+typedef <a class="el" href="classFEDD_1_1HDF5Toolbox.html">HDF5Toolbox</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>HDF5_Type</b></td></tr>
+<tr class="separator:a51a08a0475d547f52fc6631a89797d80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2213dcf0827c07498a9eed31acf5563" id="r_ae2213dcf0827c07498a9eed31acf5563"><td class="memItemLeft" align="right" valign="top"><a id="ae2213dcf0827c07498a9eed31acf5563" name="ae2213dcf0827c07498a9eed31acf5563"></a>
-typedef Teuchos::RCP&lt; HDF5_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>HDF5Ptr_Type</b></td></tr>
+typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1HDF5Toolbox.html">HDF5_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>HDF5Ptr_Type</b></td></tr>
 <tr class="separator:ae2213dcf0827c07498a9eed31acf5563"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81b7a6348982a319f1a71c3d4042f8a6" id="r_a81b7a6348982a319f1a71c3d4042f8a6"><td class="memItemLeft" align="right" valign="top"><a id="a81b7a6348982a319f1a71c3d4042f8a6" name="a81b7a6348982a319f1a71c3d4042f8a6"></a>
 typedef Teuchos::Comm&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Comm_Type</b></td></tr>
@@ -129,6 +126,9 @@ typedef <a class="el" href="classFEDD_1_1Map.html">Map</a>&lt; LO, GO, NO &gt;&#
 <tr class="memitem:a591128c79a6ace706ffa134cce80f2e8" id="r_a591128c79a6ace706ffa134cce80f2e8"><td class="memItemLeft" align="right" valign="top"><a id="a591128c79a6ace706ffa134cce80f2e8" name="a591128c79a6ace706ffa134cce80f2e8"></a>
 typedef Teuchos::RCP&lt; const <a class="el" href="classFEDD_1_1Map.html">Map_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MapConstPtr_Type</b></td></tr>
 <tr class="separator:a591128c79a6ace706ffa134cce80f2e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4428026970be5cacccc8ab7aa1186484" id="r_a4428026970be5cacccc8ab7aa1186484"><td class="memItemLeft" align="right" valign="top"><a id="a4428026970be5cacccc8ab7aa1186484" name="a4428026970be5cacccc8ab7aa1186484"></a>
+typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1Map.html">Map_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MapPtr_Type</b></td></tr>
+<tr class="separator:a4428026970be5cacccc8ab7aa1186484"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4cb3a7f030c3e3a56220b9764073ecb" id="r_aa4cb3a7f030c3e3a56220b9764073ecb"><td class="memItemLeft" align="right" valign="top"><a id="aa4cb3a7f030c3e3a56220b9764073ecb" name="aa4cb3a7f030c3e3a56220b9764073ecb"></a>
 typedef <a class="el" href="classFEDD_1_1MultiVector.html">MultiVector</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>MultiVector_Type</b></td></tr>
 <tr class="separator:aa4cb3a7f030c3e3a56220b9764073ecb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,7 +139,7 @@ typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1MultiVector.html">Mult
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aca8f0a461be0642616f19cdbb3848e97" id="r_aca8f0a461be0642616f19cdbb3848e97"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca8f0a461be0642616f19cdbb3848e97">HDF5Import</a> (MapConstPtr_Type readMap, std::string inputFilename)</td></tr>
-<tr class="memdesc:aca8f0a461be0642616f19cdbb3848e97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor of HDF import. Here the general setting are defined. An epetra map build based on the read map.  <br /></td></tr>
+<tr class="memdesc:aca8f0a461be0642616f19cdbb3848e97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor of HDF import. Here the general setting are defined. An tpetra map build based on the read map.  <br /></td></tr>
 <tr class="separator:aca8f0a461be0642616f19cdbb3848e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fec1a47b2a94f70e46b45fcc17a9e6e" id="r_a4fec1a47b2a94f70e46b45fcc17a9e6e"><td class="memItemLeft" align="right" valign="top">MultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fec1a47b2a94f70e46b45fcc17a9e6e">readVariablesHDF5</a> (std::string varName)</td></tr>
 <tr class="memdesc:a4fec1a47b2a94f70e46b45fcc17a9e6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reading a variable 'varName' from the inputFile with inputFilename of file type HDF5.  <br /></td></tr>
@@ -152,26 +152,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>closeImporter</b> ()<
 Protected Attributes</h2></td></tr>
 <tr class="memitem:aef6882fcd3217410e1a3445ce9689ba2" id="r_aef6882fcd3217410e1a3445ce9689ba2"><td class="memItemLeft" align="right" valign="top"><a id="aef6882fcd3217410e1a3445ce9689ba2" name="aef6882fcd3217410e1a3445ce9689ba2"></a>
 HDF5Ptr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>hdf5importer_</b></td></tr>
-<tr class="memdesc:aef6882fcd3217410e1a3445ce9689ba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">HDF5 importer based on EpetraExt HDF5 importer. <br /></td></tr>
+<tr class="memdesc:aef6882fcd3217410e1a3445ce9689ba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">HDF5 importer based on <a class="el" href="classFEDD_1_1HDF5Toolbox.html" title="This class contains the features we use from EpteraExt::HDF5, but we transition it to Tpetra.">HDF5Toolbox</a>. <br /></td></tr>
 <tr class="separator:aef6882fcd3217410e1a3445ce9689ba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d0d7ff2d8436c7a3f93afda98403178" id="r_a0d0d7ff2d8436c7a3f93afda98403178"><td class="memItemLeft" align="right" valign="top"><a id="a0d0d7ff2d8436c7a3f93afda98403178" name="a0d0d7ff2d8436c7a3f93afda98403178"></a>
 CommConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>comm_</b></td></tr>
 <tr class="separator:a0d0d7ff2d8436c7a3f93afda98403178"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3ae3c99b23dbe35ef33c8844b0464dc" id="r_ae3ae3c99b23dbe35ef33c8844b0464dc"><td class="memItemLeft" align="right" valign="top"><a id="ae3ae3c99b23dbe35ef33c8844b0464dc" name="ae3ae3c99b23dbe35ef33c8844b0464dc"></a>
-Teuchos::RCP&lt; Epetra_MpiComm &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>commEpetra_</b></td></tr>
-<tr class="separator:ae3ae3c99b23dbe35ef33c8844b0464dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8698a737f344ab29375d92bd736e1221" id="r_a8698a737f344ab29375d92bd736e1221"><td class="memItemLeft" align="right" valign="top"><a id="a8698a737f344ab29375d92bd736e1221" name="a8698a737f344ab29375d92bd736e1221"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>inputFilename_</b></td></tr>
 <tr class="memdesc:a8698a737f344ab29375d92bd736e1221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of input file. <br /></td></tr>
 <tr class="separator:a8698a737f344ab29375d92bd736e1221"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ee6bc43b75a6531a6704abc57dcaedd" id="r_a4ee6bc43b75a6531a6704abc57dcaedd"><td class="memItemLeft" align="right" valign="top"><a id="a4ee6bc43b75a6531a6704abc57dcaedd" name="a4ee6bc43b75a6531a6704abc57dcaedd"></a>
-EpetraMapPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>readMap_</b></td></tr>
-<tr class="memdesc:a4ee6bc43b75a6531a6704abc57dcaedd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of <a class="el" href="classFEDD_1_1Map.html">Map</a> of import multivector. <br /></td></tr>
-<tr class="separator:a4ee6bc43b75a6531a6704abc57dcaedd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b18512c9323900d174b9fcdd1182646" id="r_a8b18512c9323900d174b9fcdd1182646"><td class="memItemLeft" align="right" valign="top"><a id="a8b18512c9323900d174b9fcdd1182646" name="a8b18512c9323900d174b9fcdd1182646"></a>
-Epetra_MultiVector *&#160;</td><td class="memItemRight" valign="bottom"><b>u_import_Epetra_</b></td></tr>
-<tr class="memdesc:a8b18512c9323900d174b9fcdd1182646"><td class="mdescLeft">&#160;</td><td class="mdescRight">Imported <a class="el" href="classFEDD_1_1MultiVector.html">MultiVector</a> in Epetra format. <br /></td></tr>
-<tr class="separator:a8b18512c9323900d174b9fcdd1182646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add4dfc22e2f3dee0a99819b4eadf4c6a" id="r_add4dfc22e2f3dee0a99819b4eadf4c6a"><td class="memItemLeft" align="right" valign="top"><a id="add4dfc22e2f3dee0a99819b4eadf4c6a" name="add4dfc22e2f3dee0a99819b4eadf4c6a"></a>
+MapConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>readMap_</b></td></tr>
+<tr class="memdesc:add4dfc22e2f3dee0a99819b4eadf4c6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of <a class="el" href="classFEDD_1_1Map.html">Map</a> of import multivector. <br /></td></tr>
+<tr class="separator:add4dfc22e2f3dee0a99819b4eadf4c6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95425675a08aef7f2da9333576411a8c" id="r_a95425675a08aef7f2da9333576411a8c"><td class="memItemLeft" align="right" valign="top"><a id="a95425675a08aef7f2da9333576411a8c" name="a95425675a08aef7f2da9333576411a8c"></a>
 MultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>u_import_Tpetra_</b></td></tr>
 <tr class="memdesc:a95425675a08aef7f2da9333576411a8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Imported file in Tpetra format. <br /></td></tr>
@@ -199,7 +192,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Constructor of HDF import. Here the general setting are defined. An epetra map build based on the read map. </p>
+<p>Constructor of HDF import. Here the general setting are defined. An tpetra map build based on the read map. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">readMap</td><td><a class="el" href="classFEDD_1_1Map.html">Map</a> for reading file. Parallel distribution for the to be imported multivector. </td></tr>

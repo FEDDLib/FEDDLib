@@ -112,70 +112,46 @@ $(function(){initNavTree('HDF5Export__def_8hpp_source.html',''); initResizable(t
 <div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classFEDD_1_1HDF5Export.html#a930642a3940d7b40549b9e15fb1daf28">   10</a></span><a class="code hl_function" href="classFEDD_1_1HDF5Export.html#a930642a3940d7b40549b9e15fb1daf28">HDF5Export&lt;SC,LO,GO,NO&gt;::HDF5Export</a>(MapConstPtr_Type writeMap, std::string outputFilename):</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>hdf5exporter_(),</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>comm_(),</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>commEpetra_()</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>{</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    Teuchos::RCP&lt;const Teuchos::MpiComm&lt;int&gt; &gt; mpiComm = Teuchos::rcp_dynamic_cast&lt;const Teuchos::MpiComm&lt;int&gt; &gt;( writeMap-&gt;getComm() );</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    commEpetra_.reset( <span class="keyword">new</span> Epetra_MpiComm( *mpiComm-&gt;getRawMpiComm() ) );</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>comm_()</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    Teuchos::RCP&lt;const Teuchos::MpiComm&lt;int&gt; &gt; mpiComm = Teuchos::rcp_dynamic_cast&lt;const Teuchos::MpiComm&lt;int&gt; &gt;( writeMap-&gt;getComm() );</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    hdf5exporter_.reset( <span class="keyword">new</span> HDF5_Type(mpiComm) ); <span class="comment">// Building HDF5 Exporter</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="comment">// We convert the current map to an eptra map</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    Teuchos::ArrayView&lt; const GO &gt; indices = writeMap-&gt;getNodeElementList();</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">int</span>* intGlobIDs = <span class="keyword">new</span> <span class="keywordtype">int</span>[indices.size()];</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    for (<span class="keywordtype">int</span> i=0; i&lt;indices.size(); i++) {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        intGlobIDs[i] = (int) indices[i];</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">int</span> nmbPointsGlob = writeMap-&gt;getGlobalNumElements(); <span class="comment">// Number of global points</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    EpetraMapPtr_Type mapEpetra = Teuchos::rcp(<span class="keyword">new</span> Epetra_Map((<span class="keywordtype">int</span>)nmbPointsGlob,indices.size(),intGlobIDs,0,*commEpetra_));</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    writeMap_ = mapEpetra; <span class="comment">// Defining the read map. All different variables that might be written to the .h5 file have the same map</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    hdf5exporter_-&gt;create(outputFilename+<span class="stringliteral">&quot;.h5&quot;</span>); <span class="comment">// Creating output file with the &#39;outoutFilename&#39;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    outputFilename_ = outputFilename; </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="}">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classFEDD_1_1HDF5Export.html#ab216301a0c8fb6e836b3ab283b6f68e8">   25</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1HDF5Export.html#ab216301a0c8fb6e836b3ab283b6f68e8">HDF5Export&lt;SC,LO,GO,NO&gt;::writeVariablesHDF5</a>(std::string varName, <span class="keyword">const</span> MultiVectorConstPtr_Type writeVector){</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    hdf5exporter_-&gt;write(varName,writeVector); <span class="comment">// Writing u_export as variable &#39;varName&#39; in file</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span>(writeVector-&gt;getMap()-&gt;getComm()-&gt;getRank() == 0 )</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        std::cout &lt;&lt; <span class="stringliteral">&quot; HDF5_Export:: Exporting to file &quot;</span> &lt;&lt; outputFilename_ &lt;&lt; <span class="stringliteral">&quot; with variable name &quot;</span> &lt;&lt; varName &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    hdf5exporter_.reset( <span class="keyword">new</span> HDF5_Type(*commEpetra_) ); <span class="comment">// Building HDF5 Exporter</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    hdf5exporter_-&gt;Create(outputFilename+<span class="stringliteral">&quot;.h5&quot;</span>); <span class="comment">// Creating output file with the &#39;outoutFilename&#39;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    hdf5exporter_-&gt;flush();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    outputFilename_ = outputFilename; </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classFEDD_1_1HDF5Export.html#a1dfc6b8fa995e6affdce32569a292919">   37</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1HDF5Export.html#a1dfc6b8fa995e6affdce32569a292919">HDF5Export&lt;SC,LO,GO,NO&gt;::closeExporter</a>(){</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    hdf5exporter_-&gt;close();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
 </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classFEDD_1_1HDF5Export.html#aa127fe42b7ba3e784a53a098189d708a">   40</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1HDF5Export.html#aa127fe42b7ba3e784a53a098189d708a">HDF5Export&lt;SC,LO,GO,NO&gt;::writeVariablesHDF5</a>(std::string varName,MultiVectorConstPtr_Type writeVector){</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    EpetraMVPtr_Type u_export(<span class="keyword">new</span> Epetra_MultiVector(*(writeMap_),1)); <span class="comment">// Epetra export vector</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    TEUCHOS_TEST_FOR_EXCEPTION( std::abs(writeMap_-&gt;NumMyElements() - writeVector-&gt;getLocalLength()) &gt; 1e-12, std::logic_error, <span class="stringliteral">&quot; The local length of map does not match the local mv length. Map and MultiVector are not compatible&quot;</span>);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="comment">// We need to write the contents of the writeVector into the Epetra export vector: Convert Xpetra -&gt; Epetra</span></div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    Teuchos::ArrayRCP&lt;const SC&gt; tmpData = writeVector-&gt;getData(0);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i&lt;writeVector-&gt;getLocalLength(); i++) {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        u_export-&gt;ReplaceMyValue( i, 0, tmpData[i] );</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    hdf5exporter_-&gt;Write(varName,*u_export); <span class="comment">// Writing u_export as variable &#39;varName&#39; in file</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">if</span>(writeVector-&gt;getMap()-&gt;getComm()-&gt;getRank() == 0 )</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        std::cout &lt;&lt; <span class="stringliteral">&quot; HDF5_Export:: Exporting to file &quot;</span> &lt;&lt; outputFilename_ &lt;&lt; <span class="stringliteral">&quot; with variable name &quot;</span> &lt;&lt; varName &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    hdf5exporter_-&gt;Flush();</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
-</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC,<span class="keyword">class</span> LO,<span class="keyword">class</span> GO,<span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classFEDD_1_1HDF5Export.html#a1dfc6b8fa995e6affdce32569a292919">   62</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1HDF5Export.html#a1dfc6b8fa995e6affdce32569a292919">HDF5Export&lt;SC,LO,GO,NO&gt;::closeExporter</a>(){</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    hdf5exporter_-&gt;Close();</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
-</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassFEDD_1_1HDF5Export_html_a1dfc6b8fa995e6affdce32569a292919"><div class="ttname"><a href="classFEDD_1_1HDF5Export.html#a1dfc6b8fa995e6affdce32569a292919">FEDD::HDF5Export::closeExporter</a></div><div class="ttdeci">void closeExporter()</div><div class="ttdoc">Closing Exporter.</div><div class="ttdef"><b>Definition</b> HDF5Export_def.hpp:62</div></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassFEDD_1_1HDF5Export_html_a1dfc6b8fa995e6affdce32569a292919"><div class="ttname"><a href="classFEDD_1_1HDF5Export.html#a1dfc6b8fa995e6affdce32569a292919">FEDD::HDF5Export::closeExporter</a></div><div class="ttdeci">void closeExporter()</div><div class="ttdoc">Closing Exporter.</div><div class="ttdef"><b>Definition</b> HDF5Export_def.hpp:37</div></div>
 <div class="ttc" id="aclassFEDD_1_1HDF5Export_html_a930642a3940d7b40549b9e15fb1daf28"><div class="ttname"><a href="classFEDD_1_1HDF5Export.html#a930642a3940d7b40549b9e15fb1daf28">FEDD::HDF5Export::HDF5Export</a></div><div class="ttdeci">HDF5Export(MapConstPtr_Type writeMap, std::string outputFilename)</div><div class="ttdoc">Constructor for HDF5 Exporter.</div><div class="ttdef"><b>Definition</b> HDF5Export_def.hpp:10</div></div>
-<div class="ttc" id="aclassFEDD_1_1HDF5Export_html_aa127fe42b7ba3e784a53a098189d708a"><div class="ttname"><a href="classFEDD_1_1HDF5Export.html#aa127fe42b7ba3e784a53a098189d708a">FEDD::HDF5Export::writeVariablesHDF5</a></div><div class="ttdeci">void writeVariablesHDF5(std::string varName, MultiVectorConstPtr_Type writeVector)</div><div class="ttdoc">Exporting MultiVector writeVector as HDF5 File with the variable name varName.</div><div class="ttdef"><b>Definition</b> HDF5Export_def.hpp:40</div></div>
+<div class="ttc" id="aclassFEDD_1_1HDF5Export_html_ab216301a0c8fb6e836b3ab283b6f68e8"><div class="ttname"><a href="classFEDD_1_1HDF5Export.html#ab216301a0c8fb6e836b3ab283b6f68e8">FEDD::HDF5Export::writeVariablesHDF5</a></div><div class="ttdeci">void writeVariablesHDF5(std::string varName, const MultiVectorConstPtr_Type writeVector)</div><div class="ttdoc">Exporting MultiVector writeVector as HDF5 File with the variable name varName.</div><div class="ttdef"><b>Definition</b> HDF5Export_def.hpp:25</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

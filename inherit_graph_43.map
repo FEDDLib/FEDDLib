@@ -1,7 +1,11 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classFEDD_1_1Mesh.html" title=" " alt="" coords="5,39,157,79"/>
-<area shape="rect" id="Node000001" href="$classFEDD_1_1MeshStructured.html" title=" " alt="" coords="212,5,366,46"/>
-<area shape="poly" id="edge32_Node000000_Node000001" title=" " alt="" coords="171,42,211,35,212,41,172,47"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshUnstructured.html" title=" " alt="" coords="205,71,373,111"/>
-<area shape="poly" id="edge33_Node000000_Node000002" title=" " alt="" coords="172,70,205,75,204,81,172,76"/>
+<area shape="rect" id="Node000000" href="$classFEDD_1_1Mesh.html" title=" " alt="" coords="5,77,157,133"/>
+<area shape="rect" id="Node000001" href="$classFEDD_1_1MeshUnstructured.html" title=" " alt="" coords="205,5,388,61"/>
+<area shape="poly" id="edge28_Node000000_Node000001" title=" " alt="" coords="171,72,210,59,212,64,173,77"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1MeshStructured.html" title=" " alt="" coords="220,85,373,126"/>
+<area shape="poly" id="edge30_Node000000_Node000003" title=" " alt="" coords="173,102,219,102,219,108,173,108"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1MeshUnstructured.html" title=" " alt="" coords="212,150,380,191"/>
+<area shape="poly" id="edge31_Node000000_Node000004" title=" " alt="" coords="173,130,228,147,226,152,171,135"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1RefinementFactory.html" title=" " alt="" coords="436,13,605,54"/>
+<area shape="poly" id="edge29_Node000001_Node000002" title=" " alt="" coords="404,30,435,30,435,36,404,36"/>
 </map>

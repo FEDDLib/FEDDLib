@@ -108,17 +108,11 @@ $(function(){initNavTree('classFEDD_1_1HDF5Export.html',''); initResizable(true)
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a12e64044952e5f97316ff7d883f99a10" id="r_a12e64044952e5f97316ff7d883f99a10"><td class="memItemLeft" align="right" valign="top"><a id="a12e64044952e5f97316ff7d883f99a10" name="a12e64044952e5f97316ff7d883f99a10"></a>
-typedef Teuchos::RCP&lt; Epetra_Map &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>EpetraMapPtr_Type</b></td></tr>
-<tr class="separator:a12e64044952e5f97316ff7d883f99a10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad03d5fbae0e0b994403c3ecf82e49913" id="r_ad03d5fbae0e0b994403c3ecf82e49913"><td class="memItemLeft" align="right" valign="top"><a id="ad03d5fbae0e0b994403c3ecf82e49913" name="ad03d5fbae0e0b994403c3ecf82e49913"></a>
-typedef Teuchos::RCP&lt; Epetra_MultiVector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>EpetraMVPtr_Type</b></td></tr>
-<tr class="separator:ad03d5fbae0e0b994403c3ecf82e49913"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a466e5d7d8515712cfd8c8feed41baf66" id="r_a466e5d7d8515712cfd8c8feed41baf66"><td class="memItemLeft" align="right" valign="top"><a id="a466e5d7d8515712cfd8c8feed41baf66" name="a466e5d7d8515712cfd8c8feed41baf66"></a>
-typedef EpetraExt::HDF5&#160;</td><td class="memItemRight" valign="bottom"><b>HDF5_Type</b></td></tr>
-<tr class="separator:a466e5d7d8515712cfd8c8feed41baf66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f66439f6ab43e7dd0fffd0d6acd502b" id="r_a2f66439f6ab43e7dd0fffd0d6acd502b"><td class="memItemLeft" align="right" valign="top"><a id="a2f66439f6ab43e7dd0fffd0d6acd502b" name="a2f66439f6ab43e7dd0fffd0d6acd502b"></a>
+typedef <a class="el" href="classFEDD_1_1HDF5Toolbox.html">HDF5Toolbox</a>&lt; SC, LO, GO, NO &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>HDF5_Type</b></td></tr>
+<tr class="separator:a2f66439f6ab43e7dd0fffd0d6acd502b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8de4cc285b596bb34b4004f3058a07b" id="r_ac8de4cc285b596bb34b4004f3058a07b"><td class="memItemLeft" align="right" valign="top"><a id="ac8de4cc285b596bb34b4004f3058a07b" name="ac8de4cc285b596bb34b4004f3058a07b"></a>
-typedef Teuchos::RCP&lt; HDF5_Type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>HDF5Ptr_Type</b></td></tr>
+typedef Teuchos::RCP&lt; <a class="el" href="classFEDD_1_1HDF5Toolbox.html">HDF5_Type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>HDF5Ptr_Type</b></td></tr>
 <tr class="separator:ac8de4cc285b596bb34b4004f3058a07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac73f7ddc904c133e85b1d2d8a784f7f" id="r_aac73f7ddc904c133e85b1d2d8a784f7f"><td class="memItemLeft" align="right" valign="top"><a id="aac73f7ddc904c133e85b1d2d8a784f7f" name="aac73f7ddc904c133e85b1d2d8a784f7f"></a>
 typedef Teuchos::Comm&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Comm_Type</b></td></tr>
@@ -147,9 +141,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a930642a3940d7b40549b9e15fb1daf28" id="r_a930642a3940d7b40549b9e15fb1daf28"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a930642a3940d7b40549b9e15fb1daf28">HDF5Export</a> (MapConstPtr_Type writeMap, std::string outputFilename)</td></tr>
 <tr class="memdesc:a930642a3940d7b40549b9e15fb1daf28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for HDF5 Exporter.  <br /></td></tr>
 <tr class="separator:a930642a3940d7b40549b9e15fb1daf28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa127fe42b7ba3e784a53a098189d708a" id="r_aa127fe42b7ba3e784a53a098189d708a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa127fe42b7ba3e784a53a098189d708a">writeVariablesHDF5</a> (std::string varName, MultiVectorConstPtr_Type writeVector)</td></tr>
-<tr class="memdesc:aa127fe42b7ba3e784a53a098189d708a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exporting <a class="el" href="classFEDD_1_1MultiVector.html">MultiVector</a> writeVector as HDF5 File with the variable name varName.  <br /></td></tr>
-<tr class="separator:aa127fe42b7ba3e784a53a098189d708a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab216301a0c8fb6e836b3ab283b6f68e8" id="r_ab216301a0c8fb6e836b3ab283b6f68e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab216301a0c8fb6e836b3ab283b6f68e8">writeVariablesHDF5</a> (std::string varName, const MultiVectorConstPtr_Type writeVector)</td></tr>
+<tr class="memdesc:ab216301a0c8fb6e836b3ab283b6f68e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exporting <a class="el" href="classFEDD_1_1MultiVector.html">MultiVector</a> writeVector as HDF5 File with the variable name varName.  <br /></td></tr>
+<tr class="separator:ab216301a0c8fb6e836b3ab283b6f68e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1dfc6b8fa995e6affdce32569a292919" id="r_a1dfc6b8fa995e6affdce32569a292919"><td class="memItemLeft" align="right" valign="top"><a id="a1dfc6b8fa995e6affdce32569a292919" name="a1dfc6b8fa995e6affdce32569a292919"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>closeExporter</b> ()</td></tr>
 <tr class="memdesc:a1dfc6b8fa995e6affdce32569a292919"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closing Exporter. <br /></td></tr>
@@ -163,18 +157,12 @@ HDF5Ptr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>hdf5exporter_
 <tr class="memitem:a5cfa8b659f9588b7b24eff895fa8a53a" id="r_a5cfa8b659f9588b7b24eff895fa8a53a"><td class="memItemLeft" align="right" valign="top"><a id="a5cfa8b659f9588b7b24eff895fa8a53a" name="a5cfa8b659f9588b7b24eff895fa8a53a"></a>
 CommConstPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>comm_</b></td></tr>
 <tr class="separator:a5cfa8b659f9588b7b24eff895fa8a53a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c30b5f64987f437ea33d14496e28094" id="r_a3c30b5f64987f437ea33d14496e28094"><td class="memItemLeft" align="right" valign="top"><a id="a3c30b5f64987f437ea33d14496e28094" name="a3c30b5f64987f437ea33d14496e28094"></a>
-Teuchos::RCP&lt; Epetra_MpiComm &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>commEpetra_</b></td></tr>
-<tr class="separator:a3c30b5f64987f437ea33d14496e28094"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f97eaefd42717ef804ec89300666a18" id="r_a3f97eaefd42717ef804ec89300666a18"><td class="memItemLeft" align="right" valign="top"><a id="a3f97eaefd42717ef804ec89300666a18" name="a3f97eaefd42717ef804ec89300666a18"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>outputFilename_</b></td></tr>
 <tr class="separator:a3f97eaefd42717ef804ec89300666a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63ed9bc401d25f24daaf966a318818a2" id="r_a63ed9bc401d25f24daaf966a318818a2"><td class="memItemLeft" align="right" valign="top"><a id="a63ed9bc401d25f24daaf966a318818a2" name="a63ed9bc401d25f24daaf966a318818a2"></a>
 std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>varNamesRead_</b></td></tr>
 <tr class="separator:a63ed9bc401d25f24daaf966a318818a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1861b55ffa6130989854cafdef8fada7" id="r_a1861b55ffa6130989854cafdef8fada7"><td class="memItemLeft" align="right" valign="top"><a id="a1861b55ffa6130989854cafdef8fada7" name="a1861b55ffa6130989854cafdef8fada7"></a>
-EpetraMapPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>writeMap_</b></td></tr>
-<tr class="separator:a1861b55ffa6130989854cafdef8fada7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a930642a3940d7b40549b9e15fb1daf28" name="a930642a3940d7b40549b9e15fb1daf28"></a>
@@ -210,8 +198,8 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa127fe42b7ba3e784a53a098189d708a" name="aa127fe42b7ba3e784a53a098189d708a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa127fe42b7ba3e784a53a098189d708a">&#9670;&#160;</a></span>writeVariablesHDF5()</h2>
+<a id="ab216301a0c8fb6e836b3ab283b6f68e8" name="ab216301a0c8fb6e836b3ab283b6f68e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab216301a0c8fb6e836b3ab283b6f68e8">&#9670;&#160;</a></span>writeVariablesHDF5()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -226,7 +214,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">MultiVectorConstPtr_Type</td>          <td class="paramname"><span class="paramname"><em>writeVector</em></span>&#160;)</td>
+          <td class="paramtype">const MultiVectorConstPtr_Type</td>          <td class="paramname"><span class="paramname"><em>writeVector</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
