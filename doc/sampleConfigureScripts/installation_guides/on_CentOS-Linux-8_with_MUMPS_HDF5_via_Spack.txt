@@ -1,0 +1,757 @@
+Installation guide for Trilinos and FEDDLib
+System used: CentOS Linux 8
+
+Note 1: Depending on the versions of software already available, you can skip the installation of basic tools like CMake and GCC.
+Note 2: The installation guide will use paths and versions as examples. Adapt them to your setup.
+Note 3: Some information is only mentioned once and not repeated every time. It may, thus, be helpful to at least skim the installation description of skipped installations.
+Note 4: Reload your shell after each installation, so the environment paths are updated. This is especially relevant if Spack is used to find packages.
+Note 5: Pay attention to the number of cores that are used to build a package. Particularly the linker can have high memory demands (three instances running in parallel have once crashed my system with 16 GB of RAM) for large libraries and executables. Standard packages (CMake, GCC etc.) should have comparatively small executables/libraries, though, allowing the use of more cores.
+
+
+=== Overview ====================================================================
+
+* Spack
+* binutils
+* GCC
+* CMake
+* OpenMPI
+* ParMETIS/METIS
+* BLAS/LAPACK via OpenBLAS
+* Boost
+* HDF5
+* MUMPS
+* ccache
+* Trilinos
+* FEDDLib
+
+
+=== Spack =======================================================================
+
+To download only the current version (without all the history) of Spack, use
+git clone --depth=2 https://github.com/spack/spack.git
+
+Optional:
+If you want to use the same version that this guide refers to, you probably need to download the full history of the repository:
+git clone https://github.com/spack/spack.git
+Change into the cloned folder and
+git checkout 75611a9ee7da7ba1c7f9b651e10af59d762a524d
+
+Put Spack in your PATH environment variable in  ~/.bashrc (loaded with every shell) or ~/.bash_profile (loaded at login):
+. ~/opt/spack/share/spack/setup-env.sh
+
+Reload the shell or set the Spack paths temporarily with
+. ~/opt/spack/share/spack/setup-env.sh
+
+Optional:
+If you want to use the same Spack package configurations as the ones this guide refers to:
+spack repo update
+spack repo ls
+Change into the shown directory. Then:
+git fetch --unshallow
+git checkout 4b3ea86166f57956da219c4f5848f7c915744b46
+
+Note:
+Despite identical installation procedures and user rights, Spack puts the packages.yaml file for external packages in different locations on different systems. I don't why that is. On the system that this guide is based on, the location is $SPACK_ROOT/etc/spack/packages.yaml. SPACK_ROOT is defined by Spack itself when you load setup-env.sh. On another system, the file is at ~/.spack/packages.yaml. Generally, it is my understanding that SPACK_ROOT should be used for system-wide installations, but I did not want to mess with Spack's default placement of packages.yaml and kept it in Spack's installation folder. In the following, replace $SPACK_ROOT/etc/spack/packages.yaml with the location your packages.yaml file is at.
+
+
+=== binutils ====================================================================
+
+Skip the installation of binutils, unless you have issues with the system linker (too old, ...).
+
+Download the source files, create a build folder and run:
+
+../binutils-source/configure --prefix=$HOME/opt/binutils-2.45
+make -j4
+make install
+
+Add to ~/.bashrc or ~/.bash_profile:
+
+BINUTILS_PATH=$HOME/opt/binutils-2.45
+export PATH =$BINUTILS_PATH/bin:$PATH
+export LD_LIBRARY_PATH=$BINUTILS_PATH/lib:$LD_LIBRARY_PATH
+
+Spack ---------------------------------------
+
+After installing GCC in the next step, using the command
+spack compiler find
+the binary utilities were detected by Spack automatically on this system.
+This gave me the following entries in the packages.yaml file:
+
+packages:
+  binutils:
+    externals:
+    - spec: binutils@2.45~gold+headers
+      prefix: /home/jknepper/opt/binutils-2.45
+    - spec: binutils@2.30.79~gold~headers
+      prefix: /usr
+  gcc:
+    externals:
+    - spec: gcc@15.2.0 languages:='c,c++,fortran'
+      prefix: /home/jknepper/opt/gcc-15.2.0
+      extra_attributes:
+        compilers:
+          c: /home/jknepper/opt/gcc-15.2.0/bin/gcc
+          cxx: /home/jknepper/opt/gcc-15.2.0/bin/g++
+          fortran: /home/jknepper/opt/gcc-15.2.0/bin/gfortran
+    - spec: gcc@8.3.1 languages:='c,c++,fortran'
+      prefix: /usr
+      extra_attributes:
+        compilers:
+          c: /usr/bin/gcc
+          cxx: /usr/bin/g++
+          fortran: /usr/bin/gfortran
+
+On a Ubuntu system with the identical Spack version (commit ID) and Spack's configuration repository (also based on commit ID), I was not so lucky.
+Neither did it add binutils as an external dependency, nor did
+spack external find binutils
+add binutils to the list -- despite an identical setup from the user perspective.
+Since binutils is not added as an explicit dependency to packages, simply adding it to packages.yaml will most likely not have an effect.
+I have not found a way to determine, which linker Spack actually uses, as a verbose build output does not give any indication.
+I have found the following suggestion: Add the linker path as a prepend_path, so ld (and the other tools) are accessible in Spack's environment when the compiler is used:
+
+packages:
+  gcc:
+    externals:
+    - spec: gcc@15.2.0 languages:='c,c++,fortran'
+      prefix: /home/jknepper/opt/gcc-15.2.0
+      extra_attributes:
+        compilers:
+          c: /home/jknepper/opt/gcc-15.2.0/bin/gcc
+          cxx: /home/jknepper/opt/gcc-15.2.0/bin/g++
+          fortran: /home/jknepper/opt/gcc-15.2.0/bin/gfortran
+        environment:
+          prepend_path:
+            PATH: /home/jknepper/opt/binutils-2.45/bin
+
+One alternative should be to install a separate (additional) version of binutils via Spack.
+One should hope that this internal version is then definitely used.
+As binutils is not particularly large, and since one should not have any compatibility issues for the same binutils version, this might be a suitable solution.
+
+
+=== GCC =========================================================================
+
+Skip the installation of GCC, unless you cannot use the system installation (too old, does not exist, version with a bug, ...).
+
+(This takes very long to build from source. Use as many parallel cores as possible to speed this up, i.e., make -j20 for example.)
+
+Download the source files and change into the source folder:
+
+contrib/download_prerequisites
+./configure --disable-multilib --prefix=$HOME/opt/gcc-15.2.0/
+make -j8
+make install
+
+With disable-multilib, a pure 64-bit compiler is built.
+Add to ~/.bashrc or ~/.bash_profile:
+
+GCC_PATH=$HOME/opt/gcc-15.2.0
+export PATH=$GCC_PATH/bin:$PATH
+export LD_LIBRARY_PATH=$GCC_PATH/lib64:$LD_LIBRARY_PATH
+
+Add to Spack:
+To use GCC as an external dependency in Spack, Spack can find it automatically via the PATH:
+spack compiler find
+This will not use the libraries, and I was not able to get Spack to use them. So I ended up installing them in Spack again:
+spack install gcc-runtime@15.2.0
+
+
+=== CMake =======================================================================
+
+Skip the installation of CMake, unless you cannot use the system installation (too old, does not exist, version with a bug, ...).
+
+Download source code für CMake, extract it, and change into the source code folder.
+Build and install to $HOME/opt/cmake-4.1.2:
+
+./bootstrap --prefix=$HOME/opt/cmake-4.1.2 --parallel=4
+gmake
+make install
+
+Add to ~/.bashrc or ~/.bash_profile:
+export PATH=$HOME/opt/cmake-4.1.2/bin:$PATH
+
+Add to Spack:
+To use CMake as an external dependency in Spack, Spack can find it automatically via the PATH:
+spack external find cmake
+
+However, this is not yet sufficient, as we need to tell Spack that CMake requires up to date libraries, i.e., the ones in LD_LIBRARY_PATH (unless your system libraries are recent enough).
+cd $SPACK_ROOT/etc/spack/
+
+Open packages.yaml and add LD_LIBRARY_PATH:
+packages:
+  cmake:
+	externals:
+	- spec: cmake@4.1.2
+	  prefix: /home/jknepper/opt/cmake-4.1.2
+	  extra_attributes:
+		environment:
+		  set:
+			LD_LIBRARY_PATH: /home/jknepper/opt/gcc-15.2.0/lib64
+
+
+=== OpenMPI =====================================================================
+
+Download the source files, change into their directory, and execute
+
+./configure --prefix=$HOME/opt/openmpi-4.1.5
+make all -j8
+make install
+
+Add to ~/.bashrc or ~/.bash_profile:
+MPI_PATH=$HOME/opt/openmpi-5.0.8
+export PATH=$MPI_PATH/bin:$PATH
+
+You can check the version via
+mpirun --version
+
+Add to Spack:
+spack external find openmpi
+
+
+=== ParMETIS/METIS ==============================================================
+
+IMPORTANT: At some point, METIS and ParMETIS were restructured, and GKlib was moved to its own library. It is now a dependency of METIS and ParMETIS. As of now (2025-11), most sources, including Spack, use older versions that still integrate GKlib's functionality in METIS and ParMETIS. The easy way is to use these older versions, for example, by installing METIS and ParMETIS via Spack. Here, we will take the detour and modify Spack to be able to work with the (as of now) most up to date METIS and ParMETIS version from their respective GitHub repository.
+
+GKlib ---------------------------------------
+
+git clone https://github.com/KarypisLab/GKlib
+
+Optional (use the commit that this guide is based on):
+git checkout 6e7951358fd896e2abed7887196b6871aac9f2f8
+
+Edit the Makefile and add to the first CONFIG_FLAGS the part -DCMAKE_POSITION_INDEPENDENT_CODE=ON to obtain:
+CONFIG_FLAGS = -DCMAKE_VERBOSE_MAKEFILE=1 -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+This will generate position independent code (PIC, -fPIC), which is required for dynamic libraries (.so files).
+
+Configure and compile:
+make config cc=gcc prefix=$HOME/opt/graph_partitioning/gklib-repo-install
+make -j8
+make install
+
+Spack:
+Add GKlib as an external dependency. Edit the packages.yaml file ($SPACK_ROOT/etc/spack/):
+packages:
+  gklib:
+    externals:
+    - spec: gklib@0.0.1
+      prefix: /home/jknepper/opt/graph_partitioning/gklib-repo-install
+I took the version number from CMakelists.txt (unclear, whether this is correct).
+
+Spack does not know yet that GKlib is a package, since there does not exist any package configuration file.
+Go to the folder displayed by
+spack repo ls
+(In my case, this is ~/.spack/package_repos/fncqgg4/repos/spack_repo/builtin/).
+Go to the packages subfolder (with all the packages configurations) and create the folder gklib:
+~/.spack/package_repos/fncqgg4/repos/spack_repo/builtin/packages/gklib/
+Inside the gklib folde, create the file package.py. You can also later edit this file via "spack edit gklib".
+Add the following content:
+from spack.package import *
+
+class Gklib(Package):
+	"""External GKlib placeholder package. Installed manually outside Spack."""
+
+	homepage = "https://github.com/KarypisLab/GKlib"
+
+	version('0.0.1')
+
+	# No build instructions — only externals are supported.                                                                 
+	def install(self, spec, prefix):
+		raise InstallError(
+			"GKlib must be provided as an external package in packages.yaml"
+		)
+This configuration file is only supposed to tell Spack that GKlib is indeed a package. It cannot be installed or loaded.
+Note that
+~/.spack/package_repos/fncqgg4 is a git repository. You can, thus, create a new branch for your changes to keep them separate from the develop branch:
+git branch my_changes
+git checkout my_changes
+git add --all
+git commit -m "Make Spack aware of GKlib"
+
+(Later on, we need to modify MUMPS' configuration file as well.)
+
+METIS ---------------------------------------
+
+git clone https://github.com/KarypisLab/METIS
+
+Optional (use the commit that this guide is based on):
+git checkout a6e6a2cfa92f93a3ee2971ebc9ddfc3b0b581ab2
+
+make config cc=gcc prefix=$HOME/opt/graph_partitioning/metis-repo-install gklib_path=$HOME/opt/graph_partitioning/gklib-repo-install/
+make -j8
+
+If you get the error "/usr/bin/ld: cannot find -lGKlib", edit CMakeLists.txt and change lib to lib64 for GKLIB_PATH:
+link_directories(${GKLIB_PATH}/lib64)
+In that case, you will most likely also have to change the corresponding line to compile ParMETIS below.
+
+make install
+
+Add to $SPACK_ROOT/etc/spack/packages.yaml:
+
+packages:
+  metis:
+    externals:
+    - spec: metis@5.2.1
+      prefix: /home/jknepper/opt/graph_partitioning/metis-repo-install
+
+I took the version number from the Changelog in the source directory.
+
+ParMETIS ------------------------------------
+
+git clone https://github.com/KarypisLab/ParMETIS
+
+Optional (use the commit that this guide is based on):
+git checkout 8ee6a372ca703836f593e3c450ca903f04be14df
+
+make config cc=mpicc prefix=$HOME/opt/graph_partitioning/parmetis-repo-install gklib_path=$HOME/opt/graph_partitioning/gklib-repo-install metis_path=$HOME/opt/graph_partitioning/metis-repo-install
+
+I had an issue that it was complaining about a the most recent CMake version (4.1.2). Strangely enough, it was sufficient to change 
+cmake_minimum_required(VERSION 2.8)
+to
+cmake_minimum_required(VERSION 3.5)
+in CMakeLists.txt.
+
+make -j8
+For the error "/usr/bin/ld: cannot find -lGKlib", see above at METIS.
+
+make install
+
+Add to $SPACK_ROOT/etc/spack/packages.yaml:
+
+packages:
+  parmetis:
+    externals:
+    - spec: parmetis@4.0.3
+      prefix: /home/jknepper/opt/graph_partitioning/parmetis-repo-install
+
+I took the version number from the Changelog in the source directory.
+
+
+=== BLAS/LAPACK via OpenBLAS ====================================================
+
+Download the source files and change into the source folder:
+make -j4
+make PREFIX=$HOME/opt/OpenBLAS-0.3.30 install
+
+libopenblas.a (static) and libopenblas.so (dynamic) contain BLAS and LAPACK.
+
+Add it to Spack in packages.yaml:
+packages:
+  openblas:
+    externals:
+    - spec: openblas@0.3.30
+      prefix: /home/jknepper/opt/OpenBLAS-0.3.30
+
+
+=== Boost =======================================================================
+
+Download the source files and change into the source folder:
+./bootstrap.sh --prefix=$HOME/opt/boost_1_89_0
+./b2 install
+
+Add it to Spack in packages.yaml:
+packages:
+  boost:
+    externals:
+    - spec: boost@1.89.0
+      prefix: /home/jknepper/opt/boost_1_89_0
+
+
+=== HDF5 ========================================================================
+
+To use MUMPS, the z library is loaded, particularly the package zlib-ng in Spack (or zlib on other systems).
+This shadows the system z library, which is used for compression in HDF5.
+Building HDF5 with the system z library may then cause issues later on when MUMPS is loaded with a different z library.
+
+Option 1: Install HDF5 via Spack (chosen here).
+
+spack spec -Il hdf5
+will show the dependency tree of packages that need to be installed.
+[+] means that it is already installed; [e] means that it is installed outside of Spack; [-] and - mean that something needs to be installed.
+The output will also show the default configuration that will be used. A plus sign means that a feature will be installed, a tilde means that a feature will not be installed.
+I chose to enable MPI and shared libraries; the rest I left to default:
+spack spec -Il hdf5@1.14.6+mpi+shared
+This gave me the configuration
+hdf5@1.14.6~cxx~fortran~hl~ipo~java~map+mpi+shared~subfiling~szip~threadsafe+tools api=default build_system=cmake build_type=Release generator=make platform=linux os=centos8 target=cascadelake %c=gcc@15.2.0
+To install:
+spack install hdf5@1.14.6+mpi+shared
+
+Option 2: Install zlib-ng via Spack and then HDF5 manually.
+
+Install zlib via spack: (or zlib on other systems; check dependency tree of hdf5 and MUMPS)
+spack install zlib-ng
+
+Using
+spack load zlib-ng
+should then set the right environment variables, so that the z lib is actually used.
+In case there are issues, you can find the location and version of z lib via
+spack find -p
+
+Extract the source files of HDF5 and change it the source directory.
+cc=mpicc cxx=mpicxx ./configure --enable-parallel --prefix=$HOME/opt/hdf5-1.14.1-2
+make -j8
+make install
+
+
+=== MUMPS =======================================================================
+
+If you have chosen to use an older version of METIS/ParMETIS that does not have GKlib as a separate dependency, much work can be skipped here.
+
+We will install MUMPS via Spack with support for METIS, ParMETIS, and MPI, while disabling support for OpenMP.
+
+Looking ahead (or if you are using METIS/ParMETIS version without GKlib as a seperate dependency):
+
+Depending on which version you have added for METIS and ParMETIS as external dependencies, you may (!read on before you install MUMPS!) be able to use the following command to check the dependency tree and configuration of MUMPS:
+spack spec -Il mumps@5.8.1+metis+mpi~openmp+parmetis ^metis@5.2.1 ^parmetis@4.0.3
+
+To install (you can remove the -d flag to get less output):
+spack -d install mumps@5.8.1+metis+mpi~openmp+parmetis ^metis@5.2.1 ^parmetis@4.0.3
+
+2025-11: The Spack configuration for MUMPS does not account for up-to-date METIS versions.
+These depend on GKlib as a separate dependency.
+GKlib was already added manually to Spack above for METIS/ParMETIS (although not to use it for METIS/ParMETIS, but to use it now for MUMPS).
+It has to be added as a dependency of MUMPS, and its include and library paths need to be forwarded to the compiler/linker.
+
+I added the following in MUMPS' configuration file (spack edit mumps):
+depends_on("gklib", type=("build", "link"), when="+metis ^metis@5.2.1")
+depends_on("gklib", type=("build", "link"), when="+parmetis ^parmetis@4.0.3")
+
+In the function write_makefile_inc is a part where the paths to the ParMETIS and METIS libraries and includes are added:
+if "+parmetis" in self.spec:
+...
+elif "+metis" in self.spec:
+Underneath, add the following:
+        # parmetis can only be enabled if metis is enabled.
+        # So it's either metis and parmetis or only metis.
+        if "+metis" in self.spec:
+            metis_spec = self.spec["metis"]
+
+            # Starting with some version, METIS and ParMETIS depend on GKlib, so we need to add include and libraries paths.                                                                                                                           
+            if metis_spec.version >= Version("5.2.1"):
+                makefile_conf.extend(
+                    [
+                        "IGKLIB = -I%s" % self.spec["gklib"].prefix.include,
+                        (
+                            ("LGKLIB = -L%s -l%s" % (self.spec["gklib"].prefix.lib64, "GKlib"))
+                            if not shared
+                            else "LGKLIB ="
+	                ),
+                    ]
+		)
+Further below, in the if "+shared" part, add self.spec["gklib"].prefix.lib64,"GKlib" to ParMETIS and METIS. It should read
+        if "+shared" in self.spec:
+            # All Mumps libraries will be linked with 'inject_libs'.                                                                                                                                                                                     
+            inject_libs = []
+            if "+mpi" in self.spec:
+                inject_libs += [self.spec["scalapack"].libs.ld_flags]
+            if "+ptscotch" in self.spec or "+scotch" in self.spec:
+                inject_libs += [self.spec["scotch"].libs.ld_flags]
+            if "+parmetis" in self.spec and "+metis" in self.spec:
+                inject_libs += [
+                    "-L%s -l%s -L%s -l%s -L%s -l%s"
+                    % (
+                        self.spec["parmetis"].prefix.lib,
+                        "parmetis",
+                        self.spec["metis"].prefix.lib,
+                        "metis",
+                        self.spec["gklib"].prefix.lib64,
+                        "GKlib"
+                    )
+                ]
+            elif "+metis" in self.spec:
+                inject_libs += ["-L%s -l%s -L%s -l%s" % (self.spec["metis"].prefix.lib, "metis", self.spec["gklib"].prefix.lib64, "GKlib")]
+The configuration files of Spack are actually in a git repository. Run
+spack repo list
+to get the location. To share the changes above with somebody else, you can create a patch that they can apply:
+git add --all
+(You can reset all staged changes after the patch.)
+git diff --staged > my_changes.patch
+Download my_changes.patch.
+git apply ~/Downloads/my_changes.patch
+To store your changes more permanently, you can create a branch, commit the changes there, and later on update the main branch and merge these updates into your branch.
+git branch my_changes
+git checkout my_changes
+git add --all
+git commit -m "Add limited GKlib support for new METIS version to MUMPS"
+To update the repository in the future:
+git checkout develop
+git pull
+git checkout my_changes
+git rebase develop
+There is also the update repo functionality of Spack (I have not yet tried that):
+spack repo update
+
+Going back to the top,
+spack spec -Il mumps@5.8.1+metis+mpi~openmp+parmetis ^metis@5.2.1 ^parmetis@4.0.3
+should now show GKlib as a new dependency. Install with
+spack -d install mumps@5.8.1+metis+mpi~openmp+parmetis ^metis@5.2.1 ^parmetis@4.0.3
+
+=== ccache ======================================================================
+
+Download the binaries from the website and
+make install prefix=$HOME/opt/ccache
+
+Change to $HOME/opt/ccache/bin:
+ln -s ccache gcc
+ln -s ccache g++
+ln -s ccache mpicc
+ln -s ccache mpicxx
+
+Add to ~/.bashrc or ~/.bash_profile. Make sure that ccache comes before the GCC and OpenMPI compilers:
+export PATH=$HOME/opt/ccache/bin:$PATH
+
+Note:
+1) ccache will use the PATH environment variable to look up the path for gcc, g++, mpicc, mpicxx.
+2) I have put ccache so far at the back of this guide, since I don't want to pollute the cache with one-time installations of the packages above. This also removes another possible source of issues during these installations.
+
+
+=== Trilinos ====================================================================
+
+I use the following folder/file structure for Trilinos installations:
+trilinos/src
+trilinos/build
+trilinos/install
+trilinos/config.sh
+
+git clone https://github.com/trilinos/Trilinos.git src
+git checkout develop
+
+To use the Trilinos commit that this guide was tested with: (2025-11-01)
+git checkout 0ddb43eae0cc2f9524b239aec8b12258fced54ea
+
+Use the following config.sh configuration script. Note that most tests have been disabled. You can also disable all tests (for example, for Amesos2 and NOX, the tests are still enabled). However, disabling tests also reduces the chance of catching linking issues early, which then may later surface while building the FEDDLib.
+
+#!/bin/bash
+
+TYPE=DEBUG
+#TYPE=RELEASE
+
+BASE_DIR=$HOME/dev/trilinos/src
+INSTALL_DIR=$HOME/dev/trilinos/install
+
+BOOST=$HOME/opt/boost_1_89_0
+OPENBLAS=$HOME/opt/OpenBLAS-0.3.30/lib/libopenblas.a
+BLAS=$OPENBLAS
+LAPACK=$OPENBLAS
+PARMETIS=$HOME/opt/graph_partitioning/parmetis-repo-install/lib/libparmetis.a
+METIS=$HOME/opt/graph_partitioning/metis-repo-install/lib/libmetis.a
+
+#UMFPACK=$HOME/opt/umfpack/UMFPACK-5.3.0
+#HDF5=$HOME/opt/hdf5-1.14.6
+#spack load hdf5
+
+# Note 2025-11-08: To use MUMPS with the METIS version from the repository, the Spack configure scripts need to be updated, since METIS now depends on GKlib. To avoid this hassle, use an older version of METIS.
+spack load mumps
+
+# Note on MUMPS vs HDF5 vs Z library
+# With MUMPS, zlib-ng is loaded, which shadows the system libraries that are used for HDF5 if that is compiled independently. Thus, I have built HDF5 via Spack as well to avoid inconsistencies.
+
+# The settings
+# -D Tpetra_INST_INT_LONG_LONG:BOOL=OFF \
+# -D Tpetra_INST_INT_INT:BOOL=ON \
+# are for MUMPS. By default the top setting would be on.
+
+rm -rf CMake*
+
+cmake \
+-D CMAKE_BUILD_TYPE:STRING=$TYPE \
+-D CMAKE_INSTALL_PREFIX:STRING=$INSTALL_DIR \
+-D CMAKE_C_FLAGS:STRING="-DH5_HAVE_PARALLEL -DSHYLU_NODEBASKER" \
+-D CMAKE_CXX_FLAGS:STRING="-DH5_HAVE_PARALLEL -DSHYLU_NODEBASKER" \
+-D CMAKE_C_COMPILER=mpicc \
+-D CMAKE_CXX_COMPILER=mpicxx \
+-D CMAKE_Fortran_COMPILER=mpifort \
+-D MPI_EXEC_MAX_NUMPROCS:STRING=8 \
+-D CMAKE_CXX_STANDARD:STRING=17 \
+-D BUILD_SHARED_LIBS:BOOL=OFF \
+-D Trilinos_ENABLE_TESTS:BOOL=OFF \
+-D Trilinos_ENABLE_EXAMPLES:BOOL=OFF \
+-D Trilinos_ENABLE_Fortran:BOOL=ON \
+-D Trilinos_ENABLE_OpenMP:BOOL=OFF \
+-D Trilinos_ENABLE_Kokkos:BOOL=ON \
+-D Trilinos_ENABLE_Teuchos:BOOL=ON \
+-D Trilinos_ENABLE_Epetra:BOOL=OFF \
+-D Trilinos_ENABLE_EpetraExt:BOOL=OFF \
+-D Trilinos_ENABLE_PyTrilinos:BOOL=OFF \
+-D Trilinos_ENABLE_Xpetra:BOOL=ON \
+-D Trilinos_ENABLE_Tpetra:BOOL=ON \
+-D Tpetra_INST_INT_LONG_LONG:BOOL=OFF \
+-D Tpetra_INST_INT_INT:BOOL=ON \
+-D Trilinos_ENABLE_AztecOO:BOOL=OFF \
+-D Trilinos_ENABLE_Belos:BOOL=ON \
+-D Trilinos_ENABLE_Anasazi:BOOL=ON \
+-D Trilinos_ENABLE_Amesos:BOOL=OFF \
+-D Trilinos_ENABLE_Amesos2:BOOL=ON \
+-D Amesos2_ENABLE_MUMPS:BOOL=ON \
+-D Amesos2_ENABLE_TESTS:BOOL=ON \
+-D Trilinos_ENABLE_NOX:BOOL=ON \
+-D NOX_ENABLE_TESTS:BOOL=ON \
+-D Trilinos_ENABLE_Zoltan:BOOL=ON \
+-D Zoltan_ENABLE_TESTS:BOOL=OFF \
+-D Trilinos_ENABLE_Zoltan2:BOOL=ON \
+-D Trilinos_ENABLE_Ifpack2:BOOL=ON \
+-D Trilinos_ENABLE_Thyra:BOOL=ON \
+-D Thyra_ENABLE_TESTS:BOOL=OFF \
+-D Trilinos_ENABLE_ShyLU:BOOL=OFF \
+-D Trilinos_ENABLE_ShyLU_DDFROSch:BOOL=ON \
+-D Trilinos_ENABLE_Stratimikos:BOOL=ON \
+-D Stratimikos_ENABLE_TESTS:BOOL=OFF \
+-D Trilinos_ENABLE_MueLu:BOOL=OFF \
+-D Trilinos_ENABLE_ML:BOOL=OFF \
+-D Trilinos_ENABLE_Sacado:Bool=OFF \
+-D Sacado_ENABLE_TESTS:BOOL=OFF \
+-D Trilinos_ENABLE_Panzer:BOOL=OFF \
+-D Trilinos_ENABLE_Intrepid2:BOOL=OFF \
+-D Trilinos_ENABLE_Shards:BOOL=OFF \
+-D Trilinos_ENABLE_STK:BOOL=OFF \
+-D Trilinos_ENABLE_Galeri:BOOL=ON \
+-D Trilinos_ENABLE_Teko:BOOL=ON \
+-D TPL_FIND_SHARED_LIBS:BOOL=ON \
+-D TPL_ENABLE_DLlib:BOOL=OFF \
+-D TPL_ENABLE_Pthread:BOOL=OFF \
+-D TPL_ENABLE_MPI:BOOL=ON \
+-D TPL_ENABLE_Matio:BOOL=OFF \
+-D TPL_ENABLE_BLAS:BOOL=ON \
+-D TPL_BLAS_LIBRARIES:STRING="$BLAS;-lgfortran;-lm" \
+-D TPL_ENABLE_LAPACK:BOOL=ON \
+-D TPL_LAPACK_LIBRARIES:STRING="$LAPACK;-lgfortran;-lm" \
+-D TPL_ENABLE_METIS:BOOL=ON \
+-D TPL_METIS_LIBRARIES:STRING="$METIS;$GKLIB" \
+-D TPL_ENABLE_ParMETIS:BOOL=ON \
+-D TPL_ParMETIS_LIBRARIES:STRING="$PARMETIS;$GKLIB" \
+-D TPL_ENABLE_UMFPACK:BOOL=OFF \
+-D TPL_UMFPACK_LIBRARIES:STRING="$UMFPACK/lib/libumfpack.a;$UMFPACK/lib/libamd.a" \
+-D UMFPACK_INCLUDE_DIRS:PATH=$UMFPACK/include \
+-D TPL_ENABLE_Boost:BOOL=ON \
+-D Boost_INCLUDE_DIRS:PATH=$BOOST/include \
+-D TPL_ENABLE_HDF5:BOOL=OFF \
+-D Trilinos_EXTRA_LINK_FLAGS:STRING="" \
+-D Trilinos_ENABLE_CONFIGURE_TIMING=ON \
+-D Trilinos_ENABLE_PACKAGE_CONFIGURE_TIMING=ON \
+$BASE_DIR
+
+#-D ParMETIS_LIBRARY_DIRS:PATH="$PARMETIS/lib" \
+#-D ParMETIS_INCLUDE_DIRS:PATH="$PARMETIS/include" \
+#-D METIS_LIBRARY_DIRS:PATH="$METIS/lib" \
+#-D METIS_INCLUDE_DIRS:PATH="$METIS/include" \
+#-D HDF5_LIBRARY_DIRS:PATH=$HDF5/lib \
+#-D HDF5_INCLUDE_DIRS:PATH=$HDF5/include \
+#-D TPL_HDF5_LIBRARIES:PATH="$HDF5/lib/libhdf5_hl.a;$HDF5/lib/libhdf5.a;-ldl;-lz" \
+#-D TPL_UMFPACK_LIBRARIES:STRING="$UMFPACK/lib/libumfpack.a;$UMFPACK/lib/libamd.a" \
+#-D UMFPACK_INCLUDE_DIRS:PATH=$UMFPACK/include \
+
+Some commented out parts might help if, for example, UMFPACK is used or HDF5 was installed manually.
+
+Change into the build folder and execute (make -j20 if your machine can handle it)
+../config.sh
+make -j2
+make install
+
+
+=== FEDDLib =====================================================================
+
+Folder/file structure:
+feddlib/main/src
+feddlib/main/build
+feddlib/main/config.sh
+feddlib/my_fork/src
+feddlib/my_fork/build
+feddlib/my_fork/config.sh
+
+git clone https://github.com/FEDDLib/FEDDLib.git src
+
+Configuation script:
+
+#!/bin/bash
+
+BUILD_TYPE=DEBUG
+#BUILD_TYPE=RELEASE
+
+MPI_C_COMPILER=mpicc
+MPI_CXX_COMPILER=mpicxx
+MPI_FORTRAN_COMPILER=mpifort
+
+BASE_FEDDLIB=$HOME/dev/feddlib/main
+
+TRILINOS_DIR=$HOME/dev/trilinos/install
+SOURCE_DIR=$BASE_FEDDLIB/src
+INSTALL_DIR=$BASE_FEDDLIB/install
+BUILD_DIR=$BASE_FEDDLIB/build
+#ACEGEN_INTERFACE_DIR=$HOME/dev/feddlib/interface2/install
+
+#HDF5=$HOME/opt/hdf5-1.14.6
+spack load hdf5
+
+# Note on MUMPS vs HDF5 vs Z library
+# With MUMPS, zlib/zlib-ng is loaded, which shadows the system libraries that are used for HDF5 if that is compiled independently. Thus, I have built HDF5 via Spack as well to avoid inconsistencies.
+
+# Note on HDF5
+# It requires libdl and libz. We instruct the linker to include them via -ldl and -lz below.
+
+MACROS="-D HAVE_EXPLICIT_INSTANTIATION"
+FLAGS="$MACROS -ldl -lz"
+FLAGS_RELEASE="-O3 -march=native"
+FLAGS_DEBUG="-O0 -ggdb -debug all -traceback -ftrapuv"
+
+rm -rf $BUILD_DIR/CMake*
+
+cmake \
+-D CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=True \
+-D CMAKE_BUILD_TYPE:STRING=${BUILD_TYPE} \
+-D CMAKE_C_COMPILER=$MPI_C_COMPILER \
+-D CMAKE_CXX_COMPILER=$MPI_CXX_COMPILER \
+-D CMAKE_Fortran_COMPILER=$MPI_FORTRAN_COMPILER \
+-D CMAKE_INSTALL_PREFIX:STRING=$INSTALL_DIR \
+-D CMAKE_C_FLAGS:STRING="$FLAGS" \
+-D CMAKE_CXX_FLAGS:STRING="$FLAGS" \
+-D CMAKE_C_FLAGS_RELEASE:STRING="$FLAGS_RELEASE" \
+-D CMAKE_CXX_FLAGS_RELEASE:STRING="$FLAGS_RELEASE" \
+-D CMAKE_C_FLAGS_DEBUG:STRING="$FLAGS_DEBUG" \
+-D CMAKE_CXX_FLAGS_DEBUG:STRING="$FLAGS_DEBUG" \
+-D CMAKE_CXX_STANDARD=17 \
+-D MPI_EXEC_MAX_NUMPROCS:STRING=8 \
+-D CMAKE_VERBOSE_MAKEFILE:BOOL=OFF \
+-D FEDDLib_ENABLE_ALL_PACKAGES:BOOL=ON \
+-D FEDDLib_ENABLE_TESTS:BOOL=ON \
+-D TPL_FIND_SHARED_LIBS:BOOL=OFF \
+-D TPL_ENABLE_MPI:BOOL=ON \
+-D TPL_ENABLE_Trilinos:BOOL=ON \
+-D Trilinos_INCLUDE_DIRS:PATH=$TRILINOS_DIR/include \
+-D Trilinos_LIBRARY_DIRS:PATH=$TRILINOS_DIR/lib64 \
+-D TPL_ENABLE_AceGENInterface:BOOL=OFF \
+-S ${SOURCE_DIR} -B ${BUILD_DIR}
+
+# MPI_EXEC_MAX_NUMPROCS: Tests requiring more than the specified number of processes are excluded from CTest.
+
+#-D TPL_AceGENInterface_LIBRARIES:STRING="$ACEGEN_INTERFACE_DIR/lib/libinterface2.a;$ACEGEN_INTERFACE_DIR/lib/libaceutility.a" \
+#-D TPL_AceGENInterface_INCLUDE_DIRS:STRING="$ACEGEN_INTERFACE_DIR/include" \
+
+Change into the build folder and execute
+../config.sh
+make -j2
+
+To check if all test run through, execute
+ctest
+
+To show a list of tests:
+ctest -N
+
+To check a specific test, run
+ctest -I 65,65 --rerun-failed --output-on-failure
+
+Run an example, using MUMPS as the coarse solver:
+Change into the subdirectory
+build/feddlib/problems/examples/unsteadyNavierStokes
+and edit the file parametersPrec.xml. Change the coarse solver to "MUMPS":
+                    <ParameterList name="CoarseSolver">
+                        <Parameter name="SolverType" type="string" value="Amesos2"/>
+                        <Parameter name="Solver" type="string" value="MUMPS"/>
+                    </ParameterList>
+Save the changes, exit the editor, and run
+mpirun -np 4 ./problems_unsteadyNavierStokes.exe
+In the output, it should display MUMPS was used:
+     -----------------------------------------------------------------------------------------
+     | > Coarse Problem Statistics (Coarse Communicator)                          (Level  1) |
+     =========================================================================================
+     | Number of ranks on the coarse comm        |                                         1 |
+     | Solver type                               |                                   Amesos2 |
+     | Solver                                    |                                     MUMPS |
+
