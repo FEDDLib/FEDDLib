@@ -213,6 +213,31 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
     this->system_->addBlock( A_, 0, 0 );
     assembleDivAndStab();
     
+    // If pressure projection is used, we need to assemble the projection vector here
+    // Only for P2-P1 or Q2-Q1 elements in monolithic case
+    if(this->parameterList_->sublist("Parameter").get("Use Pressure Projection",false) && (!this->getFEType(0).compare("P2") || (!this->getFEType(0).compare("Q2") && !this->getFEType(1).compare("Q1"))) && !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Monolithic")){ 
+        // Projection vector a: \int p dx, for pressure component and 0 for velocity.
+        BlockMultiVectorPtr_Type projection(new BlockMultiVector_Type (2));
+
+        MultiVectorPtr_Type P(new MultiVector_Type( this->getDomain(1)->getMapUnique(), 1 ) );
+
+        this->feFactory_->assemblyPressureMeanValue( this->dim_,this->getFEType(1),P) ;
+
+        // Velocity component is set to zero, such that the projection vector only influences the pressure part
+        MultiVectorPtr_Type vel0(new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
+        vel0->putScalar(0.);
+
+        // Adding components to projection vector 
+        projection->addBlock(vel0,0);
+        projection->addBlock(P,1);
+
+        // Setting projection vector in preconditioner to later pass to paramterlist in FROSch
+        this->getPreconditionerConst()->setPressureProjection( projection );    
+
+        if (this->verbose_)
+            std::cout << "\n 'Use pressure correction' was set to 'true'. This requieres a version of Trilinos of that includes pressure correction in the FROSch_OverlappingOperator!!" << std::endl;  
+
+    }
 
 #ifdef FEDD_HAVE_TEKO
     if ( !this->parameterList_->sublist("General").get("Preconditioner Method","Monolithic").compare("Teko") 

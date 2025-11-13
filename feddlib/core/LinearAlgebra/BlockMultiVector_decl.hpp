@@ -139,6 +139,11 @@ public:
 
     MultiVectorConstPtr_Type getMergedVector();
 
+    /// @brief Return the merged vector as non-const vector. This finds application in pressure projection
+    /// @return 
+    MultiVectorPtr_Type getMergedVectorNonConst();
+
+
 private:
 
     Teuchos::Array<MultiVectorPtr_Type> blockMultiVector_;

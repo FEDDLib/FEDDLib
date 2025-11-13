@@ -214,6 +214,7 @@ class FE {
                                 MultiVectorPtr_Type solution_rep, 
                                 int FEloc=0);
 
+    void assemblyPressureMeanValue(int dim, std::string FEType, MultiVectorPtr_Type a);
 
     // void assemblyAceGenTPM( MatrixPtr_Type &A00,
     //                         MatrixPtr_Type &A01,
@@ -518,12 +519,6 @@ class FE {
                                            MultiVectorPtr_Type u, // Geschwindigkeit
                                            bool callFillComplete = true);
 
-
-    /// @brief Assembling Pressure Integral to determine pressure mean value
-    /// @param dim Dimension
-    /// @param FEType FEType
-    /// @param a Resultin matrix with one column
-    void assemblyPressureMeanValue(int dim, std::string FEType, MatrixPtr_Type a, MatrixPtr_Type aT);
 
     void assemblyRHS(int dim,
                      std::string FEType,

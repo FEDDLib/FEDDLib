@@ -463,5 +463,16 @@ typename BlockMultiVector<SC,LO,GO,NO>::MultiVectorConstPtr_Type BlockMultiVecto
     else
         return this->getBlockNonConst(0);
 }
+
+template <class SC, class LO, class GO, class NO>
+typename BlockMultiVector<SC,LO,GO,NO>::MultiVectorPtr_Type BlockMultiVector<SC,LO,GO,NO>::getMergedVectorNonConst(){
+    if (this->size()>1) {
+        this->merge();
+        return mergedMultiVector_;
+    }
+    else
+        return this->getBlockNonConst(0);
+}
+
 }
 #endif

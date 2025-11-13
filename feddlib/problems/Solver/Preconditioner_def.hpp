@@ -95,6 +95,11 @@ precFactory_()
 {
     timeProblem_.reset( problem, false );
 
+    // We need to ensure that already set information is upheld
+    if(!problem->getUnderlyingProblem()->preconditioner_->getPressureProjection().is_null()){
+        setPressureProjection(problem->getUnderlyingProblem()->preconditioner_->getPressureProjection());
+    }
+
     if(!problem->getUnderlyingProblem()->preconditioner_->getVelocityMassMatrix().is_null()){
         setVelocityMassMatrix(problem->getUnderlyingProblem()->preconditioner_->getVelocityMassMatrix());
     }
@@ -151,6 +156,11 @@ void Preconditioner<SC,LO,GO,NO>::initializePreconditioner( std::string type )
     }
     else
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Unkown preconditioner type for initialization.");
+}
+
+template <class SC,class LO,class GO,class NO>
+void Preconditioner<SC,LO,GO,NO>::setPressureProjection(BlockMultiVectorPtr_Type pressureProjection) const{
+    pressureProjection_ = pressureProjection;
 }
 
 template <class SC,class LO,class GO,class NO>
@@ -451,6 +461,21 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
             pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").set("DofOrdering Vector",dofOrderings);
             pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").set("DofsPerNode Vector",dofsPerNodeVector);
             pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").set( "Mpi Ranks Coarse",parameterList->sublist("General").get("Mpi Ranks Coarse",0) );
+
+            // This a pressure projection is only used for saddle point problems. We check here if we have a pressure projection set and if we have more than one block or one block with dim dof per node (i.e. fluid problem)
+            // This is unfortunately called pressure correction in FROSch, but is a projection!
+            if(!pressureProjection_.is_null() && ( dofsPerNodeVector.size() > 1 || dofsPerNodeVector[0] == 1) ){
+                pressureProjection_->merge(); // We merge the projection vector, as FROSch does not distinguish between blocks
+
+                Teuchos::RCP< Tpetra::MultiVector<SC,LO,GO,NO> > vectorTpetra =  pressureProjection_->getMergedVectorNonConst()->getTpetraMultiVectorNonConst();
+                Teuchos::RCP< Xpetra::TpetraMultiVector<SC,LO,GO,NO> > vectorXpetraTpetra = Teuchos::rcp(new Xpetra::TpetraMultiVector<SC,LO,GO,NO>(vectorTpetra));
+                Teuchos::RCP< Xpetra::MultiVector<SC,LO,GO,NO> > vectorXpetra = Teuchos::rcp_dynamic_cast<Xpetra::MultiVector<SC,LO,GO,NO>>(vectorXpetraTpetra);
+
+                pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").sublist("AlgebraicOverlappingOperator").set("Projection",vectorXpetra);
+                // In case of pressure correction we set the parameter in the paramterlist to true
+                pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").sublist("AlgebraicOverlappingOperator").set("Use Pressure Correction", true);
+                pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").sublist("AlgebraicOverlappingOperator").set("Use Local Pressure Correction", true);
+            }
 
             /*  We need to set the ranges of local problems and the coarse problem here.
                 When using an unstructured decomposition of, e.g., FSI, with 2 domains, which might be on a different set of ranks, we need to set the following parameters for FROSch here. Similarly we need to set a coarse rank problem range. For now, we use extra coarse ranks only for structured decompositions

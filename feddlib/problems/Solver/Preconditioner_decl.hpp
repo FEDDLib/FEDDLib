@@ -144,6 +144,14 @@ public:
 
     bool isPreconditionerComputed() const{return precondtionerIsBuilt_;}
 
+    /// @brief Setting pressure projection from specific prolem to be used in preconditioner
+    /// @param pressureProjection 
+    void setPressureProjection(BlockMultiVectorPtr_Type pressureProjection) const;
+
+    /// @brief Getting pressure projection used in preconditioner
+    /// @return pressure projection
+    BlockMultiVectorPtr_Type getPressureProjection(){return pressureProjection_;}
+
 
 private:
     ThyraPrecPtr_Type thyraPrec_;
@@ -185,6 +193,9 @@ private:
     
     mutable MatrixPtr_Type pcdOperatorMatrixPtr_; // PCD
     mutable ThyraLinOpConstPtr_Type pcdOperator_; // PCD
+
+    // Block multivector for pressure projection
+    mutable BlockMultiVectorPtr_Type pressureProjection_;
 
     // For construction in the FEDDLib
     MinPrecProblemPtr_Type probLaplace_;

@@ -26,6 +26,10 @@
         <!-- Testing Residuals, Or means either abolute or relative tolerance is achieved -->
         <Parameter name="Combo" type="string" value="OR"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
+
+        <!-- use pressure projection to correct pressure in P2-P1/Q2-Q1 case-->
+        <Parameter name="Use Pressure Projection" type="bool" value="false"/>   
+
     </ParameterList>
     <ParameterList name="General">
 		<!-- Linearization method-->
