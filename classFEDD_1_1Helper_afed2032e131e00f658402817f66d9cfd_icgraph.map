@@ -8,7 +8,7 @@
 <area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="810,417,759,347,727,309,691,273,641,229,599,197,554,171,493,143,458,131,459,126,495,138,557,166,602,193,645,225,695,270,731,305,763,344,814,414"/>
 <area shape="rect" id="Node000005" href="$classFEDD_1_1FE.html#a933964a43c17eb6c1de6c8eb62cdbfe5" title="Same as assemblyLinElasXDim except for changing E Module Value." alt="" coords="290,176,472,217"/>
 <area shape="poly" id="edge7_Node000001_Node000005" title=" " alt="" coords="798,420,749,378,692,335,596,276,493,231,462,220,464,215,495,226,598,272,695,331,753,374,802,416"/>
-<area shape="rect" id="Node000006" href="$classFEDD_1_1FE.html#a72b274bce942884dad966bbbad3a5de0" title="Assembling Pressure Integral to determine pressure mean value." alt="" coords="286,1455,476,1496"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1FE.html#afcdf2ac8d92debcbe5c215cd85e35b00" title="Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value." alt="" coords="286,1455,476,1496"/>
 <area shape="poly" id="edge9_Node000001_Node000006" title=" " alt="" coords="834,485,816,650,795,768,764,899,721,1037,694,1107,663,1175,628,1242,589,1306,545,1366,496,1421,471,1442,443,1457,440,1452,468,1437,492,1418,541,1362,584,1303,623,1239,658,1173,689,1105,716,1036,759,898,790,767,810,650,829,484"/>
 <area shape="rect" id="Node000007" href="$classFEDD_1_1FE.html#a27ac1ba294c0c90818d11fdf5d56cf2e" title="(\grad u + (\grad u)^T, \grad v ); symmetrischer Gradient, wenn func = 1.0" alt="" coords="293,265,469,291"/>
 <area shape="poly" id="edge11_Node000001_Node000007" title=" " alt="" coords="777,424,649,365,571,334,493,306,450,294,451,289,495,301,573,329,651,360,779,419"/>

@@ -238,69 +238,78 @@ $(function(){initNavTree('Preconditioner__decl_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">void</span> exportCoarseBasisFSI( );</div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">bool</span> isPreconditionerComputed()<span class="keyword"> const</span>{<span class="keywordflow">return</span> precondtionerIsBuilt_;}</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    ThyraPrecPtr_Type thyraPrec_;</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">bool</span> precondtionerIsBuilt_;</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    ProblemPtr_Type problem_;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    TimeProblemPtr_Type timeProblem_;</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    Teuchos::RCP&lt;Thyra::PreconditionerFactoryBase&lt;SC&gt; &gt; precFactory_;</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="preprocessor">#ifdef FEDD_HAVE_TEKO</span></div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    ThyraLinOpConstPtr_Type tekoLinOp_;</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    Teuchos::RCP&lt;Teko::RequestHandler&gt; rh_;</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    Teuchos::RCP&lt; Teko::StaticRequestCallback&lt;Teko::LinearOp&gt; &gt; callbackPCD_;</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="comment">// For FaCSI precondtioner</span></div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    ThyraLinOpConstPtr_Type fsiLinOp_;</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    ThyraLinOpPtr_Type precFluid_;</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    ThyraLinOpPtr_Type precStruct_;</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    ThyraLinOpPtr_Type precGeo_;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    MinPrecProblemPtr_Type probFluid_;</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    MinPrecProblemPtr_Type probSolid_;</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    MinPrecProblemPtr_Type probGeo_;</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    BCConstPtr_Type faCSIBCFactory_;</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="comment">// For Stokes-type block diagonal and triangular precondtioner</span></div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    ThyraLinOpPtr_Type precVelocity_;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    ThyraLinOpPtr_Type precSchur_;</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    MinPrecProblemPtr_Type probVelocity_;</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    MinPrecProblemPtr_Type probSchur_;</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="comment">// mutable MatrixPtr_Type pressureMassMatrix_;</span></div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="comment">// For LSC and PCD preconditioner</span></div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keyword">mutable</span> ThyraLinOpConstPtr_Type velocityMassMatrix_; <span class="comment">// LSC</span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keyword">mutable</span> MatrixPtr_Type velocityMassMatrixMatrixPtr_; <span class="comment">// LSC</span></div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keyword">mutable</span> MatrixPtr_Type pressureLaplaceMatrixPtr_; <span class="comment">// PCD</span></div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keyword">mutable</span> ThyraLinOpConstPtr_Type pressureLaplace_; <span class="comment">// PCD</span></div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keyword">mutable</span> MatrixPtr_Type pressureMassMatrixPtr_; <span class="comment">// PCD</span></div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keyword">mutable</span> ThyraLinOpConstPtr_Type pressureMass_; <span class="comment">// PCD</span></div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    </div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">mutable</span> MatrixPtr_Type pcdOperatorMatrixPtr_; <span class="comment">// PCD</span></div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keyword">mutable</span> ThyraLinOpConstPtr_Type pcdOperator_; <span class="comment">// PCD</span></div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="comment">// For construction in the FEDDLib</span></div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    MinPrecProblemPtr_Type probLaplace_;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    MinPrecProblemPtr_Type probMass_;</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    MinPrecProblemPtr_Type probVMass_;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    ThyraLinOpPtr_Type laplaceInverse_;</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    ThyraLinOpPtr_Type massMatrixInverse_;</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    ThyraLinOpPtr_Type massMatrixVInverse_;  </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classFEDD_1_1Preconditioner.html#a09dc2c37769d69be92066085b3368728">  149</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Preconditioner.html#a09dc2c37769d69be92066085b3368728">setPressureProjection</a>(BlockMultiVectorPtr_Type pressureProjection) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classFEDD_1_1Preconditioner.html#a6ed4cd16a58505f583f57718f69a9f74">  153</a></span>    BlockMultiVectorPtr_Type <a class="code hl_function" href="classFEDD_1_1Preconditioner.html#a6ed4cd16a58505f583f57718f69a9f74">getPressureProjection</a>(){<span class="keywordflow">return</span> pressureProjection_;}</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    ThyraPrecPtr_Type thyraPrec_;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordtype">bool</span> precondtionerIsBuilt_;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    ProblemPtr_Type problem_;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    TimeProblemPtr_Type timeProblem_;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    Teuchos::RCP&lt;Thyra::PreconditionerFactoryBase&lt;SC&gt; &gt; precFactory_;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span><span class="preprocessor">#ifdef FEDD_HAVE_TEKO</span></div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    ThyraLinOpConstPtr_Type tekoLinOp_;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    Teuchos::RCP&lt;Teko::RequestHandler&gt; rh_;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    Teuchos::RCP&lt; Teko::StaticRequestCallback&lt;Teko::LinearOp&gt; &gt; callbackPCD_;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="comment">// For FaCSI precondtioner</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    ThyraLinOpConstPtr_Type fsiLinOp_;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    ThyraLinOpPtr_Type precFluid_;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    ThyraLinOpPtr_Type precStruct_;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    ThyraLinOpPtr_Type precGeo_;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    MinPrecProblemPtr_Type probFluid_;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    MinPrecProblemPtr_Type probSolid_;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    MinPrecProblemPtr_Type probGeo_;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    BCConstPtr_Type faCSIBCFactory_;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="comment">// For Stokes-type block diagonal and triangular precondtioner</span></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    ThyraLinOpPtr_Type precVelocity_;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    ThyraLinOpPtr_Type precSchur_;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    MinPrecProblemPtr_Type probVelocity_;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    MinPrecProblemPtr_Type probSchur_;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="comment">// mutable MatrixPtr_Type pressureMassMatrix_;</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="comment">// For LSC and PCD preconditioner</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keyword">mutable</span> ThyraLinOpConstPtr_Type velocityMassMatrix_; <span class="comment">// LSC</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">mutable</span> MatrixPtr_Type velocityMassMatrixMatrixPtr_; <span class="comment">// LSC</span></div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keyword">mutable</span> MatrixPtr_Type pressureLaplaceMatrixPtr_; <span class="comment">// PCD</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keyword">mutable</span> ThyraLinOpConstPtr_Type pressureLaplace_; <span class="comment">// PCD</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keyword">mutable</span> MatrixPtr_Type pressureMassMatrixPtr_; <span class="comment">// PCD</span></div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keyword">mutable</span> ThyraLinOpConstPtr_Type pressureMass_; <span class="comment">// PCD</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keyword">mutable</span> MatrixPtr_Type pcdOperatorMatrixPtr_; <span class="comment">// PCD</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keyword">mutable</span> ThyraLinOpConstPtr_Type pcdOperator_; <span class="comment">// PCD</span></div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    ParameterListPtr_Type pListPhiExport_;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="preprocessor">#define PRECONDITIONER_TIMER</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="preprocessor">#ifdef PRECONDITIONER_TIMER</span></div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    TimePtr_Type preconditionerTimer_;</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>};</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="comment">// Block multivector for pressure projection</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keyword">mutable</span> BlockMultiVectorPtr_Type pressureProjection_;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="comment">// For construction in the FEDDLib</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    MinPrecProblemPtr_Type probLaplace_;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    MinPrecProblemPtr_Type probMass_;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    MinPrecProblemPtr_Type probVMass_;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    ThyraLinOpPtr_Type laplaceInverse_;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    ThyraLinOpPtr_Type massMatrixInverse_;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    ThyraLinOpPtr_Type massMatrixVInverse_;  </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    ParameterListPtr_Type pListPhiExport_;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="preprocessor">#define PRECONDITIONER_TIMER</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="preprocessor">#ifdef PRECONDITIONER_TIMER</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    TimePtr_Type preconditionerTimer_;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>};</div>
 </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>}</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>}</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassFEDD_1_1Map_html"><div class="ttname"><a href="classFEDD_1_1Map.html">FEDD::Map</a></div><div class="ttdef"><b>Definition</b> Map_decl.hpp:30</div></div>
 <div class="ttc" id="aclassFEDD_1_1Mesh_html"><div class="ttname"><a href="classFEDD_1_1Mesh.html">FEDD::Mesh</a></div><div class="ttdef"><b>Definition</b> Mesh_decl.hpp:25</div></div>
 <div class="ttc" id="aclassFEDD_1_1MinPrecProblem_html"><div class="ttname"><a href="classFEDD_1_1MinPrecProblem.html">FEDD::MinPrecProblem</a></div><div class="ttdef"><b>Definition</b> MinPrecProblem_decl.hpp:26</div></div>
+<div class="ttc" id="aclassFEDD_1_1Preconditioner_html_a09dc2c37769d69be92066085b3368728"><div class="ttname"><a href="classFEDD_1_1Preconditioner.html#a09dc2c37769d69be92066085b3368728">FEDD::Preconditioner::setPressureProjection</a></div><div class="ttdeci">void setPressureProjection(BlockMultiVectorPtr_Type pressureProjection) const</div><div class="ttdoc">Setting pressure projection from specific prolem to be used in preconditioner.</div><div class="ttdef"><b>Definition</b> Preconditioner_def.hpp:162</div></div>
+<div class="ttc" id="aclassFEDD_1_1Preconditioner_html_a6ed4cd16a58505f583f57718f69a9f74"><div class="ttname"><a href="classFEDD_1_1Preconditioner.html#a6ed4cd16a58505f583f57718f69a9f74">FEDD::Preconditioner::getPressureProjection</a></div><div class="ttdeci">BlockMultiVectorPtr_Type getPressureProjection()</div><div class="ttdoc">Getting pressure projection used in preconditioner.</div><div class="ttdef"><b>Definition</b> Preconditioner_decl.hpp:153</div></div>
 <div class="ttc" id="aclassFEDD_1_1Problem_html"><div class="ttname"><a href="classFEDD_1_1Problem.html">FEDD::Problem</a></div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:40</div></div>
 <div class="ttc" id="aclassFEDD_1_1TimeProblem_html"><div class="ttname"><a href="classFEDD_1_1TimeProblem.html">FEDD::TimeProblem</a></div><div class="ttdef"><b>Definition</b> TimeProblem_decl.hpp:33</div></div>
 <div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>

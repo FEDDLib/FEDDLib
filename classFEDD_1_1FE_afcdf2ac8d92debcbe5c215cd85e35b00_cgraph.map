@@ -1,5 +1,5 @@
 <map id="FEDD::FE::assemblyPressureMeanValue" name="FEDD::FE::assemblyPressureMeanValue">
-<area shape="rect" id="Node000001" title="Assembling Pressure Integral to determine pressure mean value." alt="" coords="5,48,196,89"/>
+<area shape="rect" id="Node000001" title="Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value." alt="" coords="5,48,196,89"/>
 <area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="53,49,51,38,59,29,75,24,101,22,128,24,144,30,142,35,127,29,100,27,76,29,62,34,56,40,58,47"/>
 <area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#aa39723a79c28706566d5b54a4cde6b4e" title="Build transformation of element to reference element depending on FEType." alt="" coords="244,5,463,31"/>
 <area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="196,47,270,32,271,37,197,52"/>

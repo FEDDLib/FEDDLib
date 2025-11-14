@@ -266,7 +266,89 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>exportCoarseBasisFSI<
 <tr class="memitem:aabe4ff92fa62392aa89342ea9e4761b3" id="r_aabe4ff92fa62392aa89342ea9e4761b3"><td class="memItemLeft" align="right" valign="top"><a id="aabe4ff92fa62392aa89342ea9e4761b3" name="aabe4ff92fa62392aa89342ea9e4761b3"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isPreconditionerComputed</b> () const</td></tr>
 <tr class="separator:aabe4ff92fa62392aa89342ea9e4761b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09dc2c37769d69be92066085b3368728" id="r_a09dc2c37769d69be92066085b3368728"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09dc2c37769d69be92066085b3368728">setPressureProjection</a> (BlockMultiVectorPtr_Type pressureProjection) const</td></tr>
+<tr class="memdesc:a09dc2c37769d69be92066085b3368728"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting pressure projection from specific prolem to be used in preconditioner.  <br /></td></tr>
+<tr class="separator:a09dc2c37769d69be92066085b3368728"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ed4cd16a58505f583f57718f69a9f74" id="r_a6ed4cd16a58505f583f57718f69a9f74"><td class="memItemLeft" align="right" valign="top">BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ed4cd16a58505f583f57718f69a9f74">getPressureProjection</a> ()</td></tr>
+<tr class="memdesc:a6ed4cd16a58505f583f57718f69a9f74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getting pressure projection used in preconditioner.  <br /></td></tr>
+<tr class="separator:a6ed4cd16a58505f583f57718f69a9f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a6ed4cd16a58505f583f57718f69a9f74" name="a6ed4cd16a58505f583f57718f69a9f74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ed4cd16a58505f583f57718f69a9f74">&#9670;&#160;</a></span>getPressureProjection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">BlockMultiVectorPtr_Type <a class="el" href="classFEDD_1_1Preconditioner.html">FEDD::Preconditioner</a>&lt; SC, LO, GO, NO &gt;::getPressureProjection </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Getting pressure projection used in preconditioner. </p>
+<dl class="section return"><dt>Returns</dt><dd>pressure projection </dd></dl>
+
+</div>
+</div>
+<a id="a09dc2c37769d69be92066085b3368728" name="a09dc2c37769d69be92066085b3368728"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09dc2c37769d69be92066085b3368728">&#9670;&#160;</a></span>setPressureProjection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1Preconditioner.html">FEDD::Preconditioner</a>&lt; SC, LO, GO, NO &gt;::setPressureProjection </td>
+          <td>(</td>
+          <td class="paramtype">BlockMultiVectorPtr_Type</td>          <td class="paramname"><span class="paramname"><em>pressureProjection</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setting pressure projection from specific prolem to be used in preconditioner. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pressureProjection</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Preconditioner_a09dc2c37769d69be92066085b3368728_cgraph.png" border="0" usemap="#aclassFEDD_1_1Preconditioner_a09dc2c37769d69be92066085b3368728_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Preconditioner_a09dc2c37769d69be92066085b3368728_cgraph" id="aclassFEDD_1_1Preconditioner_a09dc2c37769d69be92066085b3368728_cgraph">
+<area shape="rect" title="Setting pressure projection from specific prolem to be used in preconditioner." alt="" coords="5,29,161,70"/>
+<area shape="poly" title=" " alt="" coords="53,29,51,19,56,11,67,5,83,3,100,5,110,11,108,16,98,10,83,8,69,10,60,14,57,20,58,28"/>
+</map>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Preconditioner_a09dc2c37769d69be92066085b3368728_icgraph.png" border="0" usemap="#aclassFEDD_1_1Preconditioner_a09dc2c37769d69be92066085b3368728_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Preconditioner_a09dc2c37769d69be92066085b3368728_icgraph" id="aclassFEDD_1_1Preconditioner_a09dc2c37769d69be92066085b3368728_icgraph">
+<area shape="rect" title="Setting pressure projection from specific prolem to be used in preconditioner." alt="" coords="5,29,161,70"/>
+<area shape="poly" title=" " alt="" coords="108,16,98,10,83,8,69,10,60,14,57,20,58,28,53,29,51,19,56,11,67,5,83,3,100,5,110,11"/>
+</map>
+</div>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>feddlib/problems/abstract/<a class="el" href="MinPrecProblem__decl_8hpp_source.html">MinPrecProblem_decl.hpp</a></li>
 <li>feddlib/problems/Solver/<a class="el" href="Preconditioner__decl_8hpp_source.html">Preconditioner_decl.hpp</a></li>

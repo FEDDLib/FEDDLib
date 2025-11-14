@@ -26,7 +26,7 @@
 <area shape="poly" id="edge20_Node000002_Node000015" title=" " alt="" coords="609,519,596,568,573,629,541,694,520,724,496,752,466,773,434,788,431,783,463,769,492,748,516,721,536,691,568,627,590,566,603,517"/>
 <area shape="rect" id="Node000016" href="$classFEDD_1_1FE.html#a661127e7bb58b7dfe810d8a1b8bff0fe" title="Assembly of \int q_h (nabla \cdot v_h) dx." alt="" coords="291,860,471,901"/>
 <area shape="poly" id="edge22_Node000002_Node000016" title=" " alt="" coords="612,519,602,580,582,661,567,704,548,748,524,789,496,826,472,847,446,862,443,857,469,842,492,823,520,786,543,745,562,703,577,659,597,579,606,518"/>
-<area shape="rect" id="Node000017" href="$classFEDD_1_1FE.html#a72b274bce942884dad966bbbad3a5de0" title="Assembling Pressure Integral to determine pressure mean value." alt="" coords="286,949,476,990"/>
+<area shape="rect" id="Node000017" href="$classFEDD_1_1FE.html#afcdf2ac8d92debcbe5c215cd85e35b00" title="Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value." alt="" coords="286,949,476,990"/>
 <area shape="poly" id="edge24_Node000002_Node000017" title=" " alt="" coords="614,519,609,594,592,698,577,755,556,811,530,865,496,914,473,935,446,951,443,947,470,931,492,911,525,862,551,809,571,753,586,697,603,594,609,518"/>
 <area shape="poly" id="edge5_Node000005_Node000005" title=" " alt="" coords="419,147,405,141,381,139,359,141,345,145,340,151,342,159,337,160,335,150,342,141,358,135,381,133,406,136,421,142"/>
 <area shape="rect" id="Node000007" href="$classFEDD_1_1AssembleFENavierStokes.html#a0e179525f5e7a8341fb0304d28bb24a2" title="Assembly of FixedPoint&#45; Matrix (System Matrix K with current u)" alt="" coords="5,493,220,534"/>

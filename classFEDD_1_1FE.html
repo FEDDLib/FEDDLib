@@ -264,6 +264,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyFlowRate</b> (
 <tr class="memitem:a73168023febd446d33d9978d195e362a" id="r_a73168023febd446d33d9978d195e362a"><td class="memItemLeft" align="right" valign="top"><a id="a73168023febd446d33d9978d195e362a" name="a73168023febd446d33d9978d195e362a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyAverageVelocity</b> (int dim, double &amp;averageVelocity, std::string FEType, int dofs, int flag, MultiVectorPtr_Type solution_rep, int FEloc=0)</td></tr>
 <tr class="separator:a73168023febd446d33d9978d195e362a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcdf2ac8d92debcbe5c215cd85e35b00" id="r_afcdf2ac8d92debcbe5c215cd85e35b00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afcdf2ac8d92debcbe5c215cd85e35b00">assemblyPressureMeanValue</a> (int dim, std::string FEType, MultiVectorPtr_Type a)</td></tr>
+<tr class="memdesc:afcdf2ac8d92debcbe5c215cd85e35b00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value.  <br /></td></tr>
+<tr class="separator:afcdf2ac8d92debcbe5c215cd85e35b00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac75a7fcf88130e98a77930e9152be709" id="r_ac75a7fcf88130e98a77930e9152be709"><td class="memItemLeft" align="right" valign="top"><a id="ac75a7fcf88130e98a77930e9152be709" name="ac75a7fcf88130e98a77930e9152be709"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addFE</b> (DomainConstPtr_Type domain)</td></tr>
 <tr class="separator:ac75a7fcf88130e98a77930e9152be709"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -364,9 +367,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyShapeDerivati
 <tr class="memitem:a99ba0f0c59b17df7b2fb7da220413fd0" id="r_a99ba0f0c59b17df7b2fb7da220413fd0"><td class="memItemLeft" align="right" valign="top"><a id="a99ba0f0c59b17df7b2fb7da220413fd0" name="a99ba0f0c59b17df7b2fb7da220413fd0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyShapeDerivativeDivergence</b> (int dim, std::string FEType1, std::string FEType2, MatrixPtr_Type &amp;DB, int FEloc1, int FEloc2, MapConstPtr_Type map1_unique, MapConstPtr_Type map2_unique, MultiVectorPtr_Type u, bool callFillComplete=true)</td></tr>
 <tr class="separator:a99ba0f0c59b17df7b2fb7da220413fd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72b274bce942884dad966bbbad3a5de0" id="r_a72b274bce942884dad966bbbad3a5de0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72b274bce942884dad966bbbad3a5de0">assemblyPressureMeanValue</a> (int dim, std::string FEType, MatrixPtr_Type a, MatrixPtr_Type aT)</td></tr>
-<tr class="memdesc:a72b274bce942884dad966bbbad3a5de0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembling Pressure Integral to determine pressure mean value.  <br /></td></tr>
-<tr class="separator:a72b274bce942884dad966bbbad3a5de0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54d4abd0b4b5d3d2eacb1a500e2678b6" id="r_a54d4abd0b4b5d3d2eacb1a500e2678b6"><td class="memItemLeft" align="right" valign="top"><a id="a54d4abd0b4b5d3d2eacb1a500e2678b6" name="a54d4abd0b4b5d3d2eacb1a500e2678b6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>assemblyRHS</b> (int dim, std::string FEType, MultiVectorPtr_Type a, std::string fieldType, RhsFunc_Type func, std::vector&lt; SC &gt; &amp;funcParameter)</td></tr>
 <tr class="separator:a54d4abd0b4b5d3d2eacb1a500e2678b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1718,8 +1718,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a72b274bce942884dad966bbbad3a5de0" name="a72b274bce942884dad966bbbad3a5de0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a72b274bce942884dad966bbbad3a5de0">&#9670;&#160;</a></span>assemblyPressureMeanValue()</h2>
+<a id="afcdf2ac8d92debcbe5c215cd85e35b00" name="afcdf2ac8d92debcbe5c215cd85e35b00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcdf2ac8d92debcbe5c215cd85e35b00">&#9670;&#160;</a></span>assemblyPressureMeanValue()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1739,23 +1739,14 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">MatrixPtr_Type</td>          <td class="paramname"><span class="paramname"><em>a</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">MatrixPtr_Type</td>          <td class="paramname"><span class="paramname"><em>aT</em></span>&#160;)</td>
+          <td class="paramtype">MultiVectorPtr_Type</td>          <td class="paramname"><span class="paramname"><em>a</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Assembling Pressure Integral to determine pressure mean value. </p>
-<p>Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value. We need this to be in matrix format, as it is added to the system.</p>
+<p>Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dim</td><td>Dimension </td></tr>
-    <tr><td class="paramname">FEType</td><td>FEType </td></tr>
-    <tr><td class="paramname">a</td><td>Resultin matrix with one column</td></tr>
     <tr><td class="paramname">dim</td><td>Dimension </td></tr>
     <tr><td class="paramname">FEType</td><td>FEType </td></tr>
     <tr><td class="paramname">a</td><td><a class="el" href="classFEDD_1_1Matrix.html">Matrix</a> Ptr with resulting assembly </td></tr>
@@ -1765,9 +1756,9 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_cgraph.png" border="0" usemap="#aclassFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_cgraph" id="aclassFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_cgraph">
-<area shape="rect" title="Assembling Pressure Integral to determine pressure mean value." alt="" coords="5,48,196,89"/>
+<div class="center"><img src="classFEDD_1_1FE_afcdf2ac8d92debcbe5c215cd85e35b00_cgraph.png" border="0" usemap="#aclassFEDD_1_1FE_afcdf2ac8d92debcbe5c215cd85e35b00_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1FE_afcdf2ac8d92debcbe5c215cd85e35b00_cgraph" id="aclassFEDD_1_1FE_afcdf2ac8d92debcbe5c215cd85e35b00_cgraph">
+<area shape="rect" title="Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value." alt="" coords="5,48,196,89"/>
 <area shape="poly" title=" " alt="" coords="53,49,51,38,59,29,75,24,101,22,128,24,144,30,142,35,127,29,100,27,76,29,62,34,56,40,58,47"/>
 <area shape="rect" href="classFEDD_1_1Helper.html#aa39723a79c28706566d5b54a4cde6b4e" title="Build transformation of element to reference element depending on FEType." alt="" coords="244,5,463,31"/>
 <area shape="poly" title=" " alt="" coords="196,47,270,32,271,37,197,52"/>
@@ -1783,9 +1774,9 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_icgraph.png" border="0" usemap="#aclassFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_icgraph" id="aclassFEDD_1_1FE_a72b274bce942884dad966bbbad3a5de0_icgraph">
-<area shape="rect" title="Assembling Pressure Integral to determine pressure mean value." alt="" coords="5,29,196,70"/>
+<div class="center"><img src="classFEDD_1_1FE_afcdf2ac8d92debcbe5c215cd85e35b00_icgraph.png" border="0" usemap="#aclassFEDD_1_1FE_afcdf2ac8d92debcbe5c215cd85e35b00_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1FE_afcdf2ac8d92debcbe5c215cd85e35b00_icgraph" id="aclassFEDD_1_1FE_afcdf2ac8d92debcbe5c215cd85e35b00_icgraph">
+<area shape="rect" title="Assembling \int p \dx = 0. Thus, we need the integral part for the mean pressure value." alt="" coords="5,29,196,70"/>
 <area shape="poly" title=" " alt="" coords="131,16,120,10,100,8,83,10,72,15,68,20,69,28,64,29,62,19,68,10,81,5,101,3,121,5,134,11"/>
 </map>
 </div>
