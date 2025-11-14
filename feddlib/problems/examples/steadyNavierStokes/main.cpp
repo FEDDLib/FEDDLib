@@ -396,7 +396,7 @@ int main(int argc, char *argv[]) {
                         bcFactory->addBC(ldcFunc3D, 2, 0, domainVelocity, "Dirichlet", dim,parameter_vec); // Lid
                         bcFactory->addBC(zeroDirichlet, 3, 1, domainPressure, "Dirichlet", 1); // Pressure Node
                         if(parameterListAll->sublist("Parameter").get("Use Pressure Projection",false)==true && linearization=="NOX")
-                            std::cout << " WARNING: 'Use Pressure Projection' is set to true. This does not work for the LDC test with NOX. Somehow the Dirichlet fixed pressure point at (0,0,0) is an issue.Remove the RB to make it work or choose Newton!" << std::endl;
+                            std::cout << " WARNING: 'Use Pressure Projection' is set to true. This does not work for the LDC test with NOX. Somehow the Dirichlet fixed pressure point at (0,0,0) is an issue. Remove the RB to make it work or choose Newton!" << std::endl;
                     }
                        
                 }
