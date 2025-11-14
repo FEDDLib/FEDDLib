@@ -472,7 +472,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
                 Teuchos::RCP< Xpetra::MultiVector<SC,LO,GO,NO> > vectorXpetra = Teuchos::rcp_dynamic_cast<Xpetra::MultiVector<SC,LO,GO,NO>>(vectorXpetraTpetra);
 
                 pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").sublist("AlgebraicOverlappingOperator").set("Projection",vectorXpetra);
-                // In case of pressure correction we set the parameter in the paramterlist to true
+                // In case of pressure correction we set the parameter in the parameterlist to true
                 pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").sublist("AlgebraicOverlappingOperator").set("Use Pressure Correction", true);
                 pListThyraPrec->sublist("Preconditioner Types").sublist("FROSch").sublist("AlgebraicOverlappingOperator").set("Use Local Pressure Correction", true);
             }
