@@ -231,7 +231,7 @@ void NavierStokes<SC,LO,GO,NO>::assembleConstantMatrices() const{
         projection->addBlock(vel0,0);
         projection->addBlock(P,1);
 
-        // Setting projection vector in preconditioner to later pass to paramterlist in FROSch
+        // Setting projection vector in preconditioner to later pass to parameterlist in FROSch
         this->getPreconditionerConst()->setPressureProjection( projection );    
 
         if (this->verbose_)
