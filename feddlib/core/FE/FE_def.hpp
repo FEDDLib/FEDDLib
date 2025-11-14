@@ -8695,7 +8695,6 @@ void FE<SC,LO,GO,NO>::assemblyPressureMeanValue( int dim,
                 value[0] += weights->at(w) * phi->at(w).at(i)*1.0; // We integrate the 1 function over the elements
             }
             value[0] *= absDetB;
-            //value[0] = 10.;
             LO row = (LO) elements->getElement(T).getNode(i);
 
             values_a[row] += value[0];
