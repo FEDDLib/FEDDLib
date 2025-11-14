@@ -28,6 +28,9 @@
         <Parameter name="MaxNonLinIts" type="int" value="10"/>
         <Parameter name="Cancel MaxNonLinIts" type="bool" value="true"/>
         <Parameter name="Symmetric gradient" type="bool" value="false"/>
+
+        <!-- use pressure projection to correct pressure in P2-P1/Q2-Q1 case-->
+        <Parameter name="Use Pressure Projection" type="bool" value="false"/>   
     </ParameterList>
     <ParameterList name="Mesh Partitioner">
         
