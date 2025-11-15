@@ -1,0 +1,62 @@
+You will find many templated classes in the FEDDLib. However, despite the way it may seem, you cannot use arbitrary types for these classes. Particularly, since the default is that templates are explicitly instantiated (more on that below) in FEDDLib as well as Trilinos, only the explicitly instantiated templates can be used.
+
+You can expect the following two templates to be available:
+
+SC = scalar type
+   = double
+
+LO = local ordinal type [local to a subdomain / MPI rank]
+   = int
+
+GO = global ordinal type [all indices, e.g., for the global stiffness matrix] 
+   = int / long long
+     long long   if   HAVE_TPETRA_INT_LONG_LONG
+     int         if   HAVE_TPETRA_INT_INT
+
+NO = node type
+   = Tpetra::KokkosClassic::DefaultNode::DefaultNodeType
+
+These default types are defined in 
+
+feddlib/core/General/DefaultTypeDefs.hpp
+
+and you can create shortcuts via
+
+typedef default_sc SC;
+typedef default_lo LO;
+typedef default_go GO;
+typedef default_no NO;
+
+Defaults are also defined in Tpetra:
+
+using SC = Tpetra::Details::DefaultTypes::scalar_type;
+using LO = Tpetra::Details::DefaultTypes::local_ordinal_type;
+using GO = Tpetra::Details::DefaultTypes::global_ordinal_type;
+using NO = Tpetra::Details::DefaultTypes::node_type;
+
+
+Explicit instantiation ---------------------------------------
+
+Templated classes are only that: templates/blueprints of classes. The compiler cannot generate code for them if it does not know the type to substitute (for example, for <typename T>: is it an integer, a float, a double, another class?). There are two ways to instantiate a templated class:
+
+The code that actually uses the templated class (e.g., a .cpp file from which an executable is generated) knows which type it needs. So if the templated class definition is in the header files, the compiler can then generate the code. But the downside is that the same code (i.e., for the class with a specific template parameter) may be generated many times by the compiler (for different executables).
+
+The alternative is to explicitly tell the compiler which template instantiations you require across your software and to generate code for this -- only once. The code that uses a templated class then does not need the definitions but only needs to include the declarations, and the definition of a certain type is added by the linker via the already generated code.
+
+Example:
+
+Let's take a look at the MultiVector class of the FEDDLib (feddlib/core/LinearAlgebra/).
+It contains the declaration in MultiVector_decl.hpp and the definition in MultiVector_def.hpp.
+The file MultiVector.hpp is the header file that is relevant for the user of the MultiVector class.
+Only this file should be included -- do not include the declaration or definition file.
+Case A) Explicit instantiation is enabled.
+    MultiVector.hpp is included, which itself includes the declaration file.
+    Since the compiler does not know MultiVector_def.hpp, its instantiation must come frome somewhere else.
+    This is done in MultiVector.cpp, which includes the declaration and definition files, and the explicit instantiations
+        template class MultiVector<default_sc, default_lo, default_go, default_no>;
+        template class MultiVector<default_lo, default_lo, default_go, default_no>;
+    of the MultiVector class. Files that use the MultiVector class only know the declaration in MultiVector_decl.hpp. The missing piece, the definition, is linked in from the code that was generated for MultiVector.cpp.
+Case B) Explicit instantiation is disabled.
+    MultiVector.hpp is included, which itself includes the declaration and the definition file.
+    The compiler has all information it needs to generate code.
+    MultiVector.cpp is empty.
