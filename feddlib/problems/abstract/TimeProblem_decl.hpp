@@ -181,15 +181,15 @@ public:
     BlockMultiVectorPtrArray_Type getSolutionAllPreviousTimestep();
 
     BlockMatrixPtr_Type getMassSystem();
-    
+
     ParameterListPtr_Type getParameterList();
-        
+
     void assembleSourceTerm( double time=0. );
 
     BlockMultiVectorPtr_Type getSourceTerm( );
-        
+
     bool hasSourceTerm() const;
-    
+
     CommConstPtr_Type getComm() const{return  comm_;}
 
     LinSolverBuilderPtr_Type getLinearSolverBuilder() const;
@@ -197,20 +197,20 @@ public:
     void getValuesOfInterest( vec_dbl_Type& values );
 
     void computeValuesOfInterestAndExport();
-    
+
     void updateTime( double time ){ time_ = time;}
 
     void addToRhs(BlockMultiVectorPtr_Type x);
-    
+
     ProblemPtr_Type problem_;
     CommConstPtr_Type comm_;
-    
+
     mutable BlockMatrixPtr_Type systemCombined_;
     mutable BlockMatrixPtr_Type systemMass_;
     mutable SmallMatrix<double> timeParameters_;
     SmallMatrix<int>        timeStepDef_;
     SmallMatrix<double>     massParameters_;
-    
+
     FEFacPtr_Type feFactory_;
 //    bool					boolLinearProblem_;
     int                     dimension_;

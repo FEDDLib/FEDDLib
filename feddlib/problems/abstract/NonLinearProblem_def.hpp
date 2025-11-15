@@ -1,6 +1,7 @@
 #ifndef NONLINEARPROBLEM_DEF_hpp
 #define NONLINEARPROBLEM_DEF_hpp
 #include "NonLinearProblem_decl.hpp"
+#include "TimeProblem.hpp"
 
 /*!
  Definition of NonLinearProblem
@@ -97,7 +98,7 @@ namespace FEDD
     }
 
     template <class SC, class LO, class GO, class NO>
-    void NonLinearProblem<SC, LO, GO, NO>::calculateNonLinResidualVec(SmallMatrix<double> &coeff, std::string type, double time)
+    void NonLinearProblem<SC, LO, GO, NO>::calculateNonLinResidualVec(SmallMatrix<double> &coeff, std::string type, double time, BlockMatrixPtr_Type systemMass)
     {
 
         coeff_ = coeff;

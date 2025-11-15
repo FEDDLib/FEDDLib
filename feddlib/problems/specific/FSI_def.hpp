@@ -836,6 +836,20 @@ void FSI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
 }
 
+template <class SC, class LO, class GO, class NO>
+void FSI<SC, LO, GO, NO>::calculateNonLinResidualVec(SmallMatrix<double> &coeff, std::string type, double time, BlockMatrixPtr_Type systemMass)
+{
+    NonLinearProblem<SC,LO,GO,NO>::calculateNonLinResidualVec(coeff,type,time);
+
+    // for FSI we need to reassemble the massmatrix system if the mesh was moved for geometry implicit computations
+    bool geometryExplicit = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
+    if( !geometryExplicit ) {
+        MatrixPtr_Type massmatrix;
+        this->setFluidMassmatrix( massmatrix );
+        systemMass->addBlock( massmatrix, 0, 0 );
+    }
+}
+
 // Muss derzeit nur am Anfang jeder Zeititeration aufgerufen werden, damit
 // problemTimeFluid_ und problemTimeStructure_ die aktuelle Loesung haben.
 // ACHTUNG: Wenn wir irgendwann einmal anfangen reAssemble() auf problemFluid_ und

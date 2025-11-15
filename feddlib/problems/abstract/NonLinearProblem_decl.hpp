@@ -17,6 +17,9 @@
 namespace FEDD{
 template<class SC_, class LO_, class GO_, class NO_>
 class Problem;
+template<class SC_, class LO_, class GO_, class NO_>
+class TimeProblem;
+
 template <class SC = default_sc,
           class LO = default_lo,
           class GO = default_go,
@@ -121,7 +124,7 @@ public:
     virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const = 0; //type=standard or reverse
 
     /// @brief Calculate the non-linear residual vector with given coefficients for time-dependent problems (if used for timeproblem)
-    virtual void calculateNonLinResidualVec(SmallMatrix<double>& coeff, std::string type="standard", double time=0.); //type=standard or reverse
+    virtual void calculateNonLinResidualVec(SmallMatrix<double>& coeff, std::string type="standard", double time=0., BlockMatrixPtr_Type systemMass = Teuchos::null); //type=standard or reverse
     
     /// @brief Get the residual vector
     /// @return residual vector

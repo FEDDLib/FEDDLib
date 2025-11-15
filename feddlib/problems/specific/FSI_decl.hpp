@@ -20,6 +20,7 @@ template <class SC , class LO , class GO , class NO >
 class LinElas;
 template <class SC , class LO , class GO , class NO >
 class NonLinElasticity;
+
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
 class FSI : public NonLinearProblem<SC,LO,GO,NO>  {
 
@@ -117,7 +118,10 @@ public:
     
     virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions);
 
-    virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const; //standard or reverse    
+    virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const override; //standard or reverse
+
+    /// @brief Calculate the non-linear residual vector with given coefficients for time-dependent problems (if used for timeproblem)
+    void calculateNonLinResidualVec(SmallMatrix<double>& coeff, std::string type="standard", double time=0., BlockMatrixPtr_Type systemMass = Teuchos::null) override; //type=standard or reverse
     
     virtual void getValuesOfInterest( vec_dbl_Type& values );
     
