@@ -37,7 +37,7 @@ set(General_SOURCES
 CACHE INTERNAL "")
 
 # --- Add HDF5 includes ---
-INCLUDE_DIRECTORIES(${TPL_HDF5_INCLUDE_DIRS})
+tribits_include_directories(${TPL_HDF5_INCLUDE_DIRS})
 
 set(LOCAL_HEADERS)
 foreach(INC ${General_HEADERS})

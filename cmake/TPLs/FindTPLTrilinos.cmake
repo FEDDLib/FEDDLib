@@ -1,10 +1,5 @@
 include(TribitsTplDeclareLibraries)
 
-# TRIBITS_TPL_DECLARE_LIBRARIES( Trilinos
-#   REQUIRED_HEADERS Epetra_Comm.h
-#   REQUIRED_LIBS_NAMES "epetra"
-#   )
-
 if(Trilinos_LIBRARY_DIRS)
     set (Trilinos_DIR ${Trilinos_DIR} "${Trilinos_LIBRARY_DIRS}/cmake/Trilinos")
 endif()
@@ -14,10 +9,10 @@ endif()
 
 message("Trilinos_DIR: ${Trilinos_DIR}")
 
-# Here I am looking for TrilinosConfig.cmake and I will import it.
+# Find TrilinosConfig.cmake and import it.
 find_package (Trilinos NO_MODULE HINTS ${Trilinos_DIR})
 
-# Stop cmake if Trilinos is not found.
+# Stop CMake if Trilinos was not found.
 if (NOT Trilinos_FOUND)
   message (FATAL_ERROR "Could not find Trilinos!")
 endif ()
@@ -58,20 +53,24 @@ endif()
 
 # Optional Packages (to be moved outside with COMPONENTS ...)
 list (APPEND FEDDLib_OPTIONAL_Trilinos_PKGS
-  "NOX" "Thyra" "Rythmos" "Teko" "Stratimikos" "Isorropia" "ShyLU" "Zoltan2" "MueLu")
+  "NOX" "Thyra" "Teko" "Stratimikos" "ShyLU" "Zoltan" "Zoltan2" "MueLu" "Ifpack2" "Anasazi")
 
 # Required packages (to be moved outside, like REQUIRED COMPONENTS ...)
-list (APPEND XLib_REQUIRED_Trilinos_PKGS
-  "Belos" "ShyLU_DDFROSch" "Stratimikos" "Teko" "Teuchos" "Thyra" "Tpetra" "Xpetra")
+list (APPEND FEDDLib_REQUIRED_Trilinos_PKGS
+  "Amesos2" "Belos" "ShyLU_DDFROSch" "Stratimikos" "Teko" "Teuchos" "Thyra" "Tpetra" "Xpetra")
 
 # Start scanning Trilinos configuration
+set (Trilinos_MISSING_REQUIRED_PACKAGE OFF) # Will be set to ON if a required package is missing
 foreach (TYPE IN ITEMS "OPTIONAL" "REQUIRED")
   foreach (PKG IN LISTS FEDDLib_${TYPE}_Trilinos_PKGS)
     # Look for PKG
     list (FIND Trilinos_PACKAGE_LIST "${PKG}" PKG_FOUND)
     if (PKG_FOUND GREATER -1)
-      # Found! Let's announce it!
-      message (STATUS "Trilinos :: ${PKG} Found!")
+      if (TYPE STREQUAL "REQUIRED")
+        message (STATUS "Trilinos :: required package     found:   ${PKG}")
+      else ()
+        message (STATUS "Trilinos :: optional package     found:   ${PKG}")
+      endif ()
       list (APPEND FEDDLib_Trilinos_LIBRARIES "${${PKG}_LIBRARIES}")
       list (APPEND FEDDLib_Trilinos_TPL_INCLUDE_DIRS "${${PKG}_TPL_INCLUDE_DIRS}")
       list (APPEND FEDDLib_Trilinos_TPL_LIST "${${PKG}_TPL_LIST}")
@@ -80,13 +79,21 @@ foreach (TYPE IN ITEMS "OPTIONAL" "REQUIRED")
       set (HAVE_TRILINOS_${UPKG} True)
     else ()
       if (TYPE STREQUAL "REQUIRED")
-        message (FATAL_ERROR "Trilinos :: ${PKG} NOT Found!")
+        message (SEND_ERROR "Trilinos :: required package NOT found:   ${PKG}")
+        set (Trilinos_MISSING_REQUIRED_PACKAGE ON)
       else ()
-        message (WARNING "Trilinos :: ${PKG} NOT Found! Some test might not compile properly ...")
+        # Only give a status information about packages that are not available.
+        # Replace STATUS with WARNING if you want something stronger.
+        message (STATUS "Trilinos :: optional package NOT found:   ${PKG}   (Some tests might not compile properly.)")
       endif ()
     endif ()
   endforeach (PKG)
 endforeach (TYPE)
+
+# If there are any required packages missing: abort.
+if (Trilinos_MISSING_REQUIRED_PACKAGE)
+  message (FATAL_ERROR "Trilinos :: Required package(s) not found. See above for missing packages.")
+endif ()
 
 # Cleaning duplicates
 list (REVERSE FEDDLib_Trilinos_TPL_LIST)
@@ -113,46 +120,76 @@ foreach (LIB IN LISTS FEDDLib_Trilinos_LIBRARIES)
 endforeach (LIB)
 set (FEDDLib_Trilinos_LIBS ${FEDDLib_Trilinos_LIBS} ${FEDDLib_Trilinos_TPL_LIBRARIES})
 
+# Detect available Trilinos packages and set FEDD_HAVE_* flags
+# This runs after Trilinos is found, so Trilinos_PACKAGE_LIST is populated
+foreach(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
+    if(${TRILINOS_PACKAGE_NAME} STREQUAL "Ifpack2")
+        set(FEDD_HAVE_IFPACK2 TRUE)
+        message(STATUS "FEDDLib:   FEDD_HAVE_IFPACK2   TRUE")
+    endif()
+    if(${TRILINOS_PACKAGE_NAME} STREQUAL "NOX")
+        set(FEDD_HAVE_NOX TRUE)
+        message(STATUS "FEDDLib:   FEDD_HAVE_NOX       TRUE")
+    endif()
+    if(${TRILINOS_PACKAGE_NAME} STREQUAL "Teko")
+        set(FEDD_HAVE_TEKO TRUE)
+        message(STATUS "FEDDLib:   FEDD_HAVE_TEKO      TRUE")
+    endif()
+    if(${TRILINOS_PACKAGE_NAME} STREQUAL "Zoltan2")
+        set(FEDD_HAVE_ZOLTAN2 TRUE)
+        message(STATUS "FEDDLib:   FEDD_HAVE_ZOLTAN2   TRUE")
+    endif()
+endforeach()
+
+# Uncomment the following to see all variables in the current scope.
+#get_cmake_property(_variableNames VARIABLES)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
+
 # TPLs
-foreach (TPL IN ITEMS "ParMETIS" "Boost" "LAPACK" "BLAS" "UMFPACK" "SuperLU" "SuperLUDist" "HDF5")
-    list (FIND FEDDLib_Trilinos_TPL_LIST ${TPL} TPL_FOUND)
-  if (TPL_FOUND GREATER -1)
+set(TRILINOS_ENABLED_TPLS_LIST "")
+
+# Define a function to check TPL status across packages.
+# This will not differentiate between TPLs enabled only for individual packages, e.g., Amesos2_ENABLE_METIS.
+# Important: It will check all variables for the searched TPL name, so it is not entirely robust.
+function(check_tpl_status TPL_NAME)
+    # The actual variable names depend on the internal Trilinos setup, 
+    # but the pattern should be <PackageName>_ENABLE_<TPL_NAME>.
+
+    # We find any variable that contains the searched name.
+    get_cmake_property(_all_vars VARIABLES)
+    foreach(_var ${_all_vars})
+        if("${_var}" MATCHES "([A-Za-z0-9]+_ENABLE_${TPL_NAME})$")
+            if(${_var}) # Check if the variable's value is TRUE/ON
+                list(APPEND TRILINOS_ENABLED_TPLS_LIST "${TPL_NAME}")
+                set(TRILINOS_ENABLED_TPLS_LIST ${TRILINOS_ENABLED_TPLS_LIST} PARENT_SCOPE)
+                set(FOUND_TPL TRUE PARENT_SCOPE)
+                return() # Found on occurence of the TPL name, so return.
+            endif()
+        endif()
+    endforeach()
+endfunction()
+
+message(STATUS "Check all variables in scope for containing TPL names.")
+foreach (TPL IN ITEMS "Boost" "BLAS" "LAPACK" "METIS" "ParMETIS" "KLU2" "UMFPACK" "SuperLU" "SuperLUDist" "MUMPS" "PARDISO_MKL" "HDF5")
+  set(FOUND_TPL FALSE)
+  check_tpl_status(${TPL})
+  if (FOUND_TPL)
     string (TOUPPER ${TPL} UTPL)
     set (${UTPL}_IS_IN_TRILINOS True)
-  endif()
+    message (STATUS "Trilinos :: TPL     found:   ${TPL}")
+  else ()
+    message (STATUS "Trilinos :: TPL NOT found:   ${TPL}")
+  endif ()
 endforeach (TPL)
+
+# TRILINOS_ENABLED_TPLS_LIST contains all found TPLs.
+message(STATUS "Summary of enabled TPLs: ${TRILINOS_ENABLED_TPLS_LIST}")
 
 # Filling variables needed by the TriBITS system
 set (TPL_Trilinos_INCLUDE_DIRS ${FEDDLib_Trilinos_INCLUDE_DIRS})
 set (TPL_Trilinos_LIBRARY_DIRS Trilinos::all_selected_libs) 
 set (TPL_Trilinos_LIBRARIES Trilinos::all_selected_libs)
 
-# Detect available Trilinos packages and set FEDD_HAVE_* flags
-# This runs after Trilinos is found, so Trilinos_PACKAGE_LIST is populated
-foreach(TRILINOS_PACKAGE_NAME in ${Trilinos_PACKAGE_LIST})
-    if(${TRILINOS_PACKAGE_NAME} STREQUAL "Ifpack2")
-        set(FEDD_HAVE_IFPACK2 TRUE)
-        message(STATUS "FEDDLib: Found Trilinos Ifpack2 package")
-    endif()
-    if(${TRILINOS_PACKAGE_NAME} STREQUAL "NOX")
-        set(FEDD_HAVE_NOX TRUE)
-        message(STATUS "FEDDLib: Found Trilinos NOX package")
-    endif()
-    if(${TRILINOS_PACKAGE_NAME} STREQUAL "Teko")
-        set(FEDD_HAVE_TEKO TRUE)
-        message(STATUS "FEDDLib: Found Trilinos Teko package")
-    endif()
-    if(${TRILINOS_PACKAGE_NAME} STREQUAL "Zoltan2")
-        set(FEDD_HAVE_ZOLTAN2 TRUE)
-        message(STATUS "FEDDLib: Found Trilinos Zoltan2 package")
-    endif()
-endforeach()
-
-# Summary of detected features
-message(STATUS "FEDDLib: Feature detection summary:")
-message(STATUS "  - FEDD_HAVE_IFPACK2: ${FEDD_HAVE_IFPACK2}")
-message(STATUS "  - FEDD_HAVE_NOX: ${FEDD_HAVE_NOX}")
-message(STATUS "  - FEDD_HAVE_TEKO: ${FEDD_HAVE_TEKO}")
-
-
-
+message(STATUS "End of processing Trilinos installation.\n")

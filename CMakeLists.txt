@@ -30,7 +30,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tribits/TriBITS.cmake)
 cmake_minimum_required(VERSION ${TRIBITS_CMAKE_MINIMUM_REQUIRED})
 
 # Add source dir to includes
-include_directories(${CMAKE_SOURCE_DIR})
+tribits_include_directories(${CMAKE_SOURCE_DIR})
 
 # Do all of the processing for this Tribits project
 tribits_project()
