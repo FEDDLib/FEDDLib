@@ -459,9 +459,12 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssemble</b
 <tr class="memitem:ad37ba72069e531748c0a96dd6e6090c5" id="r_ad37ba72069e531748c0a96dd6e6090c5"><td class="memItemLeft" align="right" valign="top"><a id="ad37ba72069e531748c0a96dd6e6090c5" name="ad37ba72069e531748c0a96dd6e6090c5"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssembleExtrapolation</b> (BlockMultiVectorPtrArray_Type previousSolutions)</td></tr>
 <tr class="separator:ad37ba72069e531748c0a96dd6e6090c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa717420d31a8c74dc5a09dae2671dd1" id="r_afa717420d31a8c74dc5a09dae2671dd1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa717420d31a8c74dc5a09dae2671dd1">calculateNonLinResidualVec</a> (std::string type=&quot;standard&quot;, double time=0.) const</td></tr>
-<tr class="memdesc:afa717420d31a8c74dc5a09dae2671dd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual function which is implemented in the specific non-linear problem classes to calculate the non-linear residual vector.  <br /></td></tr>
-<tr class="separator:afa717420d31a8c74dc5a09dae2671dd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a163adffd826cb4facc57bbefe71182" id="r_a4a163adffd826cb4facc57bbefe71182"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a163adffd826cb4facc57bbefe71182">calculateNonLinResidualVec</a> (std::string type=&quot;standard&quot;, double time=0.) const override</td></tr>
+<tr class="memdesc:a4a163adffd826cb4facc57bbefe71182"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual function which is implemented in the specific non-linear problem classes to calculate the non-linear residual vector.  <br /></td></tr>
+<tr class="separator:a4a163adffd826cb4facc57bbefe71182"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4926e81eec5ee6a3c469f60a36fb065a" id="r_a4926e81eec5ee6a3c469f60a36fb065a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4926e81eec5ee6a3c469f60a36fb065a">calculateNonLinResidualVec</a> (<a class="el" href="classFEDD_1_1SmallMatrix.html">SmallMatrix</a>&lt; double &gt; &amp;coeff, std::string type=&quot;standard&quot;, double time=0., BlockMatrixPtr_Type systemMass=Teuchos::null) override</td></tr>
+<tr class="memdesc:a4926e81eec5ee6a3c469f60a36fb065a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the non-linear residual vector with given coefficients for time-dependent problems (if used for timeproblem)  <br /></td></tr>
+<tr class="separator:a4926e81eec5ee6a3c469f60a36fb065a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81b173206825b6c90ee39581f5599de4" id="r_a81b173206825b6c90ee39581f5599de4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81b173206825b6c90ee39581f5599de4">getValuesOfInterest</a> (vec_dbl_Type &amp;values)</td></tr>
 <tr class="memdesc:a81b173206825b6c90ee39581f5599de4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual class to extract values of interest that are computed during the solve.  <br /></td></tr>
 <tr class="separator:a81b173206825b6c90ee39581f5599de4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -574,10 +577,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>reAssembleExt
 <tr class="memitem:a98a9d9723563ece2ab9eddc08f4e9570 inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_a98a9d9723563ece2ab9eddc08f4e9570"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1NonLinearProblem.html#a98a9d9723563ece2ab9eddc08f4e9570">calculateResidualNorm</a> () const</td></tr>
 <tr class="memdesc:a98a9d9723563ece2ab9eddc08f4e9570 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the 2-norm of the residual vector.  <br /></td></tr>
 <tr class="separator:a98a9d9723563ece2ab9eddc08f4e9570 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a462d228c649c87e033cbc968e307a70c inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_a462d228c649c87e033cbc968e307a70c"><td class="memItemLeft" align="right" valign="top">
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>calculateNonLinResidualVec</b> (<a class="el" href="classFEDD_1_1SmallMatrix.html">SmallMatrix</a>&lt; double &gt; &amp;coeff, std::string type=&quot;standard&quot;, double time=0.)</td></tr>
-<tr class="memdesc:a462d228c649c87e033cbc968e307a70c inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the non-linear residual vector with given coefficients for time-dependent problems (if used for timeproblem) <br /></td></tr>
-<tr class="separator:a462d228c649c87e033cbc968e307a70c inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25537d76e46d6a7bc20324d03de73568 inherit pub_methods_classFEDD_1_1NonLinearProblem" id="r_a25537d76e46d6a7bc20324d03de73568"><td class="memItemLeft" align="right" valign="top">BlockMultiVectorPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFEDD_1_1NonLinearProblem.html#a25537d76e46d6a7bc20324d03de73568">getResidualVector</a> () const</td></tr>
 <tr class="memdesc:a25537d76e46d6a7bc20324d03de73568 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the residual vector.  <br /></td></tr>
 <tr class="separator:a25537d76e46d6a7bc20324d03de73568 inherit pub_methods_classFEDD_1_1NonLinearProblem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -948,8 +947,66 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="afa717420d31a8c74dc5a09dae2671dd1" name="afa717420d31a8c74dc5a09dae2671dd1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa717420d31a8c74dc5a09dae2671dd1">&#9670;&#160;</a></span>calculateNonLinResidualVec()</h2>
+<a id="a4926e81eec5ee6a3c469f60a36fb065a" name="a4926e81eec5ee6a3c469f60a36fb065a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4926e81eec5ee6a3c469f60a36fb065a">&#9670;&#160;</a></span>calculateNonLinResidualVec() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC, class LO, class GO, class NO&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classFEDD_1_1FSI.html">FEDD::FSI</a>&lt; SC, LO, GO, NO &gt;::calculateNonLinResidualVec </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classFEDD_1_1SmallMatrix.html">SmallMatrix</a>&lt; double &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>coeff</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>type</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;standard&quot;</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>time</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0.</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BlockMatrixPtr_Type</td>          <td class="paramname"><span class="paramname"><em>systemMass</em></span><span class="paramdefsep"> = </span><span class="paramdefval">Teuchos::null</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calculate the non-linear residual vector with given coefficients for time-dependent problems (if used for timeproblem) </p>
+
+<p>Reimplemented from <a class="el" href="classFEDD_1_1NonLinearProblem.html#a601d86d0c54d19984d0f561af0d083d4">FEDD::NonLinearProblem&lt; default_sc, default_lo, default_go, default_no &gt;</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1FSI_a4926e81eec5ee6a3c469f60a36fb065a_cgraph.png" border="0" usemap="#aclassFEDD_1_1FSI_a4926e81eec5ee6a3c469f60a36fb065a_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1FSI_a4926e81eec5ee6a3c469f60a36fb065a_cgraph" id="aclassFEDD_1_1FSI_a4926e81eec5ee6a3c469f60a36fb065a_cgraph">
+<area shape="rect" title="Calculate the non&#45;linear residual vector with given coefficients for time&#45;dependent problems (if used..." alt="" coords="5,63,188,103"/>
+<area shape="rect" href="classFEDD_1_1FSI.html#a4a163adffd826cb4facc57bbefe71182" title="Virtual function which is implemented in the specific non&#45;linear problem classes to calculate the non..." alt="" coords="242,29,424,70"/>
+<area shape="poly" title=" " alt="" coords="188,67,226,62,227,67,189,73"/>
+<area shape="rect" href="classFEDD_1_1NonLinearProblem.html#aedd83cdf3b7e9a2f8da1286a7b7534f6" title="Virtual function which is implemented in the specific non&#45;linear problem classes to calculate the non..." alt="" coords="236,95,430,135"/>
+<area shape="poly" title=" " alt="" coords="189,93,220,97,220,102,188,98"/>
+<area shape="poly" title=" " alt="" coords="288,29,286,19,293,10,309,5,333,3,358,5,373,11,371,16,357,10,333,8,310,10,297,15,291,21,294,28"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a4a163adffd826cb4facc57bbefe71182" name="a4a163adffd826cb4facc57bbefe71182"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a163adffd826cb4facc57bbefe71182">&#9670;&#160;</a></span>calculateNonLinResidualVec() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -972,7 +1029,7 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -990,8 +1047,8 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1FSI_afa717420d31a8c74dc5a09dae2671dd1_cgraph.png" border="0" usemap="#aclassFEDD_1_1FSI_afa717420d31a8c74dc5a09dae2671dd1_cgraph" alt=""/></div>
-<map name="aclassFEDD_1_1FSI_afa717420d31a8c74dc5a09dae2671dd1_cgraph" id="aclassFEDD_1_1FSI_afa717420d31a8c74dc5a09dae2671dd1_cgraph">
+<div class="center"><img src="classFEDD_1_1FSI_a4a163adffd826cb4facc57bbefe71182_cgraph.png" border="0" usemap="#aclassFEDD_1_1FSI_a4a163adffd826cb4facc57bbefe71182_cgraph" alt=""/></div>
+<map name="aclassFEDD_1_1FSI_a4a163adffd826cb4facc57bbefe71182_cgraph" id="aclassFEDD_1_1FSI_a4a163adffd826cb4facc57bbefe71182_cgraph">
 <area shape="rect" title="Virtual function which is implemented in the specific non&#45;linear problem classes to calculate the non..." alt="" coords="5,29,188,70"/>
 <area shape="poly" title=" " alt="" coords="62,29,60,19,66,10,78,5,97,3,116,5,128,11,126,16,115,10,96,8,79,10,69,14,65,20,67,28"/>
 </map>
@@ -999,10 +1056,12 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classFEDD_1_1FSI_afa717420d31a8c74dc5a09dae2671dd1_icgraph.png" border="0" usemap="#aclassFEDD_1_1FSI_afa717420d31a8c74dc5a09dae2671dd1_icgraph" alt=""/></div>
-<map name="aclassFEDD_1_1FSI_afa717420d31a8c74dc5a09dae2671dd1_icgraph" id="aclassFEDD_1_1FSI_afa717420d31a8c74dc5a09dae2671dd1_icgraph">
-<area shape="rect" title="Virtual function which is implemented in the specific non&#45;linear problem classes to calculate the non..." alt="" coords="5,29,188,70"/>
-<area shape="poly" title=" " alt="" coords="126,16,115,10,96,8,79,10,69,14,65,20,67,28,62,29,60,19,66,10,78,5,97,3,116,5,128,11"/>
+<div class="center"><img src="classFEDD_1_1FSI_a4a163adffd826cb4facc57bbefe71182_icgraph.png" border="0" usemap="#aclassFEDD_1_1FSI_a4a163adffd826cb4facc57bbefe71182_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1FSI_a4a163adffd826cb4facc57bbefe71182_icgraph" id="aclassFEDD_1_1FSI_a4a163adffd826cb4facc57bbefe71182_icgraph">
+<area shape="rect" title="Virtual function which is implemented in the specific non&#45;linear problem classes to calculate the non..." alt="" coords="236,29,418,70"/>
+<area shape="poly" title=" " alt="" coords="364,16,350,10,327,8,305,10,292,15,286,21,289,28,283,29,281,19,288,10,304,5,327,3,352,5,366,11"/>
+<area shape="rect" href="classFEDD_1_1FSI.html#a4926e81eec5ee6a3c469f60a36fb065a" title="Calculate the non&#45;linear residual vector with given coefficients for time&#45;dependent problems (if used..." alt="" coords="5,29,188,70"/>
+<area shape="poly" title=" " alt="" coords="220,52,188,52,188,47,220,47"/>
 </map>
 </div>
 

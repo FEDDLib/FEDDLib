@@ -1,5 +1,7 @@
 var NAVTREEINDEX4 =
 {
+"classFEDD_1_1Matrix.html#a3544253497eaa0762112537546138fcf":[0,0,0,53,22],
+"classFEDD_1_1Matrix.html#a3544253497eaa0762112537546138fcf":[1,0,0,54,22],
 "classFEDD_1_1Matrix.html#a38171cf5dc98f2c3c57d08e22d202b7f":[0,0,0,53,21],
 "classFEDD_1_1Matrix.html#a38171cf5dc98f2c3c57d08e22d202b7f":[1,0,0,54,21],
 "classFEDD_1_1Matrix.html#a39109e02a3914b754117a24d925ac9ac":[0,0,0,53,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX4 =
 "classFEDD_1_1MultiVector.html#ae7016d4462351c4734003f47994a4f9f":[0,0,0,60,12],
 "classFEDD_1_1MultiVector.html#ae7016d4462351c4734003f47994a4f9f":[1,0,0,61,12],
 "classFEDD_1_1NavierStokes.html":[0,0,0,61],
-"classFEDD_1_1NavierStokes.html":[1,0,0,62],
-"classFEDD_1_1NavierStokes.html#a0fce4c4a70d3fb5833f3f3100346718c":[0,0,0,61,0],
-"classFEDD_1_1NavierStokes.html#a0fce4c4a70d3fb5833f3f3100346718c":[1,0,0,62,0]
+"classFEDD_1_1NavierStokes.html":[1,0,0,62]
 };
