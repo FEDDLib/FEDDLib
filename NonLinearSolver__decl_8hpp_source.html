@@ -105,7 +105,7 @@ $(function(){initNavTree('NonLinearSolver__decl_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;feddlib/problems/problems_config.h&quot;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;feddlib/problems/abstract/NonLinearProblem.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;feddlib/problems/abstract/TimeProblem.hpp&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;feddlib/core/General/ExporterTxt.hpp&quot;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;boost/function.hpp&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
@@ -192,13 +192,13 @@ $(function(){initNavTree('NonLinearSolver__decl_8hpp_source.html',''); initResiz
 </div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a></div><div class="ttdef"><b>Definition</b> NonLinearProblem_decl.hpp:27</div></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a></div><div class="ttdef"><b>Definition</b> NonLinearProblem_decl.hpp:28</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearSolver_html_a38595db2209fcff9472b635d8493a6d3"><div class="ttname"><a href="classFEDD_1_1NonLinearSolver.html#a38595db2209fcff9472b635d8493a6d3">FEDD::NonLinearSolver::getNonLinIts</a></div><div class="ttdeci">int getNonLinIts()</div><div class="ttdoc">return the number of nonlinear iterations needed</div><div class="ttdef"><b>Definition</b> NonLinearSolver_decl.hpp:78</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearSolver_html_aa81ae95c8a0d42347a47c486dde03881"><div class="ttname"><a href="classFEDD_1_1NonLinearSolver.html#aa81ae95c8a0d42347a47c486dde03881">FEDD::NonLinearSolver::addSwitchingStrategyFunction</a></div><div class="ttdeci">void addSwitchingStrategyFunction(SwitchingStrategyFunc switchingStrategy)</div><div class="ttdoc">Add a switching strategy function for the FixedPointNewton method.</div><div class="ttdef"><b>Definition</b> NonLinearSolver_decl.hpp:84</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearSolver_html_ae60cba66ce05ae5f37e6787114b1906c"><div class="ttname"><a href="classFEDD_1_1NonLinearSolver.html#ae60cba66ce05ae5f37e6787114b1906c">FEDD::NonLinearSolver::solve</a></div><div class="ttdeci">void solve(NonLinearProblem_Type &amp;problem, vec_dbl_ptr_Type valuesForExport=Teuchos::null)</div><div class="ttdoc">Call for solving a nonlinear problem, depending on linearization solveNOX/solveFixedPoint/solveNewton...</div><div class="ttdef"><b>Definition</b> NonLinearSolver_def.hpp:33</div></div>
-<div class="ttc" id="aclassFEDD_1_1Problem_html"><div class="ttname"><a href="classFEDD_1_1Problem.html">FEDD::Problem</a></div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:40</div></div>
-<div class="ttc" id="aclassFEDD_1_1TimeProblem_html"><div class="ttname"><a href="classFEDD_1_1TimeProblem.html">FEDD::TimeProblem</a></div><div class="ttdef"><b>Definition</b> TimeProblem_decl.hpp:33</div></div>
-<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
+<div class="ttc" id="aclassFEDD_1_1Problem_html"><div class="ttname"><a href="classFEDD_1_1Problem.html">FEDD::Problem</a></div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:42</div></div>
+<div class="ttc" id="aclassFEDD_1_1TimeProblem_html"><div class="ttname"><a href="classFEDD_1_1TimeProblem.html">FEDD::TimeProblem</a></div><div class="ttdef"><b>Definition</b> TimeProblem_decl.hpp:31</div></div>
+<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:36</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

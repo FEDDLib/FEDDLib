@@ -103,73 +103,71 @@ $(function(){initNavTree('AssembleFEBlock__def_8hpp_source.html',''); initResiza
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef AssembleFEBLOCK_DEF_hpp</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define AssembleFEBLOCK_DEF_hpp</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;AssembleFEBlock_decl.hpp&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFEBlock.html#a0312f7df5a0f057ab31cb66729539c1a">   10</a></span><a class="code hl_function" href="classFEDD_1_1AssembleFEBlock.html#a0312f7df5a0f057ab31cb66729539c1a">AssembleFEBlock&lt;SC,LO,GO,NO&gt;::AssembleFEBlock</a>(<span class="keywordtype">int</span> flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><a class="code hl_function" href="classFEDD_1_1AssembleFE.html#a5ff56b610942ec92cc1b1e0ac1e07ce4">AssembleFE</a>&lt;SC,LO,GO,NO&gt;(flag, nodesRefConfig, params,tuple)</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>{</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    FEType_ = std::get&lt;1&gt;(this-&gt;diskTuple_-&gt;at(0)); <span class="comment">// FEType of Disk</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    dofsSolid_ = std::get&lt;2&gt;(this-&gt;diskTuple_-&gt;at(0)); <span class="comment">// Degrees of freedom per node</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    dofsChem_ = std::get&lt;2&gt;(this-&gt;diskTuple_-&gt;at(1)); <span class="comment">// Degrees of freedom per node</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    numNodesSolid_ = std::get&lt;3&gt;(this-&gt;diskTuple_-&gt;at(0)); <span class="comment">// Number of nodes of element</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    numNodesChem_ = std::get&lt;3&gt;(this-&gt;diskTuple_-&gt;at(1)); <span class="comment">// Number of nodes of element</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    dofsElement_ = dofsSolid_*numNodesSolid_ + dofsChem_*numNodesChem_; <span class="comment">// &quot;Dimension of return matrix&quot;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    dimSystem_ = 2;</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFEBlock.html#a0312f7df5a0f057ab31cb66729539c1a">    8</a></span><a class="code hl_function" href="classFEDD_1_1AssembleFEBlock.html#a0312f7df5a0f057ab31cb66729539c1a">AssembleFEBlock&lt;SC,LO,GO,NO&gt;::AssembleFEBlock</a>(<span class="keywordtype">int</span> flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><a class="code hl_function" href="classFEDD_1_1AssembleFE.html#a5ff56b610942ec92cc1b1e0ac1e07ce4">AssembleFE</a>&lt;SC,LO,GO,NO&gt;(flag, nodesRefConfig, params,tuple)</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    FEType_ = std::get&lt;1&gt;(this-&gt;diskTuple_-&gt;at(0)); <span class="comment">// FEType of Disk</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    dofsSolid_ = std::get&lt;2&gt;(this-&gt;diskTuple_-&gt;at(0)); <span class="comment">// Degrees of freedom per node</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    dofsChem_ = std::get&lt;2&gt;(this-&gt;diskTuple_-&gt;at(1)); <span class="comment">// Degrees of freedom per node</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    numNodesSolid_ = std::get&lt;3&gt;(this-&gt;diskTuple_-&gt;at(0)); <span class="comment">// Number of nodes of element</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    numNodesChem_ = std::get&lt;3&gt;(this-&gt;diskTuple_-&gt;at(1)); <span class="comment">// Number of nodes of element</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    dofsElement_ = dofsSolid_*numNodesSolid_ + dofsChem_*numNodesChem_; <span class="comment">// &quot;Dimension of return matrix&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    dimSystem_ = 2;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
-</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFEBlock.html#a2337a36b97c9088d2bda41e3b7e30cd2">   34</a></span><span class="keywordtype">void</span>  <a class="code hl_function" href="classFEDD_1_1AssembleFEBlock.html#a2337a36b97c9088d2bda41e3b7e30cd2">AssembleFEBlock&lt;SC,LO,GO,NO&gt;::assembleJacobian</a>() {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFEBlock.html#a2337a36b97c9088d2bda41e3b7e30cd2">   32</a></span><span class="keywordtype">void</span>  <a class="code hl_function" href="classFEDD_1_1AssembleFEBlock.html#a2337a36b97c9088d2bda41e3b7e30cd2">AssembleFEBlock&lt;SC,LO,GO,NO&gt;::assembleJacobian</a>() {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( <span class="keyword">new</span> SmallMatrix_Type( this-&gt;dofsElement_)); <span class="comment">// Matrix we fill with entries.</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( <span class="keyword">new</span> SmallMatrix_Type( this-&gt;dofsElement_)); <span class="comment">// Matrix we fill with entries.</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    assembleMonolithicSystem(elementMatrix); <span class="comment">// Function that fills the matrix. We pass though a pointer that will be filled.</span></div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    assembleMonolithicSystem(elementMatrix); <span class="comment">// Function that fills the matrix. We pass though a pointer that will be filled.</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    this-&gt;jacobian_ = elementMatrix ; <span class="comment">// We init the jacobian matrix with the matrix we just build.</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    this-&gt;jacobian_ = elementMatrix ; <span class="comment">// We init the jacobian matrix with the matrix we just build.</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
 </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFEBlock.html#a8b303c5404806ade098ce32cc6c34af2">   53</a></span><span class="keywordtype">void</span>  <a class="code hl_function" href="classFEDD_1_1AssembleFEBlock.html#a8b303c5404806ade098ce32cc6c34af2">AssembleFEBlock&lt;SC,LO,GO,NO&gt;::assembleJacobianBlock</a>(LO i) {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classFEDD_1_1AssembleFEBlock.html#a8b303c5404806ade098ce32cc6c34af2">   51</a></span><span class="keywordtype">void</span>  <a class="code hl_function" href="classFEDD_1_1AssembleFEBlock.html#a8b303c5404806ade098ce32cc6c34af2">AssembleFEBlock&lt;SC,LO,GO,NO&gt;::assembleJacobianBlock</a>(LO i) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( <span class="keyword">new</span> SmallMatrix_Type( this-&gt;dofsElement_)); <span class="comment">// Matrix we fill with entries.</span></div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( <span class="keyword">new</span> SmallMatrix_Type( this-&gt;dofsElement_)); <span class="comment">// Matrix we fill with entries.</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    assembleMonolithicSystem(elementMatrix); <span class="comment">// Function that fills the matrix. We pass though a pointer that will be filled.</span></div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    assembleMonolithicSystem(elementMatrix); <span class="comment">// Function that fills the matrix. We pass though a pointer that will be filled.</span></div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    this-&gt;jacobian_ = elementMatrix ; <span class="comment">// We init the jacobian matrix with the matrix we just build.</span></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    this-&gt;jacobian_ = elementMatrix ; <span class="comment">// We init the jacobian matrix with the matrix we just build.</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
 </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keywordtype">void</span> AssembleFEBlock&lt;SC,LO,GO,NO&gt;::assembleMonolithicSystem(SmallMatrixPtr_Type elementMatrix){</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC, <span class="keyword">class</span> LO, <span class="keyword">class</span> GO, <span class="keyword">class</span> NO&gt;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keywordtype">void</span> AssembleFEBlock&lt;SC,LO,GO,NO&gt;::assembleMonolithicSystem(SmallMatrixPtr_Type elementMatrix){</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassFEDD_1_1AssembleFEBlock_html_a0312f7df5a0f057ab31cb66729539c1a"><div class="ttname"><a href="classFEDD_1_1AssembleFEBlock.html#a0312f7df5a0f057ab31cb66729539c1a">FEDD::AssembleFEBlock::AssembleFEBlock</a></div><div class="ttdeci">AssembleFEBlock(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters, tuple_disk_vec_ptr_Type tuple)</div><div class="ttdoc">Constructor.</div><div class="ttdef"><b>Definition</b> AssembleFEBlock_def.hpp:10</div></div>
-<div class="ttc" id="aclassFEDD_1_1AssembleFEBlock_html_a2337a36b97c9088d2bda41e3b7e30cd2"><div class="ttname"><a href="classFEDD_1_1AssembleFEBlock.html#a2337a36b97c9088d2bda41e3b7e30cd2">FEDD::AssembleFEBlock::assembleJacobian</a></div><div class="ttdeci">virtual void assembleJacobian()=0</div><div class="ttdoc">Assemble the element Jacobian matrix.</div><div class="ttdef"><b>Definition</b> AssembleFEBlock_def.hpp:34</div></div>
-<div class="ttc" id="aclassFEDD_1_1AssembleFEBlock_html_a8b303c5404806ade098ce32cc6c34af2"><div class="ttname"><a href="classFEDD_1_1AssembleFEBlock.html#a8b303c5404806ade098ce32cc6c34af2">FEDD::AssembleFEBlock::assembleJacobianBlock</a></div><div class="ttdeci">virtual void assembleJacobianBlock(LO i)=0</div><div class="ttdoc">Assembly Jacobian.</div><div class="ttdef"><b>Definition</b> AssembleFEBlock_def.hpp:53</div></div>
-<div class="ttc" id="aclassFEDD_1_1AssembleFE_html_a5ff56b610942ec92cc1b1e0ac1e07ce4"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#a5ff56b610942ec92cc1b1e0ac1e07ce4">FEDD::AssembleFE&lt; default_sc, default_lo, default_go, default_no &gt;::AssembleFE</a></div><div class="ttdeci">AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters, tuple_disk_vec_ptr_Type tuple)</div><div class="ttdef"><b>Definition</b> AssembleFE_def.hpp:10</div></div>
-<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassFEDD_1_1AssembleFEBlock_html_a0312f7df5a0f057ab31cb66729539c1a"><div class="ttname"><a href="classFEDD_1_1AssembleFEBlock.html#a0312f7df5a0f057ab31cb66729539c1a">FEDD::AssembleFEBlock::AssembleFEBlock</a></div><div class="ttdeci">AssembleFEBlock(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters, tuple_disk_vec_ptr_Type tuple)</div><div class="ttdoc">Constructor.</div><div class="ttdef"><b>Definition</b> AssembleFEBlock_def.hpp:8</div></div>
+<div class="ttc" id="aclassFEDD_1_1AssembleFEBlock_html_a2337a36b97c9088d2bda41e3b7e30cd2"><div class="ttname"><a href="classFEDD_1_1AssembleFEBlock.html#a2337a36b97c9088d2bda41e3b7e30cd2">FEDD::AssembleFEBlock::assembleJacobian</a></div><div class="ttdeci">virtual void assembleJacobian()=0</div><div class="ttdoc">Assemble the element Jacobian matrix.</div><div class="ttdef"><b>Definition</b> AssembleFEBlock_def.hpp:32</div></div>
+<div class="ttc" id="aclassFEDD_1_1AssembleFEBlock_html_a8b303c5404806ade098ce32cc6c34af2"><div class="ttname"><a href="classFEDD_1_1AssembleFEBlock.html#a8b303c5404806ade098ce32cc6c34af2">FEDD::AssembleFEBlock::assembleJacobianBlock</a></div><div class="ttdeci">virtual void assembleJacobianBlock(LO i)=0</div><div class="ttdoc">Assembly Jacobian.</div><div class="ttdef"><b>Definition</b> AssembleFEBlock_def.hpp:51</div></div>
+<div class="ttc" id="aclassFEDD_1_1AssembleFE_html_a5ff56b610942ec92cc1b1e0ac1e07ce4"><div class="ttname"><a href="classFEDD_1_1AssembleFE.html#a5ff56b610942ec92cc1b1e0ac1e07ce4">FEDD::AssembleFE&lt; default_sc, default_lo, default_go, default_no &gt;::AssembleFE</a></div><div class="ttdeci">AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type parameters, tuple_disk_vec_ptr_Type tuple)</div><div class="ttdef"><b>Definition</b> AssembleFE_def.hpp:8</div></div>
+<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:36</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

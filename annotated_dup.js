@@ -83,8 +83,10 @@ var annotated_dup =
       [ "SmallMatrix", "classFEDD_1_1SmallMatrix.html", null ],
       [ "Stokes", "classFEDD_1_1Stokes.html", null ],
       [ "SurfaceElements", "classFEDD_1_1SurfaceElements.html", null ],
+      [ "ThyraTypedefs", "structFEDD_1_1ThyraTypedefs.html", null ],
       [ "TimeProblem", "classFEDD_1_1TimeProblem.html", null ],
       [ "TimeSteppingTools", "classFEDD_1_1TimeSteppingTools.html", null ],
+      [ "TpetraTypedefs", "structFEDD_1_1TpetraTypedefs.html", null ],
       [ "TPM", "classFEDD_1_1TPM.html", null ]
     ] ],
     [ "AssembleFE_SCI_SMC_Active_Growth_Reorientation", "classAssembleFE__SCI__SMC__Active__Growth__Reorientation.html", null ],

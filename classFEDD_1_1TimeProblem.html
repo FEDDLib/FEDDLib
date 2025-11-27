@@ -206,24 +206,30 @@ typedef Problem_Type::PreconditionerPtr_Type&#160;</td><td class="memItemRight" 
 <tr class="memitem:a948c7986777eeb125ced0d6f86271a82" id="r_a948c7986777eeb125ced0d6f86271a82"><td class="memItemLeft" align="right" valign="top"><a id="a948c7986777eeb125ced0d6f86271a82" name="a948c7986777eeb125ced0d6f86271a82"></a>
 typedef Problem_Type::LinSolverBuilderPtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>LinSolverBuilderPtr_Type</b></td></tr>
 <tr class="separator:a948c7986777eeb125ced0d6f86271a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1b878654a57f28c16b0eee9792cfa5d" id="r_ad1b878654a57f28c16b0eee9792cfa5d"><td class="memItemLeft" align="right" valign="top"><a id="ad1b878654a57f28c16b0eee9792cfa5d" name="ad1b878654a57f28c16b0eee9792cfa5d"></a>
-typedef NonLinProb_Type::TpetraMatrix_Type&#160;</td><td class="memItemRight" valign="bottom"><b>TpetraMatrix_Type</b></td></tr>
-<tr class="separator:ad1b878654a57f28c16b0eee9792cfa5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a104cc1841c72e2ddab9aad3766b18031" id="r_a104cc1841c72e2ddab9aad3766b18031"><td class="memItemLeft" align="right" valign="top"><a id="a104cc1841c72e2ddab9aad3766b18031" name="a104cc1841c72e2ddab9aad3766b18031"></a>
-typedef NonLinProb_Type::ThyraVecSpace_Type&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraVecSpace_Type</b></td></tr>
-<tr class="separator:a104cc1841c72e2ddab9aad3766b18031"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0b11186b0967d07312f1027485dc935" id="r_af0b11186b0967d07312f1027485dc935"><td class="memItemLeft" align="right" valign="top"><a id="af0b11186b0967d07312f1027485dc935" name="af0b11186b0967d07312f1027485dc935"></a>
-typedef NonLinProb_Type::ThyraVec_Type&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraVec_Type</b></td></tr>
-<tr class="separator:af0b11186b0967d07312f1027485dc935"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01308578953f4516e3976673924aff67" id="r_a01308578953f4516e3976673924aff67"><td class="memItemLeft" align="right" valign="top"><a id="a01308578953f4516e3976673924aff67" name="a01308578953f4516e3976673924aff67"></a>
-typedef NonLinProb_Type::ThyraOp_Type&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraOp_Type</b></td></tr>
-<tr class="separator:a01308578953f4516e3976673924aff67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad23c52b20303892ec501bff2f4683fba" id="r_ad23c52b20303892ec501bff2f4683fba"><td class="memItemLeft" align="right" valign="top"><a id="ad23c52b20303892ec501bff2f4683fba" name="ad23c52b20303892ec501bff2f4683fba"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>TpetraTypes</b> = <a class="el" href="structFEDD_1_1TpetraTypedefs.html">TpetraTypedefs</a>&lt;SC,LO,GO,NO&gt;</td></tr>
+<tr class="separator:ad23c52b20303892ec501bff2f4683fba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f05b790dde4705f24310d71addab664" id="r_a0f05b790dde4705f24310d71addab664"><td class="memItemLeft" align="right" valign="top"><a id="a0f05b790dde4705f24310d71addab664" name="a0f05b790dde4705f24310d71addab664"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>TpetraMatrix_Type</b> = typename TpetraTypes::TpetraMatrix_Type</td></tr>
+<tr class="separator:a0f05b790dde4705f24310d71addab664"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae746f28d074690811daeb15a32af7b15" id="r_ae746f28d074690811daeb15a32af7b15"><td class="memItemLeft" align="right" valign="top"><a id="ae746f28d074690811daeb15a32af7b15" name="ae746f28d074690811daeb15a32af7b15"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>TpetraOp_Type</b> = typename TpetraTypes::TpetraOp_Type</td></tr>
+<tr class="separator:ae746f28d074690811daeb15a32af7b15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f39c5578b5a03ac12a588a39752686d" id="r_a9f39c5578b5a03ac12a588a39752686d"><td class="memItemLeft" align="right" valign="top"><a id="a9f39c5578b5a03ac12a588a39752686d" name="a9f39c5578b5a03ac12a588a39752686d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraTypes</b> = <a class="el" href="structFEDD_1_1ThyraTypedefs.html">ThyraTypedefs</a>&lt;SC&gt;</td></tr>
+<tr class="separator:a9f39c5578b5a03ac12a588a39752686d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b9e908ca6943017a11986bfe16be4e9" id="r_a7b9e908ca6943017a11986bfe16be4e9"><td class="memItemLeft" align="right" valign="top"><a id="a7b9e908ca6943017a11986bfe16be4e9" name="a7b9e908ca6943017a11986bfe16be4e9"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraVecSpace_Type</b> = typename ThyraTypes::ThyraVecSpace_Type</td></tr>
+<tr class="separator:a7b9e908ca6943017a11986bfe16be4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b87c4fa1ce135e56c36063718e2b0dd" id="r_a9b87c4fa1ce135e56c36063718e2b0dd"><td class="memItemLeft" align="right" valign="top"><a id="a9b87c4fa1ce135e56c36063718e2b0dd" name="a9b87c4fa1ce135e56c36063718e2b0dd"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraVec_Type</b> = typename ThyraTypes::ThyraVec_Type</td></tr>
+<tr class="separator:a9b87c4fa1ce135e56c36063718e2b0dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65374b175409623c558b391a1a5d8a85" id="r_a65374b175409623c558b391a1a5d8a85"><td class="memItemLeft" align="right" valign="top"><a id="a65374b175409623c558b391a1a5d8a85" name="a65374b175409623c558b391a1a5d8a85"></a>
 typedef Thyra::BlockedLinearOpBase&lt; SC &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraBlockOp_Type</b></td></tr>
 <tr class="separator:a65374b175409623c558b391a1a5d8a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf877345cd67ad3a0d7b685043c2795d" id="r_aaf877345cd67ad3a0d7b685043c2795d"><td class="memItemLeft" align="right" valign="top"><a id="aaf877345cd67ad3a0d7b685043c2795d" name="aaf877345cd67ad3a0d7b685043c2795d"></a>
-typedef NonLinProb_Type::TpetraOp_Type&#160;</td><td class="memItemRight" valign="bottom"><b>TpetraOp_Type</b></td></tr>
-<tr class="separator:aaf877345cd67ad3a0d7b685043c2795d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a827e02a9def5d9b6362b7ea74753ff43" id="r_a827e02a9def5d9b6362b7ea74753ff43"><td class="memItemLeft" align="right" valign="top"><a id="a827e02a9def5d9b6362b7ea74753ff43" name="a827e02a9def5d9b6362b7ea74753ff43"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ThyraOp_Type</b> = typename ThyraTypes::ThyraOp_Type</td></tr>
+<tr class="separator:a827e02a9def5d9b6362b7ea74753ff43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -484,7 +490,6 @@ TimePtr_Type&#160;</td><td class="memItemRight" valign="bottom"><b>TimeSolveTime
 <tr class="separator:acd2c04602a71108ea82605da50ba6c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>feddlib/problems/abstract/<a class="el" href="NonLinearProblem__decl_8hpp_source.html">NonLinearProblem_decl.hpp</a></li>
 <li>feddlib/problems/abstract/<a class="el" href="TimeProblem__decl_8hpp_source.html">TimeProblem_decl.hpp</a></li>
 <li>feddlib/problems/abstract/<a class="el" href="TimeProblem__def_8hpp_source.html">TimeProblem_def.hpp</a></li>
 </ul>

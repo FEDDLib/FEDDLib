@@ -1,7 +1,4 @@
 <map id="FEDD::BCBuilder::setRHS" name="FEDD::BCBuilder::setRHS">
-<area shape="rect" id="Node000001" title="Setting boundary conditions to (block)vector." alt="" coords="197,29,368,55"/>
-<area shape="poly" id="edge3_Node000001_Node000001" title=" " alt="" coords="318,17,306,10,282,8,261,10,249,15,247,20,252,27,248,31,241,21,245,11,259,5,282,3,308,5,320,12"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1BCBuilder.html#a21dac1adbaa03e8272afde11386858e8" title="Setting bundary condtions to problem." alt="" coords="5,29,149,55"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="181,45,149,45,149,40,181,40"/>
-<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="113,17,101,10,77,8,55,10,44,15,41,20,47,27,43,31,36,21,40,11,54,5,77,3,102,5,115,12"/>
+<area shape="rect" id="Node000001" title="Setting boundary conditions to (block)vector." alt="" coords="5,29,177,55"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="120,16,110,10,91,8,73,10,64,15,62,20,66,28,62,30,56,21,60,11,72,5,91,3,112,5,123,12"/>
 </map>

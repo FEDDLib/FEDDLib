@@ -79,7 +79,9 @@ var namespaceFEDD =
     [ "SmallMatrix", "classFEDD_1_1SmallMatrix.html", null ],
     [ "Stokes", "classFEDD_1_1Stokes.html", null ],
     [ "SurfaceElements", "classFEDD_1_1SurfaceElements.html", null ],
+    [ "ThyraTypedefs", "structFEDD_1_1ThyraTypedefs.html", null ],
     [ "TimeProblem", "classFEDD_1_1TimeProblem.html", null ],
     [ "TimeSteppingTools", "classFEDD_1_1TimeSteppingTools.html", null ],
+    [ "TpetraTypedefs", "structFEDD_1_1TpetraTypedefs.html", null ],
     [ "TPM", "classFEDD_1_1TPM.html", null ]
 ];

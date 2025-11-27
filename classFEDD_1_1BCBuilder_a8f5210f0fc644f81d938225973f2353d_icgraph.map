@@ -1,10 +1,7 @@
 <map id="FEDD::BCBuilder::setDirichletBC" name="FEDD::BCBuilder::setDirichletBC">
-<area shape="rect" id="Node000001" title=" " alt="" coords="432,29,640,55"/>
-<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="580,17,565,11,536,8,510,10,496,15,493,20,500,27,496,31,488,21,492,11,509,5,536,3,567,5,582,13"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1BCBuilder.html#a2d2b064c1a50b229c015bd599a66c7f1" title="Set boundary conditions to system." alt="" coords="197,29,384,55"/>
-<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="416,45,385,45,385,40,416,40"/>
-<area shape="poly" id="edge5_Node000002_Node000002" title=" " alt="" coords="327,17,315,10,290,8,268,10,256,15,253,20,259,27,255,31,248,21,252,11,267,5,290,3,316,5,330,12"/>
-<area shape="rect" id="Node000003" href="$classFEDD_1_1BCBuilder.html#a21dac1adbaa03e8272afde11386858e8" title="Setting bundary condtions to problem." alt="" coords="5,29,149,55"/>
-<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="182,45,149,45,149,40,182,40"/>
-<area shape="poly" id="edge4_Node000003_Node000003" title=" " alt="" coords="114,17,102,10,77,8,54,10,42,15,40,20,46,27,41,31,34,21,39,11,53,5,77,3,103,5,116,12"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="241,29,449,55"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="388,17,374,11,345,8,319,10,305,15,302,20,308,27,304,31,296,21,301,11,318,5,345,3,375,5,390,13"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1BCBuilder.html#a2d2b064c1a50b229c015bd599a66c7f1" title="Set boundary conditions to system." alt="" coords="5,29,193,55"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="225,45,193,45,193,40,225,40"/>
+<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="142,17,128,11,99,8,73,10,59,15,56,20,63,27,59,31,50,21,55,11,72,5,99,3,130,5,145,13"/>
 </map>

@@ -105,78 +105,78 @@ $(function(){initNavTree('TimeProblem__decl_8hpp_source.html',''); initResizable
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;feddlib/problems/problems_config.h&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;feddlib/core/FEDDCore.hpp&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;feddlib/core/General/DefaultTypeDefs.hpp&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;feddlib/problems/Solver/Preconditioner.hpp&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;NonLinearProblem.hpp&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">//#include &quot;LinearProblem.hpp&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;Thyra_StateFuncModelEvaluatorBase.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;Problem.hpp&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;Thyra_StateFuncModelEvaluatorBase.hpp&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">/*</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> If nonlinear iterative scheme is used, assemble() always assembles the Oseen system (FixedPoint).</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> reAssemble(&quot;Newton&quot;) then assembles the Newton system. We need to adapt the functionality to general systems/problems</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1NonLinearProblem.html">NonLinearProblem</a>;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">//class LinearProblem;</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">//template&lt;class SC_, class LO_, class GO_, class NO_&gt;</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1Preconditioner.html">Preconditioner</a>;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC = default_sc, <span class="keyword">class</span> LO = default_lo, <span class="keyword">class</span> GO = default_go, <span class="keyword">class</span> NO = default_no&gt;</div>
-<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classFEDD_1_1TimeProblem.html">   33</a></span><span class="keyword">class </span>TimeProblem: <span class="keyword">public</span> Thyra::StateFuncModelEvaluatorBase&lt;SC&gt;  {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> If nonlinear iterative scheme is used, assemble() always assembles the Oseen system (FixedPoint).</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> reAssemble(&quot;Newton&quot;) then assembles the Newton system. We need to adapt the functionality to general systems/problems</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1Preconditioner.html">Preconditioner</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1NonLinearProblem.html">NonLinearProblem</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC = default_sc, <span class="keyword">class</span> LO = default_lo, <span class="keyword">class</span> GO = default_go, <span class="keyword">class</span> NO = default_no&gt;</div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classFEDD_1_1TimeProblem.html">   31</a></span><span class="keyword">class </span>TimeProblem: <span class="keyword">public</span> Thyra::StateFuncModelEvaluatorBase&lt;SC&gt;  {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Problem.html">Problem&lt;SC,LO,GO,NO&gt;</a> Problem_Type;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Problem_Type&gt; ProblemPtr_Type;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::CommConstPtr_Type CommConstPtr_Type;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::Map_Type Map_Type;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MapPtr_Type MapPtr_Type;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MapConstPtr_Type MapConstPtr_Type;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::Matrix_Type Matrix_Type;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MatrixPtr_Type MatrixPtr_Type;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Matrix_Type&gt; MatrixConstPtr_Type;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMatrix_Type BlockMatrix_Type;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMatrixPtr_Type BlockMatrixPtr_Type;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMatrixConstPtr_Type BlockMatrixConstPtr_Type;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">typedef</span> Teuchos::Array&lt;BlockMatrixPtr_Type&gt; BlockMatrixPtrArray_Type;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MultiVector_Type MultiVector_Type;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MultiVectorPtr_Type MultiVectorPtr_Type;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMultiVector_Type BlockMultiVector_Type;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMultiVectorPtr_Type BlockMultiVectorPtr_Type;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMultiVectorConstPtr_Type BlockMultiVectorConstPtr_Type;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">typedef</span> Teuchos::Array&lt;BlockMultiVectorPtr_Type&gt; BlockMultiVectorPtrArray_Type;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Problem.html">Problem&lt;SC,LO,GO,NO&gt;</a> Problem_Type;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Problem_Type&gt; ProblemPtr_Type;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::CommConstPtr_Type CommConstPtr_Type;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::Map_Type Map_Type;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MapPtr_Type MapPtr_Type;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MapConstPtr_Type MapConstPtr_Type;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::Matrix_Type Matrix_Type;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MatrixPtr_Type MatrixPtr_Type;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Matrix_Type&gt; MatrixConstPtr_Type;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMatrix_Type BlockMatrix_Type;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMatrixPtr_Type BlockMatrixPtr_Type;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMatrixConstPtr_Type BlockMatrixConstPtr_Type;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">typedef</span> Teuchos::Array&lt;BlockMatrixPtr_Type&gt; BlockMatrixPtrArray_Type;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MultiVector_Type MultiVector_Type;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::MultiVectorPtr_Type MultiVectorPtr_Type;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMultiVector_Type BlockMultiVector_Type;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMultiVectorPtr_Type BlockMultiVectorPtr_Type;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BlockMultiVectorConstPtr_Type BlockMultiVectorConstPtr_Type;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">typedef</span> Teuchos::Array&lt;BlockMultiVectorPtr_Type&gt; BlockMultiVectorPtrArray_Type;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::DomainConstPtr_Type DomainConstPtr_Type;</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::DomainConstPtr_Type DomainConstPtr_Type;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::FEFac_Type FEFac_Type;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;FEFac_Type&gt; FEFacPtr_Type;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const FEFac_Type&gt; FEFacConstPtr_Type;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BCConstPtr_Type BCConstPtr_Type;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1NonLinearProblem.html">NonLinearProblem&lt;SC,LO,GO,NO&gt;</a> NonLinProb_Type;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;NonLinProb_Type&gt; NonLinProbPtr_Type;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::Preconditioner_Type Preconditioner_Type;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::PreconditionerPtr_Type PreconditionerPtr_Type;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::FEFac_Type FEFac_Type;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;FEFac_Type&gt; FEFacPtr_Type;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const FEFac_Type&gt; FEFacConstPtr_Type;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::BCConstPtr_Type BCConstPtr_Type;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1NonLinearProblem.html">NonLinearProblem&lt;SC,LO,GO,NO&gt;</a> NonLinProb_Type;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;NonLinProb_Type&gt; NonLinProbPtr_Type;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::Preconditioner_Type Preconditioner_Type;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::PreconditionerPtr_Type PreconditionerPtr_Type;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::LinSolverBuilderPtr_Type LinSolverBuilderPtr_Type;</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Problem_Type::LinSolverBuilderPtr_Type LinSolverBuilderPtr_Type;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> NonLinProb_Type::TpetraMatrix_Type TpetraMatrix_Type;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> NonLinProb_Type::ThyraVecSpace_Type ThyraVecSpace_Type;</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> NonLinProb_Type::ThyraVec_Type ThyraVec_Type;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> NonLinProb_Type::ThyraOp_Type ThyraOp_Type;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">using </span>TpetraTypes = <a class="code hl_struct" href="structFEDD_1_1TpetraTypedefs.html">TpetraTypedefs&lt;SC,LO,GO,NO&gt;</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">using </span>TpetraMatrix_Type = <span class="keyword">typename</span> TpetraTypes::TpetraMatrix_Type;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">using </span>TpetraOp_Type = <span class="keyword">typename</span> TpetraTypes::TpetraOp_Type;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">using </span>ThyraTypes = <a class="code hl_struct" href="structFEDD_1_1ThyraTypedefs.html">ThyraTypedefs&lt;SC&gt;</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">using </span>ThyraVecSpace_Type = <span class="keyword">typename</span> ThyraTypes::ThyraVecSpace_Type;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">using </span>ThyraVec_Type = <span class="keyword">typename</span> ThyraTypes::ThyraVec_Type;</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">typedef</span> Thyra::BlockedLinearOpBase&lt;SC&gt; ThyraBlockOp_Type;</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> NonLinProb_Type::TpetraOp_Type TpetraOp_Type;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">using </span>ThyraOp_Type = <span class="keyword">typename</span> ThyraTypes::ThyraOp_Type;    </div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        </div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    TimeProblem(Problem_Type&amp; problem, CommConstPtr_Type comm);</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    </div>
@@ -384,11 +384,13 @@ $(function(){initNavTree('TimeProblem__decl_8hpp_source.html',''); initResizable
 <div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>}</div>
 <div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span> </div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a></div><div class="ttdef"><b>Definition</b> NonLinearProblem_decl.hpp:27</div></div>
-<div class="ttc" id="aclassFEDD_1_1Preconditioner_html"><div class="ttname"><a href="classFEDD_1_1Preconditioner.html">FEDD::Preconditioner</a></div><div class="ttdef"><b>Definition</b> Preconditioner_decl.hpp:41</div></div>
-<div class="ttc" id="aclassFEDD_1_1Problem_html"><div class="ttname"><a href="classFEDD_1_1Problem.html">FEDD::Problem</a></div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:40</div></div>
-<div class="ttc" id="aclassFEDD_1_1SmallMatrix_html"><div class="ttname"><a href="classFEDD_1_1SmallMatrix.html">FEDD::SmallMatrix</a></div><div class="ttdoc">This class represents a templated small Matrix of type T. Primarily created for 2x2 and 3x3 matrices....</div><div class="ttdef"><b>Definition</b> SmallMatrix.hpp:22</div></div>
-<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a></div><div class="ttdef"><b>Definition</b> NonLinearProblem_decl.hpp:28</div></div>
+<div class="ttc" id="aclassFEDD_1_1Preconditioner_html"><div class="ttname"><a href="classFEDD_1_1Preconditioner.html">FEDD::Preconditioner</a></div><div class="ttdef"><b>Definition</b> Preconditioner_decl.hpp:35</div></div>
+<div class="ttc" id="aclassFEDD_1_1Problem_html"><div class="ttname"><a href="classFEDD_1_1Problem.html">FEDD::Problem</a></div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:42</div></div>
+<div class="ttc" id="aclassFEDD_1_1SmallMatrix_html"><div class="ttname"><a href="classFEDD_1_1SmallMatrix.html">FEDD::SmallMatrix</a></div><div class="ttdoc">This class represents a templated small Matrix of type T. Primarily created for 2x2 and 3x3 matrices....</div><div class="ttdef"><b>Definition</b> SmallMatrix.hpp:20</div></div>
+<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:36</div></div>
+<div class="ttc" id="astructFEDD_1_1ThyraTypedefs_html"><div class="ttname"><a href="structFEDD_1_1ThyraTypedefs.html">FEDD::ThyraTypedefs</a></div><div class="ttdef"><b>Definition</b> FEDDCore.hpp:141</div></div>
+<div class="ttc" id="astructFEDD_1_1TpetraTypedefs_html"><div class="ttname"><a href="structFEDD_1_1TpetraTypedefs.html">FEDD::TpetraTypedefs</a></div><div class="ttdef"><b>Definition</b> FEDDCore.hpp:148</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -1,7 +1,4 @@
 <map id="FEDD::BCBuilder::setSystem" name="FEDD::BCBuilder::setSystem">
-<area shape="rect" id="Node000001" title="Set boundary conditions to system." alt="" coords="197,29,384,55"/>
-<area shape="poly" id="edge3_Node000001_Node000001" title=" " alt="" coords="327,17,315,10,290,8,268,10,256,15,253,20,259,27,255,31,248,21,252,11,267,5,290,3,316,5,330,12"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1BCBuilder.html#a21dac1adbaa03e8272afde11386858e8" title="Setting bundary condtions to problem." alt="" coords="5,29,149,55"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="182,45,149,45,149,40,182,40"/>
-<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="114,17,102,10,77,8,54,10,42,15,40,20,46,27,41,31,34,21,39,11,53,5,77,3,103,5,116,12"/>
+<area shape="rect" id="Node000001" title="Set boundary conditions to system." alt="" coords="5,29,193,55"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="131,16,120,10,99,8,79,10,69,15,67,20,72,27,67,30,61,21,65,11,78,5,99,3,122,5,134,12"/>
 </map>

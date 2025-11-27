@@ -1,12 +1,9 @@
 <map id="FEDD::Domain::getMapRepeated" name="FEDD::Domain::getMapRepeated">
-<area shape="rect" id="Node000001" title="Get map of all repeated (not uniquely distributed) nodes of processors." alt="" coords="259,120,468,146"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#ae55dcd00227f596970c66171c48ecde5" title="Exporting Mesh." alt="" coords="19,29,197,55"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="320,115,210,70,169,58,171,53,212,65,322,110"/>
-<area shape="rect" id="Node000003" href="$classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5" title="Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not ab..." alt="" coords="12,79,204,120"/>
-<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="245,120,204,115,204,109,245,115"/>
-<area shape="rect" id="Node000004" href="$classFEDD_1_1Domain.html#a29f63d5ea1a5bad9c4c6143747b22096" title=" " alt="" coords="5,144,211,185"/>
-<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="243,151,211,155,211,149,243,145"/>
-<area shape="rect" id="Node000005" href="$classFEDD_1_1Domain.html#a4d65f9b93a9bdc2349a01387b6a50efa" title="Get node list in multi vector point." alt="" coords="7,209,209,235"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="321,155,212,199,171,211,169,206,210,194,319,150"/>
-<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="153,17,138,11,108,8,81,10,66,15,63,20,70,27,66,31,58,21,63,11,80,5,108,3,140,5,155,13"/>
+<area shape="rect" id="Node000001" title="Get map of all repeated (not uniquely distributed) nodes of processors." alt="" coords="259,78,468,104"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#a182837ea70fa396919b9c6dde6d771d5" title="Exporting Paraview file displaying surface normals of the underlying mesh. As we are generally not ab..." alt="" coords="12,5,204,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="295,76,190,49,191,44,296,71"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Domain.html#a29f63d5ea1a5bad9c4c6143747b22096" title=" " alt="" coords="5,71,211,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="243,94,211,94,211,88,243,88"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1Domain.html#a4d65f9b93a9bdc2349a01387b6a50efa" title="Get node list in multi vector point." alt="" coords="7,136,209,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="289,110,169,137,168,132,287,105"/>
 </map>

@@ -103,257 +103,261 @@ $(function(){initNavTree('Problem__decl_8hpp_source.html',''); initResizable(tru
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef PROBLEM_DECL_hpp</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define PROBLEM_DECL_hpp</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;feddlib/problems/problems_config.h&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;feddlib/core/FEDDCore.hpp&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;feddlib/core/FE/FE.hpp&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;feddlib/core/FE/Domain.hpp&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;feddlib/core/General/BCBuilder.hpp&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;feddlib/core/General/DefaultTypeDefs.hpp&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;feddlib/problems/Solver/Preconditioner.hpp&quot;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;feddlib/core/LinearAlgebra/BlockMultiVector.hpp&quot;</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;feddlib/core/LinearAlgebra/BlockMatrix.hpp&quot;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;feddlib/problems/Solver/LinearSolver.hpp&quot;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;Stratimikos_DefaultLinearSolverBuilder.hpp&gt;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;Thyra_PreconditionerBase.hpp&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;Thyra_LinearOpBase_decl.hpp&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;git_version.h&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#ifdef FEDD_HAVE_TEKO</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;Teko_StratimikosFactory.hpp&gt;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;Stratimikos_DefaultLinearSolverBuilder.hpp&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;Thyra_PreconditionerBase.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;git_version.h&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#ifdef FEDD_HAVE_TEKO</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;Teko_StratimikosFactory.hpp&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;feddlib/problems/problems_config.h&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;feddlib/core/FEDDCore.hpp&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;feddlib/core/LinearAlgebra/Matrix.hpp&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1BlockMultiVector.html">BlockMultiVector</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1BCBuilder.html">BCBuilder</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1BlockMatrix.html">BlockMatrix</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1Domain.html">Domain</a>;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1Preconditioner.html">Preconditioner</a>;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC = default_sc, <span class="keyword">class</span> LO = default_lo, <span class="keyword">class</span> GO = default_go, <span class="keyword">class</span> NO = default_no&gt;</div>
-<div class="foldopen" id="foldopen00040" data-start="{" data-end="};">
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html">   40</a></span><span class="keyword">class </span>Problem {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1FE.html">FE</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> SC_, <span class="keyword">class</span> LO_, <span class="keyword">class</span> GO_, <span class="keyword">class</span> NO_&gt;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">class </span><a class="code hl_class" href="classFEDD_1_1Preconditioner.html">Preconditioner</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC = default_sc, <span class="keyword">class</span> LO = default_lo, <span class="keyword">class</span> GO = default_go, <span class="keyword">class</span> NO = default_no&gt;</div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html">   42</a></span><span class="keyword">class </span>Problem {</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Domain.html">Domain&lt;SC,LO,GO,NO&gt;</a> Domain_Type;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Domain_Type&gt; DomainPtr_Type;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Domain_Type&gt; DomainConstPtr_Type;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">typedef</span> std::vector&lt;DomainConstPtr_Type&gt; DomainConstPtr_vec_Type;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Matrix.html">Matrix&lt;SC,LO,GO,NO&gt;</a> Matrix_Type;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Matrix_Type&gt; MatrixPtr_Type;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::Map_Type Map_Type;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MapPtr_Type MapPtr_Type;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MapConstPtr_Type MapConstPtr_Type;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMatrix.html">BlockMatrix&lt;SC,LO,GO,NO&gt;</a> BlockMatrix_Type;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMatrix_Type&gt; BlockMatrixPtr_Type;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const BlockMatrix_Type&gt; BlockMatrixConstPtr_Type;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a> MultiVector_Type;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;MultiVector_Type&gt; MultiVectorPtr_Type;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const MultiVector_Type&gt; MultiVectorConstPtr_Type;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMultiVector.html">BlockMultiVector&lt;SC,LO,GO,NO&gt;</a> BlockMultiVector_Type;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMultiVector_Type&gt; BlockMultiVectorPtr_Type;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const BlockMultiVector_Type&gt; BlockMultiVectorConstPtr_Type;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Preconditioner.html">Preconditioner&lt;SC,LO,GO,NO&gt;</a> Preconditioner_Type;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Preconditioner_Type&gt; PreconditionerPtr_Type;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Preconditioner_Type&gt; PreconditionerConstPtr_Type;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BCBuilder.html">BCBuilder&lt;SC,LO,GO,NO&gt;</a> BC_Type;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BC_Type&gt; BCPtr_Type;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const BC_Type&gt; BCConstPtr_Type;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1FE.html">FE&lt;SC,LO,GO,NO&gt;</a> FEFac_Type;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;FEFac_Type&gt; FEFacPtr_Type;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const FEFac_Type&gt; FEFacConstPtr_Type;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">typedef</span> Teuchos::ParameterList ParameterList_Type;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;ParameterList_Type&gt; ParameterListPtr_Type;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Stratimikos::DefaultLinearSolverBuilder &gt;  LinSolverBuilderPtr_Type;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Stratimikos::DefaultLinearSolverBuilder &gt;  LinSolverBuilderConstPtr_Type;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">typedef</span> Teuchos::Comm&lt;int&gt; Comm_Type;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Comm_Type&gt; CommConstPtr_Type;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">typedef</span> Teuchos::ArrayRCP&lt;GO&gt; GOVecPtr;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Domain.html">Domain&lt;SC,LO,GO,NO&gt;</a> Domain_Type;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Domain_Type&gt; DomainPtr_Type;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Domain_Type&gt; DomainConstPtr_Type;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">typedef</span> std::vector&lt;DomainConstPtr_Type&gt; DomainConstPtr_vec_Type;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Matrix.html">Matrix&lt;SC,LO,GO,NO&gt;</a> Matrix_Type;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Matrix_Type&gt; MatrixPtr_Type;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::Map_Type Map_Type;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MapPtr_Type MapPtr_Type;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MapConstPtr_Type MapConstPtr_Type;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMatrix.html">BlockMatrix&lt;SC,LO,GO,NO&gt;</a> BlockMatrix_Type;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMatrix_Type&gt; BlockMatrixPtr_Type;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const BlockMatrix_Type&gt; BlockMatrixConstPtr_Type;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1MultiVector.html">MultiVector&lt;SC,LO,GO,NO&gt;</a> MultiVector_Type;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;MultiVector_Type&gt; MultiVectorPtr_Type;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const MultiVector_Type&gt; MultiVectorConstPtr_Type;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMultiVector.html">BlockMultiVector&lt;SC,LO,GO,NO&gt;</a> BlockMultiVector_Type;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMultiVector_Type&gt; BlockMultiVectorPtr_Type;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const BlockMultiVector_Type&gt; BlockMultiVectorConstPtr_Type;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Preconditioner.html">Preconditioner&lt;SC,LO,GO,NO&gt;</a> Preconditioner_Type;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Preconditioner_Type&gt; PreconditionerPtr_Type;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Preconditioner_Type&gt; PreconditionerConstPtr_Type;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BCBuilder.html">BCBuilder&lt;SC,LO,GO,NO&gt;</a> BC_Type;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BC_Type&gt; BCPtr_Type;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const BC_Type&gt; BCConstPtr_Type;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1FE.html">FE&lt;SC,LO,GO,NO&gt;</a> FEFac_Type;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;FEFac_Type&gt; FEFacPtr_Type;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const FEFac_Type&gt; FEFacConstPtr_Type;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">typedef</span> Teuchos::ParameterList ParameterList_Type;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;ParameterList_Type&gt; ParameterListPtr_Type;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Stratimikos::DefaultLinearSolverBuilder &gt;  LinSolverBuilderPtr_Type;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Stratimikos::DefaultLinearSolverBuilder &gt;  LinSolverBuilderConstPtr_Type;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">typedef</span> Teuchos::Comm&lt;int&gt; Comm_Type;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Comm_Type&gt; CommConstPtr_Type;</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">typedef</span> std::vector&lt;std::string&gt; string_vec_Type;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">typedef</span> Teuchos::ArrayRCP&lt;GO&gt; GOVecPtr;</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Thyra::PreconditionerBase&lt;SC&gt; &gt; ThyraPrecPtr_Type;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Thyra::LinearOpBase&lt;SC&gt; &gt; ThyraLinOpPtr_Type;</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    Problem(CommConstPtr_Type comm);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    Problem(ParameterListPtr_Type &amp;parameterList, CommConstPtr_Type comm);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">virtual</span> ~Problem() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> info() = 0;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> infoProblem();</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">void</span> infoParameter(<span class="keywordtype">bool</span> full = <span class="keyword">true</span>, std::string =<span class="stringliteral">&quot;empty&quot;</span>);</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordtype">void</span> addVariable(<span class="keyword">const</span> DomainConstPtr_Type &amp;domain, std::string FEType, std::string name, <span class="keywordtype">int</span> dofsPerNode);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span></div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html#a22f74b9cad55ff27801959281d0ef4d4">  115</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Problem.html#a22f74b9cad55ff27801959281d0ef4d4">addRhsFunction</a>(RhsFunc_Type func);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span></div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html#a291712cda02e33840d487ba222b7bd21">  118</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Problem.html#a291712cda02e33840d487ba222b7bd21">addRhsFunction</a>(RhsFunc_Type func,<span class="keywordtype">int</span> i);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">typedef</span> std::vector&lt;std::string&gt; string_vec_Type;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Thyra::PreconditionerBase&lt;SC&gt; &gt; ThyraPrecPtr_Type;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">using </span>ThyraTypes = <a class="code hl_struct" href="structFEDD_1_1ThyraTypedefs.html">ThyraTypedefs&lt;SC&gt;</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">using </span>ThyraLinOpPtr_Type = Teuchos::RCP&lt;typename ThyraTypes::ThyraOp_Type&gt;;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    Problem(CommConstPtr_Type comm);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    Problem(ParameterListPtr_Type &amp;parameterList, CommConstPtr_Type comm);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">virtual</span> ~Problem() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> info() = 0;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">void</span> infoProblem();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">void</span> infoParameter(<span class="keywordtype">bool</span> full = <span class="keyword">true</span>, std::string =<span class="stringliteral">&quot;empty&quot;</span>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">void</span> addVariable(<span class="keyword">const</span> DomainConstPtr_Type &amp;domain, std::string FEType, std::string name, <span class="keywordtype">int</span> dofsPerNode);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html#a22f74b9cad55ff27801959281d0ef4d4">  118</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Problem.html#a22f74b9cad55ff27801959281d0ef4d4">addRhsFunction</a>(RhsFunc_Type func);</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span></div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>   <span class="comment">// void addRhsFunctionAndFlag(RhsFunc_Type func, int i, int flag);    </span></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html#a5f5b59cbf23a852a68b8a54289eae439">  123</a></span>    RhsFunc_Type&amp; <a class="code hl_function" href="classFEDD_1_1Problem.html#a5f5b59cbf23a852a68b8a54289eae439">getRhsFunction</a>( <span class="keywordtype">int</span> i );</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> assemble( std::string type ) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="comment">//    virtual void assembleExternal( std::string type ) = 0;</span></div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="comment">//void reAssemble();</span></div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">void</span> assembleSourceTerm( <span class="keywordtype">double</span> time = 0. ) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordtype">void</span> assembleVolumeTerm( <span class="keywordtype">double</span> time ) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">void</span> assembleSurfaceTerm( <span class="keywordtype">double</span> time ) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    </div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">bool</span> hasSourceTerm() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">int</span> solve( BlockMultiVectorPtr_Type rhs = Teuchos::null );</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">void</span> setupPreconditioner( std::string type=<span class="stringliteral">&quot;Monolithic&quot;</span> ) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">void</span> initializePreconditioner( std::string type=<span class="stringliteral">&quot;Monolithic&quot;</span> ) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">void</span> addBoundaries(<span class="keyword">const</span> BCConstPtr_Type &amp;bcFactory);</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">void</span> setBoundaries(<span class="keywordtype">double</span> time=.0) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordtype">void</span> setBoundariesRHS(<span class="keywordtype">double</span> time=.0) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    </div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordtype">void</span> setAllDirichletZero( BlockMultiVectorPtr_Type rhs) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordtype">void</span> setBoundariesSystem() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">void</span> initializeProblem(<span class="keywordtype">int</span> nmbVectors=1);</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    </div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordtype">void</span> initializeVectors(<span class="keywordtype">int</span> nmbVectors=1);</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    BlockMultiVectorPtr_Type getRhs();</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    BlockMultiVectorPtr_Type getRhs() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    BlockMultiVectorPtr_Type getSolution();</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    BlockMatrixPtr_Type getSystem() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    PreconditionerPtr_Type getPreconditioner();</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    PreconditionerConstPtr_Type getPreconditionerConst() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordtype">void</span> setPreconditionerThyraFromLinOp( ThyraLinOpPtr_Type precLinOp );</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    </div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordtype">void</span> initializeSolverBuilder() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordtype">bool</span> getVerbose() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    FEFacConstPtr_Type getFEFactory();</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    BCConstPtr_Type getBCFactory();</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    DomainConstPtr_Type getDomain(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    DomainConstPtr_vec_Type getDomainVector()<span class="keyword"> const</span>{</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordflow">return</span> domainPtr_vec_;</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    }</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    </div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    std::string getFEType(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    std::string getVariableName(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">int</span> getDofsPerNode(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    ParameterListPtr_Type getParameterList() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">void</span> addToRhs(BlockMultiVectorPtr_Type x) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    BlockMultiVectorPtr_Type getSourceTerm();</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordtype">void</span> initSolutionWithVector(MultiVector_Type&amp; mv);</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    LinSolverBuilderPtr_Type getLinearSolverBuilder()<span class="keyword"> const</span>{<span class="keywordflow">return</span> linearSolverBuilder_;}</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    CommConstPtr_Type getComm()<span class="keyword"> const</span>{<span class="keywordflow">return</span> comm_;}</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> getValuesOfInterest( vec_dbl_Type&amp; values ) = 0 ;</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> computeValuesOfInterestAndExport() = 0;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordtype">void</span> addParemeterRhs(<span class="keywordtype">double</span> para){ parasSourceFunc_.push_back( para ); }</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    </div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordtype">void</span> changeAssFELinearization(std::string linearization); <span class="comment">// Function in order to be able to change e.g. from FixedPoint to Newton linearization on element level</span></div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordtype">double</span> calculateH1Norm(MultiVectorConstPtr_Type mv, <span class="keywordtype">int</span> blockId1=0, <span class="keywordtype">int</span> blockId2=0, <span class="keywordtype">int</span> domainInd=0); <span class="comment">// Function that calculates H1 Error in the &#39;mv * K * mv&#39; sense, with K beeing the Stiffness Matrix</span></div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordtype">double</span> calculateL2Norm(MultiVectorConstPtr_Type mv, <span class="keywordtype">int</span> domainInd=0); <span class="comment">// Function that calculates L2 Error in the &#39;mv * M * mv&#39; sense, with M beeing the Mass Matrix</span></div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html#a291712cda02e33840d487ba222b7bd21">  121</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classFEDD_1_1Problem.html#a291712cda02e33840d487ba222b7bd21">addRhsFunction</a>(RhsFunc_Type func,<span class="keywordtype">int</span> i);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>   <span class="comment">// void addRhsFunctionAndFlag(RhsFunc_Type func, int i, int flag);    </span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html#a5f5b59cbf23a852a68b8a54289eae439">  126</a></span>    RhsFunc_Type&amp; <a class="code hl_function" href="classFEDD_1_1Problem.html#a5f5b59cbf23a852a68b8a54289eae439">getRhsFunction</a>( <span class="keywordtype">int</span> i );</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> assemble( std::string type ) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="comment">//    virtual void assembleExternal( std::string type ) = 0;</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="comment">//void reAssemble();</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordtype">void</span> assembleSourceTerm( <span class="keywordtype">double</span> time = 0. ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordtype">void</span> assembleVolumeTerm( <span class="keywordtype">double</span> time ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordtype">void</span> assembleSurfaceTerm( <span class="keywordtype">double</span> time ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordtype">bool</span> hasSourceTerm() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordtype">int</span> solve( BlockMultiVectorPtr_Type rhs = Teuchos::null );</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">void</span> setupPreconditioner( std::string type=<span class="stringliteral">&quot;Monolithic&quot;</span> ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">void</span> initializePreconditioner( std::string type=<span class="stringliteral">&quot;Monolithic&quot;</span> ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordtype">void</span> addBoundaries(<span class="keyword">const</span> BCConstPtr_Type &amp;bcFactory);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">void</span> setBoundaries(<span class="keywordtype">double</span> time=.0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordtype">void</span> setBoundariesRHS(<span class="keywordtype">double</span> time=.0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">void</span> setAllDirichletZero( BlockMultiVectorPtr_Type rhs) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">void</span> setBoundariesSystem() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordtype">void</span> initializeProblem(<span class="keywordtype">int</span> nmbVectors=1);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordtype">void</span> initializeVectors(<span class="keywordtype">int</span> nmbVectors=1);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    BlockMultiVectorPtr_Type getRhs();</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    BlockMultiVectorPtr_Type getRhs() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    BlockMultiVectorPtr_Type getSolution();</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    BlockMatrixPtr_Type getSystem() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    PreconditionerPtr_Type getPreconditioner();</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    PreconditionerConstPtr_Type getPreconditionerConst() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordtype">void</span> setPreconditionerThyraFromLinOp( ThyraLinOpPtr_Type precLinOp );</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordtype">void</span> initializeSolverBuilder() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordtype">bool</span> getVerbose() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    FEFacConstPtr_Type getFEFactory();</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    BCConstPtr_Type getBCFactory();</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    DomainConstPtr_Type getDomain(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    DomainConstPtr_vec_Type getDomainVector()<span class="keyword"> const</span>{</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">return</span> domainPtr_vec_;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    }</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    std::string getFEType(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    std::string getVariableName(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordtype">int</span> getDofsPerNode(<span class="keywordtype">int</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    ParameterListPtr_Type getParameterList() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keywordtype">void</span> addToRhs(BlockMultiVectorPtr_Type x) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    BlockMultiVectorPtr_Type getSourceTerm();</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keywordtype">void</span> initSolutionWithVector(MultiVector_Type&amp; mv);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    LinSolverBuilderPtr_Type getLinearSolverBuilder()<span class="keyword"> const</span>{<span class="keywordflow">return</span> linearSolverBuilder_;}</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    CommConstPtr_Type getComm()<span class="keyword"> const</span>{<span class="keywordflow">return</span> comm_;}</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> getValuesOfInterest( vec_dbl_Type&amp; values ) = 0 ;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> computeValuesOfInterestAndExport() = 0;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordtype">void</span> addParemeterRhs(<span class="keywordtype">double</span> para){ parasSourceFunc_.push_back( para ); }</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    </div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordtype">void</span> changeAssFELinearization(std::string linearization); <span class="comment">// Function in order to be able to change e.g. from FixedPoint to Newton linearization on element level</span></div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">double</span> calculateH1Norm(MultiVectorConstPtr_Type mv, <span class="keywordtype">int</span> blockId1=0, <span class="keywordtype">int</span> blockId2=0, <span class="keywordtype">int</span> domainInd=0); <span class="comment">// Function that calculates H1 Error in the &#39;mv * K * mv&#39; sense, with K beeing the Stiffness Matrix</span></div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordtype">int</span> dim_;</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keyword">mutable</span> CommConstPtr_Type comm_;</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keyword">mutable</span> BlockMatrixPtr_Type system_;</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keyword">mutable</span> BlockMultiVectorPtr_Type rhs_;</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keyword">mutable</span> BlockMultiVectorPtr_Type solution_;</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    PreconditionerPtr_Type preconditioner_;</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    LinSolverBuilderPtr_Type linearSolverBuilder_;</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordtype">bool</span> verbose_;</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    std::vector&lt;RhsFunc_Type&gt;   rhsFuncVec_; <span class="comment">// RHS functions of different blocks</span></div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    vec_dbl_Type parasSourceFunc_; <span class="comment">//</span></div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    </div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keyword">mutable</span> ParameterListPtr_Type   parameterList_;</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keyword">mutable</span> DomainConstPtr_vec_Type domainPtr_vec_;</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    string_vec_Type                 domain_FEType_vec_;</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    string_vec_Type                 variableName_vec_;</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keyword">mutable</span> BCConstPtr_Type         bcFactory_;</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    FEFacPtr_Type feFactory_;</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    std::vector&lt;int&gt; dofsPerNode_vec_;</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    </div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">  243</a></span>    BlockMultiVectorPtr_Type    <a class="code hl_variable" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">sourceTerm_</a>; <span class="comment">// BlockMV of all assembled RHS functions</span></div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordtype">double</span> calculateL2Norm(MultiVectorConstPtr_Type mv, <span class="keywordtype">int</span> domainInd=0); <span class="comment">// Function that calculates L2 Error in the &#39;mv * M * mv&#39; sense, with M beeing the Mass Matrix</span></div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordtype">int</span> dim_;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keyword">mutable</span> CommConstPtr_Type comm_;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keyword">mutable</span> BlockMatrixPtr_Type system_;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keyword">mutable</span> BlockMultiVectorPtr_Type rhs_;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keyword">mutable</span> BlockMultiVectorPtr_Type solution_;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    PreconditionerPtr_Type preconditioner_;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    LinSolverBuilderPtr_Type linearSolverBuilder_;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keywordtype">bool</span> verbose_;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    std::vector&lt;RhsFunc_Type&gt;   rhsFuncVec_; <span class="comment">// RHS functions of different blocks</span></div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    vec_dbl_Type parasSourceFunc_; <span class="comment">//</span></div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keyword">mutable</span> ParameterListPtr_Type   parameterList_;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keyword">mutable</span> DomainConstPtr_vec_Type domainPtr_vec_;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    string_vec_Type                 domain_FEType_vec_;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    string_vec_Type                 variableName_vec_;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keyword">mutable</span> BCConstPtr_Type         bcFactory_;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    FEFacPtr_Type feFactory_;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    std::vector&lt;int&gt; dofsPerNode_vec_;</div>
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span><span class="preprocessor">#ifdef FEDD_TIMER</span></div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    TimePtr_Type solveProblemTimer_;</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    TimePtr_Type bcMatrixTimer_;</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    TimePtr_Type bcRHSTimer_;</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>};</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno"><a class="line" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">  246</a></span>    BlockMultiVectorPtr_Type    <a class="code hl_variable" href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">sourceTerm_</a>; <span class="comment">// BlockMV of all assembled RHS functions</span></div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span><span class="preprocessor">#ifdef FEDD_TIMER</span></div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    TimePtr_Type solveProblemTimer_;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    TimePtr_Type bcMatrixTimer_;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    TimePtr_Type bcRHSTimer_;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>};</div>
 </div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>}</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>}</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassFEDD_1_1BCBuilder_html"><div class="ttname"><a href="classFEDD_1_1BCBuilder.html">FEDD::BCBuilder</a></div><div class="ttdoc">This class is responsible for setting the boundary conditions into the system and rhs.</div><div class="ttdef"><b>Definition</b> BCBuilder_decl.hpp:45</div></div>
-<div class="ttc" id="aclassFEDD_1_1BlockMatrix_html"><div class="ttname"><a href="classFEDD_1_1BlockMatrix.html">FEDD::BlockMatrix</a></div><div class="ttdef"><b>Definition</b> BlockMatrix_decl.hpp:23</div></div>
+<div class="ttc" id="aclassFEDD_1_1BlockMatrix_html"><div class="ttname"><a href="classFEDD_1_1BlockMatrix.html">FEDD::BlockMatrix</a></div><div class="ttdef"><b>Definition</b> BlockMatrix_decl.hpp:25</div></div>
 <div class="ttc" id="aclassFEDD_1_1BlockMultiVector_html"><div class="ttname"><a href="classFEDD_1_1BlockMultiVector.html">FEDD::BlockMultiVector</a></div><div class="ttdef"><b>Definition</b> BlockMultiVector_decl.hpp:25</div></div>
 <div class="ttc" id="aclassFEDD_1_1Domain_html"><div class="ttname"><a href="classFEDD_1_1Domain.html">FEDD::Domain</a></div><div class="ttdef"><b>Definition</b> Domain_decl.hpp:20</div></div>
 <div class="ttc" id="aclassFEDD_1_1FE_html"><div class="ttname"><a href="classFEDD_1_1FE.html">FEDD::FE</a></div><div class="ttdef"><b>Definition</b> FE_decl.hpp:48</div></div>
-<div class="ttc" id="aclassFEDD_1_1Matrix_html"><div class="ttname"><a href="classFEDD_1_1Matrix.html">FEDD::Matrix</a></div><div class="ttdef"><b>Definition</b> Matrix_decl.hpp:31</div></div>
+<div class="ttc" id="aclassFEDD_1_1Matrix_html"><div class="ttname"><a href="classFEDD_1_1Matrix.html">FEDD::Matrix</a></div><div class="ttdef"><b>Definition</b> Matrix_decl.hpp:30</div></div>
 <div class="ttc" id="aclassFEDD_1_1MultiVector_html"><div class="ttname"><a href="classFEDD_1_1MultiVector.html">FEDD::MultiVector</a></div><div class="ttdef"><b>Definition</b> MultiVector_decl.hpp:61</div></div>
-<div class="ttc" id="aclassFEDD_1_1Preconditioner_html"><div class="ttname"><a href="classFEDD_1_1Preconditioner.html">FEDD::Preconditioner</a></div><div class="ttdef"><b>Definition</b> Preconditioner_decl.hpp:41</div></div>
-<div class="ttc" id="aclassFEDD_1_1Problem_html_a22f74b9cad55ff27801959281d0ef4d4"><div class="ttname"><a href="classFEDD_1_1Problem.html#a22f74b9cad55ff27801959281d0ef4d4">FEDD::Problem::addRhsFunction</a></div><div class="ttdeci">void addRhsFunction(RhsFunc_Type func)</div><div class="ttdef"><b>Definition</b> Problem_def.hpp:141</div></div>
-<div class="ttc" id="aclassFEDD_1_1Problem_html_a291712cda02e33840d487ba222b7bd21"><div class="ttname"><a href="classFEDD_1_1Problem.html#a291712cda02e33840d487ba222b7bd21">FEDD::Problem::addRhsFunction</a></div><div class="ttdeci">void addRhsFunction(RhsFunc_Type func, int i)</div><div class="ttdef"><b>Definition</b> Problem_def.hpp:146</div></div>
-<div class="ttc" id="aclassFEDD_1_1Problem_html_a5f5b59cbf23a852a68b8a54289eae439"><div class="ttname"><a href="classFEDD_1_1Problem.html#a5f5b59cbf23a852a68b8a54289eae439">FEDD::Problem::getRhsFunction</a></div><div class="ttdeci">RhsFunc_Type &amp; getRhsFunction(int i)</div><div class="ttdef"><b>Definition</b> Problem_def.hpp:176</div></div>
-<div class="ttc" id="aclassFEDD_1_1Problem_html_a8ab364ed3f0be15fcd70cb39c36f169e"><div class="ttname"><a href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">FEDD::Problem&lt; SC, LO, GO, NO &gt;::sourceTerm_</a></div><div class="ttdeci">BlockMultiVectorPtr_Type sourceTerm_</div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:243</div></div>
-<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
+<div class="ttc" id="aclassFEDD_1_1Preconditioner_html"><div class="ttname"><a href="classFEDD_1_1Preconditioner.html">FEDD::Preconditioner</a></div><div class="ttdef"><b>Definition</b> Preconditioner_decl.hpp:35</div></div>
+<div class="ttc" id="aclassFEDD_1_1Problem_html_a22f74b9cad55ff27801959281d0ef4d4"><div class="ttname"><a href="classFEDD_1_1Problem.html#a22f74b9cad55ff27801959281d0ef4d4">FEDD::Problem::addRhsFunction</a></div><div class="ttdeci">void addRhsFunction(RhsFunc_Type func)</div><div class="ttdef"><b>Definition</b> Problem_def.hpp:144</div></div>
+<div class="ttc" id="aclassFEDD_1_1Problem_html_a291712cda02e33840d487ba222b7bd21"><div class="ttname"><a href="classFEDD_1_1Problem.html#a291712cda02e33840d487ba222b7bd21">FEDD::Problem::addRhsFunction</a></div><div class="ttdeci">void addRhsFunction(RhsFunc_Type func, int i)</div><div class="ttdef"><b>Definition</b> Problem_def.hpp:149</div></div>
+<div class="ttc" id="aclassFEDD_1_1Problem_html_a5f5b59cbf23a852a68b8a54289eae439"><div class="ttname"><a href="classFEDD_1_1Problem.html#a5f5b59cbf23a852a68b8a54289eae439">FEDD::Problem::getRhsFunction</a></div><div class="ttdeci">RhsFunc_Type &amp; getRhsFunction(int i)</div><div class="ttdef"><b>Definition</b> Problem_def.hpp:179</div></div>
+<div class="ttc" id="aclassFEDD_1_1Problem_html_a8ab364ed3f0be15fcd70cb39c36f169e"><div class="ttname"><a href="classFEDD_1_1Problem.html#a8ab364ed3f0be15fcd70cb39c36f169e">FEDD::Problem&lt; SC, LO, GO, NO &gt;::sourceTerm_</a></div><div class="ttdeci">BlockMultiVectorPtr_Type sourceTerm_</div><div class="ttdef"><b>Definition</b> Problem_decl.hpp:246</div></div>
+<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:36</div></div>
+<div class="ttc" id="astructFEDD_1_1ThyraTypedefs_html"><div class="ttname"><a href="structFEDD_1_1ThyraTypedefs.html">FEDD::ThyraTypedefs</a></div><div class="ttdef"><b>Definition</b> FEDDCore.hpp:141</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

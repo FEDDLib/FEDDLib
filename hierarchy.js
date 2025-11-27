@@ -156,5 +156,7 @@ var hierarchy =
     ] ],
     [ "TaskOptions", "structTaskOptions.html", null ],
     [ "TaskReturn", "structTaskReturn.html", null ],
-    [ "FEDD::TimeSteppingTools", "classFEDD_1_1TimeSteppingTools.html", null ]
+    [ "FEDD::ThyraTypedefs< SC >", "structFEDD_1_1ThyraTypedefs.html", null ],
+    [ "FEDD::TimeSteppingTools", "classFEDD_1_1TimeSteppingTools.html", null ],
+    [ "FEDD::TpetraTypedefs< SC, LO, GO, NO >", "structFEDD_1_1TpetraTypedefs.html", null ]
 ];

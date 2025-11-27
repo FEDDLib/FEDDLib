@@ -1,5 +1,4 @@
 <map id="FEDD::Mesh::getMapUnique" name="FEDD::Mesh::getMapUnique">
-<area shape="rect" id="Node000001" title="Getter for unique node map." alt="" coords="258,13,441,38"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1Mesh.html#a46ea9c752a803b2b6a1386cee18a5981" title=" " alt="" coords="5,5,210,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="242,28,210,28,210,23,242,23"/>
+<area shape="rect" id="Node000001" title="Getter for unique node map." alt="" coords="5,29,189,55"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="128,16,118,10,97,8,78,10,68,15,65,20,71,27,66,30,60,21,64,11,76,5,97,3,119,5,131,12"/>
 </map>

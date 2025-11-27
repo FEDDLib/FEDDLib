@@ -98,7 +98,6 @@ $(function(){initNavTree('classFEDD_1_1PreconditionerOperator.html',''); initRes
 
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classFEDD_1_1PreconditionerOperator-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">FEDD::PreconditionerOperator&lt; SC, LO, GO, NO &gt; Class Template Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span></div></div>
 </div><!--header-->
@@ -116,10 +115,6 @@ Inheritance diagram for FEDD::PreconditionerOperator&lt; SC, LO, GO, NO &gt;:</d
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a71164c5462a638ce01461e0e7b14a276" id="r_a71164c5462a638ce01461e0e7b14a276"><td class="memTemplParams" colspan="2"><a id="a71164c5462a638ce01461e0e7b14a276" name="a71164c5462a638ce01461e0e7b14a276"></a>
-template&lt;class LinearOpType&gt; </td></tr>
-<tr class="memitem:a71164c5462a638ce01461e0e7b14a276"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setBlockImpl</b> (const int i, const int j, const RCP&lt; LinearOpType &gt; &amp;block)</td></tr>
-<tr class="separator:a71164c5462a638ce01461e0e7b14a276"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Overridden from PhysicallyBlockedLinearOpBase</div></td></tr>
 <tr class="memitem:a54962b2e57e82963ef11bc4762cc25db" id="r_a54962b2e57e82963ef11bc4762cc25db"><td class="memItemLeft" align="right" valign="top"><a id="a54962b2e57e82963ef11bc4762cc25db" name="a54962b2e57e82963ef11bc4762cc25db"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>beginBlockFill</b> ()</td></tr>
@@ -127,9 +122,9 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>beginBlockFil
 <tr class="memitem:ae52b53af0d4d6f72c38629b7d86ea38c" id="r_ae52b53af0d4d6f72c38629b7d86ea38c"><td class="memItemLeft" align="right" valign="top"><a id="ae52b53af0d4d6f72c38629b7d86ea38c" name="ae52b53af0d4d6f72c38629b7d86ea38c"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>beginBlockFill</b> (const int numRowBlocks, const int numColBlocks)</td></tr>
 <tr class="separator:ae52b53af0d4d6f72c38629b7d86ea38c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab09fe1cad803c2a284e25b0abee3502c" id="r_ab09fe1cad803c2a284e25b0abee3502c"><td class="memItemLeft" align="right" valign="top"><a id="ab09fe1cad803c2a284e25b0abee3502c" name="ab09fe1cad803c2a284e25b0abee3502c"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>beginBlockFill</b> (const Teuchos::RCP&lt; const Thyra::ProductVectorSpaceBase&lt; SC &gt; &gt; &amp;<a class="el" href="#a2ebf5e318f7a41ce5326d298a8723759">productRange</a>, const Teuchos::RCP&lt; const Thyra::ProductVectorSpaceBase&lt; SC &gt; &gt; &amp;<a class="el" href="#a1d8293b1f95f99b42508d2bc68acfe2e">productDomain</a>)</td></tr>
-<tr class="separator:ab09fe1cad803c2a284e25b0abee3502c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46f025b5facade163d6ab98e13a2cc30" id="r_a46f025b5facade163d6ab98e13a2cc30"><td class="memItemLeft" align="right" valign="top"><a id="a46f025b5facade163d6ab98e13a2cc30" name="a46f025b5facade163d6ab98e13a2cc30"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>beginBlockFill</b> (const Teuchos::RCP&lt; const Thyra::ProductVectorSpaceBase&lt; SC &gt; &gt; &amp;<a class="el" href="#a6db31ddfd5ba6a1ece748f06ceffccf4">productRange</a>, const Teuchos::RCP&lt; const Thyra::ProductVectorSpaceBase&lt; SC &gt; &gt; &amp;<a class="el" href="#ab279d2eeff92a568ddd16eb71e26e04f">productDomain</a>)</td></tr>
+<tr class="separator:a46f025b5facade163d6ab98e13a2cc30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4869a2ab155043e2df5750d6a5a7217b" id="r_a4869a2ab155043e2df5750d6a5a7217b"><td class="memItemLeft" align="right" valign="top"><a id="a4869a2ab155043e2df5750d6a5a7217b" name="a4869a2ab155043e2df5750d6a5a7217b"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>blockFillIsActive</b> () const</td></tr>
 <tr class="separator:a4869a2ab155043e2df5750d6a5a7217b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,33 +144,33 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>endBlockFill<
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>uninitialize</b> ()</td></tr>
 <tr class="separator:a5063ade275eb107363d1137c0c8dc487"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Overridden from BlockedLinearOpBase</div></td></tr>
-<tr class="memitem:a2ebf5e318f7a41ce5326d298a8723759" id="r_a2ebf5e318f7a41ce5326d298a8723759"><td class="memItemLeft" align="right" valign="top"><a id="a2ebf5e318f7a41ce5326d298a8723759" name="a2ebf5e318f7a41ce5326d298a8723759"></a>
+<tr class="memitem:a6db31ddfd5ba6a1ece748f06ceffccf4" id="r_a6db31ddfd5ba6a1ece748f06ceffccf4"><td class="memItemLeft" align="right" valign="top"><a id="a6db31ddfd5ba6a1ece748f06ceffccf4" name="a6db31ddfd5ba6a1ece748f06ceffccf4"></a>
 Teuchos::RCP&lt; const Thyra::ProductVectorSpaceBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>productRange</b> () const</td></tr>
-<tr class="separator:a2ebf5e318f7a41ce5326d298a8723759"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d8293b1f95f99b42508d2bc68acfe2e" id="r_a1d8293b1f95f99b42508d2bc68acfe2e"><td class="memItemLeft" align="right" valign="top"><a id="a1d8293b1f95f99b42508d2bc68acfe2e" name="a1d8293b1f95f99b42508d2bc68acfe2e"></a>
+<tr class="separator:a6db31ddfd5ba6a1ece748f06ceffccf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab279d2eeff92a568ddd16eb71e26e04f" id="r_ab279d2eeff92a568ddd16eb71e26e04f"><td class="memItemLeft" align="right" valign="top"><a id="ab279d2eeff92a568ddd16eb71e26e04f" name="ab279d2eeff92a568ddd16eb71e26e04f"></a>
 Teuchos::RCP&lt; const Thyra::ProductVectorSpaceBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>productDomain</b> () const</td></tr>
-<tr class="separator:a1d8293b1f95f99b42508d2bc68acfe2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ab279d2eeff92a568ddd16eb71e26e04f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae678b21225de1a338228292b5dec83d6" id="r_ae678b21225de1a338228292b5dec83d6"><td class="memItemLeft" align="right" valign="top"><a id="ae678b21225de1a338228292b5dec83d6" name="ae678b21225de1a338228292b5dec83d6"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>blockExists</b> (const int i, const int j) const</td></tr>
 <tr class="separator:ae678b21225de1a338228292b5dec83d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1cd8f539c9285f359f25a077b072c3c4" id="r_a1cd8f539c9285f359f25a077b072c3c4"><td class="memItemLeft" align="right" valign="top"><a id="a1cd8f539c9285f359f25a077b072c3c4" name="a1cd8f539c9285f359f25a077b072c3c4"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>blockIsConst</b> (const int i, const int j) const</td></tr>
 <tr class="separator:a1cd8f539c9285f359f25a077b072c3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af135a8e604ee34c32491852c0200c145" id="r_af135a8e604ee34c32491852c0200c145"><td class="memItemLeft" align="right" valign="top"><a id="af135a8e604ee34c32491852c0200c145" name="af135a8e604ee34c32491852c0200c145"></a>
+<tr class="memitem:a8c87b56eb2350bb0f6413ac14c05f3f9" id="r_a8c87b56eb2350bb0f6413ac14c05f3f9"><td class="memItemLeft" align="right" valign="top"><a id="a8c87b56eb2350bb0f6413ac14c05f3f9" name="a8c87b56eb2350bb0f6413ac14c05f3f9"></a>
 Teuchos::RCP&lt; Thyra::LinearOpBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getNonconstBlock</b> (const int i, const int j)</td></tr>
-<tr class="separator:af135a8e604ee34c32491852c0200c145"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a930ec5b26b7c34ea88e87928f08c8703" id="r_a930ec5b26b7c34ea88e87928f08c8703"><td class="memItemLeft" align="right" valign="top"><a id="a930ec5b26b7c34ea88e87928f08c8703" name="a930ec5b26b7c34ea88e87928f08c8703"></a>
+<tr class="separator:a8c87b56eb2350bb0f6413ac14c05f3f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52a86122b914ee1f0f571ec666bc6b74" id="r_a52a86122b914ee1f0f571ec666bc6b74"><td class="memItemLeft" align="right" valign="top"><a id="a52a86122b914ee1f0f571ec666bc6b74" name="a52a86122b914ee1f0f571ec666bc6b74"></a>
 Teuchos::RCP&lt; const Thyra::LinearOpBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getBlock</b> (const int i, const int j) const</td></tr>
-<tr class="separator:a930ec5b26b7c34ea88e87928f08c8703"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abde8548e528a925a74e32d5321b38fef" id="r_abde8548e528a925a74e32d5321b38fef"><td class="memItemLeft" align="right" valign="top"><a id="abde8548e528a925a74e32d5321b38fef" name="abde8548e528a925a74e32d5321b38fef"></a>
+<tr class="separator:a52a86122b914ee1f0f571ec666bc6b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae540ede988344a39fe434fea62f4f3c1" id="r_ae540ede988344a39fe434fea62f4f3c1"><td class="memItemLeft" align="right" valign="top"><a id="ae540ede988344a39fe434fea62f4f3c1" name="ae540ede988344a39fe434fea62f4f3c1"></a>
 Teuchos::RCP&lt; const Thyra::VectorSpaceBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>range</b> () const</td></tr>
-<tr class="separator:abde8548e528a925a74e32d5321b38fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a923d10c6eab5b29ded98fd3397034dbe" id="r_a923d10c6eab5b29ded98fd3397034dbe"><td class="memItemLeft" align="right" valign="top"><a id="a923d10c6eab5b29ded98fd3397034dbe" name="a923d10c6eab5b29ded98fd3397034dbe"></a>
+<tr class="separator:ae540ede988344a39fe434fea62f4f3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af31cd1cdc07b28f5b578607d8e8447c3" id="r_af31cd1cdc07b28f5b578607d8e8447c3"><td class="memItemLeft" align="right" valign="top"><a id="af31cd1cdc07b28f5b578607d8e8447c3" name="af31cd1cdc07b28f5b578607d8e8447c3"></a>
 Teuchos::RCP&lt; const Thyra::VectorSpaceBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>domain</b> () const</td></tr>
-<tr class="separator:a923d10c6eab5b29ded98fd3397034dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e49776159e351b874377a6ddd61320d" id="r_a2e49776159e351b874377a6ddd61320d"><td class="memItemLeft" align="right" valign="top"><a id="a2e49776159e351b874377a6ddd61320d" name="a2e49776159e351b874377a6ddd61320d"></a>
+<tr class="separator:af31cd1cdc07b28f5b578607d8e8447c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8cbab6c73e5844b5372505ac0e7da97" id="r_ab8cbab6c73e5844b5372505ac0e7da97"><td class="memItemLeft" align="right" valign="top"><a id="ab8cbab6c73e5844b5372505ac0e7da97" name="ab8cbab6c73e5844b5372505ac0e7da97"></a>
 Teuchos::RCP&lt; const Thyra::LinearOpBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const</td></tr>
-<tr class="separator:a2e49776159e351b874377a6ddd61320d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ab8cbab6c73e5844b5372505ac0e7da97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1843809ebbd9184340d61d602f0bcab4" id="r_a1843809ebbd9184340d61d602f0bcab4"><td class="memItemLeft" align="right" valign="top"><a id="a1843809ebbd9184340d61d602f0bcab4" name="a1843809ebbd9184340d61d602f0bcab4"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>description</b> () const</td></tr>
 <tr class="separator:a1843809ebbd9184340d61d602f0bcab4"><td class="memSeparator" colspan="2">&#160;</td></tr>

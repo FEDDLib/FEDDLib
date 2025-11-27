@@ -232,6 +232,10 @@ var NAVTREEINDEX6 =
 "structElementSpec.html":[1,0,9],
 "structFEDD_1_1FindDataset__t.html":[0,0,0,35],
 "structFEDD_1_1FindDataset__t.html":[1,0,0,36],
+"structFEDD_1_1ThyraTypedefs.html":[0,0,0,79],
+"structFEDD_1_1ThyraTypedefs.html":[1,0,0,80],
+"structFEDD_1_1TpetraTypedefs.html":[0,0,0,82],
+"structFEDD_1_1TpetraTypedefs.html":[1,0,0,83],
 "structIterationHistoryStruct.html":[1,0,10],
 "structNodeData.html":[1,0,12],
 "structNodeSpec.html":[1,0,13],
@@ -245,9 +249,5 @@ var NAVTREEINDEX6 =
 "tdato_8h_source.html":[2,0,0,1,0,0,179],
 "trdat_8h_source.html":[2,0,0,1,0,0,180],
 "trdata_8h_source.html":[2,0,0,1,0,0,181],
-"ublk1_8h_source.html":[2,0,0,1,0,0,182],
-"umac1_8h_source.html":[2,0,0,1,0,0,183],
-"vdata_8h_source.html":[2,0,0,1,0,0,184],
-"vem__data_8h_source.html":[2,0,0,1,0,0,185],
-"w__int_8h_source.html":[2,0,0,1,0,0,186]
+"ublk1_8h_source.html":[2,0,0,1,0,0,182]
 };

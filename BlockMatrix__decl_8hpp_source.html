@@ -103,115 +103,117 @@ $(function(){initNavTree('BlockMatrix__decl_8hpp_source.html',''); initResizable
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef BLOCKMATRIX_DECL_hpp</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define BLOCKMATRIX_DECL_hpp</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;feddlib/core/General/DefaultTypeDefs.hpp&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;feddlib/core/General/SmallMatrix.hpp&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;BlockMap.hpp&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;BlockMultiVector.hpp&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;Matrix.hpp&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;Teuchos_Tuple.hpp&gt;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;Thyra_BlockedLinearOpBase.hpp&gt;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;Thyra_DefaultBlockedLinearOp_decl.hpp&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC = default_sc, <span class="keyword">class</span> LO = default_lo, <span class="keyword">class</span> GO = default_go, <span class="keyword">class</span> NO = default_no&gt;</div>
-<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMatrix.html">   23</a></span><span class="keyword">class </span>BlockMatrix {</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;Teuchos_Tuple.hpp&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;Thyra_BlockedLinearOpBase.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;Thyra_DefaultBlockedLinearOp_decl.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;feddlib/core/General/DefaultTypeDefs.hpp&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;feddlib/core/General/SmallMatrix.hpp&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;BlockMap.hpp&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;BlockMultiVector.hpp&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;Matrix.hpp&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceFEDD.html">FEDD</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> SC = default_sc, <span class="keyword">class</span> LO = default_lo, <span class="keyword">class</span> GO = default_go, <span class="keyword">class</span> NO = default_no&gt;</div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classFEDD_1_1BlockMatrix.html">   25</a></span><span class="keyword">class </span>BlockMatrix {</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Matrix.html">Matrix&lt;SC,LO,GO,NO&gt;</a> Matrix_Type;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Matrix_Type&gt; MatrixPtr_Type;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Matrix_Type&gt; MatrixConstPtr_Type;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::Map_Type Map_Type;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MapPtr_Type MapPtr_Type;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MapConstPtr_Type MapConstPtr_Type;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MultiVector_Type MultiVector_Type;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MultiVectorPtr_Type MultiVectorPtr_Type;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MultiVectorConstPtr_Type MultiVectorConstPtr_Type;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMultiVector.html">BlockMultiVector&lt;SC,LO,GO,NO&gt;</a> BlockMultiVector_Type;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMultiVector_Type&gt; BlockMultiVectorPtr_Type;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">typedef</span> BlockMatrix&lt;SC,LO,GO,NO&gt; BlockMatrix_Type;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMatrix_Type&gt; BlockMatrixPtr_Type;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMap.html">BlockMap&lt;LO,GO,NO&gt;</a> BlockMap_Type;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMap_Type&gt; BlockMapPtr_Type;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">typedef</span> Teuchos::Tuple&lt;GO, 2&gt; GOTuple_Type;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">typedef</span> Teuchos::Tuple&lt;LO, 2&gt; LOTuple_Type;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    BlockMatrix();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1Matrix.html">Matrix&lt;SC,LO,GO,NO&gt;</a> Matrix_Type;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;Matrix_Type&gt; MatrixPtr_Type;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;const Matrix_Type&gt; MatrixConstPtr_Type;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::Map_Type Map_Type;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MapPtr_Type MapPtr_Type;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MapConstPtr_Type MapConstPtr_Type;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MultiVector_Type MultiVector_Type;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MultiVectorPtr_Type MultiVectorPtr_Type;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">typedef</span> <span class="keyword">typename</span> Matrix_Type::MultiVectorConstPtr_Type MultiVectorConstPtr_Type;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMultiVector.html">BlockMultiVector&lt;SC,LO,GO,NO&gt;</a> BlockMultiVector_Type;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMultiVector_Type&gt; BlockMultiVectorPtr_Type;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">typedef</span> BlockMatrix&lt;SC,LO,GO,NO&gt; BlockMatrix_Type;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMatrix_Type&gt; BlockMatrixPtr_Type;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">typedef</span> <a class="code hl_class" href="classFEDD_1_1BlockMap.html">BlockMap&lt;LO,GO,NO&gt;</a> BlockMap_Type;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">typedef</span> Teuchos::RCP&lt;BlockMap_Type&gt; BlockMapPtr_Type;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">typedef</span> Teuchos::Tuple&lt;GO, 2&gt; GOTuple_Type;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">typedef</span> Teuchos::Tuple&lt;LO, 2&gt; LOTuple_Type;</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    BlockMatrix(UN size);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    BlockMatrix();</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="comment">// TODO</span></div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    BlockMatrix(BlockMatrixPtr_Type bMatrixIn);</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    ~BlockMatrix();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    BlockMatrix(UN size);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// TODO</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    BlockMatrix(BlockMatrixPtr_Type bMatrixIn);</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">int</span> size() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    ~BlockMatrix();</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> resize(UN size);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    MatrixPtr_Type getBlock(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    MatrixConstPtr_Type getBlockConst(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">bool</span> blockExists(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> addBlock(<span class="keyword">const</span> MatrixPtr_Type&amp; matrix, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">int</span> size() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span> resize(UN size);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    MatrixPtr_Type getBlock(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    MatrixConstPtr_Type getBlockConst(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">bool</span> blockExists(<span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> merge();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> addBlock(<span class="keyword">const</span> MatrixPtr_Type&amp; matrix, <span class="keywordtype">int</span> i, <span class="keywordtype">int</span> j);</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> mergeBlockNew(UN blockRow, UN blockCol);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> merge();</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> determineLocalOffsets();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> mergeBlockNew(UN blockRow, UN blockCol);</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> determineGlobalOffsets();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> determineLocalOffsets();</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span> print(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span> determineGlobalOffsets();</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">void</span> printMerge(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">void</span> print(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME);</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">void</span> writeMM(std::string fN=<span class="stringliteral">&quot;blockMat&quot;</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">void</span> printMerge(Teuchos::EVerbosityLevel verbLevel=Teuchos::VERB_EXTREME);</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    Teuchos::RCP&lt;const Thyra::LinearOpBase&lt;SC&gt; &gt; getThyraLinOp();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> writeMM(std::string fN=<span class="stringliteral">&quot;blockMat&quot;</span>) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    Teuchos::RCP&lt;const Thyra::BlockedLinearOpBase&lt;SC&gt; &gt; getThyraLinBlockOp() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    Teuchos::RCP&lt;const Thyra::LinearOpBase&lt;SC&gt; &gt; getThyraLinOp();</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">void</span> apply(<span class="keyword">const</span> BlockMultiVector_Type&amp; X,</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>               BlockMultiVector_Type&amp; Y ) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">void</span> apply(<span class="keyword">const</span> BlockMultiVector_Type&amp; X,</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>               BlockMultiVector_Type&amp; Y,</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>               <span class="keyword">const</span> <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a>&amp; coeff) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">void</span> addMatrix( <span class="keyword">const</span> <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a>&amp; coeffAlpha, <span class="keyword">const</span> BlockMatrixPtr_Type&amp; matrix, <span class="keyword">const</span> <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a>&amp; coeffbeta );</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    Teuchos::RCP&lt;const Thyra::BlockedLinearOpBase&lt;SC&gt; &gt; getThyraLinBlockOp() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">void</span> apply(<span class="keyword">const</span> BlockMultiVector_Type&amp; X,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>               BlockMultiVector_Type&amp; Y ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">void</span> apply(<span class="keyword">const</span> BlockMultiVector_Type&amp; X,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>               BlockMultiVector_Type&amp; Y,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>               <span class="keyword">const</span> <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a>&amp; coeff) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    MatrixPtr_Type getMergedMatrix();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span> addMatrix( <span class="keyword">const</span> <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a>&amp; coeffAlpha, <span class="keyword">const</span> BlockMatrixPtr_Type&amp; matrix, <span class="keyword">const</span> <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;SC&gt;</a>&amp; coeffbeta );</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    BlockMapPtr_Type getMap();</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;MatrixPtr_Type&gt;</a> blockMatrix_;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    BlockMapPtr_Type blockMap_;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    MatrixPtr_Type mergedMatrix_;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    MapPtr_Type mergedMap_;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    Teuchos::RCP&lt;SmallMatrix&lt;GOTuple_Type&gt; &gt; globalBlockOffsets_;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    Teuchos::RCP&lt;SmallMatrix&lt;LOTuple_Type&gt; &gt; localBlockOffsets_;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>};</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    MatrixPtr_Type getMergedMatrix();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    BlockMapPtr_Type getMap();</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;MatrixPtr_Type&gt;</a> blockMatrix_;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    BlockMapPtr_Type blockMap_;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    MatrixPtr_Type mergedMatrix_;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    MapPtr_Type mergedMap_;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    Teuchos::RCP&lt;SmallMatrix&lt;GOTuple_Type&gt; &gt; globalBlockOffsets_;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    Teuchos::RCP&lt;SmallMatrix&lt;LOTuple_Type&gt; &gt; localBlockOffsets_;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>};</div>
 </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>}</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassFEDD_1_1BlockMap_html"><div class="ttname"><a href="classFEDD_1_1BlockMap.html">FEDD::BlockMap</a></div><div class="ttdoc">Block Variant of Map class.</div><div class="ttdef"><b>Definition</b> BlockMap_decl.hpp:38</div></div>
 <div class="ttc" id="aclassFEDD_1_1BlockMultiVector_html"><div class="ttname"><a href="classFEDD_1_1BlockMultiVector.html">FEDD::BlockMultiVector</a></div><div class="ttdef"><b>Definition</b> BlockMultiVector_decl.hpp:25</div></div>
-<div class="ttc" id="aclassFEDD_1_1Matrix_html"><div class="ttname"><a href="classFEDD_1_1Matrix.html">FEDD::Matrix</a></div><div class="ttdef"><b>Definition</b> Matrix_decl.hpp:31</div></div>
-<div class="ttc" id="aclassFEDD_1_1SmallMatrix_html"><div class="ttname"><a href="classFEDD_1_1SmallMatrix.html">FEDD::SmallMatrix</a></div><div class="ttdoc">This class represents a templated small Matrix of type T. Primarily created for 2x2 and 3x3 matrices....</div><div class="ttdef"><b>Definition</b> SmallMatrix.hpp:22</div></div>
-<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:33</div></div>
+<div class="ttc" id="aclassFEDD_1_1Matrix_html"><div class="ttname"><a href="classFEDD_1_1Matrix.html">FEDD::Matrix</a></div><div class="ttdef"><b>Definition</b> Matrix_decl.hpp:30</div></div>
+<div class="ttc" id="aclassFEDD_1_1SmallMatrix_html"><div class="ttname"><a href="classFEDD_1_1SmallMatrix.html">FEDD::SmallMatrix</a></div><div class="ttdoc">This class represents a templated small Matrix of type T. Primarily created for 2x2 and 3x3 matrices....</div><div class="ttdef"><b>Definition</b> SmallMatrix.hpp:20</div></div>
+<div class="ttc" id="anamespaceFEDD_html"><div class="ttname"><a href="namespaceFEDD.html">FEDD</a></div><div class="ttdoc">Adaptive Mesh Refinement.</div><div class="ttdef"><b>Definition</b> AdaptiveMeshRefinement_decl.hpp:36</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
