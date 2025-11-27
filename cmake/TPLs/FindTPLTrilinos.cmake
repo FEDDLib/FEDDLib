@@ -188,8 +188,14 @@ endforeach (TPL)
 message(STATUS "Summary of enabled TPLs: ${TRILINOS_ENABLED_TPLS_LIST}")
 
 # Filling variables needed by the TriBITS system
-set (TPL_Trilinos_INCLUDE_DIRS ${FEDDLib_Trilinos_INCLUDE_DIRS})
-set (TPL_Trilinos_LIBRARY_DIRS Trilinos::all_selected_libs) 
-set (TPL_Trilinos_LIBRARIES Trilinos::all_selected_libs)
+# set (TPL_Trilinos_INCLUDE_DIRS ${FEDDLib_Trilinos_INCLUDE_DIRS})
+# set (TPL_Trilinos_LIBRARY_DIRS Trilinos::all_selected_libs) 
+# set (TPL_Trilinos_LIBRARIES Trilinos::all_selected_libs)
 
+# This generates the TrilinosConfig.cmake file for installation together with FEDDLib libs and headers.
+# Since Trilinos types are exposed direclty in the FEDDLib, Trilinos headers are a compile time dependency.
+# It is possible that the generated TrilinosConfig.cmake file is not complete, as this use-case has not been tested to date [27.11.25]. 
+# In this case the install location of Trilinos would need to be passed to the compiler using -I/path/to/Trilinos/install 
+# or the commented code above needs to be fixed.
+tribits_tpl_find_include_dirs_and_libraries(Trilinos)
 message(STATUS "End of processing Trilinos installation.\n")
