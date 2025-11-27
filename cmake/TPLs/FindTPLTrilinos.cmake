@@ -53,11 +53,11 @@ endif()
 
 # Optional Packages (to be moved outside with COMPONENTS ...)
 list (APPEND FEDDLib_OPTIONAL_Trilinos_PKGS
-  "NOX" "Thyra" "Teko" "Stratimikos" "ShyLU" "Zoltan" "Zoltan2" "MueLu" "Ifpack2" "Anasazi")
+  "NOX" "Teko" "Stratimikos" "ShyLU" "Zoltan" "Zoltan2" "MueLu" "Ifpack2" "Anasazi")
 
 # Required packages (to be moved outside, like REQUIRED COMPONENTS ...)
 list (APPEND FEDDLib_REQUIRED_Trilinos_PKGS
-  "Amesos2" "Belos" "ShyLU_DDFROSch" "Stratimikos" "Teko" "Teuchos" "Thyra" "Tpetra" "Xpetra")
+  "Amesos2" "Belos" "ShyLU_DDFROSch" "Stratimikos" "Teuchos" "Thyra" "Tpetra" "Xpetra")
 
 # Start scanning Trilinos configuration
 set (Trilinos_MISSING_REQUIRED_PACKAGE OFF) # Will be set to ON if a required package is missing
