@@ -235,6 +235,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4f4ecc964937c6a4dbb1b6fba52ef41d" id="r_a4f4ecc964937c6a4dbb1b6fba52ef41d"><td class="memItemLeft" align="right" valign="top"><a id="a4f4ecc964937c6a4dbb1b6fba52ef41d" name="a4f4ecc964937c6a4dbb1b6fba52ef41d"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>info</b> ()=0</td></tr>
 <tr class="separator:a4f4ecc964937c6a4dbb1b6fba52ef41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17a5d14f9282d9cee69b4e2fef021ad2" id="r_a17a5d14f9282d9cee69b4e2fef021ad2"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17a5d14f9282d9cee69b4e2fef021ad2">getNonlinearIterationStep</a> () const</td></tr>
+<tr class="separator:a17a5d14f9282d9cee69b4e2fef021ad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06af5dc8c475870e7f4b1d4f3af16292" id="r_a06af5dc8c475870e7f4b1d4f3af16292"><td class="memItemLeft" align="right" valign="top"><a id="a06af5dc8c475870e7f4b1d4f3af16292" name="a06af5dc8c475870e7f4b1d4f3af16292"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>infoProblem</b> ()</td></tr>
 <tr class="separator:a06af5dc8c475870e7f4b1d4f3af16292"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -539,6 +541,50 @@ template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go,
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="classFEDD_1_1DiffusionReaction.html#a176cb9440a79cc39c9d6a2b561a732b5">FEDD::DiffusionReaction&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#a9dafbf6d00ccb60f60399daf47236f08">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#a9dafbf6d00ccb60f60399daf47236f08">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1FSI.html#a9dafbf6d00ccb60f60399daf47236f08">FEDD::FSI&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#a0fce4c4a70d3fb5833f3f3100346718c">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#a0fce4c4a70d3fb5833f3f3100346718c">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokes.html#a0fce4c4a70d3fb5833f3f3100346718c">FEDD::NavierStokes&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NavierStokesAssFE.html#a6fb89c6d63465ce978cd6f98c319a4b4">FEDD::NavierStokesAssFE&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinearProblem.html#a2a4cfd75654ab793f979d952c2d927ac">FEDD::NonLinearProblem&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinearProblem.html#a2a4cfd75654ab793f979d952c2d927ac">FEDD::NonLinearProblem&lt; default_sc, default_lo, default_go, default_no &gt;</a>, <a class="el" href="classFEDD_1_1NonLinearProblem.html#a2a4cfd75654ab793f979d952c2d927ac">FEDD::NonLinearProblem&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinearProblem.html#a2a4cfd75654ab793f979d952c2d927ac">FEDD::NonLinearProblem&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasAssFE.html#a202c764e740b1b63587ad8564239bf7e">FEDD::NonLinElasAssFE&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a6e8f9ce7b83d728695220a66142ac563">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a6e8f9ce7b83d728695220a66142ac563">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinElasticity.html#a6e8f9ce7b83d728695220a66142ac563">FEDD::NonLinElasticity&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinLaplace.html#aa793a15db7db580a9c567e649f2b6f8c">FEDD::NonLinLaplace&lt; SC, LO, GO, NO &gt;</a>, and <a class="el" href="classFEDD_1_1NonLinTPM.html#a3a0005fb802050f2df841f13becccc9c">FEDD::NonLinTPM&lt; SC, LO, GO, NO &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a17a5d14f9282d9cee69b4e2fef021ad2" name="a17a5d14f9282d9cee69b4e2fef021ad2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17a5d14f9282d9cee69b4e2fef021ad2">&#9670;&#160;</a></span>getNonlinearIterationStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int <a class="el" href="classFEDD_1_1Problem.html">FEDD::Problem</a>&lt; SC, LO, GO, NO &gt;::getNonlinearIterationStep </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If we have a Nonlinear <a class="el" href="classFEDD_1_1Problem.html">Problem</a>, we need the opportunity to know about the current Newton Step -&gt; override in <a class="el" href="classFEDD_1_1NonLinearProblem.html">NonLinearProblem</a> Default implementation just returns 0 </p>
+
+<p>Reimplemented in <a class="el" href="classFEDD_1_1NonLinearProblem.html#a66d9d10f8c664d50d1cc0367ea3cebd5">FEDD::NonLinearProblem&lt; SC, LO, GO, NO &gt;</a>, <a class="el" href="classFEDD_1_1NonLinearProblem.html#a66d9d10f8c664d50d1cc0367ea3cebd5">FEDD::NonLinearProblem&lt; default_sc, default_lo, default_go, default_no &gt;</a>, <a class="el" href="classFEDD_1_1NonLinearProblem.html#a66d9d10f8c664d50d1cc0367ea3cebd5">FEDD::NonLinearProblem&lt; SC, LO, GO, NO &gt;</a>, and <a class="el" href="classFEDD_1_1NonLinearProblem.html#a66d9d10f8c664d50d1cc0367ea3cebd5">FEDD::NonLinearProblem&lt; SC, LO, GO, NO &gt;</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classFEDD_1_1Problem_a17a5d14f9282d9cee69b4e2fef021ad2_icgraph.png" border="0" usemap="#aclassFEDD_1_1Problem_a17a5d14f9282d9cee69b4e2fef021ad2_icgraph" alt=""/></div>
+<map name="aclassFEDD_1_1Problem_a17a5d14f9282d9cee69b4e2fef021ad2_icgraph" id="aclassFEDD_1_1Problem_a17a5d14f9282d9cee69b4e2fef021ad2_icgraph">
+<area shape="rect" title=" " alt="" coords="370,39,558,79"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#a6b1be3b3f5eee893ef83e11d5b935e78" title="Solve linear/linearized problem monolithicly." alt="" coords="188,39,322,79"/>
+<area shape="poly" title=" " alt="" coords="355,62,322,62,322,56,355,56"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#adb86ac28d97d3db35faae29751a9e662" title="Call to solve a linear/linearized problem with right&#45;hand side rhs. Depending on &#39;type&#39; solveMonolith..." alt="" coords="5,5,140,46"/>
+<area shape="poly" title=" " alt="" coords="172,47,139,41,140,35,173,41"/>
+<area shape="rect" href="classFEDD_1_1LinearSolver.html#ae07f03b75143261839ad2ed8d040dba8" title="Call to solve a linear/linearized problem with right&#45;hand side rhs. Depending on &#39;type&#39; solveMonolith..." alt="" coords="5,71,140,111"/>
+<area shape="poly" title=" " alt="" coords="173,76,140,82,139,77,172,71"/>
+</map>
+</div>
 
 </div>
 </div>

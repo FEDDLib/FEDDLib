@@ -7,6 +7,7 @@ var classFEDD_1_1NonLinearProblem =
     [ "calculateNonLinResidualVec", "classFEDD_1_1NonLinearProblem.html#aedd83cdf3b7e9a2f8da1286a7b7534f6", null ],
     [ "calculateResidualNorm", "classFEDD_1_1NonLinearProblem.html#a98a9d9723563ece2ab9eddc08f4e9570", null ],
     [ "create_W_op", "classFEDD_1_1NonLinearProblem.html#a90cd81c8804f191c15ebe589a0021c5f", null ],
+    [ "getNonlinearIterationStep", "classFEDD_1_1NonLinearProblem.html#a66d9d10f8c664d50d1cc0367ea3cebd5", null ],
     [ "getPreviousSolution", "classFEDD_1_1NonLinearProblem.html#acb51901c446aa2eb6d4856a97f4fc467", null ],
     [ "getResidualVector", "classFEDD_1_1NonLinearProblem.html#a25537d76e46d6a7bc20324d03de73568", null ],
     [ "getValuesOfInterest", "classFEDD_1_1NonLinearProblem.html#a86f2234df0762544aa553c101e726716", null ],

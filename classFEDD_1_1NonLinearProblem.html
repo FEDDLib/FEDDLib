@@ -406,6 +406,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initVectorSpacesBlock
 <tr class="memitem:a18c0cd3fc4142dce21288be0e6cdf388" id="r_a18c0cd3fc4142dce21288be0e6cdf388"><td class="memItemLeft" align="right" valign="top"><a id="a18c0cd3fc4142dce21288be0e6cdf388" name="a18c0cd3fc4142dce21288be0e6cdf388"></a>
 virtual ::Thyra::ModelEvaluatorBase::OutArgs&lt; SC &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createOutArgsImpl</b> () const</td></tr>
 <tr class="separator:a18c0cd3fc4142dce21288be0e6cdf388"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8a62eb1ddc8700d31058e3b81bc223d" id="r_ac8a62eb1ddc8700d31058e3b81bc223d"><td class="memItemLeft" align="right" valign="top"><a id="ac8a62eb1ddc8700d31058e3b81bc223d" name="ac8a62eb1ddc8700d31058e3b81bc223d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setNonlinearIterationStep</b> (int newtonStep)</td></tr>
+<tr class="separator:ac8a62eb1ddc8700d31058e3b81bc223d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66d9d10f8c664d50d1cc0367ea3cebd5" id="r_a66d9d10f8c664d50d1cc0367ea3cebd5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66d9d10f8c664d50d1cc0367ea3cebd5">getNonlinearIterationStep</a> () const override</td></tr>
+<tr class="separator:a66d9d10f8c664d50d1cc0367ea3cebd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90cd81c8804f191c15ebe589a0021c5f" id="r_a90cd81c8804f191c15ebe589a0021c5f"><td class="memItemLeft" align="right" valign="top"><a id="a90cd81c8804f191c15ebe589a0021c5f" name="a90cd81c8804f191c15ebe589a0021c5f"></a>
 Teuchos::RCP&lt; Thyra::LinearOpBase&lt; SC &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_W_op</b> () const</td></tr>
 <tr class="memdesc:a90cd81c8804f191c15ebe589a0021c5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block Approach for Nonlinear Solver NOX. Input. Includes calculation of the residual vector and update (reAssembly) of non constant matrices with new solution. ResidualVec and SystemMatrix of this class are then converted into the corresponding Thyra/Tpetra objects for Solver. <br /></td></tr>
@@ -866,6 +871,36 @@ template&lt;class SC, class LO, class GO, class NO&gt; </div>
 
 <p>Calculate the 2-norm of the residual vector. </p>
 <dl class="section return"><dt>Returns</dt><dd>Value of the norm of the residual </dd></dl>
+
+</div>
+</div>
+<a id="a66d9d10f8c664d50d1cc0367ea3cebd5" name="a66d9d10f8c664d50d1cc0367ea3cebd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66d9d10f8c664d50d1cc0367ea3cebd5">&#9670;&#160;</a></span>getNonlinearIterationStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classFEDD_1_1NonLinearProblem.html">FEDD::NonLinearProblem</a>&lt; SC, LO, GO, NO &gt;::getNonlinearIterationStep </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If we have a Nonlinear <a class="el" href="classFEDD_1_1Problem.html">Problem</a>, we need the opportunity to know about the current Newton Step -&gt; override in <a class="el" href="classFEDD_1_1NonLinearProblem.html">NonLinearProblem</a> Default implementation just returns 0 </p>
+
+<p>Reimplemented from <a class="el" href="classFEDD_1_1Problem.html#a17a5d14f9282d9cee69b4e2fef021ad2">FEDD::Problem&lt; default_sc, default_lo, default_go, default_no &gt;</a>.</p>
 
 </div>
 </div>

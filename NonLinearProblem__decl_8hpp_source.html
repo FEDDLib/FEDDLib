@@ -217,59 +217,64 @@ $(function(){initNavTree('NonLinearProblem__decl_8hpp_source.html',''); initResi
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">void</span> initVectorSpacesBlock( );</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    virtual ::Thyra::ModelEvaluatorBase::OutArgs&lt;SC&gt; createOutArgsImpl() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    </div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordtype">double</span> nonLinearTolerance_;</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    BlockMultiVectorPtr_Type    previousSolution_;</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keyword">mutable</span> BlockMultiVectorPtr_Type    residualVec_;</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;double&gt;</a> coeff_;<span class="comment">// coefficients for a time-dependent problem</span></div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">mutable</span> <span class="keywordtype">int</span> newtonStep_;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinearProblem.html#a90cd81c8804f191c15ebe589a0021c5f">  165</a></span>    Teuchos::RCP&lt; Thyra::LinearOpBase&lt;SC&gt; &gt; <a class="code hl_function" href="classFEDD_1_1NonLinearProblem.html#a90cd81c8804f191c15ebe589a0021c5f">create_W_op</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    Teuchos::RCP&lt; Thyra::LinearOpBase&lt;SC&gt; &gt; create_W_op_Monolithic() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="preprocessor">#ifdef FEDD_HAVE_TEKO</span></div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    Teuchos::RCP&lt; Thyra::LinearOpBase&lt;SC&gt; &gt; create_W_op_Block() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    Teuchos::RCP&lt;Thyra::PreconditionerBase&lt;SC&gt; &gt; create_W_prec() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keyword">mutable</span> <span class="keywordtype">bool</span> precInitOnly_; <span class="comment">//Help variable to signal that we constructed the initial preconditioner </span></div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                                <span class="comment">// for NOX already and we do not need to compute it if fill_W_prec is </span></div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                                <span class="comment">// called for the first time. However, the preconditioner is only correct </span></div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>                                <span class="comment">// if a linear system is solved in the first nonlinear iteration. </span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; nominalValues_;</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; prototypeInArgs_;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    Thyra::ModelEvaluatorBase::OutArgs&lt;SC&gt; prototypeOutArgs_;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordtype">void</span> setNonlinearIterationStep(<span class="keywordtype">int</span> newtonStep)  { this-&gt;newtonStep_ = newtonStep;}   <span class="comment">// For SolveFixedPoint etc. we need to set the Newton Step manually</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinearProblem.html#a66d9d10f8c664d50d1cc0367ea3cebd5">  160</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classFEDD_1_1NonLinearProblem.html#a66d9d10f8c664d50d1cc0367ea3cebd5">getNonlinearIterationStep</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> newtonStep_; }              <span class="comment">// This overrides the default in Problem to provide the actual Newton step</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">double</span> nonLinearTolerance_;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    BlockMultiVectorPtr_Type    previousSolution_;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">mutable</span> BlockMultiVectorPtr_Type    residualVec_;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <a class="code hl_class" href="classFEDD_1_1SmallMatrix.html">SmallMatrix&lt;double&gt;</a> coeff_;<span class="comment">// coefficients for a time-dependent problem</span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">mutable</span> <span class="keywordtype">int</span> newtonStep_;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classFEDD_1_1NonLinearProblem.html#a90cd81c8804f191c15ebe589a0021c5f">  170</a></span>    Teuchos::RCP&lt; Thyra::LinearOpBase&lt;SC&gt; &gt; <a class="code hl_function" href="classFEDD_1_1NonLinearProblem.html#a90cd81c8804f191c15ebe589a0021c5f">create_W_op</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    Teuchos::RCP&lt; Thyra::LinearOpBase&lt;SC&gt; &gt; create_W_op_Monolithic() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="preprocessor">#ifdef FEDD_HAVE_TEKO</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    Teuchos::RCP&lt; Thyra::LinearOpBase&lt;SC&gt; &gt; create_W_op_Block() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    Teuchos::RCP&lt;Thyra::PreconditionerBase&lt;SC&gt; &gt; create_W_prec() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">mutable</span> <span class="keywordtype">bool</span> precInitOnly_; <span class="comment">//Help variable to signal that we constructed the initial preconditioner </span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                                <span class="comment">// for NOX already and we do not need to compute it if fill_W_prec is </span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                                <span class="comment">// called for the first time. However, the preconditioner is only correct </span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                                <span class="comment">// if a linear system is solved in the first nonlinear iteration. </span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    Teuchos::RCP&lt;const ThyraVecSpace_Type&gt; xSpace_;</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    Teuchos::RCP&lt;const ThyraVecSpace_Type&gt; fSpace_;</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    Teuchos::RCP&lt;ThyraVec_Type&gt; x0_;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; nominalValues_;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; prototypeInArgs_;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    Thyra::ModelEvaluatorBase::OutArgs&lt;SC&gt; prototypeOutArgs_;</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> evalModelImpl(</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                       const ::Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; &amp;inArgs,</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                       const ::Thyra::ModelEvaluatorBase::OutArgs&lt;SC&gt; &amp;outArgs</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                       ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    Teuchos::RCP&lt;const ThyraVecSpace_Type&gt; xSpace_;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    Teuchos::RCP&lt;const ThyraVecSpace_Type&gt; fSpace_;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    Teuchos::RCP&lt;ThyraVec_Type&gt; x0_;</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">void</span> evalModelImplMonolithic(const ::Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; &amp;inArgs,</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                                 const ::Thyra::ModelEvaluatorBase::OutArgs&lt;SC&gt; &amp;outArgs) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="preprocessor">#ifdef FEDD_HAVE_TEKO</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordtype">void</span> evalModelImplBlock(const ::Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; &amp;inArgs,</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                            const ::Thyra::ModelEvaluatorBase::OutArgs&lt;SC&gt; &amp;outArgs) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> evalModelImpl(</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                       const ::Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; &amp;inArgs,</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>                       const ::Thyra::ModelEvaluatorBase::OutArgs&lt;SC&gt; &amp;outArgs</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>                       ) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordtype">void</span> evalModelImplMonolithic(const ::Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; &amp;inArgs,</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                                 const ::Thyra::ModelEvaluatorBase::OutArgs&lt;SC&gt; &amp;outArgs) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>};</div>
-</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>}</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="preprocessor">#ifdef FEDD_HAVE_TEKO</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordtype">void</span> evalModelImplBlock(const ::Thyra::ModelEvaluatorBase::InArgs&lt;SC&gt; &amp;inArgs,</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>                            const ::Thyra::ModelEvaluatorBase::OutArgs&lt;SC&gt; &amp;outArgs) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>};</div>
+</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>}</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassFEDD_1_1BlockMap_html"><div class="ttname"><a href="classFEDD_1_1BlockMap.html">FEDD::BlockMap</a></div><div class="ttdoc">Block Variant of Map class.</div><div class="ttdef"><b>Definition</b> BlockMap_decl.hpp:38</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_a17138cdc8844ca30962f5f5619e7a3d6"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#a17138cdc8844ca30962f5f5619e7a3d6">FEDD::NonLinearProblem::initializeVectorsNonLinear</a></div><div class="ttdeci">void initializeVectorsNonLinear(int nmbVectors=1)</div><div class="ttdoc">Initialisation of the non-linear vectors like residual and previous solution.</div><div class="ttdef"><b>Definition</b> NonLinearProblem_def.hpp:60</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_a25537d76e46d6a7bc20324d03de73568"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#a25537d76e46d6a7bc20324d03de73568">FEDD::NonLinearProblem::getResidualVector</a></div><div class="ttdeci">BlockMultiVectorPtr_Type getResidualVector() const</div><div class="ttdoc">Get the residual vector.</div><div class="ttdef"><b>Definition</b> NonLinearProblem_def.hpp:172</div></div>
@@ -277,6 +282,7 @@ $(function(){initNavTree('NonLinearProblem__decl_8hpp_source.html',''); initResi
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_a3090255ed838400dc04dcab2a9349611"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#a3090255ed838400dc04dcab2a9349611">FEDD::NonLinearProblem::NonLinearProblem</a></div><div class="ttdeci">NonLinearProblem(ParameterListPtr_Type &amp;parameterList, CommConstPtr_Type comm)</div><div class="ttdoc">Constructor with parameterlist.</div><div class="ttdef"><b>Definition</b> NonLinearProblem_def.hpp:32</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_a5c44e392d9aaede1e269479ac1d00f7d"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#a5c44e392d9aaede1e269479ac1d00f7d">FEDD::NonLinearProblem::initializeProblem</a></div><div class="ttdeci">void initializeProblem(int nmbVectors=1)</div><div class="ttdoc">Initialisation of the non-linear problem with system, vectors, and Thyra vector spaces for NOX.</div><div class="ttdef"><b>Definition</b> NonLinearProblem_def.hpp:45</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_a601d86d0c54d19984d0f561af0d083d4"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#a601d86d0c54d19984d0f561af0d083d4">FEDD::NonLinearProblem::calculateNonLinResidualVec</a></div><div class="ttdeci">virtual void calculateNonLinResidualVec(SmallMatrix&lt; double &gt; &amp;coeff, std::string type=&quot;standard&quot;, double time=0., BlockMatrixPtr_Type systemMass=Teuchos::null)</div><div class="ttdoc">Calculate the non-linear residual vector with given coefficients for time-dependent problems (if used...</div><div class="ttdef"><b>Definition</b> NonLinearProblem_def.hpp:105</div></div>
+<div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_a66d9d10f8c664d50d1cc0367ea3cebd5"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#a66d9d10f8c664d50d1cc0367ea3cebd5">FEDD::NonLinearProblem::getNonlinearIterationStep</a></div><div class="ttdeci">int getNonlinearIterationStep() const override</div><div class="ttdef"><b>Definition</b> NonLinearProblem_decl.hpp:160</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_a723e96f970e9dc26090dcfab47dbcaa6"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#a723e96f970e9dc26090dcfab47dbcaa6">FEDD::NonLinearProblem::solveUpdate</a></div><div class="ttdeci">int solveUpdate()</div><div class="ttdoc">This is where the linear solve specifically happens.</div><div class="ttdef"><b>Definition</b> NonLinearProblem_def.hpp:143</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_a7bee4c0f6eb1f9da4cb69b393a0b0385"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#a7bee4c0f6eb1f9da4cb69b393a0b0385">FEDD::NonLinearProblem::reAssemble</a></div><div class="ttdeci">virtual void reAssemble(BlockMultiVectorPtr_Type previousSolution) const =0</div><div class="ttdoc">Reassemble with previous solution. I think it is not used anymore. @TODO: Look into this.</div></div>
 <div class="ttc" id="aclassFEDD_1_1NonLinearProblem_html_a86f2234df0762544aa553c101e726716"><div class="ttname"><a href="classFEDD_1_1NonLinearProblem.html#a86f2234df0762544aa553c101e726716">FEDD::NonLinearProblem::getValuesOfInterest</a></div><div class="ttdeci">virtual void getValuesOfInterest(vec_dbl_Type &amp;values)=0</div><div class="ttdoc">Virtual class to extract values of interest that are computed during the solve.</div></div>
