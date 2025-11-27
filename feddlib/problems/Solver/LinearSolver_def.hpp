@@ -93,10 +93,22 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
 
     problem->getLinearSolverBuilder()->setParameterList(pListThyraSolver);
     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
-
+        
+    // Add the possibility to completly skip the preconditioner rebuild after a specific number of Newton steps
     bool iterativeSolve = !pListThyraSolver->get("Linear Solver Type", "Belos").compare("Belos");
     if (iterativeSolve && (type != "MonolithicConstPrec" || problem->getPreconditioner()->getThyraPrec().is_null()))
-        problem->setupPreconditioner("Monolithic");
+    {   // Analogous to NOX as Nonlinear Solver in NonLinearProblem_def.hpp, we want to have the option to reuse the Preconditioner after the first X Newtonsteps
+        // We have the option to reuse the preconditioner after the first X Newtonsteps
+        int newtonLimit = problem->getParameterList()->sublist("Parameter").get("newtonLimit",2);
+        if(problem->getNonlinearIterationStep() < newtonLimit || problem->getParameterList()->sublist("Parameter").get("Rebuild Preconditioner every Newton Iteration",true) )
+        {
+            problem->setupPreconditioner("Monolithic");
+        }
+        else{ // Reusing preconditioner
+            if (verbose)
+                std::cout << "LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMultiVectorPtr_Type rhs, std::string type ):: Skipping preconditioner reconstruction" << std::endl;
+        }
+    }
 
     if (!pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive").compare("Multiplicative")) {
         pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",true);

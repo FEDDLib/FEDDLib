@@ -154,6 +154,11 @@ public:
     void initVectorSpacesBlock( );
 
     virtual ::Thyra::ModelEvaluatorBase::OutArgs<SC> createOutArgsImpl() const;
+
+    
+    void setNonlinearIterationStep(int newtonStep)  { this->newtonStep_ = newtonStep;}   // For SolveFixedPoint etc. we need to set the Newton Step manually
+    int  getNonlinearIterationStep() const override { return newtonStep_; }              // This overrides the default in Problem to provide the actual Newton step
+
     
     double nonLinearTolerance_;
     BlockMultiVectorPtr_Type    previousSolution_;

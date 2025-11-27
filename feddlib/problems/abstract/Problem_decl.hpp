@@ -104,6 +104,11 @@ public:
 
     virtual void info() = 0;
 
+    /*! If we have a Nonlinear Problem, we need the opportunity to know about the current Newton Step -> override in NonLinearProblem
+        Default implementation just returns 0
+    */
+    virtual int getNonlinearIterationStep() const{return 0; } 
+
     void infoProblem();
 
     void infoParameter(bool full = true, std::string ="empty");
