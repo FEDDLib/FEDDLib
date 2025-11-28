@@ -1,15 +1,16 @@
 <map id="FEDD::FE::assemblyLaplaceXDim" name="FEDD::FE::assemblyLaplaceXDim">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,80,222,106"/>
-<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="70,81,61,71,66,61,84,55,114,53,147,56,163,64,161,69,146,61,113,59,85,61,70,66,66,71,74,78"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,149,222,175"/>
 <area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#aa39723a79c28706566d5b54a4cde6b4e" title="Build transformation of element to reference element depending on FEType." alt="" coords="270,5,489,31"/>
-<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="151,77,269,40,297,32,298,38,270,45,153,82"/>
-<area shape="rect" id="Node000003" href="$classFEDD_1_1Helper.html#a85dd0118ef667862aaa595a41542b2f1" title="Determine polynomial degree of a finite element basis function or its gradient that is required to se..." alt="" coords="278,55,481,80"/>
-<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="222,80,262,76,263,81,223,85"/>
-<area shape="rect" id="Node000004" href="$classFEDD_1_1Helper.html#aec6f9bc4208c7ce02f2bebad7a98e7d1" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="304,156,455,182"/>
-<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="162,104,318,149,317,154,161,109"/>
-<area shape="rect" id="Node000005" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="537,98,724,138"/>
-<area shape="poly" id="edge7_Node000001_Node000005" title=" " alt="" coords="222,95,522,110,521,116,222,101"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="446,153,521,138,522,143,447,158"/>
-<area shape="rect" id="Node000006" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="556,163,705,188"/>
-<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="456,168,540,170,540,176,456,174"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="126,147,184,95,224,65,268,40,282,34,285,39,271,45,227,69,187,99,129,151"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1FE__ElementAssembly.html#a1c707e88cef0a2cd1c2aca513621064f" title=" " alt="" coords="285,55,474,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="163,146,269,117,271,122,164,151"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1Helper.html#a85dd0118ef667862aaa595a41542b2f1" title="Determine polynomial degree of a finite element basis function or its gradient that is required to se..." alt="" coords="278,149,481,175"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="222,160,262,160,262,165,222,165"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1Helper.html#aec6f9bc4208c7ce02f2bebad7a98e7d1" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="304,251,455,276"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="143,173,201,200,271,229,314,243,312,248,269,234,199,205,141,178"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="537,192,724,233"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="189,173,270,185,401,197,522,205,521,210,400,203,269,190,188,178"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="446,247,521,232,522,237,447,253"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="556,257,705,283"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="456,263,540,265,540,270,456,268"/>
 </map>

@@ -1,0 +1,7 @@
+<map id="FEDD::FE_ElementAssembly::assemblyAceDeformDiffuBlock" name="FEDD::FE_ElementAssembly::assemblyAceDeformDiffuBlock">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,29,212,70"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="62,29,60,19,68,10,84,5,109,3,135,5,151,11,149,16,134,10,108,8,85,10,71,15,65,21,68,28"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1FE__ElementAssembly.html#a7f2982c015f382d7fb3917ef008636f5" title="Returns entries of u of element." alt="" coords="260,29,448,70"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="212,47,244,47,244,52,212,52"/>
+<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="308,29,305,19,313,10,329,5,354,3,380,5,396,11,394,16,379,10,354,8,330,10,316,15,311,21,313,28"/>
+</map>

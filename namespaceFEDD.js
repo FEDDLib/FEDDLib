@@ -35,6 +35,7 @@ var namespaceFEDD =
     [ "ExporterParaViewAMR", "classFEDD_1_1ExporterParaViewAMR.html", null ],
     [ "ExporterTxt", "classFEDD_1_1ExporterTxt.html", null ],
     [ "FE", "classFEDD_1_1FE.html", "classFEDD_1_1FE" ],
+    [ "FE_ElementAssembly", "classFEDD_1_1FE__ElementAssembly.html", "classFEDD_1_1FE__ElementAssembly" ],
     [ "FindDataset_t", "structFEDD_1_1FindDataset__t.html", null ],
     [ "FiniteElement", "classFEDD_1_1FiniteElement.html", "classFEDD_1_1FiniteElement" ],
     [ "FSI", "classFEDD_1_1FSI.html", "classFEDD_1_1FSI" ],

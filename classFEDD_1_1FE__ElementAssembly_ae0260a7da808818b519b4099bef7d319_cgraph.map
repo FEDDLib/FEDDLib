@@ -1,0 +1,7 @@
+<map id="FEDD::FE_ElementAssembly::assemblyLaplaceAssFE" name="FEDD::FE_ElementAssembly::assemblyLaplaceAssFE">
+<area shape="rect" id="Node000001" title="Assembly of constant stiffness matix for laplacian operator ." alt="" coords="5,29,194,70"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="55,29,53,19,60,10,76,5,100,3,125,5,140,11,138,16,124,10,99,8,77,10,63,15,58,21,60,28"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1FE__ElementAssembly.html#a1c707e88cef0a2cd1c2aca513621064f" title="Checks which domain corresponds to certain FE Type and dimension." alt="" coords="242,29,430,70"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="194,47,226,47,226,52,194,52"/>
+<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="291,29,289,19,296,10,312,5,336,3,361,5,376,11,374,16,360,10,336,8,313,10,300,15,294,21,297,28"/>
+</map>

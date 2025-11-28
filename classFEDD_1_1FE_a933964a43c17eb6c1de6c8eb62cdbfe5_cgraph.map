@@ -1,15 +1,16 @@
 <map id="FEDD::FE::assemblyLinElasXDimE" name="FEDD::FE::assemblyLinElasXDimE">
-<area shape="rect" id="Node000001" title="Same as assemblyLinElasXDim except for changing E Module Value." alt="" coords="5,72,187,113"/>
-<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="49,73,47,62,55,53,71,48,96,46,123,48,139,54,137,59,122,53,96,51,72,53,58,58,52,64,55,71"/>
+<area shape="rect" id="Node000001" title="Same as assemblyLinElasXDim except for changing E Module Value." alt="" coords="5,142,187,182"/>
 <area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#aa39723a79c28706566d5b54a4cde6b4e" title="Build transformation of element to reference element depending on FEType." alt="" coords="235,5,454,31"/>
-<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="148,69,234,40,260,33,261,38,235,45,150,74"/>
-<area shape="rect" id="Node000003" href="$classFEDD_1_1Helper.html#a85dd0118ef667862aaa595a41542b2f1" title="Determine polynomial degree of a finite element basis function or its gradient that is required to se..." alt="" coords="243,55,446,80"/>
-<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="187,81,227,77,227,82,187,86"/>
-<area shape="rect" id="Node000004" href="$classFEDD_1_1Helper.html#aec6f9bc4208c7ce02f2bebad7a98e7d1" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="269,156,420,182"/>
-<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="162,111,235,134,283,149,281,154,234,139,161,116"/>
-<area shape="rect" id="Node000005" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="502,98,689,138"/>
-<area shape="poly" id="edge7_Node000001_Node000005" title=" " alt="" coords="187,95,486,110,486,115,187,100"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="411,153,486,138,487,143,412,158"/>
-<area shape="rect" id="Node000006" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="521,163,670,188"/>
-<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="421,168,505,170,505,176,421,174"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,139,164,89,197,62,233,40,246,34,248,39,236,45,200,67,167,93,117,143"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1FE__ElementAssembly.html#a1c707e88cef0a2cd1c2aca513621064f" title=" " alt="" coords="250,55,438,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="168,139,234,119,236,124,169,144"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1Helper.html#a85dd0118ef667862aaa595a41542b2f1" title="Determine polynomial degree of a finite element basis function or its gradient that is required to se..." alt="" coords="243,149,446,175"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="187,160,227,160,227,165,187,165"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1Helper.html#aec6f9bc4208c7ce02f2bebad7a98e7d1" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="269,251,420,276"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="135,180,182,205,236,229,277,243,275,248,234,234,180,210,133,185"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="502,192,689,233"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="188,178,235,185,366,198,487,206,487,211,365,203,234,190,187,183"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="411,247,486,232,487,237,412,253"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="521,257,670,283"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="421,263,505,265,505,270,421,268"/>
 </map>
