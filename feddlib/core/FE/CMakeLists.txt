@@ -8,6 +8,9 @@ set(FE_HEADERS
 	FE/FE.hpp
 	FE/FE_decl.hpp
 	FE/FE_def.hpp
+	FE/FE_ElementAssembly.hpp
+	FE/FE_ElementAssembly_decl.hpp
+	FE/FE_ElementAssembly_def.hpp
 	FE/FiniteElement.hpp
 	FE/TriangleElements.hpp
     FE/sms.hpp
@@ -20,6 +23,7 @@ set(FE_SOURCES
     FE/Elements.cpp
     FE/EntitiesOfElements.cpp
 	FE/FE.cpp
+    FE/FE_ElementAssembly.cpp
     FE/FiniteElement.cpp  
 	FE/TriangleElements.cpp  
     FE/SMSUtility.cpp
