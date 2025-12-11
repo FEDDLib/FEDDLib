@@ -364,11 +364,32 @@ namespace FEDD
         }         // end if dim==3
     }
 
-    // Directional Derivative of shear stress term resulting from chosen nonlinear non-newtonian model  -----
-    // Same structure and functions as in assemblyStress
-    //  ( -2.0*deta/dgammaDot * dgammaDot/dTau * (0.5(dv^k + (dvh^k)^T): 0.5( dPhiTrans_j + (dPhiTrans_j)^T))0.5(dv^k + (dvh^k)^T): 0.5( dPhiTrans_i + (dPhiTrans_i)^T)    )
+    /* ------------------------ Directional Derivative of shear stress term nabla \cdot  2 eta(gamma) D(v) -------------------------------------------------------------
+       For literature, see for example, [On preconditioning of incompressible non-newtonian flow problems, He et al., 2015]
+       D(v) = 0.5( \nabla v + (\nabla v)^T ) is the rate of deformation tensor, which is a symmetric tensor
+       The shear rate is defined by gamma_dot = 2 sqrt ( - PI_D )
+       with PI_D being the second invariant of the rate of deformation tensor defined for incompressible flows as: PI_D = - tr( D^2 )/2   < 0 
+       In the derivation of the Gateueux derivative, the expression d/depsilon (  eta ( D(v+ epsioln delta v ) ) |_epsilon = 0 occurs
+       from which with the chain rule we obtain deta/dgammaDot * dgammaDot/dPI_D * dPI_D/dD(v)  dD(v)/d epsilon | epsilon = 0 
+       Looking at the single terms and setting epsilon = 0 we obtain:
+       deta/dgammaDot: --> derivative of the viscosity model w.r.t. shear rate - Depending on the model
+       dgammaDot/dTau: --> derivative of shear rate w.r.t. second invariant of rate of deformation tensor
+                          = d/dPI_D ( 2 sqrt( - PI_D ) ) = -2.0 / (2 * sqrt(-PI_D) ) = -1.0 / ( sqrt(-PI_D) ) = -2.0 / gammaDot
+        dPI_D/dD(v) : --> derivative of second invariant of rate of deformation tensor w.r.t. rate of deformation tensor D(v)
+                          = d/dD(v) ( - tr( D^2 )/2 ) = - D(v)
+        dD(v)/d epsilon | epsilon = 0  : --> derivative of rate of deformation tensor w.r.t. epsilon at epsilon = 0
+                          = D( delta v )
+        Putting all together we obtain the Gateueux derivative of the shear stress term as:
+            nabla \cdot  ( -2.0 *deta/dgammaDot * dgammaDot/dTau * ( D(v^k) : D( delta v) )   *   ( D(v^k) ) )
+        and in the weak formulation we have to test with basis functions phi_j leading to the element matrix entries:
+            ( -2.0 *deta/dgammaDot * dgammaDot/dTau * ( D(v^k) : D(\phi_i) )   *   ( D(v^k) : D(\phi_j) ) )
+       -----> This tensor is symmetric
+       Importantly we will summarize deta/dgammaDot * dgammaDot/dTau into a single term, as it might be beneficial to cancel gammaDot from the denominator
+       ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    */
     template <class SC, class LO, class GO, class NO>
-    void AssembleFEGeneralizedNewtonian<SC, LO, GO, NO>::assemblyStressDev(SmallMatrixPtr_Type &elementMatrix)
+    void AssembleFEGeneralizedNewtonian<SC, LO, GO, NO>::assemblyStressDev(SmallMatrixPtr_Type &elementMatrix) //  Same basic structure/ functions as in assemblyStress
+
     {
 
         int dim = this->getDim();
@@ -582,7 +603,7 @@ namespace FEDD
                     v32 = 0.0;
                     v33 = 0.0;
 
-                    // So in general compute the components of eta*[ dPhiTrans_i : ( dPhiTrans_j + (dPhiTrans_j)^T )]
+                    // We compute for the derivative 
                     for (UN w = 0; w < dPhiTrans.size(); w++)
                     {
 
@@ -596,18 +617,19 @@ namespace FEDD
 
                         this->viscosityModel->evaluateDerivative(this->params_, gammaDot->at(w), deta_dgamma_dgamma_dtau);
 
+                        // ( -2.0 *deta/dgammaDot * dgammaDot/dTau * ( D(v^k) : D(\phi_i) )   *   ( D(v^k) : D(\phi_j) ) ) ----> Symmetric tensor
                         // Construct entries - we go over all quadrature points and if j is updated we set v11 etc. again to zero
-                        v11 = v11 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_j * u11[w] + value2_j * mixed_term_xy->at(w) + value3_j * mixed_term_xz->at(w)) * (value1_i * u11[w] + value2_i * mixed_term_xy->at(w) + value3_i * mixed_term_xz->at(w)));
-                        v12 = v12 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_j * mixed_term_xy->at(w) + u22[w] * value2_j + mixed_term_yz->at(w) * value3_j) * (value1_i * u11[w] + value2_i * mixed_term_xy->at(w) + value3_i * mixed_term_xz->at(w)));
-                        v13 = v13 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value3_j * mixed_term_xz->at(w) + value2_j * mixed_term_yz->at(w) + value3_j * u33[w]) * (value1_i * u11[w] + value2_i * mixed_term_xy->at(w) + value3_i * mixed_term_xz->at(w)));
+                        v11 = v11 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_i * u11[w] + value2_i * mixed_term_xy->at(w) + value3_i * mixed_term_xz->at(w)) * (value1_j * u11[w] + value2_j * mixed_term_xy->at(w) + value3_j * mixed_term_xz->at(w))) ;
+                        v12 = v12 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_i * u11[w] + value2_i * mixed_term_xy->at(w) + value3_i * mixed_term_xz->at(w)) * (value1_j * mixed_term_xy->at(w) + u22[w] * value2_j + mixed_term_yz->at(w) * value3_j));
+                        v13 = v13 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_i * u11[w] + value2_i * mixed_term_xy->at(w) + value3_i * mixed_term_xz->at(w)) * (value1_j * mixed_term_xz->at(w) + value2_j * mixed_term_yz->at(w) + value3_j * u33[w]));
 
-                        v21 = v21 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_j * u11[w] + value2_j * mixed_term_xy->at(w) + value3_j * mixed_term_xz->at(w)) * (value1_i * mixed_term_xy->at(w) + value2_i * u22[w] + value3_i * mixed_term_yz->at(w)));
-                        v22 = v22 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_j * mixed_term_xy->at(w) + u22[w] * value2_j + mixed_term_yz->at(w) * value3_j) * (value1_i * mixed_term_xy->at(w) + value2_i * u22[w] + value3_i * mixed_term_yz->at(w)));
-                        v23 = v23 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value3_j * mixed_term_xz->at(w) + value2_j * mixed_term_yz->at(w) + value3_j * u33[w]) * (value1_i * mixed_term_xy->at(w) + value2_i * u22[w] + value3_i * mixed_term_yz->at(w)));
+                        v21 = v21 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_i * mixed_term_xy->at(w) + value2_i * u22[w] + value3_i * mixed_term_yz->at(w)) * (value1_j * u11[w] + value2_j * mixed_term_xy->at(w) + value3_j * mixed_term_xz->at(w)));
+                        v22 = v22 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_i * mixed_term_xy->at(w) + value2_i * u22[w] + value3_i * mixed_term_yz->at(w)) * (value1_j * mixed_term_xy->at(w) + u22[w] * value2_j + mixed_term_yz->at(w) * value3_j));
+                        v23 = v23 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_i * mixed_term_xy->at(w) + value2_i * u22[w] + value3_i * mixed_term_yz->at(w)) * (value1_j * mixed_term_xz->at(w) + value2_j * mixed_term_yz->at(w) + value3_j * u33[w]));
 
-                        v31 = v31 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_j * u11[w] + value2_j * mixed_term_xy->at(w) + value3_j * mixed_term_xz->at(w)) * (value1_i * mixed_term_xz->at(w) + mixed_term_yz->at(w) * value2_i + u33[w] * value3_i));
-                        v32 = v32 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_j * mixed_term_xy->at(w) + u22[w] * value2_j + mixed_term_yz->at(w) * value3_j) * (value1_i * mixed_term_xz->at(w) + mixed_term_yz->at(w) * value2_i + u33[w] * value3_i));
-                        v33 = v33 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value3_j * mixed_term_xz->at(w) + value2_j * mixed_term_yz->at(w) + value3_j * u33[w]) * (value1_i * mixed_term_xz->at(w) + mixed_term_yz->at(w) * value2_i + u33[w] * value3_i));
+                        v31 = v31 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_i * mixed_term_xz->at(w) + mixed_term_yz->at(w) * value2_i + u33[w] * value3_i) * (value1_j * u11[w] + value2_j * mixed_term_xy->at(w) + value3_j * mixed_term_xz->at(w)));
+                        v32 = v32 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_i * mixed_term_xz->at(w) + mixed_term_yz->at(w) * value2_i + u33[w] * value3_i) * (value1_j * mixed_term_xy->at(w) + u22[w] * value2_j + mixed_term_yz->at(w) * value3_j));
+                        v33 = v33 + (-2.0) * deta_dgamma_dgamma_dtau * weights->at(w) * ((value1_i * mixed_term_xz->at(w) + mixed_term_yz->at(w) * value2_i + u33[w] * value3_i) * (value1_j * mixed_term_xz->at(w) + value2_j * mixed_term_yz->at(w) + value3_j * u33[w]));
 
                     } // loop end quadrature points
 
