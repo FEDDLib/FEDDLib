@@ -6,7 +6,7 @@
 #include <Teuchos_ScalarTraitsDecl.hpp>
 
 
-void dummyFuncBC(double* x, double* res, double t, const double* parameters)
+inline void dummyFuncBC(double* x, double* res, double t, const double* parameters)
 {
     return;
 }

@@ -17,7 +17,7 @@
  */
 
 
-int MMAInitialisationCode[]={
+static int MMAInitialisationCode[]={
     0,0
 };
 
@@ -27,31 +27,31 @@ using Teuchos::REDUCE_SUM;
 using Teuchos::outArg;
 
 namespace FEDD {
-DataElement::DataElement():
+inline DataElement::DataElement():
 ht_(1,0.),
 hp_(1,0.)
 {
     
 }
 
-DataElement::DataElement(int size):
+inline DataElement::DataElement(int size):
 ht_(size,0.),
 hp_(size,0.)
 {
     
 }
 
-std::vector<double> DataElement::getHp()
+inline std::vector<double> DataElement::getHp()
 {
     return hp_;
 }
 
-std::vector<double> DataElement::getHt()
+inline std::vector<double> DataElement::getHt()
 {
     return ht_;
 }
 
-void DataElement::setHp( double* ht )
+inline void DataElement::setHp( double* ht )
 {
     for (int i=0; i<hp_.size(); i++)
         hp_[i] = ht[i];
