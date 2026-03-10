@@ -1,0 +1,25 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: FEDDLib
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: FEDDLib Team
+    email: feddlib-contact@uni-koeln.de
+    website: 'https://feddlib.github.io/'
+repository-code: 'https://github.com/FEDDLib/FEDDLib'
+url: 'https://feddlib.github.io/FEDDLib/'
+abstract: >-
+  FEDDLib (Finite Element and Domain Decomposition Library)
+  – C++ finite element library based on the open source
+  package Trilinos with interfaces to solver packages in
+  Trilinos (e.g., FROSch) and assembly routines from AceGEN.
+keywords:
+  - finite element method
+  - domain decomposition methods
+  - Trilinos
+license: GPL-3.0
