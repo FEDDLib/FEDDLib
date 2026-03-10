@@ -19,10 +19,11 @@ List the dependency tree of Spack
    spack spec -Il mumps %gcc@13.3.0
  Symbols at the very left of the output:
 * A minus sign: package is not installed.
-* [e] means external (not even mentioned in the documentation ...)
-* [+] means installed
-* [^] installed in an upstream package of the dependency tree
-* [-] missing dependency of installed package.
+* [e] means installed externally
+* [+] means installed in Spack
+* [^] installed upstream (in a different spack instance, i.e., if multiple installations of spack are managed)
+* [-] missing dependency of installed package
+*  -  package not installed
 In my case, the dependency tree had the following header:
    mumps@5.8.1~blr_mt+complex+double+float~incfort~int64~metis+mpi+openmp~parmetis~ptscotch~scotch+shared build_system=generic patches:=14f0694 platform=linux os=rhel9 target=zen4 %c,fortran=gcc@13.3.0
 We remove most things from this configuration to concentrate on OpenMPI, since, as of now, it will install OpenMPI and not use the preinstalled version. First, we find our external OpenMPI installation and then show the specification output again: 
