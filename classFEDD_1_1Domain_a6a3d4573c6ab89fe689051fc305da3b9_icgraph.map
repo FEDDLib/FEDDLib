@@ -1,0 +1,5 @@
+<map id="FEDD::Domain::checkGeomentry" name="FEDD::Domain::checkGeomentry">
+<area shape="rect" id="Node000001" title="Checks geometriy." alt="" coords="224,5,433,31"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#a2f3fe2ee8778eea865302570501432dc" title="Build structured mesh in FEDDLib." alt="" coords="5,5,176,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="208,21,176,21,176,16,208,16"/>
+</map>

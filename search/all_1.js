@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['a_20b_20blockmap_20getblock_200_20of_20row_20block_200_0',['0 | A   B       BlockMap-&gt;getBlock(0) of row-block 0',['../classFEDD_1_1BlockMap.html#autotoc_md0',1,'']]],
+  ['a_20b_20blockmap_20getblock_200_20of_20row_20block_200_0',['0 | A B BlockMap-&amp;gt;getBlock(0) of row-block 0',['../classFEDD_1_1BlockMap.html#autotoc_md0',1,'']]],
   ['aabbtree_1',['AABBTree',['../classFEDD_1_1AABBTree.html',1,'FEDD']]],
   ['aabbtree_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_2',['AABBTree&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1AABBTree.html',1,'FEDD']]],
   ['acceptsblock_3',['acceptsBlock',['../classFEDD_1_1PreconditionerOperator.html#ae2771db5be708e2ccfc6c1c1812c924b',1,'FEDD::PreconditionerOperator']]],

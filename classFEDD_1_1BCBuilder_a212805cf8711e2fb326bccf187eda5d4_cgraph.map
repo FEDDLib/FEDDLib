@@ -1,4 +1,13 @@
 <map id="FEDD::BCBuilder::setRHS" name="FEDD::BCBuilder::setRHS">
-<area shape="rect" id="Node000001" title="Setting boundary conditions to (block)vector." alt="" coords="5,29,177,55"/>
-<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="62,30,56,21,60,11,72,5,91,3,112,5,123,12,120,16,110,10,91,8,73,10,64,15,62,20,66,28"/>
+<area shape="rect" id="Node000001" title="Setting boundary conditions to (block)vector." alt="" coords="5,118,177,144"/>
+<area shape="poly" id="edge7_Node000001_Node000001" title=" " alt="" coords="53,119,46,110,50,100,66,94,91,92,119,94,133,101,131,106,118,99,91,97,67,99,54,104,51,109,57,116"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1BCBuilder.html#aaf5b29a7c5663fe235385da3941707ea" title=" " alt="" coords="230,29,410,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="127,115,224,79,241,73,243,78,226,84,129,120"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1BCBuilder.html#aed3efb55b048d3ff75763fb0726c69f9" title=" " alt="" coords="235,118,405,144"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="177,128,219,128,219,134,177,134"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1BCBuilder.html#a85f4fe085c295973bd70331d6022e095" title=" " alt="" coords="225,192,415,233"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="131,142,247,184,245,189,129,147"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="277,29,275,19,282,10,297,5,320,3,345,5,359,11,357,16,343,10,320,8,298,10,285,15,280,21,282,28"/>
+<area shape="poly" id="edge4_Node000003_Node000003" title=" " alt="" coords="282,119,274,110,279,100,294,94,320,92,348,94,362,101,360,106,346,99,320,97,296,99,283,104,280,109,286,116"/>
+<area shape="poly" id="edge6_Node000004_Node000004" title=" " alt="" coords="277,192,275,182,282,173,297,167,320,165,345,168,359,174,357,179,343,173,320,171,298,173,285,177,280,183,282,191"/>
 </map>

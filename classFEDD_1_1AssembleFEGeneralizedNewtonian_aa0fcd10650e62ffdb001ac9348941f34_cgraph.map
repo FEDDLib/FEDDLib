@@ -4,12 +4,20 @@
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="163,147,231,93,276,64,323,40,338,34,340,39,325,45,278,69,234,98,166,152"/>
 <area shape="rect" id="Node000003" href="$classFEDD_1_1AssembleFENavierStokes.html#a267514037c5191c0253a5ecc3e84168c" title=" " alt="" coords="324,55,538,126"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="216,147,308,121,309,126,218,152"/>
-<area shape="rect" id="Node000004" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#aada016627843de170307fd27342535f0" title="Computation of shear rate using the current velocity solution at the nodes and the derivative of the ..." alt="" coords="329,150,532,190"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="276,168,314,168,314,173,276,173"/>
-<area shape="rect" id="Node000005" href="$classFEDD_1_1AssembleFE.html#a35ada89164c74b433340733c01f30f4b" title=" " alt="" coords="338,214,524,270"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="226,189,324,213,322,218,225,194"/>
-<area shape="rect" id="Node000006" href="$classFEDD_1_1Helper.html#add6906564af2183ea44d4213a7bc7fde" title=" " alt="" coords="339,295,523,320"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="171,189,239,235,281,259,325,280,346,287,344,292,323,285,278,264,236,239,168,193"/>
-<area shape="rect" id="Node000007" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="586,295,735,320"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="523,305,570,305,570,310,523,310"/>
+<area shape="rect" id="Node000008" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#aada016627843de170307fd27342535f0" title="Computation of shear rate using the current velocity solution at the nodes and the derivative of the ..." alt="" coords="329,150,532,190"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="276,168,314,168,314,173,276,173"/>
+<area shape="rect" id="Node000009" href="$classFEDD_1_1AssembleFE.html#a35ada89164c74b433340733c01f30f4b" title=" " alt="" coords="338,214,524,270"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="226,189,324,213,322,218,225,194"/>
+<area shape="rect" id="Node000010" href="$classFEDD_1_1Helper.html#add6906564af2183ea44d4213a7bc7fde" title=" " alt="" coords="339,295,523,320"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="171,189,239,235,281,259,325,280,346,287,344,292,323,285,278,264,236,239,168,193"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1AssembleFENavierStokes.html#a95445082e9e700036a2aedbd1fc257c4" title=" " alt="" coords="586,8,800,79"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="538,68,570,63,571,68,539,74"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1AssembleFENavierStokes.html#a903ab346dc6fe7ae1260c76fa0d4c824" title=" " alt="" coords="586,103,800,174"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="539,107,571,113,570,118,538,112"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1AssembleFENavierStokes.html#ad6e18c1a1a728f48dd237a7f8a6e99b2" title=" " alt="" coords="848,8,1063,79"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="801,41,833,41,833,46,801,46"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1AssembleFENavierStokes.html#a68797d16d6e430320f577bd2e3c55448" title=" " alt="" coords="848,103,1063,174"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="801,136,833,136,833,141,801,141"/>
+<area shape="rect" id="Node000011" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="618,295,768,320"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="523,305,603,305,603,310,523,310"/>
 </map>

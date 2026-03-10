@@ -1,5 +1,5 @@
 <map id="FEDD::Mesh::getPointsUnique" name="FEDD::Mesh::getPointsUnique">
-<area shape="rect" id="Node000001" title="getter for list of unique points with x,y,z coordinates in each row" alt="" coords="225,13,420,38"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1Mesh.html#ad1d04fb6406ec5c9b92cf11c4765f36f" title=" " alt="" coords="5,5,177,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="209,28,177,28,177,23,209,23"/>
+<area shape="rect" id="Node000001" title="getter for list of unique points with x,y,z coordinates in each row" alt="" coords="263,20,458,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Mesh.html#ad1d04fb6406ec5c9b92cf11c4765f36f" title=" " alt="" coords="5,5,215,61"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="247,36,215,36,215,30,247,30"/>
 </map>

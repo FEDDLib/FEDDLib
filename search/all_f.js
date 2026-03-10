@@ -28,5 +28,5 @@ var searchData=
   ['replacelocalvalue_25',['replaceLocalValue',['../classFEDD_1_1MultiVector.html#a0c4f103d9b266f06c0800b5de0ff8954',1,'FEDD::MultiVector']]],
   ['replacelocalvalues_26',['replaceLocalValues',['../classFEDD_1_1Matrix.html#a3544253497eaa0762112537546138fcf',1,'FEDD::Matrix']]],
   ['resumefill_27',['resumeFill',['../classFEDD_1_1Matrix.html#ac2f4ffec6b12b2520307f603f59886a3',1,'FEDD::Matrix']]],
-  ['row_20block_200_28',['0 | A   B       BlockMap-&gt;getBlock(0) of row-block 0',['../classFEDD_1_1BlockMap.html#autotoc_md0',1,'']]]
+  ['row_20block_200_28',['0 | A B BlockMap-&amp;gt;getBlock(0) of row-block 0',['../classFEDD_1_1BlockMap.html#autotoc_md0',1,'']]]
 ];

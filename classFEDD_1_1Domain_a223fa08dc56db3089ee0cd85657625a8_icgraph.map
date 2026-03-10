@@ -1,5 +1,5 @@
 <map id="FEDD::Domain::getBCFlagUnique" name="FEDD::Domain::getBCFlagUnique">
-<area shape="rect" id="Node000001" title="Get vector of the flags corrsponding to the unique points (on your processor)" alt="" coords="275,35,488,60"/>
+<area shape="rect" id="Node000001" title="Get vector of the flags corrsponding to the unique points (on your processor)." alt="" coords="275,35,488,60"/>
 <area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#a36ee94dc00b0b8ff344faa6ed9b64385" title="Build interface maps." alt="" coords="5,5,227,31"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="259,37,227,33,227,28,260,31"/>
 <area shape="rect" id="Node000003" href="$classFEDD_1_1Domain.html#ab3da9cc7d970f2513fdeaa7431fd52f9" title="Exporting Paraview file displaying node flags of the underlying mesh." alt="" coords="27,55,205,96"/>

@@ -1,23 +1,30 @@
 <map id="FEDD::AssembleFEGeneralizedNewtonian::assembleRHS" name="FEDD::AssembleFEGeneralizedNewtonian::assembleRHS">
-<area shape="rect" id="Node000001" title="Assemble the element right hand side vector." alt="" coords="5,139,209,180"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1AssembleFENavierStokes.html#a95445082e9e700036a2aedbd1fc257c4" title=" " alt="" coords="257,84,471,155"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="209,141,241,136,242,141,210,146"/>
-<area shape="rect" id="Node000003" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a9c501ec405d0bd5b8e6364e2561740b0" title="Assembly function for shear stress tensor which includes viscosity function , which is a highly nonli..." alt="" coords="262,179,466,220"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="210,173,247,179,246,184,209,178"/>
-<area shape="rect" id="Node000004" href="$classFEDD_1_1Helper.html#a98540dc14b095b21d9adc79ee7fd1809" title="Applying the transformation matriX B to the gradient of phi, as is done in when transforming the grad..." alt="" coords="542,5,711,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="452,177,469,164,481,149,488,134,492,103,496,71,504,55,517,40,526,34,529,38,521,44,508,58,501,73,497,104,493,136,486,152,473,168,455,181"/>
-<area shape="rect" id="Node000005" href="$classFEDD_1_1AssembleFENavierStokes.html#a267514037c5191c0253a5ecc3e84168c" title=" " alt="" coords="519,55,733,126"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="438,176,470,164,494,150,518,136,529,130,531,135,520,140,497,155,472,169,440,181"/>
-<area shape="rect" id="Node000006" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#aada016627843de170307fd27342535f0" title="Computation of shear rate using the current velocity solution at the nodes and the derivative of the ..." alt="" coords="524,150,728,190"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="466,185,509,181,510,186,466,191"/>
-<area shape="rect" id="Node000007" href="$classFEDD_1_1Helper.html#a85dd0118ef667862aaa595a41542b2f1" title="Determine polynomial degree of a finite element basis function or its gradient that is required to se..." alt="" coords="524,215,728,240"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="466,208,509,212,509,218,466,213"/>
-<area shape="rect" id="Node000008" href="$classFEDD_1_1AssembleFE.html#a35ada89164c74b433340733c01f30f4b" title=" " alt="" coords="534,265,719,321"/>
-<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="424,218,532,257,531,262,423,223"/>
-<area shape="rect" id="Node000009" href="$classFEDD_1_1Helper.html#aec6f9bc4208c7ce02f2bebad7a98e7d1" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="550,345,702,371"/>
-<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="385,218,441,275,479,305,520,330,537,338,535,343,518,335,476,309,438,279,381,222"/>
-<area shape="rect" id="Node000010" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="781,308,969,349"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="702,347,766,339,766,344,703,352"/>
-<area shape="rect" id="Node000011" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="800,373,950,399"/>
-<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="703,364,785,373,785,379,702,369"/>
+<area shape="rect" id="Node000001" title="Assemble the element right hand side vector." alt="" coords="5,107,209,148"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1AssembleFENavierStokes.html#a95445082e9e700036a2aedbd1fc257c4" title=" " alt="" coords="770,5,985,76"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="196,104,342,74,508,49,635,39,755,37,755,42,635,45,508,54,342,79,197,109"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a9c501ec405d0bd5b8e6364e2561740b0" title="Assembly function for shear stress tensor which includes viscosity function , which is a highly nonli..." alt="" coords="257,208,460,249"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="161,146,293,200,290,204,159,151"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1AssembleFENavierStokes.html#ad6e18c1a1a728f48dd237a7f8a6e99b2" title=" " alt="" coords="1033,5,1247,76"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="985,38,1017,38,1017,43,985,43"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1Helper.html#a98540dc14b095b21d9adc79ee7fd1809" title="Applying the transformation matriX B to the gradient of phi, as is done in when transforming the grad..." alt="" coords="530,64,700,90"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="376,206,430,152,467,123,507,98,520,93,522,97,509,103,470,127,434,156,379,210"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1AssembleFENavierStokes.html#a267514037c5191c0253a5ecc3e84168c" title=" " alt="" coords="508,113,722,184"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="425,205,492,184,494,189,427,210"/>
+<area shape="rect" id="Node000009" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#aada016627843de170307fd27342535f0" title="Computation of shear rate using the current velocity solution at the nodes and the derivative of the ..." alt="" coords="514,208,717,249"/>
+<area shape="poly" id="edge9_Node000004_Node000009" title=" " alt="" coords="460,226,498,226,498,231,460,231"/>
+<area shape="rect" id="Node000010" href="$classFEDD_1_1Helper.html#a85dd0118ef667862aaa595a41542b2f1" title="Determine polynomial degree of a finite element basis function or its gradient that is required to se..." alt="" coords="514,273,717,299"/>
+<area shape="poly" id="edge10_Node000004_Node000010" title=" " alt="" coords="453,247,540,267,539,272,452,252"/>
+<area shape="rect" id="Node000011" href="$classFEDD_1_1AssembleFE.html#a35ada89164c74b433340733c01f30f4b" title=" " alt="" coords="522,324,708,379"/>
+<area shape="poly" id="edge11_Node000004_Node000011" title=" " alt="" coords="395,247,448,278,509,309,522,315,520,319,507,314,446,282,392,252"/>
+<area shape="rect" id="Node000012" href="$classFEDD_1_1Helper.html#aec6f9bc4208c7ce02f2bebad7a98e7d1" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="540,404,691,430"/>
+<area shape="poly" id="edge12_Node000004_Node000012" title=" " alt="" coords="375,248,428,318,466,357,509,389,526,397,524,402,507,394,462,361,424,321,370,251"/>
+<area shape="poly" id="edge6_Node000006_Node000002" title=" " alt="" coords="702,110,775,80,777,85,704,115"/>
+<area shape="rect" id="Node000007" href="$classFEDD_1_1AssembleFENavierStokes.html#a903ab346dc6fe7ae1260c76fa0d4c824" title=" " alt="" coords="770,113,985,184"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="723,146,755,146,755,151,723,151"/>
+<area shape="rect" id="Node000008" href="$classFEDD_1_1AssembleFENavierStokes.html#a68797d16d6e430320f577bd2e3c55448" title=" " alt="" coords="1033,113,1247,184"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="985,146,1017,146,1017,151,985,151"/>
+<area shape="rect" id="Node000013" href="$classFEDD_1_1Helper.html#afed2032e131e00f658402817f66d9cfd" title="Get quadrature formula." alt="" coords="784,367,971,408"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="691,406,768,397,769,402,692,411"/>
+<area shape="rect" id="Node000014" href="$classFEDD_1_1Helper.html#a86db0eff29bd3d7e6d7853436a9e5e37" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="803,432,952,458"/>
+<area shape="poly" id="edge14_Node000012_Node000014" title=" " alt="" coords="692,422,788,432,787,438,691,427"/>
 </map>

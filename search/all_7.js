@@ -6,7 +6,7 @@ var searchData=
   ['getbcflagrepeated_3',['getBCFlagRepeated',['../classFEDD_1_1Domain.html#acde507cac4f63d8da0157c9d4ed9cbb4',1,'FEDD::Domain::getBCFlagRepeated()'],['../classFEDD_1_1Mesh.html#a46ea9c752a803b2b6a1386cee18a5981',1,'FEDD::Mesh::getBCFlagRepeated()']]],
   ['getbcflagunique_4',['getBCFlagUnique',['../classFEDD_1_1Domain.html#a223fa08dc56db3089ee0cd85657625a8',1,'FEDD::Domain::getBCFlagUnique()'],['../classFEDD_1_1Mesh.html#aff3b40811a32be0be38208b055be3d25',1,'FEDD::Mesh::getBCFlagUnique()']]],
   ['getblock_5',['getBlock',['../classFEDD_1_1PreconditionerOperator.html#a52a86122b914ee1f0f571ec666bc6b74',1,'FEDD::PreconditionerOperator']]],
-  ['getblock_200_20of_20row_20block_200_6',['0 | A   B       BlockMap-&gt;getBlock(0) of row-block 0',['../classFEDD_1_1BlockMap.html#autotoc_md0',1,'']]],
+  ['getblock_200_20of_20row_20block_200_6',['0 | A B BlockMap-&amp;gt;getBlock(0) of row-block 0',['../classFEDD_1_1BlockMap.html#autotoc_md0',1,'']]],
   ['getcomm_7',['getComm',['../classFEDD_1_1Domain.html#a21b36bac11162ab2d87c3ea50617e479',1,'FEDD::Domain::getComm()'],['../classFEDD_1_1BlockMap.html#a0fe880d4a7b4b9dd1a0dd8d323528144',1,'FEDD::BlockMap::getComm()'],['../classFEDD_1_1Mesh.html#a36b35249b1e160e4f90b7b7e41c7672b',1,'FEDD::Mesh::getComm()']]],
   ['getcoordinates_8',['getCoordinates',['../classFEDD_1_1FE__ElementAssembly.html#a01770eae270dba10c6bdece8a081c93a',1,'FEDD::FE_ElementAssembly']]],
   ['getdata_9',['getData',['../classFEDD_1_1MultiVector.html#a31139344af1f6e205b99378a9b3b56a6',1,'FEDD::MultiVector']]],

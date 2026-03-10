@@ -1,10 +1,16 @@
 <map id="FEDD::BCBuilder::setDirichletBoundaryFromExternal" name="FEDD::BCBuilder::setDirichletBoundaryFromExternal">
-<area shape="rect" id="Node000001" title=" " alt="" coords="250,75,440,115"/>
-<area shape="poly" id="edge3_Node000001_Node000001" title=" " alt="" coords="384,62,370,56,345,53,322,55,308,60,302,66,305,73,299,75,297,65,305,56,321,50,345,48,371,50,386,57"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1BCBuilder.html#a02280f3620316e30150471917de4e4d0" title=" " alt="" coords="5,29,202,70"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="234,77,202,71,202,66,235,72"/>
-<area shape="rect" id="Node000003" href="$classFEDD_1_1BCBuilder.html#a0f6f3d4ddedfe54b8351f7c9a849c1fb" title=" " alt="" coords="13,119,194,159"/>
-<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="235,118,195,125,194,120,234,113"/>
-<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="143,16,128,10,103,8,80,10,66,15,61,21,63,28,58,29,56,19,63,10,79,5,104,3,130,5,145,11"/>
-<area shape="poly" id="edge5_Node000003_Node000003" title=" " alt="" coords="143,106,128,100,103,97,80,99,66,104,61,110,63,117,58,119,56,109,63,100,79,94,104,92,130,94,145,101"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="441,111,631,151"/>
+<area shape="poly" id="edge3_Node000001_Node000001" title=" " alt="" coords="576,98,561,92,536,89,513,91,499,96,494,102,496,109,491,111,489,101,496,92,512,86,536,84,562,86,578,93"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1BCBuilder.html#a02280f3620316e30150471917de4e4d0" title=" " alt="" coords="197,29,393,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="460,108,392,84,359,73,361,68,394,79,462,103"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1BCBuilder.html#a212805cf8711e2fb326bccf187eda5d4" title="Setting boundary conditions to (block)vector." alt="" coords="209,118,380,144"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="426,134,381,134,381,128,426,128"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1BCBuilder.html#a0f6f3d4ddedfe54b8351f7c9a849c1fb" title=" " alt="" coords="204,192,386,233"/>
+<area shape="poly" id="edge8_Node000001_Node000005" title=" " alt="" coords="460,159,358,194,357,189,458,154"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="330,16,317,10,295,8,274,10,262,15,257,21,259,28,254,29,252,19,258,10,273,5,295,3,318,5,332,11"/>
+<area shape="poly" id="edge7_Node000003_Node000003" title=" " alt="" coords="333,106,320,99,295,97,272,99,259,104,257,109,263,116,259,119,251,110,256,100,271,94,295,92,321,94,335,101"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1BCBuilder.html#a21dac1adbaa03e8272afde11386858e8" title="Setting bundary condtions to problem." alt="" coords="5,118,149,144"/>
+<area shape="poly" id="edge5_Node000003_Node000004" title=" " alt="" coords="194,134,149,134,149,128,194,128"/>
+<area shape="poly" id="edge6_Node000004_Node000004" title=" " alt="" coords="115,106,102,99,77,97,54,99,42,104,39,109,45,116,41,119,34,110,38,100,53,94,77,92,104,94,117,101"/>
+<area shape="poly" id="edge9_Node000005_Node000005" title=" " alt="" coords="330,179,317,173,295,171,274,173,262,177,257,183,259,191,254,192,252,182,258,173,273,167,295,165,318,168,332,174"/>
 </map>

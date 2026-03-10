@@ -2,12 +2,12 @@
 <area shape="rect" id="Node000001" title="Returning gradient of phi evaluated at the quadrature points." alt="" coords="818,794,968,820"/>
 <area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#aec6f9bc4208c7ce02f2bebad7a98e7d1" title="Full matrix representation of gradient of a basis function for each quadrature point." alt="" coords="602,557,754,582"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="868,784,689,585,693,581,872,781"/>
-<area shape="rect" id="Node000023" href="$classFEDD_1_1Helper.html#add6906564af2183ea44d4213a7bc7fde" title=" " alt="" coords="586,818,770,844"/>
-<area shape="poly" id="edge24_Node000001_Node000023" title=" " alt="" coords="803,820,771,823,771,818,803,814"/>
+<area shape="rect" id="Node000024" href="$classFEDD_1_1Helper.html#add6906564af2183ea44d4213a7bc7fde" title=" " alt="" coords="586,818,770,844"/>
+<area shape="poly" id="edge26_Node000001_Node000024" title=" " alt="" coords="803,820,771,823,771,818,803,814"/>
 <area shape="rect" id="Node000003" href="$classFEDD_1_1AssembleFENonLinLaplace.html#a1326743f2955d6790520a9e18c1a03d4" title="Assemble the element right hand side vector." alt="" coords="291,5,514,46"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="670,542,653,435,624,290,606,217,585,151,561,97,536,61,513,45,516,40,540,57,566,94,590,149,611,216,629,289,659,434,676,541"/>
-<area shape="rect" id="Node000004" href="$classFEDD_1_1FE.html#ab1ff7a8cf8700b25ebb7e58dc327f48a" title=" " alt="" coords="284,71,522,111"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="674,541,669,459,662,406,650,347,633,287,609,228,577,174,536,126,520,114,523,110,540,122,581,171,614,226,638,285,656,346,667,405,675,459,680,541"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1FE.html#ab1ff7a8cf8700b25ebb7e58dc327f48a" title="Addional Matrix due to ALE derivation: \int \rho_f div(w) u_h \cdot v_f dx, with mesh velocity w." alt="" coords="305,71,500,111"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="674,541,669,459,662,406,650,347,633,287,609,228,577,174,536,126,519,114,500,105,502,100,522,109,540,122,581,171,614,226,638,285,656,346,667,405,675,459,680,541"/>
 <area shape="rect" id="Node000005" href="$classFEDD_1_1AssembleFENavierStokes.html#a95445082e9e700036a2aedbd1fc257c4" title="Assembly advection vector field ." alt="" coords="296,136,510,177"/>
 <area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="673,542,664,471,642,376,624,326,601,277,572,231,536,192,509,174,511,170,540,188,576,228,606,274,629,324,647,374,669,470,678,541"/>
 <area shape="rect" id="Node000008" href="$classFEDD_1_1AssembleFENavierStokes.html#a903ab346dc6fe7ae1260c76fa0d4c824" title="Assembly advection vector field in u &#160;&#160;TODO: [JK] What is this? Is this the portion that needs to be ..." alt="" coords="296,201,510,242"/>
@@ -34,18 +34,21 @@
 <area shape="poly" id="edge19_Node000002_Node000018" title=" " alt="" coords="670,598,653,642,625,696,588,751,565,776,540,797,518,810,495,818,493,813,516,805,536,793,561,772,584,748,621,693,648,640,665,596"/>
 <area shape="rect" id="Node000019" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a9c501ec405d0bd5b8e6364e2561740b0" title="Assembly function for shear stress tensor which includes viscosity function , which is a highly nonli..." alt="" coords="301,872,504,913"/>
 <area shape="poly" id="edge20_Node000002_Node000019" title=" " alt="" coords="669,598,612,740,576,814,557,842,540,861,506,880,504,875,536,857,553,839,571,811,608,738,665,596"/>
-<area shape="rect" id="Node000021" href="$classFEDD_1_1FE.html#a27ac1ba294c0c90818d11fdf5d56cf2e" title="(\grad u + (\grad u)^T, \grad v ); symmetrischer Gradient, wenn func = 1.0" alt="" coords="315,937,491,962"/>
-<area shape="poly" id="edge22_Node000002_Node000021" title=" " alt="" coords="669,598,540,926,517,940,492,949,491,944,515,935,536,923,664,596"/>
-<area shape="rect" id="Node000022" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#abffdc8a11c2919f272044ff6c1bfb5d9" title="Assembly function for directional derivative contribution of shear stress tensor term (see function f..." alt="" coords="300,987,506,1027"/>
-<area shape="poly" id="edge23_Node000002_Node000022" title=" " alt="" coords="668,598,631,690,589,806,579,856,577,898,568,937,557,957,540,977,507,997,505,993,536,973,553,954,563,935,571,898,573,855,583,805,626,688,663,596"/>
-<area shape="rect" id="Node000006" href="$classFEDD_1_1AssembleFENavierStokes.html#a0e179525f5e7a8341fb0304d28bb24a2" title="Assembly of FixedPoint&#45; Matrix (System Matrix K with current u)" alt="" coords="5,463,220,503"/>
+<area shape="rect" id="Node000022" href="$classFEDD_1_1FE.html#a27ac1ba294c0c90818d11fdf5d56cf2e" title="(\grad u + (\grad u)^T, \grad v ); symmetrischer Gradient, wenn func = 1.0" alt="" coords="315,937,491,962"/>
+<area shape="poly" id="edge23_Node000002_Node000022" title=" " alt="" coords="669,598,540,926,517,940,492,949,491,944,515,935,536,923,664,596"/>
+<area shape="rect" id="Node000023" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#abffdc8a11c2919f272044ff6c1bfb5d9" title="Assembly function for directional derivative contribution of shear stress tensor term (see function f..." alt="" coords="300,987,506,1027"/>
+<area shape="poly" id="edge24_Node000002_Node000023" title=" " alt="" coords="668,598,631,690,589,806,579,856,577,898,568,937,557,957,540,977,507,997,505,993,536,973,553,954,563,935,571,898,573,855,583,805,626,688,663,596"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1AssembleFENavierStokes.html#a0e179525f5e7a8341fb0304d28bb24a2" title="Assembly of FixedPoint&#45; Matrix (System Matrix K with current u)." alt="" coords="5,463,220,503"/>
 <area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="283,183,269,192,237,222,209,257,185,295,166,334,137,408,121,463,116,461,132,406,161,332,181,293,205,254,233,218,266,188,280,178"/>
 <area shape="rect" id="Node000007" href="$classFEDD_1_1AssembleFENavierStokes.html#ab3dfe0c3a4f8e3ca9eb9b7414419a982" title="Assemble the element right hand side vector." alt="" coords="5,136,220,177"/>
 <area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="280,159,220,159,220,154,280,154"/>
 <area shape="poly" id="edge12_Node000012_Node000006" title=" " alt="" coords="280,486,220,486,220,480,280,480"/>
 <area shape="poly" id="edge17_Node000016_Node000006" title=" " alt="" coords="280,690,266,683,216,641,175,592,143,543,121,505,126,502,147,540,179,588,220,637,269,678,283,686"/>
-<area shape="rect" id="Node000020" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a05530e76c5d7995cd52b24110d17413c" title="Assemble the element right hand side vector." alt="" coords="11,872,214,913"/>
-<area shape="poly" id="edge21_Node000019_Node000020" title=" " alt="" coords="286,895,214,895,214,890,286,890"/>
-<area shape="rect" id="Node000024" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#aa0fcd10650e62ffdb001ac9348941f34" title="Compute the viscosity for an element depending on the knwon velocity solution." alt="" coords="268,1052,538,1093"/>
-<area shape="poly" id="edge25_Node000023_Node000024" title=" " alt="" coords="669,859,650,900,622,949,585,999,540,1041,517,1054,515,1049,536,1037,581,996,618,946,646,897,664,857"/>
+<area shape="rect" id="Node000020" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a19e239eadd255e69d5756adacb3b7924" title="Assemble the element Jacobian matrix." alt="" coords="11,961,214,1002"/>
+<area shape="poly" id="edge21_Node000019_Node000020" title=" " alt="" coords="294,920,268,927,166,963,164,958,267,922,292,915"/>
+<area shape="rect" id="Node000021" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a05530e76c5d7995cd52b24110d17413c" title="Assemble the element right hand side vector." alt="" coords="11,872,214,913"/>
+<area shape="poly" id="edge22_Node000019_Node000021" title=" " alt="" coords="286,895,214,895,214,890,286,890"/>
+<area shape="poly" id="edge25_Node000023_Node000020" title=" " alt="" coords="284,999,214,993,215,988,285,994"/>
+<area shape="rect" id="Node000025" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#aa0fcd10650e62ffdb001ac9348941f34" title="Compute the viscosity for an element depending on the knwon velocity solution." alt="" coords="268,1052,538,1093"/>
+<area shape="poly" id="edge27_Node000024_Node000025" title=" " alt="" coords="669,859,650,900,622,949,585,999,540,1041,517,1054,515,1049,536,1037,581,996,618,946,646,897,664,857"/>
 </map>

@@ -1,9 +1,11 @@
 <map id="FEDD::AssembleFEGeneralizedNewtonian::computeShearRate" name="FEDD::AssembleFEGeneralizedNewtonian::computeShearRate">
-<area shape="rect" id="Node000001" title="Computation of shear rate using the current velocity solution at the nodes and the derivative of the ..." alt="" coords="575,39,778,79"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a9c501ec405d0bd5b8e6364e2561740b0" title="Assembly function for shear stress tensor which includes viscosity function , which is a highly nonli..." alt="" coords="290,5,494,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="559,48,493,40,494,35,560,43"/>
-<area shape="rect" id="Node000004" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#aa0fcd10650e62ffdb001ac9348941f34" title="Compute the viscosity for an element depending on the knwon velocity solution." alt="" coords="257,71,527,111"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="560,75,528,78,527,73,559,69"/>
-<area shape="rect" id="Node000003" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a05530e76c5d7995cd52b24110d17413c" title="Assemble the element right hand side vector." alt="" coords="5,5,209,46"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="275,28,209,28,209,23,275,23"/>
+<area shape="rect" id="Node000001" title="Computation of shear rate using the current velocity solution at the nodes and the derivative of the ..." alt="" coords="575,71,778,111"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a9c501ec405d0bd5b8e6364e2561740b0" title="Assembly function for shear stress tensor which includes viscosity function , which is a highly nonli..." alt="" coords="290,37,494,78"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="559,80,493,72,494,67,560,75"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#aa0fcd10650e62ffdb001ac9348941f34" title="Compute the viscosity for an element depending on the knwon velocity solution." alt="" coords="257,103,527,143"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="560,107,528,110,527,105,559,101"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a19e239eadd255e69d5756adacb3b7924" title="Assemble the element Jacobian matrix." alt="" coords="5,5,209,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="275,47,209,40,209,34,275,42"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a05530e76c5d7995cd52b24110d17413c" title="Assemble the element right hand side vector." alt="" coords="5,71,209,111"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="275,74,209,82,209,76,275,69"/>
 </map>

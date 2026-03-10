@@ -1,5 +1,7 @@
 <map id="FEDD::AssembleFEGeneralizedNewtonian::assemblyStress" name="FEDD::AssembleFEGeneralizedNewtonian::assemblyStress">
-<area shape="rect" id="Node000001" title="Assembly function for shear stress tensor which includes viscosity function , which is a highly nonli..." alt="" coords="257,5,460,46"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a05530e76c5d7995cd52b24110d17413c" title="Assemble the element right hand side vector." alt="" coords="5,5,209,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="241,28,209,28,209,23,241,23"/>
+<area shape="rect" id="Node000001" title="Assembly function for shear stress tensor which includes viscosity function , which is a highly nonli..." alt="" coords="257,39,460,79"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a19e239eadd255e69d5756adacb3b7924" title="Assemble the element Jacobian matrix." alt="" coords="5,5,209,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="241,46,209,42,210,37,242,41"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1AssembleFEGeneralizedNewtonian.html#a05530e76c5d7995cd52b24110d17413c" title="Assemble the element right hand side vector." alt="" coords="5,71,209,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="242,77,210,81,209,75,241,71"/>
 </map>

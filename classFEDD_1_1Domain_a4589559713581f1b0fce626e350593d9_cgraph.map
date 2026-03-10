@@ -1,0 +1,5 @@
+<map id="FEDD::Domain::partitionMesh" name="FEDD::Domain::partitionMesh">
+<area shape="rect" id="Node000001" title="Partition mesh according to number of processors. Partition with parmetis." alt="" coords="5,13,195,38"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#a2bb51fe7a4dcd1c1733e74ef98e5c7e4" title="Partition distance to interface." alt="" coords="243,5,451,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="195,23,227,23,227,28,195,28"/>
+</map>
