@@ -82,6 +82,33 @@ HEADERS ${HEADERS}
 SOURCES ${SOURCES}
 )
 
+# Link Fortran runtime libraries
+# The core library contains Fortran source files (from AceFemAssembly/AceInterface),
+# so we need to ensure the Fortran runtime libraries are linked and propagated to
+# consumers of the library. Using PUBLIC visibility ensures that when consumers
+# link against libcore.a (or use imported targets), they automatically get the
+# Fortran runtime dependencies.
+if(CMAKE_Fortran_COMPILER)
+    # CMake provides implicit link libraries detected from the Fortran compiler.
+    # This includes libgfortran for GCC, libifcore for Intel, etc.
+    # These are the libraries that the Fortran compiler implicitly links but
+    # C++ compilers don't know about.
+    if(CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES)
+        target_link_libraries(core
+            PUBLIC
+                ${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES}
+        )
+    endif()
+
+    # Also link standard Fortran libraries if available
+    if(CMAKE_Fortran_STANDARD_LIBRARIES)
+        target_link_libraries(core
+            PUBLIC
+                ${CMAKE_Fortran_STANDARD_LIBRARIES}
+        )
+    endif()
+endif()
+
 # Add test directories
 # Each subdirectory can have its own tests subdirectory
 # TriBITS will automatically discover and build tests in these directories
