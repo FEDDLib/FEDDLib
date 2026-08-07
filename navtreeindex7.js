@@ -1,8 +1,8 @@
 var NAVTREEINDEX7 =
 {
-"structFEDD_1_1ThyraTypedefs.html":[1,0,0,31],
-"structFEDD_1_1TpetraTypedefs.html":[0,0,0,31],
-"structFEDD_1_1TpetraTypedefs.html":[1,0,0,32],
+"structFEDD_1_1ThyraTypedefs.html":[1,0,0,81],
+"structFEDD_1_1TpetraTypedefs.html":[0,0,0,83],
+"structFEDD_1_1TpetraTypedefs.html":[1,0,0,84],
 "structIterationHistoryStruct.html":[1,0,10],
 "structNodeData.html":[1,0,12],
 "structNodeSpec.html":[1,0,13],
