@@ -466,8 +466,11 @@ int main(int argc, char *argv[])
         domainStructure.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
         domainChem.reset(new Domain<SC,LO,GO,NO>( x, 1., 1., 1., comm));
     
-        domainStructure->buildMesh( 3,"Square", dim, discType, n, m, numProcsCoarseSolve);
-        domainChem->buildMesh( 3,"Square", dim, discType, n, m, numProcsCoarseSolve);
+        // "Square5Element" and not "Square": the 6-element subcube decomposition
+        // gives tetrahedra with a negative Jacobian determinant, which the AceGen
+        // SCI elements cannot assemble on (Newton diverges at the first step).
+        domainStructure->buildMesh( 3,"Square5Element", dim, discType, n, m, numProcsCoarseSolve);
+        domainChem->buildMesh( 3,"Square5Element", dim, discType, n, m, numProcsCoarseSolve);
 		
         domainStructure->setDofs(dim);
         domainChem->setDofs(1);
