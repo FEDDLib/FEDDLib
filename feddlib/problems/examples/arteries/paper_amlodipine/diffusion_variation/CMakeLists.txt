@@ -1,4 +1,0 @@
-INCLUDE(TribitsCopyFilesToBinaryDir)
-INCLUDE(TribitsAddExecutableAndTest)
-INCLUDE(AddSubdirectories)
-ADD_SUBDIRECTORIES(artery_dan_withDrug_a artery_dan_withDrug_b artery_dan_withDrug_c artery_dan_withDrug_d artery_dan_withDrug_e artery_dan_withDrug_f artery_dan_withDrug_h artery_dan_withDrug_i artery_dan_withDrug_j)

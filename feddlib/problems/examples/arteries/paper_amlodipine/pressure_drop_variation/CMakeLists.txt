@@ -1,4 +1,0 @@
-INCLUDE(TribitsCopyFilesToBinaryDir)
-INCLUDE(TribitsAddExecutableAndTest)
-INCLUDE(AddSubdirectories)
-ADD_SUBDIRECTORIES(0_pressure_drop 10_pressure_drop 20_pressure_drop 30_pressure_drop)
