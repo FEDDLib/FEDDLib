@@ -56,10 +56,6 @@ void NonLinearSolver<SC,LO,GO,NO>::solve(NonLinearProblem_Type &problem,vec_dbl_
 #endif
     }
 
-    // Option to export the newly computed solution via HDF5 file
-    bool safeSolution = problem.getParameterList()->sublist("General").get("Safe solution", false);
-    if(safeSolution)
-        problem.exportSolutionHDF5();
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -100,20 +96,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(NonLinearProblem_Type &problem,vec_d
 
     // Create the initial guess
     Teuchos::RCP<Thyra::VectorBase<SC> > initial_guess = problemPtr->getNominalValues().get_x()->clone_v();
-    if(!problem.getParameterList()->get("Zero Initial Guess",true) || problem.getParameterList()->sublist("General").get("Initialize solution from external", false))
-    { 
-        Teuchos::RCP<Thyra::ProductVectorBase<SC> > initialGuessProd = Teuchos::rcp_dynamic_cast<Thyra::ProductVectorBase<SC> >(initial_guess);
-        Teuchos::RCP<Thyra::MultiVectorBase<SC> > solMV;
-            if (!initialGuessProd.is_null())
-                solMV = problemPtr->getSolution()->getProdThyraMultiVector();
-            else
-                solMV = problemPtr->getSolution()->getThyraMultiVector();
-        Thyra::assign(initial_guess.ptr(), *solMV->col(0));
-    }
-    else
-        Thyra::V_S(initial_guess.ptr(),Teuchos::ScalarTraits<SC>::zero());
-
-      
+    Thyra::V_S(initial_guess.ptr(),Teuchos::ScalarTraits<SC>::zero());
 
     Teuchos::RCP<Thyra::LinearOpBase<SC> > W_op = problemPtr->create_W_op();
     Teuchos::RCP<Thyra::PreconditionerBase<SC> > W_prec = problemPtr->create_W_prec();

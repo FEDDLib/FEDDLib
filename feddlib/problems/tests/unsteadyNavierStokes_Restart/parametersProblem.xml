@@ -33,10 +33,6 @@
         <Parameter name="ParaView export subdomain" type="bool" value="false"/>
         <Parameter name="Preconditioner Method" type="string" value="Monolithic"/><!-- Monolithic, Teko-->
 
-        <!-- Export: Write solution to hdf5 
-        <Parameter name="Safe solution" type="bool"  value="false"/> -->
-   		<!--<Parameter name="File name export" type="string" value="solution"/> --> <!-- general name of the export file which will be extended by a block id-->
-		<!-- <Parameter name="Variable name export" type="string" value="u"/> -->  <!-- name for variable within file, this be replace with time at some point -->
   
     </ParameterList>
     <ParameterList name="Timestepping Parameter">

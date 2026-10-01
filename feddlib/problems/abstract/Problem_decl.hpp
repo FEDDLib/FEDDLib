@@ -13,7 +13,6 @@
 #include "feddlib/problems/problems_config.h"
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"
-#include "feddlib/core/General/HDF5Export.hpp"
 #include "feddlib/core/General/HDF5Import.hpp"
 
 /*!
@@ -233,7 +232,6 @@ public:
 
 	double calculateL2Norm(MultiVectorConstPtr_Type mv, int domainInd=0); // Function that calculates L2 Error in the 'mv * M * mv' sense, with M beeing the Mass Matrix
 
-    void exportSolutionHDF5(); // Export the solution BlockMultiVector to a HDF5 Format
     int dim_;
     mutable CommConstPtr_Type comm_;
     mutable BlockMatrixPtr_Type system_;
@@ -248,7 +246,6 @@ public:
     vec_dbl_Type parasSourceFunc_; //
     
     // Exporter for the solution. Vector entry i corresponds to block i of the solution BlockMultiVector
-    std::vector<HDF5Export<SC,LO,GO,NO>> HDF5exporterSolution_; // Solution
 
     
 protected:
