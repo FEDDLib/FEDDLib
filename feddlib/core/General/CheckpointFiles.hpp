@@ -1,8 +1,7 @@
 #ifndef CHECKPOINTFILES_hpp
 #define CHECKPOINTFILES_hpp
 
-#include <Teuchos_ParameterList.hpp>
-#include <Teuchos_RCP.hpp>
+#include "feddlib/core/FEDDCore.hpp"
 
 #include <string>
 
@@ -30,13 +29,13 @@ inline std::string joinPath(const std::string& directory, const std::string& fil
 }
 
 /// Path of the checkpoint file 'file' a run writes.
-inline std::string checkpointFile(const Teuchos::RCP<Teuchos::ParameterList>& parameters, const std::string& file)
+inline std::string checkpointFile(const ParameterListPtr_Type& parameters, const std::string& file)
 {
     return joinPath(parameters->sublist("Timestepping Parameter").get("Checkpoint directory", std::string("")), file);
 }
 
 /// Path of the checkpoint file 'file' a restart reads.
-inline std::string restartFile(const Teuchos::RCP<Teuchos::ParameterList>& parameters, const std::string& file)
+inline std::string restartFile(const ParameterListPtr_Type& parameters, const std::string& file)
 {
     return joinPath(parameters->sublist("Timestepping Parameter").get("Restart directory", std::string("")), file);
 }

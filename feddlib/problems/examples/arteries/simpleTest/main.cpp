@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
         (*defTS)[0][0] = 1; // Structure
         (*defTS)[1][1] = 1; // Diffusion
 
-        std::vector<std::vector<double>> diffusionTensor(dimension, std::vector<double>(3));
+        FEDD::vec2D_dbl_Type diffusionTensor(dimension, FEDD::vec_dbl_Type(3));
         double D0 = allParameters->sublist("Parameter Diffusion").get("D0", 1.);
         for (int i = 0; i < dimension; i++)
         {

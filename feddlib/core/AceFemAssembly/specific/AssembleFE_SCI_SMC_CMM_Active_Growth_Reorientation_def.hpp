@@ -37,9 +37,9 @@ inline std::string cleanDomainDataName(const std::string& raw) {
 // (the model author's "SingleGP" vector). The fiber-orientation (a**) and growth
 // tensor (ag**) entries are placeholders: the element initializes them itself on its
 // first call, when time == timeIncrement.
-constexpr int kHistoryPerGaussPoint = 39;
-constexpr int kLambdaa1 = 31;  // position of Lambdaa1 within one Gauss point's history
-constexpr int kLambdaa2 = 32;  // position of Lambdaa2 within one Gauss point's history
+constexpr int historyPerGaussPoint = 39;
+constexpr int lambdaa1Position = 31;  // position of Lambdaa1 within one Gauss point's history
+constexpr int lambdaa2Position = 32;  // position of Lambdaa2 within one Gauss point's history
 inline const std::vector<double>& initialHistorySingleGP() {
     static const std::vector<double> history = {
         0., 0., 0., 0., 0., 0.,              // a11 a12 a13 a21 a22 a23
@@ -333,12 +333,6 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::advance
     // Checking for Active Response and Reorientation
     checkingReorientationActiveGrowth();
 
-    if (this->globalElementID_ == 0) {
-        std::cout << " ---------------------------------------------- \n";
-        std::cout << " AssembleFE_SCI_SMC_CMM: Advancing time in elements\n";
-        std::cout << " Timestep: " << this->timeStep_ << " \t timeincrement: " << this->timeIncrement_ << "\n";
-        std::cout << " ---------------------------------------------- \n";
-    }
     for (int i = 0; i < this->historyLength_; i++)
         this->history_[i] = this->historyUpdated_[i];
 
@@ -541,8 +535,6 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::initial
 template <class SC, class LO, class GO, class NO>
 void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::initializeActiveResponse() {
     double deltaT = this->getTimeIncrement();
-    if (this->getGlobalElementID() == 0)
-        std::cout << "AssembleFE_SCI_SMC_CMM: Initialize active response in elements\n";
     double time = this->getTimeStep();
 #ifdef FEDD_HAVE_ACEGENINTERFACE
     std::vector<double> domainDataModified = modifiedDomainData(time);
@@ -555,10 +547,10 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::initial
     // non-CMM class does with its LambdaA1/LambdaA2 (history positions differ: 31/32 here).
     int historyPerGP = (int)this->historyLength_ / this->numberOfIntegrationPoints_;
     for (int i = 0; i < this->numberOfIntegrationPoints_; i++) {
-        this->history_[i * historyPerGP + SCI_SMC_CMM_detail::kLambdaa1] = stretches[i * 2];
-        this->history_[i * historyPerGP + SCI_SMC_CMM_detail::kLambdaa2] = stretches[i * 2 + 1];
-        this->historyUpdated_[i * historyPerGP + SCI_SMC_CMM_detail::kLambdaa1] = stretches[i * 2];
-        this->historyUpdated_[i * historyPerGP + SCI_SMC_CMM_detail::kLambdaa2] = stretches[i * 2 + 1];
+        this->history_[i * historyPerGP + SCI_SMC_CMM_detail::lambdaa1Position] = stretches[i * 2];
+        this->history_[i * historyPerGP + SCI_SMC_CMM_detail::lambdaa2Position] = stretches[i * 2 + 1];
+        this->historyUpdated_[i * historyPerGP + SCI_SMC_CMM_detail::lambdaa1Position] = stretches[i * 2];
+        this->historyUpdated_[i * historyPerGP + SCI_SMC_CMM_detail::lambdaa2Position] = stretches[i * 2 + 1];
     }
 #endif
     activeInitialized_ = true;
@@ -571,7 +563,7 @@ AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::aceGenElemen
 #ifdef ACEGENINTERFACE_REUSABLE_ELEMENTS
     // Interface2 resets the element's results in compute(), so one element can be
     // reused with the data of each call.
-    if (aceGenElement_) {
+    if (!aceGenElement_.is_null()) {
         aceGenElement_->setPositions(this->positions_.data());
         aceGenElement_->setDisplacements(displacements);
         aceGenElement_->setConcentrations(concentrations);

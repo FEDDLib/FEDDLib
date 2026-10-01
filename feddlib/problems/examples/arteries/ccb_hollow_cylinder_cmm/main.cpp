@@ -96,7 +96,7 @@ std::vector<GeometryOverrideEntry> readGeometryOverride(const std::string &fileN
 // nodes and sets flags. Nodes carrying one of the Dirichlet flags that are not listed
 // lose it, so the constrained node sets are exactly the override's. Returns
 // {#nodes moved, #flags set} for this point list.
-std::array<int, 2> applyGeometryOverride(std::vector<std::vector<double>> &points, std::vector<int> &flags,
+std::array<int, 2> applyGeometryOverride(FEDD::vec2D_dbl_Type &points, FEDD::vec_int_Type &flags,
                                          const std::vector<GeometryOverrideEntry> &entries)
 {
     const std::set<int> dirichletFlags = {2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 16};
@@ -276,7 +276,7 @@ int main(int argc, char *argv[])
         (*defTS)[0][0] = 1;
         (*defTS)[1][1] = 1;
 
-        std::vector<std::vector<double>> diffusionTensor(dimension, std::vector<double>(3));
+        FEDD::vec2D_dbl_Type diffusionTensor(dimension, FEDD::vec_dbl_Type(3));
         double D0 = allParameters->sublist("Parameter Diffusion").get("D0", 1.);
         for (int i = 0; i < dimension; i++)
         {

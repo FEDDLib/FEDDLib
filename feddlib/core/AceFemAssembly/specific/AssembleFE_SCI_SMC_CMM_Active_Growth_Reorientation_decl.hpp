@@ -11,7 +11,6 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include <memory>
 
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 #include "aceinterface.hpp"
@@ -169,7 +168,7 @@ class AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation : public AssembleFE<SC,
     */
     AceGenElement_Type& aceGenElement(double* displacements, double* concentrations, double* accelerations, double* rates, double* domainData, double deltaT, double time);
 
-    std::unique_ptr<AceGenElement_Type> aceGenElement_;
+    Teuchos::RCP<AceGenElement_Type> aceGenElement_;
 #endif
 };
 

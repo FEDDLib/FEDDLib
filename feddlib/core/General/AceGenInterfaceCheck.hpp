@@ -1,5 +1,5 @@
-#ifndef ACEGENINTERFACECHECK_HPP
-#define ACEGENINTERFACECHECK_HPP
+#ifndef ACEGENINTERFACECHECK_hpp
+#define ACEGENINTERFACECHECK_hpp
 
 #include "feddlib/core/core_config.h"
 
