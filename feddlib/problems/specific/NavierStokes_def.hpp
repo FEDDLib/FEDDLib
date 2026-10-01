@@ -75,10 +75,11 @@ A_(),
 pressureIDsLoc(new vec_int_Type(2)),
 u_rep_()
 {
+
     this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
     this->initNOXParameters();
 
-    this->addVariable( domainVelocity , FETypeVelocity , "u_f" , domainVelocity->getDimension());
+    this->addVariable( domainVelocity , FETypeVelocity , "u" , domainVelocity->getDimension());
     this->addVariable( domainPressure , FETypePressure , "p" , 1);
     this->dim_ = this->getDomain(0)->getDimension();
 
@@ -791,15 +792,11 @@ void NavierStokes<SC,LO,GO,NO>::calculateNonLinResidualVecWithMeshVelo(std::stri
         if ( !this->sourceTerm_.is_null() )
             this->residualVec_->update(1.,*this->sourceTerm_,1.);
     }
+    
     // this might be set again by the TimeProblem after addition of M*u
     this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-
-    
+        
 }
-
-    
-#ifdef FEDD_HAVE_TEKO
-#endif
 
 }
 

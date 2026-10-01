@@ -23,7 +23,7 @@ u_rep_()
 {
     this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
     this->initNOXParameters();
-    this->addVariable( domain , FEType , "d_s" , domain->getDimension());
+    this->addVariable( domain , FEType , "u" , domain->getDimension());
     this->dim_ = this->getDomain(0)->getDimension();
     
     C_ = this->parameterList_->sublist("Parameter").get("C",1.);
@@ -76,11 +76,9 @@ void NonLinElasticity<SC,LO,GO,NO>::assemble(std::string type) const{
         
         this->addToRhs( this->sourceTerm_ );
 
-
         this->setBoundariesRHS();
-                
-        
-        //this->solution_->putScalar(0.);
+                    
+        this->solution_->putScalar(0.);
         
         u_rep_ = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);

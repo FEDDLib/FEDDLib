@@ -19,7 +19,7 @@ u_rep_()
 {
     this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
     this->initNOXParameters();
-    this->addVariable( domain , FEType , "d_s" , domain->getDimension());
+    this->addVariable( domain , FEType , "u" , domain->getDimension());
     this->dim_ = this->getDomain(0)->getDimension();
     
     C_ = this->parameterList_->sublist("Parameter").get("C",1.);
@@ -29,9 +29,6 @@ u_rep_()
     loadStepping_ =    !(parameterList->sublist("Timestepping Parameter").get("Class","Singlestep")).compare("Loadstepping");
     externalForce_ =   parameterList->sublist("Parameter").get("External Force",false);
     nonlinearExternalForce_ = parameterList->sublist("Parameter").get("Nonlinear External Force",false);
-
-    concentration_ = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapRepeated(), 1 ) );
-    concentration_->putScalar(0.); 
 
     timeSteppingTool_ = Teuchos::rcp(new TimeSteppingTools(sublist(this->parameterList_,"Timestepping Parameter") , this->comm_));
 
@@ -92,12 +89,6 @@ void NonLinElasAssFE<SC,LO,GO,NO>::assemble(std::string type) const{
         updateTime();
         return;
     }
-    else if(type == "ComputeSolidRHSLoad"){
-        if(this->verbose_)
-            std::cout << "-- Reassembly (Load)" << '\n';
-         assembleSourceTermLoadstepping();
-
-    }
     else
         this->reAssemble(type);
 }
@@ -107,20 +98,15 @@ template<class SC,class LO,class GO,class NO>
 void NonLinElasAssFE<SC,LO,GO,NO>::updateTime() const
 {
     timeSteppingTool_->t_ = timeSteppingTool_->t_ + timeSteppingTool_->dt_prev_;
-
-    MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-    u_rep_->importFromVector(u, true); 
-    this->feFactory_->advanceInTimeAssemblyFEElements(timeSteppingTool_->dt_, u_rep_ );    
-
 }
 
 template<class SC,class LO,class GO,class NO>
 void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
 
-   // std::string material_model = this->parameterList_->sublist("Parameter").get("Structure Model","SCI_NH");
+    std::string material_model = this->parameterList_->sublist("Parameter").get("Structure Model","Neo-Hooke");
 
     if (this->verbose_)
-        std::cout << "-- Reassembly nonlinear elasticity type=" << type << "... " << std::flush;
+        std::cout << "-- Reassembly nonlinear elasticity with structure material model " << material_model <<" ("<<type <<") ... " << std::flush;
     
     if (type=="Newton-Residual") {
         MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
@@ -135,25 +121,21 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssemble(std::string type) const {
         fRep->putScalar(0.);   
         this->residualVec_->addBlock( fRep, 0 ); 
 
-        if(this->parameterList_->sublist("Parameter").get("SCI",false) == true || this->parameterList_->sublist("Parameter").get("FSCI",false) == true)
+        if(this->parameterList_->sublist("Parameter").get("SCI",false) == true || this->parameterList_->sublist("Parameter").get("FSCI",false) == true )
             this->feFactory_->assemblyAceDeformDiffuBlock(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,concentration_,u_rep_,this->system_,0,0,this->residualVec_,0, this->parameterList_, "Jacobian", true/*call fillComplete*/);
-       	else{
+       	else 
  			this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,true);
-        }
+        //fRep->scale(-1.);
+        
         MultiVectorPtr_Type fUnique = Teuchos::rcp( new MultiVector_Type( this->getDomain(0)->getMapVecFieldUnique(), 1 ) );
         fUnique->putScalar(0.);
-        fUnique->exportFromVector(this->residualVec_->getBlock(0), true, "Add" );
-
-        //if(this->parameterList_->sublist("Parameter").get("FSI",false) == true)
-            fUnique->scale(-1.);
+        fUnique->exportFromVector( fRep, true, "Add" );
 
         this->residualVec_->addBlock( fUnique, 0 );
 
         if(loadStepping_) 
             assembleSourceTermLoadstepping();
 
-        if(nonlinearExternalForce_)
-            this->assembleSourceTermLoadstepping();
 
     }
     else if(type=="Newton"){ //we already assemble the new tangent when we calculate the stresses above
@@ -180,6 +162,10 @@ void NonLinElasAssFE<SC,LO,GO,NO>::reAssembleExtrapolation(BlockMultiVectorPtrAr
 template<class SC,class LO,class GO,class NO>
 void NonLinElasAssFE<SC,LO,GO,NO>::assembleSourceTermLoadstepping(double time) const
 {
+    double dt = timeSteppingTool_->get_dt();
+    double beta = timeSteppingTool_->get_beta();
+    double gamma = timeSteppingTool_->get_gamma();
+    
     
     if(  loadStepping_ == true){
         // The if condition resets the rhs. If we skip it when we attemp loadstepping, the rhs will be updated continously and wrongly increase with each timestep
@@ -192,17 +178,18 @@ void NonLinElasAssFE<SC,LO,GO,NO>::assembleSourceTermLoadstepping(double time) c
         if(externalForce_){
 
             MultiVectorPtr_Type FERhs = Teuchos::rcp(new MultiVector_Type( this->getDomain(0)->getMapVecFieldRepeated() ));
-            vec_dbl_Type funcParameter(1,0.);
+            vec_dbl_Type funcParameter(4,0.);
             funcParameter[0] = timeSteppingTool_->t_;            
             // how can we use different parameters for different blocks here?
-            for (int j = 0; j < this->getParameterCount(); j++)
-                funcParameter.push_back(this->getParameterRhs(j));
-            funcParameter.push_back(0.);
-            if(nonlinearExternalForce_){
+            funcParameter[1] =this->parameterList_->sublist("Parameter").get("Volume force",0.00211);
 
+            funcParameter[3] =this->parameterList_->sublist("Parameter").get("Final time force",1.0);
+            funcParameter[4] =this->parameterList_->sublist("Parameter").get("dt",0.1);
+
+
+            if(nonlinearExternalForce_){
                 MatrixPtr_Type A( new Matrix_Type (this->system_->getBlock(0,0)));
-                MultiVectorConstPtr_Type u = this->solution_->getBlock(0);
-                u_rep_->importFromVector(u, true);   
+                //A->print();
                 MatrixPtr_Type AKext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );          
                 MatrixPtr_Type Kext(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow()*2 ) );          
                 MultiVectorPtr_Type Kext_vec;
@@ -222,11 +209,9 @@ void NonLinElasAssFE<SC,LO,GO,NO>::assembleSourceTermLoadstepping(double time) c
 
             this->sourceTerm_->getBlockNonConst(0)->exportFromVector( FERhs, false, "Add" );
         }
-        else{
+        else
             this->assembleSourceTerm( timeSteppingTool_->t_ );
-        
-        }
-       
+        //this->problemTimeStructure_->getSourceTerm()->scale(density);
         // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
         // Die Skalierung mit der Dichte erfolgt schon in der Assemblierungsfunktion!
         
@@ -250,29 +235,24 @@ void NonLinElasAssFE<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, 
      		//this->feFactory_->assemblyNonLinearElasticity(this->dim_, this->getDomain(0)->getFEType(),2, this->dim_, u_rep_, this->system_, this->residualVec_, this->parameterList_,this->getDomain(0), this->eModVec_,true);
             this->feFactory_->assemblyAceDeformDiffuBlock(this->dim_, this->getDomain(0)->getFEType(), this->getDomain(0)->getFEType(), 2, 1,this->dim_,concentration_,u_rep_,this->system_,0,0,this->residualVec_,0, this->parameterList_, "Rhs", true/*call fillComplete*/);
     }
-    if (!type.compare("standard")){
-        this->residualVec_->update(-1.,*this->rhs_,1.);
-        //if ( !this->sourceTerm_.is_null() )
-        //    this->residualVec_->update(-1.,*this->sourceTerm_,1.);
-        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-
-    }
-    else if(!type.compare("reverse")){
-        this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
-        //if ( !this->sourceTerm_.is_null() )
-        //    this->residualVec_->update(1.,*this->sourceTerm_,1.);
-        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
-
-    }
-    else if(!type.compare("external")){
-        std::cout << " Only computing residual, without combining it with rhs " << std::endl;
-    }
     else{
-        TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Unknown type for residual computation.");
+        if (!type.compare("standard")){
+            this->residualVec_->update(-1.,*this->rhs_,1.);
+            //if ( !this->sourceTerm_.is_null() )
+            //    this->residualVec_->update(-1.,*this->sourceTerm_,1.);
+        }
+        else if(!type.compare("reverse")){
+            this->residualVec_->update(1.,*this->rhs_,-1.); // this = -1*this + 1*rhs
+            //if ( !this->sourceTerm_.is_null() )
+            //    this->residualVec_->update(1.,*this->sourceTerm_,1.);
+        }
+        else{
+            TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Unknown type for residual computation.");
+        }
+        
+        // this might be set again by the TimeProblem after adding of M*u
+        this->bcFactory_->setBCMinusVector( this->residualVec_, this->solution_, time );
     }
-    
-    // this might be set again by the TimeProblem after adding of M*u
-    
     
 }
 }

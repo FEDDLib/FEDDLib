@@ -86,8 +86,8 @@ void MeshPartitioner<SC,LO,GO,NO>::determineRanks(){
             (*iterator)++;
             iterator++;
             diff++;
-        }// This piece of code ensure that the sum of fractions is exaclty equal to 100
-        
+        }
+
         this->determineRanksFromFractions( fractions );
         
         if (verbose) {
@@ -253,7 +253,6 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
         this->setSurfacesToElements( meshNumber );
     else
         meshUnstr->deleteSurfaceElements();
-    
     
 	// Serially distributed elements
     ElementsPtr_Type elementsMesh = meshUnstr->getElementsC();
@@ -683,7 +682,7 @@ void MeshPartitioner<SC,LO,GO,NO>::setSurfacesToElements(int meshNumber){
     for (int i=0; i<surfElements_vec.size(); i++){
         vec_int_Type surface = surfaceElements->getElement(i ).getVectorNodeListNonConst(); // surfaceElements->getElement(i + offset).getVectorNodeListNonConst();
         surfElements_vec.at(i)  = surface;
-        std::sort( surface.begin(), surface.end() ); // We need to maintain a consistent numbering in the surface elements, so we use a sorted and ansorted vector
+        std::sort( surface.begin(), surface.end() ); // We need to maintain a consistent numbering in the surface elements, so we use a sorted and unsorted vector
         surfElements_vec_sorted.at(i) = surface;
         surfElementsFlag_vec.at(i) = surfaceElements->getElement(i).getFlag(); // surfaceElements->getElement(i + offset).getFlag();
 

@@ -30,8 +30,6 @@ reactionFunc_()
 	
 	diffusionTensor_ = diffusionTensor;
 
-    this->parameterList_ = parameterList;
-
     funcParameter_.push_back(this->parameterList_->sublist("Parameter").get("E0",1.0));
     funcParameter_.push_back(this->parameterList_->sublist("Parameter").get("E1",0.5));
 
@@ -77,9 +75,6 @@ void DiffusionReaction<SC,LO,GO,NO>::assembleConstantMatrices( std::string type 
     
     if (this->verbose_)
         std::cout << "done -- " << std::endl;
-
-    //this->bcFactory_->setRHS( this->getSolution(), 0.);
-
 }
 
 /*!

@@ -78,12 +78,6 @@ typedef std::tuple<std::string,double> tuple_sd_Type;
 typedef std::vector<tuple_sd_Type> tuple_sd_vec_Type;
 typedef Teuchos::RCP<tuple_sd_vec_Type> tuple_sd_vec_ptr_Type;
 
-typedef std::tuple<std::string,std::string,int,int,int> tuple_ssiii_Type;
-
-typedef std::vector<tuple_ssiii_Type> tuple_disk_vec2_Type;
-typedef Teuchos::RCP<tuple_disk_vec2_Type> tuple_disk_vec2_ptr_Type;
-
-
 typedef std::vector<tuple_ssii_Type> tuple_disk_vec_Type;
 typedef Teuchos::RCP<tuple_disk_vec_Type> tuple_disk_vec_ptr_Type;
 

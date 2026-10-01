@@ -2,10 +2,8 @@
 *.o
 *.so
 *.dylib
-/build
-.vscode/
-Doygen/html/
-Doygen/latex/
+/build*
+/.vscode
 *.bak
 .DS_Store
 

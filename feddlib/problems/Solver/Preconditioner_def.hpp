@@ -1136,7 +1136,7 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerFaCSI( std::string type )
 
     probSolid_->initializeSystem( structSystem );
     
-    probSolid_->setupPreconditioner( "Monolithic");
+    probSolid_->setupPreconditioner( );
 
     precStruct_ = probSolid_->getPreconditioner()->getThyraPrec()->getNonconstUnspecifiedPrecOp();
 

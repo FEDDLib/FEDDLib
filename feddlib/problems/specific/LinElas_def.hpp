@@ -74,7 +74,7 @@ void LinElas<SC,LO,GO,NO>::assemble( std::string type ) const
         std::cout << "-- Assembly linear elasticity ... " << std::flush;
 
     // Hole die Dichte \rho (density) und die Paramter \nu (Poisson-ratio) und \mu (zweite Lamé-Konstante)
-    double density = this->parameterList_->sublist("Parameter").get("Density",1.);
+    double density = this->parameterList_->sublist("Parameter").get("Density",1000.);
     
     double poissonRatio = this->parameterList_->sublist("Parameter").get("Poisson Ratio",0.4);
     double mu = this->parameterList_->sublist("Parameter").get("Mu",2.0e+6);

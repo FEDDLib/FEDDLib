@@ -134,7 +134,7 @@ void BlockMatrix<SC,LO,GO,NO>::merge(){
     }
     
 //    if ( mergedMatrix_.is_null() ){
-    mergedMatrix_ = Teuchos::rcp( new Matrix_Type( mergedMap_, maxNumEntries+210) ); // we should identify the number of entries per row.
+    mergedMatrix_ = Teuchos::rcp( new Matrix_Type( mergedMap_, maxNumEntries ) ); // we should identify the number of entries per row.
     this->determineLocalOffsets();
     this->determineGlobalOffsets();
 

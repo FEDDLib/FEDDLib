@@ -390,9 +390,9 @@ void PrecOpFaCSI<SC,LO,GO,NO>::applyImpl(
     Teuchos::RCP< const Thyra::MultiVectorBase< SC > > X_s = X->getMultiVectorBlock(2);
     Teuchos::RCP< Thyra::MultiVectorBase< SC > > Y_s = Y->getNonconstMultiVectorBlock(2);
         
-    
-    //Teuchos::RCP< const Thyra::TpetraMultiVector< SC, LO, GO, NO > > XsTpetra =
-    //Teuchos::rcp_dynamic_cast< const Thyra::TpetraMultiVector< SC, LO, GO, NO > > ( X_s );
+        
+    Teuchos::RCP< const Thyra::TpetraMultiVector< SC, LO, GO, NO > > XsTpetra =
+    Teuchos::rcp_dynamic_cast< const Thyra::TpetraMultiVector< SC, LO, GO, NO > > ( X_s );
 //    XsTpetra->getConstTpetraMultiVector()->describe(*out,Teuchos::VERB_EXTREME);
 
 //    std::cout << "Xs" << std::endl;
@@ -460,11 +460,8 @@ void PrecOpFaCSI<SC,LO,GO,NO>::applyImpl(
 //        Z_fv_ = X_fv->clone_mv();
 //    else
     
-   
+    
 
-    //std::cout << "X_fv" << std::endl;
-    //X_fv->describe(*out,Teuchos::VERB_EXTREME);
-    //comm_->barrier();    comm_->barrier();    comm_->barrier();
     
     Teuchos::RCP< const Thyra::MultiVectorBase< SC > > X_fp = X->getMultiVectorBlock(1);
     Teuchos::RCP< Thyra::MultiVectorBase< SC > > Y_fp = Y->getNonconstMultiVectorBlock(1);
@@ -491,9 +488,9 @@ void PrecOpFaCSI<SC,LO,GO,NO>::applyImpl(
     else
         assign(Z_fv_.ptr(), *Y_fv);
     
-    //std::cout << "Z_fv_ set:" << std::endl;
-    //Z_fv_->describe(*out,Teuchos::VERB_EXTREME);
-    //comm_->barrier();    comm_->barrier();    comm_->barrier();
+//    std::cout << "Z_fv_ set:" << std::endl;
+//    Z_fv_->describe(*out,Teuchos::VERB_EXTREME);
+//    comm_->barrier();    comm_->barrier();    comm_->barrier();
 //
 //    std::cout << "Z_fp_ set:" << std::endl;
 //    Y_fp->describe(*out,Teuchos::VERB_EXTREME);
@@ -565,12 +562,12 @@ void PrecOpFaCSI<SC,LO,GO,NO>::applyImpl(
         assign(Y_fp.ptr(), *X_fp);
     }
 
-   // std::cout << "Y_fv after mono" << std::endl;
-    //Y_fv->describe(*out,Teuchos::VERB_EXTREME);
-    //comm_->barrier();    comm_->barrier();    comm_->barrier();
-   // std::cout << "Y_fp after mono" << std::endl;
-   // Y_fp->describe(*out,Teuchos::VERB_EXTREME);
-   // comm_->barrier();    comm_->barrier();    comm_->barrier();
+//    std::cout << "Y_fv after mono" << std::endl;
+//    Y_fv->describe(*out,Teuchos::VERB_EXTREME);
+//    comm_->barrier();    comm_->barrier();    comm_->barrier();
+//    std::cout << "Y_fp after mono" << std::endl;
+//    Y_fp->describe(*out,Teuchos::VERB_EXTREME);
+//    comm_->barrier();    comm_->barrier();    comm_->barrier();
 
 
     fBT_->apply(Thyra::NOTRANS, *Y_fp, Z_fv_.ptr(), -1., 1.);
@@ -607,14 +604,14 @@ void PrecOpFaCSI<SC,LO,GO,NO>::applyImpl(
 //        Teuchos::RCP< MultiVectorBase< SC > > Y_s = Y->getNonconstMultiVectorBlock(2);
 //        Teuchos::RCP< MultiVectorBase< SC > > Y_l = Y->getNonconstMultiVectorBlock(3);
 
- /*       Teuchos::RCP< Thyra::TpetraMultiVector< SC, LO, GO, NO > > Y_fvT =
+        Teuchos::RCP< Thyra::TpetraMultiVector< SC, LO, GO, NO > > Y_fvT =
         Teuchos::rcp_dynamic_cast< Thyra::TpetraMultiVector< SC, LO, GO, NO > > ( Y_fv );
         Teuchos::RCP< Thyra::TpetraMultiVector< SC, LO, GO, NO > > Y_fpT =
         Teuchos::rcp_dynamic_cast< Thyra::TpetraMultiVector< SC, LO, GO, NO > > ( Y_fp );
         Teuchos::RCP< Thyra::TpetraMultiVector< SC, LO, GO, NO > > Y_sT =
             Teuchos::rcp_dynamic_cast< Thyra::TpetraMultiVector< SC, LO, GO, NO > > ( Y_s );
         Teuchos::RCP< Thyra::TpetraMultiVector< SC, LO, GO, NO > > Y_lT =
-        Teuchos::rcp_dynamic_cast< Thyra::TpetraMultiVector< SC, LO, GO, NO > > ( Y_l );*/
+        Teuchos::rcp_dynamic_cast< Thyra::TpetraMultiVector< SC, LO, GO, NO > > ( Y_l );
 
 //        std::cout << "Yfv:" << std::endl;
 //        Y_fvT->getConstTpetraMultiVector()->describe(*out,Teuchos::VERB_EXTREME);
@@ -630,8 +627,7 @@ void PrecOpFaCSI<SC,LO,GO,NO>::applyImpl(
 //        comm_->barrier();    comm_->barrier();    comm_->barrier();
 
         
-    // TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,"First It.");
-
+        
         
     }
 }

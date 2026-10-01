@@ -12,8 +12,6 @@
 #include <Thyra_TpetraVector_decl.hpp>
 #include <Thyra_DetachedMultiVectorView.hpp>
 #include <Thyra_SpmdVectorSpaceBase_decl.hpp>
-#include <MatrixMarket_Tpetra.hpp>
-
 /*!
  Declaration of PrecOpFaCSI
  
@@ -25,10 +23,9 @@
 
 namespace FEDD {
 
-/*
-    Definition of the FaCSI factorization for the fluid structure interaction problem based on Deparis, Forti, Quarteroni and Grandperrin
-
-
+/*!
+ The FaCSI factorization for the fluid-structure interaction problem, after
+ Deparis, Forti, Grandperrin and Quarteroni.
 */
 
 template <class SC = default_sc, class LO = default_lo, class GO = default_go, class NO = default_no>
@@ -43,15 +40,16 @@ public:
     
     PrecOpFaCSI(CommConstPtr_Type comm, bool fluidPrecMonolithic, bool useFluidPreconditioner = true, bool useSolidPreconditioner = true, bool onlyDiagonal=false);
     
-
-    /// @brief Setting Matrices of factorized FSI system 
-    /// @param C1 Fluid coupling block
-    /// @param C1T Fluid coupling block transposed
-    /// @param C2 Structure coupling block
-    /// @param sInv inverse of structure (assume prec related)
-    /// @param fInv inverse of fluid (assume prec related)
-    /// @param fF Fluid block of Navier-Stokes
-    /// @param fBT BT of Navier-Stokes
+    /*!
+         \brief Set the matrices of the factorized FSI system
+         @param[in] C1 fluid coupling block
+         @param[in] C1T fluid coupling block, transposed
+         @param[in] C2 structure coupling block
+         @param[in] sInv inverse of the structure block (its preconditioner)
+         @param[in] fInv inverse of the fluid block (its preconditioner)
+         @param[in] fF fluid block of Navier-Stokes
+         @param[in] fBT BT block of Navier-Stokes
+    */
     void setGE(ThyraLinOpPtr_Type C1,
           ThyraLinOpPtr_Type C1T,
           ThyraLinOpPtr_Type C2,
