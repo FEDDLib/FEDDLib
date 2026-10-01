@@ -219,7 +219,7 @@ int main(int argc, char *argv[]) {
             // Comparing computed solution from restart to the hdf5 saved solution.
             double finalTime = parameterListProblem->sublist("Timestepping Parameter").get("Final time compare", 0.0);
             double dt = parameterListProblem->sublist("Timestepping Parameter").get("dt", 0.01);
-            HDF5Import<SC,LO,GO,NO> importer(navierStokes.getSolution()->getBlock(0)->getMap(),restartFile(parameterListProblem, "Solutionu_f"));
+            HDF5Import<SC,LO,GO,NO> importer(navierStokes.getSolution()->getBlock(0)->getMap(),restartFile(parameterListProblem, "Solutionu"));
             Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solutionImported = importer.readVariablesHDF5( std::to_string(finalTime));
 		
 			Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaVelocity(new ExporterParaView<SC,LO,GO,NO>());

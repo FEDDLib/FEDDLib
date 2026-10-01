@@ -48,7 +48,7 @@
        	<!-- Import: Read solution from hdf5 as start soltion :::: RESTART     -->
         <Parameter name="Restart" type="bool"  value="true"/>
         <Parameter name="Time step" type="double"   	value="0.5"/> <!-- this time must be set as variable name import. Variable name import need to be set for 6 dezimal points -->
-        <Parameter name="Final time compare" type="double" value="1.0"/> <!-- the restarted solution at the final time is compared with the stored one (Solutionu_f.h5) -->
+        <Parameter name="Final time compare" type="double" value="1.0"/> <!-- the restarted solution at the final time is compared with the stored one (Solutionu.h5) -->
         <Parameter name="Restart tolerance" type="double" value="1.e-6"/> <!-- relative 2-norm of the difference -->
 
   
