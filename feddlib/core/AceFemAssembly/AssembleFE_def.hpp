@@ -6,7 +6,7 @@ namespace FEDD {
 template <class SC, class LO, class GO, class NO>
 AssembleFE<SC, LO, GO, NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params, tuple_disk_vec_ptr_Type tuple) : rhsVec_(0), jacobian_(0), solution_(0) {
     flag_ = flag;
-    nodesRefConfig_ = nodesRefConfig;
+	nodesRefConfig_ = nodesRefConfig;
 
     timeStep_ = 0.;
     newtonStep_ = 0;
@@ -14,14 +14,14 @@ AssembleFE<SC, LO, GO, NO>::AssembleFE(int flag, vec2D_dbl_Type nodesRefConfig, 
 
     params_ = params;
 
-    // Reading through parameterlist
+	// Reading through parameterlist
     dim_ = params_->sublist("Parameter").get("Dimension", -1);
 
     timeIncrement_ = params_->sublist("Timestepping Parameter").get("dt", 0.1); // as develop: stationary problems set no dt
 
     diskTuple_ = tuple;
-
-    checkParameters();
+	
+	checkParameters();
 
     // Checking for restart. In case of restart we need to adjust the current time step.
     bool restart = params_->sublist("Timestepping Parameter").get("Restart",false);

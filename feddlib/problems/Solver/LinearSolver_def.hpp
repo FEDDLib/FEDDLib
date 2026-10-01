@@ -228,7 +228,7 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
     if(plotLinResVector && timeProblem->time_ >= range1 && timeProblem->time_ <= range2)
         timeProblem->plotLinResVec(timeProblem->time_);
 
-return its;
+    return its;
 }
  
 template<class SC,class LO,class GO,class NO>
@@ -378,7 +378,7 @@ int LinearSolver<SC,LO,GO,NO>::solveBlock(TimeProblem_Type* timeProblem, BlockMu
 //            }
 //        }
 //    }
-
+    
     ThyraLinOpConstPtr_Type thyraMatrix = timeProblem->getSystemCombined()->getThyraLinBlockOp();
     // rhs->getBlock(0)->writeMM("rhsFluid_"+std::to_string(timeProblem->time_));
     // // //timeProblem->getSystemCombined()->getBlock(2,2)->writeMM("systemCombinedStructure_"+std::to_string(timeProblem->time_));

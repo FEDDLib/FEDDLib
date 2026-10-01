@@ -117,7 +117,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(NonLinearProblem_Type &problem,vec_d
         Thyra::assign(initial_guess.ptr(), *solMV->col(0));
     }
     else{
-        Thyra::V_S(initial_guess.ptr(),Teuchos::ScalarTraits<SC>::zero());
+    Thyra::V_S(initial_guess.ptr(),Teuchos::ScalarTraits<SC>::zero());
     } 
 
       
@@ -707,7 +707,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
         }
         else
             gmresIts += problem.solveAndUpdate( criterion,criterionValue,criterionValueVec );
-
+        
 
         if(displayResiduals){
             vec_dbl_Type normVec = problem.calculateResidualNormVec();

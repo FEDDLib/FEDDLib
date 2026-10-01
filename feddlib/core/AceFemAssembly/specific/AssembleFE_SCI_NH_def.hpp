@@ -89,18 +89,11 @@ namespace FEDD
 		}*/
 		if(this->timeStep_ -1.e-13 < 0) // only in this one instance T=0 we set the dt beforehand, as the initial dt is set through the paramterlist and this is error prone
 			this->timeIncrement_=dt;
-
+       
 		this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 
 		this->timeIncrement_ = dt;
 
-		if(this->globalElementID_==0){
-			std::cout << " ---------------------------------------------- " << std::endl;
-			std::cout << " AssembleFE_SCI_NH: Advancing time in elements" << std::endl;
-			std::cout << " Timestep: " << this->timeStep_ << " \t timeincrement: "<< this->timeIncrement_ << std::endl;
-			std::cout << " ---------------------------------------------- " << std::endl;
-
-		}
         //cout << " Advance in time on element timestep: " << this->timeStep_ << " increment: " << this->timeIncrement_ << endl;
 
 		for (int i = 0; i < 40; i++)
@@ -220,9 +213,9 @@ namespace FEDD
 			{
 				(*elementMatrix)[i][j] = -stiffnessMatrix[i][j];
 			}
-		}
+	}
 
-	
+
 	#endif
 	}
 } // namespace FEDD

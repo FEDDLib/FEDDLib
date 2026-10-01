@@ -649,7 +649,7 @@ void FE_ElementAssembly<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 		numSolid=4;
         if(FETypeSolid == "P2")
             numSolid=10;
-    }
+	}
 	tuple_disk_vec_ptr_Type problemDisk = Teuchos::rcp(new tuple_disk_vec_Type(0));
 	tuple_ssii_Type chem ("Chemistry",FETypeChem,dofsChem,numChem);
 	tuple_ssii_Type solid ("Solid",FETypeSolid,dofsSolid,numSolid);
@@ -659,13 +659,12 @@ void FE_ElementAssembly<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 	tuple_disk_vec_ptr_Type problemDiskChem = Teuchos::rcp(new tuple_disk_vec_Type(0));
     problemDiskChem->push_back(chem);
 
-	std::string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_NH");
+	std::string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
 
-	// if(assemblyFEElements_.size()== 0){
-    //    	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep,domainVec_.at(FElocSolid)->getElementMap());
-    // }
-	// else 
-    if(assemblyFEElements_.size() != elementsChem->numberElements())
+	if(assemblyFEElements_.size()== 0){
+       	initAssembleFEElements(SCIModel,problemDisk,elementsChem, params,pointsRep,domainVec_.at(FElocSolid)->getElementMap());
+    }
+	else if(assemblyFEElements_.size() != elementsChem->numberElements())
 	     TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Number Elements not the same as number assembleFE elements." );
 
 	//SmallMatrixPtr_Type elementMatrix =Teuchos::rcp( new SmallMatrix_Type( dofsElement));
@@ -698,12 +697,15 @@ void FE_ElementAssembly<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
  		SmallMatrixPtr_Type elementMatrix;
 
         // ------------------------
-        Helper::buildTransformation(elementsSolid->getElement(T).getVectorNodeList(), pointsRep, B, FETypeSolid);
+        /*buildTransformation(elementsSolid->getElement(T).getVectorNodeList(), pointsRep, B, FETypeSolid);
         detB = B.computeInverse(Binv);
-        //absDetB = std::fabs(detB);
-        if(detB <=0.)
-           std::cout << " Determinante Element: " << detB << std::endl;
+        absDetB = std::fabs(detB);
+        std::cout << " Determinante " << detB << std::endl;*/
         // ------------------------
+
+
+
+
 		if(assembleMode == "Jacobian"){
 			assemblyFEElements_[T]->assembleJacobian();
 
@@ -727,7 +729,7 @@ void FE_ElementAssembly<SC,LO,GO,NO>::assemblyAceDeformDiffu(int dim,
 
             AssembleFE_SCI_SMC_Active_Growth_Reorientation_Ptr_Type elTmp = Teuchos::rcp_dynamic_cast<AssembleFE_SCI_SMC_Active_Growth_Reorientation_Type>(assemblyFEElements_[T] );
             if (!elTmp.is_null())
-                elTmp->getMassMatrix(elementMatrix);
+            elTmp->getMassMatrix(elementMatrix);
             else {
                 AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation_Ptr_Type elTmpCMM = Teuchos::rcp_dynamic_cast<AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation_Type>(assemblyFEElements_[T] );
                 TEUCHOS_TEST_FOR_EXCEPTION(elTmpCMM.is_null(), std::logic_error, "MassMatrix assembly is only available for the SCI_SMC_Active_Growth_Reorientation and SCI_SMC_CMM_Active_Growth_Reorientation elements.");
@@ -1360,7 +1362,7 @@ void FE_ElementAssembly<SC,LO,GO,NO>::initAssembleFEElements(std::string element
 	// Solid materials: the element of a material ("Material Model") is chosen by its "Volume Flag"
 	int numMaterials = params->sublist("Parameter Solid").get("Number of Materials", 0);
 	for (UN T=0; T<elements->numberElements(); T++) {
-
+		
 		nodes = getCoordinates(elements->getElement(T).getVectorNodeList(), pointsRep);
 
 		AssembleFEFactory<SC,LO,GO,NO> assembleFEFactory;
@@ -1857,7 +1859,7 @@ void FE_ElementAssembly<SC,LO,GO,NO>::initAssembleFEAceDeformDiffu(int dim,
 	tuple_disk_vec_ptr_Type problemDiskChem = Teuchos::rcp(new tuple_disk_vec_Type(0));
     problemDiskChem->push_back(chem);
 
-	std::string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_NH");
+	std::string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
     initAssembleFEElements(SCIModel, problemDisk, elementsChem, params, pointsRep, domainVec_.at(FElocSolid)->getElementMap());
 }
 

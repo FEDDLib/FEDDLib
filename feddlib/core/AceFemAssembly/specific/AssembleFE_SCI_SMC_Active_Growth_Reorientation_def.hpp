@@ -1,476 +1,573 @@
 #ifndef AssembleFE_SCI_SMC_Active_Growth_Reorientation_DEF_hpp
 #define AssembleFE_SCI_SMC_Active_Growth_Reorientation_DEF_hpp
 
-#ifdef FEDD_HAVE_ACEGENINTERFACE
-#include <aceinterface.hpp>
-#endif
-
+#include <string>
+#include <set>
 #include <vector>
-//#include <iostream>
+
+#include "AssembleFE_SCI_SMC_Active_Growth_Reorientation_decl.hpp"
 
 namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>
-AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::AssembleFE_SCI_SMC_Active_Growth_Reorientation(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params,tuple_disk_vec_ptr_Type tuple):
-AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
-{
-		/*
-		fA -Fibre angle_1  							30e0, 
-		$[Lambda]$C50 -LambdaC50_2				 	0.12e1
-		$[Gamma]$3 -Gamma3_3 						0.9e0,
-		$[Lambda]$BarCDotMax -LambdaBarCDotMax_4 	0.3387e-1
-		$[Lambda]$BarCDotMin -LambdaBarCDotMin_5 	-0.3387e-1
-		$[Gamma]$2 -Gamma2_6 						50e0,
-		$[Gamma]$1 -Gamma1_7 						0.50247e0, 
-		$[Eta]$1 -Eta1_8 							0.18745e0, 
-		Ca50 -Ca50_9 								0.4e0
-		k2 -K2_10 									0.2e0
-		k5 -K5_11 									0.2e0,
-		k3 -K3_12 									0.134e0
-		k4 -K4_13 									0.166e-2
-		k7 -K7_14 									0.66e-4
-		$[Kappa]$C -KappaC_15 						0.14636600000000002e3
-		$[Beta]$1 -Beta1_16							0.10097e-2
-		$[Mu]$a -MuA_17 							0.9291e1
-		$[Alpha]$ -Alpha_18 						0.2668e2
-		$[Epsilon]$1 -Epsilon1_19					0.15173775e3
-		$[Epsilon]$2 -Epsilon2_20 					0.27566199999999996e1
-		c1 -C1_21 									0.1152507e2
-		$[Alpha]$1 -Alpha1_22 						0.127631e1
-		$[Alpha]$2 -Alpha2_23 						0.308798e1
-		$[Gamma]$6 -Gamma6_24 									0.15e1
-		$[Lambda]$P50 -LambdaP50_25								1.e0
-		kDotMin -KDotMin_26										-0.118863e-2
-		$[Zeta]$1 -Zeta1_27										100.e0
-		kDotMax -KDotMax_28										0.51028e-3
-		$[Gamma]$4 -Gamma4_29									200.e0	
-		$[Lambda]$BarDotPMin -LambdaBarDotPMin_30 				-0.17689e-3
-		$[Lambda]$BarDotPMax -LambdaBarDotPMax_31 				0.13957e-3
-		$[Gamma]$5 -Gamma5_32									50.e0
-		$[Zeta]$2 -Zeta2_33										1000.e0
-		$[CapitalDelta]$$[Lambda]$BarPMin -DeltaLambdaBarPMin_34	-0.1e-4
-		p1 -P1_35												0.3e0
-		p3 -P3_36												0.2e0
-		c50 -C50_37												0.5e0
-		d0 -D0_38												0.6e-4					
-		m -M_39													0e0
-		activeStartTime -ActiveStartTime_40						1000.e0
-		k$[Eta]$Plus -kEtaPlus_41								0.6e0
-		m$[Eta]$Plus -mEtaPlus_42								5.e0
-		growthStartTime -growthStartTime_43						1.e0
-		reorientationStartTime -reorientationStartTime_44 		1.e0
-		growthEndTime -growthEndTime_45							100.e0
-		reorientationEndTime -reorientationEndTime_46			100.e0
-		k$[Theta]$Plus -KThetaPlus_47							1.e0
-		k$[Theta]$Minus -KThetaMinus_48							1.e0	
-		m$[Theta]$Plus -MThetaPlus_49							3.e0
-		m$[Theta]$Minus -MThetaMinus_50							3.e0
-		$[Theta]$Plus1 -ThetaPlus1_51							0.1000882e1
-		$[Theta]$Plus2 -ThetaPlus2_52							0.1234826e1					
-		$[Theta]$Plus3 -ThetaPlus3_53							0.11414189999999999e1						
-		$[Theta]$Minus1 -ThetaMinus1_54							0.98e0
-		$[Theta]$Minus2 -ThetaMinus2_55							0.98e0
-		$[Theta]$Minus3 -ThetaMinus3_56							0.98e0
-		$[Rho]$ -Density_57										1.e0
-										
-	*/
-
-	
-	// -------------------- Parameter ---------------------
-	fA_= this->params_->sublist("Parameter Solid").get("FA",30.e0); // ??
-	lambdaC50_ = this->params_->sublist("Parameter Solid").get("LambdaC50",0.12e1); // ??
-	gamma3_= this->params_->sublist("Parameter Solid").get("Gamma3",0.9e0);
-	lambdaBarCDotMax_= this->params_->sublist("Parameter Solid").get("LambdaBarCDotMax",0.443e-1); // ??
-	lambdaBarCDotMin_= this->params_->sublist("Parameter Solid").get("LambdaBarCDotMin",-0.443e-1); // ?? 
-	gamma2_ = this->params_->sublist("Parameter Solid").get("Gamma2",50.0e0); // ??
-	gamma1_ = this->params_->sublist("Parameter Solid").get("Gamma1",0.5131e0); 
-	eta_ = this->params_->sublist("Parameter Solid").get("Eta",0.18745e0); // ??
-	ca50_ = this->params_->sublist("Parameter Solid").get("Ca50",0.4e0); // ??
-	k2_ = this->params_->sublist("Parameter Solid").get("K2",0.2e0); 
-	k5_ = this->params_->sublist("Parameter Solid").get("K5",0.2e0);
-	k3_ = this->params_->sublist("Parameter Solid").get("K3",0.134e0); // ??
-	k4_ = this->params_->sublist("Parameter Solid").get("K4",0.166e-2); // ??
-	k7_= this->params_->sublist("Parameter Solid").get("K7",0.66e-4); // ?? 
-	kappa_ = this->params_->sublist("Parameter Solid").get("Kappa",0.148262e0); 
-	beta1_ = this->params_->sublist("Parameter Solid").get("Beta1",0.1006e-2); // ??
-	muA_ = this->params_->sublist("Parameter Solid").get("MuA",0.11857e-1); 
-	beta2_ = this->params_->sublist("Parameter Solid").get("Beta2",0.2668e-1); 
-	alpha2_ = this->params_->sublist("Parameter Solid").get("Alpha2",0.15173775e0); 
-	alpha3_ = this->params_->sublist("Parameter Solid").get("Alpha3",0.275662e1); // ??
-	alpha1_ = this->params_->sublist("Parameter Solid").get("Alpha1",11.52507e-3);
-	alpha4_ = this->params_->sublist("Parameter Solid").get("Alpha4",1.27631e-3);
-	alpha5_ = this->params_->sublist("Parameter Solid").get("Alpha5",0.308798e1); // ?? 
-	gamma6_ = this->params_->sublist("Parameter Solid").get("Gamma6",0.15e1);
-	lambdaP50_ = this->params_->sublist("Parameter Solid").get("LambdaP50",1.0e0);
-	kDotMin_ = this->params_->sublist("Parameter Solid").get("KDotMin",-0.10694e-1);
-	zeta1_ = this->params_->sublist("Parameter Solid").get("Zeta1",100.e0);
-	kDotMax_ = this->params_->sublist("Parameter Solid").get("KDotMax",0.9735e-3);
-	gamma4_ = this->params_->sublist("Parameter Solid").get("Gamma4",200.e0);
-	lambdaBarDotPMin_ = this->params_->sublist("Parameter Solid").get("LambdaBarDotMin",-0.2323e-3);
-	lambdaBarDotPMax_ = this->params_->sublist("Parameter Solid").get("LambdaBarDotMax",0.699e-4);
-	gamma5_ = this->params_->sublist("Parameter Solid").get("Gamma5", 50.e0 );
-	zeta2_ = this->params_->sublist("Parameter Solid").get("Zeta2", 1000.e0 );
-	DeltaLambdaBarPMin_ =this->params_->sublist("Parameter Solid").get("DeltaLambdaBarPMin", -0.1e-4);
-	p1_ = this->params_->sublist("Parameter Solid").get("P1",0.6e0);
-	p3_ = this->params_->sublist("Parameter Solid").get("P3",0.6e0);
-	c50_ = this->params_->sublist("Parameter Solid").get("C50",0.5e0);
-	d0_ = this->params_->sublist("Parameter Diffusion").get("D0",6.e-05);
-	m_ = this->params_->sublist("Parameter Solid").get("m",0.e0);
-	activeStartTime_ = this->params_->sublist("Parameter Solid").get("ActiveStartTime",1.0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime	
-	kEtaPlus_ = this->params_->sublist("Parameter Solid").get("KEtaPlus",0.1e-3);
-	mEtaPlus_ = this->params_->sublist("Parameter Solid").get("MEtaPlus",5.0e0);
-	growthStartTime_ = this->params_->sublist("Parameter Solid").get("GrowthStartTime",0.e0);
-	reorientationStartTime_ = this->params_->sublist("Parameter Solid").get("ReorientationStartTime",0.e0);
-	growthEndTime_ = this->params_->sublist("Parameter Solid").get("GrowthEndTime",0.e0);
-	reorientationEndTime_ = this->params_->sublist("Parameter Solid").get("ReorientationEndTime",0.e0);
-	kThetaPlus_ = this->params_->sublist("Parameter Solid").get("KThetaPlus",1.e-4);
-	kThetaMinus_ = this->params_->sublist("Parameter Solid").get("KThetaMinus",1.e-4);
-	mThetaPlus_ = this->params_->sublist("Parameter Solid").get("MThetaPlus",3.e0);
-	mThetaMinus_ = this->params_->sublist("Parameter Solid").get("MThetaMinus",3.e0);
-	thetaPlus1_ = this->params_->sublist("Parameter Solid").get("ThetaPlus1",1.005063);
-	thetaPlus2_ = this->params_->sublist("Parameter Solid").get("ThetaPlus2",1.020595);
-	thetaPlus3_ = this->params_->sublist("Parameter Solid").get("ThetaPlus3",1.119918);
-	thetaMinus1_ = this->params_->sublist("Parameter Solid").get("ThetaMinus1",0.98e0);
-	thetaMinus2_ = this->params_->sublist("Parameter Solid").get("ThetaMinus2",0.98e0);
-	thetaMinus3_ = this->params_->sublist("Parameter Solid").get("ThetaMinus3",0.98e0);
-	kMin_ = this->params_->sublist("Parameter Solid").get("KMin",0.15e0);
-	rho_ = this->params_->sublist("Parameter Solid").get("Rho",1.e0);
-
-// iCode_ = this->params_->sublist("Parameter Solid").get("Intergration Code",18);
-	iCode_=18; //Only works for 18 currently!!
-
-    FEType_ = std::get<1>(this->diskTuple_->at(0)); // FEType of Disk
-	dofsSolid_ = std::get<2>(this->diskTuple_->at(0)); // Degrees of freedom per node
-	dofsChem_ = std::get<2>(this->diskTuple_->at(1)); // Degrees of freedom per node
-
-	numNodesSolid_ = std::get<3>(this->diskTuple_->at(0)); // Number of nodes of element
-	numNodesChem_ = std::get<3>(this->diskTuple_->at(1)); // Number of nodes of element
-
-	dofsElement_ = dofsSolid_*numNodesSolid_ + dofsChem_*numNodesChem_; // "Dimension of return matrix"
-
-	// Einlesen durch Parameterdatei irgendwann cool
-	this->history_ ={1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.82758, 1.82758, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.82758, 1.82758, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.82758, 1.82758, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.82758, 1.82758, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
-					 /*{1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                     1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};*/
-
-	this->historyLength_ = 0;	
-#ifdef FEDD_HAVE_ACEGENINTERFACE	   
-	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 tempElem(iCode_);
-	this->historyLength_ = tempElem.getHistoryLength();
-	
-	TEUCHOS_TEST_FOR_EXCEPTION(this->historyLength_ != this->history_.size(), std::logic_error, "History input length does not match history size of model! \n Hisory input length: " << this->history_.size() << "\n History size of model: " << this->historyLength_ << "\n");
+AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::AssembleFE_SCI_SMC_Active_Growth_Reorientation(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params, tuple_disk_vec_ptr_Type tuple) : AssembleFE<SC, LO, GO, NO>(flag, nodesRefConfig, params, tuple),
+                                                                                                                                                                                                                       segmentsActive_(0),
+                                                                                                                                                                                                                       segmentsGrowth_(0),
+                                                                                                                                                                                                                       segmentsReorientation_(0) {
+#ifndef FEDD_HAVE_ACEGENINTERFACE
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "AssembleFE_SCI_SMC_Active_Growth_Reorientation needs FEDDLib built with the AceGen interface (Interface2): configure with -D TPL_ENABLE_AceGENInterface=ON.");
 #endif
+    activeAcceleratedEndTime_ = this->params_->sublist("Parameter").get("Accelerated Active Until", -1.);
+    TEUCHOS_TEST_FOR_EXCEPTION(activeAcceleratedEndTime_ < 0, std::logic_error, "!!! Warning: Accelerated Active Until not set correctly. Please Check Parameterlist !!!");
+										
+    activeAcceleratedMultiplier_ = this->params_->sublist("Parameter").get("Active Acceleration Multiplier", -1.);
+    TEUCHOS_TEST_FOR_EXCEPTION(activeAcceleratedMultiplier_ < 0, std::logic_error, "!!! Warning: Active Acceleration Multiplier not set correctly. Please Check Parameterlist !!!");
 
-	this->historyUpdated_.resize(this->historyLength_,0.);
-
-
-	solutionC_n_.resize(10,0.);
-	solutionC_n1_.resize(10,0.);
-
-	this->solution_.reset( new vec_dbl_Type ( dofsElement_,0.) );
-
-	/*timeParametersVec_.resize(0, vec_dbl_Type(2));
-    numSegments_ = this->params_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);
-
- 	for(int i=1; i <= numSegments_; i++){
-
-        double startTime = this->params_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("Start Time",0.);
-        double dtTmp = this->params_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("dt",0.1);
-        
-        vec_dbl_Type segment = {startTime,dtTmp};
-        timeParametersVec_.push_back(segment);
-    }*/
-    massMatrix_ = Teuchos::rcp( new SmallMatrix_Type(10,0.));
-}
-
-template <class SC, class LO, class GO, class NO>
-void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleJacobian() {
-
-    SmallMatrixPtr_Type elementMatrix = Teuchos::rcp( new SmallMatrix_Type(this->dofsElement_,0.));
-
-    assemble_SCI_SMC_Active_Growth_Reorientation(elementMatrix);
-
-    this->jacobian_ = elementMatrix;
+    int numMaterials = this->params_->sublist("Parameter Solid").get("Number of Materials", 1);
+    int materialID = 0;
+    for (int i = 1; i <= numMaterials; i++)
+        if (this->params_->sublist("Parameter Solid").sublist(std::to_string(i)).get("Volume Flag", 15) == this->flag_)
+            materialID = i;
 	
-}
-template <class SC, class LO, class GO, class NO>
-void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::advanceInTime( double dt){
+    TEUCHOS_TEST_FOR_EXCEPTION(materialID == 0, std::logic_error, "!!! Warning: No corresponding parameterslist for the element flag = " << this->flag_ << ". Please Check volume flags of elements and Mesh Data !!!");
 
-	// If we have a time segment setting we switch to the demanded time increment
-	/*for(int i=0; i<numSegments_ ; i++){
-		if(this->timeStep_+1.0e-12 > timeParametersVec_[i][0])
-			this->timeIncrement_=timeParametersVec_[i][1];
-	}*/
-
-	this->timeStep_ = this->timeStep_ + this->timeIncrement_;
-	
-	this->timeIncrement_ = dt;
-
-	for(int i=0; i< this->historyLength_; i++){
-		//if(this->timeStep_  > activeStartTime_ +dt )
-			this->history_[i] = this->historyUpdated_[i];
-	}
-
-	for(int i=0; i< 10 ; i++)
-		this->solutionC_n_[i]=(*this->solution_)[i+30]; // this is the LAST solution of newton iterations
-
-	
-}
-
-template <class SC, class LO, class GO, class NO>
-void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assembleRHS(){
-
-	this->rhsVec_.reset( new vec_dbl_Type ( this->dofsElement_,0.) );
+    this->iCode_ = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).get("Integration Code", 18);
 
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 
+    AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 tempElem = AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10(this->iCode_);
+    this->historyLength_ = tempElem.getHistoryLength();
+    this->numberOfIntegrationPoints_ = tempElem.getNumberOfGaussPoints();
+    this->postDataLength_ = tempElem.getNumberOfPostData();
+    this->domainDataLength_ = tempElem.getNumberOfDomainData();
+    char** domainDataNames = tempElem.getDomainDataNames();
+    char** postDataNames = tempElem.getPostDataNames();
 
-	double deltaT=this->getTimeIncrement();
+    std::vector<std::string> subString(this->domainDataLength_);
 
-	double positions[30];
-	int count = 0;
-	//cout << "Positions " << endl;
-	for(int i=0;i<10;i++){
-		for(int j=0;j<3;j++){
-			positions[count] = this->getNodesRefConfig()[i][j];
-			count++;
-	//		cout << " | " <<  positions[count-1] ;
+    this->domainDataNames_.resize(this->domainDataLength_);
+    this->postDataNames_.resize(this->postDataLength_);
+    this->domainData_.resize(this->domainDataLength_, 0.0);
+
+    for (int i = 0; i < this->domainDataLength_; i++) {
+        this->domainDataNames_[i] = std::string(domainDataNames[i]);
+        int pos1 = domainDataNames_[i].find("-");
+        int pos2 = domainDataNames_[i].find("_");
+
+        subString[i] = domainDataNames_[i].substr(pos1 + 1, pos2 - pos1 - 1);
+        this->domainDataNames_[i] = subString[i];
+        this->domainData_[i] = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).get(subString[i], 1.e13);
+
+        TEUCHOS_TEST_FOR_EXCEPTION(this->domainData_[i] > 1.e12, std::logic_error, " Parameter not set correctly. Parameter " << this->domainDataNames_[i] << " received default value!!");
+
+        // Pre-compute which parameters need acceleration/deceleration, by exact name: a
+        // substring match would also scale kEtaPlus and mEtaPlus (through "Eta").
+        static const std::set<std::string> acceleratedNames = {
+            "LambdaBarCDotMax", "LambdaBarCDotMin", "Eta", "K3", "K4", "K7", "Beta1", "Gamma6",
+            "KDotMin", "KDotMax", "LambdaBarDotPMin", "LambdaBarDotPMax"};
+        static const std::set<std::string> deceleratedNames = {"Gamma5", "Gamma2"};
+        if (acceleratedNames.count(domainDataNames_[i]) > 0)
+            acceleratedParamIndices_.push_back(i);
+        else if (deceleratedNames.count(domainDataNames_[i]) > 0)
+            deceleratedParamIndices_.push_back(i);
+    }
+
+    for (int i = 0; i < this->postDataLength_; i++) {
+        this->postDataNames_[i] = std::string(postDataNames[i]);
+    }
+
+    // Create map from field name to position in postDataNames_
+    for (int i = 0; i < postDataNames_.size(); i++) {
+        fieldNameToPosition_[postDataNames_[i]] = i;
+    }
+
+    this->residuumRint_.resize(30, 0.0);
+    this->residuumRc_.resize(10, 0.0);
+    this->residuumRdyn_.resize(30, 0.0);
+
+    this->stiffnessMatrixKuu_.resize(30, vec_dbl_Type(30, 0.0));
+    this->stiffnessMatrixKuc_.resize(30, vec_dbl_Type(10, 0.0));
+    this->stiffnessMatrixKcu_.resize(10, vec_dbl_Type(30, 0.0));
+    this->stiffnessMatrixKcc_.resize(10, vec_dbl_Type(10, 0.0));
+    this->massMatrixMc_.resize(10, vec_dbl_Type(10, 0.0));
+
+#endif
+
+    this->subiterationTolerance_ = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).get("Subiteration Tolerance", 1.e-7);
+    this->FEType_ = std::get<1>(this->diskTuple_->at(0));     // FEType of Disk
+    this->dofsSolid_ = std::get<2>(this->diskTuple_->at(0));  // Degrees of freedom per node
+    this->dofsChem_ = std::get<2>(this->diskTuple_->at(1));   // Degrees of freedom per node
+
+    this->numNodesSolid_ = std::get<3>(this->diskTuple_->at(0));  // Number of nodes of element
+    this->numNodesChem_ = std::get<3>(this->diskTuple_->at(1));   // Number of nodes of element
+
+    this->dofsElement_ = this->dofsSolid_ * this->numNodesSolid_ + this->dofsChem_ * this->numNodesChem_;  // "Dimension of return matrix"
+
+    this->positions_ = std::vector<double>(30, 0.0);
+    this->displacements_ = std::vector<double>(30, 0.0);
+    this->accelerations_ = std::vector<double>(30, 0.0);
+    this->concentrations_ = std::vector<double>(10, 0.0);
+    this->rates_ = std::vector<double>(10, 0.0);
+
+	// Einlesen durch Parameterdatei irgendwann cool
+
+    // historyGP: Vector of history variables [Order: LambdaBarC1, LambdaBarC2, nA1, nA2, nB1, nB2, nC1, nC2, nD1, nD2, LambdaA1, LambdaA2, k251, k252, LambdaBarP1, LambdaBarP2, Theta1, Theta2, Theta3, Ag11, Ag12, Ag13, Ag21, Ag22, Ag23, Ag31, Ag32, Ag33, a11, a12, a13, a21, a22, a23] (The length must be equal to number of history variables per gauss point(34) * number of gauss points)
+    std::vector<double> historyGP = {1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.82758, 1.82758, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
+
+    this->history_.clear();
+    this->historyUpdated_.clear();
+
+    this->history_.reserve(this->historyLength_);
+    for (int i = 0; i < this->numberOfIntegrationPoints_; i++)
+        this->history_.insert(this->history_.end(), historyGP.begin(), historyGP.end());
+
+    // Error out if history length is inconsistent
+    TEUCHOS_TEST_FOR_EXCEPTION(this->history_.size() != this->historyLength_, std::logic_error, "History input length does not match history size of model! \n History input length: " << this->history_.size() << "\n History size of model: " << this->historyLength_ << "\n");
+
+    this->historyUpdated_.reserve(this->historyLength_);
+    for (int i = 0; i < this->numberOfIntegrationPoints_; i++)
+        this->historyUpdated_.insert(this->historyUpdated_.end(), historyGP.begin(), historyGP.end());
+
+    this->solutionC_n_.resize(10, 0.);
+    this->solutionC_n1_.resize(10, 0.);
+
+    this->postProcessingData_ = Teuchos::rcp(new vec2D_dbl_Type(this->numNodesSolid_, vec_dbl_Type(this->postDataLength_)));
+    this->solution_.reset(new vec_dbl_Type(this->dofsElement_, 0.));
+
+#ifdef FEDD_HAVE_ACEGENINTERFACE	   
+	
+    // Nodal Positions in Reference Coordinates
+    int count = 0;
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < 3; j++) {
+            this->positions_[count] = this->getNodesRefConfig()[i][j];
+            count++;
+        }
+
+    // Active and Growth Time intervals
+    int numSegmentsActive = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).sublist("Timestepping Intervalls Active").get("Number of Segments", 0);
+    int numSegmentsGrowth = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).sublist("Timestepping Intervalls Growth").get("Number of Segments", 0);
+    int numSegmentsReorientation = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).sublist("Timestepping Intervalls Reorientation").get("Number of Segments", 0);
+
+    for (int i = 1; i <= numSegmentsActive; i++) {
+        double startTime = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).sublist("Timestepping Intervalls Active").sublist(std::to_string(i)).get("Start Time", 0.);
+        double endTime = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).sublist("Timestepping Intervalls Active").sublist(std::to_string(i)).get("End Time", 0.);
+
+        if (i == 1)
+            TEUCHOS_TEST_FOR_EXCEPTION(startTime != this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).get("ActiveStartTime", 0.), std::logic_error, "!!!WARNING:: The ActiveStartTime and the start of Time stepping intervalls for active response do not match!!!");
+
+        vec_dbl_Type segment = {startTime, endTime};
+        segmentsActive_.push_back(segment);
+    }
+
+    for (int i = 1; i <= numSegmentsGrowth; i++) {
+        double startTime = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).sublist("Timestepping Intervalls Growth").sublist(std::to_string(i)).get("Start Time", 0.);
+        double endTime = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).sublist("Timestepping Intervalls Growth").sublist(std::to_string(i)).get("End Time", 0.);
+
+        vec_dbl_Type segment = {startTime, endTime};
+        segmentsGrowth_.push_back(segment);
+    }
+
+    for (int i = 1; i <= numSegmentsReorientation; i++) {
+        double startTime = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).sublist("Timestepping Intervalls Reorientation").sublist(std::to_string(i)).get("Start Time", 0.);
+        double endTime = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).sublist("Timestepping Intervalls Reorientation").sublist(std::to_string(i)).get("End Time", 0.);
+
+        vec_dbl_Type segment = {startTime, endTime};
+        segmentsReorientation_.push_back(segment);
+    }
+#endif
+}
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::assembleJacobian() {
+    SmallMatrixPtr_Type elementMatrix = Teuchos::rcp(new SmallMatrix_Type(this->dofsElement_, 0.));
+#ifdef FEDD_HAVE_ACEGENINTERFACE
+
+    assemble_SCI_SMC_Active_Growth_Reorientation(true);
+
+    for (int i = 0; i < 30; i++)
+        for (int j = 0; j < 30; j++)
+            (*elementMatrix)[i][j] = this->stiffnessMatrixKuu_[i][j];
+
+    for (int i = 0; i < 30; i++)
+        for (int j = 0; j < 10; j++)
+            (*elementMatrix)[i][j + 30] = this->stiffnessMatrixKuc_[i][j];
+
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < 30; j++)
+            (*elementMatrix)[i + 30][j] = this->stiffnessMatrixKcu_[i][j];
+
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < 10; j++)
+            (*elementMatrix)[i + 30][j + 30] = this->stiffnessMatrixKcc_[i][j] + (1. / this->getTimeIncrement()) * this->massMatrixMc_[i][j];
+
+#endif
+
+    this->jacobian_ = elementMatrix;
+}
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::checkingReorientationActiveGrowth() {
+    bool restart = this->params_->sublist("Timestepping Parameter").get("Restart", false);
+    double timeStepRestart = this->params_->sublist("Timestepping Parameter").get("Time step", 0.0);
+
+    // Checking for active response
+    for (int i = 0; i < segmentsActive_.size(); i++) {
+        // if (time >= startTime && time < endTime)
+        if ((this->timeStep_ > segmentsActive_[i][0] || approxEqual(this->timeStep_, segmentsActive_[i][0])) && (this->timeStep_ < segmentsActive_[i][1] && !approxEqual(this->timeStep_, segmentsActive_[i][1]))) {
+            this->activeBool_ = 1;
+            if (!this->activeInitialized_) {
+                // if (restart and timeStepRestart > firstActiveStartTime)
+                if (restart && timeStepRestart > segmentsActive_[0][0] && !approxEqual(timeStepRestart, segmentsActive_[0][0]))
+                    this->activeInitialized_ = true;
+                else
+                    this->initializeActiveResponse();
+            }
+            break;
+        } else
+            this->activeBool_ = 0;
+    }
+
+    // Checking for growth
+    for (int i = 0; i < segmentsGrowth_.size(); i++) {
+        // if (time >= startTime && time < endTime)
+        if ((this->timeStep_ > segmentsGrowth_[i][0] || approxEqual(this->timeStep_, segmentsGrowth_[i][0])) && (this->timeStep_ < segmentsGrowth_[i][1] && !approxEqual(this->timeStep_, segmentsGrowth_[i][1]))) {
+            this->growthBool_ = 1;
+            if (!this->growthInitialized_) {
+                // if(restart and timeStepRestart > firstGrowthStartTime)
+                if (restart && timeStepRestart > segmentsGrowth_[0][0] && !approxEqual(timeStepRestart, segmentsGrowth_[0][0]))
+                    this->growthInitialized_ = true;
+                else
+                    this->initializeGrowth();
+            }
+            break;
+        } else
+            this->growthBool_ = 0;
+    }
+
+    for (int i = 0; i < segmentsReorientation_.size(); i++) {
+        // if (time >= startTime && time < endTime)
+        if ((this->timeStep_ > segmentsReorientation_[i][0] || approxEqual(this->timeStep_, segmentsReorientation_[i][0])) && (this->timeStep_ < segmentsReorientation_[i][1] && !approxEqual(this->timeStep_, segmentsReorientation_[i][1]))) {
+            this->reorientationBool_ = 1;
+            break;
+        } else
+            this->reorientationBool_ = 0;
+    }
+
+    if (activeBool_ == 1 && growthBool_ == 1)
+        std::cout << " WARNING: Growth and Reorientation occuring simultaneously in element: " << this->globalElementID_ << ". Ignore message if intended.\n";
+
+    if (activeBool_ == 1 && reorientationBool_ == 1)
+        std::cout << " WARNING: Active Response and Reorientation occuring simultaneously in element: " << this->globalElementID_ << ". Ignore message if intended.\n";
+
+    if (growthBool_ == 1 && reorientationBool_ == 1)
+        std::cout << " WARNING: Growth and Reorientation occuring simultaneously in element: " << this->globalElementID_ << ". Ignore message if intended.\n";
+
+    this->updateDomainData("growthBool", growthBool_);
+    this->updateDomainData("ActiveBool", activeBool_);
+    this->updateDomainData("reorientationBool", reorientationBool_);
+}
+
+// This is called at the beginning of each time step and sets time = t_n+1 along with the correct time increment dt
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::advanceInTime(Teuchos::RCP<TimeSteppingTools> timeSteppingTool) {
+    this->timeStep_ = timeSteppingTool->currentTime();  // Sets time to t_n+1
+
+    this->timeIncrement_ = timeSteppingTool->get_dt();
+
+    // Checking for Active Response Reorientation and Growth
+    checkingReorientationActiveGrowth();
+
+    for (int i = 0; i < this->historyLength_; i++)
+        this->history_[i] = this->historyUpdated_[i];
+
+    for (int i = 0; i < 10; i++)
+        this->solutionC_n_[i] = (*this->solution_)[i + 30];
+}
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::assembleRHS() {
+    this->rhsVec_.reset(new vec_dbl_Type(this->dofsElement_, 0.));
+#ifdef FEDD_HAVE_ACEGENINTERFACE
+
+    assemble_SCI_SMC_Active_Growth_Reorientation(false);
+
+    for (int i = 0; i < 30; i++)
+        (*this->rhsVec_)[i] = this->residuumRint_[i];  //+residuumRDyn[i];
+
+    for (int i = 0; i < 10; i++)
+        (*this->rhsVec_)[i + 30] = this->residuumRc_[i];
+#endif
 		}
-	//	cout << endl;
 
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::assemble_SCI_SMC_Active_Growth_Reorientation(bool computeTangent) {
+#ifdef FEDD_HAVE_ACEGENINTERFACE
+
+    // We check this in case of restart. Then the history parameters are already set or we are already in a state of reorientation etc. Then the history does not need to be explicitly updated again.
+    bool restart = this->params_->sublist("Timestepping Parameter").get("Restart", false);
+    if (restart) {
+        double timeStepRestart = this->params_->sublist("Timestepping Parameter").get("Time step", 0.0);
+        if (approxEqual(this->timeStep_, timeStepRestart + this->getTimeIncrement()) && this->historyImported_)
+            checkingReorientationActiveGrowth();
 	}
-	//cout << " --- " << endl;
-	// std::ofstream myfile;
-	// myfile.open ("outputs.txt",ios::app);
-	// myfile << "Positions " << endl;
-	// for(int i=0;i<30;i++)
-	// 	myfile << positions[i] << endl;
-	// myfile << endl;
 
+    double deltaT = this->getTimeIncrement();
+
+    double time = this->getTimeStep();
+
+    for (int i = 0; i < 30; i++)
+        this->displacements_[i] = (*this->solution_)[i];
+
+    for (int i = 0; i < 10; i++) {
+        this->concentrations_[i] = (*this->solution_)[i + 30];
+        this->solutionC_n1_[i] = (*this->solution_)[i + 30];  // in each newtonstep solution for n+1 is updated.
+    }
+
+    for (int i = 0; i < 10; i++)
+        this->rates_[i] = (this->solutionC_n1_[i] - this->solutionC_n_[i]) / deltaT;
+
+    std::vector<double> domainDataModified(this->domainDataLength_);
+
+    std::copy(this->domainData_.begin(), this->domainData_.end(), domainDataModified.begin());
+
+    if (time < this->activeAcceleratedEndTime_) {
+        for (int idx : acceleratedParamIndices_) {
+            domainDataModified[idx] = this->domainData_[idx] * this->activeAcceleratedMultiplier_;
+        }
+        for (int idx : deceleratedParamIndices_) {
+            domainDataModified[idx] = this->domainData_[idx] / this->activeAcceleratedMultiplier_;
+        }
+    }
+
+    AceGenElement_Type& elem = aceGenElement(this->displacements_.data(), this->concentrations_.data(), this->accelerations_.data(), this->rates_.data(), domainDataModified.data(), deltaT, time);
+
+    int errorCode = elem.compute(computeTangent);
+
+    double* residuumRint = elem.getResiduumVectorRint();
+    for (int i = 0; i < 30; i++)
+        this->residuumRint_[i] = residuumRint[i];
+
+    double* residuumRdyn = elem.getResiduumVectorRdyn();
+    for (int i = 0; i < 30; i++)
+        this->residuumRdyn_[i] = residuumRdyn[i];
+
+    double* residuumRc = elem.getResiduumVectorRc();
+    for (int i = 0; i < 10; i++)
+        this->residuumRc_[i] = residuumRc[i];
+
+    if (computeTangent) {
+        double** stiffnessMatrixKuu = elem.getStiffnessMatrixKuu();
+        for (int i = 0; i < 30; i++)
+            for (int j = 0; j < 30; j++)
+                this->stiffnessMatrixKuu_[i][j] = stiffnessMatrixKuu[i][j];
+
+        double** stiffnessMatrixKuc = elem.getStiffnessMatrixKuc();
+        for (int i = 0; i < 30; i++)
+            for (int j = 0; j < 10; j++)
+                this->stiffnessMatrixKuc_[i][j] = stiffnessMatrixKuc[i][j];
+
+        double** stiffnessMatrixKcu = elem.getStiffnessMatrixKcu();
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 30; j++)
+                this->stiffnessMatrixKcu_[i][j] = stiffnessMatrixKcu[i][j];
+
+        double** massMatrixMc = elem.getMassMatrixMc();
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
+                this->massMatrixMc_[i][j] = massMatrixMc[i][j];
+
+        double** stiffnessMatrixKcc = elem.getStiffnessMatrixKcc();
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
+                this->stiffnessMatrixKcc_[i][j] = stiffnessMatrixKcc[i][j];
+
+        double* historyUpdated = elem.getHistoryUpdated();
+        for (int i = 0; i < this->historyLength_; i++)
+            this->historyUpdated_[i] = historyUpdated[i];
+    }
+
+#endif
+}
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::postProcessing() {
+#ifdef FEDD_HAVE_ACEGENINTERFACE
 
 	double displacements[30];
-	for(int i = 0; i < 30; i++)
-	{
-		displacements[i]=(*this->solution_)[i];	
-	}
-
-
-	std::vector<double> history(this->historyLength_, 0.0);
-    for(int i = 0; i < this->historyLength_; i++){
-	    history[i] = this->history_[i];
-	}
+    for (int i = 0; i < 30; i++)
+        displacements[i] = (*this->solution_)[i];
    
     double concentrations[10];
-    for(int i = 0; i < 10; i++)
-	{
-		concentrations[i]= (*this->solution_)[i+30];	
-		this->solutionC_n1_[i] = (*this->solution_)[i+30];		// in each newtonstep solution for n+1 is updated.
+    for (int i = 0; i < 10; i++) {
+        concentrations[i] = (*this->solution_)[i + 30];
+        solutionC_n1_[i] = (*this->solution_)[i + 30];  // in each newtonstep solution for n+1 is updated.
 	}	
 	
     double accelerations[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
    	
-	std::vector<double> domainData = {this->fA_, this->lambdaC50_, this->gamma3_, this->lambdaBarCDotMax_, this->lambdaBarCDotMin_, this->gamma2_, this->gamma1_, this->eta_, this->ca50_, this->k2_, this->k5_,
-						   this->k3_, this->k4_, this->k7_, this->kappa_, this->beta1_, this->muA_, this->beta2_, this->alpha2_, this->alpha3_, this->alpha1_, this->alpha4_, this->alpha5_,
-						   this->gamma6_, this->lambdaP50_, this->kDotMin_, this->zeta1_, this->kDotMax_, this->gamma4_, this->lambdaBarDotPMin_, this->lambdaBarDotPMax_, this->gamma5_, this->zeta2_,
-		 				   this->DeltaLambdaBarPMin_, this->p1_, this->p3_, this->c50_, this->d0_, this->m_, this->activeStartTime_, this->kEtaPlus_, this->mEtaPlus_, this->growthStartTime_,
-						   this->reorientationStartTime_, this->growthEndTime_, this->reorientationEndTime_, this->kThetaPlus_, this->kThetaMinus_, this->mThetaPlus_, this->mThetaMinus_, this->thetaPlus1_,
-						   this->thetaPlus2_, this->thetaPlus3_, this->thetaMinus1_, this->thetaMinus2_, this->thetaMinus3_, this->kMin_, this->rho_};
-
     double rates[10];
+    for (int i = 0; i < 10; i++)
+        rates[i] = (this->solutionC_n1_[i] - this->solutionC_n_[i]) / this->getTimeIncrement();
 
-	for(int i=0; i<10 ; i++){
-		rates[i] =(this->solutionC_n1_[i]-this->solutionC_n_[i])/deltaT;//(solutionC_n1_[i])/deltaT; //-solutionC_n_[i](solutionC_n1_[i]-solutionC_n_[i])/deltaT;//
+    double deltaT = this->getTimeIncrement();
+
+    double time = this->getTimeStep();
+
+    std::vector<double> domainDataModified(this->domainDataLength_);
+
+    std::copy(this->domainData_.begin(), this->domainData_.end(), domainDataModified.begin());
+
+    if (time < this->activeAcceleratedEndTime_) {
+        for (int idx : acceleratedParamIndices_) {
+            domainDataModified[idx] = this->domainData_[idx] * this->activeAcceleratedMultiplier_;
+        }
+        for (int idx : deceleratedParamIndices_) {
+            domainDataModified[idx] = this->domainData_[idx] / this->activeAcceleratedMultiplier_;
+        }
 	}
 
+    AceGenElement_Type& elem = aceGenElement(&displacements[0], &concentrations[0], &accelerations[0], &rates[0], domainDataModified.data(), deltaT, time);
     
-    double time = this->getTimeStep()+deltaT;
+    double** postProcessingResults = elem.postProcess(&displacements[0], &concentrations[0], this->history_.data(), &rates[0], &accelerations[0]);
 
-    double subIterationTolerance = 1.e-7;
- 
-    // immer speicher und wenn es konvergiert, dann zur history machen
-    double historyUpdated[] = {1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                    		   1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                    		   1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                     		   1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 1., 1., 1.512656, 1.512656, 1., 1., 1., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
-	
-	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 elem(positions, displacements, concentrations, accelerations, rates, &domainData[0], &history[0], subIterationTolerance, deltaT, time, this->iCode_,this->getGlobalElementID());
-	int errorCode = elem.compute();
-
-	TEUCHOS_TEST_FOR_EXCEPTION(errorCode == 2, std::runtime_error, "Subiteration Fail in Element" << this->getGlobalElementID() );
-
-
-	double *residuumRint = elem.getResiduumVectorRint();
-
-	// Write residuumRint to a file named residuumRint.txt
-	// myfile.open ("outputs.txt",ios::app);
-	// myfile << "residuumRint: ";
-	// for(int i=0; i< 30 ; i++){
-		// myfile << residuumRint[i] << " ";
-	// }
-	// myfile << "\n";
-	// myfile.close();
-
-	double *residuumRDyn = elem.getResiduumVectorRdyn();
-	
-	for(int i=0; i< 30 ; i++){
-		(*this->rhsVec_)[i] = residuumRint[i]; //+residuumRDyn[i];
-	}
-
-	double *residuumRc = elem.getResiduumVectorRc();
-
-	for(int i=0; i< 10 ; i++){		
-		(*this->rhsVec_)[i+30] = residuumRc[i];
-
-	}
-
-
-	
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < this->postDataLength_; j++)
+            (*this->postProcessingData_)[i][j] = postProcessingResults[i][j];
 #endif
+	}
 
-}
+template <class SC, class LO, class GO, class NO>
+int AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::findPosition(const std::string& subString, const std::vector<std::string>& stringArray) {
+    for (int i = 0; i < stringArray.size(); i++)
+        if (stringArray[i] == subString)
+            return i;
+	return -1;
+	}
 
-/**
- * @brief Example for stiffness matrix Kuc
- * @param nodalPositionReference [in] The nodal positions in the reference coordinates in order (x1,y1,z1,x2,y2,z2..)
- * @param displacements [in] The nodal displacements
- * @param concentrations [in] The nodal concentrations
- * @param accelerations [in] The nodal accelerations
- * @param rates [in] The nodal concentrations rates (dC/dt)
- * @param domainData [in] Vector of domain data (Use function getDomainDataNames() to get the names and order)
- * @param history  [in] Vector of history variables [Order: LambdaBarC1, LambdaBarC2, nA1, nA2, nB1, nB2, nC1, nC2, nD1, nD2, LambdaA1, LambdaA2] (The length must be equal to number of history variables per gauss point * number of gauss points)
- * @param subIterationTolerance [in] Tolernace for the local Newton iterations (Gauss Point values). Recommended 1e-7.
- * @param timeIncrement [in] Time increment
- * @param time [in] Current time
- * @param integrationScheme [in] Integration code (18 for 4 point, 19 for 5 point, 40 for 14 point, 43 for 8 point)
- * @param historyUpdated [out] Updated values of the history variables after the Newton-Raphson iteration
- * @param stiffnessMatrixKuu [out] The stiffness matrix Kuu
- */
-
-
-template <class SC,class LO, class GO, class NO>
-void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO>::assemble_SCI_SMC_Active_Growth_Reorientation(SmallMatrixPtr_Type &elementMatrix){
-	// double deltat=this->getTimeIncrement();
-	// std::vector<double> deltat(1);
-	// deltat[0]=this->getTimeIncrement();
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::initializeGrowth() {
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 
-	double deltaT=this->getTimeIncrement();
- 	
-	double positions[30];
-	int count = 0;
-	for(int i=0;i<10;i++){
-		for(int j=0;j<3;j++){
-			positions[count] =  this->getNodesRefConfig()[i][j];
-			count++;
-		}
-	}
 	double displacements[30];
-	for(int i = 0; i < 30; i++)
-	{
-		displacements[i]= (*this->solution_)[i];	
-		
-	}
-  	std::vector<double> history(this->historyLength_,0.0);// = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
-  	//cout << "History_ " ; 
-    for(int i = 0; i < this->historyLength_; i++){
-	    history[i] = this->history_[i];
-		//cout << history[i] << ", ";
-	}
-	//cout << endl;
-
+    for (int i = 0; i < 30; i++)
+        displacements[i] = (*this->solution_)[i];
 
     double concentrations[10];
-    for(int i = 0; i < 10; i++)
-	{
-		concentrations[i]=(*this->solution_)[i+30];	
-		solutionC_n1_[i]=(*this->solution_)[i+30];		// in each newtonstep solution for n+1 is updated.
+    for (int i = 0; i < 10; i++) {
+        concentrations[i] = (*this->solution_)[i + 30];
+        solutionC_n1_[i] = (*this->solution_)[i + 30];  // in each newtonstep solution for n+1 is updated.
 	}
 
     double accelerations[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
    
+    double rates[10];
+    for (int i = 0; i < 10; i++)
+        rates[i] = (this->solutionC_n1_[i] - this->solutionC_n_[i]) / this->getTimeIncrement();
    
-    std::vector<double> domainData = {this->fA_, this->lambdaC50_, this->gamma3_, this->lambdaBarCDotMax_, this->lambdaBarCDotMin_, this->gamma2_, this->gamma1_, this->eta_, this->ca50_, this->k2_, this->k5_,
-						   this->k3_, this->k4_, this->k7_, this->kappa_, this->beta1_, this->muA_, this->beta2_, this->alpha2_, this->alpha3_, this->alpha1_, this->alpha4_, this->alpha5_,
-						   this->gamma6_, this->lambdaP50_, this->kDotMin_, this->zeta1_, this->kDotMax_, this->gamma4_, this->lambdaBarDotPMin_, this->lambdaBarDotPMax_, this->gamma5_, this->zeta2_,
-		 				   this->DeltaLambdaBarPMin_, this->p1_, this->p3_, this->c50_, this->d0_, this->m_, this->activeStartTime_, this->kEtaPlus_, this->mEtaPlus_, this->growthStartTime_,
-						   this->reorientationStartTime_, this->growthEndTime_, this->reorientationEndTime_, this->kThetaPlus_, this->kThetaMinus_, this->mThetaPlus_, this->mThetaMinus_, this->thetaPlus1_,
-						   this->thetaPlus2_, this->thetaPlus3_, this->thetaMinus1_, this->thetaMinus2_, this->thetaMinus3_, this->kMin_, this->rho_};
+    double deltaT = this->getTimeIncrement();
 
+    double time = this->getTimeStep();
 
-	double rates[10];
-	for(int i=0; i<10 ; i++){
-		rates[i] =(this->solutionC_n1_[i]-this->solutionC_n_[i]) / deltaT;//
+    std::vector<double> domainDataModified(this->domainDataLength_);
+
+    std::copy(this->domainData_.begin(), this->domainData_.end(), domainDataModified.begin());
+
+    if (time < this->activeAcceleratedEndTime_) {
+        for (int idx : acceleratedParamIndices_) {
+            domainDataModified[idx] = this->domainData_[idx] * this->activeAcceleratedMultiplier_;
 	}
-	// ##########################
-
-    // history  [in] Vector of history variables [Order: LambdaBarC1, LambdaBarC2, nA1, nA2, nB1, nB2, nC1, nC2, nD1, nD2, LambdaA1, LambdaA2] (The length must be equal to number of history variables per gauss point * number of gauss points)
-    
-    double time = this->getTimeStep()+deltaT;
-    double subIterationTolerance = 1.e-7;
-    	
-    // immer speicher und wenn es konvergiert, dann zur history machen
-    // double historyUpdated[] = {1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0}; // 48 values, 12 variables, 4 gausspoints
-	
-	AceGenInterface::DeformationDiffusionSmoothMuscleActiveGrowthReorientationTetrahedra3D10 elem(positions, displacements, concentrations, accelerations, rates, &domainData[0], &history[0], subIterationTolerance, deltaT, time, this->iCode_,this->getGlobalElementID());
-	int errorCode = elem.compute();
-	TEUCHOS_TEST_FOR_EXCEPTION(errorCode == 2, std::runtime_error, "Subiteration Fail in Element" << this->getGlobalElementID() );
-
-	double *historyUpdated = elem.getHistoryUpdated();
-
-	double** stiffnessMatrixKuu = elem.getStiffnessMatrixKuu();
-	double** stiffnessMatrixKuc = elem.getStiffnessMatrixKuc();
-	double** stiffnessMatrixKcu = elem.getStiffnessMatrixKcu();
-	double** stiffnessMatrixKcc = elem.getStiffnessMatrixKcc();
-	double** massMatrixMc = elem.getMassMatrixMc();
-
-	for(int i=0; i< this->historyLength_; i++){
-		this->historyUpdated_[i] = historyUpdated[i];
+        for (int idx : deceleratedParamIndices_) {
+            domainDataModified[idx] = this->domainData_[idx] / this->activeAcceleratedMultiplier_;
+        }
 	}
 
-	for(int i=0; i< 30; i++){
-		for(int j=0; j<30; j++){
-			//if(std::fabs(stiffnessMatrixKuu[i][j]) > 1e7)
-			//	cout << " !!! Sus entry Kuu [" << i << "][" << j << "] " << stiffnessMatrixKuu[i][j] << endl; 
+    AceGenElement_Type& elem = aceGenElement(&displacements[0], &concentrations[0], &accelerations[0], &rates[0], domainDataModified.data(), deltaT, time);
 			
-			(*elementMatrix)[i][j]=stiffnessMatrixKuu[i][j];		
+    std::vector<double> historyNew = elem.initializeGrowthOrientationVectors();
+
+    for (int i = 0; i < this->historyLength_; i++) {
+        this->history_[i] = historyNew[i];
+        this->historyUpdated_[i] = historyNew[i];
+    }
+#endif
+    growthInitialized_ = true;
 		}
 		
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::initializeActiveResponse() {
+    double deltaT = this->getTimeIncrement();
+    double time = this->getTimeStep();
+#ifdef FEDD_HAVE_ACEGENINTERFACE
+    std::vector<double> domainDataModified(this->domainDataLength_);
+
+    std::copy(this->domainData_.begin(), this->domainData_.end(), domainDataModified.begin());
+
+    if (time < this->activeAcceleratedEndTime_) {
+        for (int idx : acceleratedParamIndices_) {
+            domainDataModified[idx] = this->domainData_[idx] * this->activeAcceleratedMultiplier_;
+        }
+        for (int idx : deceleratedParamIndices_) {
+            domainDataModified[idx] = this->domainData_[idx] / this->activeAcceleratedMultiplier_;
+        }
 	}
 
-	for(int i=0; i< 30; i++){
-		for(int j=0; j<10; j++){
-			//if(std::fabs(stiffnessMatrixKuc[i][j]) > 1e7)
-			//	cout << " !!! Sus entry Kuc [" << i << "][" << j << "] " << stiffnessMatrixKuc[i][j] << endl; 
+    AceGenElement_Type& elem = aceGenElement(this->displacements_.data(), this->concentrations_.data(), this->accelerations_.data(), this->rates_.data(), domainDataModified.data(), deltaT, time);
 			
-			(*elementMatrix)[i][j+30]=stiffnessMatrixKuc[i][j];
-		}
-	}
-	for(int i=0; i< 10; i++){
-		for(int j=0; j<30; j++){
-			//if(std::fabs(stiffnessMatrixKcu[i][j]) > 1e7)
-			//	cout << " !!! Sus entry Kcu [" << i << "][" << j << "] " << stiffnessMatrixKcu[i][j] << endl; 
-			
-			(*elementMatrix)[i+30][j]=stiffnessMatrixKcu[i][j];
-		}
-	}
-	for(int i=0; i< 10; i++){
-		for(int j=0; j<10; j++){
-			//if(std::fabs(massMatrixMc[i][j]) > 1e5 || std::fabs(stiffnessMatrixKcc[i][j]) > 1e5 )
-			//	cout << " !!! Sus entry Mass [" << i << "][" << j << "] " << massMatrixMc[i][j] << " or stiff Kcc " << stiffnessMatrixKcc[i][j] << endl; 
-			 
-			(*elementMatrix)[i+30][j+30] =stiffnessMatrixKcc[i][j] +(1./deltaT)*massMatrixMc[i][j]; //
+    std::vector<double> stretches = elem.getGaussPointStretches();
 
-			//(*massMatrix_)[i][j] = massMatrixMc[i][j];
+    int historyPerGP = (int)this->historyLength_ / this->numberOfIntegrationPoints_;
+    for (int i = 0; i < this->numberOfIntegrationPoints_; i++) {
+        this->history_[i * historyPerGP + 10] = stretches[i * 2];
+        this->history_[i * historyPerGP + 11] = stretches[i * 2 + 1];
+        this->historyUpdated_[i * historyPerGP + 10] = stretches[i * 2];
+        this->historyUpdated_[i * historyPerGP + 11] = stretches[i * 2 + 1];
 		}
+#endif
+    activeInitialized_ = true;
+	}
+			
+#ifdef FEDD_HAVE_ACEGENINTERFACE
+template <class SC, class LO, class GO, class NO>
+typename AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::AceGenElement_Type&
+AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::aceGenElement(double* displacements, double* concentrations, double* accelerations, double* rates, double* domainData, double deltaT, double time) {
+#ifdef ACEGENINTERFACE_REUSABLE_ELEMENTS
+    // Interface2 resets the element's results in compute(), so one element can be
+    // reused with the data of each call.
+    if (!aceGenElement_.is_null()) {
+        aceGenElement_->setPositions(this->positions_.data());
+        aceGenElement_->setDisplacements(displacements);
+        aceGenElement_->setConcentrations(concentrations);
+        aceGenElement_->setAccelerations(accelerations);
+        aceGenElement_->setRates(rates);
+        aceGenElement_->setDomainData(domainData);
+        aceGenElement_->setHistoryVector(this->history_.data());
+        aceGenElement_->setSubIterationTolerance(this->subiterationTolerance_);
+        aceGenElement_->setTimeIncrement(deltaT);
+        aceGenElement_->setTime(time);
+        aceGenElement_->setIntegrationCode(this->iCode_);
+        aceGenElement_->setElementID(this->getGlobalElementID());
+        return *aceGenElement_;
+		}
+#endif
+    // Older Interface2 versions add the results of compute() to those of the previous
+    // call: a new element for every call.
+    aceGenElement_.reset(new AceGenElement_Type(this->positions_.data(), displacements, concentrations, accelerations, rates, domainData, this->history_.data(), this->subiterationTolerance_, deltaT, time, this->iCode_, this->getGlobalElementID()));
+    return *aceGenElement_;
 	}
 #endif
 
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::updateDomainData(const std::string& dataName, double dataValue) {
+    int position = findPosition(dataName, this->domainDataNames_);
+	TEUCHOS_TEST_FOR_EXCEPTION(position == -1, std::logic_error, " Parameter " << dataName << " not found in domain data names!!");
+    this->domainData_[position] = dataValue;
+}
 	
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::synchronizeTime(Teuchos::RCP<TimeSteppingTools> timeSteppingTool) {
+    this->timeStep_ = timeSteppingTool->t_;
+    this->timeIncrement_ = timeSteppingTool->get_dt();
 }
 
 } // namespace FEDD

@@ -53,7 +53,7 @@ public:
 
     typedef typename Problem_Type::BlockMultiVectorPtr_Type BlockMultiVectorPtr_Type;
     typedef Teuchos::Array<BlockMultiVectorPtr_Type> BlockMultiVectorPtrArray_Type;
-
+    
     typedef Teuchos::RCP<ExporterTxt> ExporterTxtPtr_Type;
 
     // boost function type for switching strategy 

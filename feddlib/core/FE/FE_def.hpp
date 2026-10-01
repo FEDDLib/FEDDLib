@@ -6801,7 +6801,7 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                 for (int n = 0; n < 3; n++)
                     for (int k = 0; k < 3; k++)
                         p1[k] += nodes[n][k] / 3.;
-                paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();
+                paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();          
                 func( &p1[0], &valueFunc[0], paramsFunc);
   
                 if(valueFunc[0] != 0.){

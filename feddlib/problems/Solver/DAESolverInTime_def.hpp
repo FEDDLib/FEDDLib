@@ -736,7 +736,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearNewmark()
     NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","Newton"));
     while(timeSteppingTool_->continueTimeStepping())
     {
-        std::cout << "  ############## Timeloop Newmark ##########" << std::endl;
+        if (verbose_)
+            std::cout << "  ############## Timeloop Newmark ##########" << std::endl;
         // Stelle (massCoeff*M + problemCoeff*A) auf
         problemTime_->combineSystems();
         
@@ -1202,7 +1203,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
 
-        if(this->comm_->getRank()==0)
+        if (verbose_)
             std::cout << " ----- Nonlinear System Info|| Number of rows:" << problemTime_->getSystem()->size() << " || number of rhs:" << problemTime_->getRhs()->size() << " || solution: " << problemTime_->getSolution()->size() << std::endl; 
         //massCoeffSCI.print();
         //problemCoeffSCI.print();
@@ -1337,7 +1338,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceWithLoadStepping()
     // problemCoeff vor A (= komplettes steady-System)
     // massCoeff vor M (= Massematrix)
     // coeffSourceTerm vor f (= rechte Seite der DGL)
-    std::cout << " Advance with Loadstepping " << std::endl;
+    if (verbose_)
+        std::cout << " Advance with Loadstepping " << std::endl;
     NonLinElasProblemPtr_Type nonLinElas = Teuchos::rcp_dynamic_cast<NonLinElasProblem_Type>( this->problemTime_->getUnderlyingProblem() );
 
     bool print = parameterList_->sublist("General").get("ParaViewExport",false);
@@ -2784,10 +2786,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
             fsi->problemTimeFluid_->setTimeParameters(massCoeffFluidTmp, problemCoeffFluid);
 
         }
-            
+        
         double time = timeSteppingTool_->currentTime() +  timeSteppingTool_->dt_;
-        problemTime_->updateTime ( time );     
-        std::cout << " ----> Time updated <-----" << std::endl;       
+        problemTime_->updateTime ( time );        
+        if (verbose_)
+            std::cout << " ----> Time updated <-----" << std::endl;
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
 
         nlSolver.solve(*this->problemTime_, time, its);
@@ -3438,7 +3441,7 @@ void DAESolverInTime<SC,LO,GO,NO>::setupExporter(){
             if(this->parameterList_->sublist("Parameter").get("FSCI",false) == true)
                 if(i==4 )
                     dofsPerNode = problemTime_->getDofsPerNode(5);
-
+            
             if (dofsPerNode == 1)
                 exporterPtr->addVariable( exportVector, varName, "Scalar", dofsPerNode, dom->getMapUnique() );
             else

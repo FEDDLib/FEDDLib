@@ -243,18 +243,18 @@ void TimeProblem<SC,LO,GO,NO>::updateMultistepRhsFSI(vec_dbl_Type& coeff, int nm
         if(k >= 0 && k < restartMassSolutions_.size())
             massSolutionPreviousTimesteps[i] = restartMassSolutions_[k];
         else{
-            SmallMatrix<SC> tmpMassParameter(size);
-            for (int r=0; r<size; r++) {
-                for (int s=0; s<size; s++) {
-                    if (massParameters_[r][s]!=0.) {
+        SmallMatrix<SC> tmpMassParameter(size);
+        for (int r=0; r<size; r++) {
+            for (int s=0; s<size; s++) {
+                if (massParameters_[r][s]!=0.) {
                         tmpMassParameter[r][s] = 1.;
-                    }
-
                 }
+
             }
+        }
             massSolutionPreviousTimesteps[i] = Teuchos::rcp( new BlockMultiVector_Type( problem_->getRhs() ) );
             systemMassPreviousTimeSteps_[i]->apply( *solutionPreviousTimesteps_[i], *massSolutionPreviousTimesteps[i], tmpMassParameter );
-        }
+    }
         problem_->getRhs()->update( coeff[i], *massSolutionPreviousTimesteps[i], 1. );
     }
 
@@ -541,7 +541,7 @@ void TimeProblem<SC,LO,GO,NO>::calculateNonLinResidualVec( std::string type, dou
             this->bcFactory_->setBCMinusVector( nonLinProb->getResidualVector(), nonLinProb->getSolution(), time );
         else if(type=="standard")// we set the negative Dirichlet BC to the residual
             this->bcFactory_->setVectorMinusBC( nonLinProb->getResidualVector(), nonLinProb->getSolution(), time );
-
+            
 
         bool plotResVector = nonLinProb->getParameterList()->sublist("General").get("Plot Residual Vector",false);
         double range1 = nonLinProb->getParameterList()->sublist("General").get("Plot Residual Vector Start",0.0);
@@ -794,7 +794,7 @@ void TimeProblem<SC,LO,GO,NO>::updateSolutionPreviousStep(){
             double dt = getPreviousTimeIncrement(timeStep); //parameterList_->sublist("Timestepping Parameter").get("dt", 0.01);
             double extract = timeStep - dt;
             int size = problem_->getSolution()->size();
-            
+
             solutionPreviousTimesteps_[0] = Teuchos::rcp( new BlockMultiVector_Type( problem_->getSolution()->getMap() ) );
 
             if(extract>0.){
@@ -819,7 +819,7 @@ void TimeProblem<SC,LO,GO,NO>::updateSolutionPreviousStep(){
         }
     }
     solutionPreviousTimesteps_[0] = Teuchos::rcp( new BlockMultiVector_Type( problem_->getSolution() ) );
-
+    
 
     // #######
     // Check for export for restart
@@ -1024,7 +1024,7 @@ void TimeProblem<SC,LO,GO,NO>::updateSolutionNewmarkPreviousStep(double dt, doub
                 accelerationPreviousTimesteps_.at(0)->addBlock(aImportedAcceleration,0);
 
                 newmarkUpdate = restartNewmarkUpdate_; // u'_{r-1}, u''_{r-1}: compute u'_r, u''_r below as in the uninterrupted run
-            }
+    }
             else{
                 TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"You are trying to restart from a time with no previous exported time.");
             }

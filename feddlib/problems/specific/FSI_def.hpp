@@ -111,7 +111,7 @@ exporterGeo_()
 
     this->initNOXParameters();
     counterP = 0;
-
+    
     std::string linearization = parameterListFSI->sublist("General").get("Linearization","FixedPoint");
     
     TEUCHOS_TEST_FOR_EXCEPTION( !(linearization == "Newton" || linearization == "NOX")  && materialModel_ != "linear", std::runtime_error, "Nonlinear material models can only be used with Newton's method or FixedPoint (nonlinear material Jacobian will still be used).");
@@ -229,7 +229,7 @@ void FSI<SC,LO,GO,NO>::assemble( std::string type ) const
         }
 
     //    P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 10 ) );
-
+        
         this->problemFluid_->assemble();
         
         // steady rhs wird hier assembliert.
@@ -293,7 +293,7 @@ void FSI<SC,LO,GO,NO>::assemble( std::string type ) const
         // ACHTUNG: Die Interface-Variable \lambda wird eindeutig von der Fluid-Seite gehalten.
         // Deswegen auch getDomain(0) fuer die Spalten der Kopplungsbloecke.
         this->feFactory_->assemblyFSICoupling(this->dim_, this->domain_FEType_vec_.at(2), C2, C3_T, 0, 2,
-        this->getDomain(0)->getInterfaceMapVecFieldUnique(), this->getDomain(2)->getMapVecFieldUnique(), true);
+            this->getDomain(0)->getInterfaceMapVecFieldUnique(), this->getDomain(2)->getMapVecFieldUnique(), true);
 
         
         // Falls geometrisch implizit
@@ -547,7 +547,7 @@ void FSI<SC,LO,GO,NO>::reAssemble(std::string type) const
         {
             // ACHTUNG: Fluid-Loesung wird hier auf Null gesetzt, wegen initializeVectors().
             // Somit dann auch die problemTimeFluid_ wodurch eine falsche BDF2-RHS entsteht.
-            // Rufe im DAESolverInTime deswegen erneut setPartialSolutions() auf.            
+            // Rufe im DAESolverInTime deswegen erneut setPartialSolutions() auf.
             this->problemFluid_->assembleConstantMatrices(); // Die Steifikeitsmatrix wird weiter unten erst genutzt
             
             // Es ist P = P_
@@ -767,7 +767,7 @@ void FSI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     }
     
     meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
-   
+    
     MultiVectorConstPtr_Type fluidSolution = this->solution_->getBlock(0);
     u_rep_->importFromVector(fluidSolution, true);
     u_minus_w_rep_->importFromVector(fluidSolution, true); //    u_minus_w_rep_ = *u_rep_;
@@ -1037,7 +1037,7 @@ void FSI<SC,LO,GO,NO>::solveGeometryProblem() const
         
         if (!this->exporterGeo_.is_null())
             this->exporterGeo_->save( this->timeSteppingTool_->currentTime() );
-        
+
     }
     
     

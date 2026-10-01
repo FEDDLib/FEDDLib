@@ -215,7 +215,7 @@ public:
     virtual void getValuesOfInterest( vec_dbl_Type& values ) = 0 ;
 
     virtual void computeValuesOfInterestAndExport() = 0;
-
+    
     /// @brief Write the problem's own restart data (e.g. element history) for the checkpoint at 'time'. Nothing by default.
     virtual void exportValuesOfInterest(double time) {}
 
@@ -250,7 +250,7 @@ public:
     // Exporter for the solution. Vector entry i corresponds to block i of the solution BlockMultiVector
     std::vector<HDF5Export<SC,LO,GO,NO>> HDF5exporterSolution_; // Solution
 
-
+    
 protected:
 
     mutable ParameterListPtr_Type	parameterList_;
