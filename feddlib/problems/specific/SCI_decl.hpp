@@ -41,7 +41,6 @@ public:
     typedef typename Problem_Type::MultiVectorConstPtr_Type MultiVectorConstPtr_Type;
     typedef typename Problem_Type::BlockMultiVector_Type BlockMultiVector_Type;
     typedef typename Problem_Type::BlockMultiVectorPtr_Type BlockMultiVectorPtr_Type;
-    // typedef Teuchos::Array<BlockMultiVectorPtr_Type> BlockMultiVectorPtrArray_Type;
 
     typedef typename Problem_Type::Domain_Type Domain_Type;
     typedef Teuchos::RCP<Domain_Type > DomainPtr_Type;
@@ -118,7 +117,6 @@ public:
     
     void computeChemRHSInTime() const;
 
-    // Hier wird timeSteppingTool_->t_ inkrementiert
     void updateTime() const;
 
     // Hier wird im Prinzip updateSolution() fuer problemTimeChem_ aufgerufen
@@ -231,21 +229,6 @@ private:
 public:
         // NOX and FSI only implement in combination with TimeProblem
 
-//    typedef Thyra::VectorSpaceBase<SC> thyra_vec_space;
-//    typedef Thyra::VectorBase<SC> thyra_vec;
-//    typedef Tpetra::Map<LO, GO, NO> tpetra_map;
-//    typedef Tpetra::CrsMatrix<SC, LO, GO, NO> tpetra_matrix;
-//    typedef Thyra::LinearOpBase<SC> thyra_op;
-//    typedef Tpetra::Operator<SC,LO,GO,NO> tpetra_op;
-//
-
-//    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
-//    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Monolithic() const;
-//#ifdef FEDD_HAVE_TEKO
-//    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Block() const;
-//#endif
-//    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
-    
 private:
     
     virtual void evalModelImpl(

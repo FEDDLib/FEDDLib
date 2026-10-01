@@ -337,7 +337,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerMonolithic( )
     ParameterListPtr_Type pListThyraPrec = sublist( parameterList, "ThyraPreconditioner" );
     ParameterListPtr_Type plFrosch = sublist( sublist( pListThyraPrec, "Preconditioner Types" ), "FROSch");
     
-    //problem->getSystem()->writeMM("SystemWithLagrange");
 
     ThyraLinOpConstPtr_Type thyraMatrix;
     if (!problem_.is_null())
@@ -1223,8 +1222,6 @@ template <class SC,class LO,class GO,class NO>
 void Preconditioner<SC,LO,GO,NO>::buildPreconditionerFaCSCI( std::string type )
 {
 
-    //cout << "  ########## Prec: Build Preconditioner FaCSCI ########### " << endl;
-
     typedef Domain<SC,LO,GO,NO> Domain_Type;
     typedef Teuchos::RCP<const Domain_Type> DomainConstPtr_Type;
     typedef std::vector<DomainConstPtr_Type> DomainConstPtr_vec_Type;
@@ -1320,8 +1317,6 @@ void Preconditioner<SC,LO,GO,NO>::buildPreconditionerFaCSCI( std::string type )
         sciSystem->addBlock( fsiSystem->getBlock(4,2), 1, 0 );
     }
     sciSystem->addBlock( fsiSystem->getBlock(2,2), 0, 0 );
-
-    //faCSIBCFactory_->setSystem( sciSystem );
 
     probSCI_->initializeSystem( sciSystem );
     

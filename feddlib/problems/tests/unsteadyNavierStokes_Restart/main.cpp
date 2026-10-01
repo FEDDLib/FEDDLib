@@ -267,8 +267,6 @@ int main(int argc, char *argv[]) {
 
             exParaVelocity->save(0.0);
 
-           //TEUCHOS_TEST_FOR_EXCEPTION( infNormError > 1e-11 , std::logic_error, "Inf Norm of Error between calculated solutions is too great. Exceeded 1e-11. ");
-
 
         }
     }

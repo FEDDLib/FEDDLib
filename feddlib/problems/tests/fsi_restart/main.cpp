@@ -220,8 +220,6 @@ int main(int argc, char *argv[])
         ParameterListPtr_Type parameterListPrecGI = Teuchos::getParametersFromXmlFile(xmlPrecFileGI);
         ParameterListPtr_Type parameterListSolverFSI = Teuchos::getParametersFromXmlFile(xmlSolverFileFSI);
         ParameterListPtr_Type parameterListSolverGeometry = Teuchos::getParametersFromXmlFile(xmlSolverFileGeometry);
-//        ParameterListPtr_Type parameterListProblemFluid = Teuchos::getParametersFromXmlFile(xmlProblemFileFluid);
-//        ParameterListPtr_Type parameterListProblemStructure = Teuchos::getParametersFromXmlFile("parametersProblemStructure.xml");
         ParameterListPtr_Type parameterListPrecGeometry = Teuchos::getParametersFromXmlFile(xmlPrecFileGeometry);
 
         ParameterListPtr_Type parameterListPrecFluidMono = Teuchos::getParametersFromXmlFile(xmlPrecFileFluidMono);
@@ -380,7 +378,6 @@ int main(int argc, char *argv[])
                 domainFluidPressure = domainP1fluid;
                 domainStructure = domainP1struct;
                 domainGeometry = domainP1fluid;
-//                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
             }
 
 
@@ -449,7 +446,6 @@ int main(int argc, char *argv[])
             Teuchos::RCP<SmallMatrix<int>> defTS;
             if(geometryExplicit)
             {
-                // SmallMatrix<int> defTS(4);
                 defTS.reset( new SmallMatrix<int> (4) );
 
                 // Fluid
@@ -461,7 +457,6 @@ int main(int argc, char *argv[])
             }
             else
             {
-                // SmallMatrix<int> defTS(5);
                 defTS.reset( new SmallMatrix<int> (5) );
 
                 // Fluid
@@ -651,7 +646,6 @@ int main(int argc, char *argv[])
             }
             else if(dim == 3)
             {
-//                TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "fix Randwerte für Richter Benchmark");
                 bcFactoryGeometry->addBC(zeroDirichlet3D, 1, 0, domainGeometry, "Dirichlet", dim); // wall
                 bcFactoryGeometry->addBC(zeroDirichlet3D, 2, 0, domainGeometry, "Dirichlet", dim); // inflow
                 if (bcType == "Richter3D"){
@@ -711,9 +705,6 @@ int main(int argc, char *argv[])
             HDF5Import<SC,LO,GO,NO> importerD(fsi.getSolution()->getBlock(2)->getMap(),restartFile(parameterListAll, "Solutiond_s"));
             Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solutionImportedD = importerD.readVariablesHDF5(std::to_string(finalTime));
 
-            // HDF5Import<SC,LO,GO,NO> importerG(fsci.getSolution()->getBlock(3)->getMap(),fileName+"d_f");
-            // Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solutionImportedG = importerG.readVariablesHDF5(std::to_string(finalTime));
-
             // ---------------
             // Exporter
             // ---------------
@@ -725,8 +716,6 @@ int main(int argc, char *argv[])
 
             Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaResultsStructure(new ExporterParaView<SC,LO,GO,NO>());
             exParaResultsStructure->setup("Restart_Error_d", domainStructure->getMesh(), domainStructure->getFEType());
-            // Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaResultsGeo(new ExporterParaView<SC,LO,GO,NO>());
-            // exParaResultsGeo->setup("Restart_Error_g", domainGeometry->getMesh(), domainGeometry->getFEType());
 
             // Solutions
             Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = fsi.getSolution()->getBlock(0);
@@ -734,8 +723,6 @@ int main(int argc, char *argv[])
             Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionP = fsi.getSolution()->getBlock(1);
 
             Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionD = fsi.getSolution()->getBlock(2);
-
-            // Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionG =fsci.getSolution()->getBlock(3);
 
 
             // Adding solution to paraview exporter
@@ -747,9 +734,6 @@ int main(int argc, char *argv[])
 
             exParaResultsStructure->addVariable(exportSolutionD, "d", "Vector", dim, domainStructure->getMapUnique());
             exParaResultsStructure->addVariable(solutionImportedD, "d_import", "Vector", dim,  domainStructure->getMapUnique());
-
-            // exParaResultsGeo->addVariable(exportSolutionG, "g", "Vector", 3, domainGeometry->getMapUnique());
-            // exParaResultsGeo->addVariable(solutionImportedG, "g_import", "Vector", 3,  domainGeometry->getMapUnique());
 
             // -------------------------------------------------
             Teuchos::Array<SC> norm2(1), normInf(1),normSol2(1); 

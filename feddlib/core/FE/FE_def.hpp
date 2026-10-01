@@ -629,8 +629,6 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 			diffusionT[i][j]=diffusionTensor[i][j];
 		}
 	}
-	//Teuchos::ArrayRCP< SC >  linearDiff = diffusionTensor->getDataNonConst( 0 );
-	//std::cout << "Assembly Info " << "num Elements " <<  elements->numberElements() << " num Nodes " << pointsRep->size()  << std::endl;
 
     // Diffusion per material: D0 of the material with the element's volume flag scales the tensor
     int numMaterials = params->sublist("Parameter Solid").get("Number of Materials", 0);

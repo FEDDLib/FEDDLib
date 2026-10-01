@@ -691,12 +691,6 @@ int main(int argc, char *argv[])
     std::string xmlPrecFileChem = "parametersPrecChem.xml";
     myCLP.setOption("precfileChem",&xmlPrecFileChem,".xml file with Inputparameters.");
     
- 	//string xmlBlockPrecFile = "parametersPrecBlock.xml";
-    //myCLP.setOption("blockprecfile",&xmlBlockPrecFile,".xml file with Inputparameters.");
-   
-    //string xmlPrecFile = "parametersPrec.xml";
-    //myCLP.setOption("precfile",&xmlPrecFile,".xml file with Inputparameters.");
-
     std::string xmlPrecCEFile = "parametersPrecCE.xml";
     myCLP.setOption("precCEfile",&xmlPrecCEFile,".xml file with Inputparameters.");
 
@@ -842,7 +836,6 @@ int main(int argc, char *argv[])
 		    else if(bcType=="Realistic Artery 1" || bcType=="Realistic Artery 2" )
 		    	volumeID = 21;
 		    	
-		    //partitionerP1.readAndPartition(volumeID);
             bool convertMesh = parameterListAll->sublist("Parameter").get("Convert Mesh",false);
             std::string unit = parameterListAll->sublist("Parameter").get("Mesh Unit","cm");
 
@@ -960,8 +953,6 @@ int main(int argc, char *argv[])
         domainStructure->setReferenceConfiguration();
 
         MultiVectorPtr_Type nodes(domainStructure->getNodeListMV());
-
-        // nodes->writeMM("nodes.mm");
 
         vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
         double D0 = parameterListAll->sublist("Parameter Diffusion").get("D0",1.);
@@ -1213,7 +1204,6 @@ int main(int argc, char *argv[])
 			
         }
        
-        // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
         if (!sci.problemStructure_.is_null())
             sci.problemStructure_->addBoundaries(bcFactoryStructure);
         else
@@ -1328,13 +1318,11 @@ int main(int argc, char *argv[])
             bcFactory->addBC(inflowChem, 0, 1, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
             bcFactory->addBC(inflowChem, 1, 1, domainChem, "Dirichlet", 1, parameter_vec); // inflow of Chem
             bcFactory->addBC(inflowChem, 7, 1, domainChem, "Dirichlet", 1,parameter_vec);            		
-            //bcFactory->addBC(zeroDirichlet, 8, 1, domainChem, "Dirichlet", 1);
             bcFactory->addBC(inflowChem, 9, 1, domainChem, "Dirichlet", 1,parameter_vec);
             /*bcFactory->addBC(zeroDirichlet, 2, 1, domainChem, "Dirichlet", 1);
             bcFactory->addBC(zeroDirichlet, 3, 1, domainChem, "Dirichlet", 1);            
             bcFactory->addBC(zeroDirichlet, 4, 1, domainChem, "Dirichlet", 1);            
             bcFactory->addBC(zeroDirichlet, 5, 1, domainChem, "Dirichlet", 1);            
-           // bcFactory->addBC(zeroDirichlet, 6, 1, domainChem, "Dirichlet", 1);            
             */
             
             bcFactoryChem->addBC(inflowChem, 0, 0, domainChem, "Dirichlet", 1,parameter_vec); // inflow of Chem
@@ -1345,7 +1333,6 @@ int main(int argc, char *argv[])
             bcFactoryChem->addBC(zeroDirichlet, 3, 0, domainChem, "Dirichlet", 1);            
             bcFactoryChem->addBC(zeroDirichlet, 4, 0, domainChem, "Dirichlet", 1);            
             bcFactoryChem->addBC(zeroDirichlet, 5, 0, domainChem, "Dirichlet", 1);            
-            //bcFactoryChem->addBC(zeroDirichlet, 6, 0, domainChem, "Dirichlet", 1);
             bcFactoryChem->addBC(zeroDirichlet, 8, 0, domainChem, "Dirichlet", 1);
             
             */

@@ -93,7 +93,6 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 	startTime_ = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).get("ActiveStartTime",1001.e0); // At Starttime 1000 the diffused drug influences the material model. -> Active response at T=starttime
 	rho_ = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).get("Rho",1.e0);
 
-	// iCode_ = this->params_->sublist("Parameter Solid").sublist(std::to_string(materialID)).get("Intergration Code",18);
 	iCode_=18; //Only works for 18 currently!!
 
     FEType_ = std::get<1>(this->diskTuple_->at(0)); // FEType of Disk
@@ -119,7 +118,6 @@ AssembleFE<SC,LO,GO,NO>(flag, nodesRefConfig, params, tuple)
 
 	this->solution_.reset( new vec_dbl_Type ( dofsElement_,0.) );
 	
-	//this->postProcessingData_ = Teuchos::rcp( new SmallMatrix_Type(dofsElement_,0.));
 
 	/*timeParametersVec_.resize(0, vec_dbl_Type(2));
     numSegments_ = this->params_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);

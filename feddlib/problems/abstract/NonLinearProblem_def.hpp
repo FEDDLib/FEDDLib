@@ -87,7 +87,6 @@ namespace FEDD
 
             if(exportBlock){
                 double exportTime = timeStep_ + (double) newtonStep_*0.01;
-                //cout << " Export Timestep for component " << i << ": " << exportTime << endl;
                 MultiVectorConstPtr_Type exportVector = this->residualVec_->getBlock(i);
                 std::string varName ="Component"+std::to_string(i);
                 exporterResidual_[i]->updateVariables(exportVector, varName);
@@ -118,8 +117,6 @@ namespace FEDD
 
                 ExporterPtr_Type exporter = Teuchos::rcp(new Exporter_Type());
                 
-                //DomainConstPtr_Type dom = this->domainPtr_vec_.at(i);
-
                 std::string suffix = this->parameterList_->sublist("Exporter").get("Geometry Suffix", "" );
                 std::string varName ="Component"+std::to_string(i);
                 
@@ -132,8 +129,6 @@ namespace FEDD
                     exporter->addVariable( exportVector, varName, "Vector", this->dofsPerNode_vec_[i], this->domainPtr_vec_.at(i)->getMapUnique() );
                 else     
                     exporter->addVariable( exportVector, varName, "Scalar", this->dofsPerNode_vec_[i], this->domainPtr_vec_.at(i)->getMapUnique() );
-
-                //cout << " Initialize resdual plot for variable " << i << " dofs= " << this->domainPtr_vec_.at(i)->getDofs()<< " and FEType " << this->domainPtr_vec_.at(i)->getFEType() << endl;
 
                 exporterResidual_[i] = exporter;
             }

@@ -119,13 +119,9 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(Problem_Type* problem, BlockMulti
     }
 
     Teuchos::RCP<Teuchos::FancyOStream> out = Teuchos::VerboseObjectBase::getDefaultOStream();
-    // cout << " Solve Monolithic problem " << endl;
 
     lowsFactory->setOStream(out);
     lowsFactory->setVerbLevel(Teuchos::VERB_HIGH);
-
-    //problem->getSystem()->getBlock(0,0)->writeMM("SystemCombined");
-    //rhs->writeMM("rhs");
 
     Teuchos::RCP<Thyra::LinearOpWithSolveBase<SC> > solver = lowsFactory->createOp();
 //    Teuchos::RCP<Thyra::LinearOpWithSolveBase<SC> > solver = linearOpWithSolve(*lowsFactory, problem->getSystem()->getThyraLinOp());
@@ -332,13 +328,13 @@ int LinearSolver<SC,LO,GO,NO>::solveBlock(TimeProblem_Type* timeProblem, BlockMu
     Teuchos::RCP< Thyra::ProductMultiVectorBase<SC> > thyraX = problem->getSolution()->getProdThyraMultiVector();
     
     Teuchos::RCP< Thyra::ProductMultiVectorBase<SC> > thyraRHS;
-    if ( rhs.is_null() ){
+    if ( rhs.is_null() )
         thyraRHS = problem->getRhs()->getProdThyraMultiVector();
-    }    
-    else{
+    else
         thyraRHS = rhs->getProdThyraMultiVector();
-    }
+    
     ParameterListPtr_Type pListThyraSolver = sublist( problem->getParameterList(), "ThyraSolver" );
+
     
     problem->getLinearSolverBuilder()->setParameterList(pListThyraSolver);
     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
@@ -380,13 +376,7 @@ int LinearSolver<SC,LO,GO,NO>::solveBlock(TimeProblem_Type* timeProblem, BlockMu
 //    }
     
     ThyraLinOpConstPtr_Type thyraMatrix = timeProblem->getSystemCombined()->getThyraLinBlockOp();
-    // rhs->getBlock(0)->writeMM("rhsFluid_"+std::to_string(timeProblem->time_));
-    // // //timeProblem->getSystemCombined()->getBlock(2,2)->writeMM("systemCombinedStructure_"+std::to_string(timeProblem->time_));
-    // timeProblem->getSystem()->getBlock(0,0)->writeMM("systemFluid_"+std::to_string(timeProblem->time_));
-    // //timeProblem->getSystem()->getBlock(2,2)->writeMM("systemStructure_"+std::to_string(timeProblem->time_));
-
 //    ThyraLinOpBlockConstPtr_Type thyraMatrixBlock = timeProblem->getSystemCombined()->getThyraLinBlockOp();
-
     Thyra::initializePreconditionedOp<SC>(*lowsFactory, thyraMatrix, thyraPrec.getConst(), solver.ptr());
     {
         

@@ -589,12 +589,6 @@ int main(int argc, char *argv[])
     std::string xmlPrecFileChem = "parametersPrecChem.xml";
     myCLP.setOption("precfileChem",&xmlPrecFileChem,".xml file with Inputparameters.");
     
- 	//string xmlBlockPrecFile = "parametersPrecBlock.xml";
-    //myCLP.setOption("blockprecfile",&xmlBlockPrecFile,".xml file with Inputparameters.");
-   
-    //string xmlPrecFile = "parametersPrec.xml";
-    //myCLP.setOption("precfile",&xmlPrecFile,".xml file with Inputparameters.");
-
     std::string xmlPrecCEFile = "parametersPrecCE.xml";
     myCLP.setOption("precCEfile",&xmlPrecCEFile,".xml file with Inputparameters.");
 
@@ -946,7 +940,6 @@ int main(int argc, char *argv[])
 
         }
        
-        // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
         if (!sci.problemStructure_.is_null())
             sci.problemStructure_->addBoundaries(bcFactoryStructure);
         else

@@ -190,7 +190,6 @@ public:
     bool boolExporterSetup_;
     
     std::vector<ExporterPtr_Type> exporter_vector_postprocess_;
-    //MultiVectorConstPtrArray_Type export_stress_vector_;
     bool boolExporterSetupPostprocess_;
 
 private:

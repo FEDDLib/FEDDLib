@@ -797,7 +797,6 @@ template <class SC, class LO, class GO, class NO>
         if(safeSolution){
             if(HDF5exporterSolution_.size()==0){
                 std::string fileName =  parameterList_->sublist("General").get("File name export", "Solution");
-                //HDF5exporterSolution_.resize(size);
                 for (UN i = 0; i < size; i++)
                 {
                     HDF5Export<SC,LO,GO,NO> exporter(this->getSolution()->getBlock(i)->getMap(),fileName+variableName_vec_[i]);

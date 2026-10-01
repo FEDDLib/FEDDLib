@@ -116,7 +116,6 @@ public:
     /// @param time current time
     void plotResidualVec(double time =0.) const;
 
-//    virtual void reAssemble(std::string type="FixedPoint") const = 0;
 
     /// @brief Reassemble with previous solution. I think it is not used anymore. @TODO: Look into this.
     /// @param previousSolution 

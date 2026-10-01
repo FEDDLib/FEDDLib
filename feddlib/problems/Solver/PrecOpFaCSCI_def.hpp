@@ -22,7 +22,6 @@ PrecOpFaCSCI<SC,LO,GO,NO>::PrecOpFaCSCI()
 fluidPrecMonolithic_(false),
 useSolidPreconditioner_(true)
 {
-//    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Still a problem for FaCSCI, cant be used yet.");
 }
 
 template<class SC, class LO, class GO, class NO>
@@ -34,7 +33,6 @@ useSolidPreconditioner_(useSolidPreconditioner),
 onlyDiagonal_(onlyDiagonal)
 {
     comm_=comm;
-//    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Still a problem for FaCSCI, cant be used yet.");
 }
     
 template<class SC, class LO, class GO, class NO>
@@ -137,8 +135,6 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::setFluidBT(ThyraLinOpPtr_Type fBT){
 template<class SC, class LO, class GO, class NO>
 void PrecOpFaCSCI<SC,LO,GO,NO>::initialize(){
 
-    //std::cout << "  ########## Init PrecOpFaCSCI ########### " << std::endl;
-
     TEUCHOS_TEST_FOR_EXCEPTION(fInv_.is_null(), std::runtime_error,"Can not initialize FaCSCI preconditioner: Fluid preconditioner not set.");
     TEUCHOS_TEST_FOR_EXCEPTION(sciInv_.is_null(), std::runtime_error,"Can not initialize FaCSCI preconditioner: Structure preconditioner not set.");
     TEUCHOS_TEST_FOR_EXCEPTION(C1_.is_null(), std::runtime_error,"Can not initialize FaCSCI preconditioner: C1 not set.");
@@ -162,16 +158,9 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::initialize(){
         vectorSpacesRange.push_back( sciC_->range() );
         vectorSpacesDomain.push_back( sciC_->domain() );     
     }
-    //     defaultProductRange_;
-    //    Teuchos::RCP<const Thyra::DefaultProductVectorSpace<SC> > defaultProductDomain_;
     
     Teuchos::RCP<const Thyra::DefaultProductVectorSpace<SC> > pR = Thyra::productVectorSpace<SC>( vectorSpacesRange );
     Teuchos::RCP<const Thyra::DefaultProductVectorSpace<SC> > pD = Thyra::productVectorSpace<SC>( vectorSpacesDomain );
-//    Teuchos::RCP<const Thyra::VectorSpaceBase<SC> > pVSR = Teuchos::rcp_dynamic_cast<const Thyra::VectorSpaceBase<SC> >(pR);
-//    Teuchos::RCP<const Thyra::VectorSpaceBase<SC> > pVSD = Teuchos::rcp_dynamic_cast<const Thyra::VectorSpaceBase<SC> >(pD);
-//    
-//    this->defaultProductRange_ = Thyra::multiVectorProductVectorSpace<SC>( pVSR , 1);
-//    this->defaultProductDomain_ = Thyra::multiVectorProductVectorSpace<SC>( pVSD, 1);
     
     this->defaultProductRange_ = pR;
     this->defaultProductDomain_ = pD;
@@ -210,7 +199,6 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
     // X_in : Input Vector for applying to system. Defined operator as system being applied. Now we partition X into the different components. 
     // Different systems contain the preconditioners then.
 
-   // std::cout << "  ########## Apply PrecOpFaCSCI --  alpha : " << alpha << " beta: " << beta << " ########### " << std::endl;
     using Teuchos::rcpFromRef;
     typedef Teuchos::ScalarTraits<SC> ST;
     typedef Teuchos::RCP<Thyra::MultiVectorBase<SC> > MultiVectorPtr;
@@ -238,13 +226,11 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
     assign(Y_s.ptr(), *X_s);  
 
    
-    //std::cout << "  ########## Apply PrecOpFaCSCI: SCI  " << std::endl;
     if (useSolidPreconditioner_){
 
          // Chemistry: Chemistry at block component 5
    
         if(!sciC_.is_null()){
-            //std::cout << "FACSCI:: Implicit Case " << std::endl;
             Teuchos::RCP< const Thyra::MultiVectorBase< SC > > X_chem = X->getMultiVectorBlock(4);
             Teuchos::RCP< Thyra::MultiVectorBase< SC > > Y_chem = Y->getNonconstMultiVectorBlock(4);
             assign(Y_chem.ptr(), *X_chem);
@@ -257,7 +243,6 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
             Y_sci[0] = Y_s;
             Y_sci[1] = Y_chem;
             Teuchos::RCP< const Thyra::VectorSpaceBase< SC > > sciMonoVS = sciInv_->domain();
-            // std::cout << " Initi X_scimono_ " << std::endl;
             if ( X_scimono_.is_null() ){
                 X_scimono_ = createMembers( sciMonoVS, X_sci[0]->domain()->dim() );
                 Y_scimono_ = createMembers( sciMonoVS, Y_sci[0]->domain()->dim() );
@@ -266,7 +251,6 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
         // std::cout << " Copy to mono " << std::endl;
 
             copyToMonoSCI(X_sci);
-            //std::cout << " Apply " << std::endl;
 
             sciInv_->apply(Thyra::NOTRANS, *X_scimono_, Y_scimono_.ptr(), 1., 0.);
             copyFromMonoSCI(Y_sci); 
@@ -285,8 +269,6 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
     }
     
   
-
-    //std::cout << "  ########## Apply PrecOpFaCSCI: Geomertry  " << std::endl;
 
     Teuchos::RCP< const Thyra::MultiVectorBase< SC > > X_g;
     Teuchos::RCP< Thyra::MultiVectorBase< SC > > Y_g;
@@ -317,10 +299,6 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
     Teuchos::RCP< Thyra::MultiVectorBase< SC > > Y_fv = Y->getNonconstMultiVectorBlock(0);
     assign(Y_fv.ptr(), *X_fv); 
 
-   // std::cout << "X_fv" << std::endl;
-   // X_fv->describe(*out,Teuchos::VERB_EXTREME);
-   // comm_->barrier();    comm_->barrier();    comm_->barrier();
-
     
     Teuchos::RCP< const Thyra::MultiVectorBase< SC > > X_fp = X->getMultiVectorBlock(1); // fluid pressure
     Teuchos::RCP< Thyra::MultiVectorBase< SC > > Y_fp = Y->getNonconstMultiVectorBlock(1);
@@ -337,12 +315,6 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
     else
         assign(Z_fv_.ptr(), *Y_fv);
     
-    //std::cout << "Z_fv_ set:" << std::endl;
-    //Z_fv_->describe(*out,Teuchos::VERB_EXTREME);
-    //comm_->barrier();    comm_->barrier();    comm_->barrier();
-
-    //std::cout << "  ########## Apply PrecOpFaCSCI: Fluid Condensation  " << std::endl;
-
     // fluid C_1 blocks
     if (tmp_l_.is_null())
         tmp_l_ = Y_l->clone_mv();
@@ -371,8 +343,6 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
     Y_fluid[0] = Y_fv;
     Y_fluid[1] = Y_fp;
 
-   // std::cout << "  ########## Apply PrecOpFaCSCI: Fluid  " << std::endl;
-    //useFluidPreconditioner_=false;
     if (useFluidPreconditioner_){
     
         if (fluidPrecMonolithic_) {
@@ -402,15 +372,7 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
         assign(Y_fp.ptr(), *X_fp);
     }
 
-    //std::cout << "Y_fv after mono" << std::endl;
-    //Y_fv->describe(*out,Teuchos::VERB_EXTREME);
-    //comm_->barrier();    comm_->barrier();    comm_->barrier();
-   // std::cout << "Y_fp after mono" << std::endl;
-   // Y_fp->describe(*out,Teuchos::VERB_EXTREME);
-   // comm_->barrier();    comm_->barrier();    comm_->barrier();
 
-
-    //std::cout << "  ########## Apply PrecOpFaCSCI: Others  " << std::endl;
     // Condensation
 
     fBT_->apply(Thyra::NOTRANS, *Y_fp, Z_fv_.ptr(), -1., 1.);
@@ -432,8 +394,6 @@ void PrecOpFaCSCI<SC,LO,GO,NO>::applyImpl(
     Teuchos::RCP< Thyra::TpetraMultiVector< SC, LO, GO, NO > > Y_chemT =
     Teuchos::rcp_dynamic_cast< Thyra::TpetraMultiVector< SC, LO, GO, NO > > ( Y_chem );*/
         
-    //TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error,"First It.");
-  
     
 }
 template<class SC, class LO, class GO, class NO>

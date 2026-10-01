@@ -63,15 +63,11 @@ public:
     typedef Teuchos::RCP<TimeProblem_Type> TimeProblemPtr_Type;
 
     typedef NavierStokes<SC,LO,GO,NO> FluidProblem_Type;
-    //typedef LinElas<SC,LO,GO,NO> StructureProblem_Type;
-    //typedef NonLinElasticity<SC,LO,GO,NO> StructureNonLinProblem_Type;
     typedef Geometry<SC,LO,GO,NO> GeometryProblem_Type;
     typedef SCI<SC,LO,GO,NO> SCIProblem_Type;
 
     
     typedef Teuchos::RCP<FluidProblem_Type> FluidProblemPtr_Type;
-    //typedef Teuchos::RCP<StructureProblem_Type> StructureProblemPtr_Type;
-    //typedef Teuchos::RCP<StructureNonLinProblem_Type> StructureNonLinProblemPtr_Type;
     typedef Teuchos::RCP<GeometryProblem_Type> GeometryProblemPtr_Type;
     typedef Teuchos::RCP<SCIProblem_Type> SCIProblemPtr_Type;
 
@@ -126,8 +122,6 @@ public:
 
     virtual void reAssemble( BlockMultiVectorPtr_Type previousSolution ) const{};
     
-    //virtual void reAssembleExtrapolation(BlockMultiVectorPtrArray_Type previousSolutions);
-
     virtual void calculateNonLinResidualVec(std::string type="standard", double time=0.) const; //standard or reverse    
     
     virtual void getValuesOfInterest( vec_dbl_Type& values );
@@ -170,9 +164,6 @@ public:
 
     void computeSolidRHSInTime() const;
     
-    // Hier wird timeSteppingTool_->t_ inkrementiert
-    //void updateTime() const;
-
     // Verschiebt die notwendigen Gitter
     //void moveMesh() const;
 
@@ -249,27 +240,11 @@ private:
     std::string materialModel_;
     vec_dbl_Type valuesForExport_;
     bool chemistryExplicit_;
-    //bool geometryExplicit_;
     /*####################*/
 
 public:
         // NOX and FSCI only implement in combination with TimeProblem
 
-//    typedef Thyra::VectorSpaceBase<SC> thyra_vec_space;
-//    typedef Thyra::VectorBase<SC> thyra_vec;
-//    typedef Tpetra::Map<LO, GO, NO> tpetra_map;
-//    typedef Tpetra::CrsMatrix<SC, LO, GO, NO> tpetra_matrix;
-//    typedef Thyra::LinearOpBase<SC> thyra_op;
-//    typedef Tpetra::Operator<SC,LO,GO,NO> tpetra_op;
-//
-
-//    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op() const;
-//    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Monolithic() const;
-//#ifdef FEDD_HAVE_TEKO
-//    Teuchos::RCP< Thyra::LinearOpBase<SC> > create_W_op_Block() const;
-//#endif
-//    Teuchos::RCP<Thyra::PreconditionerBase<SC> > create_W_prec() const;
-    
 private:
     
     virtual void evalModelImpl(

@@ -70,7 +70,6 @@ int main(int argc, char *argv[])
 
         int dimension = simulationParameters->sublist("Simulation Parameters").get("Dimension", 3);
         std::string discretizationType = simulationParameters->sublist("Simulation Parameters").get("Discretization", "P2");
-        // string preconditionerType = simulationParameters->sublist("Simulation Parameters").get("Preconditioner Type");
 
         Teuchos::RCP<Teuchos::ParameterList> allParameters = Teuchos::rcp(new Teuchos::ParameterList(*simulationParameters));
         allParameters->sublist("Parameter").set("Chemistry Explicit", false );  // We set chemistry explicit to false again here, since this main only considers chem explicit 
@@ -95,8 +94,6 @@ int main(int argc, char *argv[])
 
         Teuchos::RCP<FEDD::Domain<SC, LO, GO, NO>> domainP1Diffusion;
         Teuchos::RCP<FEDD::Domain<SC, LO, GO, NO>> domainP1Structure;
-        // Teuchos::RCP<FEDD::Domain<SC, LO, GO, NO>> domainP2Diffusion;
-        // Teuchos::RCP<FEDD::Domain<SC, LO, GO, NO>> domainP2Structure;
         Teuchos::RCP<FEDD::Domain<SC, LO, GO, NO>> domainDiffusion;
         Teuchos::RCP<FEDD::Domain<SC, LO, GO, NO>> domainStructure;
 
