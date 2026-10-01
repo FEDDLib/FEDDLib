@@ -18,10 +18,6 @@ class Geometry;
 template <class SC , class LO , class GO , class NO >
 class NavierStokes;
 template <class SC , class LO , class GO , class NO >
-class LinElasAssFE; //LinElas;
-template <class SC , class LO , class GO , class NO >
-class NonLinElasAssFE; //NonLinElasticity;
-template <class SC , class LO , class GO , class NO >
 class LinElas;
 template <class SC , class LO , class GO , class NO >
 class NonLinElasticity;
@@ -224,7 +220,6 @@ public:
     double getPressureOutlet(){return pressureOutlet_;};
 
     /*####################*/
-    void solveSteadyStateNavierStokes() const;
 
     // Alternativ wie in reAssembleExtrapolation() in NS?
 
@@ -241,8 +236,6 @@ public:
     mutable int counterP;
     // stationaere Systeme
     FluidProblemPtr_Type problemFluid_;
-    FluidProblemPtr_Type problemSteadyFluid_;
-
     StructureProblemPtr_Type problemStructure_;
     StructureNonLinProblemPtr_Type problemStructureNonLin_; // CH: we want to combine both structure models to one general model later
     GeometryProblemPtr_Type problemGeometry_;

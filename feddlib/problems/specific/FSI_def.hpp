@@ -99,13 +99,11 @@ u_minus_w_rep_(),
 p_rep_(),
 defTS_(defTS),
 timeSteppingTool_(),
-materialModel_( parameterListStructure->sublist("Parameter").get("Material model","Neo-Hooke") ),
+materialModel_( parameterListStructure->sublist("Parameter").get("Material model","linear") ),
 valuesForExport_(0),
 exporterTxtDrag_(),
 exporterGeo_()
 {
-    std::cout << " Init FSI Problem " << std::endl;
-
     this->nonLinearTolerance_ = this->parameterList_->sublist("Parameter").get("relNonLinTol",1.0e-6);
     geometryExplicit_ = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
 
@@ -782,7 +780,7 @@ void FSI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
     if (!geometryExplicit_) {
         
         P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-        double density = this->problemTimeFluid_->getParameterList()->sublist("Parameter").get("Density",1.e-0);
+        double density = this->problemTimeFluid_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
         
         this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), P_, w_rep_, true );
         P_->resumeFill();
@@ -1035,7 +1033,7 @@ void FSI<SC,LO,GO,NO>::solveGeometryProblem() const
 
         this->problemGeometry_->solve();
         
-        if (!this->exporterGeo_.is_null())
+        if (!exporterGeo_.is_null())
             this->exporterGeo_->save( this->timeSteppingTool_->currentTime() );
 
     }
@@ -1044,14 +1042,6 @@ void FSI<SC,LO,GO,NO>::solveGeometryProblem() const
 
 }
 
-
-template<class SC,class LO,class GO,class NO>
-void FSI<SC,LO,GO,NO>::solveSteadyStateNavierStokes() const
-{
-    
-
-
-}
 
 template<class SC,class LO,class GO,class NO>
 void FSI<SC,LO,GO,NO>::setupSubTimeProblems(ParameterListPtr_Type parameterListFluid, ParameterListPtr_Type parameterListStructure) const
@@ -1171,9 +1161,8 @@ void FSI<SC,LO,GO,NO>::setFluidMassmatrix( MatrixPtr_Type& massmatrix ) const
 {
     //######################
     // Massematrix fuer FSI combineSystems(), ggf nichtlinear.
-    std::cout << " --------- Assembly Fluid Mass Matrix --------- " << std::endl;
     //######################
-    double density = this->problemTimeFluid_->getParameterList()->sublist("Parameter").get("Density",1.e-0);
+    double density = this->problemTimeFluid_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
     int size = this->problemTimeFluid_->getSystem()->size();
 
     this->problemTimeFluid_->systemMass_.reset(new BlockMatrix_Type(size));
@@ -1448,9 +1437,9 @@ void FSI<SC,LO,GO,NO>::computeFluidRHSInTime( ) const
         this->problemTimeFluid_->updateMultistepRhsFSI(coeffPrevSteps,nmbBDF);/*apply (mass matrix_t / dt) to u_t and more*/
     }
     // TODO
-    /*if (this->problemTimeFluid_->hasSourceTerm()) {
+    if (this->problemTimeFluid_->hasSourceTerm()) {
         TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Check sourceterm.");
-    }*/
+    }
 
     // Wieder zu den eigentlichen Parametern zuruecksetzen, nachdem die temporaeren
     // genommen wurden.
@@ -1539,10 +1528,6 @@ void FSI<SC,LO,GO,NO>::computeSolidRHSInTime() const {
     {
         this->problemTimeStructure_->assembleSourceTerm( time );
         
-        double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Density",1.0);
-        this->problemTimeStructure_->getSourceTerm()->scale(density);
-
-        //this->problemTimeStructure_->getSourceTerm()->print();
         // Fuege die rechte Seite der DGL (f bzw. f_{n+1}) der rechten Seite hinzu (skaliert mit coeffSourceTerm)
         // Die Skalierung mit der Dichte erfolgt schon in der Assemblierungsfunktion!
         
@@ -1560,7 +1545,7 @@ void FSI<SC,LO,GO,NO>::setSolidMassmatrix( MatrixPtr_Type& massmatrix ) const
     //######################
     // Massematrix
     //######################
-    double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Density",1.0);
+    double density = this->problemTimeStructure_->getParameterList()->sublist("Parameter").get("Density",1000.e-0);
     int size = this->problemTimeStructure_->getSystem()->size();
 
     bool restart = this->parameterList_->sublist("Timestepping Parameter").get("Restart", false);
@@ -1781,7 +1766,6 @@ void FSI<SC,LO,GO,NO>::exportValuesOfInterest(double time)
 
     if(geometryExplicit_)
     {
-        std::cout << " Export geometry " << std::endl;
         std::string varName = std::to_string(time);
         exporterGeometry_->writeVariablesHDF5(varName,problemGeometry_->getSolution()->getBlockNonConst(0)); 
     }

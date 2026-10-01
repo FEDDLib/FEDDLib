@@ -351,25 +351,6 @@ void reactionFunc(double* x, double* res, double* parameters){
     res[0] = m * x[0];
 
 }
-void rhsFluidRB(double* x, double* res, double* parameters){
-
-    double pressureValue = parameters[1];
-    double flag = parameters[3];
-    double ramp = parameters[2];
-  	res[0] =0.;
-    
-    if(parameters[0]+1.e-12 < ramp)
-        pressureValue = parameters[0]*pressureValue/ramp;
-    else
-        pressureValue = parameters[1];
-
-    res[0] = pressureValue;  // Usually we check here for the correct flag. But as the boundary condition is limited to the outlet anyway, we have no issues
-    
-
-    return;
-}
-
-
 typedef unsigned UN;
 typedef double SC;
 typedef int LO;
@@ -633,9 +614,6 @@ int main(int argc, char *argv[])
         else
             partitionerP1.readAndPartition(15); 
 
-		//domainP1fluid->exportNodeFlags();
-		//domainP1struct->exportElementFlags();
-
         if (!discType.compare("P2")){
             domainP2fluid->buildP2ofP1Domain( domainP1fluid );
             domainP2struct->buildP2ofP1Domain( domainP1struct );
@@ -775,7 +753,6 @@ int main(int argc, char *argv[])
 
         if(geometryExplicit)
         {
-            // SmallMatrix<int> defTS(4);
 
             defTS.reset( new SmallMatrix<int> (4) );
             if(!chemistryExplicit){
@@ -794,7 +771,6 @@ int main(int argc, char *argv[])
         }
         else
         {
-            // SmallMatrix<int> defTS(5);
             defTS.reset( new SmallMatrix<int> (5) );
             if(!chemistryExplicit){
                 defTS.reset( new SmallMatrix<int> (6) );
@@ -817,7 +793,6 @@ int main(int argc, char *argv[])
         }
 
         vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
-        //double D0 = parameterListAll->sublist("Parameter Diffusion").get("D0",1.);
         for(int i=0; i<dim; i++){
             diffusionTensor[0][0] =1;
             diffusionTensor[1][1] =1;
@@ -917,8 +892,6 @@ int main(int argc, char *argv[])
             
             exPara->setup("parabolicInflow", domainFluidVelocity->getMesh(), discType);
             
-//                exPara->setup(domainFluidVelocity->getDimension(), domainFluidVelocity->getNumElementsGlobal(), domainFluidVelocity->getElements(), domainFluidVelocity->getPointsUnique(), domainFluidVelocity->getMapUnique(), domainFluidVelocity->getMapRepeated(), discType, "parabolicInflow", 1, comm);
-
             MultiVectorConstPtr_Type valuesConst = laplace.getSolution()->getBlock(0);
             exPara->addVariable( valuesConst, "values", "Scalar", 1, domainFluidVelocity->getMapUnique() );
 
@@ -966,7 +939,6 @@ int main(int argc, char *argv[])
             // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
             // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
             fsci.problemFluid_->addBoundaries(bcFactoryFluid);
-            //fsci.problemSteadyFluid_->addBoundaries(bcFactoryFluid);
 
         }
 
@@ -1015,10 +987,6 @@ int main(int argc, char *argv[])
         else
             fsci.problemSCI_->problemStructureNonLin_->addRhsFunction( rhsDummy );
     
-        fsci.problemFluid_->addRhsFunction(rhsFluidRB,0);
-        double resistance= parameterListAll->sublist("Parameter Fluid").get("Resistance",0.5);
-        fsci.problemFluid_->addParemeterRhs( resistance);
-        fsci.problemFluid_->addParemeterRhs( parameterListProblem->sublist("Parameter Fluid").get("BC Ramp",0.1));
   
 
         // Geometrie-RW separat, falls geometrisch explizit.
@@ -1143,9 +1111,6 @@ int main(int argc, char *argv[])
         HDF5Import<SC,LO,GO,NO> importerC(fsci.getSolution()->getBlock(4)->getMap(),fileName+"c");
         Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solutionImportedC = importerC.readVariablesHDF5(std::to_string(finalTime));
 
-        // HDF5Import<SC,LO,GO,NO> importerG(fsci.getSolution()->getBlock(3)->getMap(),fileName+"d_f");
-        // Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > solutionImportedG = importerG.readVariablesHDF5(std::to_string(finalTime));
-
         // ---------------
         // Exporter
         // ---------------
@@ -1161,9 +1126,6 @@ int main(int argc, char *argv[])
         Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaResultsChem(new ExporterParaView<SC,LO,GO,NO>());
         exParaResultsChem->setup("Restart_Error_c", domainChem->getMesh(), domainChem->getFEType());
 
-        // Teuchos::RCP<ExporterParaView<SC,LO,GO,NO> > exParaResultsGeo(new ExporterParaView<SC,LO,GO,NO>());
-        // exParaResultsGeo->setup("Restart_Error_g", domainGeometry->getMesh(), domainGeometry->getFEType());
-
         // Solutions
         Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionV = fsci.getSolution()->getBlock(0);
 
@@ -1172,8 +1134,6 @@ int main(int argc, char *argv[])
         Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionD = fsci.getSolution()->getBlock(2);
 
         Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionC = fsci.getSolution()->getBlock(4);
-
-        // Teuchos::RCP<const MultiVector<SC,LO,GO,NO> > exportSolutionG =fsci.getSolution()->getBlock(3);
 
 
         // Adding solution to paraview exporter
@@ -1188,9 +1148,6 @@ int main(int argc, char *argv[])
 
         exParaResultsChem->addVariable(exportSolutionC, "c", "Scalar", 1, domainChem->getMapUnique());
         exParaResultsChem->addVariable(solutionImportedC, "c_import", "Scalar", 1,  domainChem->getMapUnique());
-
-        // exParaResultsGeo->addVariable(exportSolutionG, "g", "Vector", 3, domainGeometry->getMapUnique());
-        // exParaResultsGeo->addVariable(solutionImportedG, "g_import", "Vector", 3,  domainGeometry->getMapUnique());
 
         // -------------------------------------------------
         Teuchos::Array<SC> norm2(1), normInf(1),normSol2(1); 

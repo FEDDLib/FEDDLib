@@ -351,25 +351,6 @@ void reactionFunc(double* x, double* res, double* parameters){
     res[0] = m * x[0];
 
 }
-void rhsFluidRB(double* x, double* res, double* parameters){
-
-    double pressureValue = parameters[1];
-    double flag = parameters[3];
-    double ramp = parameters[2];
-  	res[0] =0.;
-    
-    if(parameters[0]+1.e-12 < ramp)
-        pressureValue = parameters[0]*pressureValue/ramp;
-    else
-        pressureValue = parameters[1];
-
-    res[0] = pressureValue;  // Usually we check here for the correct flag. But as the boundary condition is limited to the outlet anyway, we have no issues
-    
-
-    return;
-}
-
-
 typedef unsigned UN;
 typedef double SC;
 typedef int LO;
@@ -627,9 +608,6 @@ int main(int argc, char *argv[])
         else
             partitionerP1.readAndPartition(15); 
 
-		//domainP1fluid->exportNodeFlags();
-		//domainP1struct->exportElementFlags();
-
         if (!discType.compare("P2")){
             domainP2fluid->buildP2ofP1Domain( domainP1fluid );
             domainP2struct->buildP2ofP1Domain( domainP1struct );
@@ -769,7 +747,6 @@ int main(int argc, char *argv[])
 
         if(geometryExplicit)
         {
-            // SmallMatrix<int> defTS(4);
 
             defTS.reset( new SmallMatrix<int> (4) );
             if(!chemistryExplicit){
@@ -788,7 +765,6 @@ int main(int argc, char *argv[])
         }
         else
         {
-            // SmallMatrix<int> defTS(5);
             defTS.reset( new SmallMatrix<int> (5) );
             if(!chemistryExplicit){
                 defTS.reset( new SmallMatrix<int> (6) );
@@ -811,7 +787,6 @@ int main(int argc, char *argv[])
         }
 
         vec2D_dbl_Type diffusionTensor(dim,vec_dbl_Type(3));
-        //double D0 = parameterListAll->sublist("Parameter Diffusion").get("D0",1.);
         for(int i=0; i<dim; i++){
             diffusionTensor[0][0] =1;
             diffusionTensor[1][1] =1;
@@ -911,8 +886,6 @@ int main(int argc, char *argv[])
             
             exPara->setup("parabolicInflow", domainFluidVelocity->getMesh(), discType);
             
-//                exPara->setup(domainFluidVelocity->getDimension(), domainFluidVelocity->getNumElementsGlobal(), domainFluidVelocity->getElements(), domainFluidVelocity->getPointsUnique(), domainFluidVelocity->getMapUnique(), domainFluidVelocity->getMapRepeated(), discType, "parabolicInflow", 1, comm);
-
             MultiVectorConstPtr_Type valuesConst = laplace.getSolution()->getBlock(0);
             exPara->addVariable( valuesConst, "values", "Scalar", 1, domainFluidVelocity->getMapUnique() );
 
@@ -960,7 +933,6 @@ int main(int argc, char *argv[])
             // Fuer die Teil-TimeProblems brauchen wir bei TimeProblems
             // die bcFactory; vgl. z.B. Timeproblem::updateMultistepRhs()
             fsci.problemFluid_->addBoundaries(bcFactoryFluid);
-            //fsci.problemSteadyFluid_->addBoundaries(bcFactoryFluid);
 
         }
 
@@ -1009,10 +981,6 @@ int main(int argc, char *argv[])
         else
             fsci.problemSCI_->problemStructureNonLin_->addRhsFunction( rhsDummy );
     
-        fsci.problemFluid_->addRhsFunction(rhsFluidRB,0);
-        double resistance= parameterListAll->sublist("Parameter Fluid").get("Resistance",0.5);
-        fsci.problemFluid_->addParemeterRhs( resistance);
-        fsci.problemFluid_->addParemeterRhs( parameterListProblem->sublist("Parameter Fluid").get("BC Ramp",0.1));
   
 
         // Geometrie-RW separat, falls geometrisch explizit.

@@ -12,6 +12,16 @@
  @copyright CH
  */
 namespace FEDD {
+
+namespace {
+// Two times closer than this are the same time: round-off accumulated over many
+// steps, relative to the final time (an absolute threshold does not scale with it).
+double timeTolerance(double tEnd)
+{
+    return std::max(1e-12, 100.0 * std::numeric_limits<double>::epsilon() * std::max(1.0, std::abs(tEnd)));
+}
+}
+
 TimeSteppingTools::TimeSteppingTools():
 comm_(),
 parameterList_(),
@@ -148,11 +158,7 @@ double TimeSteppingTools::currentTime(){
 }
 
 bool TimeSteppingTools::continueTimeStepping(){
-    // Avoid stopping a step early due to floating point accumulation (e.g. dt=0.2 over many steps).
-    // We consider the simulation finished only once t_ is sufficiently close to tEnd_.
-    const double scale = std::max(1.0, std::abs(tEnd_));
-    const double tol = std::max(1e-12, 100.0 * std::numeric_limits<double>::epsilon() * scale);
-    return (t_ < tEnd_ - tol);
+    return t_ < tEnd_ - timeTolerance(tEnd_);
 }
 
 double TimeSteppingTools::getButcherTableCoefficient(int row , int col){
@@ -279,27 +285,17 @@ void TimeSteppingTools::advanceTime(bool printInfo){
         exporterTxtError_->exportData(t_);
     }
 
-    // Clamp the very last step so we hit Final time exactly.
-    // This prevents exporting a "final" timestep slightly beyond tEnd_ or missing it entirely.
-    if (t_ < tEnd_) {
-        const double remaining = tEnd_ - t_;
-        const double scale = std::max(1.0, std::abs(tEnd_));
-        const double tol = std::max(1e-12, 100.0 * std::numeric_limits<double>::epsilon() * scale);
-        if (dt_ > remaining && remaining > tol) {
-            dt_ = remaining;
-        }
-    }
+    // The last step ends exactly at the final time: it is shortened if it would pass it, and a
+    // time within round-off of it is snapped to it. Checkpoints are named by the time, so a
+    // run has to land on it exactly to be restarted from it.
+    const double tol = timeTolerance(tEnd_);
+    if (t_ < tEnd_ && dt_ > tEnd_ - t_ && tEnd_ - t_ > tol)
+        dt_ = tEnd_ - t_;
 
     t_ += dt_;
 
-    // If we're extremely close, snap to tEnd_.
-    {
-        const double scale = std::max(1.0, std::abs(tEnd_));
-        const double tol = std::max(1e-12, 100.0 * std::numeric_limits<double>::epsilon() * scale);
-        if (std::abs(t_ - tEnd_) <= tol) {
-            t_ = tEnd_;
-        }
-    }
+    if (std::abs(t_ - tEnd_) <= tol)
+        t_ = tEnd_;
 
     if (printInfo)
         this->printInfo();

@@ -234,7 +234,6 @@ public:
     mutable double timeStep_ =0;
     mutable double newtonStep_=0;
     
-    void exportSolutionHDF5();
 
     ProblemPtr_Type problem_;
     CommConstPtr_Type comm_;

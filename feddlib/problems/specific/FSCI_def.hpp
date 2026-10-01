@@ -77,7 +77,6 @@ void FSCI<SC,LO,GO,NO>::assemble( std::string type ) const
             std::cout << "-- Assembly FSCI ... " << std::endl;
         }
 
-    //    P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), 10 ) );
         this->problemFluid_->assemble();
         
         this->problemSCI_->assemble();
@@ -232,10 +231,6 @@ void FSCI<SC,LO,GO,NO>::assemble( std::string type ) const
         {
             TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "Only Geometry explicit available here");
 
-            // Geometrie
-           // this->system_->addBlock( this->problemGeometry_->system_->getBlock(0,0), 5, 5 );
-            // Kopplung
-            //this->system_->addBlock( C4, 5, 2 );
         }
 
         // Sollte (bzw. muss) erst aufgerufen werden, wenn alle Bloecke aus assemble()
@@ -441,18 +436,10 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             
             // Es ist P = P_
             this->P_.reset(new Matrix_Type( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getDimension() * this->getDomain(0)->getApproxEntriesPerRow() ) );
-//            counterP++;
-//            std::string outNameMeshVelo = "meshVelo" + to_string(counterP) + ".mm";
-//            w_rep_->writeMM(outNameMeshVelo);
-//            Teuchos::ArrayRCP<SC> values = w_rep_->getDataNonConst(0);
-//            for (int i=0; i<values.size()/2; i++) {
-//                values[2*i] = i;
-//            }
             this->feFactory_->assemblyAdditionalConvection( this->dim_, this->domain_FEType_vec_.at(0), this->P_, this->w_rep_, true );
             this->P_->resumeFill();
             this->P_->scale(density);
             this->P_->scale(-1.0);
-//            P_->scale(.0);
             this->P_->fillComplete( this->getDomain(0)->getMapVecFieldUnique(), this->getDomain(0)->getMapVecFieldUnique());
 //            std::string outNameP = "P" + to_string(counterP) + ".mm";
 //            std::cout << "write P:"<<std::endl;
@@ -489,7 +476,6 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             }
             
             this->problemFluid_->reAssemble( "Newton" );
-            //if (materialModel_ != "linear")
             this->problemSCI_->reAssemble("Newton");
             
         }
@@ -526,7 +512,6 @@ void FSCI<SC,LO,GO,NO>::reAssemble(std::string type) const
             this->system_->addBlock(shapeVelocity, 0, 5);
             this->system_->addBlock(shapeDiv, 1, 5);
             
-            //if (materialModel_ != "linear")
             this->problemSCI_->reAssemble("Newton");
 
         }
@@ -565,9 +550,6 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
     }*/
     
      
-   // if((this->parameterList_->sublist("Parameter Fluid").get("Implicit BC",false) == true) && (this->timeSteppingTool_->t_ > this->parameterList_->sublist("Parameter Fluid").get("Implicit Start",1.0)))
-    //    this->computePressureRHSInTime();
-
     this->meshDisplacementNew_rep_->importFromVector(geometrySolution, true);
     
     MultiVectorConstPtr_Type fluidSolution = this->solution_->getBlock(0);
@@ -608,10 +590,8 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
     // we need to account for the coupling in the residuals
     this->problemSCI_->calculateNonLinResidualVec( "reverse", time );
 
-    //this->problemSCI_->getResidualVector()->getBlockNonConst(0)->scale(-1.0);
     this->residualVec_->addBlock(  this->problemSCI_->getResidualVector()->getBlockNonConst(0) , 2);
     if(!chemistryExplicit_) {
-        //this->problemSCI_->getResidualVector()->getBlockNonConst(1)->scale(-1.);
         this->residualVec_->addBlock(this->problemSCI_->getResidualVector()->getBlockNonConst(1), 4);
     }
     MultiVectorPtr_Type residualFluidVelocityFSCI =
@@ -620,9 +600,7 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
         Teuchos::rcp_const_cast<MultiVector_Type>( this->residualVec_->getBlock(2) );
     
     if(!chemistryExplicit_) {
-        //cout << " Residual " << endl;
         MultiVectorPtr_Type residualChemFSCI = Teuchos::rcp_const_cast<MultiVector_Type>(this->residualVec_->getBlock(4));
-        //residualChemFSCI->print();
     }
 
     MultiVectorPtr_Type residualCouplingFSCI =
@@ -658,7 +636,6 @@ void FSCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time
         this->bcFactory_->setVectorMinusBC( this->residualVec_, this->solution_, time );
     } 
     this->setBoundariesRHS(this->timeSteppingTool_->currentTime());
-    // this->rhs_->getBlock(0)->print();
     /*bool plotResVector = this->getParameterList()->sublist("General").get("Plot Residual Vector",true);
     double range1 = this->getParameterList()->sublist("General").get("Plot Residual Vector Start",0.0);
     double range2 = this->getParameterList()->sublist("General").get("Plot Residual Vector End",1.0);
@@ -970,7 +947,6 @@ void FSCI<SC,LO,GO,NO>::exportValuesOfInterest(double time)
     problemSCI_->exportValuesOfInterest(time);
     if(this->geometryExplicit_)
     {
-        std::cout << " Export geometry " << std::endl;
         std::string varName = std::to_string(time);
         this->exporterGeometry_->writeVariablesHDF5(varName,this->problemGeometry_->getSolution()->getBlock(0));
     }

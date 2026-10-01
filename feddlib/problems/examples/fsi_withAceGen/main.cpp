@@ -280,28 +280,6 @@ void parabolicInflowSteady(double* x, double* res, double t, const double* param
 
 
 
-void rhsResistance(double* x, double* res, double* parameters){
-
-    double pressureValue = parameters[1];
-    double flag = parameters[3];
-    double ramp = parameters[2];
-
-
-  	res[0] =0.;
-    
-    if(parameters[0]+1.e-12 < ramp)
-        pressureValue = parameters[0]*pressureValue/ramp;
-    else
-        pressureValue = parameters[1];
-
-    if(flag == 5){
-      	res[0] = pressureValue;
-        
-    }
-    
-    return;
-}
-
 void parabolicInflow3DLinArtery(double* x, double* res, double t, const double* parameters)
 {
     // parameters[0] is the maxium desired velocity
@@ -482,7 +460,6 @@ int main(int argc, char *argv[])
         sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Solid") );
         sublist(parameterListStructureAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter") );
 
-        //parameterListStructureAll->setParameters(*parameterListStructure);
         parameterListStructureAll->setParameters(*parameterListPrecStructure);
 
         ParameterListPtr_Type parameterListChemAll(new Teuchos::ParameterList(*parameterListPrecChem));
@@ -491,8 +468,6 @@ int main(int argc, char *argv[])
 
         ParameterListPtr_Type parameterListSCIAll(new Teuchos::ParameterList(*parameterListPrecStructure));
         parameterListSCIAll->setParameters(*parameterListProblem);
-        //sublist(parameterListSCIAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter Solid") );
-        //sublist(parameterListSCIAll, "Parameter")->setParameters( parameterListProblem->sublist("Parameter") );
 
         
         
@@ -659,7 +634,6 @@ int main(int argc, char *argv[])
             domainFluidPressure = domainP1fluid;
             domainStructure = domainP1struct;
             domainGeometry = domainP1fluid;
-            //                TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error,"P1/P1 for FSI not implemented!");
         }
 
         if (verbose){
@@ -731,7 +705,6 @@ int main(int argc, char *argv[])
         Teuchos::RCP<SmallMatrix<int>> defTS;
         if(geometryExplicit)
         {
-            // SmallMatrix<int> defTS(4);
             defTS.reset( new SmallMatrix<int> (4) );
 
             // Fluid
@@ -745,7 +718,6 @@ int main(int argc, char *argv[])
         }
         else
         {
-            // SmallMatrix<int> defTS(5);
             defTS.reset( new SmallMatrix<int> (5) );
 
             // Fluid
@@ -844,8 +816,6 @@ int main(int argc, char *argv[])
             
             exPara->setup("parabolicInflow", domainFluidVelocity->getMesh(), discType);
             
-//                exPara->setup(domainFluidVelocity->getDimension(), domainFluidVelocity->getNumElementsGlobal(), domainFluidVelocity->getElements(), domainFluidVelocity->getPointsUnique(), domainFluidVelocity->getMapUnique(), domainFluidVelocity->getMapRepeated(), discType, "parabolicInflow", 1, comm);
-
             MultiVectorConstPtr_Type valuesConst = laplace.getSolution()->getBlock(0);
             exPara->addVariable( valuesConst, "values", "Scalar", 1, domainFluidVelocity->getMapUnique() );
 
@@ -871,18 +841,6 @@ int main(int argc, char *argv[])
             bcFactory->addBC(zeroDirichlet3D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
             bcFactoryFluid->addBC(zeroDirichlet3D, 2, 0, domainFluidVelocity, "Dirichlet", dim, parameter_vec);// solutionLaplaceConst, true , parabolicInflowDirection3D); // inflow 
 
-            //bcFactory->addBC(zeroDirichlet3D, 2, 0, domainFluidVelocity, "Dirichlet", dim); // inflow ring                
-            //bcFactoryFluid->addBC(zeroDirichlet3D, 2, 0, domainFluidVelocity, "Dirichlet", dim); // inflow ring
-            //bcFactorySteadyFluid->addBC(zeroDirichlet3D, 2, 0, domainFluidVelocity, "Dirichlet", dim); // inflow ring
-
-            //bcFactory->addBC(zeroDirichlet3D, 3, 0, domainFluidVelocity, "Dirichlet", dim); // outflow ring                
-            //bcFactoryFluid->addBC(zeroDirichlet3D, 3, 0, domainFluidVelocity, "Dirichlet", dim); // outflow ring
-            //bcFactorySteadyFluid->addBC(zeroDirichlet3D, 6, 0, domainFluidVelocity, "Dirichlet", dim); // Interface
-            //bcFactorySteadyFluid->addBC(zeroDirichlet3D, 3, 0, domainFluidVelocity, "Dirichlet", dim); // Outflow ring
-
-            //bcFactory->addBC(pressureBC, 5, 1, domainFluidPressure, "Neumann", 1,parameter_vec_pressure); // outflow                
-            //bcFactoryFluid->addBC(pressureBC, 5, 1, domainFluidPressure, "Neumann", 1,parameter_vec_pressure); // outflow
-            
             if (zeroPressure) {
                 bcFactory->addBC(zeroBC, 3, 1, domainFluidPressure, "Dirichlet", 1); // outflow ring
                 bcFactory->addBC(zeroBC, 5, 1, domainFluidPressure, "Dirichlet", 1); // outflow
@@ -928,11 +886,6 @@ int main(int argc, char *argv[])
         fsi.problemStructureNonLin_->addRhsFunction( rhsDummy );
     
 
-        fsi.problemFluid_->addRhsFunction(rhsResistance,0);
-        double resistance= parameterListAll->sublist("Parameter Fluid").get("Resistance",0.5);
-
-        fsi.problemFluid_->addParemeterRhs( resistance);
-        fsi.problemFluid_->addParemeterRhs( parameterListProblem->sublist("Parameter Fluid").get("Resistance Ramp",0.1));
 
         // Geometrie-RW separat, falls geometrisch explizit.
         // Bei Geometrisch implizit: Keine RW in die factoryFSI fuer das
@@ -971,46 +924,6 @@ int main(int argc, char *argv[])
 
      
         // Matrizen assemblieren
-        /*if(parameterListAll->sublist("General").get("Use steady fluid solution",false) == true){
-            cout << " Solve Steady State Navier-Stokes " << endl;
-            // Defining steady state Navier Stokes problem.
-            //this->problemSteadyFluid_->addBoundaries(this->bcFactory_);
-            fsi.problemSteadyFluid_->initializeProblem();
-
-            fsi.problemSteadyFluid_->assemble();
-            fsi.problemSteadyFluid_->setBoundariesRHS();
-
-            // Solving the problem
-            std::string nlSolverType = "NOX";
-            NonLinearSolver<SC,LO,GO,NO> nlSolver( nlSolverType );
-            nlSolver.solve( *(fsi.problemSteadyFluid_) );
-
-            // Using velocity and pressure as start solution
-            fsi.problemFluid_->getSolution()->getBlockNonConst(0)->update(1.0, *fsi.problemSteadyFluid_->getSolution()->getBlockNonConst(0), 1.);
-            fsi.problemFluid_->getSolution()->getBlockNonConst(1)->update(1.0, *fsi.problemSteadyFluid_->getSolution()->getBlockNonConst(1), 1.);
-
-            ExporterPVPtr_Type exporterSteadyFluid = Teuchos::rcp(new ExporterPV_Type());
-            ExporterPVPtr_Type exporterSteadyPressure = Teuchos::rcp(new ExporterPV_Type());
-            
-            MeshPtr_Type meshNonConstF = Teuchos::rcp_const_cast<Mesh_Type>( domainFluidVelocity->getMesh() );
-            MeshPtr_Type meshNonConstP = Teuchos::rcp_const_cast<Mesh_Type>( domainFluidPressure->getMesh() );
-
-            exporterSteadyFluid->setup("u_f_steady", meshNonConstF, domainFluidVelocity->getFEType(), parameterListAll);
-            exporterSteadyPressure->setup("p_steady", meshNonConstP, domainFluidPressure->getFEType(), parameterListAll);
-
-            MultiVectorConstPtr_Type u_f_steady = fsi.problemSteadyFluid_->getSolution()->getBlock(0);            
-            MultiVectorConstPtr_Type p_steady = fsi.problemSteadyFluid_->getSolution()->getBlock(1);
-
-            exporterSteadyFluid->addVariable( u_f_steady, "u", "Vector", 3, domainFluidVelocity->getMapUnique() );
-            exporterSteadyPressure->addVariable( p_steady, "p", "Scalar", 1, domainFluidPressure->getMapUnique() );
-
-            exporterSteadyFluid->save( 0. );
-            exporterSteadyPressure->save(0. );
-
-            exporterSteadyFluid->closeExporter();
-            exporterSteadyPressure->closeExporter();
-
-        }*/
            // #####################
         // Zeitintegration
         // #####################

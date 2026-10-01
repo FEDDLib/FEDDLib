@@ -579,6 +579,98 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinear(){
 
 }
 
+// TODO: Irgendwann einmal fuer St. Venant-Kirchoff oder so programmieren.
+// Erstmal nicht wichtig
+template<class SC,class LO,class GO,class NO>
+void DAESolverInTime<SC,LO,GO,NO>::advanceWithLoadStepping()
+{
+    
+    bool print = parameterList_->sublist("General").get("ParaViewExport",false);
+    bool printExtraData = parameterList_->sublist("General").get("Export Extra Data",false);
+    bool printData = parameterList_->sublist("General").get("Export Data",false);
+    if (print)
+    {
+        exportTimestep();
+    }
+    
+    vec_dbl_ptr_Type its = Teuchos::rcp(new vec_dbl_Type ( 2, 0. ) ); //0:linear iterations, 1: nonlinear iterations
+    ExporterTxtPtr_Type exporterTimeTxt;
+    ExporterTxtPtr_Type exporterIterations;
+    ExporterTxtPtr_Type exporterNewtonIterations;
+    if (printData) {
+        std::string suffix = parameterList_->sublist("General").get("Export Suffix","");
+        
+        exporterTimeTxt = Teuchos::rcp(new ExporterTxt());
+        exporterTimeTxt->setup( "time" + suffix, this->comm_ );
+        
+        exporterNewtonIterations = Teuchos::rcp(new ExporterTxt());
+        exporterNewtonIterations->setup( "newtonIterations" + suffix, this->comm_ );
+        
+        exporterIterations = Teuchos::rcp(new ExporterTxt());
+        exporterIterations->setup( "linearIterations" + suffix, this->comm_ );
+    }
+    // Groesse des Problems, Zeitschrittweite und Newmark-Parameter
+    int size = timeStepDef_.size();
+    TEUCHOS_TEST_FOR_EXCEPTION( size>1, std::runtime_error, "Loadstepping only implemented or sensible for 1x1 Systems.");
+    double dt = timeSteppingTool_->get_dt();
+   
+
+    // Koeffizienten vor der Massematrix und vor der Systemmatrix des steady-Problems
+    SmallMatrix<double> massCoeff(size);
+    SmallMatrix<double> problemCoeff(size);
+    double coeffSourceTerm = 0.0; // Koeffizient fuer den Source-Term (= rechte Seite der DGL); mit Null initialisieren
+
+    // Koeffizient vor der Massematrix
+    massCoeff[0][0] = 0.;
+    problemCoeff[0][0] =  1.0;
+    // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
+    coeffSourceTerm = 1.0; // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
+
+    // Temporaerer Koeffizienten fuer die Skalierung der Massematrix in der rechten Seite des Systems in UpdateNewmarkRhs()
+    vec_dbl_Type coeffTemp(1);
+    coeffTemp.at(0) = 1.0;
+
+    // Uebergebe die Parameter fuer Masse- und steady-Problemmatrix an TimeProblem
+    // Wegen moeglicher Zeitschrittweitensteuerung, rufe CombineSystems()
+    // in jedem Zeitschritt auf, um LHS neu aufzustellen.
+    // Bei AdvanceInTimeNonLinear... wird das in ReAssemble() gemacht!!!
+    problemTime_->setTimeParameters(massCoeff, problemCoeff);
+    // Der Source Term ist schon nach der Assemblierung mit der Dichte \rho skaliert worden
+   
+    // ######################
+    // "Time" loop
+    // ######################
+    while(timeSteppingTool_->continueTimeStepping())
+    {
+        // Stelle (massCoeff*M + problemCoeff*A) auf
+        //problemTime_->combineSystems();
+        
+       
+        double time = timeSteppingTool_->currentTime() + dt;
+        problemTime_->updateTime ( time );
+          
+        NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","Newton"));
+        nlSolver.solve( *problemTime_, time, its );
+        
+        timeSteppingTool_->advanceTime(true/*output info*/);
+        if (printData) {
+            exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
+            exporterIterations->exportData( (*its)[0] );
+            exporterNewtonIterations->exportData( (*its)[1] );
+        }
+        if (print) {
+            exportTimestep();
+        }
+        this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
+
+    }
+    
+    comm_->barrier();
+    if (print)
+    {
+        closeExporter();
+    }
+}
 
 
 template<class SC,class LO,class GO,class NO>
@@ -750,7 +842,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeNonLinearNewmark()
         // Bei Newmark lautet dies:
         // M*[\frac{1}{dt^2*beta}*u_n + \frac{1}{dt*beta}*u'_n + \frac{0.5 - beta}{beta}*u''_n],
         // wobei u' = v (velocity) und u'' = w (acceleration).
-        std::cout << " Beta " << beta << " gamma " << gamma << std::endl;
+        if (verbose_)
+            std::cout << " Beta " << beta << " gamma " << gamma << std::endl;
         problemTime_->updateNewmarkRhs(dt, beta, gamma, coeffTemp);
         
         // TODO: SourceTerm wird in jedem Zeitschritt neu berechnet; auch wenn konstant!!!
@@ -1095,8 +1188,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         }
         problemTime_->updateTime ( timeSteppingTool_->currentTime() ); // Synchronize timestep to the timeProblem timestepper (t_n)
 
-        //string linearization = this->parameterList_->sublist("General").get("Linearization","Extrapolation");
-
         // Ist noetig, falls wir extrapolieren, damit wir
         // immer die korrekten previousSolution_ haben.
         // TODO: Vermutlich reicht lediglich (da erstmal nur BDF2):
@@ -1168,9 +1259,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
         MatrixPtr_Type massmatrix;
         sci->setChemMassmatrix( massmatrix );
-        //massmatrix->print();
-        //if(couplingType=="explicit" ) //|| structureModel=="SCI_sophisticated")
-        //    this->problemTime_->systemMass_->addBlock( massmatrix, 1, 1);
 
         // RHS nach BDF2
         //if(couplingType=="explicit" )//|| structureModel=="SCI_sophisticated")
@@ -1205,8 +1293,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
         if (verbose_)
             std::cout << " ----- Nonlinear System Info|| Number of rows:" << problemTime_->getSystem()->size() << " || number of rhs:" << problemTime_->getRhs()->size() << " || solution: " << problemTime_->getSolution()->size() << std::endl; 
-        //massCoeffSCI.print();
-        //problemCoeffSCI.print();
         if("SCI_Linear" != parameterList_->sublist("Parameter").get("Structure Model","SCI_Linear"))
             nlSolver.solve(*this->problemTime_, time, its);
         else{
@@ -1230,8 +1316,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             }
         }
         
-        //this->problemTime_->computeValuesOfInterestAndExport();
-
         // timeSteppingTool_->advanceTime(false);//output info); // DAE Time stepper gets n+1 time step value
 
         // Should be some place else
@@ -1331,258 +1415,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     }
 }
 
-
-template<class SC,class LO,class GO,class NO>
-void DAESolverInTime<SC,LO,GO,NO>::advanceWithLoadStepping()
-{
-    // problemCoeff vor A (= komplettes steady-System)
-    // massCoeff vor M (= Massematrix)
-    // coeffSourceTerm vor f (= rechte Seite der DGL)
-    if (verbose_)
-        std::cout << " Advance with Loadstepping " << std::endl;
-    NonLinElasProblemPtr_Type nonLinElas = Teuchos::rcp_dynamic_cast<NonLinElasProblem_Type>( this->problemTime_->getUnderlyingProblem() );
-
-    bool print = parameterList_->sublist("General").get("ParaViewExport",false);
-    bool printStress = parameterList_->sublist("General").get("Export Stress",false);
-    bool printData = parameterList_->sublist("General").get("Export Data",true);
-    bool printExtraData = parameterList_->sublist("General").get("Export Extra Data",false);
-
-    BlockMultiVectorPtr_Type stressVec;
-    if (print)
-    {
-        exportTimestep();
-    }
-
-    vec_dbl_ptr_Type its = Teuchos::rcp(new vec_dbl_Type ( 2, 0. ) ); //0:linear iterations, 1: nonlinear iterations
-    ExporterTxtPtr_Type exporterTimeTxt;
-    ExporterTxtPtr_Type exporterDisplXTxt;
-    ExporterTxtPtr_Type exporterDisplYTxt;
-    ExporterTxtPtr_Type exporterIterations;
-    ExporterTxtPtr_Type exporterNewtonIterations;
-    ExporterTxtPtr_Type exporterCornerValue;
-
-    GO idExport = parameterList_->sublist("General").get("ExportID",0);
-    LO valueCorner =-1;
-
-    
-    if (printData) {
-        exporterTimeTxt = Teuchos::rcp(new ExporterTxt());
-        exporterDisplXTxt = Teuchos::rcp(new ExporterTxt());
-        exporterDisplYTxt = Teuchos::rcp(new ExporterTxt());
-        exporterTimeTxt->setup( "time", this->comm_ );
-
-        std::string suffix = parameterList_->sublist("General").get("Export Suffix","");
-        
-        exporterNewtonIterations = Teuchos::rcp(new ExporterTxt());
-        exporterNewtonIterations->setup( "newtonIterations" + suffix, this->comm_ );
-        
-        exporterIterations = Teuchos::rcp(new ExporterTxt());
-        exporterIterations->setup( "linearIterations" + suffix, this->comm_ );
-
-        exporterCornerValue = Teuchos::rcp(new ExporterTxt());
-        exporterCornerValue->setup( "cornerValue" + suffix, this->comm_ );
-
-        MapConstPtr_Type map = problemTime_->getDomain(0)->getMapUnique();
-        vec2D_dbl_ptr_Type points = problemTime_->getDomain(0)->getPointsUnique();
-
-        valueCorner = map->getLocalElement(idExport);
-        if(valueCorner != -1)
-            std::cout <<" Value corner local ID " << valueCorner  << " with node values " << points->at(valueCorner).at(0) << " " << points->at(valueCorner).at(1) << " " << points->at(valueCorner).at(2)  << std::endl;
-
-
-    }
-   
-    vec2D_dbl_Type timeParametersVec(0,vec_dbl_Type(2));
-    
-    int numSegments = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);
-
- 	for(int i=1; i <= numSegments; i++){
-
-        double startTime = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("Start Time",0.);
-        double dtTmp = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").sublist(std::to_string(i)).get("dt",0.1);
-        
-        vec_dbl_Type segment = {startTime,dtTmp};
-        timeParametersVec.push_back(segment);
-    }
-    double loadStepSize = parameterList_->sublist("Parameter").get("Load Step Size",1.);
-
-    if(numSegments > 0 ){
-        TEUCHOS_TEST_FOR_EXCEPTION( loadStepSize != timeParametersVec[0][1], std::runtime_error, "Load Step Size and First Time Interval Size appear different" );
-    }
-    else{
-        TEUCHOS_TEST_FOR_EXCEPTION( loadStepSize != timeSteppingTool_->dt_, std::runtime_error, "Load Step Size and dt appear different" );
-    }
-    double dt;
-    for(int i=0; i<numSegments ; i++){
-        if(timeSteppingTool_->currentTime()+1.0e-12 > timeParametersVec[i][0]){
-            dt=timeParametersVec[i][1];
-            timeSteppingTool_->dt_ = dt;
-        }
-
-    }
-    
-   
-    int sizeStructure = 1; // d_s
-
-    dt = timeSteppingTool_->get_dt();
-  // ######################
-    // Struktur: Mass-, Problem, SourceTerm Koeffizienten
-    // ######################
-    // Koeffizienten vor der Massematrix und vor der Systemmatrix des steady-Problems
-    SmallMatrix<double> massCoeff(sizeStructure);
-    SmallMatrix<double> problemCoeff(sizeStructure);
-    double coeffSourceTermStructure = 0.0; // Koeffizient fuer den Source-Term (= rechte Seite der DGL); mit Null initialisieren
-
-    massCoeff[0][0] = 1.;
-    problemCoeff[0][0] =  1.0;
-    coeffSourceTermStructure = 0.0; // ACHTUNG FUER SOURCE TERM, DER NICHT IN DER ZEIT DISKRETISIERT WIRD!
-
-    this->problemTime_->setTimeParameters(massCoeff, problemCoeff);
-    
-    if (printExtraData) {
-        exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
-        vec_dbl_Type v(3,0.);
-        this->problemTime_->getValuesOfInterest( v );
-
-        exporterDisplXTxt->exportData( v[0] );
-        exporterDisplYTxt->exportData( v[1] );
-    }
-
-    // ######################
-    // Time loop
-    // ######################
-    while(timeSteppingTool_->continueTimeStepping())
-    {
-        for(int i=0; i<numSegments ; i++){
-            if(timeSteppingTool_->currentTime()+1.0e-12 > timeParametersVec[i][0])
-                dt=timeParametersVec[i][1];
-        }
-        timeSteppingTool_->dt_= dt;
-        if(!nonLinElas.is_null() && !nonLinElas->timeSteppingTool_.is_null())
-            nonLinElas->timeSteppingTool_->dt_ = dt;
-        if(timeSteppingTool_->currentTime() <= 0. + 1e-12){
-            timeSteppingTool_->dt_prev_= dt;        
-            if(!nonLinElas.is_null() && !nonLinElas->timeSteppingTool_.is_null())
-                nonLinElas->timeSteppingTool_->dt_prev_= dt;        
-        }
-        else{
-            timeSteppingTool_->dt_prev_= timeSteppingTool_->dt_;
-
-            this->problemTime_->assemble("UpdateTime"); // Updates to next timestep
-
-            if(!nonLinElas.is_null() && !nonLinElas->timeSteppingTool_.is_null())
-                nonLinElas->timeSteppingTool_->dt_prev_ = timeSteppingTool_->dt_;
-
-        }
-
-        
-
-        timeSteppingTool_->printInfo();
-
-       
-        problemTime_->updateTime ( timeSteppingTool_->currentTime() );
-           
-        {
-            
-            // Hier wird auch direkt ein Update der Loesung bei der Struktur gemacht.
-            // Aehnlich zu "UpdateFluidInTime".
-            
-            /*if(timeSteppingTool_->currentTime() == 0.0)
-            {
-                // We extract the underlying FSI problem
-                MatrixPtr_Type massmatrix;
-                sci->setSolidMassmatrix( massmatrix );
-                this->problemTime_->systemMass_->addBlock( massmatrix, 0, 0 );
-            }*/
-            // this should be done automatically rhs will not be used here
-            //  this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 2 );
-            this->problemTime_->assemble("ComputeSolidRHSLoad");
-        }
-
-        double time = timeSteppingTool_->currentTime() +  timeSteppingTool_->dt_;
-        problemTime_->updateTime ( time );
-        
-        NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
-        //massCoeffSCI.print();
-        //problemCoeffSCI.print();
-       // if("SCI_Linear" != parameterList_->sublist("Parameter").get("Structure Model","SCI_Linear"))
-            nlSolver.solve(*this->problemTime_, time, its);
-        /*else{
-            problemTime_->combineSystems();
-            problemTime_->setBoundaries(time); 
-            (*its)[0]=problemTime_->solve();
-            }
-        */  
-        //this->problemTime_->computeValuesOfInterestAndExport();
-
-        timeSteppingTool_->advanceTime(false);//output info);
-
-       
-
-        if (printData) {
-            exporterTimeTxt->exportData( timeSteppingTool_->currentTime() );
-            exporterIterations->exportData( (*its)[0] );
-            exporterNewtonIterations->exportData( (*its)[1] );
-
-            vec_dbl_Type d_s(0);
-            double norm=0.;
-
-            std::string name = parameterList_->sublist("General").get("Physic","Structure");             
-            if(valueCorner != -1){
-
-                if(name == "Structure"){
-                    for(int i=0; i< problemTime_->dimension_ ; i++)
-                        d_s.push_back(problemTime_->getSolution()->getBlock(0)->getDataNonConst(0)[problemTime_->dimension_*valueCorner+i]);
-                    
-                    for(int i=0; i< problemTime_->dimension_ ; i++)
-                        norm += pow(d_s[i],2);
-                    norm = sqrt(norm);
-                }
-                else{
-                    norm = problemTime_->getSolution()->getBlock(1)->getDataNonConst(0)[valueCorner];
-                }
-
-
-            }
-
-			Teuchos::reduceAll<int, double> ( *this->comm_, Teuchos::REDUCE_MAX, norm , Teuchos::outArg (norm));
-
-            exporterCornerValue->exportData(norm);
-
-
-        }
-        if (printExtraData) {
-            vec_dbl_Type v(3,-9999.);
-            this->problemTime_->getValuesOfInterest(v);
-            
-            exporterDisplXTxt->exportData( v[0] );
-            exporterDisplYTxt->exportData( v[1] );
-        }
-        if (print)
-        {
-            exportTimestep();
-
-        }
-      
-
-    }
-
-    comm_->barrier();
-    if (printExtraData) {
-        exporterTimeTxt->closeExporter();
-        exporterIterations->closeExporter();
-        exporterNewtonIterations->closeExporter();
-    }
-    if (printExtraData) {
-        exporterDisplXTxt->closeExporter();
-        exporterDisplYTxt->closeExporter();        
-    }
-    if (print)
-    {
-        closeExporter();
-        closeExporterPostprocess();
-    }
-}
 
 template<class SC,class LO,class GO,class NO>
 void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
@@ -1701,8 +1533,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
     bool geometryExplicit = this->parameterList_->sublist("Parameter").get("Geometry Explicit",true);
     bool chemistryExplicit_ = this->parameterList_->sublist("Parameter").get("Chemistry Explicit",false);
 
-    //std::string couplingType = parameterList_->sublist("Parameter").get("Coupling Type","explicit");
-
     int sizeFSI = timeStepDef_.size();
 
     // ACHTUNG
@@ -1745,7 +1575,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
 #endif
     while(timeSteppingTool_->continueTimeStepping())
     {
-        //cout << " ###### Timeloop #########" << endl;
         for(int i=0; i<numSegments ; i++){
             if(timeSteppingTool_->currentTime()+1.0e-12 > timeParametersVec[i][0])
                 dt=timeParametersVec[i][1];
@@ -1758,7 +1587,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
             timeSteppingTool_->dt_prev_= dt;        
             fsci->timeSteppingTool_->dt_prev_= dt;  
             fsci->problemSCI_->timeSteppingTool_->dt_prev_ = dt; 
-            //fsci->problemFluid_->timeSteppingTool_->dt_prev_= dt; 
         }
         else{
             timeSteppingTool_->dt_prev_= timeSteppingTool_->dt_;
@@ -1767,7 +1595,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
 
             fsci->timeSteppingTool_->dt_prev_ = timeSteppingTool_->dt_;
             fsci->problemSCI_->timeSteppingTool_->dt_prev_ = timeSteppingTool_->dt_;
-            //fsci->problemFluid_->timeSteppingTool_->dt_prev_= timeSteppingTool_->dt_; 
 
         }
 
@@ -2062,7 +1889,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
 
         // RHS nach BDF2
         this->problemTime_->assemble( "ComputeFluidRHSInTime" ); // hier ist massmatrix nicht relevant
-        // this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 0 );
 
         // Aktuelle Massematrix auf dem Gitter fuer BDF2-Integration und
         // fuer das FSI-System (bei GI wird die Massematrix weiterhin in TimeProblem.reAssemble() assembliert).
@@ -2070,8 +1896,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSCI()
         // Massematrix fuer FSI holen und fuer timeProblemFluid setzen (fuer BDF2)
         MatrixPtr_Type massmatrixC;
         fsci->setChemMassmatrix( massmatrixC );
-       // if(couplingType=="explicit" ) //|| structureModel=="SCI_sophisticated")
-       //     this->problemTime_->systemMass_->addBlock( massmatrixC, 4, 4);
 
         // RHS nach BDF2
         //if(couplingType=="explicit" ) //|| structureModel=="SCI_sophisticated")
@@ -2502,7 +2326,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
 #endif
     while(timeSteppingTool_->continueTimeStepping())
     {
-         //cout << " ###### Timeloop #########" << endl;
         for(int i=0; i<numSegments ; i++){
             if(timeSteppingTool_->currentTime()+1.0e-12 > timeParametersVec[i][0])
                 dt=timeParametersVec[i][1];
@@ -2512,7 +2335,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
         if(timeSteppingTool_->currentTime() <= 0. + 1e-12 ||( restart &&  timeSteppingTool_->currentTime() -1e-10 <= timeStepRestart)){
             timeSteppingTool_->dt_prev_= dt;        
             fsi->timeSteppingTool_->dt_prev_= dt;  
-            //fsci->problemFluid_->timeSteppingTool_->dt_prev_= dt; 
         }
         else{
             timeSteppingTool_->dt_prev_= timeSteppingTool_->dt_;
@@ -2520,7 +2342,6 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeFSI()
             this->problemTime_->assemble("UpdateTime"); // Updates to next timestep previously:problemTime_->updateTime ( timeSteppingTool_->currentTime() );
 
             fsi->timeSteppingTool_->dt_prev_ = timeSteppingTool_->dt_;
-            //fsci->problemFluid_->timeSteppingTool_->dt_prev_= timeSteppingTool_->dt_; 
 
         }
 
@@ -3402,14 +3223,10 @@ void DAESolverInTime<SC,LO,GO,NO>::setupExporter(){
     for (int i=0; i<timeStepDef_.size(); i++) {
         // \lambda in FSI, koennen wir nicht exportieren, weil keine Elementliste dafuer vorhanden
         bool exportThisBlock  = true;
-        //bool chemistryExplicit = this->parameterList_->sublist("Parameter").get("Chemistry Explicit",false);
         if(this->parameterList_->sublist("Parameter").get("FSI",false) == true  )
             exportThisBlock = (i != 3);
        else if(this->parameterList_->sublist("Parameter").get("FSCI",false) == true){
             exportThisBlock = (i != 3);
-            //exportThisBlock = (i != 4);
-        //if(chemistryExplicit)   
-        //   exportThisBlock = false;
        }
 
         if(exportThisBlock)

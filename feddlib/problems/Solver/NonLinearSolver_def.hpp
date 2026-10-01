@@ -80,11 +80,6 @@ void NonLinearSolver<SC,LO,GO,NO>::solve(TimeProblem_Type &problem, double time,
         solveExtrapolation(problem, time);
     }
 
-    // Option to export the newly computed solution via HDF5 file
-    // BlockMultiVectorPtrArray_Type solution;
-    // solution.resize(1);
-    // solution.at(0) = Teuchos::rcp(new BlockMultiVector_Type(problem.getSolution()));
-    // problem.checkForExportAndExport( solution, "Solution");
     
 }
 
@@ -102,7 +97,6 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(NonLinearProblem_Type &problem,vec_d
     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problemPtr->getLinearSolverBuilder()->createLinearSolveStrategy("");
 
 	//problemPtr->set_W_factory(lowsFactory);
-	//problemPtr->set_W_factory(lowsFactory);
 
     // Create the initial guess
     Teuchos::RCP<Thyra::VectorBase<SC> > initial_guess = problemPtr->getNominalValues().get_x()->clone_v();
@@ -116,9 +110,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(NonLinearProblem_Type &problem,vec_d
                 solMV = problemPtr->getSolution()->getThyraMultiVector();
         Thyra::assign(initial_guess.ptr(), *solMV->col(0));
     }
-    else{
-    Thyra::V_S(initial_guess.ptr(),Teuchos::ScalarTraits<SC>::zero());
-    } 
+    else
+        Thyra::V_S(initial_guess.ptr(),Teuchos::ScalarTraits<SC>::zero());
 
       
 
@@ -223,9 +216,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
     // Try to convert to a ProductVB. If resulting pointer is not null we need to use the ProductMV below, otherwise it is a monolithic vector.
     Teuchos::RCP<Thyra::ProductVectorBase<SC> > initialGuessProd = Teuchos::rcp_dynamic_cast<Thyra::ProductVectorBase<SC> >(initialGuess);
     Teuchos::RCP<Thyra::MultiVectorBase<SC> > solMV;
-    if (!initialGuessProd.is_null()){
+    if (!initialGuessProd.is_null())
         solMV = problemPtr->getSolution()->getProdThyraMultiVector();
-    }
     else
         solMV = problemPtr->getSolution()->getThyraMultiVector();
 
@@ -330,8 +322,6 @@ void NonLinearSolver<SC,LO,GO,NO>::solveFixedPoint(NonLinearProblem_Type &proble
     
     double tol = problem.getParameterList()->sublist("Parameter").get("relNonLinTol",1.0e-6);
     int maxNonLinIts = problem.getParameterList()->sublist("Parameter").get("MaxNonLinIts",10);
-    bool displayResiduals = problem.getParameterList()->sublist("Parameter").get("Display Residuals",true);
-
     int nlIts=0;
 
     double criterionValue = 1.;
@@ -646,9 +636,10 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
     vec_dbl_Type criterionValueVec(problem.getSolution()->size());
     std::string criterion = problem.getParameterList()->sublist("Parameter").get("Criterion","Residual");
     std::string timestepping = problem.getParameterList()->sublist("Timestepping Parameter").get("Class","Singlestep");
-    bool displayResiduals = problem.getParameterList()->sublist("Parameter").get("Display Residuals",true);
+    // Per-component residuals, printed and written to relResidual/absResidual
+    bool displayResiduals = problem.getParameterList()->sublist("Parameter").get("Display Residuals",false);
 
-    vec_dbl_Type residualInitV(4,1.);
+    vec_dbl_Type residualInitV;
 
    // Adding exporter for Newton residual values
     if(!initExport_ &&  displayResiduals){
@@ -687,9 +678,9 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
             if (verbose)
                 std::cout << "### Newton iteration : " << nlIts << "  relative nonlinear residual : " << criterionValue << std::endl;
             if ( criterionValue < tol ){
-                exporterRelRes_->exportData(  "--Converged with value: " , criterionValue );
+                if (displayResiduals)
+                    exporterRelRes_->exportData(  "--Converged with value: " , criterionValue );
                 break;
-
             }
         }
 
@@ -712,13 +703,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
         if(displayResiduals){
             vec_dbl_Type normVec = problem.calculateResidualNormVec();
             int numNorms = normVec.size();
-            if (nlIts==0){
-                residualInitV[0] = normVec[0];
-                residualInitV[1] = normVec[1];
-                residualInitV[2] = normVec[2];
-                residualInitV[3] = normVec[3];
-
-            }
+            if (nlIts==0)
+                residualInitV = normVec;
             if (verbose){
                 std::cout << "############################################################ " << std::endl;
                 std::cout << "Initial relative residual (as sum over all partial res) r0 = " << residualInit << std::endl;
@@ -746,7 +732,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNewton(TimeProblem_Type &problem, double
             if (verbose)
                 std::cout << "### Newton iteration : " << nlIts << "  residual of update : " << criterionValue << std::endl;
             if ( criterionValue < tol ){
-                exporterAbsRes_->exportData(  "--Converged with value: " , criterionValue );
+                if (displayResiduals)
+                    exporterAbsRes_->exportData(  "--Converged with value: " , criterionValue );
                 break;
             }
         }

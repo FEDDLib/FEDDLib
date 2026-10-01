@@ -1649,8 +1649,6 @@ void FE_ElementAssembly<SC,LO,GO,NO>::advanceInTimeAssemblyFEElements(Teuchos::R
     //UN FElocChem = 1; //checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype
     UN FElocSolid = 0; //checkFE(dim,FETypeSolid); // Checks for different domains which belongs to a certain fetype
 
-    //ElementsPtr_Type elementsChem= domainVec_.at(FElocChem)->getElementsC();
-
     ElementsPtr_Type elementsSolid = domainVec_.at(FElocSolid)->getElementsC();
         
     vec_dbl_Type solution_c;
@@ -1824,10 +1822,6 @@ void FE_ElementAssembly<SC,LO,GO,NO>::initAssembleFEAceDeformDiffu(int dim,
 
 	ElementsPtr_Type elementsSolid = domainVec_.at(FElocSolid)->getElementsC();
 
-    //this->domainVec_.at(FElocChem)->info();
-    //this->domainVec_.at(FElocSolid)->info();
-	//int dofsElement = elements->getElement(0).getVectorNodeList().size();
-
 	vec2D_dbl_ptr_Type pointsRep = domainVec_.at(FElocSolid)->getPointsRepeated();
 
 	/// Tupel construction follows follwing pattern:
@@ -1859,7 +1853,7 @@ void FE_ElementAssembly<SC,LO,GO,NO>::initAssembleFEAceDeformDiffu(int dim,
 	tuple_disk_vec_ptr_Type problemDiskChem = Teuchos::rcp(new tuple_disk_vec_Type(0));
     problemDiskChem->push_back(chem);
 
-	std::string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_simple");
+	std::string SCIModel = params->sublist("Parameter").get("Structure Model","SCI_NH");
     initAssembleFEElements(SCIModel, problemDisk, elementsChem, params, pointsRep, domainVec_.at(FElocSolid)->getElementMap());
 }
 
