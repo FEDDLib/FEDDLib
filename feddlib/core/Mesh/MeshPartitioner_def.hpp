@@ -365,9 +365,6 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
     
     makeContinuousElements(elementsMesh, eind_vec, eptr_vec);
 
-    idx_t *eptr = eptr_vec.data();
-    idx_t *eind = eind_vec.data();
-
     idx_t ncommon;
     int orderSurface;
     if (dim==2) {
@@ -403,13 +400,13 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
         if ( nparts > 1 ) {
             int rank = this->comm_->getRank();
             // upperRange - lowerRange +1
-            idx_t returnCode = METIS_PartMeshDual(&ne, &nn, eptr, eind, NULL, NULL, &ncommon, &nparts, NULL, options, &objval, &epart[0], &npart[0]);
+            idx_t returnCode = METIS_PartMeshDual(&ne, &nn, eptr_vec.data(), eind_vec.data(), NULL, NULL, &ncommon, &nparts, NULL, options, &objval, epart.data(), npart.data());
             if ( verbose )
                 std::cout << "\n--\t Metis return code: " << returnCode;
         }
         else{
             for (int i=0; i<ne; i++)
-                epart[i] = 0;
+                epart.at(i) = 0;
         }
     }
 
@@ -428,10 +425,10 @@ void MeshPartitioner<SC,LO,GO,NO>::readAndPartitionMesh( int meshNumber ){
 
 	// Getting global IDs of element's nodes
     for (int i=0; i<ne; i++) {
-        if (epart[i] == comm_->getRank() - std::get<0>( rankRanges_[meshNumber] ) ){
+        if (epart.at(i) == comm_->getRank() - std::get<0>( rankRanges_[meshNumber] ) ){
             locepart.push_back(i);
-            for (int j=eptr[i]; j<eptr[i+1]; j++)
-                pointsRepIndices.push_back( eind[j] ); // Ids of element nodes, globalIDs
+            for (int j=eptr_vec.at(i); j<eptr_vec.at(i+1); j++)
+                pointsRepIndices.push_back( eind_vec.at(j) ); // Ids of element nodes, globalIDs
         }
     }
     // Sorting ids with global and corresponding local values to create repeated map
