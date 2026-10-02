@@ -13,8 +13,8 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_fsci
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_fsci
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
-    SOURCE_FILES plaque_fluid_length_0_5.mesh plaque_solid_length_0_5.mesh plaque_fluid_length_3.mesh arterie_with_plaque_initma_media_adventitia_solid.mesh arterie_with_plaque_initma_media_adventitia_fluid.mesh arterie_with_plaque_initma_media_adventitia_fluid_2.mesh fluid_length_0_5_simp.mesh solid_length_0_5_simp.mesh
+    SOURCE_FILES fluid_length_0_5_simp.mesh solid_length_0_5_simp.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES  plaque_fluid_length_0_5.mesh plaque_solid_length_0_5.mesh plaque_fluid_length_3.mesh arterie_with_plaque_initma_media_adventitia_solid.mesh arterie_with_plaque_initma_media_adventitia_fluid.mesh arterie_with_plaque_initma_media_adventitia_fluid_2.mesh fluid_length_0_5_simp.mesh solid_length_0_5_simp.mesh
+	DEST_FILES fluid_length_0_5_simp.mesh solid_length_0_5_simp.mesh
 	EXEDEPS fsci
 )

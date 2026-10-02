@@ -23,8 +23,16 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_sciTest
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_sciTest
 	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes/SPP2311
-    SOURCE_FILES artery_h_025_L_025.mesh artery_h_0_8_L_0_25.mesh plaque_short_6_k.mesh
+    SOURCE_FILES plaque_short_6_k.mesh
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
-	DEST_FILES artery_h_025_L_025.mesh artery_h_0_8_L_0_25.mesh plaque_short_6_k.mesh
+	DEST_FILES plaque_short_6_k.mesh
+	EXEDEPS sci_Test
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(meshes_develop_sciTest
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
+    SOURCE_FILES artery_h_0_8_L_0_25.mesh
+	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
+	DEST_FILES artery_h_0_8_L_0_25.mesh
 	EXEDEPS sci_Test
 )
