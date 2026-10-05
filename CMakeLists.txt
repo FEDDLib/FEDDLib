@@ -28,8 +28,8 @@ set(${PROJECT_NAME}_ENABLE_INSTALL_CMAKE_CONFIG_FILES ON CACHE BOOL
 set(${PROJECT_NAME}_GENERATE_EXPORT_FILE_DEPENDENCIES ON CACHE BOOL
     "Generate export file dependencies for proper transitive linking")
 
-# Set C++ standard to C++17
-set(CMAKE_CXX_STANDARD 17)
+# Set C++ standard to C++20
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #
