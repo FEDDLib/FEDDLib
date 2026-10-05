@@ -2,19 +2,13 @@
     <ParameterList name="Parameter">
         <Parameter name="Dimension" type="int" value="3"/>
         <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
-        <Parameter name="BC Type" type="string" value="Plaque"/><!--Artery, Artery Full, Plaque, Cube-->
+        <Parameter name="BC Type" type="string" value="Artery"/><!--Plaque (Artery_dan_SCI.mesh) or Artery (artery_h_0_8_L_0_25_clean.mesh)-->
         <Parameter name="RHS Type" type="string" value="Constant"/><!--Constant, Paper, Heart Beat-->
         
 		<Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  structured, unstructured -->
         <Parameter name="H/h" type="int" value="1"/> <!-- only relevant for structured meshes -->
     
-        <!-- <Parameter name="Pressure" type="double" value="12.95131763460572"/> Load applied on interior wall. Equates to 97.14 mmHg and hence results in 85mmHg(0.875 times) -->
-        <!-- Replace the existing pressure parameter with these mmHg-based parameters -->
-        <Parameter name="Max Pressure mmHg" type="double" value="97.14"/> <!-- Maximum pressure in mmHg -->
-        <Parameter name="Target Pressure mmHg" type="double" value="85.0"/> <!-- Target pressure in mmHg -->
-        <Parameter name="Pressure Reduction Start Time" type="double" value="1000.0"/>
-        <Parameter name="Pressure Reduction End Time" type="double" value="1200.0"/>
-        <Parameter name="Pressure Reduction Amount mmHg" type="double" value="0.0"/> <!-- Pressure reduction in mmHg -->
+        <Parameter name="Pressure" type="double" value="12.95131763460572"/> <!-- Load applied on interior wall. Equates to 97.14 mmHg and hence results in 85mmHg(0.875 times) -->
         <Parameter name="Source Type" type="string"   value="surface"/>
         <Parameter name="Model Geometry" type="string" value="Laplace"/>
         
@@ -23,7 +17,7 @@
         <Parameter name="Load Stepping" type="bool" value="true"/>
         <Parameter name="Inflow Start Time" type="double" value="10000000.0"/><!-- Start of diffusion process -->
         <Parameter name="Heart Beat Start" type="double" value="70000000.0"/><!-- Start of heart beat -->
-        <Parameter name="Load Step Size" type="double" value="0.02"/><!-- Length/size of Loadsteps -->
+        <Parameter name="Load Step Size" type="double" value="0.05"/><!-- Length/size of Loadsteps -->
         <Parameter name="Ramp End Time" type="double" value="1.0"/><!-- End of Load Stepping -->
         <Parameter name="External Force" type="bool" value="true"/>
         <Parameter name="Nonlinear External Force" type="bool" value="true"/>
@@ -31,17 +25,6 @@
         <Parameter name="Accelerated Active Until" type="double" value="220.0"/>
         <Parameter name="Active Acceleration Multiplier" type="double" value="20.0"/>
 
-        <Parameter name="Post Processing Fields" type="Array(string)" value="{MisesStress, SCirc, SAxial, SRadial, W, Growth1, Growth2, Growth3, Stretch1, Stretch2, nC1, nD1, nC2, nD2, DetF, DetFe, DetFg}"/> <!-- Choose from 
-                       {"Volume","Sxx","Sxy","Sxz","Syx","Syy",
-                       "Syz","Szx","Szy","Szz","MisesStress","SCirc",
-                       "SAxial","SRadial","Exx","Exy","Exz","Eyx",
-                       "Eyy","Eyz","Ezx","Ezy","Ezz","W",
-                       "Growth1","Growth2","Growth3","Stretch1","Stretch2","DetF",
-                       "Ag1n1","Ag1n2","Ag1n3","Ag2n1","Ag2n2","Ag2n3",
-                       "Ag3n1","Ag3n2","Ag3n3","a11","a12","a13",
-                       "a21","a22","a23","nC1","nC2","nD1",
-                       "nD2","ScDir1","ScDir2","ScDir3","SaDir1","SaDir2",
-                       "SaDir3","SrDir1","SrDir2","SrDir3","DetFg","DetFe"}-->
        
         <Parameter name="relNonLinTol" type="double" value="1.0e-7"/>
         <Parameter name="absNonLinTol" type="double" value="1.0e-7"/>
@@ -58,7 +41,7 @@
     <ParameterList name="Mesh Partitioner">
         <Parameter name="Contiguous" type="bool" value="true"/>
         
-        <Parameter name="Mesh 1 Name" type="string" value="fsi_solid_2mm.mesh"/> <!-- plaque_short_6_k.mesh -->
+        <Parameter name="Mesh 1 Name" type="string" value="artery_h_0_8_L_0_25_clean.mesh"/> <!-- a quarter of a short artery segment: sci_Test's mesh without its two unused vertices on the axis -->
         
         <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
         
@@ -104,20 +87,45 @@
         <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, Extrapolation-->
     </ParameterList>
     <ParameterList name="Timestepping Parameter">
-        
+        <!-- Restart test, phase 1 (this file): the uninterrupted run. It writes
+             checkpoints at 0.05 (the restart time of phase 2, after the first step of the
+             load ramp) and 0.1 (the time phase 2 compares at) to the checkpoint directory. A checkpoint is written at the
+             start of the time step after it, so this run ends one step later. -->
+        <Parameter name="Checkpointing" type="bool"  value="true"/>
+        <Parameter name="Checkpoint directory" type="string" value="restartCheckpoints"/>
+        <Parameter name="Number Checkpoints"  type="int"   	value="2"/>
+        <ParameterList name="Checkpoints">
+         	<Parameter name="1" type="double"   	value="0.05"/>
+         	<Parameter name="2" type="double"   	value="0.1"/>
+        </ParameterList>
+        <Parameter name="Export history" type="bool"  value="true"/>
+
+        <!-- Restart (phase 2, simulationParameters_restart.xml): from the checkpoint at
+             "Time step" in the restart directory -->
+        <Parameter name="Restart" type="bool"  value="false"/>
+        <Parameter name="Restart directory" type="string" value="restartCheckpoints"/>
+        <Parameter name="Time step" type="double"   	value="0.05"/>
+        <Parameter name="Import history" type="bool"  value="false"/>
+
+        <!-- Phase 2 compares its solution at its final time with the checkpoint of
+             phase 1 at that time -->
+        <Parameter name="Final time compare" type="double" value="0.1"/>
+        <Parameter name="Restart tolerance" type="double" value="1.e-8"/> <!-- relative 2-norm of the difference -->
+
+
         <Parameter name="BDF" type="int" value="1"/>
         <Parameter name="Class" type="string" value="Multistep"/> <!-- External, Multistep-->
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value="0.02"/> <!-- ctest variant of simulationParameters.xml: 1 time step (5 in simulationParameters_test_heavy.xml) -->
-        <Parameter name="dt" type="double" value=".02"/>
+        <Parameter name="Final time" type="double" value="0.15"/>
+        <Parameter name="dt" type="double" value="0.05"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
         <ParameterList name="Timestepping Intervalls">
             <Parameter name="Number of Segments" type="int" value="13"/>
             <ParameterList name="1">
                 <Parameter name="Start Time" type="double" value="0."/>
-                <Parameter name="dt" type="double" value="0.02"/>
+                <Parameter name="dt" type="double" value="0.05"/>
             </ParameterList>
              <ParameterList name="2">
                 <Parameter name="Start Time" type="double" value="1."/>

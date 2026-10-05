@@ -185,48 +185,101 @@ int main(int argc, char *argv[])
         // Set load function (the second parameter is the block index)
         sci.problemStructureNonLin_->addRhsFunction(loadFunction, 0);
 
-        // Structure dirichtlet boundary conditions
-        bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0
-        bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0.5
-        bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0, inner ring
-        bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0.5 inner ring
-        bcFactoryStructure->addBC(zeroDirichlet3D, 6, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0, outer ring
-        bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0.5, outer ring
-        bcFactoryStructure->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_X_Z", dimension); // additional point(s) on outer ring held in x-z direction
-        bcFactoryStructure->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Y_Z", dimension); // additional point(s) on outer ring held in y-z direction
+        // Structure dirichtlet boundary conditions: "Plaque" for a full artery ring
+        // (Artery_dan_SCI.mesh), "Artery" for a quarter of an artery segment with
+        // symmetry planes (artery_h_0_8_L_0_25_clean.mesh)
+        std::string bcType = allParameters->sublist("Parameter").get("BC Type", "Plaque");
+        TEUCHOS_TEST_FOR_EXCEPTION(bcType != "Plaque" && bcType != "Artery", std::logic_error, "BC Type must be Plaque or Artery");
+        if (bcType == "Artery")
+        {
+            bcFactoryStructure->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_Y", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_X", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Y_Z", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_X_Z", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Y_Z", dimension);
+            bcFactoryStructure->addBC(zeroDirichlet3D, 12, 0, domainStructure, "Dirichlet_X_Z", dimension);
+
+            bcFactory->addBC(zeroDirichlet3D, 1, 0, domainStructure, "Dirichlet_Y", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_X", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 4, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Y_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_X_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_X", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 10, 0, domainStructure, "Dirichlet_Y", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 11, 0, domainStructure, "Dirichlet_Y_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 12, 0, domainStructure, "Dirichlet_X_Z", dimension);
+        }
+        else
+        {
+            bcFactoryStructure->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0
+            bcFactoryStructure->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0.5
+            bcFactoryStructure->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0, inner ring
+            bcFactoryStructure->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0.5 inner ring
+            bcFactoryStructure->addBC(zeroDirichlet3D, 6, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0, outer ring
+            bcFactoryStructure->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Z", dimension);    // z=0.5, outer ring
+            bcFactoryStructure->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_X_Z", dimension); // additional point(s) on outer ring held in x-z direction
+            bcFactoryStructure->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Y_Z", dimension); // additional point(s) on outer ring held in y-z direction
+
+            bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 6, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_X_Z", dimension);
+            bcFactory->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Y_Z", dimension);
+        }
 
         if (!sci.problemStructure_.is_null())
             sci.problemStructure_->addBoundaries(bcFactoryStructure);
         else
             sci.problemStructureNonLin_->addBoundaries(bcFactoryStructure);
 
-        bcFactory->addBC(zeroDirichlet3D, 2, 0, domainStructure, "Dirichlet_Z", dimension);
-        bcFactory->addBC(zeroDirichlet3D, 3, 0, domainStructure, "Dirichlet_Z", dimension);
-        bcFactory->addBC(zeroDirichlet3D, 7, 0, domainStructure, "Dirichlet_Z", dimension);
-        bcFactory->addBC(zeroDirichlet3D, 8, 0, domainStructure, "Dirichlet_Z", dimension);
-        bcFactory->addBC(zeroDirichlet3D, 6, 0, domainStructure, "Dirichlet_Z", dimension);
-        bcFactory->addBC(zeroDirichlet3D, 9, 0, domainStructure, "Dirichlet_Z", dimension);
-        bcFactory->addBC(zeroDirichlet3D, 13, 0, domainStructure, "Dirichlet_X_Z", dimension);
-        bcFactory->addBC(zeroDirichlet3D, 14, 0, domainStructure, "Dirichlet_Y_Z", dimension);
-
         // Diffusion boundary conditions
         std::vector<double> parameter_vec(1, allParameters->sublist("Parameter").get("Inflow Start Time", 0.));
-        bcFactoryDiffusion->addBC(inflowChem, 5, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // Inflow through inner wall
-        bcFactoryDiffusion->addBC(inflowChem, 7, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // z=0, inner ring on innter wall
-        bcFactoryDiffusion->addBC(inflowChem, 8, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // z=0.5 inner ring
+        if (bcType == "Artery")
+        {
+            // Inflow through the inner wall
+            bcFactoryDiffusion->addBC(inflowChem, 5, 0, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactoryDiffusion->addBC(inflowChem, 13, 0, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactoryDiffusion->addBC(inflowChem, 14, 0, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactoryDiffusion->addBC(inflowChem, 7, 0, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactoryDiffusion->addBC(inflowChem, 10, 0, domainDiffusion, "Dirichlet", 1, parameter_vec);
 
-        bcFactory->addBC(inflowChem, 5, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
-        bcFactory->addBC(inflowChem, 7, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
-        bcFactory->addBC(inflowChem, 8, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactory->addBC(inflowChem, 5, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactory->addBC(inflowChem, 13, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactory->addBC(inflowChem, 14, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactory->addBC(inflowChem, 7, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactory->addBC(inflowChem, 10, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+        }
+        else
+        {
+            bcFactoryDiffusion->addBC(inflowChem, 5, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // Inflow through inner wall
+            bcFactoryDiffusion->addBC(inflowChem, 7, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // z=0, inner ring on innter wall
+            bcFactoryDiffusion->addBC(inflowChem, 8, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // z=0.5 inner ring
 
-        // Inflow through outer wall
-        bcFactoryDiffusion->addBC(inflowChem, 4, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // Inflow through outer wall
-        bcFactoryDiffusion->addBC(inflowChem, 6, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // z=0, outer ring on outer wall
-        bcFactoryDiffusion->addBC(inflowChem, 9, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // z=0.5 inner ring
+            bcFactory->addBC(inflowChem, 5, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactory->addBC(inflowChem, 7, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactory->addBC(inflowChem, 8, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
 
-        bcFactory->addBC(inflowChem, 4, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
-        bcFactory->addBC(inflowChem, 6, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
-        bcFactory->addBC(inflowChem, 9, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            // Inflow through outer wall
+            bcFactoryDiffusion->addBC(inflowChem, 4, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // Inflow through outer wall
+            bcFactoryDiffusion->addBC(inflowChem, 6, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // z=0, outer ring on outer wall
+            bcFactoryDiffusion->addBC(inflowChem, 9, 0, domainDiffusion, "Dirichlet", 1, parameter_vec); // z=0.5 inner ring
+
+            bcFactory->addBC(inflowChem, 4, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactory->addBC(inflowChem, 6, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+            bcFactory->addBC(inflowChem, 9, 1, domainDiffusion, "Dirichlet", 1, parameter_vec);
+        }
 
         sci.problemChem_->addBoundaries(bcFactoryDiffusion);
 
