@@ -143,7 +143,6 @@ void MultiVector<SC,LO,GO,NO>::print(Teuchos::EVerbosityLevel verbLevel) const{
     multiVector_->describe(*out,verbLevel);
 }
 
-#if __cplusplus >= 202002L // >= C++20
 template <typename SC, typename LO, typename GO, typename NO>
 Teuchos::RCP<Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThyraMultiVector( ) requires std::same_as<SC,double> {
 
@@ -166,47 +165,6 @@ Teuchos::RCP<const Thyra::MultiVectorBase<SC> > MultiVector<SC,LO,GO,NO>::getThy
     
     return thyMV;
 }
-
-#else // <= C++17
-
-template <typename SC, typename LO, typename GO, typename NO>
-template <typename SCALAR, typename>
-Teuchos::RCP<Thyra::MultiVectorBase<SCALAR> >
-MultiVector<SC,LO,GO,NO>::getThyraMultiVector( ) {
-
-    auto thyTpMap = Thyra::tpetraVectorSpace<SCALAR,LO,GO,NO>(multiVector_->getMap()); //Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Teuchos::rcp_dynamic_cast<const TpetraMap_Type>(multiVector_->getMap())->getTpetraMap());
-    Teuchos::RCP<Tpetra::MultiVector<SCALAR,LO,GO,NO>> tpMV = multiVector_;
-    auto thyDomMap =Thyra::tpetraVectorSpace<SCALAR,LO,GO,NO>(Tpetra::createLocalMapWithNode<LO,GO,NO>(multiVector_->getNumVectors(), multiVector_->getMap()->getComm()));
-    auto thyMV = rcp(new Thyra::TpetraMultiVector<SCALAR,LO,GO,NO>());
-    thyMV->initialize(thyTpMap, thyDomMap, tpMV);
-
-    return thyMV;
-}
-#ifdef HAVE_EXPLICIT_INSTANTIATION
-template Teuchos::RCP<Thyra::MultiVectorBase<double>> MultiVector<double, default_lo, default_go, default_no>::getThyraMultiVector<double, void>();
-#endif
-
-template <typename SC, typename LO, typename GO, typename NO>
-template <typename SCALAR, typename>
-Teuchos::RCP<const Thyra::MultiVectorBase<SCALAR> >
-MultiVector<SC,LO,GO,NO>::getThyraMultiVectorConst( ) const {
-
-    auto thyTpMap = Thyra::tpetraVectorSpace<SCALAR,LO,GO,NO>(multiVector_->getMap()); //Thyra::tpetraVectorSpace<SC,LO,GO,NO>(Teuchos::rcp_dynamic_cast<const TpetraMap_Type>(multiVector_->getMap())->getTpetraMap());
-    Teuchos::RCP<Tpetra::MultiVector<SCALAR,LO,GO,NO>> tpMV = multiVector_;
-    auto thyDomMap =Thyra::tpetraVectorSpace<SCALAR,LO,GO,NO>(Tpetra::createLocalMapWithNode<LO,GO,NO>(multiVector_->getNumVectors(), multiVector_->getMap()->getComm()));
-    auto thyMV = rcp(new Thyra::TpetraMultiVector<SCALAR,LO,GO,NO>());
-    thyMV->initialize(thyTpMap, thyDomMap, tpMV);
-
-    return thyMV;
-}
-#ifdef HAVE_EXPLICIT_INSTANTIATION
-template Teuchos::RCP<const Thyra::MultiVectorBase<double>> MultiVector<double, default_lo, default_go, default_no>::getThyraMultiVectorConst<double, void>() const;
-#endif
-
-#endif // __cplusplus >= 202002L
-
-
-
 
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::fromThyraMultiVector( Teuchos::RCP< Thyra::MultiVectorBase<SC> > thyraMV){
@@ -272,7 +230,6 @@ void MultiVector<SC,LO,GO,NO>::multiply(Teuchos::ETransp transA, Teuchos::ETrans
     multiVector_->multiply( transA, transB, alpha, *A->getTpetraMultiVector(), *B->getTpetraMultiVector(), beta );
 }
 
-#if __cplusplus >= 202002L // >= C++20
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, const SC &alpha, BlockMultiVectorConstPtr_Type &A, BlockMultiVectorConstPtr_Type &B, const SC &beta) requires std::same_as<SC,double>{
 //    if (this->getMap()->getCommNonConst()->getRank()==0)
@@ -288,29 +245,6 @@ void MultiVector<SC,LO,GO,NO>::multiply(Teuchos::ETransp transA, Teuchos::ETrans
     }
 
 }
-#else // <= C++17
-template <typename SC, typename LO, typename GO, typename NO>
-template <typename SCALAR, typename>
-void MultiVector<SC,LO,GO,NO>::multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, const SCALAR &alpha, BlockMultiVectorConstPtr_Type &A, BlockMultiVectorConstPtr_Type &B, const SCALAR &beta) {
-//    if (this->getMap()->getCommNonConst()->getRank()==0)
-//        std::cout << "### For testing purposes only." << std::endl;
-
-    for (int i=0; i<A->size(); i++){
-        MultiVectorConstPtr_Type a = A->getBlock(i);
-        MultiVectorConstPtr_Type b = B->getBlock(i);
-        if ( i==0 )
-            this->multiply( transA, transB, alpha, a, b, beta );
-        else
-            this->multiply( transA, transB, alpha, a, b, Teuchos::ScalarTraits<SCALAR>::one() );
-    }
-
-}
-#ifdef HAVE_EXPLICIT_INSTANTIATION
-template void MultiVector<double, default_lo, default_go, default_no>::multiply<double, void>(Teuchos::ETransp transA, Teuchos::ETransp transB, const double &alpha, BlockMultiVectorConstPtr_Type &A, BlockMultiVectorConstPtr_Type &B, const double &beta);
-#endif
-
-
-#endif
     
 template <class SC, class LO, class GO, class NO>
 void MultiVector<SC,LO,GO,NO>::importFromVector( MultiVectorConstPtr_Type mvIn, bool reuseImport, std::string combineMode, std::string type) {

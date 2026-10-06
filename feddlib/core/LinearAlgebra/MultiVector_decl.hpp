@@ -3,28 +3,12 @@
 
 /*
  We need to remove some functions from the MultiVector class that are
- only supported for a scalar type (SC) of double. To achieve this is
- simple using concepts in C++20. But for backwards compatibility, we
- offer a C++17 alternative. This alternative is based on SFINAE. A new
- function template parameter is introduced, which is necessary to make
- use of SFINAE. We cannot use substitution failure directly on the
- class template parameters, as this would lead to a compilation error.
- On the function level, if substitution fails, the corresponding
- function is removed. Thus, we can keep SC = double and remove all
- other possibilities. Since the function now has a new template
- parameter, it must be explicitly instantiated if this is done for
- the class as well. The problematic functions, for which only
- SC = double is supported, are functions that return a Thyra vector.
- A Thyra vector does not exist for SC = int, for example.
- TODO: The C++17 compatible code is quite difficult to read.
-       I suggest to remove it rather sooner than later when C++17
-       compatibility can be dropped.
+ only supported for a scalar type (SC) of double. To achieve this we use
+ concepts, which are supported since C++20. The problematic functions, 
+ for which only SC = double is supported, are functions that return 
+ a Thyra vector. A Thyra vector does not exist for SC = int, for example.
 */
-#if __cplusplus >= 202002L // >= C++20
-    #include <concepts>
-#else // <= C++17
-    #include <type_traits>
-#endif
+#include <concepts>
 
 #include <MatrixMarket_Tpetra.hpp>
 #include <Teuchos_VerboseObject.hpp>
@@ -192,17 +176,9 @@ public:
 
     TpetraMultiVectorPtr_Type getTpetraMultiVectorNonConst();
 
-#if __cplusplus >= 202002L // >= C++20
     Teuchos::RCP< Thyra::MultiVectorBase<SC> > getThyraMultiVector( ) requires std::same_as<SC,double>;
 
     Teuchos::RCP<const Thyra::MultiVectorBase<SC> > getThyraMultiVectorConst( ) const requires std::same_as<SC,double>;
-#else // <= C++17
-    template <typename SCALAR = SC, typename = std::enable_if_t<std::is_same_v<SCALAR,double>>>
-    Teuchos::RCP< Thyra::MultiVectorBase<SCALAR> > getThyraMultiVector( );
-
-    template <typename SCALAR = SC, typename = std::enable_if_t<std::is_same_v<SCALAR,double>>>
-    Teuchos::RCP<const Thyra::MultiVectorBase<SCALAR> > getThyraMultiVectorConst( ) const;
-#endif
 
     void fromThyraMultiVector( Teuchos::RCP< Thyra::MultiVectorBase<SC> > thyraMV); 
 
@@ -223,12 +199,7 @@ public:
     // Matrix-matrix multiplication: this = beta*this + alpha*op(A)*op(B).
     void multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, const SC &alpha, MultiVectorConstPtr_Type &A, MultiVectorConstPtr_Type &B, const SC &beta);
 
-#if __cplusplus >= 202002L // >= C++20
     void multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, const SC &alpha, BlockMultiVectorConstPtr_Type &A, BlockMultiVectorConstPtr_Type &B, const SC &beta) requires std::same_as<SC,double>;
-#else // <= C++17
-    template <typename SCALAR = SC, typename = std::enable_if_t<std::is_same_v<SCALAR,double>>>
-    void multiply(Teuchos::ETransp transA, Teuchos::ETransp transB, const SCALAR &alpha, BlockMultiVectorConstPtr_Type &A, BlockMultiVectorConstPtr_Type &B, const SCALAR &beta);
-#endif
     
     void putScalar( const SC& alpha );
 
