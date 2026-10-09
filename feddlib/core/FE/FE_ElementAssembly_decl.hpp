@@ -13,9 +13,11 @@
 #include "sms.hpp"
 #include "feddlib/core/AceFemAssembly/AssembleFE.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFENavierStokes.hpp"
 
 #include "feddlib/core/AceFemAssembly/AssembleFEFactory.hpp"
+#include "feddlib/core/General/TimeSteppingTools.hpp"
 
 #include <Teuchos_Array.hpp>
 #include <Teuchos_BLAS.hpp>
@@ -76,6 +78,8 @@ class FE_ElementAssembly {
 
     typedef AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC,LO,GO,NO> AssembleFE_SCI_SMC_Active_Growth_Reorientation_Type;
     typedef Teuchos::RCP<AssembleFE_SCI_SMC_Active_Growth_Reorientation_Type> AssembleFE_SCI_SMC_Active_Growth_Reorientation_Ptr_Type;
+    typedef AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC,LO,GO,NO> AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation_Type;
+    typedef Teuchos::RCP<AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation_Type> AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation_Ptr_Type;
 
     typedef std::vector<AssembleFEPtr_Type> AssembleFEPtr_vec_Type;	
 
@@ -163,6 +167,22 @@ class FE_ElementAssembly {
                                 bool callFillComplete = true,
                                 int FELocExternal=-1);
 
+    // SCI element assembly: time, history (restart) and post-processing of the elements
+    void initAssembleFEAceDeformDiffu(int dim, std::string FETypeChem, std::string FETypeSolid, int dofsChem, int dofsSolid, ParameterListPtr_Type params);
+    void advanceInTimeAssemblyFEElements(Teuchos::RCP<TimeSteppingTools> timeSteppingTool, MultiVectorPtr_Type d_rep, MultiVectorPtr_Type c_rep);
+    void updateSolutionAssemblyFEElements(MultiVectorPtr_Type d_rep, MultiVectorPtr_Type c_rep);
+    void synchronizeTime(Teuchos::RCP<TimeSteppingTools> timeSteppingTool);
+    // Adaptive time stepping: the elements' state at the start of a time step, and their failures
+    void saveStateAssemblyFEElements();
+    void restoreStateAssemblyFEElements();
+    void setRecordFailureAssemblyFEElements(bool record);
+    void resetFailureAssemblyFEElements();
+    /// Number of elements of this process that failed since the last reset; message: that of the first one
+    int assemblyFEElementsFailed(std::string& message);
+    void postProcessing(std::string type, MultiVectorPtr_Type &postProcessingVec);
+    std::vector<std::string> getPostDataNames();
+    BlockMultiVectorPtr_Type getHistoryValues();
+    void setHistoryValues(LO T, vec_dbl_Type history);
     void advanceInTimeAssemblyFEElements(double dt ,MultiVectorPtr_Type d_rep , MultiVectorPtr_Type c_rep) 
     {
         //UN FElocChem = 1; //checkFE(dim,FETypeChem); // Checks for different domains which belongs to a certain fetype

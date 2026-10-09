@@ -124,6 +124,8 @@ public:
 
     void buildPreconditionerFaCSI( std::string type );
 
+    void buildPreconditionerFaCSCI(std::string type);
+
     void buildPreconditionerBlock2x2();
 
     void setFaCSIBCFactory( BCConstPtr_Type bcFactory ){ faCSIBCFactory_ = bcFactory; }
@@ -162,8 +164,11 @@ private:
     ThyraLinOpConstPtr_Type fsiLinOp_;
     ThyraLinOpPtr_Type precFluid_;
     ThyraLinOpPtr_Type precStruct_;
+    ThyraLinOpPtr_Type precSCI_;
     ThyraLinOpPtr_Type precGeo_;
+
     MinPrecProblemPtr_Type probFluid_;
+    MinPrecProblemPtr_Type probSCI_;
     MinPrecProblemPtr_Type probSolid_;
     MinPrecProblemPtr_Type probGeo_;
     BCConstPtr_Type faCSIBCFactory_;

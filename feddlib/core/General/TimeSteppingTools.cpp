@@ -1,6 +1,8 @@
 #include "TimeSteppingTools.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 
+// For std::numeric_limits
+#include <limits>
 /*!
  Definition of TimeSteppingTools
  
@@ -10,6 +12,16 @@
  @copyright CH
  */
 namespace FEDD {
+
+namespace {
+// Two times closer than this are the same time: round-off accumulated over many
+// steps, relative to the final time (an absolute threshold does not scale with it).
+double timeTolerance(double tEnd)
+{
+    return std::max(1e-12, 100.0 * std::numeric_limits<double>::epsilon() * std::max(1.0, std::abs(tEnd)));
+}
+}
+
 TimeSteppingTools::TimeSteppingTools():
 comm_(),
 parameterList_(),
@@ -132,6 +144,13 @@ void TimeSteppingTools::setParameter(){
         BDFNmb_ = parameterList_->get("BDF",1);
         setInformationBDF();
     }
+
+    // Updating time if restart occurs.
+    bool restart = this->parameterList_->get("Restart", false);
+    double timeStep = this->parameterList_->get("Time step", 0.0);
+    if(restart)
+        t_ = timeStep;
+        
 }
 
 double TimeSteppingTools::currentTime(){
@@ -139,10 +158,7 @@ double TimeSteppingTools::currentTime(){
 }
 
 bool TimeSteppingTools::continueTimeStepping(){
-    if (t_+1.e-10<tEnd_)
-        return true;
-    else
-        return false;
+    return t_ < tEnd_ - timeTolerance(tEnd_);
 }
 
 double TimeSteppingTools::getButcherTableCoefficient(int row , int col){
@@ -269,7 +285,17 @@ void TimeSteppingTools::advanceTime(bool printInfo){
         exporterTxtError_->exportData(t_);
     }
 
-    t_+=dt_;
+    // The last step ends exactly at the final time: it is shortened if it would pass it, and a
+    // time within round-off of it is snapped to it. Checkpoints are named by the time, so a
+    // run has to land on it exactly to be restarted from it.
+    const double tol = timeTolerance(tEnd_);
+    if (t_ < tEnd_ && dt_ > tEnd_ - t_ && tEnd_ - t_ > tol)
+        dt_ = tEnd_ - t_;
+
+    t_ += dt_;
+
+    if (std::abs(t_ - tEnd_) <= tol)
+        t_ = tEnd_;
 
     if (printInfo)
         this->printInfo();

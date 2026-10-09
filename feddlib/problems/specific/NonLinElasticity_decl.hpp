@@ -1,7 +1,7 @@
 #ifndef NonLinElasticity_decl_hpp
 #define NonLinElasticity_decl_hpp
 #include "feddlib/problems/abstract/NonLinearProblem.hpp"
-#include "feddlib/problems/Solver/TimeSteppingTools.hpp"
+#include "feddlib/core/General/TimeSteppingTools.hpp"
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_ModelEvaluatorBase_decl.hpp>
 /*!

@@ -25,7 +25,7 @@ u_rep_(),
 reactionFunc_()
 {
  
-    this->addVariable( domain , FEType , "u" , 1);
+    this->addVariable( domain , FEType , "c" , 1);
     this->dim_ = this->getDomain(0)->getDimension();
 	
 	diffusionTensor_ = diffusionTensor;
@@ -63,7 +63,7 @@ void DiffusionReaction<SC,LO,GO,NO>::assembleConstantMatrices( std::string type 
 
     A_.reset(new Matrix_Type( this->getDomain(0)->getMapUnique(), this->getDomain(0)->getApproxEntriesPerRow() ) );
 
-    this->feFactory_->assemblyLaplaceDiffusion(this->dim_, this->domain_FEType_vec_.at(0), 2, A_, this->diffusionTensor_ );
+    this->feFactory_->assemblyLaplaceDiffusion(this->dim_, this->domain_FEType_vec_.at(0), 2, A_, this->diffusionTensor_,this->parameterList_  );
 
     if (this->system_.is_null())
         this->system_.reset(new BlockMatrix_Type(1));

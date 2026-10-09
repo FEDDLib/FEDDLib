@@ -1,0 +1,17 @@
+<ParameterList name="SCI"> 
+	<ParameterList name="Parameter Solid"> 
+    	<Parameter name="Number of Materials" type="int" value="1"/>
+          	<ParameterList name="1">
+				<!--linear,Neo-Hooke Only relevant for explicit coupling-->  
+	         	<Parameter name="Volume Flag" type="int" value="10"/>
+				<Parameter name="Material Model" type="string" value="SCI_NH"/> 
+				<!-- For Explicit Coupling and SCI_NH , SCI_SMC_Active_Growth_Reorientation-->
+				<Parameter name="E" type="double" value="380158.5"/> <!-- N/m²-->
+				<Parameter name="E1" type="double" value="380158.5"/><!-- N/m²-->
+				<Parameter name="c1" type="double" value="0.25"/>
+				<Parameter name="Poisson Ratio" type="double" value="0.49"/>
+				<!-- ######################################## -->
+            </ParameterList>
+           
+        </ParameterList>    
+</ParameterList>    

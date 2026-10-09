@@ -137,6 +137,8 @@ typedef boost::function<void(double* x, double* res, double* parameters)>       
 typedef boost::function<void(double* x, double* res, double t, double* parameters)>     GeneralFunc_Type;        
 typedef boost::function<void(double* x, double* res)>                                   Func_Type;
 
+inline bool approxEqual(double a, double b, double eps = 1e-8) {return std::abs(a - b) < eps;}
+
 template <typename SC>
 struct ThyraTypedefs {
 using ThyraOp_Type = Thyra::LinearOpBase<SC>;

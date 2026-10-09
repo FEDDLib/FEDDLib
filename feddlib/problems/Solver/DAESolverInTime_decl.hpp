@@ -7,7 +7,7 @@
 #include "feddlib/core/General/ExporterTxt.hpp"
 
 #include "NonLinearSolver.hpp"
-#include "TimeSteppingTools.hpp"
+#include "feddlib/core/General/TimeSteppingTools.hpp"
 
 /*!
  Declaration of DAESolverInTime
@@ -22,6 +22,12 @@ namespace FEDD {
 
 template <class SC, class LO, class GO, class NO>
 class FSI;
+template <class SC, class LO, class GO, class NO>
+class FSCI;
+template <class SC, class LO, class GO, class NO>
+class SCI;
+template <class SC, class LO, class GO, class NO>
+class NonLinElasticity;
 template <class SC, class LO, class GO, class NO>
 class MeshUnstructured;
 template <class SC, class LO, class GO, class NO>
@@ -59,8 +65,18 @@ public:
     typedef Teuchos::RCP<Exporter_Type> ExporterPtr_Type;
     typedef Teuchos::RCP<ExporterTxt> ExporterTxtPtr_Type;
 
+    typedef NonLinElasticity<SC,LO,GO,NO> NonLinElasProblem_Type;
+    typedef Teuchos::RCP<NonLinElasProblem_Type> NonLinElasProblemPtr_Type;
+
     typedef FSI<SC,LO,GO,NO> FSIProblem_Type;
     typedef Teuchos::RCP<FSIProblem_Type> FSIProblemPtr_Type;
+
+    typedef FSCI<SC,LO,GO,NO> FSCIProblem_Type;
+    typedef Teuchos::RCP<FSCIProblem_Type> FSCIProblemPtr_Type;
+
+    typedef SCI<SC,LO,GO,NO> SCIProblem_Type;
+    typedef Teuchos::RCP<SCIProblem_Type> SCIProblemPtr_Type;
+
 
     typedef Domain<SC,LO,GO,NO> Domain_Type;
     typedef Teuchos::RCP<Domain_Type > DomainPtr_Type;
@@ -105,6 +121,10 @@ public:
     // schreibe dann vor dem nlSolve() alles in das FSI-System hinein
     void advanceInTimeFSI();
 
+    void advanceInTimeSCI();
+
+    void advanceInTimeFSCI();
+
     void advanceInTimeLinearMultistep();
 
     void advanceInTimeNonLinearMultistep();
@@ -127,7 +147,13 @@ public:
     
     void setupExporter(BlockMultiVectorPtr_Type& solShort);
 
+    void exportPostprocess(BlockMultiVectorPtr_Type postprocessVec,DomainConstPtr_Type domain,vec_string_Type exportNames);
+
+    void setupExporter(BlockMultiVectorPtr_Type postprocessVec, DomainConstPtr_Type domain, vec_string_Type exportNames);
+
     void closeExporter();
+
+    void closeExporterPostprocess();
 
     void addRhsDAE(SmallMatrix<double> coeff, BlockMatrixPtr_Type bMat, BlockMultiVectorPtr_Type vec);
 
@@ -162,13 +188,17 @@ public:
     std::vector<ExporterPtr_Type> exporter_vector_;
     MultiVectorConstPtrArray_Type export_solution_vector_;
     bool boolExporterSetup_;
+    
+    std::vector<ExporterPtr_Type> exporter_vector_postprocess_;
+    bool boolExporterSetupPostprocess_;
 
 private:
 
+    void getActiveTimeSegment(const vec2D_dbl_Type& timeSegments, const double& currentTime, int& activeSegmentNumber, double tolerance=1.0e-8);
+    void getTimeIncrementFromSegments(const vec2D_dbl_Type& timeSegments, const int& activeSegmentNumber, const double& currentTime, double& dt);
+
 #ifdef FEDD_TIMER
     TimePtr_Type solveProblemTimer_;
-#endif
-#ifdef FEDD_TIMER
     TimePtr_Type reassmbleAddInterfaceRHSTimer_;
     TimePtr_Type reassmbleUpdateMeshDisplacementTimer_;
     TimePtr_Type reassmbleSolveGeometryTimer_;
@@ -177,6 +207,7 @@ private:
     TimePtr_Type reassmbleForTimeTimer_;
     TimePtr_Type reassmbleUpdateFluidInTimeTimer_;
 #endif
+   
 };
 }
 #endif

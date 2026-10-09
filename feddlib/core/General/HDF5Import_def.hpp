@@ -26,7 +26,7 @@ comm_()
     hdf5importer_.reset( new HDF5_Type(comm_) ); // Build HDF5 importer as HDF5Toolbox Type
   
     inputFilename_ = inputFilename; //  Name of input file
-    hdf5importer_->open(inputFilename_+".h5"); // We 'open' the file and connect to HDF5 importer 
+    hdf5importer_->open(inputFilename_+".h5", H5F_ACC_RDONLY); // read only (e.g. checkpoints) // We 'open' the file and connect to HDF5 importer 
 
     u_import_Tpetra_.reset(new MultiVector_Type(readMap)); // The general import vector is defined via readMap
 

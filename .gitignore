@@ -4,3 +4,12 @@
 *.dylib
 /build*
 /.vscode
+*.bak
+.DS_Store
+
+# Messages of the Interface2/AceGen elements, written to the run directory
+ErrorLog.txt
+
+# Python caches
+__pycache__/
+*.py[cod]

@@ -116,6 +116,7 @@ public:
     
     void writeVariablesHDF5();
     
+    
     void initHDF5();
     
     void writeMeshElements( std::string nameConn );
@@ -126,8 +127,10 @@ public:
                     std::string nameP_Y,
                     std::string nameP_Z );
     
+    
     void updatePoints();
     
+    void updateVariables(MultiVecConstPtr_Type &u, std::string varName);
     
     void initXmf();
     
@@ -194,6 +197,7 @@ protected:
 	MeshPtr_Type mesh_;
     MapConstPtr_Type mapUniqueVariables_;
     
+
     };
 }
 

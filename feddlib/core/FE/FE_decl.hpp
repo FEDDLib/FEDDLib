@@ -303,6 +303,15 @@ class FE: public FE_ElementAssembly<SC,LO,GO,NO> {
 		            	vec2D_dbl_Type diffusionTensor,
                         bool callFillComplete = true,
                         int FELocExternal = -1);
+    /*! Diffusion per material: D0 of the material ('Parameter Solid', by 'Volume Flag') scales the diffusion tensor */
+    void assemblyLaplaceDiffusion(int Dimension,
+                        std::string FEType,
+                        int degree,
+                        MatrixPtr_Type &A,
+		            	vec2D_dbl_Type diffusionTensor,
+                        ParameterListPtr_Type params,
+                        bool callFillComplete = true,
+                        int FELocExternal = -1);
 
     void assemblyElasticityJacobianAndStressAceFEM(int dim,
                                                    std::string FEType,

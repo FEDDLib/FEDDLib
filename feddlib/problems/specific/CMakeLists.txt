@@ -14,9 +14,15 @@ set(problems_specific_HEADERS
     specific/LinElas_decl.hpp
     specific/LinElas_def.hpp
     specific/LinElas.hpp
+ 	 specific/DiffusionReaction_decl.hpp
+ 	specific/DiffusionReaction_def.hpp
+ 	specific/DiffusionReaction.hpp
     specific/NavierStokes_decl.hpp
 	specific/NavierStokes_def.hpp
 	specific/NavierStokes.hpp
+	specific/NavierStokesAssFE_decl.hpp
+	specific/NavierStokesAssFE_def.hpp
+	specific/NavierStokesAssFE.hpp
 	specific/NavierStokesAssFE_decl.hpp
 	specific/NavierStokesAssFE_def.hpp
 	specific/NavierStokesAssFE.hpp
@@ -32,6 +38,12 @@ set(problems_specific_HEADERS
     specific/FSI_decl.hpp
     specific/FSI_def.hpp
     specific/FSI.hpp
+    specific/SCI_decl.hpp
+    specific/SCI_def.hpp
+    specific/SCI.hpp
+    specific/FSCI_decl.hpp
+    specific/FSCI_def.hpp
+    specific/FSCI.hpp
 CACHE INTERNAL "")
 
 set(problems_specific_SOURCES
@@ -40,12 +52,16 @@ set(problems_specific_SOURCES
 	specific/LaplaceBlocks.cpp
     specific/LinElas.cpp
 	specific/DiffusionReaction.cpp
+	specific/DiffusionReaction.cpp
 	specific/NavierStokes.cpp
+	specific/NavierStokesAssFE.cpp
 	specific/NavierStokesAssFE.cpp
     specific/NonLinElasticity.cpp
     specific/NonLinLaplace.cpp
     specific/Stokes.cpp
     specific/FSI.cpp
+    specific/SCI.cpp
+    specific/FSCI.cpp
 CACHE INTERNAL "")
 
 

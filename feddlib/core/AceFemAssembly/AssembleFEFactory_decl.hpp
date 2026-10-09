@@ -14,6 +14,7 @@
 #include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_NH.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_MLCK.hpp"
 #include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.hpp"
+#include "feddlib/core/AceFemAssembly/specific/AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation.hpp"
 
 namespace FEDD {
 
