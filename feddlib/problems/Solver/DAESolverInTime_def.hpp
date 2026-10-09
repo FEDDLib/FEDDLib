@@ -1192,6 +1192,13 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     bool anyAdaptiveSegment = false;
     for (int i = 0; i < timeSegments.size(); i++)
         anyAdaptiveSegment = anyAdaptiveSegment || timeSegments[i][4] > 0.5;
+    if (anyAdaptiveSegment){
+        // A failed time step is detected from NOX's status
+        TEUCHOS_TEST_FOR_EXCEPTION( parameterList_->sublist("General").get("Linearization","FixedPoint") != "NOX" || "SCI_Linear" == parameterList_->sublist("Parameter").get("Structure Model","SCI_Linear"), std::runtime_error, "Adaptive time stepping needs the NOX linearization and a nonlinear structure model.");
+        // The checkpoints are written at the start of the time step after their time, found with the
+        // segments' dt, and once per attempt: not with the time steps of adaptive time stepping
+        TEUCHOS_TEST_FOR_EXCEPTION( parameterList_->sublist("Timestepping Parameter").get("Checkpointing",false) || parameterList_->sublist("General").get("Safe all solution",false), std::runtime_error, "Adaptive time stepping does not support Checkpointing or Safe all solution yet.");
+    }
 
     while(timeSteppingTool_->continueTimeStepping())
     {
@@ -1231,6 +1238,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         }
         timeSteppingTool_->dt_= dt; // At this point DAESolver time stepper has t_n and accurate dt value
         sci->timeSteppingTool_->dt_ = dt; // At this point SCI time stepper has t_n and accurate dt value
+        if (anyAdaptiveSegment){ // the structure's inertia with this time step's size (otherwise that of the first one)
+            massCoeffSCI[0][0] = 1./(dt*dt*beta);
+            this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
+        }
         if(approxEqual(timeSteppingTool_->currentTime(), 0.0)){ // First time step (SCI already has t_1, see setProblem)
             timeSteppingTool_->dt_prev_= dt;
             sci->timeSteppingTool_->dt_prev_= dt;
@@ -1311,14 +1322,14 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             
             // Hier wird auch direkt ein Update der Loesung bei der Struktur gemacht.
             // Aehnlich zu "UpdateFluidInTime".
-            // (built once: a repeated attempt keeps the first attempt's)
-            if(attempt == 0 && (approxEqual(timeSteppingTool_->currentTime(), 0.0) || (restart &&  timeSteppingTool_->currentTime() -1.e-5 < timeStepRestart )))
+            if(approxEqual(timeSteppingTool_->currentTime(), 0.0) || (restart &&  timeSteppingTool_->currentTime() -1.e-5 < timeStepRestart ))
             {
                 // We extract the underlying FSI problem
                 // This here does nothing. It's only used for FSI problems.
                 MatrixPtr_Type massmatrix;
                 sci->setSolidMassmatrix( massmatrix );
-                this->problemTime_->systemMass_->addBlock( massmatrix, 0, 0 );
+                if (!massmatrix.is_null()) // built once: a repeated time step keeps it
+                    this->problemTime_->systemMass_->addBlock( massmatrix, 0, 0 );
             }
             // this should be done automatically rhs will not be used here
             //  this->problemTime_->getRhs()->addBlock( Teuchos::rcp_const_cast<MultiVector_Type>(rhs->getBlock(0)), 2 );
@@ -1419,7 +1430,12 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         // Repeat the time step from the state it started from with a smaller time step size
         double reduced = dt * reductionFactor;
         double dtMin = timeSegments[activeSegmentNumber][3];
-        bool belowMinimum = reduced < dtMin && !approxEqual(reduced, dtMin);
+        // (relative: the sizes may be far below approxEqual's absolute tolerance)
+        bool belowMinimum = reduced < dtMin * (1. - 1.e-10);
+        if (belowMinimum && dt > dtMin * (1. + 1.e-10)){ // the minimum itself is tried before the run stops
+            reduced = dtMin;
+            belowMinimum = false;
+        }
         // At the smallest size, a time step that elements fail is tried once more with their failures
         // only counted, if the segment accepts them
         if (belowMinimum && elementFailure && timeSegments[activeSegmentNumber][5] > 0.5){

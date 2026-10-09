@@ -68,7 +68,7 @@ and in each segment of `Timestepping Intervalls`:
 | `dt` | | the size the segment starts with (and, without `Adaptive`, takes throughout) |
 | `Adaptive` | `Adaptive Time Stepping` | whether the segment adapts its size; a segment that does not, e.g. a pressure ramp, takes `dt` |
 | `Maximum dt` | `dt` | the largest size the segment grows to |
-| `Minimum dt` | `dt`/1000 | below it the run stops with an error naming the failure |
+| `Minimum dt` | `dt`/1000 | the smallest size: tried before the run stops with an error naming the failure |
 | `Accept Element Failures At Minimum dt` | false | a time step that elements fail at the smallest size is tried once more with their failures only counted, and accepted if the Newton iteration converges |
 
 The log shows every repeated time step (`[adaptive] t = ...: the time step of
@@ -80,6 +80,12 @@ time step size; a repeated time step gives the result of a run that took the
 accepted sizes directly, to the last bit, unless the preconditioner keeps its
 coarse basis (`Reuse: Coarse Basis`), which it then took from the failed
 attempt's first matrix (differences at the Newton tolerance).
+
+Adaptive time stepping needs the NOX linearization and a nonlinear structure
+model, and does not support `Checkpointing` or `Safe all solution` yet (the
+checkpoints are found with the segments' `dt` and written once per attempt).
+A run with adaptive segments takes the structure's inertia coefficient from
+each time step's size (otherwise it is that of the first time step).
 
 Load functions that compute the load at `t + Load Step Size` (as the artery
 cases do) assume a fixed time step size: use them with adaptive time stepping

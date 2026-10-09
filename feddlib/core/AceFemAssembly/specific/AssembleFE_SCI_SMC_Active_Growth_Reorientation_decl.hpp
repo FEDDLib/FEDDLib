@@ -145,7 +145,12 @@ class AssembleFE_SCI_SMC_Active_Growth_Reorientation : public AssembleFE<SC, LO,
 
     bool activeInitialized_ = false;
     bool growthInitialized_ = false;
-    // State kept by saveState()
+    // State kept by saveState(). The element data of the last computation are part of it:
+    // initializeActiveResponse() and initializeGrowth() compute with them.
+    vec_dbl_Type savedDisplacements_;
+    vec_dbl_Type savedConcentrations_;
+    vec_dbl_Type savedRates_;
+    vec_dbl_Type savedAccelerations_;
     vec_dbl_Type savedSolutionC_n_;
     vec_dbl_Type savedSolutionC_n1_;
     vec_dbl_Type savedDomainData_;

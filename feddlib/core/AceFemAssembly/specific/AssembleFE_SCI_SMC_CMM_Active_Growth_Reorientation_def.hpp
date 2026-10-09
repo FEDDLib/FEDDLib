@@ -600,6 +600,10 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::updateD
 template <class SC, class LO, class GO, class NO>
 void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::saveState() {
     AssembleFE<SC, LO, GO, NO>::saveState();
+    savedDisplacements_ = this->displacements_;
+    savedConcentrations_ = this->concentrations_;
+    savedRates_ = this->rates_;
+    savedAccelerations_ = this->accelerations_;
     savedSolutionC_n_ = this->solutionC_n_;
     savedSolutionC_n1_ = this->solutionC_n1_;
     savedDomainData_ = this->domainData_;
@@ -613,6 +617,10 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::saveSta
 template <class SC, class LO, class GO, class NO>
 void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::restoreState() {
     AssembleFE<SC, LO, GO, NO>::restoreState();
+    this->displacements_ = savedDisplacements_;
+    this->concentrations_ = savedConcentrations_;
+    this->rates_ = savedRates_;
+    this->accelerations_ = savedAccelerations_;
     this->solutionC_n_ = savedSolutionC_n_;
     this->solutionC_n1_ = savedSolutionC_n1_;
     this->domainData_ = savedDomainData_;

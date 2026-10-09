@@ -1013,6 +1013,8 @@ void SCI<SC,LO,GO,NO>::saveStepState() const
     savedTimeSteppingTool_ = Teuchos::rcp( new TimeSteppingTools( *timeSteppingTool_ ) );
     if (!problemTimeStructure_.is_null())
         problemTimeStructure_->saveState();
+    if (!problemTimeChem_.is_null())
+        problemTimeChem_->saveState();
     this->feFactory_->saveStateAssemblyFEElements();
 }
 
@@ -1023,6 +1025,8 @@ void SCI<SC,LO,GO,NO>::restoreStepState() const
     *timeSteppingTool_ = *savedTimeSteppingTool_;
     if (!problemTimeStructure_.is_null())
         problemTimeStructure_->restoreState();
+    if (!problemTimeChem_.is_null())
+        problemTimeChem_->restoreState();
     this->feFactory_->restoreStateAssemblyFEElements();
     elementFailed_ = false;
     failedElements_ = 0;

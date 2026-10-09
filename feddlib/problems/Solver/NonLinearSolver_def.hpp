@@ -81,18 +81,19 @@ void NonLinearSolver<SC,LO,GO,NO>::solve(TimeProblem_Type &problem, double time,
 
 #ifdef FEDD_HAVE_NOX
 /// NOX status test of adaptive time stepping: fails a solve whose residual norm exceeds factor times
-/// the norm it started from, so that a diverging time step is repeated before it reaches the
-/// maximum number of iterations (and before a diverged state is assembled again).
+/// the norm it started from (and the absolute tolerance, so that a residual at round-off level that
+/// grows does not count), so that a diverging time step is repeated before it reaches the maximum
+/// number of iterations (and before a diverged state is assembled again).
 class NOXDivergenceTest : public NOX::StatusTest::Generic {
 public:
-    NOXDivergenceTest(double factor) : factor_(factor) {}
+    NOXDivergenceTest(double factor, double absoluteTolerance) : factor_(factor), absoluteTolerance_(absoluteTolerance) {}
 
     NOX::StatusTest::StatusType checkStatus(const NOX::Solver::Generic& problem, NOX::StatusTest::CheckType checkType) override {
         double normF = problem.getSolutionGroup().getNormF();
         if (problem.getNumIterations() == 0)
             initialNormF_ = normF;
         status_ = NOX::StatusTest::Unconverged;
-        if (checkType != NOX::StatusTest::None && initialNormF_ > 0. && normF > factor_ * initialNormF_)
+        if (checkType != NOX::StatusTest::None && initialNormF_ > 0. && normF > factor_ * initialNormF_ && normF > absoluteTolerance_)
             status_ = NOX::StatusTest::Failed;
         return status_;
     }
@@ -108,6 +109,7 @@ public:
 
 private:
     double factor_;
+    double absoluteTolerance_;
     double initialNormF_ = 0.;
     NOX::StatusTest::StatusType status_ = NOX::StatusTest::Unevaluated;
 };
@@ -295,7 +297,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
     combo->addStatusTest(converged);
     combo->addStatusTest(maxiters);
     if (divergenceFactor_ > 0.)
-        combo->addStatusTest(Teuchos::rcp(new NOXDivergenceTest(divergenceFactor_)));
+        combo->addStatusTest(Teuchos::rcp(new NOXDivergenceTest(divergenceFactor_, problemPtr->getParameterList()->sublist("Parameter").get("absNonLinTol",1.0e-6))));
     
     // Create nox parameter list
     Teuchos::RCP<Teuchos::ParameterList> nl_params = sublist(problemPtr->getParameterList(),"NOXSolver");
