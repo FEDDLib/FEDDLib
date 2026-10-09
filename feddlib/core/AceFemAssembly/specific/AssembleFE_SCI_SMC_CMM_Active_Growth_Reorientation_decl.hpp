@@ -62,6 +62,11 @@ class AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation : public AssembleFE<SC,
 
     void synchronizeTime(Teuchos::RCP<TimeSteppingTools> timeSteppingTool) override;
 
+    /// Adaptive time stepping: the base state, the concentrations of the time step and the
+    /// switches (and one-time initializations) of the active, growth and reorientation segments
+    void saveState() override;
+    void restoreState() override;
+
     void postProcessing() override;
 
     void getMassMatrix(SmallMatrixPtr_Type& massMatrix) { massMatrix = massMatrix_; };
@@ -152,6 +157,15 @@ class AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation : public AssembleFE<SC,
 
     bool activeInitialized_ = false;
     bool growthInitialized_ = false;
+    // State kept by saveState()
+    vec_dbl_Type savedSolutionC_n_;
+    vec_dbl_Type savedSolutionC_n1_;
+    vec_dbl_Type savedDomainData_;
+    int savedActiveBool_ = 0;
+    int savedGrowthBool_ = 0;
+    int savedReorientationBool_ = 0;
+    bool savedActiveInitialized_ = false;
+    bool savedGrowthInitialized_ = false;
 
     // Pre-computed indices for domain data modification
     std::vector<int> acceleratedParamIndices_;  // Parameters to multiply

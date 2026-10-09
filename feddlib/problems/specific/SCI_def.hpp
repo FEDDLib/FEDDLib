@@ -1,6 +1,7 @@
 #ifndef SCI_def_hpp
 #define SCI_def_hpp
 #include "SCI_decl.hpp"
+#include <limits>
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/FE/FE.hpp"
 #include "feddlib/core/General/BCBuilder.hpp"
@@ -505,6 +506,24 @@ void SCI<SC,LO,GO,NO>::calculateNonLinResidualVec(std::string type, double time)
 
     this->setBoundariesRHS(this->timeSteppingTool_->currentTime());
 
+    // Adaptive time stepping: an element of any process that cannot compute its state fails the
+    // time step. A NaN residual on every process ends the Newton iteration (its finite value test).
+    // With acceptElementFailures_ the failures are only counted.
+    if (adaptiveStep_){
+        std::string message;
+        int failedHere = this->feFactory_->assemblyFEElementsFailed(message);
+        int failedAnywhere = 0;
+        Teuchos::reduceAll<int, int>( *this->comm_, Teuchos::REDUCE_SUM, failedHere, Teuchos::outArg(failedAnywhere) );
+        if (failedAnywhere > 0){
+            if (failedHere > 0 && !elementFailed_)
+                std::cout << " [adaptive] process " << this->comm_->getRank() << ": " << message << std::endl;
+            elementFailed_ = true;
+            failedElements_ = failedAnywhere;
+            if (!acceptElementFailures_)
+                this->residualVec_->putScalar( std::numeric_limits<SC>::quiet_NaN() );
+        }
+    }
+
 
     Teuchos::Array<SC> norm_d(1); 
     this->residualVec_->getBlock(0)->norm2(norm_d);
@@ -987,6 +1006,39 @@ void SCI<SC,LO,GO,NO>::setBoundariesSubProblems( ) const
 
 
 // Damit die richtige timeSteppingTool_->currentTime() genommen wird.
+template<class SC,class LO,class GO,class NO>
+void SCI<SC,LO,GO,NO>::saveStepState() const
+{
+    TEUCHOS_TEST_FOR_EXCEPTION( chemistryExplicit_, std::logic_error, "Adaptive time stepping needs the implicit coupling (Chemistry Explicit false).");
+    savedTimeSteppingTool_ = Teuchos::rcp( new TimeSteppingTools( *timeSteppingTool_ ) );
+    if (!problemTimeStructure_.is_null())
+        problemTimeStructure_->saveState();
+    this->feFactory_->saveStateAssemblyFEElements();
+}
+
+template<class SC,class LO,class GO,class NO>
+void SCI<SC,LO,GO,NO>::restoreStepState() const
+{
+    TEUCHOS_TEST_FOR_EXCEPTION( savedTimeSteppingTool_.is_null(), std::logic_error, "SCI::restoreStepState() without saveStepState().");
+    *timeSteppingTool_ = *savedTimeSteppingTool_;
+    if (!problemTimeStructure_.is_null())
+        problemTimeStructure_->restoreState();
+    this->feFactory_->restoreStateAssemblyFEElements();
+    elementFailed_ = false;
+    failedElements_ = 0;
+}
+
+template<class SC,class LO,class GO,class NO>
+void SCI<SC,LO,GO,NO>::setAdaptiveStep(bool adaptive, bool acceptElementFailures) const
+{
+    adaptiveStep_ = adaptive;
+    acceptElementFailures_ = adaptive && acceptElementFailures;
+    elementFailed_ = false;
+    failedElements_ = 0;
+    this->feFactory_->setRecordFailureAssemblyFEElements(adaptive);
+    this->feFactory_->resetFailureAssemblyFEElements();
+}
+
 template<class SC,class LO,class GO,class NO>
 void SCI<SC,LO,GO,NO>::updateTime() const
 {

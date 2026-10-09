@@ -1669,6 +1669,43 @@ void FE_ElementAssembly<SC,LO,GO,NO>::advanceInTimeAssemblyFEElements(Teuchos::R
 }
 
 template <class SC, class LO, class GO, class NO>
+void FE_ElementAssembly<SC,LO,GO,NO>::saveStateAssemblyFEElements(){
+    for (UN T=0; T<assemblyFEElements_.size(); T++)
+        assemblyFEElements_[T]->saveState();
+}
+
+template <class SC, class LO, class GO, class NO>
+void FE_ElementAssembly<SC,LO,GO,NO>::restoreStateAssemblyFEElements(){
+    for (UN T=0; T<assemblyFEElements_.size(); T++)
+        assemblyFEElements_[T]->restoreState();
+}
+
+template <class SC, class LO, class GO, class NO>
+void FE_ElementAssembly<SC,LO,GO,NO>::setRecordFailureAssemblyFEElements(bool record){
+    for (UN T=0; T<assemblyFEElements_.size(); T++)
+        assemblyFEElements_[T]->setRecordFailure(record);
+}
+
+template <class SC, class LO, class GO, class NO>
+void FE_ElementAssembly<SC,LO,GO,NO>::resetFailureAssemblyFEElements(){
+    for (UN T=0; T<assemblyFEElements_.size(); T++)
+        assemblyFEElements_[T]->resetFailure();
+}
+
+template <class SC, class LO, class GO, class NO>
+int FE_ElementAssembly<SC,LO,GO,NO>::assemblyFEElementsFailed(std::string& message){
+    int failed = 0;
+    for (UN T=0; T<assemblyFEElements_.size(); T++){
+        if (assemblyFEElements_[T]->failed()){
+            if (failed == 0)
+                message = assemblyFEElements_[T]->getFailureMessage();
+            failed++;
+        }
+    }
+    return failed;
+}
+
+template <class SC, class LO, class GO, class NO>
 void FE_ElementAssembly<SC,LO,GO,NO>::updateSolutionAssemblyFEElements(MultiVectorPtr_Type d_rep , MultiVectorPtr_Type c_rep){
     
     ElementsPtr_Type elementsSolid = domainVec_.at(0)->getElementsC();

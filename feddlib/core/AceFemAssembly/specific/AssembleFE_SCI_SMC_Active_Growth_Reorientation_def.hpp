@@ -343,6 +343,9 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::assemble_SC
     AceGenElement_Type& elem = aceGenElement(this->displacements_.data(), this->concentrations_.data(), this->accelerations_.data(), this->rates_.data(), domainDataModified.data(), deltaT, time);
 
     int errorCode = elem.compute(computeTangent);
+    // With adaptive time stepping the failure is recorded and the time step repeated with a smaller size
+    if (errorCode != 0 && this->recordFailure_)
+        this->recordFailure("AssembleFE_SCI_SMC: AceGen element " + std::to_string(this->getGlobalElementID()) + " failed to compute its state, error code " + std::to_string(errorCode));
 
     double* residuumRint = elem.getResiduumVectorRint();
     for (int i = 0; i < 30; i++)
@@ -564,6 +567,32 @@ void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::updateDomai
     this->domainData_[position] = dataValue;
 }
 	
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::saveState() {
+    AssembleFE<SC, LO, GO, NO>::saveState();
+    savedSolutionC_n_ = this->solutionC_n_;
+    savedSolutionC_n1_ = this->solutionC_n1_;
+    savedDomainData_ = this->domainData_;
+    savedActiveBool_ = this->activeBool_;
+    savedGrowthBool_ = this->growthBool_;
+    savedReorientationBool_ = this->reorientationBool_;
+    savedActiveInitialized_ = this->activeInitialized_;
+    savedGrowthInitialized_ = this->growthInitialized_;
+}
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::restoreState() {
+    AssembleFE<SC, LO, GO, NO>::restoreState();
+    this->solutionC_n_ = savedSolutionC_n_;
+    this->solutionC_n1_ = savedSolutionC_n1_;
+    this->domainData_ = savedDomainData_;
+    this->activeBool_ = savedActiveBool_;
+    this->growthBool_ = savedGrowthBool_;
+    this->reorientationBool_ = savedReorientationBool_;
+    this->activeInitialized_ = savedActiveInitialized_;
+    this->growthInitialized_ = savedGrowthInitialized_;
+}
+
 template <class SC, class LO, class GO, class NO>
 void AssembleFE_SCI_SMC_Active_Growth_Reorientation<SC, LO, GO, NO>::synchronizeTime(Teuchos::RCP<TimeSteppingTools> timeSteppingTool) {
     this->timeStep_ = timeSteppingTool->t_;

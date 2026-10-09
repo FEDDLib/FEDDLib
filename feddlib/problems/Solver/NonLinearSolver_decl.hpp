@@ -85,6 +85,15 @@ public:
     /// return the number of nonlinear iterations needed
 	int getNonLinIts() {return nonLinearIts_;}
 
+    /// Whether the last NOX solve converged (true for the other linearizations, which do not report it)
+    bool converged() const {return converged_;}
+
+    /*!
+        \brief With factor > 0 a NOX solve fails as soon as the norm of the residual exceeds factor times
+        the norm it started from, or is not a finite number (adaptive time stepping; 0: off)
+    */
+    void setDivergenceFactor(double factor) {divergenceFactor_ = factor;}
+
     /*!
         \brief Add a switching strategy function for the FixedPointNewton method
         @param[in] switchingStrategy function which decides whether to switch the linearization or not and outputs a boolean value whether linearization was switched or not
@@ -165,6 +174,8 @@ private:
     std::string 	type_;
 
 	int nonLinearIts_ =0;
+    bool converged_ = true;
+    double divergenceFactor_ = 0.;
 
     // Create a default switching strategy function which does nothing
     SwitchingStrategyFunc switchingStrategy_ = []( std::string& currentLinearization , int nlIts, double criterionValue, ParameterListPtr_Type parameterList ) {return false;};

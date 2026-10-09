@@ -205,6 +205,20 @@ public:
     // Sets the time and time increment of the elements to those of timeSteppingTool_
     void synchronizeElementTime() const { this->feFactory_->synchronizeTime(timeSteppingTool_); }
 
+    // Adaptive time stepping (DAESolverInTime::advanceInTimeSCI): the state at the start of a time
+    // step, to repeat a failed one from, and the failures of the elements
+    void saveStepState() const;
+    void restoreStepState() const;
+    /// With adaptive true an element that cannot compute its state records it, and the residual
+    /// becomes NaN on every process (the Newton iteration fails) instead of the run stopping. With
+    /// acceptElementFailures true as well the residual is left as it is: the time step stands or falls
+    /// with the Newton iteration alone.
+    void setAdaptiveStep(bool adaptive, bool acceptElementFailures = false) const;
+    /// Whether an element of any process failed since the last restoreStepState() or setAdaptiveStep()
+    bool elementFailed() const { return elementFailed_; }
+    /// The number of elements (of all processes) that failed, as of the last residual
+    int numberOfFailedElements() const { return failedElements_; }
+
 private:
     std::string materialModel_;
     vec_dbl_Type valuesForExport_;
@@ -220,6 +234,11 @@ private:
     mutable MultiVectorPtr_Type eModVec_;
     bool loadStepping_;
     mutable bool solidMassBuilt_ = false; // the structure mass matrix (setSolidMassmatrix) is built once
+    mutable bool adaptiveStep_ = false; // see setAdaptiveStep()
+    mutable bool acceptElementFailures_ = false;
+    mutable bool elementFailed_ = false;
+    mutable int failedElements_ = 0;
+    mutable Teuchos::RCP<TimeSteppingTools> savedTimeSteppingTool_; // state kept by saveStepState()
     bool chemistryExplicit_;
     bool externalForce_;
     bool nonlinearExternalForce_;

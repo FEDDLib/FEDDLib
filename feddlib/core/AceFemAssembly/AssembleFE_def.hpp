@@ -101,6 +101,27 @@ void AssembleFE<SC,LO,GO,NO>::synchronizeTime(Teuchos::RCP<TimeSteppingTools> ti
 };
 
 template <class SC, class LO, class GO, class NO>
+void AssembleFE<SC,LO,GO,NO>::saveState(){
+	savedTimeStep_ = timeStep_;
+	savedTimeIncrement_ = timeIncrement_;
+	savedSolution_ = solution_.is_null() ? Teuchos::null : Teuchos::rcp( new vec_dbl_Type( *solution_ ) );
+	savedHistoryImported_ = historyImported_;
+	savedHistory_ = history_;
+	savedHistoryUpdated_ = historyUpdated_;
+};
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFE<SC,LO,GO,NO>::restoreState(){
+	timeStep_ = savedTimeStep_;
+	timeIncrement_ = savedTimeIncrement_;
+	solution_ = savedSolution_.is_null() ? Teuchos::null : Teuchos::rcp( new vec_dbl_Type( *savedSolution_ ) );
+	historyImported_ = savedHistoryImported_;
+	history_ = savedHistory_;
+	historyUpdated_ = savedHistoryUpdated_;
+	resetFailure();
+};
+
+template <class SC, class LO, class GO, class NO>
 void AssembleFE<SC,LO,GO,NO>::advanceNewtonStep(){
 	newtonStep_ = newtonStep_+1 ;
 

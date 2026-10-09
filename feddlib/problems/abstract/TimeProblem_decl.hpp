@@ -188,6 +188,11 @@ public:
 
     void updateSolutionMultiPreviousStep(int nmbSteps);
 
+    /// Adaptive time stepping: keep the state at the start of a time step (solution, previous
+    /// solutions, Newmark velocity and acceleration, time) and go back to it for a repeated step
+    void saveState();
+    void restoreState();
+
     void updateSystemMassMultiPreviousStep(int nmbSteps);
 
     // Verschiebung (u), Geschwindigkeit (u' = v) und Beschleunigung (u'' = w)
@@ -340,6 +345,12 @@ private:
     bool restartNewmarkUpdate_ = false; // after a restart: the imported Newmark state is that of t_{r-1} and is updated (see updateSolutionNewmarkPreviousStep)
     BlockMultiVectorPtrArray_Type restartMassSolutions_; // after a restart: the products M_i u_i of the checkpoint (see updateMultistepRhsFSI)
     int timeStepsSinceRestart_ = 0; // time steps of updateMultistepRhsFSI after the one that read restartMassSolutions_
+    // State kept by saveState()
+    BlockMultiVectorPtr_Type savedSolution_;
+    BlockMultiVectorPtrArray_Type savedSolutionPreviousTimesteps_;
+    BlockMultiVectorPtrArray_Type savedVelocityPreviousTimesteps_;
+    BlockMultiVectorPtrArray_Type savedAccelerationPreviousTimesteps_;
+    double savedTime_ = 0.;
 
 };
 }

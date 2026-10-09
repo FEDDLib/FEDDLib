@@ -172,6 +172,13 @@ class FE_ElementAssembly {
     void advanceInTimeAssemblyFEElements(Teuchos::RCP<TimeSteppingTools> timeSteppingTool, MultiVectorPtr_Type d_rep, MultiVectorPtr_Type c_rep);
     void updateSolutionAssemblyFEElements(MultiVectorPtr_Type d_rep, MultiVectorPtr_Type c_rep);
     void synchronizeTime(Teuchos::RCP<TimeSteppingTools> timeSteppingTool);
+    // Adaptive time stepping: the elements' state at the start of a time step, and their failures
+    void saveStateAssemblyFEElements();
+    void restoreStateAssemblyFEElements();
+    void setRecordFailureAssemblyFEElements(bool record);
+    void resetFailureAssemblyFEElements();
+    /// Number of elements of this process that failed since the last reset; message: that of the first one
+    int assemblyFEElementsFailed(std::string& message);
     void postProcessing(std::string type, MultiVectorPtr_Type &postProcessingVec);
     std::vector<std::string> getPostDataNames();
     BlockMultiVectorPtr_Type getHistoryValues();

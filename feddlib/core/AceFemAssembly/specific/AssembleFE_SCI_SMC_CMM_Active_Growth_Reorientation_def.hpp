@@ -402,7 +402,11 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::assembl
     AceGenElement_Type& elem = aceGenElement(this->displacements_.data(), this->concentrations_.data(), this->accelerations_.data(), this->rates_.data(), domainDataModified.data(), deltaT, time);
 
     int errorCode = elem.compute(computeTangent);
-    TEUCHOS_TEST_FOR_EXCEPTION(errorCode != 0, std::runtime_error, "AssembleFE_SCI_SMC_CMM: AceGen element " << this->getGlobalElementID() << " failed (Gauss-point sub-iteration did not converge), error code " << errorCode);
+    // With adaptive time stepping the failure is recorded and the time step repeated with a smaller size
+    if (errorCode != 0 && this->recordFailure_)
+        this->recordFailure("AssembleFE_SCI_SMC_CMM: AceGen element " + std::to_string(this->getGlobalElementID()) + " failed (Gauss-point sub-iteration did not converge), error code " + std::to_string(errorCode));
+    else
+        TEUCHOS_TEST_FOR_EXCEPTION(errorCode != 0, std::runtime_error, "AssembleFE_SCI_SMC_CMM: AceGen element " << this->getGlobalElementID() << " failed (Gauss-point sub-iteration did not converge), error code " << errorCode);
 
     double* residuumRint = elem.getResiduumVectorRint();
     for (int i = 0; i < 30; i++)
@@ -591,6 +595,32 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::updateD
     int position = findPosition(dataName, this->domainDataNames_);
     TEUCHOS_TEST_FOR_EXCEPTION(position == -1, std::logic_error, " Parameter " << dataName << " not found in domain data names!!");
     this->domainData_[position] = dataValue;
+}
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::saveState() {
+    AssembleFE<SC, LO, GO, NO>::saveState();
+    savedSolutionC_n_ = this->solutionC_n_;
+    savedSolutionC_n1_ = this->solutionC_n1_;
+    savedDomainData_ = this->domainData_;
+    savedActiveBool_ = this->activeBool_;
+    savedGrowthBool_ = this->growthBool_;
+    savedReorientationBool_ = this->reorientationBool_;
+    savedActiveInitialized_ = this->activeInitialized_;
+    savedGrowthInitialized_ = this->growthInitialized_;
+}
+
+template <class SC, class LO, class GO, class NO>
+void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::restoreState() {
+    AssembleFE<SC, LO, GO, NO>::restoreState();
+    this->solutionC_n_ = savedSolutionC_n_;
+    this->solutionC_n1_ = savedSolutionC_n1_;
+    this->domainData_ = savedDomainData_;
+    this->activeBool_ = savedActiveBool_;
+    this->growthBool_ = savedGrowthBool_;
+    this->reorientationBool_ = savedReorientationBool_;
+    this->activeInitialized_ = savedActiveInitialized_;
+    this->growthInitialized_ = savedGrowthInitialized_;
 }
 
 template <class SC, class LO, class GO, class NO>

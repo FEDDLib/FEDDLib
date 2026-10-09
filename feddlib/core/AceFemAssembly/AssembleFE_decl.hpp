@@ -262,7 +262,30 @@ namespace FEDD {
 
         virtual std::vector<std::string> getPostDataNames(){return {};};
         virtual std::map<std::string, int> getFieldNameToPosition(){return {};};
+
+        /*!
+         \brief Adaptive time stepping: keep the state the element has at the start of a time step.
+         A time step that fails is repeated from it (restoreState()) with a smaller time step size.
+         Elements with state of their own extend both functions.
+        */
+        virtual void saveState();
+        /*!
+         \brief Adaptive time stepping: go back to the state kept by saveState().
+        */
+        virtual void restoreState();
+
+        /*!
+         \brief Adaptive time stepping: with record true an element that cannot compute its state
+         records the failure (failed(), getFailureMessage()) instead of stopping the simulation, so
+         that the time step can be repeated with a smaller time step size.
+        */
+        void setRecordFailure(bool record) {recordFailure_ = record;};
+        bool failed() const {return failed_;};
+        std::string getFailureMessage() const {return failureMessage_;};
+        void resetFailure() {failed_ = false; failureMessage_.clear();};
     protected:
+        /// Record the first failure of the element since resetFailure()
+        void recordFailure(std::string message) {if (!failed_) {failed_ = true; failureMessage_ = message;}};
 
         /*!
          \brief Constructor
@@ -313,6 +336,17 @@ namespace FEDD {
         vec_dbl_Type history_;
         vec_dbl_Type historyUpdated_;
         int historyLength_; // Length of history vector
+
+        // Adaptive time stepping: failure record and the state kept by saveState()
+        bool recordFailure_ = false;
+        bool failed_ = false;
+        std::string failureMessage_;
+        double savedTimeStep_ = 0.;
+        double savedTimeIncrement_ = 0.;
+        vec_dbl_ptr_Type savedSolution_;
+        bool savedHistoryImported_ = false;
+        vec_dbl_Type savedHistory_;
+        vec_dbl_Type savedHistoryUpdated_;
 
         friend class AssembleFEFactory<SC,LO,GO,NO>;
     };

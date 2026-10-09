@@ -869,6 +869,35 @@ void TimeProblem<SC,LO,GO,NO>::updateSolutionMultiPreviousStep(int nmbSteps){
 }
 
 
+// Deep copies of the vectors of an array of previous time steps
+template<class SC,class LO,class GO,class NO>
+static void copyBlockMultiVectorArray(const Teuchos::Array<Teuchos::RCP<BlockMultiVector<SC,LO,GO,NO> > >& from,
+                                      Teuchos::Array<Teuchos::RCP<BlockMultiVector<SC,LO,GO,NO> > >& to){
+    to.resize(from.size());
+    for (int i=0; i<from.size(); i++)
+        to[i] = from[i].is_null() ? Teuchos::null : Teuchos::rcp( new BlockMultiVector<SC,LO,GO,NO>( from[i] ) );
+}
+
+template<class SC,class LO,class GO,class NO>
+void TimeProblem<SC,LO,GO,NO>::saveState(){
+    savedSolution_ = Teuchos::rcp( new BlockMultiVector_Type( problem_->getSolution() ) );
+    copyBlockMultiVectorArray<SC,LO,GO,NO>( solutionPreviousTimesteps_, savedSolutionPreviousTimesteps_ );
+    copyBlockMultiVectorArray<SC,LO,GO,NO>( velocityPreviousTimesteps_, savedVelocityPreviousTimesteps_ );
+    copyBlockMultiVectorArray<SC,LO,GO,NO>( accelerationPreviousTimesteps_, savedAccelerationPreviousTimesteps_ );
+    savedTime_ = time_;
+}
+
+template<class SC,class LO,class GO,class NO>
+void TimeProblem<SC,LO,GO,NO>::restoreState(){
+    TEUCHOS_TEST_FOR_EXCEPTION( savedSolution_.is_null(), std::logic_error, "TimeProblem::restoreState() without saveState().");
+    // The solution keeps its object: others (the nonlinear solver, the coupled problem) refer to it
+    problem_->getSolution()->update( 1., *savedSolution_, 0. );
+    copyBlockMultiVectorArray<SC,LO,GO,NO>( savedSolutionPreviousTimesteps_, solutionPreviousTimesteps_ );
+    copyBlockMultiVectorArray<SC,LO,GO,NO>( savedVelocityPreviousTimesteps_, velocityPreviousTimesteps_ );
+    copyBlockMultiVectorArray<SC,LO,GO,NO>( savedAccelerationPreviousTimesteps_, accelerationPreviousTimesteps_ );
+    time_ = savedTime_;
+}
+
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::updateSystemMassMultiPreviousStep(int nmbSteps){
 
