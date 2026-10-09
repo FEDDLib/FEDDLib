@@ -12,9 +12,11 @@ if(TPL_ENABLE_AceGENInterface)
       NUM_MPI_PROCS 4
   )
 
-  # Adaptive time stepping (DAESolverInTime::advanceInTimeSCI), in a directory of its own:
+  # Adaptive time stepping (DAESolverInTime::advanceInTimeSCI), in a directory of its own (about 2 minutes
+  # on 4 cores; HEAVY: configure with -D FEDDLib_TEST_CATEGORIES:STRING=HEAVY to add it; the default
+  # tests cover adaptive time stepping with artery_restart_adaptive):
   # simulationParameters_adaptive.xml, in which no time step fails, gives the corner values of the
-  # fixed time step size (simulationParameters_test.xml); in simulationParameters_adaptive_newton.xml simulationParameters_adaptive_newton_reference.xml
+  # fixed time step size (simulationParameters_test.xml); in simulationParameters_adaptive_newton.xml
   # time steps the Newton iteration does not converge in are repeated with a smaller size, and the
   # result is that of the accepted time steps taken directly (*_reference.xml).
   TRIBITS_ADD_ADVANCED_TEST(
@@ -49,6 +51,7 @@ if(TPL_ENABLE_AceGENInterface)
       TEST_9 CMND ${CMAKE_COMMAND}
           ARGS -E compare_files cornerValue.txt cornerValue_newton.txt
       OVERALL_NUM_MPI_PROCS 4
+      CATEGORIES HEAVY
       FAIL_FAST
   )
 endif()

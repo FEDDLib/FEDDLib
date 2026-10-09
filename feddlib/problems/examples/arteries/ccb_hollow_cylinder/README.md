@@ -75,7 +75,8 @@ The log shows every repeated time step (`[adaptive] t = ...: the time step of
 ... failed (...); repeating it with ...`) and, at the end, how many there were.
 
 `simulationParameters_adaptive*.xml` are the inputs of the ctest
-`ccb_hollow_cylinder_adaptive`. Without failures the run is that of the fixed
+`ccb_hollow_cylinder_adaptive` (HEAVY; configure with
+`-D FEDDLib_TEST_CATEGORIES:STRING=HEAVY` to add it). Without failures the run is that of the fixed
 time step size; a repeated time step gives the result of a run that took the
 accepted sizes directly, to the last bit, unless the preconditioner keeps its
 coarse basis (`Reuse: Coarse Basis`), which it then took from the failed
