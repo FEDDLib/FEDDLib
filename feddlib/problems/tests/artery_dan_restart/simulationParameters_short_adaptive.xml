@@ -33,7 +33,7 @@
         <Parameter name="Use update tol" type="bool" value="true"/>
         <Parameter name="Use WRMS" type="bool" value="false"/>
         
-        <Parameter name="MaxNonLinIts" type="int" value="20"/>
+        <Parameter name="MaxNonLinIts" type="int" value="5"/>
 
         <Parameter name="Criterion" type="string" value="Update"/><!-- Criterion for nonlinear solve, Residual or Update: Residual is the norm of the nonlinear residual; Update is the norm of the update -->
     </ParameterList>
@@ -87,26 +87,27 @@
         <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, Extrapolation-->
     </ParameterList>
     <ParameterList name="Timestepping Parameter">
-        <!-- Restart test, phase 2 (this file): the restart from phase 1 (simulationParameters.xml).
-             Phase 1 is the uninterrupted run. It writes
+        <!-- ctest artery_restart_adaptive: adaptive time stepping with checkpoints. The fixed first load step, then an adaptive segment to 0.1 (MaxNonLinIts 5): its first time step ends at the checkpoint 0.09 instead of 0.1, and the time step from 0.09, which starts by writing that checkpoint, fails and is repeated. The restart from 0.05 must reproduce the uninterrupted run at 0.09. The time steps after 0.1 do not adapt (and are not needed) -->
+        <Parameter name="Adaptive Time Stepping" type="bool" value="true"/>
+        <!-- Restart test, phase 1 (this file): the uninterrupted run. It writes
              checkpoints at 0.05 (the restart time of phase 2, after the first step of the
              load ramp) and 0.1 (the time phase 2 compares at) to the checkpoint directory. A checkpoint is written at the
              start of the time step after it, so this run ends one step later. -->
-        <Parameter name="Checkpointing" type="bool"  value="false"/>
+        <Parameter name="Checkpointing" type="bool"  value="true"/>
         <Parameter name="Checkpoint directory" type="string" value="restartCheckpoints"/>
-        <Parameter name="Checkpoint Times" type="Array(double)" value="{0.05, 0.1}"/>
-        <Parameter name="Export history" type="bool"  value="false"/>
+        <Parameter name="Checkpoint Times" type="Array(double)" value="{0.05, 0.09}"/>
+        <Parameter name="Export history" type="bool"  value="true"/>
 
         <!-- Restart (phase 2, simulationParameters_restart.xml): from the checkpoint at
              "Time step" in the restart directory -->
-        <Parameter name="Restart" type="bool"  value="true"/>
+        <Parameter name="Restart" type="bool"  value="false"/>
         <Parameter name="Restart directory" type="string" value="restartCheckpoints"/>
         <Parameter name="Time step" type="double"   	value="0.05"/>
-        <Parameter name="Import history" type="bool"  value="true"/>
+        <Parameter name="Import history" type="bool"  value="false"/>
 
         <!-- Phase 2 compares its solution at its final time with the checkpoint of
              phase 1 at that time -->
-        <Parameter name="Final time compare" type="double" value="0.1"/>
+        <Parameter name="Final time compare" type="double" value="0.09"/>
         <Parameter name="Restart tolerance" type="double" value="1.e-8"/> <!-- relative 2-norm of the difference -->
 
 
@@ -114,64 +115,27 @@
         <Parameter name="Class" type="string" value="Multistep"/> <!-- External, Multistep-->
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
     
-        <Parameter name="Final time" type="double" value="0.1"/>
+        <Parameter name="Final time" type="double" value="0.15"/>
         <Parameter name="dt" type="double" value="0.05"/>
         <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
         <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
         <ParameterList name="Timestepping Intervalls">
-            <Parameter name="Number of Segments" type="int" value="13"/>
+            <Parameter name="Number of Segments" type="int" value="3"/>
             <ParameterList name="1">
                 <Parameter name="Start Time" type="double" value="0."/>
                 <Parameter name="dt" type="double" value="0.05"/>
+                <Parameter name="Adaptive" type="bool" value="false"/>
             </ParameterList>
-             <ParameterList name="2">
-                <Parameter name="Start Time" type="double" value="1."/>
-                <Parameter name="dt" type="double" value="0.5"/>
+            <ParameterList name="2">
+                <Parameter name="Start Time" type="double" value="0.05"/>
+                <Parameter name="dt" type="double" value="0.05"/>
+                <Parameter name="Minimum dt" type="double" value="0.005"/>
             </ParameterList>
-             <ParameterList name="3">
-                <Parameter name="Start Time" type="double" value="20."/>
-                <Parameter name="dt" type="double" value="0.1"/>
+            <ParameterList name="3">
+                <Parameter name="Start Time" type="double" value="0.1"/>
+                <Parameter name="dt" type="double" value="0.05"/>
+                <Parameter name="Adaptive" type="bool" value="false"/>
             </ParameterList>
-             <ParameterList name="4">
-                <Parameter name="Start Time" type="double" value="50."/>
-                <Parameter name="dt" type="double" value="0.15"/>
-            </ParameterList>
-            <ParameterList name="5">
-                <Parameter name="Start Time" type="double" value="80."/>
-                <Parameter name="dt" type="double" value="0.2"/>
-            </ParameterList>
-            <ParameterList name="6">
-                <Parameter name="Start Time" type="double" value="110."/>
-                <Parameter name="dt" type="double" value="0.25"/>
-            </ParameterList>
-            <ParameterList name="7">
-                <Parameter name="Start Time" type="double" value="220."/>
-                <Parameter name="dt" type="double" value="0.5"/>
-            </ParameterList>
-            <ParameterList name="8">
-                <Parameter name="Start Time" type="double" value="240."/>
-                <Parameter name="dt" type="double" value="0.2"/>
-            </ParameterList>
-            <ParameterList name="9">
-                <Parameter name="Start Time" type="double" value="540."/>
-                <Parameter name="dt" type="double" value="0.1"/>
-            </ParameterList>
-            <ParameterList name="10">
-                <Parameter name="Start Time" type="double" value="560."/>
-                <Parameter name="dt" type="double" value="0.15"/>
-            </ParameterList>
-            <ParameterList name="11">
-                <Parameter name="Start Time" type="double" value="580."/>
-                <Parameter name="dt" type="double" value="0.2"/>
-            </ParameterList>
-            <ParameterList name="12">
-                <Parameter name="Start Time" type="double" value="840."/>
-                <Parameter name="dt" type="double" value="0.5"/>
-            </ParameterList>
-            <ParameterList name="13">
-                <Parameter name="Start Time" type="double" value="860."/>
-                <Parameter name="dt" type="double" value="0.2"/>
-            </ParameterList>
-         </ParameterList> 
+        </ParameterList>
     </ParameterList>
 </ParameterList>

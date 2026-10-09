@@ -9,6 +9,7 @@
 #include "feddlib/core/General/HDF5Export.hpp"
 #include "feddlib/core/General/HDF5Import.hpp"
 #include "feddlib/core/General/CheckpointFiles.hpp"
+#include <set>
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/FE/Domain.hpp"
 
@@ -341,6 +342,7 @@ private:
     Teuchos::RCP<HDF5Export<SC, LO, GO, NO>> getExporter(std::string fileName, int i);
 
     std::vector<std::tuple<double,bool>> checkPointTupel_;
+    std::set<std::string> exportsWritten_; // files and times (or checkpoints) written by checkForExportAndExport()
     bool restartValuesImported_ = false; // importRestartValues() ran
     bool restartNewmarkUpdate_ = false; // after a restart: the imported Newmark state is that of t_{r-1} and is updated (see updateSolutionNewmarkPreviousStep)
     BlockMultiVectorPtrArray_Type restartMassSolutions_; // after a restart: the products M_i u_i of the checkpoint (see updateMultistepRhsFSI)

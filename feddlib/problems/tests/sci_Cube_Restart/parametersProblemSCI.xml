@@ -93,11 +93,7 @@
              it, so this run ends one step later. -->
         <Parameter name="Checkpointing" type="bool"  value="true"/>
         <Parameter name="Checkpoint directory" type="string" value="restartCheckpoints"/>
-        <Parameter name="Number Checkpoints"  type="int"   	value="2"/>
-        <ParameterList name="Checkpoints">
-         	<Parameter name="1" type="double"   	value="1.5"/>
-         	<Parameter name="2" type="double"   	value="2.5"/>
-        </ParameterList>
+        <Parameter name="Checkpoint Times" type="Array(double)" value="{1.5, 2.5}"/>
         <Parameter name="Export history" type="bool"  value="true"/>
 
         <!-- Restart (phase 2, parametersProblemSCI_restart.xml): from the checkpoint at

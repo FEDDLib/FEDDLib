@@ -35,6 +35,28 @@ if(TPL_ENABLE_AceGENInterface)
       FAIL_FAST
   )
 
+  # artery_restart_adaptive: the same with adaptive time stepping and a repeated time step at
+  # a checkpoint (see simulationParameters_short_adaptive.xml)
+  TRIBITS_ADD_ADVANCED_TEST(
+      artery_restart_adaptive
+      OVERALL_WORKING_DIRECTORY TEST_NAME
+      TEST_0 COPY_FILES_TO_TEST_DIR materialParameters_dan.xml preconditionerParameters_Chemistry.xml
+          preconditionerParameters_Structure.xml simulationParameters_short_adaptive.xml
+          simulationParameters_short_adaptive_restart.xml solverParameters.xml
+      TEST_1 COPY_FILES_TO_TEST_DIR artery_h_0_8_L_0_25_clean.mesh
+          SOURCE_DIR ${CMAKE_SOURCE_DIR}/meshes
+      TEST_2 EXEC artery_dan_restart
+          ARGS --simulationsParameters=simulationParameters_short_adaptive.xml
+          NUM_MPI_PROCS 4
+          PASS_REGULAR_EXPRESSION_ALL "did not converge.; repeating it with" "adaptive. repeated [1-9]"
+          ALWAYS_FAIL_ON_NONZERO_RETURN
+      TEST_3 EXEC artery_dan_restart
+          ARGS --simulationsParameters=simulationParameters_short_adaptive_restart.xml
+          NUM_MPI_PROCS 4
+      OVERALL_NUM_MPI_PROCS 4
+      FAIL_FAST
+  )
+
   TRIBITS_ADD_ADVANCED_TEST(
       artery_dan_restart
       OVERALL_WORKING_DIRECTORY TEST_NAME
@@ -60,11 +82,13 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_artery_dan_restart
 	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 	SOURCE_FILES materialParameters_dan.xml preconditionerParameters_Chemistry.xml
 	preconditionerParameters_Structure.xml simulationParameters.xml simulationParameters_restart.xml
-	simulationParameters_short.xml simulationParameters_short_restart.xml solverParameters.xml
+	simulationParameters_short.xml simulationParameters_short_restart.xml simulationParameters_short_adaptive.xml
+	simulationParameters_short_adaptive_restart.xml solverParameters.xml
 	DEST_DIR ${CMAKE_CURRENT_BINARY_DIR}
 	DEST_FILES materialParameters_dan.xml preconditionerParameters_Chemistry.xml
 	preconditionerParameters_Structure.xml simulationParameters.xml simulationParameters_restart.xml
-	simulationParameters_short.xml simulationParameters_short_restart.xml solverParameters.xml
+	simulationParameters_short.xml simulationParameters_short_restart.xml simulationParameters_short_adaptive.xml
+	simulationParameters_short_adaptive_restart.xml solverParameters.xml
 	EXEDEPS artery_dan_restart
 )
 

@@ -1633,7 +1633,11 @@ void TimeProblem<SC,LO,GO,NO>::checkForExportAndExport( BlockMultiVectorPtrArray
 
     if(safeAllSolution || checkPointing){
 
+        // Each file and time is written once: a time step that adaptive time stepping repeats
+        // passes here again with the same state (the state it started from)
         if(safeAllSolution){
+            if(!exportsWritten_.insert(fileName + "@" + std::to_string(time_)).second)
+                return;
             for (UN i = 0; i < size; i++)
             {
                 std::string varName =  std::to_string(time_); 
@@ -1651,7 +1655,8 @@ void TimeProblem<SC,LO,GO,NO>::checkForExportAndExport( BlockMultiVectorPtrArray
             for(int j = 0; j< checkPointTupel_.size() ; j++){
                 double dt = getPreviousTimeIncrement(); 
                 // We previously defined the checkpoints. If a checkpoint is reached, the second value of the checkpoint row turns to true.
-                if(time_ >= std::get<0>(checkPointTupel_[j])-1.e-10 && time_ - dt < std::get<0>(checkPointTupel_[j])-1.e-10)  //&& std::get<1>(checkPointTupel_[j]) == false ) 
+                if(time_ >= std::get<0>(checkPointTupel_[j])-1.e-10 && time_ - dt < std::get<0>(checkPointTupel_[j])-1.e-10
+                   && exportsWritten_.insert(fileName + "@checkpoint" + std::to_string(j)).second)
                 { 
 
 
@@ -1722,9 +1727,7 @@ double TimeProblem<SC,LO,GO,NO>::getPreviousTimeIncrement(double timeStep){
 
 template<class SC,class LO,class GO,class NO>
 void TimeProblem<SC,LO,GO,NO>::initCheckPoints(){
-    int numberCheckpoints = parameterList_->sublist("Timestepping Parameter").get("Number Checkpoints", -1);
-    for( int i=0; i< numberCheckpoints; i++ ){
-        double startTime = parameterList_->sublist("Timestepping Parameter").sublist("Checkpoints").get(std::to_string(i+1),0.);
+    for( double startTime : checkpointTimes(parameterList_) ){
         bool checkpointReached = false;
         if(startTime < time_) // We already reached that checkpoint because we are restarting
             checkpointReached=true;

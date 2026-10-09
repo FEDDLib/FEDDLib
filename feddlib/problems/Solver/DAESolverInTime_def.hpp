@@ -1195,10 +1195,17 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     if (anyAdaptiveSegment){
         // A failed time step is detected from NOX's status
         TEUCHOS_TEST_FOR_EXCEPTION( parameterList_->sublist("General").get("Linearization","FixedPoint") != "NOX" || "SCI_Linear" == parameterList_->sublist("Parameter").get("Structure Model","SCI_Linear"), std::runtime_error, "Adaptive time stepping needs the NOX linearization and a nonlinear structure model.");
-        // The checkpoints are written at the start of the time step after their time, found with the
-        // segments' dt, and once per attempt: not with the time steps of adaptive time stepping
-        TEUCHOS_TEST_FOR_EXCEPTION( parameterList_->sublist("Timestepping Parameter").get("Checkpointing",false) || parameterList_->sublist("General").get("Safe all solution",false), std::runtime_error, "Adaptive time stepping does not support Checkpointing or Safe all solution yet.");
+        // Checkpoints and restarts keep the previous time steps (BDF > 1, the Newmark state without load
+        // stepping) under times found with the segments' dt: only the state of one time is right
+        bool checkpointsOrRestart = parameterList_->sublist("Timestepping Parameter").get("Checkpointing",false) || restart;
+        TEUCHOS_TEST_FOR_EXCEPTION( checkpointsOrRestart && (nmbBDF != 1 || !parameterList_->sublist("Parameter").get("Load Stepping",false)), std::runtime_error, "Adaptive time stepping with Checkpointing or Restart needs BDF 1 and Load Stepping.");
     }
+
+    // With adaptive time stepping a time step ends at the next checkpoint time it would pass, so that
+    // the checkpoint is written (at the start of the time step after it) with exactly that time
+    std::vector<double> checkpoints;
+    if (parameterList_->sublist("Timestepping Parameter").get("Checkpointing",false))
+        checkpoints = checkpointTimes(parameterList_);
 
     while(timeSteppingTool_->continueTimeStepping())
     {
@@ -1235,6 +1242,14 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             dt = adaptiveDt;
             if (timeStart + dt > segmentEnd) // as in getTimeIncrementFromSegments: the time step ends at the segment's end
                 dt = segmentEnd - timeStart;
+            for (double checkpoint : checkpoints){
+                double tolerance = 1.e-10 * std::max(1., std::abs(checkpoint));
+                if (checkpoint > timeStart + tolerance){
+                    if (timeStart + dt > checkpoint + tolerance)
+                        dt = checkpoint - timeStart;
+                    break;
+                }
+            }
         }
         timeSteppingTool_->dt_= dt; // At this point DAESolver time stepper has t_n and accurate dt value
         sci->timeSteppingTool_->dt_ = dt; // At this point SCI time stepper has t_n and accurate dt value

@@ -82,12 +82,15 @@ coarse basis (`Reuse: Coarse Basis`), which it then took from the failed
 attempt's first matrix (differences at the Newton tolerance).
 
 Adaptive time stepping needs the NOX linearization and a nonlinear structure
-model, and does not support `Checkpointing` or `Safe all solution` yet (the
-checkpoints are found with the segments' `dt` and written once per attempt).
-A run with adaptive segments takes the structure's inertia coefficient from
-each time step's size (otherwise it is that of the first time step).
+model. A run with adaptive segments takes the structure's inertia coefficient
+from each time step's size (otherwise it is that of the first time step).
 
-Load functions that compute the load at `t + Load Step Size` (as the artery
-cases do) assume a fixed time step size: use them with adaptive time stepping
-only in segments that do not adapt. This case's load function uses the time
-of the end of the time step and works with any size.
+Checkpoints (`Checkpointing`) are given as a list of times,
+`<Parameter name="Checkpoint Times" type="Array(double)" value="{t1, t2, ...}"/>`
+in `Timestepping Parameter`. An adaptive time step ends at the next checkpoint
+time it would pass, so that the checkpoint is written with exactly that time
+(at the start of the time step after it), and a repeated time step does not
+write it again. With adaptive time stepping, checkpoints and restarts need
+`BDF` 1 and `Load Stepping` (only the state of one time is kept). A restart
+starts its segment with the segment's `dt` again (see the ctest
+`artery_restart_adaptive`).
