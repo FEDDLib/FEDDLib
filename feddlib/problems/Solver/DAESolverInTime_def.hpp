@@ -1207,6 +1207,26 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     if (parameterList_->sublist("Timestepping Parameter").get("Checkpointing",false))
         checkpoints = checkpointTimes(parameterList_);
 
+    // Output by time instead of by time step: with "Export Times" (a list) or "Export Interval" (every
+    // that many seconds from t = 0) the solution and the postprocessing fields are written at the end of
+    // every time step that reaches one of these times, and only then. An adaptive time step ends exactly
+    // at the next of the "Export Times" it would pass, and at the next multiple of "Export Interval" if
+    // it is not longer than the interval; a longer time step is not shortened, and the output is written
+    // at its end.
+    std::vector<double> exportTimes;
+    if (parameterList_->sublist("Exporter").isParameter("Export Times")){
+        Teuchos::Array<double> times = parameterList_->sublist("Exporter").get<Teuchos::Array<double>>("Export Times");
+        exportTimes.assign(times.begin(), times.end());
+        std::sort(exportTimes.begin(), exportTimes.end());
+    }
+    double exportInterval = parameterList_->sublist("Exporter").get("Export Interval", 0.);
+    TEUCHOS_TEST_FOR_EXCEPTION( exportInterval < 0., std::runtime_error, "Export Interval must not be negative.");
+    bool exportByTime = !exportTimes.empty() || exportInterval > 0.;
+    // The number of the last multiple of the interval at or before t
+    auto exportIntervalIndex = [exportInterval](double t){
+        return std::floor((t + 1.e-10 * std::max(1., std::abs(t))) / exportInterval);
+    };
+
     while(timeSteppingTool_->continueTimeStepping())
     {
         // The time this time step starts from, its segment, and whether the segment adapts its step size
@@ -1249,6 +1269,19 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
                         dt = checkpoint - timeStart;
                     break;
                 }
+            }
+            for (double exportTime : exportTimes){
+                double tolerance = 1.e-10 * std::max(1., std::abs(exportTime));
+                if (exportTime > timeStart + tolerance){
+                    if (timeStart + dt > exportTime + tolerance)
+                        dt = exportTime - timeStart;
+                    break;
+                }
+            }
+            if (exportInterval > 0. && dt <= exportInterval * (1. + 1.e-10)){
+                double nextExport = (exportIntervalIndex(timeStart) + 1.) * exportInterval;
+                if (timeStart + dt > nextExport + 1.e-10 * std::max(1., nextExport))
+                    dt = nextExport - timeStart;
             }
         }
         timeSteppingTool_->dt_= dt; // At this point DAESolver time stepper has t_n and accurate dt value
@@ -1546,12 +1579,29 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             exporterDisplXTxt->exportData( v[0] );
             exporterDisplYTxt->exportData( v[1] );
         }
-        if (print)
+        // Whether this time step reaches one of the output times (see above)
+        bool exportNow = true;
+        if (exportByTime){
+            double timeEnd = timeSteppingTool_->currentTime();
+            exportNow = exportInterval > 0. && exportIntervalIndex(timeEnd) > exportIntervalIndex(timeStart);
+            for (double exportTime : exportTimes){
+                double tolerance = 1.e-10 * std::max(1., std::abs(exportTime));
+                exportNow = exportNow || (exportTime > timeStart + tolerance && exportTime <= timeEnd + tolerance);
+            }
+        }
+        if (print && exportNow)
         {
             exportTimestep();
 
         }
-        if (printStress){
+        if (printStress && exportByTime){
+            if (exportNow){
+                BlockMultiVectorPtr_Type stressVecTmp= sci->getPostProcessingData();
+                stressVec = stressVecTmp;
+                this->exportPostprocess(stressVec,problemTime_->getDomain(0),sci->getPostprocessingNames());
+            }
+        }
+        else if (printStress){
             timeStep = timeStep + 1.;
             bool heartbeat= false;
             double heartbeatStart1 = parameterList_->sublist("Parameter").get("Heart Beat Start 1",0.) ;
