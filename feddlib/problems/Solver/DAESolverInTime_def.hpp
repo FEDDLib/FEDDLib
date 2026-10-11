@@ -6,6 +6,9 @@
 #include "feddlib/problems/specific/FSCI.hpp"
 #include "feddlib/problems/specific/SCI.hpp"
 #include "feddlib/problems/specific/NonLinElasticity.hpp"
+#ifdef FEDD_HAVE_ACEGEN_ERRORLOG_STEP
+#include <aceinterface.hpp>
+#endif
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/FE/FE.hpp"
@@ -1451,6 +1454,10 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             solverFailed = true;
             solverMessage = exception.what();
         }
+#ifdef FEDD_HAVE_ACEGEN_ERRORLOG_STEP
+        // The elements' messages of this attempt go to ErrorLog.txt now, not only when the program exits
+        AceGenInterface::newErrorLogStep();
+#endif
 
         if (!adaptive)
             break;
@@ -1633,6 +1640,9 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
 
     }
 
+#ifdef FEDD_HAVE_ACEGEN_ERRORLOG_STEP
+    AceGenInterface::newErrorLogStep();
+#endif
     if (anyAdaptiveSegment && verbose_)
         std::cout << " [adaptive] repeated " << repeatedTimeSteps << " time step(s); accepted " << acceptedWithElementFailures << " time step(s) with elements that did not converge locally" << std::endl;
 

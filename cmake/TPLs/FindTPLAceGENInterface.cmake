@@ -66,3 +66,15 @@ SET (HAVE_ACEGENINTERFACE True)
 # This runs after AceGEN Interface is found, so HAVE_ACEGENINTERFACE is set
 set(FEDD_HAVE_ACEGENINTERFACE TRUE)
 message(STATUS "  - FEDD_HAVE_ACEGENINTERFACE: ${FEDD_HAVE_ACEGENINTERFACE}") 
+
+# Interface2 collects the elements' messages per process and writes them to ErrorLog.txt when
+# newErrorLogStep() is called (or at exit); older versions write ErrorLog.txt directly and have
+# no such function. Compiled only, not linked, so the check needs none of Interface2's libraries.
+include(CheckCXXSourceCompiles)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(CMAKE_REQUIRED_FLAGS "-std=c++17")
+check_cxx_source_compiles("#include <aceinterface.hpp>
+void foldErrorLog() { AceGenInterface::newErrorLogStep(); }" FEDD_HAVE_ACEGEN_ERRORLOG_STEP)
+unset(CMAKE_TRY_COMPILE_TARGET_TYPE)
+set(CMAKE_REQUIRED_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+message(STATUS "  - FEDD_HAVE_ACEGEN_ERRORLOG_STEP: ${FEDD_HAVE_ACEGEN_ERRORLOG_STEP}")
