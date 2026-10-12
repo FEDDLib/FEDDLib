@@ -306,17 +306,18 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
     NOX::Solver::buildSolver(nox_group, combo, nl_params);
     NOX::StatusTest::StatusType solveStatus = solver->solve();
     converged_ = solveStatus == NOX::StatusTest::Converged;
-    
+    finalNormF_ = solver->getSolutionGroup().getNormF();
+
     double nonLinearIts = solver->getSolverStatistics()->linearSolve.allNonlinearSolves_NumLinearSolves;
     double linearIts = solver->getSolverStatistics()->linearSolve.allNonlinearSolves_NumLinearIterations;
-    
+
     linearIts/=nonLinearIts;
     if (verbose){
         std::cout << "############################################################" << std::endl;
         std::cout << "### Total nonlinear iterations : " << nonLinearIts << "  with an average of " << linearIts << " linear iterations ###" << std::endl;
         std::cout << "############################################################" << std::endl;
     }
-    
+
     if ( problemPtr->getParameterList()->sublist("Parameter").get("Cancel MaxNonLinIts",false) ) {
         TEUCHOS_TEST_FOR_EXCEPTION((int)nonLinearIts == problemPtr->getParameterList()->sublist("Parameter").get("MaxNonLinIts",10) ,std::runtime_error,"Maximum nonlinear Iterations reached. Problem might have converged in the last step. Still we cancel here.");
     }

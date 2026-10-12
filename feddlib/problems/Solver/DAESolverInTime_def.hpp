@@ -10,6 +10,7 @@
 #include <aceinterface.hpp>
 #endif
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
+#include <cmath>
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/FE/FE.hpp"
 
@@ -975,16 +976,24 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     // not stop the run when a time step at its smallest size fails because elements cannot compute
     // their state (their local Gauss-point iteration does not converge): the time step is tried once
     // more at that size with the failures only counted, and accepted if the Newton iteration converges.
+    // A segment with "Accept Unconverged Newton At Minimum dt" (default: the same parameter here) does
+    // what the runs before adaptive time stepping did when a time step at its smallest size still
+    // fails: the time step is tried once more at that size with element failures only counted and
+    // without the divergence test, and accepted after at most "MaxNonLinIts" iterations whether the
+    // Newton iteration converged or not, unless the residual is not a finite number or the solver
+    // breaks down. Each such time step is reported with the residual it ended with.
     bool adaptiveTimeStepping = parameterList_->sublist("Timestepping Parameter").get("Adaptive Time Stepping", false);
     bool acceptElementFailuresDefault = parameterList_->sublist("Timestepping Parameter").get("Accept Element Failures At Minimum dt", false);
+    bool acceptUnconvergedDefault = parameterList_->sublist("Timestepping Parameter").get("Accept Unconverged Newton At Minimum dt", false);
     double reductionFactor = parameterList_->sublist("Timestepping Parameter").get("Time Step Reduction Factor", 0.5);
     double increaseFactor = parameterList_->sublist("Timestepping Parameter").get("Time Step Increase Factor", 2.0);
     int convergedBeforeIncrease = parameterList_->sublist("Timestepping Parameter").get("Converged Time Steps Before Increase", 5);
     double divergenceFactor = parameterList_->sublist("Timestepping Parameter").get("Newton Divergence Factor", 1.e3);
     TEUCHOS_TEST_FOR_EXCEPTION(!(reductionFactor > 0. && reductionFactor < 1.) || increaseFactor < 1. || convergedBeforeIncrease < 1, std::runtime_error, "Adaptive time stepping needs 0 < Time Step Reduction Factor < 1, Time Step Increase Factor >= 1 and Converged Time Steps Before Increase >= 1.");
 
-    // Per segment: start time, dt, maximum dt, minimum dt, adaptive (1) or not (0), accept element failures at the minimum dt (1) or not (0)
-    vec2D_dbl_Type timeSegments(0,vec_dbl_Type(6));
+    // Per segment: start time, dt, maximum dt, minimum dt, adaptive (1) or not (0), accept element failures at the minimum dt (1) or not (0),
+    // accept an unconverged Newton iteration at the minimum dt (1) or not (0)
+    vec2D_dbl_Type timeSegments(0,vec_dbl_Type(7));
     
     int numSegments = parameterList_->sublist("Timestepping Parameter").sublist("Timestepping Intervalls").get("Number of Segments",0);
 
@@ -1007,8 +1016,9 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         }
 
         bool acceptElementFailures = segmentList.get("Accept Element Failures At Minimum dt", acceptElementFailuresDefault);
+        bool acceptUnconverged = segmentList.get("Accept Unconverged Newton At Minimum dt", acceptUnconvergedDefault);
 
-        vec_dbl_Type segment = {startTime, dtTmp, dtMax, dtMin, adaptiveSegment ? 1. : 0., acceptElementFailures ? 1. : 0.};
+        vec_dbl_Type segment = {startTime, dtTmp, dtMax, dtMin, adaptiveSegment ? 1. : 0., acceptElementFailures ? 1. : 0., acceptUnconverged ? 1. : 0.};
         timeSegments.push_back(segment);
     }
     TEUCHOS_TEST_FOR_EXCEPTION(adaptiveTimeStepping && numSegments == 0, std::runtime_error, "Adaptive time stepping needs time segments (Timestepping Intervalls).");
@@ -1192,6 +1202,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     int convergedTimeSteps = 0;
     int repeatedTimeSteps = 0;
     int acceptedWithElementFailures = 0;
+    int acceptedUnconverged = 0;
     bool anyAdaptiveSegment = false;
     for (int i = 0; i < timeSegments.size(); i++)
         anyAdaptiveSegment = anyAdaptiveSegment || timeSegments[i][4] > 0.5;
@@ -1254,7 +1265,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         }
 
         // The attempts at this time step: one, and with adaptive time stepping one more whenever it fails
-        bool acceptingElementFailures = false; // the last attempt, at the smallest size (see above)
+        bool acceptingElementFailures = false; // the last attempts, at the smallest size (see above)
+        bool acceptingUnconverged = false;
         for (int attempt = 0; ; attempt++)
         {
         // Determine dt for current time segement
@@ -1431,7 +1443,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         problemTime_->updateTime ( time ); // Synchronize timestep to the timeProblem timestepper (t_n+1)
         
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
-        nlSolver.setDivergenceFactor(adaptive ? divergenceFactor : 0.);
+        nlSolver.setDivergenceFactor(adaptive && !acceptingUnconverged ? divergenceFactor : 0.);
 
         if (verbose_)
             std::cout << " ----- Nonlinear System Info|| Number of rows:" << problemTime_->getSystem()->size() << " || number of rhs:" << problemTime_->getRhs()->size() << " || solution: " << problemTime_->getSolution()->size() << std::endl; 
@@ -1463,10 +1475,16 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             break;
 
         // Whether the time step failed, decided alike on every process
-        int failures[2] = {solverFailed ? 1 : 0, nlSolver.converged() ? 0 : 1};
-        int failuresAnywhere[2] = {0, 0};
-        Teuchos::reduceAll<int, int>( *this->comm_, Teuchos::REDUCE_MAX, 2, failures, failuresAnywhere );
+        int failures[3] = {solverFailed ? 1 : 0, nlSolver.converged() ? 0 : 1, std::isfinite(nlSolver.finalResidualNorm()) ? 0 : 1};
+        int failuresAnywhere[3] = {0, 0, 0};
+        Teuchos::reduceAll<int, int>( *this->comm_, Teuchos::REDUCE_MAX, 3, failures, failuresAnywhere );
         bool elementFailure = sci->elementFailed() && !acceptingElementFailures;
+        if (acceptingUnconverged && failuresAnywhere[0] == 0 && failuresAnywhere[1] != 0 && failuresAnywhere[2] == 0){
+            acceptedUnconverged++;
+            if (verbose_)
+                std::cout << " [adaptive] t = " << timeStart + dt << ": accepted the time step of " << dt << " although the Newton iteration did not converge (||F|| = " << nlSolver.finalResidualNorm() << " at the end; " << sci->numberOfFailedElements() << " element(s) did not converge locally), as the runs before adaptive time stepping did" << std::endl;
+            break;
+        }
         if (!elementFailure && failuresAnywhere[0] == 0 && failuresAnywhere[1] == 0){
             if (acceptingElementFailures && sci->elementFailed()){
                 acceptedWithElementFailures++;
@@ -1481,6 +1499,8 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             reason = "an element could not compute its state";
         else if (failuresAnywhere[0] != 0)
             reason = solverFailed ? "the solver failed: " + solverMessage : "the solver of another process failed";
+        else if (failuresAnywhere[2] != 0)
+            reason = "the residual is not a finite number";
 
         // Repeat the time step from the state it started from with a smaller time step size
         double reduced = dt * reductionFactor;
@@ -1498,9 +1518,19 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             belowMinimum = false;
             acceptingElementFailures = true;
         }
+        // If it still fails (and the residual stayed finite), once more as the runs before adaptive time
+        // stepping did, if the segment accepts that
+        else if (belowMinimum && !acceptingUnconverged && failuresAnywhere[0] == 0 && failuresAnywhere[2] == 0 && timeSegments[activeSegmentNumber][6] > 0.5){
+            reduced = dt;
+            belowMinimum = false;
+            acceptingElementFailures = true;
+            acceptingUnconverged = true;
+        }
         TEUCHOS_TEST_FOR_EXCEPTION( belowMinimum, std::runtime_error, "Adaptive time stepping: the time step from t = " << timeStart << " with dt = " << dt << " failed (" << reason << "), and " << reduced << " is below the Minimum dt " << dtMin << " of its time segment.");
         if (verbose_){
-            if (acceptingElementFailures && approxEqual(reduced, dt))
+            if (acceptingUnconverged)
+                std::cout << " [adaptive] t = " << timeStart + dt << ": the time step of " << dt << " failed (" << reason << ") at the smallest size; repeating it with " << reduced << " as the runs before adaptive time stepping did: without the divergence test, accepting elements that do not converge locally and a Newton iteration that does not converge" << std::endl;
+            else if (acceptingElementFailures && approxEqual(reduced, dt))
                 std::cout << " [adaptive] t = " << timeStart + dt << ": the time step of " << dt << " failed (" << reason << ") at the smallest size; repeating it with " << reduced << ", accepting elements that do not converge locally if the Newton iteration converges" << std::endl;
             else
                 std::cout << " [adaptive] t = " << timeStart + dt << ": the time step of " << dt << " failed (" << reason << "); repeating it with " << reduced << std::endl;
@@ -1644,7 +1674,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     AceGenInterface::newErrorLogStep();
 #endif
     if (anyAdaptiveSegment && verbose_)
-        std::cout << " [adaptive] repeated " << repeatedTimeSteps << " time step(s); accepted " << acceptedWithElementFailures << " time step(s) with elements that did not converge locally" << std::endl;
+        std::cout << " [adaptive] repeated " << repeatedTimeSteps << " time step(s); accepted " << acceptedWithElementFailures << " time step(s) with elements that did not converge locally and " << acceptedUnconverged << " whose Newton iteration did not converge" << std::endl;
 
     comm_->barrier();
     if (printExtraData) {
