@@ -223,6 +223,13 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
     Teuchos::RCP<TimeProblem_Type> problemPtr = Teuchos::rcpFromRef(problem);
     Teuchos::RCP<Teuchos::ParameterList> p = sublist(problemPtr->getParameterList(),"ThyraSolver");
 
+    // The Newton steps are counted per time step: with "Rebuild Preconditioner every Newton Iteration"
+    // false the preconditioner is built in the first "newtonLimit" Newton steps of each time step and
+    // reused in the later ones
+    Teuchos::RCP<NonLinearProblem_Type> nonLinearProblem = Teuchos::rcp_dynamic_cast<NonLinearProblem_Type>(problemPtr->getUnderlyingProblem());
+    if (!nonLinearProblem.is_null())
+        nonLinearProblem->setNonlinearIterationStep(0);
+
     problemPtr->getLinearSolverBuilder()->setParameterList(p);
     
     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problemPtr->getLinearSolverBuilder()->createLinearSolveStrategy("");
