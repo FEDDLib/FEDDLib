@@ -1396,9 +1396,12 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
         // 1) Calculate residual vector f
 
         if (fill_f) {
-            
-            this->calculateNonLinResidualVec( "standard", time_ );  // Calculating residual Vector
-                        
+
+            {
+                Teuchos::TimeMonitor residualTM(*Teuchos::TimeMonitor::getNewTimer("TimeProblem: Assemble residual"));
+                this->calculateNonLinResidualVec( "standard", time_ );  // Calculating residual Vector
+            }
+
             BlockMultiVectorConstPtr_Type resConst = this->getResidualConst();
             BlockMultiVectorPtr_Type res = rcp_const_cast<BlockMultiVector_Type >(resConst);
             
@@ -1409,11 +1412,14 @@ void TimeProblem<SC,LO,GO,NO>::evalModelImplMonolithic( const Thyra::ModelEvalua
         // 2) Calculate Newton tangent W 
         TpetraMatrixPtr_Type W;
         if (fill_W) {
-            
-            this->assemble("Newton"); // ReAssembling matrices with updated u in this class
-            this->setBoundariesSystem(); // setting boundaries to the system
 
-            
+            {
+                Teuchos::TimeMonitor tangentTM(*Teuchos::TimeMonitor::getNewTimer("TimeProblem: Assemble tangent"));
+                this->assemble("Newton"); // ReAssembling matrices with updated u in this class
+                this->setBoundariesSystem(); // setting boundaries to the system
+            }
+
+
             Teuchos::RCP<TpetraOp_Type> W_tpetra = tpetra_extract::getTpetraOperator(W_out);
             Teuchos::RCP<TpetraMatrix_Type> W_tpetraMat = Teuchos::rcp_dynamic_cast<TpetraMatrix_Type>(W_tpetra);
             
