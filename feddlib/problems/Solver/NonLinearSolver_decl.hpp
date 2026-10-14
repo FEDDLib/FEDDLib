@@ -91,6 +91,9 @@ public:
     /// The norm of the residual the last NOX solve ended with (0 for the other linearizations)
     double finalResidualNorm() const {return finalNormF_;}
 
+    /// The norm of the residual the last NOX solve started from (0 for the other linearizations)
+    double initialResidualNorm() const {return initialNormF_;}
+
     /*!
         \brief With factor > 0 a NOX solve fails as soon as the norm of the residual exceeds factor times
         the norm it started from, or is not a finite number (adaptive time stepping; 0: off)
@@ -179,6 +182,7 @@ private:
 	int nonLinearIts_ =0;
     bool converged_ = true;
     double finalNormF_ = 0.;
+    double initialNormF_ = 0.;
     double divergenceFactor_ = 0.;
 
     // Create a default switching strategy function which does nothing

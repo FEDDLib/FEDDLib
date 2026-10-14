@@ -83,7 +83,8 @@ void NonLinearSolver<SC,LO,GO,NO>::solve(TimeProblem_Type &problem, double time,
 /// NOX status test of adaptive time stepping: fails a solve whose residual norm exceeds factor times
 /// the norm it started from (and the absolute tolerance, so that a residual at round-off level that
 /// grows does not count), so that a diverging time step is repeated before it reaches the maximum
-/// number of iterations (and before a diverged state is assembled again).
+/// number of iterations (and before a diverged state is assembled again). With factor 0 it only
+/// records the norm the solve started from.
 class NOXDivergenceTest : public NOX::StatusTest::Generic {
 public:
     NOXDivergenceTest(double factor, double absoluteTolerance) : factor_(factor), absoluteTolerance_(absoluteTolerance) {}
@@ -93,12 +94,14 @@ public:
         if (problem.getNumIterations() == 0)
             initialNormF_ = normF;
         status_ = NOX::StatusTest::Unconverged;
-        if (checkType != NOX::StatusTest::None && initialNormF_ > 0. && normF > factor_ * initialNormF_ && normF > absoluteTolerance_)
+        if (factor_ > 0. && checkType != NOX::StatusTest::None && initialNormF_ > 0. && normF > factor_ * initialNormF_ && normF > absoluteTolerance_)
             status_ = NOX::StatusTest::Failed;
         return status_;
     }
 
     NOX::StatusTest::StatusType getStatus() const override { return status_; }
+
+    double initialNormF() const { return initialNormF_; }
 
     std::ostream& print(std::ostream& stream, int indent = 0) const override {
         for (int j = 0; j < indent; j++)
@@ -303,8 +306,10 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
     combo->addStatusTest(fv);
     combo->addStatusTest(converged);
     combo->addStatusTest(maxiters);
-    if (divergenceFactor_ > 0.)
-        combo->addStatusTest(Teuchos::rcp(new NOXDivergenceTest(divergenceFactor_, problemPtr->getParameterList()->sublist("Parameter").get("absNonLinTol",1.0e-6))));
+    // (added last, so that it records the initial norm also when another test ends the solve)
+    Teuchos::RCP<NOXDivergenceTest> divergence =
+    Teuchos::rcp(new NOXDivergenceTest(divergenceFactor_, problemPtr->getParameterList()->sublist("Parameter").get("absNonLinTol",1.0e-6)));
+    combo->addStatusTest(divergence);
     
     // Create nox parameter list
     Teuchos::RCP<Teuchos::ParameterList> nl_params = sublist(problemPtr->getParameterList(),"NOXSolver");
@@ -314,6 +319,7 @@ void NonLinearSolver<SC,LO,GO,NO>::solveNOX(TimeProblem_Type &problem, vec_dbl_p
     NOX::StatusTest::StatusType solveStatus = solver->solve();
     converged_ = solveStatus == NOX::StatusTest::Converged;
     finalNormF_ = solver->getSolutionGroup().getNormF();
+    initialNormF_ = divergence->initialNormF();
 
     double nonLinearIts = solver->getSolverStatistics()->linearSolve.allNonlinearSolves_NumLinearSolves;
     double linearIts = solver->getSolverStatistics()->linearSolve.allNonlinearSolves_NumLinearIterations;

@@ -10,6 +10,7 @@
 #include <aceinterface.hpp>
 #endif
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
+#include <sstream>
 #include <cmath>
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/core/FE/FE.hpp"
@@ -980,8 +981,9 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     // what the runs before adaptive time stepping did when a time step at its smallest size still
     // fails: the time step is tried once more at that size with element failures only counted and
     // without the divergence test, and accepted after at most "MaxNonLinIts" iterations whether the
-    // Newton iteration converged or not, unless the residual is not a finite number or the solver
-    // breaks down. Each such time step is reported with the residual it ended with.
+    // Newton iteration converged or not, unless the residual is not a finite number, ended above the
+    // residual the attempt started from, or the solver breaks down (the run then stops). Each such
+    // time step is reported with the residual it ended with.
     bool adaptiveTimeStepping = parameterList_->sublist("Timestepping Parameter").get("Adaptive Time Stepping", false);
     bool acceptElementFailuresDefault = parameterList_->sublist("Timestepping Parameter").get("Accept Element Failures At Minimum dt", false);
     bool acceptUnconvergedDefault = parameterList_->sublist("Timestepping Parameter").get("Accept Unconverged Newton At Minimum dt", false);
@@ -1474,18 +1476,21 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         if (!adaptive)
             break;
 
-        // Whether the time step failed, decided alike on every process
-        int failures[3] = {solverFailed ? 1 : 0, nlSolver.converged() ? 0 : 1, std::isfinite(nlSolver.finalResidualNorm()) ? 0 : 1};
-        int failuresAnywhere[3] = {0, 0, 0};
-        Teuchos::reduceAll<int, int>( *this->comm_, Teuchos::REDUCE_MAX, 3, failures, failuresAnywhere );
+        // Whether the time step failed, decided alike on every process. Without the divergence test a
+        // Newton iteration can blow up and then stop on a small update ("converged" with ||F|| = 1e17),
+        // so the attempt at the minimum without it must also end below the residual it started from.
+        bool residualGrew = acceptingUnconverged && nlSolver.initialResidualNorm() > 0. && !(nlSolver.finalResidualNorm() <= nlSolver.initialResidualNorm());
+        int failures[4] = {solverFailed ? 1 : 0, nlSolver.converged() ? 0 : 1, std::isfinite(nlSolver.finalResidualNorm()) ? 0 : 1, residualGrew ? 1 : 0};
+        int failuresAnywhere[4] = {0, 0, 0, 0};
+        Teuchos::reduceAll<int, int>( *this->comm_, Teuchos::REDUCE_MAX, 4, failures, failuresAnywhere );
         bool elementFailure = sci->elementFailed() && !acceptingElementFailures;
-        if (acceptingUnconverged && failuresAnywhere[0] == 0 && failuresAnywhere[1] != 0 && failuresAnywhere[2] == 0){
+        if (acceptingUnconverged && failuresAnywhere[0] == 0 && failuresAnywhere[1] != 0 && failuresAnywhere[2] == 0 && failuresAnywhere[3] == 0){
             acceptedUnconverged++;
             if (verbose_)
                 std::cout << " [adaptive] t = " << timeStart + dt << ": accepted the time step of " << dt << " although the Newton iteration did not converge (||F|| = " << nlSolver.finalResidualNorm() << " at the end; " << sci->numberOfFailedElements() << " element(s) did not converge locally), as the runs before adaptive time stepping did" << std::endl;
             break;
         }
-        if (!elementFailure && failuresAnywhere[0] == 0 && failuresAnywhere[1] == 0){
+        if (!elementFailure && failuresAnywhere[0] == 0 && failuresAnywhere[1] == 0 && failuresAnywhere[3] == 0){
             if (acceptingElementFailures && sci->elementFailed()){
                 acceptedWithElementFailures++;
                 if (verbose_)
@@ -1501,6 +1506,11 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             reason = solverFailed ? "the solver failed: " + solverMessage : "the solver of another process failed";
         else if (failuresAnywhere[2] != 0)
             reason = "the residual is not a finite number";
+        else if (failuresAnywhere[3] != 0){
+            std::ostringstream grew;
+            grew << "the residual grew from " << nlSolver.initialResidualNorm() << " to " << nlSolver.finalResidualNorm();
+            reason = grew.str();
+        }
 
         // Repeat the time step from the state it started from with a smaller time step size
         double reduced = dt * reductionFactor;
