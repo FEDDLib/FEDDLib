@@ -482,7 +482,9 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::postPro
 
     AceGenElement_Type& elem = aceGenElement(&displacements[0], &concentrations[0], &accelerations[0], &rates[0], domainDataModified.data(), deltaT, time);
 
-    double** postProcessingResults = elem.postProcess(&displacements[0], &concentrations[0], this->history_.data(), &rates[0], &accelerations[0]);
+    // End-of-step history (theta, active state of the converged step): the start-of-step history_ would
+    // leave the last step's growth out of Fe while taking the end-of-step displacement
+    double** postProcessingResults = elem.postProcess(&displacements[0], &concentrations[0], this->historyUpdated_.data(), &rates[0], &accelerations[0]);
 
     for (int i = 0; i < 10; i++)
         for (int j = 0; j < this->postDataLength_; j++)
