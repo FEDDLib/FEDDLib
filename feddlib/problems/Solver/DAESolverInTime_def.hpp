@@ -1307,13 +1307,18 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             massCoeffSCI[0][0] = 1./(dt*dt*beta);
             this->problemTime_->setTimeParameters(massCoeffSCI, problemCoeffSCI);
         }
-        if(approxEqual(timeSteppingTool_->currentTime(), 0.0)){ // First time step (SCI already has t_1, see setProblem)
+        if(approxEqual(timeSteppingTool_->currentTime(), 0.0)){ // First time step
             timeSteppingTool_->dt_prev_= dt;
             sci->timeSteppingTool_->dt_prev_= dt;
-            if (attempt > 0){ // a repeated first time step: the SCI problem and its elements take t_1 = dt
-                sci->timeSteppingTool_->t_ = dt;
-                sci->synchronizeElementTime();
-            }
+            // The elements initialize their history (e.g. the fibre directions) in the first time step only
+            // if the time they get equals their time increment. So in every attempt at it (the first one,
+            // or a repeated one with a smaller dt) the SCI problem and its elements take t_1 = dt of this
+            // attempt, and every element is checked.
+            sci->timeSteppingTool_->t_ = dt;
+            sci->synchronizeElementTime();
+            sci->checkElementTime(dt, dt);
+            if (verbose_)
+                std::cout << " First time step: every element has the time " << dt << " and the time increment " << dt << std::endl;
         }
         else{ // Any later time step, including the first one after a restart
             timeSteppingTool_->dt_prev_= timeSteppingTool_->dt_;

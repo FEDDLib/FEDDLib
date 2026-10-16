@@ -1901,5 +1901,15 @@ void FE_ElementAssembly<SC,LO,GO,NO>::synchronizeTime(Teuchos::RCP<TimeSteppingT
     }
 }
 
+template <class SC, class LO, class GO, class NO>
+void FE_ElementAssembly<SC,LO,GO,NO>::checkTimeAssemblyFEElements(double t, double dt) {
+    for (UN T=0; T<assemblyFEElements_.size(); T++) {
+        double tElement = assemblyFEElements_.at(T)->getTimeStep();
+        double dtElement = assemblyFEElements_.at(T)->getTimeIncrement();
+        TEUCHOS_TEST_FOR_EXCEPTION(!approxEqual(tElement, t) || !approxEqual(dtElement, dt), std::runtime_error,
+            "Element " << T << " has the time " << tElement << " and the time increment " << dtElement << " instead of " << t << " and " << dt << ".");
+    }
+}
+
 }
 #endif

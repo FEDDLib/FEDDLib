@@ -204,6 +204,8 @@ public:
 
     // Sets the time and time increment of the elements to those of timeSteppingTool_
     void synchronizeElementTime() const { this->feFactory_->synchronizeTime(timeSteppingTool_); }
+    // Throws unless every element has the time t and the time increment dt
+    void checkElementTime(double t, double dt) const { this->feFactory_->checkTimeAssemblyFEElements(t, dt); }
 
     // Adaptive time stepping (DAESolverInTime::advanceInTimeSCI): the state at the start of a time
     // step, to repeat a failed one from, and the failures of the elements

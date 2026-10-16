@@ -172,6 +172,8 @@ class FE_ElementAssembly {
     void advanceInTimeAssemblyFEElements(Teuchos::RCP<TimeSteppingTools> timeSteppingTool, MultiVectorPtr_Type d_rep, MultiVectorPtr_Type c_rep);
     void updateSolutionAssemblyFEElements(MultiVectorPtr_Type d_rep, MultiVectorPtr_Type c_rep);
     void synchronizeTime(Teuchos::RCP<TimeSteppingTools> timeSteppingTool);
+    // Throws unless every element has the time t and the time increment dt
+    void checkTimeAssemblyFEElements(double t, double dt);
     // Adaptive time stepping: the elements' state at the start of a time step, and their failures
     void saveStateAssemblyFEElements();
     void restoreStateAssemblyFEElements();
