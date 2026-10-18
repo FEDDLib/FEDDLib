@@ -265,13 +265,18 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::checkin
     bool restart = this->params_->sublist("Timestepping Parameter").get("Restart", false);
     double timeStepRestart = this->params_->sublist("Timestepping Parameter").get("Time step", 0.0);
 
+    // A switch is on for the time step (t_n, t_n+1] when the step lies in one of its intervals [start, end).
+    // The steps end at the interval boundaries, so the step's midpoint decides: testing t_n+1 instead
+    // would count the step ending at start and miss the step ending at end, shifting the interval by
+    // one time step (with adaptive time steps by up to 25 s).
+    double stepMidpoint = this->timeStep_ - 0.5 * this->timeIncrement_;
+
     // Unlike AssembleFE_SCI_SMC_Active_Growth_Reorientation, a switch is only driven by its
     // time intervals when intervals are configured for it; otherwise the value given in the
     // material parameters is kept.
     if (!segmentsActive_.empty()) {
         for (int i = 0; i < segmentsActive_.size(); i++) {
-            // if (time >= startTime && time < endTime)
-            if ((this->timeStep_ > segmentsActive_[i][0] || approxEqual(this->timeStep_, segmentsActive_[i][0])) && (this->timeStep_ < segmentsActive_[i][1] && !approxEqual(this->timeStep_, segmentsActive_[i][1]))) {
+            if (stepMidpoint >= segmentsActive_[i][0] && stepMidpoint < segmentsActive_[i][1]) {
                 this->activeBool_ = 1;
                 if (!this->activeInitialized_) {
                     // if (restart and timeStepRestart > firstActiveStartTime)
@@ -289,8 +294,7 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::checkin
 
     if (!segmentsGrowth_.empty()) {
         for (int i = 0; i < segmentsGrowth_.size(); i++) {
-            // if (time >= startTime && time < endTime)
-            if ((this->timeStep_ > segmentsGrowth_[i][0] || approxEqual(this->timeStep_, segmentsGrowth_[i][0])) && (this->timeStep_ < segmentsGrowth_[i][1] && !approxEqual(this->timeStep_, segmentsGrowth_[i][1]))) {
+            if (stepMidpoint >= segmentsGrowth_[i][0] && stepMidpoint < segmentsGrowth_[i][1]) {
                 this->growthBool_ = 1;
                 if (!this->growthInitialized_) {
                     // if(restart and timeStepRestart > firstGrowthStartTime)
@@ -309,8 +313,7 @@ void AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation<SC, LO, GO, NO>::checkin
 
     if (!segmentsReorientation_.empty()) {
         for (int i = 0; i < segmentsReorientation_.size(); i++) {
-            // if (time >= startTime && time < endTime)
-            if ((this->timeStep_ > segmentsReorientation_[i][0] || approxEqual(this->timeStep_, segmentsReorientation_[i][0])) && (this->timeStep_ < segmentsReorientation_[i][1] && !approxEqual(this->timeStep_, segmentsReorientation_[i][1]))) {
+            if (stepMidpoint >= segmentsReorientation_[i][0] && stepMidpoint < segmentsReorientation_[i][1]) {
                 this->reorientationBool_ = 1;
                 break;
             } else
