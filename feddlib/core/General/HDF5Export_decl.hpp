@@ -6,7 +6,7 @@
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
 // Trilinos
 #include <Teuchos_Array.hpp>
-#include "HDF5Toolbox_decl.hpp"
+#include "HDF5Toolbox.hpp"
 
 #include <hdf5.h>
 
