@@ -1240,8 +1240,15 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
     bool exportByTime = !exportTimes.empty() || exportInterval > 0.;
     // The number of the last multiple of the interval at or before t
     auto exportIntervalIndex = [exportInterval](double t){
-        return std::floor((t + 1.e-10 * std::max(1., std::abs(t))) / exportInterval);
+        return std::floor((t + timeTolerance(t)) / exportInterval);
     };
+
+    // The smooth-muscle elements switch their active response, growth and reorientation on for a time
+    // step whose midpoint lies in one of the intervals, which is exact only if no time step crosses an
+    // interval's start or end (and only then does a restart there find the response initialized exactly
+    // when the uninterrupted run did). Adaptive time steps end at these times; a fixed time step that
+    // crosses one is reported.
+    std::vector<double> switchTimes = materialSwitchTimes();
 
     while(timeSteppingTool_->continueTimeStepping())
     {
@@ -1279,27 +1286,16 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
             dt = adaptiveDt;
             if (timeStart + dt > segmentEnd) // as in getTimeIncrementFromSegments: the time step ends at the segment's end
                 dt = segmentEnd - timeStart;
-            for (double checkpoint : checkpoints){
-                double tolerance = 1.e-10 * std::max(1., std::abs(checkpoint));
-                if (checkpoint > timeStart + tolerance){
-                    if (timeStart + dt > checkpoint + tolerance)
-                        dt = checkpoint - timeStart;
-                    break;
-                }
-            }
-            for (double exportTime : exportTimes){
-                double tolerance = 1.e-10 * std::max(1., std::abs(exportTime));
-                if (exportTime > timeStart + tolerance){
-                    if (timeStart + dt > exportTime + tolerance)
-                        dt = exportTime - timeStart;
-                    break;
-                }
-            }
-            if (exportInterval > 0. && dt <= exportInterval * (1. + 1.e-10)){
-                double nextExport = (exportIntervalIndex(timeStart) + 1.) * exportInterval;
-                if (timeStart + dt > nextExport + 1.e-10 * std::max(1., nextExport))
-                    dt = nextExport - timeStart;
-            }
+            endTimeStepAtNextTime(checkpoints, timeStart, dt);
+            endTimeStepAtNextTime(exportTimes, timeStart, dt);
+            endTimeStepAtNextTime(switchTimes, timeStart, dt);
+            if (exportInterval > 0. && dt <= exportInterval * (1. + 1.e-10))
+                endTimeStepAtNextTime({(exportIntervalIndex(timeStart) + 1.) * exportInterval}, timeStart, dt);
+        }
+        else if (attempt == 0 && verbose_){
+            for (double switchTime : switchTimes)
+                if (switchTime > timeStart + timeTolerance(switchTime) && switchTime < timeStart + dt - timeTolerance(switchTime))
+                    std::cout << " WARNING: the time step from t = " << timeStart << " to " << timeStart + dt << " crosses t = " << switchTime << ", where a smooth-muscle response switches on or off; the elements switch it by the time step's midpoint. A time segment starting at " << switchTime << " ends the time step there." << std::endl;
         }
         timeSteppingTool_->dt_= dt; // At this point DAESolver time stepper has t_n and accurate dt value
         sci->timeSteppingTool_->dt_ = dt; // At this point SCI time stepper has t_n and accurate dt value
@@ -1637,10 +1633,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         if (exportByTime){
             double timeEnd = timeSteppingTool_->currentTime();
             exportNow = exportInterval > 0. && exportIntervalIndex(timeEnd) > exportIntervalIndex(timeStart);
-            for (double exportTime : exportTimes){
-                double tolerance = 1.e-10 * std::max(1., std::abs(exportTime));
-                exportNow = exportNow || (exportTime > timeStart + tolerance && exportTime <= timeEnd + tolerance);
-            }
+            exportNow = exportNow || timeStepReaches(exportTimes, timeStart, timeEnd);
         }
         if (print && exportNow)
         {
@@ -3702,6 +3695,62 @@ void DAESolverInTime<SC,LO,GO,NO>::getTimeIncrementFromSegments(const vec2D_dbl_
             dt = segmentEndTime - currentTime;
         else
             dt = timeSegments[activeSegmentNumber][1];
+}
+
+
+template<class SC,class LO,class GO,class NO>
+double DAESolverInTime<SC,LO,GO,NO>::timeTolerance(double t){
+    return 1.e-10 * std::max(1., std::abs(t));
+}
+
+template<class SC,class LO,class GO,class NO>
+void DAESolverInTime<SC,LO,GO,NO>::endTimeStepAtNextTime(const std::vector<double>& sortedTimes, double timeStart, double& dt){
+    for (double time : sortedTimes){
+        if (time > timeStart + timeTolerance(time)){
+            if (timeStart + dt > time + timeTolerance(time))
+                dt = time - timeStart;
+            return;
+        }
+    }
+}
+
+template<class SC,class LO,class GO,class NO>
+bool DAESolverInTime<SC,LO,GO,NO>::timeStepReaches(const std::vector<double>& sortedTimes, double timeStart, double timeEnd){
+    for (double time : sortedTimes)
+        if (time > timeStart + timeTolerance(time) && time <= timeEnd + timeTolerance(time))
+            return true;
+    return false;
+}
+
+template<class SC,class LO,class GO,class NO>
+std::vector<double> DAESolverInTime<SC,LO,GO,NO>::materialSwitchTimes() const{
+    std::vector<double> times;
+    if (!parameterList_->isSublist("Parameter Solid"))
+        return times;
+    const Teuchos::ParameterList& materials = parameterList_->sublist("Parameter Solid");
+    for (auto material = materials.begin(); material != materials.end(); ++material){
+        if (!materials.isSublist(materials.name(material)))
+            continue;
+        const Teuchos::ParameterList& materialParameters = materials.sublist(materials.name(material));
+        for (std::string response : {"Active", "Growth", "Reorientation"}){
+            std::string listName = "Timestepping Intervalls " + response;
+            if (!materialParameters.isSublist(listName))
+                continue;
+            const Teuchos::ParameterList& intervals = materialParameters.sublist(listName);
+            // (as the elements read them, a missing value counting as 0)
+            int numberOfIntervals = intervals.isParameter("Number of Segments") ? intervals.get<int>("Number of Segments") : 0;
+            for (int i = 1; i <= numberOfIntervals; i++){
+                if (!intervals.isSublist(std::to_string(i)))
+                    continue;
+                const Teuchos::ParameterList& interval = intervals.sublist(std::to_string(i));
+                for (std::string bound : {"Start Time", "End Time"})
+                    times.push_back(interval.isParameter(bound) ? interval.get<double>(bound) : 0.);
+            }
+        }
+    }
+    std::sort(times.begin(), times.end());
+    times.erase(std::unique(times.begin(), times.end(), [](double a, double b){return std::abs(a - b) <= timeTolerance(b);}), times.end());
+    return times;
 }
 
 }

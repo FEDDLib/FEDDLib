@@ -99,14 +99,12 @@ from each time step's size (otherwise it is that of the first time step).
 
 The active response, growth and reorientation of the smooth-muscle elements
 are switched on for a time step when its midpoint lies in one of their
-intervals `[start, end)` (`materialParameters.xml`). Every time step then
-lies in exactly the intervals it should if the time steps end at the interval
-boundaries, so let time segments start there; adaptive time steps are not
-shortened to end at them. A time step that crosses a boundary is switched as a
-whole by its midpoint. If one crosses the start of the first active or growth
-interval with its midpoint still before it, a restart at its end takes that
-response as already initialized, while the uninterrupted run initializes it
-only in the next time step.
+intervals `[start, end)` (`materialParameters.xml`). That is exact when no time
+step crosses an interval's start or end, so adaptive time steps end at these
+times, as at checkpoints. A fixed time step that crosses one is reported
+(`WARNING: the time step from t = ... crosses t = ...`); let a time segment
+start there. Only then does a restart at such a time also find the response
+initialized exactly when the uninterrupted run did.
 
 Output by time: with `Export Times` (a list) or `Export Interval` in
 `Exporter`, the solution and the postprocessing fields are written only at the

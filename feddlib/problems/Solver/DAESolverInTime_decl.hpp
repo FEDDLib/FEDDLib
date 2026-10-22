@@ -197,6 +197,16 @@ private:
     void getActiveTimeSegment(const vec2D_dbl_Type& timeSegments, const double& currentTime, int& activeSegmentNumber, double tolerance=1.0e-8);
     void getTimeIncrementFromSegments(const vec2D_dbl_Type& timeSegments, const int& activeSegmentNumber, const double& currentTime, double& dt);
 
+    /// The tolerance for comparing times with t (relative, at least 1e-10 absolute)
+    static double timeTolerance(double t);
+    /// Shortens dt so that the time step from timeStart ends at the first of the sorted times after timeStart, if it would pass it
+    static void endTimeStepAtNextTime(const std::vector<double>& sortedTimes, double timeStart, double& dt);
+    /// Whether one of the sorted times lies in (timeStart, timeEnd]
+    static bool timeStepReaches(const std::vector<double>& sortedTimes, double timeStart, double timeEnd);
+    /// The start and end times of the active, growth and reorientation intervals ("Timestepping Intervalls Active",
+    /// ... ) of all materials in "Parameter Solid", sorted and without repetitions
+    std::vector<double> materialSwitchTimes() const;
+
 #ifdef FEDD_TIMER
     TimePtr_Type solveProblemTimer_;
     TimePtr_Type reassmbleAddInterfaceRHSTimer_;
