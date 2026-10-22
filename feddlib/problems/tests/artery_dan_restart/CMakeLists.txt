@@ -48,7 +48,8 @@ if(TPL_ENABLE_AceGENInterface)
       TEST_2 EXEC artery_dan_restart
           ARGS --simulationsParameters=simulationParameters_short_adaptive.xml
           NUM_MPI_PROCS 4
-          PASS_REGULAR_EXPRESSION_ALL "did not converge.; repeating it with" "adaptive. repeated [1-9]"
+          # (a ';' would split the pattern into two CMake list items; '..' stands for the message's ');')
+          PASS_REGULAR_EXPRESSION_ALL "did not converge.. repeating it with" "adaptive. repeated [1-9]"
           ALWAYS_FAIL_ON_NONZERO_RETURN
       TEST_3 EXEC artery_dan_restart
           ARGS --simulationsParameters=simulationParameters_short_adaptive_restart.xml

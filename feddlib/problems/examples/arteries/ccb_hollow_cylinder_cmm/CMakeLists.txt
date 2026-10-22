@@ -41,7 +41,8 @@ if(TPL_ENABLE_AceGENInterface)
       TEST_6 EXEC ccb_hollow_cylinder_cmm
           ARGS --simulationsParameters=simulationParameters_adaptive_newton.xml
           NUM_MPI_PROCS 4
-          PASS_REGULAR_EXPRESSION_ALL "the Newton iteration did not converge.; repeating it with" "adaptive. repeated [1-9]"
+          # (a ';' would split the pattern into two CMake list items; '..' stands for the message's ');')
+          PASS_REGULAR_EXPRESSION_ALL "the Newton iteration did not converge.. repeating it with" "adaptive. repeated [1-9]"
           ALWAYS_FAIL_ON_NONZERO_RETURN
       TEST_7 CMND ${CMAKE_COMMAND}
           ARGS -E rename cornerValue.txt cornerValue_newton.txt
