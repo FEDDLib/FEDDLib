@@ -96,6 +96,9 @@
         <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
         <Parameter name="Name coarse functions block1" type="string" value="phiP"/>
         <Parameter name="Exclude coarse functions block1" type="bool" value="false"/>
+        <!-- Output by time instead of by time step, SCI time loop only (DAESolverInTime::advanceInTimeSCI). With either or both set, the solution ("ParaViewExport") is written at t = 0 as before, and then it and the postprocessing fields ("Export Stress") only at the end of the time steps that reach one of these times; "Every X Second" is not used then. -->
+        <Parameter name="Export Times" type="Array(double)" value="{60., 540., 840.}"/> <!-- {list of times} - adaptive time steps are shortened to end exactly on them -->
+        <Parameter name="Export Interval" type="double" value="0."/> <!-- {double value >= 0} - every multiple of this time from t = 0 (0: off); an adaptive time step not longer than the interval is shortened to end on the next multiple, a longer one is written at its end -->
     </ParameterList>
     
     <!-- Nonlinear Solution method as well as Preconditioner as well as Parallelization specific parameters like e.g. Newton -->

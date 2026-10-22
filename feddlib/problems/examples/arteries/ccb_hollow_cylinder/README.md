@@ -60,6 +60,7 @@ breaks down. The parameters, in `Timestepping Parameter`:
 | `Converged Time Steps Before Increase` | 5 | ... after this many converged time steps in a row |
 | `Newton Divergence Factor` | 1e3 | a Newton iteration whose residual exceeds this times its first one fails the time step (0: off) |
 | `Accept Element Failures At Minimum dt` | false | default of the segments' parameter of that name |
+| `Accept Unconverged Newton At Minimum dt` | false | default of the segments' parameter of that name |
 
 and in each segment of `Timestepping Intervalls`:
 
@@ -70,9 +71,19 @@ and in each segment of `Timestepping Intervalls`:
 | `Maximum dt` | `dt` | the largest size the segment grows to |
 | `Minimum dt` | `dt`/1000 | the smallest size: tried before the run stops with an error naming the failure |
 | `Accept Element Failures At Minimum dt` | false | a time step that elements fail at the smallest size is tried once more with their failures only counted, and accepted if the Newton iteration converges |
+| `Accept Unconverged Newton At Minimum dt` | false | last resort: a time step that still fails at the smallest size is tried once more as fixed-step runs do (no divergence test, element failures only counted) and accepted after at most `MaxNonLinIts` iterations, unless its residual is not finite or ended above the one it started from (then the run stops) |
 
 The log shows every repeated time step (`[adaptive] t = ...: the time step of
-... failed (...); repeating it with ...`) and, at the end, how many there were.
+... failed (...); repeating it with ...`), every time step accepted at the
+smallest size with element failures or an unconverged Newton iteration
+(`[adaptive] t = ...: accepted the time step of ... although ...`) and, at the
+end, how many there were of each. The last resort also accepts reaching
+`MaxNonLinIts` when `Cancel MaxNonLinIts` (`Parameter`) would otherwise make
+that an error.
+
+With Interface2 versions that collect the elements' messages (configure
+reports `FEDD_HAVE_ACEGEN_ERRORLOG_STEP: 1`), `ErrorLog.txt` is written after
+every attempt at a time step, so it is complete also when a run is stopped.
 
 `simulationParameters_adaptive*.xml` are the inputs of the ctest
 `ccb_hollow_cylinder_adaptive` (HEAVY; configure with
@@ -85,6 +96,23 @@ attempt's first matrix (differences at the Newton tolerance).
 Adaptive time stepping needs the NOX linearization and a nonlinear structure
 model. A run with adaptive segments takes the structure's inertia coefficient
 from each time step's size (otherwise it is that of the first time step).
+
+The active response, growth and reorientation of the smooth-muscle elements
+are switched on for a time step when its midpoint lies in one of their
+intervals `[start, end)` (`materialParameters.xml`). Every time step then
+lies in exactly the intervals it should if the time steps end at the interval
+boundaries, so let time segments start there; adaptive time steps are not
+shortened to end at them. A time step that crosses a boundary is switched as a
+whole by its midpoint. If one crosses the start of the first active or growth
+interval with its midpoint still before it, a restart at its end takes that
+response as already initialized, while the uninterrupted run initializes it
+only in the next time step.
+
+Output by time: with `Export Times` (a list) or `Export Interval` in
+`Exporter`, the solution and the postprocessing fields are written only at the
+end of the time steps that reach these times instead of every n-th step, and
+adaptive time steps are shortened to end on them (on `Export Interval`
+multiples only if the time step is not longer than the interval).
 
 Checkpoints (`Checkpointing`) are given as a list of times,
 `<Parameter name="Checkpoint Times" type="Array(double)" value="{t1, t2, ...}"/>`
