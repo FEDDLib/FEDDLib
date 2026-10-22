@@ -14,8 +14,7 @@ void scalarFunc(double* x, double* res, double t, const double* parameters){
 }
 void zeroDirichlet(double* x, double* res, double t, const double* parameters){
    
-    res[0] = 0.;
-    res[1] = 0.;
+    res[0] = 0.; // the condition is scalar (one degree of freedom, see addBC below)
 
     return;
 }
