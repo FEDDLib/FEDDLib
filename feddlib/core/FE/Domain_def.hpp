@@ -188,11 +188,7 @@ LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
         if ( this->FEType_ == "P1" ) {
             return 100;
         }
-        else if ( this->FEType_ == "P2" ) {
-            // unstructured meshes can have vertices with 90+ tetrahedra, i.e. 240 P2 couplings
-            return 300;
-        }
-        else {
+        else { // P2 (unstructured meshes can have vertices with 90+ tetrahedra, i.e. 240 P2 couplings) and the other types
             return 300;
         }
     }
