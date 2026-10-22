@@ -70,6 +70,9 @@ message(STATUS "  - FEDD_HAVE_ACEGENINTERFACE: ${FEDD_HAVE_ACEGENINTERFACE}")
 # Interface2 collects the elements' messages per process and writes them to ErrorLog.txt when
 # newErrorLogStep() is called (or at exit); older versions write ErrorLog.txt directly and have
 # no such function. Compiled only, not linked, so the check needs none of Interface2's libraries.
+# The result is cached; it is checked again on every configure, so that switching to another
+# Interface2 in an existing build directory takes effect.
+unset(FEDD_HAVE_ACEGEN_ERRORLOG_STEP CACHE)
 include(CheckCXXSourceCompiles)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 set(CMAKE_REQUIRED_FLAGS "-std=c++17")
