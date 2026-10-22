@@ -1451,6 +1451,7 @@ void DAESolverInTime<SC,LO,GO,NO>::advanceInTimeSCI()
         
         NonLinearSolver<SC, LO, GO, NO> nlSolver(parameterList_->sublist("General").get("Linearization","FixedPoint"));
         nlSolver.setDivergenceFactor(adaptive && !acceptingUnconverged ? divergenceFactor : 0.);
+        nlSolver.setAcceptMaxNonLinIts(acceptingUnconverged);
 
         if (verbose_)
             std::cout << " ----- Nonlinear System Info|| Number of rows:" << problemTime_->getSystem()->size() << " || number of rhs:" << problemTime_->getRhs()->size() << " || solution: " << problemTime_->getSolution()->size() << std::endl; 

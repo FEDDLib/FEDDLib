@@ -101,6 +101,13 @@ public:
     void setDivergenceFactor(double factor) {divergenceFactor_ = factor;}
 
     /*!
+        \brief With true, a NOX solve that reaches MaxNonLinIts ends normally (not converged) also with
+        "Cancel MaxNonLinIts", which otherwise makes that an error (adaptive time stepping's last resort
+        accepts exactly that outcome)
+    */
+    void setAcceptMaxNonLinIts(bool accept) {acceptMaxNonLinIts_ = accept;}
+
+    /*!
         \brief Add a switching strategy function for the FixedPointNewton method
         @param[in] switchingStrategy function which decides whether to switch the linearization or not and outputs a boolean value whether linearization was switched or not
     */
@@ -184,6 +191,7 @@ private:
     double finalNormF_ = 0.;
     double initialNormF_ = 0.;
     double divergenceFactor_ = 0.;
+    bool acceptMaxNonLinIts_ = false;
 
     // Create a default switching strategy function which does nothing
     SwitchingStrategyFunc switchingStrategy_ = []( std::string& currentLinearization , int nlIts, double criterionValue, ParameterListPtr_Type parameterList ) {return false;};
