@@ -55,7 +55,7 @@ if(TPL_ENABLE_AceGENInterface)
       TEST_10 EXEC ccb_hollow_cylinder
           ARGS --simulationsParameters=simulationParameters_adaptive_element.xml
           NUM_MPI_PROCS 4
-          PASS_REGULAR_EXPRESSION_ALL "an element could not compute its state.; repeating it with" "accepted the time step of 10 although" "adaptive. repeated [1-9]"
+          PASS_REGULAR_EXPRESSION_ALL "an element could not compute its state.; repeating it with" "accepted the time step of 20 although" "adaptive. repeated [1-9]"
           ALWAYS_FAIL_ON_NONZERO_RETURN
       TEST_11 CMND ${CMAKE_COMMAND}
           ARGS -E rename cornerValue.txt cornerValue_element.txt

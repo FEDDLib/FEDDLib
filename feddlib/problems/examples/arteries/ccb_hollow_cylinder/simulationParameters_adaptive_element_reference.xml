@@ -108,7 +108,7 @@
     </ParameterList>
 
     <ParameterList name="Timestepping Parameter">
-        <!-- ctest: the time steps simulationParameters_adaptive_element.xml accepts (the ramp, then 10), taken directly without adaptive time stepping (which ignores the element errors): the same corner values -->
+        <!-- ctest: the time steps simulationParameters_adaptive_element.xml accepts (the ramp, then 20), taken directly without adaptive time stepping (which ignores the element errors): the same corner values -->
         <Parameter name="BDF" type="int" value="1"/>
         <Parameter name="Class" type="string" value="Multistep"/>
         <Parameter name="Timestepping type" type="string" value="non-adaptive"/>
@@ -124,7 +124,7 @@
             </ParameterList>
             <ParameterList name="2">
                 <Parameter name="Start Time" type="double" value="10."/>
-                <Parameter name="dt" type="double" value="10.0"/>
+                <Parameter name="dt" type="double" value="20.0"/>
             </ParameterList>
         </ParameterList>
     </ParameterList>

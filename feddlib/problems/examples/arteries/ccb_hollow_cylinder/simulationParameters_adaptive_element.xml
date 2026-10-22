@@ -108,7 +108,7 @@
     </ParameterList>
 
     <ParameterList name="Timestepping Parameter">
-        <!-- ctest: the pressure ramp in fixed load steps (Adaptive false), then the active response (from t = 20, materialParameters.xml) in time steps of up to 20. The elements cannot compute their state in the time step to t = 30 (error code 2) at 20 and at the Minimum dt 10; the segment accepts that (Accept Element Failures At Minimum dt) because the Newton iteration converges -->
+        <!-- ctest: the pressure ramp in fixed load steps (Adaptive false), then the active response (from t = 20, materialParameters.xml) in time steps of 20. The elements cannot compute their state in the time step to t = 30 (error code 2), which is at the Minimum dt 20; the segment accepts that (Accept Element Failures At Minimum dt) because the Newton iteration converges. (With a Minimum dt of 10 the step 20-30 converges: the active response switches on for the steps whose midpoint lies in its interval, so 10-20 stays passive.) -->
         <Parameter name="Adaptive Time Stepping" type="bool" value="true"/>
         <Parameter name="BDF" type="int" value="1"/>
         <Parameter name="Class" type="string" value="Multistep"/>
@@ -127,7 +127,7 @@
             <ParameterList name="2">
                 <Parameter name="Start Time" type="double" value="10."/>
                 <Parameter name="dt" type="double" value="20.0"/>
-                <Parameter name="Minimum dt" type="double" value="10.0"/>
+                <Parameter name="Minimum dt" type="double" value="20.0"/>
                 <Parameter name="Accept Element Failures At Minimum dt" type="bool" value="true"/>
             </ParameterList>
         </ParameterList>
