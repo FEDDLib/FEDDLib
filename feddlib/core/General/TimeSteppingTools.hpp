@@ -1,7 +1,7 @@
 #ifndef TIMESTEPPINGTOOLS_hpp
 #define TIMESTEPPINGTOOLS_hpp
 
-#include "feddlib/problems/problems_config.h"
+#include "feddlib/core/core_config.h"
 #include "feddlib/core/FEDDCore.hpp"
 
 #include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"

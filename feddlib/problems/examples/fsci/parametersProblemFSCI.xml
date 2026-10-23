@@ -1,0 +1,187 @@
+<ParameterList name="FSCI">
+  <ParameterList name="Parameter">                                                                                                                           
+       <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization" type="string" value="P2"/><!--P2-->
+        <Parameter name="BC Type" type="string" value="Tube"/><!--Tube, Benchmark, Plaque Artery-->
+        <Parameter name="Geometry Type" type ="string" value="Artery"/><!--partialCFD,Richter3DFull-->
+
+        <Parameter name="Mesh Type" type="string" value="unstructured"/> <!--  unstructured -->
+	<Parameter name="Mesh Unit" type="string" value="cm"/> <!--  unstructured -->
+	<Parameter name="Convert Mesh" type="bool" value="false"/> <!--  unstructured -->
+	
+	<Parameter name="Flowrate" type="double" value="3.0"/>     <!-- cm³/s -->   
+        <Parameter name="Max Ramp Time" type="double" value="0.1"/>
+ 
+        <Parameter name="FSCI" type="bool" value="true"/>
+        <Parameter name="Geometry Explicit" type="bool" value="true"/>
+        <Parameter name="Chemistry Explicit" type="bool" value="true"/>
+        <Parameter name="Inflow Start Time" type="double" value="10000.0"/><!-- Start of diffusion process -->
+	<Parameter name="Heart Beat Start 1" type="double" value="1000.0"/><!-- Start of heartbea -->
+        <Parameter name="Heart Beat End 1" type="double" value="1010.5"/><!-- Start of heartbea -->
+        <Parameter name="Heart Beat Start 2" type="double" value="1200.0"/><!-- Start of heartbea -->
+        <Parameter name="Heart Beat End 2" type="double" value="2900.0"/><!-- Start of heartbea -->
+    
+        <Parameter name="Coupling Type" type="string" value="implicit"/>
+
+        <Parameter name="relNonLinTol" type="double" value="1.0e-6"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-6"/>
+        <Parameter name="updateTol" type="double" value="1.0e-6"/>
+        <Parameter name="Combo" type="string" value="OR"/>
+        <Parameter name="Use update tol" type="bool" value="true"/>
+        <Parameter name="Use WRMS" type="bool" value="false"/>
+
+        <Parameter name="MaxNonLinIts" type="int" value="25"/>
+
+        <Parameter name="Criterion" type="string" value="Update"/>
+    </ParameterList>
+    <ParameterList name="Parameter Solid">
+        <Parameter name="Material model" type="string" value="Nonlinear"/><!--Neo-Hooke, linear -->
+        <Parameter name="Density" type="double" value="1.0e-0"/> <!-- g/cm³ -->
+    </ParameterList>
+    <ParameterList name="Parameter Fluid">
+        <Parameter name="Viscosity" type="double" value="3.0e-02"/> <!-- kinematic viscocity cm²/s-->
+        <Parameter name="Density" type="double" value="1.0e-0"/> <!-- g/cm³ -->
+        <Parameter name="Symmetric gradient" type="bool" value="true"/>
+        
+        <!-- Boundary Conditions -->
+        <Parameter name="Ramp type" type="string" value="cos"/><!--cos, linear -->
+        <Parameter name="Set Outflow Pressure to Zero" type="bool" value="false"/>
+
+        <Parameter name="Pressure Boundary Condition" type="string" value="Absorbing Paper"/>         <!-- Resistance , Absorbing , Absorbing Resistance-->
+        <Parameter name="Unsteady Start" type="double" value="1.0"/><!-- Start of 'unsteady' phase -->
+        <Parameter name="Average Flowrate" type="bool" value="true"/>
+        <Parameter name="BC Ramp" type="double" value="0.0"/>
+        <Parameter name="Resistance Ramp" type="double" value="0.0"/>
+       	<!-- Resistance boundary condition -->
+        <Parameter name="Resistance" type="double" value="3.6660e4"/> <!-- g/cm s² s/cm³ (eigentliche Einheit mPa*s/m³ , 1mPa = 10e6 N/m² -->
+        <Parameter name="Normal Scale" type="double" value="-1.0"/>
+        <Parameter name="Poisson Ratio" type="double" value="0.49"/>
+     	<!-- Absorbing boundary condition -->
+        <Parameter name="E" type="double" value="120.0e4"/>
+        <Parameter name="Wall thickness" type="double" value="0.15"/>
+        <Parameter name="Reference fluid pressure" type="double" value="11.99e4"/><!-- g/(cm s)² -->
+
+    </ParameterList>
+    
+    <ParameterList name="Parameter Diffusion">
+        <Parameter name="Viscosity" type="double" value="1.0"/>
+        <Parameter name="Density" type="double" value="1.0"/>
+        <Parameter name="m" type="double" value="0."/>
+        <Parameter name="D0" type="double" value="6.e-0"/>
+        <Parameter name="Symmetric gradient" type="bool" value="true"/>
+    </ParameterList>
+
+    <ParameterList name="Parameter Geometry">
+        <Parameter name="Poisson Ratio" type="double" value="0.49e-0"/>
+        <Parameter name="Mu" type="double" value="126.700e4"/>
+        <Parameter name="Model Geometry" type="string" value="Elasticity"/>
+	<Parameter name="Model" type="string" value="Elasticity"/>
+        <Parameter name="Distance Laplace" type="double" value="0.1"/>
+        <Parameter name="Coefficient Laplace" type="double" value="1000."/>
+    </ParameterList>
+
+
+ 	<ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>
+
+        <Parameter name="Mesh 1 Name" type="string" value="fluid_length_0_5_simp.mesh"/> 
+        <!--arterie_with_plaque_initma_media_adventitia_fluid, fluidBenchmark2.mesh , fsi_tube_fluid_1_5_cm.mesh, plaque_short_fluid.mesh  -->
+        <Parameter name="Mesh 2 Name" type="string" value="solid_length_0_5_simp.mesh"/> 
+        <!--arterie_with_plaque_initma_media_adventitia_solid structureBenchmark2.mesh , fsi_tube_solid_1_5_cm.mesh plaque_short_solid.mesh -->
+
+        <Parameter name="Automatic partition" type="bool" value="false"/> <!-- find ratio for ranks based on the number of elements of each mesh -->
+
+        <Parameter name="Mesh 1 fraction ranks" type="int" value="-1"/> 
+        
+   		<Parameter name="Mesh 1 number ranks" type="int" value="-1"/><!-- number of ranks for this mesh; if Automatic partition=true this will be ignored; if fraction ranks>=0 this will be ignored -->
+
+        <Parameter name="Mesh 2 fraction ranks" type="int" value="-1"/>
+        <Parameter name="Mesh 2 number ranks" type="int" value="-1"/>
+    </ParameterList>
+
+    <ParameterList name="Exporter">
+        <Parameter name="Write new mesh" type="bool" value="false"/>
+        <Parameter name="Export every X timesteps" type="int" value="1"/>
+
+        <Parameter name="Export GE geometry solution" type="bool" value="true"/>
+
+        <Parameter name="Export coarse functions" type="bool" value="false"/>
+
+        <Parameter name="Name coarse functions block1" type="string" value="phiU"/>
+        <Parameter name="Name coarse functions block2" type="string" value="phiP"/>
+        <Parameter name="Name coarse functions block3" type="string" value="phiD"/>
+        <Parameter name="Exclude coarse functions block4" type="bool" value="true"/>
+
+    </ParameterList>
+
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="ParaView export subdomains" type="bool" value="false"/>
+        <Parameter name="Flag Inlet Fluid" type="int" value="4"/>
+        <Parameter name="Flag Outlet Fluid" type="int" value="5"/>
+        <Parameter name="Export Flow Rate" type="bool" value="true"/>
+        <Parameter name="Plot Residual Vector" type="bool" value="false"/>                                                                                                                     <Parameter name="Export Suffix" type="string" value=""/>
+        <Parameter name="Export Data" type="bool" value="true"/>
+  		<Parameter name="Export Stress" type="bool" value="true"/>	
+        
+        <Parameter name="Preconditioner Method" type="string" value="FaCSCI"/><!-- Monolithic, FaCSI, FaCSI-Teko -->
+        <Parameter name="Use Fluid Preconditioner" type="bool" value="true"/>
+        <Parameter name="Use Solid Preconditioner" type="bool" value="true"/>
+
+        <Parameter name="Only Diagonal" type="bool" value="false"/>
+
+        <Parameter name="Scale mass matrix" type="bool" value="true"/>
+        <Parameter name="Set Zeros" type="bool" value="true"/>
+        
+        <Parameter name="Linearization" type="string" value="NOX"/> <!-- FixedPoint, Newton, Extrapolation-->
+
+    </ParameterList>
+    <ParameterList name="Timestepping Parameter">
+
+        <Parameter name="BDF" type="int" value="2"/>
+        <Parameter name="Class" type="string" value="Multistep"/>
+        <Parameter name="Timestepping type" type="string" value="non-adaptive"/><!--non-adaptive,adaptive:not working for BDF2-->
+
+        <Parameter name="Final time" type="double" value="1500.0"/>
+        <Parameter name="dt" type="double" value="0.002"/>
+        <Parameter name="beta" type="double" value="0.25"/> <!-- newmark method parameter-->
+        <Parameter name="gamma" type="double" value="0.5"/> <!-- newmark method parameter-->
+        <ParameterList name="Timestepping Intervalls">
+            <Parameter name="Number of Segments" type="int" value="8"/>
+            <ParameterList name="1">
+                <Parameter name="Start Time" type="double" value="0.0"/>
+                <Parameter name="dt" type="double" value="0.01"/>
+            </ParameterList>
+             <ParameterList name="2">
+                <Parameter name="Start Time" type="double" value="0.25"/>
+                <Parameter name="dt" type="double" value="0.25"/>
+             </ParameterList>
+             <ParameterList name="3">
+                <Parameter name="Start Time" type="double" value="20.0"/>
+                <Parameter name="dt" type="double" value="0.5"/>
+             </ParameterList>
+             <ParameterList name="4">
+                <Parameter name="Start Time" type="double" value="820.0"/>
+                <Parameter name="dt" type="double" value="0.01"/>
+             </ParameterList>
+	     <ParameterList name="5">
+                <Parameter name="Start Time" type="double" value="900.0"/>
+	        <Parameter name="dt" type="double" value="0.25"/>
+             </ParameterList>
+	       <ParameterList name="6">
+                <Parameter name="Start Time" type="double" value="998."/>
+                <Parameter name="dt" type="double" value="0.02"/>
+               </ParameterList>
+	         <ParameterList name="7">
+                <Parameter name="Start Time" type="double" value="1015."/>
+                <Parameter name="dt" type="double" value="0.5"/>
+             </ParameterList>
+	      <ParameterList name="8">
+                <Parameter name="Start Time" type="double" value="1200.0"/>
+                <Parameter name="dt" type="double" value="0.0125"/>
+            </ParameterList>
+         </ParameterList> 
+    </ParameterList>
+</ParameterList>

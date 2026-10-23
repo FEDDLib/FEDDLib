@@ -5,6 +5,7 @@
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/LinearAlgebra/Matrix.hpp"
 #include "feddlib/core/FE/Helper.hpp"
+#include "feddlib/core/General/TimeSteppingTools.hpp"
 
 namespace FEDD {
 
@@ -133,10 +134,20 @@ namespace FEDD {
         */
         virtual void advanceInTime(double dt);
         /*!
+         \brief This function is called every time the FEDDLib proceeds from one to the next time step. The size of the time step will always be provided as input.
+         @param[in] timeSteppingTool Timestepping tool object
+        */
+        virtual void advanceInTime(Teuchos::RCP<TimeSteppingTools> timeSteppingTool);
+        /*!
          \brief Get the time state of the object.
          \return the timestep
         */
         double getTimeStep();
+        
+        /*!
+         \brief This function is called once at the start of the simulation.
+        */
+        virtual void synchronizeTime(Teuchos::RCP<TimeSteppingTools> timeSteppingTool);
 
         /*!
          \brief This function is called every time the FEDDLib proceeds from one to the next newton step. The size of the time step will always be provided as input. 
@@ -167,10 +178,16 @@ namespace FEDD {
         void preProcessing();
 
         /*!
-         \brief This function is called at the end of each Newton step after updating the solution vector.
+         \brief This function is called at the end of each Newton step after updating the solution vector to calculate post processing data.
         */
-        void postProcessing();
-		/// TODO: PostProcessing: Teuchos::Array with values and one global Array with Strings and names
+        virtual void postProcessing();
+		/// @todo PostProcessing: Teuchos::Array with values and one global Array with Strings and names
+        
+        /*!
+         \brief This function is called at the end of each Newton step after updating the solution vector to return postprocessing data.
+         \return postProcessingData_
+        */
+       vec2D_dbl_ptr_Type getPostProcessingData() {return postProcessingData_;};
 
         /*!
          \brief Get the spatial dimension. (Typically 2 or 3)
@@ -217,13 +234,58 @@ namespace FEDD {
         */
         vec_dbl_Type getLocalconstOutputField() {return constOutputField_;}
 
+        /*!
+         \brief Obtain history values of element
+         \return values
+        */
+        vec_dbl_Type getLocalHistory() {return history_;};
+
+        vec_dbl_Type getLocalHistoryUpdated() {return historyUpdated_;};
+
+         /*!
+         \brief Set history values of element
+         \return values
+        */
+        void setLocalHistory(vec_dbl_Type history);
+
+        void setLocalHistoryUpdated(vec_dbl_Type historyUpdated);
 
          /*!
          \brief Switch e.g. from FixedPoint assembly to Newton method during runtime
             @param[in] linearization string defining the linearization type e.g. "FixedPoint
         */
         void changeLinearization(std::string linearization) {this->linearization_ = linearization;};
+        int getHistoryLength() {return historyLength_;};
+
+        /// Number of integration points the element keeps history at (0 if it keeps none).
+        virtual int getNumberOfIntegrationPoints() {return 0;};
+
+        virtual std::vector<std::string> getPostDataNames(){return {};};
+        virtual std::map<std::string, int> getFieldNameToPosition(){return {};};
+
+        /*!
+         \brief Adaptive time stepping: keep the state the element has at the start of a time step.
+         A time step that fails is repeated from it (restoreState()) with a smaller time step size.
+         Elements with state of their own extend both functions.
+        */
+        virtual void saveState();
+        /*!
+         \brief Adaptive time stepping: go back to the state kept by saveState().
+        */
+        virtual void restoreState();
+
+        /*!
+         \brief Adaptive time stepping: with record true an element that cannot compute its state
+         records the failure (failed(), getFailureMessage()) instead of stopping the simulation, so
+         that the time step can be repeated with a smaller time step size.
+        */
+        void setRecordFailure(bool record) {recordFailure_ = record;};
+        bool failed() const {return failed_;};
+        std::string getFailureMessage() const {return failureMessage_;};
+        void resetFailure() {failed_ = false; failureMessage_.clear();};
     protected:
+        /// Record the first failure of the element since resetFailure()
+        void recordFailure(std::string message) {if (!failed_) {failed_ = true; failureMessage_ = message;}};
 
         /*!
          \brief Constructor
@@ -249,6 +311,8 @@ namespace FEDD {
 
         int dim_;
 
+
+
 		tuple_disk_vec_ptr_Type diskTuple_;
 		tuple_sd_vec_ptr_Type elementIntormation_;
         /// TODO: Why "Reference Configuration"? 
@@ -262,11 +326,27 @@ namespace FEDD {
         vec_dbl_ptr_Type solution_ ;
         double timeIncrement_;
         GO globalElementID_;
+        vec2D_dbl_ptr_Type postProcessingData_;
 
         std::string linearization_; // Store in here which linearization e.g. FixedPoint or Newton is used -> Relevant for assembleFEElement-Specific construction of Jacobian in NavierStokes
 
         // This can be any postprocessing output field ddefined inside an element using converged solution
         vec_dbl_Type constOutputField_ ; // can be a vector with values on P1/ P2 nodes or just averaged element value
+        bool historyImported_;
+        vec_dbl_Type history_;
+        vec_dbl_Type historyUpdated_;
+        int historyLength_; // Length of history vector
+
+        // Adaptive time stepping: failure record and the state kept by saveState()
+        bool recordFailure_ = false;
+        bool failed_ = false;
+        std::string failureMessage_;
+        double savedTimeStep_ = 0.;
+        double savedTimeIncrement_ = 0.;
+        vec_dbl_ptr_Type savedSolution_;
+        bool savedHistoryImported_ = false;
+        vec_dbl_Type savedHistory_;
+        vec_dbl_Type savedHistoryUpdated_;
 
         friend class AssembleFEFactory<SC,LO,GO,NO>;
     };

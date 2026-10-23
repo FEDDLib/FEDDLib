@@ -4,7 +4,8 @@
 #include "feddlib/problems/abstract/Problem.hpp"
 #include "feddlib/core/FE/Domain.hpp"
 #include "feddlib/problems/abstract/NonLinearProblem.hpp"
-#include "feddlib/problems/Solver/TimeSteppingTools.hpp"
+#include "feddlib/core/General/TimeSteppingTools.hpp"
+#include "feddlib/core/General/HDF5Export.hpp"
 
 #include <Thyra_PreconditionerBase.hpp>
 #include <Thyra_ModelEvaluatorBase_decl.hpp>
@@ -130,6 +131,9 @@ public:
     
     virtual void getValuesOfInterest( vec_dbl_Type& values );
     
+    virtual void getValuesOfInterest( BlockMultiVectorPtr_Type& values ) {} ;
+
+    virtual void exportValuesOfInterest(double time);
     // init FSI vectors from partial problems
     void setFromPartialVectorsInit() const;
     
@@ -173,6 +177,7 @@ public:
     // Macht setupTimeStepping() auf problemTimeFluid_ und problemTimeStructure_
     void setupSubTimeProblems(ParameterListPtr_Type parameterListFluid, ParameterListPtr_Type parameterListStructure) const;
 
+    
     FluidProblemPtr_Type getFluidProblem(){
         return problemFluid_;
     }
@@ -243,13 +248,15 @@ public:
     Teuchos::RCP<SmallMatrix<int>> defTS_;
     mutable Teuchos::RCP<TimeSteppingTools>	timeSteppingTool_;
 
+    bool geometryExplicit_;
+    mutable ExporterPtr_Type exporterGeo_;
+    Teuchos::RCP<HDF5Export<SC,LO,GO,NO>> exporterGeometry_; 
+
 private:
     std::string materialModel_;
     vec_dbl_Type valuesForExport_;
-    bool geometryExplicit_;
     ExporterTxtPtr_Type exporterTxtDrag_;
     ExporterTxtPtr_Type exporterTxtLift_;
-    mutable ExporterPtr_Type exporterGeo_;
     /*####################*/
     ExporterTxtPtr_Type exporterBoundaryCondition_; // Values for absorbing boundary condition
     mutable double areaInlet_init_=0.;

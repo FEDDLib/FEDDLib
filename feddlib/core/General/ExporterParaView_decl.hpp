@@ -1,6 +1,7 @@
 #ifndef ExporterParaView_DECL_hpp
 #define ExporterParaView_DECL_hpp
 
+#include <algorithm>
 #include <fstream>
 #include "feddlib/core/FEDDCore.hpp"
 #include "feddlib/core/General/DefaultTypeDefs.hpp"
@@ -115,6 +116,9 @@ public:
     void closeExporter();
     
     void writeVariablesHDF5();
+
+    std::string dataSetName(int i) const;
+    
     
     void initHDF5();
     
@@ -124,10 +128,15 @@ public:
     
     void writeMeshPoints(std::string nameP_X,
                     std::string nameP_Y,
-                    std::string nameP_Z );
+                    std::string nameP_Z,
+                    std::string namePoints );
+
+    std::string pointsSuffix() const;
+    
     
     void updatePoints();
     
+    void updateVariables(MultiVecConstPtr_Type &u, std::string varName);
     
     void initXmf();
     
@@ -137,9 +146,7 @@ public:
     
     void writeXmfElements(std::string nameConn, double time);
     
-    void writeXmfPoints(std::string nameP_X,
-                             std::string nameP_Y,
-                             std::string nameP_Z);
+    void writeXmfPoints(std::string namePoints);
     
     void writeXmfVariables();
     
@@ -194,6 +201,7 @@ protected:
 	MeshPtr_Type mesh_;
     MapConstPtr_Type mapUniqueVariables_;
     
+
     };
 }
 

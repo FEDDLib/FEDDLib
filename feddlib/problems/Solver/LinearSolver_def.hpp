@@ -61,7 +61,7 @@ int LinearSolver<SC,LO,GO,NO>::solve(TimeProblem_Type* problem, BlockMultiVector
         TEUCHOS_TEST_FOR_EXCEPTION( true, std::logic_error, "Teko not found! Build Trilinos with Teko.");
 #endif
     }
-    else if(!type.compare("FaCSI") || type == "FaCSI-Teko" || type == "FaCSI-Blck" )
+    else if(!type.compare("FaCSI") || type == "FaCSI-Teko" || type == "FaCSI-Blck" || type == "FaCSCI")
         its = solveBlock( problem, rhs, type );
     else if (type=="Diagonal" || type=="Triangular" || type=="PCD" || type=="LSC")
         its = solveBlock( problem, rhs, type );
@@ -216,6 +216,14 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
         else
             its = 0;
     }
+    double range1 = timeProblem->getParameterList()->sublist("General").get("Plot Linear Residual Vector Start",0.0);
+    double range2 = timeProblem->getParameterList()->sublist("General").get("Plot Linear Residual Vector End",1.0);
+
+    bool plotLinResVector = timeProblem->getParameterList()->sublist("General").get("Plot Linear Residual Vector",false);
+
+    if(plotLinResVector && timeProblem->time_ >= range1 && timeProblem->time_ <= range2)
+        timeProblem->plotLinResVec(timeProblem->time_);
+
     return its;
 }
  

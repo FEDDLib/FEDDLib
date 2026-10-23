@@ -14,13 +14,34 @@ namespace FEDD
 	template <class SC, class LO, class GO, class NO>
 	AssembleFE_SCI_NH<SC, LO, GO, NO>::AssembleFE_SCI_NH(int flag, vec2D_dbl_Type nodesRefConfig, ParameterListPtr_Type params, tuple_disk_vec_ptr_Type tuple) : AssembleFE<SC, LO, GO, NO>(flag, nodesRefConfig, params, tuple)
 	{
-		// Extracting values from ParameterList
-		E0_ = this->params_->sublist("Parameter Solid").get("E", 379.95e-6);
-		E1_ = this->params_->sublist("Parameter Solid").get("E1", 300.0e-6);
-		poissonRatio_ = this->params_->sublist("Parameter Solid").get("Poisson Ratio", 0.49e-0);
-		c1_ = this->params_->sublist("Parameter Solid").get("c1", 0.25e-0);
-		D0_ = this->params_->sublist("Parameter Diffusion").get("D0", 6.0e-5);
-		m_ = this->params_->sublist("Parameter Diffusion").get("m", 0.0);
+#ifndef FEDD_HAVE_ACEGENINTERFACE
+    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "AssembleFE_SCI_NH needs FEDDLib built with the AceGen interface (Interface2): configure with -D TPL_ENABLE_AceGENInterface=ON.");
+#endif
+		// Extracting values from ParameterList. With "Number of Materials" in "Parameter Solid", the
+		// parameters are those of the material (sublist "1", "2", ...) whose "Volume Flag" is the
+		// element's flag; without it, "Parameter Solid" and "Parameter Diffusion" hold them directly.
+		ParameterListPtr_Type solid = sublist(this->params_, "Parameter Solid");
+		ParameterListPtr_Type diffusion = sublist(this->params_, "Parameter Diffusion");
+		int numMaterials = solid->get("Number of Materials", 0);
+		if (numMaterials > 0) {
+			int materialID = 0;
+			for(int i=1; i<= numMaterials; i++)
+				if( solid->sublist(std::to_string(i)).get("Volume Flag", 15) == this->flag_)
+					materialID = i;
+
+			if(materialID == 0)
+				std::cout << "!!! Warning: No corresponding parameterslist for the element flag="<< this->flag_ << ". Please Check volume flags of elements and Mesh Data !!! " << std::endl;
+
+			solid = sublist(solid, std::to_string(materialID));
+			diffusion = solid;
+		}
+
+		E0_ = solid->get("E", 379.95e-6);
+		E1_ = solid->get("E1", 300.0e-6);
+		poissonRatio_ = solid->get("Poisson Ratio", 0.49e-0);
+		c1_ = solid->get("c1", 0.25e-0);
+		D0_ = diffusion->get("D0", 6.0e-5);
+		m_ = diffusion->get("m", 0.0);
 		dofOrdering_ = this->params_->sublist("Parameter").get("Ordering", 2);
 
 		FEType_ = std::get<1>(this->diskTuple_->at(0));	   // FEType of Disk
@@ -69,10 +90,13 @@ namespace FEDD
 			if(this->timeStep_ +1.0e-12 > timeParametersVec_[i][0])
 				this->timeIncrement_=timeParametersVec_[i][1];
 		}*/
+		if(this->timeStep_ -1.e-13 < 0) // only in this one instance T=0 we set the dt beforehand, as the initial dt is set through the paramterlist and this is error prone
+			this->timeIncrement_=dt;
        
 		this->timeStep_ = this->timeStep_ + this->timeIncrement_;
 
 		this->timeIncrement_ = dt;
+
 
 		for (int i = 0; i < 40; i++)
 		{
@@ -131,7 +155,7 @@ namespace FEDD
 		double *residuum = neoHookeElement.getResiduum();
 
 		for (int i = 0; i < 40; i++)
-			(*this->rhsVec_)[i] = residuum[i];
+			(*this->rhsVec_)[i] = -residuum[i];
 
 
 #endif
@@ -142,7 +166,6 @@ namespace FEDD
 	template <class SC, class LO, class GO, class NO>
 	void AssembleFE_SCI_NH<SC, LO, GO, NO>::assembleDeformationDiffusionNeoHook(SmallMatrixPtr_Type &elementMatrix)
 	{
-
 		std::vector<double> positions(30);
 #ifdef FEDD_HAVE_ACEGENINTERFACE
 
@@ -190,13 +213,12 @@ namespace FEDD
 		{
 			for (UN j = 0; j < this->dofsElement_; j++)
 			{
-				(*elementMatrix)[i][j] = stiffnessMatrix[i][j];
+				(*elementMatrix)[i][j] = -stiffnessMatrix[i][j];
 			}
-		}
-#endif
-
 	}
 
 
+	#endif
+	}
 } // namespace FEDD
 #endif // ASSEMBLEFE_SCI_NH_DEF_hpp

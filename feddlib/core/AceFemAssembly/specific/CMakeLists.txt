@@ -29,6 +29,9 @@ set(AceFemAssemblySpecific_HEADERS
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation_def.hpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation_decl.hpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation_def.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation_decl.hpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation.hpp
 	AceFemAssembly/specific/GeneralizedNewtonianModels/CarreauYasuda_decl.hpp
 	AceFemAssembly/specific/GeneralizedNewtonianModels/CarreauYasuda_def.hpp
 	AceFemAssembly/specific/GeneralizedNewtonianModels/CarreauYasuda.hpp
@@ -51,6 +54,7 @@ set(AceFemAssemblySpecific_SOURCES
 	AceFemAssembly/specific/AssembleFE_SCI_NH.cpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_MLCK.cpp
 	AceFemAssembly/specific/AssembleFE_SCI_SMC_Active_Growth_Reorientation.cpp
+	AceFemAssembly/specific/AssembleFE_SCI_SMC_CMM_Active_Growth_Reorientation.cpp
 	AceFemAssembly/specific/GeneralizedNewtonianModels/CarreauYasuda.cpp
 	AceFemAssembly/specific/GeneralizedNewtonianModels/PowerLaw.cpp
 	AceFemAssembly/specific/GeneralizedNewtonianModels/Dimless_Carreau.cpp

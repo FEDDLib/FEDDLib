@@ -1,0 +1,129 @@
+<ParameterList name="SCI">
+    <!--
+      Hollow cylinder (Ri=1.0, Ro=1.3, L=2.0) with the non-CMM SMC element
+      (SCI_SMC_Active_Growth_Reorientation; material parameters Alpha1-5, fA,
+      etc. in materialParameters.xml), bottom/top axial fix, 3
+      circumferential pins, inner pressure ramped to 20, all bools off
+      (purely passive). ../ccb_hollow_cylinder_cmm is the same case with the
+      constrained-mixture (CMM) element.
+    -->
+    <ParameterList name="Parameter">
+        <Parameter name="Dimension" type="int" value="3"/>
+        <Parameter name="Discretization" type="string" value="P2"/>
+        <!-- Not read anywhere in this test's main.cpp (grep confirms
+             neither ccb_hollow_cylinder's nor artery_dan_withDrug_a's
+             main.cpp calls .get("BC Type", ...)); the actual Dirichlet
+             and Neumann BCs are applied explicitly in main.cpp via
+             bcFactoryStructure/bcFactory against the mesh's own vertex
+             and face flags (2/3/4/5/13/14/16, see main.cpp's header
+             comment). Kept only to match the simulationParameters.xml
+             template's documented options (Artery, Artery Full, Plaque,
+             Cube); "Cube" is the closest of those to a simple enclosed
+             volume geometry with no valid "HollowCylinder" option
+             defined anywhere in FEDDLib. -->
+        <Parameter name="BC Type" type="string" value="Cube"/>
+        <Parameter name="RHS Type" type="string" value="Constant"/>
+
+        <Parameter name="Mesh Type" type="string" value="unstructured"/>
+        <Parameter name="H/h" type="int" value="1"/>
+
+        <!-- Plain pressure units (no mmHg
+             conversion; Max Pressure is used directly as the target
+             pressure in the same units as the Alpha1-5 stress
+             parameters). -->
+        <Parameter name="Max Pressure mmHg" type="double" value="20.0"/>
+        <Parameter name="Target Pressure mmHg" type="double" value="20.0"/>
+        <Parameter name="Pressure Reduction Start Time" type="double" value="1000000.0"/>
+        <Parameter name="Pressure Reduction End Time" type="double" value="1000000.0"/>
+        <Parameter name="Pressure Reduction Amount mmHg" type="double" value="0.0"/>
+        <Parameter name="Source Type" type="string"   value="surface"/>
+        <Parameter name="Model Geometry" type="string" value="Laplace"/>
+
+        <Parameter name="SCI" type="bool" value="true"/>
+        <Parameter name="Chemistry Explicit" type="bool" value="false"/>
+        <Parameter name="Load Stepping" type="bool" value="true"/>
+        <Parameter name="Inflow Start Time" type="double" value="10000000.0"/>
+        <Parameter name="Heart Beat Start" type="double" value="70000000.0"/>
+        <!-- The pressure is ramped linearly, lambda(t) = t / Ramp End Time,
+             evaluated at t_{n+1} (see main.cpp's loadFunction): 0 -> 20 over
+             t=[0,10] in 50 steps of 0.02*Pmax with dt=0.2. The same dt
+             also enters the concentration capacitance term Mc/dt. -->
+        <Parameter name="Load Step Size" type="double" value="0.8"/>
+        <Parameter name="Ramp End Time" type="double" value="10.0"/>
+        <Parameter name="External Force" type="bool" value="true"/>
+        <Parameter name="Nonlinear External Force" type="bool" value="true"/>
+        <Parameter name="Coupling Type" type="string" value="implicit"/>
+        <Parameter name="Accelerated Active Until" type="double" value="0.0"/>
+        <Parameter name="Active Acceleration Multiplier" type="double" value="1.0"/>
+
+        <Parameter name="Post Processing Fields" type="Array(string)" value="{MisesStress, SCirc, SAxial, SRadial, W, DetF}"/>
+
+        <Parameter name="relNonLinTol" type="double" value="1.0e-7"/>
+        <Parameter name="absNonLinTol" type="double" value="1.0e-7"/>
+        <Parameter name="updateTol" type="double" value="1.0e-7"/>
+        <Parameter name="Combo" type="string" value="OR"/>
+        <Parameter name="Use update tol" type="bool" value="true"/>
+        <Parameter name="Use WRMS" type="bool" value="false"/>
+
+        <Parameter name="MaxNonLinIts" type="int" value="4"/>
+
+        <Parameter name="Criterion" type="string" value="Update"/>
+    </ParameterList>
+
+    <ParameterList name="Mesh Partitioner">
+        <Parameter name="Contiguous" type="bool" value="true"/>
+        <Parameter name="Mesh 1 Name" type="string" value="hollow_cylinder_p1.mesh"/>
+        <Parameter name="Automatic partition" type="bool" value="false"/>
+        <Parameter name="Mesh 1 fraction ranks" type="int" value="-1"/>
+        <Parameter name="Mesh 1 number ranks" type="int" value="-1"/>
+    </ParameterList>
+
+    <ParameterList name="Exporter">
+        <Parameter name="Write new mesh" type="bool" value="false"/>
+        <Parameter name="Export every X timesteps" type="int" value="1"/>
+        <Parameter name="Export coarse functions" type="bool" value="false"/>
+        <Parameter name="Name coarse functions block1" type="string" value="phiC"/>
+        <Parameter name="Name coarse functions block2" type="string" value="phiD"/>
+        <Parameter name="Exclude coarse functions block4" type="bool" value="true"/>
+    </ParameterList>
+
+    <ParameterList name="General">
+        <Parameter name="Mpi Ranks Coarse" type="int" value="0"/>
+        <Parameter name="ParaViewExport" type="bool" value="true"/>
+        <Parameter name="ParaViewCoarse" type="bool" value="false"/>
+        <Parameter name="ExportID" type="int" value="7"/>
+        <Parameter name="ParaView export subdomains" type="bool" value="true"/>
+        <Parameter name="Export Suffix" type="string" value=""/>
+        <Parameter name="Export Data" type="bool" value="true"/>
+        <Parameter name="Export Extra Data" type="bool" value="false"/>
+        <Parameter name="Export drag and lift" type="bool" value="false"/>
+        <Parameter name="Export Stress" type="bool" value="true"/>
+        <Parameter name="Every X Second" type="double" value="0.1"/>
+        <Parameter name="Preconditioner Method" type="string" value="Monolithic"/>
+        <Parameter name="Only Diagonal" type="bool" value="false"/>
+        <Parameter name="Scale mass matrix" type="bool" value="true"/>
+        <Parameter name="Set Zeros" type="bool" value="true"/>
+        <!-- NOX, FEDDLib's usual nonlinear driver. -->
+        <Parameter name="Linearization" type="string" value="NOX"/>
+    </ParameterList>
+
+    <ParameterList name="Timestepping Parameter">
+        <!-- ctest: MaxNonLinIts 4 is too few for the time step of 0.8, which is repeated with smaller ones down to Minimum dt 0.05; after five converged time steps in a row the step size doubles again -->
+        <Parameter name="Adaptive Time Stepping" type="bool" value="true"/>
+        <Parameter name="BDF" type="int" value="1"/>
+        <Parameter name="Class" type="string" value="Multistep"/>
+        <Parameter name="Timestepping type" type="string" value="non-adaptive"/>
+        <Parameter name="Final time" type="double" value="2.0"/>
+        <Parameter name="dt" type="double" value="0.2"/>
+        <Parameter name="beta" type="double" value="0.25"/>
+        <Parameter name="gamma" type="double" value="0.5"/>
+        <ParameterList name="Timestepping Intervalls">
+            <Parameter name="Number of Segments" type="int" value="1"/>
+            <ParameterList name="1">
+                <Parameter name="Start Time" type="double" value="0."/>
+                <Parameter name="dt" type="double" value="0.8"/>
+                <Parameter name="Minimum dt" type="double" value="0.05"/>
+            </ParameterList>
+        </ParameterList>
+    </ParameterList>
+</ParameterList>
