@@ -1,0 +1,7 @@
+<map id="FEDD::Matrix::getLocalRowView" name="FEDD::Matrix::getLocalRowView">
+<area shape="rect" id="Node000001" title="Extracting single rows of Matrix with local row ID. Indices returns local indices of entries stored i..." alt="" coords="187,29,394,55"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="328,17,316,10,290,8,267,10,255,15,252,20,258,27,254,31,247,21,251,11,266,5,290,3,317,5,331,12"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Matrix.html#a5ae991c8dead8e6b6d7af34d54aa3a1b" title="Turning Matrix into MultiVector Format." alt="" coords="5,29,139,55"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="171,45,139,45,139,40,171,40"/>
+<area shape="poly" id="edge3_Node000002_Node000002" title=" " alt="" coords="110,17,97,10,72,8,49,10,37,15,34,20,40,27,36,31,29,21,33,11,48,5,72,3,99,5,112,12"/>
+</map>

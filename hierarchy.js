@@ -1,5 +1,10 @@
 var hierarchy =
 [
+    [ "ElementData::[struct].id", "structElementData_1_1_0fstruct_0e_8id.html", null ],
+    [ "ElementSpec::[struct].id", "structElementSpec_1_1_0fstruct_0e_8id.html", null ],
+    [ "NodeData::[struct].id", "structNodeData_1_1_0fstruct_0e_8id.html", null ],
+    [ "NodeSpec::[struct].id", "structNodeSpec_1_1_0fstruct_0e_8id.html", null ],
+    [ "ElementSpec::[struct].user", "structElementSpec_1_1_0fstruct_0e_8user.html", null ],
     [ "FEDD::AABBTree&lt; SC, LO, GO, NO &gt;", "classFEDD_1_1AABBTree.html", null ],
     [ "FEDD::AdaptiveMeshRefinement&lt; SC, LO, GO, NO &gt;", "classFEDD_1_1AdaptiveMeshRefinement.html", null ],
     [ "FEDD::AssembleFE&lt; SC, LO, GO, NO &gt;", "classFEDD_1_1AssembleFE.html", null ],

@@ -1,0 +1,5 @@
+<map id="FEDD::MeshPartitioner::buildEdgeListParallel" name="FEDD::MeshPartitioner::buildEdgeListParallel">
+<area shape="rect" id="Node000001" title="Making the edge list parallel." alt="" coords="206,5,358,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshPartitioner.html#a612c64b91688cd12de6f75b6204d4279" title="Main function, that reads and partions and distributes the mesh to the different processors...." alt="" coords="5,5,158,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="190,28,158,28,158,23,190,23"/>
+</map>

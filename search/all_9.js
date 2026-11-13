@@ -1,25 +1,9 @@
 var searchData=
 [
-  ['identifyinterfaceparallelanddistance_0',['identifyInterfaceParallelAndDistance',['../classFEDD_1_1Domain.html#a38d5195fb9f1cff9587327f8c56a10e7',1,'FEDD::Domain']]],
-  ['identifyproblem_1',['identifyProblem',['../classFEDD_1_1AdaptiveMeshRefinement.html#acce59127908a270c29318f32d0010513',1,'FEDD::AdaptiveMeshRefinement::identifyProblem()'],['../classFEDD_1_1ErrorEstimation.html#a590f7b920955acbc096854c5de775c58',1,'FEDD::ErrorEstimation::identifyProblem()']]],
-  ['importfromvector_2',['importFromVector',['../classFEDD_1_1Matrix.html#ab1cc09c8d0df0259895a16b5e80e2a1f',1,'FEDD::Matrix']]],
-  ['info_3',['info',['../classFEDD_1_1Domain.html#acbc5db80541f22d268221c2c09dc4422',1,'FEDD::Domain']]],
-  ['infononlinproblem_4',['infoNonlinProblem',['../classFEDD_1_1NonLinearProblem.html#afd89e7822eba78630310f63dcd06a4ad',1,'FEDD::NonLinearProblem']]],
-  ['initdummymesh_5',['initDummyMesh',['../classFEDD_1_1Domain.html#a1443248fa4db9ce49bd994a8171f6987',1,'FEDD::Domain']]],
-  ['initexporter_6',['initExporter',['../classFEDD_1_1AdaptiveMeshRefinement.html#abad839ae02aaa2a4fe5f2bdb661e4dab',1,'FEDD::AdaptiveMeshRefinement']]],
-  ['initializefedata_7',['initializeFEData',['../classFEDD_1_1Domain.html#a737cca46fac2b0a2ec56c0fd158f5b43',1,'FEDD::Domain::initializeFEData()'],['../classFEDD_1_1Elements.html#aaf856c1799a13bbcf7d9eaf4938b63be',1,'FEDD::Elements::initializeFEData()']]],
-  ['initializeproblem_8',['initializeProblem',['../classFEDD_1_1NonLinearProblem.html#a5c44e392d9aaede1e269479ac1d00f7d',1,'FEDD::NonLinearProblem']]],
-  ['initializeunstructuredmesh_9',['initializeUnstructuredMesh',['../classFEDD_1_1Domain.html#a551a8e73c03111b652ef2d43cbcf9540',1,'FEDD::Domain']]],
-  ['initializevectorsnonlinear_10',['initializeVectorsNonLinear',['../classFEDD_1_1NonLinearProblem.html#a17138cdc8844ca30962f5f5619e7a3d6',1,'FEDD::NonLinearProblem']]],
-  ['initwithdomain_11',['initWithDomain',['../classFEDD_1_1Domain.html#a9d884b00bdbb13f43e06435db5c65ee9',1,'FEDD::Domain']]],
-  ['inputfilename_5f_12',['inputFilename_',['../classFEDD_1_1HDF5Import.html#a8698a737f344ab29375d92bd736e1221',1,'FEDD::HDF5Import']]],
-  ['inputtooutputmappingclass_13',['InputToOutputMappingClass',['../classFEDD_1_1InputToOutputMappingClass.html',1,'FEDD::InputToOutputMappingClass&lt; SC, LO, GO, NO &gt;'],['../classFEDD_1_1InputToOutputMappingClass.html#a97dc768e3cb05a6ba2016420e2c91a6e',1,'FEDD::InputToOutputMappingClass::InputToOutputMappingClass()']]],
-  ['inputtooutputmappingclass_3c_20default_5fsc_2c_20default_5flo_2c_20default_5fgo_2c_20default_5fno_20_3e_14',['InputToOutputMappingClass&lt; default_sc, default_lo, default_go, default_no &gt;',['../classFEDD_1_1InputToOutputMappingClass.html',1,'FEDD']]],
-  ['inputtooutputmappingclass_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_15',['InputToOutputMappingClass&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1InputToOutputMappingClass.html',1,'FEDD']]],
-  ['insertglobalvalues_16',['insertGlobalValues',['../classFEDD_1_1Matrix.html#a8a15f253461212f52905c75c37c7aaf7',1,'FEDD::Matrix']]],
-  ['is_5fnull_17',['is_null',['../classFEDD_1_1MultiVector.html#a4eead56562530b5f87b1d48466ca3b29',1,'FEDD::MultiVector']]],
-  ['iscontained_18',['isContained',['../classFEDD_1_1HDF5Toolbox.html#a8b1113ac9d058c6903d312347b1391b2',1,'FEDD::HDF5Toolbox']]],
-  ['isfillcomplete_19',['isFillComplete',['../classFEDD_1_1Matrix.html#a95c7c48f147c7be5246e02aa362e4766',1,'FEDD::Matrix']]],
-  ['isopen_20',['isOpen',['../classFEDD_1_1HDF5Toolbox.html#afeb18550a98fda99c2d529f1d612187a',1,'FEDD::HDF5Toolbox']]],
-  ['iterationhistorystruct_21',['IterationHistoryStruct',['../structIterationHistoryStruct.html',1,'']]]
+  ['hdf5export_0',['HDF5Export',['../classFEDD_1_1HDF5Export.html',1,'FEDD::HDF5Export&lt; SC, LO, GO, NO &gt;'],['../classFEDD_1_1HDF5Export.html#a930642a3940d7b40549b9e15fb1daf28',1,'FEDD::HDF5Export::HDF5Export()']]],
+  ['hdf5import_1',['HDF5Import',['../classFEDD_1_1HDF5Import.html',1,'FEDD::HDF5Import&lt; SC, LO, GO, NO &gt;'],['../classFEDD_1_1HDF5Import.html#aca8f0a461be0642616f19cdbb3848e97',1,'FEDD::HDF5Import::HDF5Import(MapConstPtr_Type readMap, std::string inputFilename)']]],
+  ['hdf5importer_5f_2',['hdf5importer_',['../classFEDD_1_1HDF5Import.html#aef6882fcd3217410e1a3445ce9689ba2',1,'FEDD::HDF5Import']]],
+  ['hdf5toolbox_3',['HDF5Toolbox',['../classFEDD_1_1HDF5Toolbox.html',1,'FEDD']]],
+  ['hdf5toolbox_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_4',['HDF5Toolbox&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1HDF5Toolbox.html',1,'FEDD']]],
+  ['helper_5',['Helper',['../classFEDD_1_1Helper.html',1,'FEDD']]]
 ];

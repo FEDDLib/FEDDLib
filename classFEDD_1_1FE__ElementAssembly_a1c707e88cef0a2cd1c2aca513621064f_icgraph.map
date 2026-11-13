@@ -1,0 +1,13 @@
+<map id="FEDD::FE_ElementAssembly::checkFE" name="FEDD::FE_ElementAssembly::checkFE">
+<area shape="rect" id="Node000001" title="Checks which domain corresponds to certain FE Type and dimension." alt="" coords="267,119,455,159"/>
+<area shape="poly" id="edge5_Node000001_Node000001" title=" " alt="" coords="402,106,386,100,361,97,337,99,322,104,317,110,319,117,314,119,312,109,320,100,336,94,361,92,388,94,404,101"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1FE__ElementAssembly.html#ae0260a7da808818b519b4099bef7d319" title="Assembly of constant stiffness matix for laplacian operator ." alt="" coords="18,29,206,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="295,115,218,86,181,73,183,68,220,80,297,110"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1FE__ElementAssembly.html#ae67b62953ca017381ec4dfa96e0638d6" title="Assembly of Jacobian for NavierStokes." alt="" coords="18,119,206,159"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="251,142,207,142,207,136,251,136"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1FE__ElementAssembly.html#a270410107bf30f4fffc178b9be2d6a86" title="Postprocessing: Using a converged velocity solution &#45;&gt; compute averaged viscosity inside an element a..." alt="" coords="5,208,219,249"/>
+<area shape="poly" id="edge6_Node000001_Node000004" title=" " alt="" coords="288,168,172,210,170,205,287,163"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="153,16,138,10,112,8,88,10,74,15,68,21,70,28,65,29,63,19,71,10,87,5,112,3,139,5,155,11"/>
+<area shape="poly" id="edge4_Node000003_Node000003" title=" " alt="" coords="153,106,138,100,112,97,88,99,74,104,68,110,70,117,65,119,63,109,71,100,87,94,112,92,139,94,155,101"/>
+<area shape="poly" id="edge7_Node000004_Node000004" title=" " alt="" coords="153,195,138,189,112,187,88,189,74,193,68,199,70,207,65,208,63,198,71,189,87,183,112,181,139,184,155,190"/>
+</map>

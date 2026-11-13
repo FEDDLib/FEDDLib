@@ -1,5 +1,7 @@
 <map id="FEDD::MeshPartitioner::findAndSetSurfacesPartitioned" name="FEDD::MeshPartitioner::findAndSetSurfacesPartitioned">
-<area shape="rect" id="Node000001" title="Finding the surfaces corresponding to a specfic element and then setting subelements." alt="" coords="220,5,424,46"/>
-<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshPartitioner.html#a941a1bbe330a5599f4c86713be8dad5b" title="Setting surfaces, i.e. edges in 2D and triangles in 3D, as subelements to the corresponding elements." alt="" coords="5,5,172,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="204,28,172,28,172,23,204,23"/>
+<area shape="rect" id="Node000001" title="Finding the surfaces corresponding to a specfic element and then setting subelements." alt="" coords="220,39,424,79"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshPartitioner.html#adda5e53a1c1cd10df6b9514f818acc60" title="Building the edge list." alt="" coords="12,5,165,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="204,45,165,39,166,34,205,40"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1MeshPartitioner.html#a941a1bbe330a5599f4c86713be8dad5b" title="Setting surfaces, i.e. edges in 2D and triangles in 3D, as subelements to the corresponding elements." alt="" coords="5,71,172,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="205,78,173,82,172,77,204,73"/>
 </map>

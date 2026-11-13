@@ -1,0 +1,14 @@
+<map id="FEDD::HDF5Toolbox::isOpen" name="FEDD::HDF5Toolbox::isOpen">
+<area shape="rect" id="Node000001" title="Return true if a file has already been opened using Open()/Create()." alt="" coords="422,124,568,165"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1HDF5Toolbox.html#a57851a52ab23da3634dc983eb66c6201" title="Create a new file." alt="" coords="214,5,360,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="455,116,416,88,373,61,347,49,349,44,375,57,419,84,458,112"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1HDF5Toolbox.html#a8b1113ac9d058c6903d312347b1391b2" title="Checking if the dataset Name is contained in the group GroupName." alt="" coords="214,95,360,135"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="407,135,360,128,361,123,408,129"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1HDF5Toolbox.html#aaf35dcf7ee0d1a18b9a35795de277eb2" title="Write/export a vector X to the HDF5 file under the group name GroupName." alt="" coords="5,124,152,165"/>
+<area shape="poly" id="edge7_Node000001_Node000004" title=" " alt="" coords="406,149,374,150,200,150,152,149,152,144,200,144,374,144,406,144"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1HDF5Toolbox.html#a289fc0d7a14ac9219ec6e98070e67053" title="Open specified file with given access type." alt="" coords="200,210,374,236"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="428,173,375,193,325,212,324,207,373,189,426,168"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="321,81,308,76,287,73,267,75,255,80,251,86,253,93,247,95,245,85,252,76,266,70,287,68,309,70,323,77"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="199,130,152,137,152,131,198,125"/>
+<area shape="poly" id="edge5_Node000004_Node000004" title=" " alt="" coords="112,111,100,105,78,103,59,105,47,109,42,115,44,123,39,124,37,114,44,105,57,99,79,97,101,100,115,106"/>
+</map>

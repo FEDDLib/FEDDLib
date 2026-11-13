@@ -1,0 +1,14 @@
+<map id="FEDD::PrecBlock2x2::setPressureInv" name="FEDD::PrecBlock2x2::setPressureInv">
+<area shape="rect" id="Node000001" title="Setting inverse approximation of Schur complement." alt="" coords="384,75,525,115"/>
+<area shape="poly" id="edge3_Node000001_Node000001" title=" " alt="" coords="485,61,474,56,455,53,437,55,426,60,422,66,424,73,419,75,417,65,423,56,435,50,455,48,475,50,488,57"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1PrecBlock2x2.html#a705e2a1ccea84b09b67bbd2408abb4dd" title="Diagonal preconditioner with \hat{S}= &#45;1/nu M_p schur complement approximation." alt="" coords="195,29,336,70"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="368,77,336,69,337,64,370,72"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1PrecBlock2x2.html#aad8f79a27cdedbd51fd37ff0201e29e0" title="Triangular preconditioner with \hat{S}= &#45;1/nu M_p schur complement approximation." alt="" coords="195,119,336,159"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="370,117,337,125,336,120,368,112"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="296,16,284,10,265,8,247,10,237,15,233,20,234,28,229,29,227,19,233,10,246,5,265,3,286,5,298,11"/>
+<area shape="poly" id="edge7_Node000003_Node000003" title=" " alt="" coords="296,105,284,100,265,97,247,99,237,104,233,110,234,117,229,119,227,109,233,100,246,94,265,92,286,94,298,101"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1PrecBlock2x2.html#aa95411db9ec015e2f139153f844bfb01" title="Pressure&#45;Convection&#45;Diffusion (PCD) block triangular preconditioner." alt="" coords="5,85,147,126"/>
+<area shape="poly" id="edge5_Node000003_Node000004" title=" " alt="" coords="179,127,146,121,147,115,180,121"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1PrecBlock2x2.html#a307830418304c132ee3ec570b6d62e7b" title="Least&#45;Squares&#45;Commutator (LSC) block triangular preconditioner." alt="" coords="5,151,147,191"/>
+<area shape="poly" id="edge6_Node000003_Node000005" title=" " alt="" coords="180,156,147,162,146,156,179,151"/>
+</map>

@@ -1,0 +1,10 @@
+<map id="FEDD::PrecBlock2x2::setPressureInvs" name="FEDD::PrecBlock2x2::setPressureInvs">
+<area shape="rect" id="Node000001" title="Setting inverse approximation of Schur complement by multiple operators. Corresponds to PCD." alt="" coords="195,71,336,111"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="296,57,284,52,265,49,247,51,237,56,233,62,234,69,229,71,227,61,233,52,246,46,265,44,286,46,298,53"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1PrecBlock2x2.html#abe034446afcdc7d7dfe1c0063ab75021" title="Setting inverse approximation of Schur complement by multiple operators. Corresponds to LSC." alt="" coords="5,5,147,46"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="189,68,136,49,138,44,191,63"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1PrecBlock2x2.html#aa95411db9ec015e2f139153f844bfb01" title="Pressure&#45;Convection&#45;Diffusion (PCD) block triangular preconditioner." alt="" coords="5,71,147,111"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="179,94,147,94,147,88,179,88"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1PrecBlock2x2.html#a307830418304c132ee3ec570b6d62e7b" title="Least&#45;Squares&#45;Commutator (LSC) block triangular preconditioner." alt="" coords="5,136,147,177"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="191,119,138,138,136,133,189,114"/>
+</map>

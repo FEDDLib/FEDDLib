@@ -55,7 +55,7 @@ var NAVTREEINDEX =
 "classFEDD_1_1Matrix.html",
 "classFEDD_1_1MultiVector.html#a898f91848ee7a237d4691818ed3f8b03",
 "classFEDD_1_1RefinementFactory.html#af40b1acc9353be1408fed4d6a61ed2ae",
-"structFEDD_1_1ThyraTypedefs.html"
+"structFEDD_1_1FindDataset__t.html"
 ];
 
 const SYNCONMSG = 'click to disable panel synchronization';

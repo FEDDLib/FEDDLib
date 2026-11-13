@@ -1,8 +1,19 @@
 var searchData=
 [
-  ['of_20row_20block_200_0',['0 | A B BlockMap-&amp;gt;getBlock(0) of row-block 0',['../classFEDD_1_1BlockMap.html#autotoc_md0',1,'']]],
-  ['open_1',['open',['../classFEDD_1_1HDF5Toolbox.html#a289fc0d7a14ac9219ec6e98070e67053',1,'FEDD::HDF5Toolbox']]],
-  ['operator_28_29_2',['operator()',['../classFEDD_1_1IO_1_1ParameterList.html#a270eb9f644bf5db1678c3e096e0d4638',1,'FEDD::IO::ParameterList']]],
-  ['operator_3d_3',['operator=',['../classFEDD_1_1MultiVector.html#a8503f858dff173f63f2701e3aefb9ea1',1,'FEDD::MultiVector']]],
-  ['opsupportedimpl_4',['opSupportedImpl',['../classFEDD_1_1PreconditionerOperator.html#aafa6386b67249afd038eeb1881c6d68c',1,'FEDD::PreconditionerOperator']]]
+  ['name_5f_0',['name_',['../classFEDD_1_1IO_1_1ParameterList.html#ae9c362f5586d686d505875bf8b7853e1',1,'FEDD::IO::ParameterList']]],
+  ['navierstokes_1',['NavierStokes',['../classFEDD_1_1NavierStokes.html',1,'FEDD']]],
+  ['navierstokes_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_2',['NavierStokes&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1NavierStokes.html',1,'FEDD']]],
+  ['navierstokesassfe_3',['NavierStokesAssFE',['../classFEDD_1_1NavierStokesAssFE.html',1,'FEDD']]],
+  ['nodedata_4',['NodeData',['../structNodeData.html',1,'']]],
+  ['nodespec_5',['NodeSpec',['../structNodeSpec.html',1,'']]],
+  ['nodesrefconfig_5f_6',['nodesRefConfig_',['../classFEDD_1_1AssembleFE.html#ab2892bff598d5a4f784d4f30ddf4836c',1,'FEDD::AssembleFE']]],
+  ['nonlinearproblem_7',['NonLinearProblem',['../classFEDD_1_1NonLinearProblem.html',1,'FEDD::NonLinearProblem&lt; SC, LO, GO, NO &gt;'],['../classFEDD_1_1NonLinearProblem.html#ac1514ee8e1c08506cf9d23e202094e98',1,'FEDD::NonLinearProblem::NonLinearProblem(CommConstPtr_Type comm)'],['../classFEDD_1_1NonLinearProblem.html#a3090255ed838400dc04dcab2a9349611',1,'FEDD::NonLinearProblem::NonLinearProblem(ParameterListPtr_Type &amp;parameterList, CommConstPtr_Type comm)']]],
+  ['nonlinearproblem_3c_20default_5fsc_2c_20default_5flo_2c_20default_5fgo_2c_20default_5fno_20_3e_8',['NonLinearProblem&lt; default_sc, default_lo, default_go, default_no &gt;',['../classFEDD_1_1NonLinearProblem.html',1,'FEDD']]],
+  ['nonlinearproblem_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_9',['NonLinearProblem&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1NonLinearProblem.html',1,'FEDD']]],
+  ['nonlinearsolver_10',['NonLinearSolver',['../classFEDD_1_1NonLinearSolver.html',1,'FEDD::NonLinearSolver&lt; SC, LO, GO, NO &gt;'],['../classFEDD_1_1NonLinearSolver.html#a8a4e8212e9d3926451c75a1ba4ba94b4',1,'FEDD::NonLinearSolver::NonLinearSolver()']]],
+  ['nonlinelasassfe_11',['NonLinElasAssFE',['../classFEDD_1_1NonLinElasAssFE.html',1,'FEDD']]],
+  ['nonlinelasticity_12',['NonLinElasticity',['../classFEDD_1_1NonLinElasticity.html',1,'FEDD']]],
+  ['nonlinelasticity_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_13',['NonLinElasticity&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1NonLinElasticity.html',1,'FEDD']]],
+  ['nonlinlaplace_14',['NonLinLaplace',['../classFEDD_1_1NonLinLaplace.html',1,'FEDD']]],
+  ['nonlintpm_15',['NonLinTPM',['../classFEDD_1_1NonLinTPM.html',1,'FEDD']]]
 ];

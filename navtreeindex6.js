@@ -246,8 +246,8 @@ var NAVTREEINDEX6 =
 "structConvergenceStatus.html":[1,0,6],
 "structDIGWin.html":[1,0,7],
 "structElementData.html":[1,0,8],
+"structElementData_1_1_0fstruct_0e_8id.html":[1,0,8,0],
 "structElementSpec.html":[1,0,9],
-"structFEDD_1_1FindDataset__t.html":[0,0,0,36],
-"structFEDD_1_1FindDataset__t.html":[1,0,0,37],
-"structFEDD_1_1ThyraTypedefs.html":[0,0,0,80]
+"structElementSpec_1_1_0fstruct_0e_8id.html":[1,0,9,1],
+"structElementSpec_1_1_0fstruct_0e_8user.html":[1,0,9,0]
 };

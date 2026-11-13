@@ -1,0 +1,8 @@
+<map id="FEDD::PrecBlock2x2::setTriangular" name="FEDD::PrecBlock2x2::setTriangular">
+<area shape="rect" id="Node000001" title="Triangular preconditioner with \hat{S}= &#45;1/nu M_p schur complement approximation." alt="" coords="195,39,336,79"/>
+<area shape="poly" id="edge3_Node000001_Node000001" title=" " alt="" coords="296,25,284,20,265,17,247,19,237,24,233,30,234,37,229,39,227,29,233,20,246,14,265,12,286,14,298,21"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1PrecBlock2x2.html#aa95411db9ec015e2f139153f844bfb01" title="Pressure&#45;Convection&#45;Diffusion (PCD) block triangular preconditioner." alt="" coords="5,5,147,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="179,47,146,41,147,35,180,41"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1PrecBlock2x2.html#a307830418304c132ee3ec570b6d62e7b" title="Least&#45;Squares&#45;Commutator (LSC) block triangular preconditioner." alt="" coords="5,71,147,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="180,76,147,82,146,76,179,71"/>
+</map>

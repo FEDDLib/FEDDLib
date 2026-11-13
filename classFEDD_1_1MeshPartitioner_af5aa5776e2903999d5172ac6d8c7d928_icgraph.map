@@ -1,0 +1,9 @@
+<map id="FEDD::MeshPartitioner::setLocalEdgeIndices" name="FEDD::MeshPartitioner::setLocalEdgeIndices">
+<area shape="rect" id="Node000001" title="Setting surfaces, i.e. edges in 2D and triangles in 3D, as subelements to the corresponding elements." alt="" coords="406,39,558,79"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshPartitioner.html#adda5e53a1c1cd10df6b9514f818acc60" title="Building the edge list." alt="" coords="206,5,358,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="390,46,358,41,359,36,391,41"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1MeshPartitioner.html#ab2a7c2078c4fd773b54dfa3890f4e778" title="Making the edge list parallel." alt="" coords="206,71,358,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="391,76,359,81,358,76,390,71"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1MeshPartitioner.html#a612c64b91688cd12de6f75b6204d4279" title="Main function, that reads and partions and distributes the mesh to the different processors...." alt="" coords="5,71,158,111"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="190,94,158,94,158,88,190,88"/>
+</map>

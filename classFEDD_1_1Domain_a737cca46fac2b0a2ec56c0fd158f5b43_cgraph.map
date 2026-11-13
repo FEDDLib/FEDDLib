@@ -1,0 +1,7 @@
+<map id="FEDD::Domain::initializeFEData" name="FEDD::Domain::initializeFEData">
+<area shape="rect" id="Node000001" title="initializeFEData" alt="" coords="5,23,163,64"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Domain.html#a686e1e8615c2420f272e525bf7385839" title="Get the elements (on your processor) as Elements_Type." alt="" coords="225,5,418,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="163,32,209,27,210,33,163,38"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Domain.html#a707f2f5b832dbb22439db6720258db1d" title="Get vector of repeated points (on your processor). 2D Vector with size: numPoints x dim." alt="" coords="211,55,432,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="163,49,196,52,195,57,163,54"/>
+</map>

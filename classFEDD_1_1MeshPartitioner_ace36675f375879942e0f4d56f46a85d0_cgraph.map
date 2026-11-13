@@ -1,0 +1,5 @@
+<map id="FEDD::MeshPartitioner::findAndSetSurfaceEdges" name="FEDD::MeshPartitioner::findAndSetSurfaceEdges">
+<area shape="rect" id="Node000001" title="Only relevant in 3D. Finding the edges corresponding to the specfic element and then setting as subsu..." alt="" coords="5,5,177,46"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshPartitioner.html#a89dff61b3bc7159bc8a668378d5c9c11" title="Searching on particular surface in a surface list." alt="" coords="225,5,377,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,23,209,23,209,28,177,28"/>
+</map>

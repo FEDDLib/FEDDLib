@@ -1,0 +1,15 @@
+<map id="FEDD::MeshPartitioner::searchInSurfaces" name="FEDD::MeshPartitioner::searchInSurfaces">
+<area shape="rect" id="Node000001" title="Searching on particular surface in a surface list." alt="" coords="472,71,624,111"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshPartitioner.html#adda5e53a1c1cd10df6b9514f818acc60" title="Building the edge list." alt="" coords="12,71,165,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="456,94,165,94,165,88,456,88"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1MeshPartitioner.html#ace36675f375879942e0f4d56f46a85d0" title="Only relevant in 3D. Finding the edges corresponding to the specfic element and then setting as subsu..." alt="" coords="236,13,408,54"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="456,71,404,57,406,52,458,65"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1MeshPartitioner.html#a80456d18a8a598338fcac1e496191bb5" title="Finding the surfaces corresponding to a specfic element and then setting subelements." alt="" coords="220,128,424,169"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="458,117,406,130,404,125,456,111"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="223,61,166,75,165,70,222,56"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1MeshPartitioner.html#aba7026d049c6ec787d262772335d3340" title="Only used in 3D to set the edges as subelements to surfaces." alt="" coords="12,5,165,46"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="221,33,165,31,165,26,221,28"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="222,126,165,112,166,107,223,121"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1MeshPartitioner.html#a941a1bbe330a5599f4c86713be8dad5b" title="Setting surfaces, i.e. edges in 2D and triangles in 3D, as subelements to the corresponding elements." alt="" coords="5,136,172,177"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="204,155,172,156,172,151,204,150"/>
+</map>

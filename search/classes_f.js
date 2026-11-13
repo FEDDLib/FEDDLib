@@ -1,11 +1,12 @@
 var searchData=
 [
-  ['taskoptions_0',['TaskOptions',['../structTaskOptions.html',1,'']]],
-  ['taskreturn_1',['TaskReturn',['../structTaskReturn.html',1,'']]],
-  ['thyratypedefs_2',['ThyraTypedefs',['../structFEDD_1_1ThyraTypedefs.html',1,'FEDD']]],
-  ['timeproblem_3',['TimeProblem',['../classFEDD_1_1TimeProblem.html',1,'FEDD']]],
-  ['timeproblem_3c_20sc_2c_20lo_2c_20go_2c_20no_20_3e_4',['TimeProblem&lt; SC, LO, GO, NO &gt;',['../classFEDD_1_1TimeProblem.html',1,'FEDD']]],
-  ['timesteppingtools_5',['TimeSteppingTools',['../classFEDD_1_1TimeSteppingTools.html',1,'FEDD']]],
-  ['tpetratypedefs_6',['TpetraTypedefs',['../structFEDD_1_1TpetraTypedefs.html',1,'FEDD']]],
-  ['tpm_7',['TPM',['../classFEDD_1_1TPM.html',1,'FEDD']]]
+  ['smallmatrix_0',['SmallMatrix',['../classFEDD_1_1SmallMatrix.html',1,'FEDD']]],
+  ['smallmatrix_3c_20default_5fsc_20_3e_1',['SmallMatrix&lt; default_sc &gt;',['../classFEDD_1_1SmallMatrix.html',1,'FEDD']]],
+  ['smallmatrix_3c_20double_20_3e_2',['SmallMatrix&lt; double &gt;',['../classFEDD_1_1SmallMatrix.html',1,'FEDD']]],
+  ['smallmatrix_3c_20int_20_3e_3',['SmallMatrix&lt; int &gt;',['../classFEDD_1_1SmallMatrix.html',1,'FEDD']]],
+  ['smallmatrix_3c_20matrixptr_5ftype_20_3e_4',['SmallMatrix&lt; MatrixPtr_Type &gt;',['../classFEDD_1_1SmallMatrix.html',1,'FEDD']]],
+  ['smallmatrix_3c_20sc_20_3e_5',['SmallMatrix&lt; SC &gt;',['../classFEDD_1_1SmallMatrix.html',1,'FEDD']]],
+  ['smtstructure_6',['SMTStructure',['../structSMTStructure.html',1,'']]],
+  ['stokes_7',['Stokes',['../classFEDD_1_1Stokes.html',1,'FEDD']]],
+  ['surfaceelements_8',['SurfaceElements',['../classFEDD_1_1SurfaceElements.html',1,'FEDD']]]
 ];

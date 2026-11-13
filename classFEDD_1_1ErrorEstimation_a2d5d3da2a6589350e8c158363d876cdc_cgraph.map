@@ -1,0 +1,13 @@
+<map id="FEDD::ErrorEstimation::calculateJump" name="FEDD::ErrorEstimation::calculateJump">
+<area shape="rect" id="Node000001" title="Part of the error estimator that calculates the jump part of the estimation. What kind of jump is cal..." alt="" coords="5,39,155,79"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1ErrorEstimation.html#a6013659e8f8022a62a2b50eb3e8d7ab0" title="Calculating the diameter of triangles." alt="" coords="203,5,353,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="155,44,187,38,188,43,156,49"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1ErrorEstimation.html#ab431a0581511b573822f153900e54ec8" title="Function that calculates the jump part for nabla u or p." alt="" coords="203,71,352,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="156,68,188,74,187,79,155,74"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1ErrorEstimation.html#a2539ddd8bc7d4bf1f4bb9889e0fe5dd8" title="Returns neccesary quadrature Values. Is distinguishes between needing Element or Surface information." alt="" coords="412,5,562,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="344,68,404,49,406,54,346,73"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1ErrorEstimation.html#a74e71e6f93d83fba059694630b01fc49" title="Calcutlating the gradient of phi depending on quad points p." alt="" coords="412,71,562,111"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="353,88,397,88,397,94,353,94"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1ErrorEstimation.html#a54af187cc5c349977b9881507f2c7067" title="Calcutlating phi depending on quad points p." alt="" coords="401,136,573,161"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="353,109,423,128,422,133,352,114"/>
+</map>

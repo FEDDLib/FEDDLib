@@ -1,0 +1,8 @@
+<map id="FEDD::Mesh::correctNormalDirections" name="FEDD::Mesh::correctNormalDirections">
+<area shape="rect" id="Node000001" title="Correcting the normal direction of all surface normals set as subelements of volume elements to be ou..." alt="" coords="5,35,187,75"/>
+<area shape="poly" id="edge2_Node000001_Node000001" title=" " alt="" coords="51,35,49,25,56,16,72,10,96,8,122,10,137,17,135,22,120,16,96,13,73,15,59,20,54,26,56,33"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1Helper.html#adeb786cd3ca841d38d9b6f6bddd09be8" title="Compute surface normal of corresponding surface." alt="" coords="235,5,435,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="187,41,219,37,220,43,188,46"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1Mesh.html#a36b35249b1e160e4f90b7b7e41c7672b" title="Communicator object." alt="" coords="257,70,412,96"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="188,63,242,69,241,75,187,68"/>
+</map>

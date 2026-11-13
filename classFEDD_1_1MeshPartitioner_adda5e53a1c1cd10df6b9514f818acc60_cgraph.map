@@ -1,0 +1,15 @@
+<map id="FEDD::MeshPartitioner::buildEdgeList" name="FEDD::MeshPartitioner::buildEdgeList">
+<area shape="rect" id="Node000001" title="Building the edge list." alt="" coords="5,120,158,161"/>
+<area shape="rect" id="Node000002" href="$classFEDD_1_1MeshPartitioner.html#ace36675f375879942e0f4d56f46a85d0" title="Only relevant in 3D. Finding the edges corresponding to the specfic element and then setting as subsu..." alt="" coords="222,5,394,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="111,117,155,90,204,62,231,50,233,55,207,67,157,94,114,122"/>
+<area shape="rect" id="Node000003" href="$classFEDD_1_1MeshPartitioner.html#a89dff61b3bc7159bc8a668378d5c9c11" title="Searching on particular surface in a surface list." alt="" coords="458,63,610,103"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="154,117,205,106,329,90,443,83,443,88,330,96,206,111,155,122"/>
+<area shape="rect" id="Node000004" href="$classFEDD_1_1MeshPartitioner.html#a80456d18a8a598338fcac1e496191bb5" title="Finding the surfaces corresponding to a specfic element and then setting subelements." alt="" coords="206,120,410,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="158,138,190,138,190,143,158,143"/>
+<area shape="rect" id="Node000005" href="$classFEDD_1_1MeshPartitioner.html#af5aa5776e2903999d5172ac6d8c7d928" title="Setting surfaces, i.e. edges in 2D and triangles in 3D, as subelements to the corresponding elements." alt="" coords="232,185,384,226"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="155,159,221,178,220,183,153,164"/>
+<area shape="rect" id="Node000006" href="$classFEDD_1_1MeshPartitioner.html#adc1950b876788ad88899de7c9188328a" title="Setting local IDs to the edges in 3D case with respect to the local numbering of elements." alt="" coords="211,251,404,291"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="106,159,151,198,207,235,220,242,218,247,204,240,147,202,102,163"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="391,44,444,57,442,63,390,49"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="390,117,442,103,444,109,391,122"/>
+</map>
