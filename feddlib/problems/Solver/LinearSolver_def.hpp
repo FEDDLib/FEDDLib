@@ -177,9 +177,11 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
     Teuchos::RCP<Thyra::LinearOpWithSolveFactoryBase<SC> > lowsFactory = problem->getLinearSolverBuilder()->createLinearSolveStrategy("");
 
 
-    problem->setupPreconditioner( "Monolithic" );
+    bool iterativeSolve = !pListThyraSolver->get("Linear Solver Type", "Belos").compare("Belos");
+    if (iterativeSolve)
+        problem->setupPreconditioner( "Monolithic" );
 
-    if (!pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive").compare("Multiplicative")) {
+    if (iterativeSolve && !pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").get("Level Combination","Additive").compare("Multiplicative")) {
         pListThyraSolver->sublist("Preconditioner Types").sublist("FROSch").set("Only apply coarse",true);
 
         Teuchos::RCP<const Thyra::LinearOpBase<SC> > thyra_linOp = problem->getPreconditioner()->getThyraPrec()->getUnspecifiedPrecOp();
@@ -196,7 +198,7 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
 
     ThyraLinOpConstPtr_Type thyraMatrix = timeProblem->getSystemCombined()->getThyraLinOp();
 
-    if ( !pListThyraSolver->get("Linear Solver Type","Belos").compare("Belos") ) {
+    if (iterativeSolve) {
         ThyraPrecPtr_Type thyraPrec = problem->getPreconditioner()->getThyraPrec();
         Thyra::initializePreconditionedOp<SC>(*lowsFactory, thyraMatrix, thyraPrec.getConst(), solver.ptr());
     }
@@ -209,7 +211,7 @@ int LinearSolver<SC,LO,GO,NO>::solveMonolithic(TimeProblem_Type* timeProblem, Bl
             std::cout << status << std::endl;
         problem->getSolution()->fromThyraMultiVector(thyraX);
 
-        if ( !pListThyraSolver->get("Linear Solver Type","Belos").compare("Belos") ){
+        if (iterativeSolve){
             its = status.extraParameters->get("Belos/Iteration Count",0);
             double achievedTol = status.extraParameters->get("Belos/Achieved Tolerance",-1.);
         }
