@@ -221,7 +221,7 @@ void MultiVector<SC,LO,GO,NO>::putScalar( const SC& alpha ){
 }
 
 template <class SC, class LO, class GO, class NO>
-void MultiVector<SC,LO,GO,NO>::scale( const SC& alpha ){
+void MultiVector<SC,LO,GO,NO>::scale( const SC& alpha ) const {
     multiVector_->scale( alpha );
 }
 

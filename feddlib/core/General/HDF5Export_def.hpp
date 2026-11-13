@@ -13,6 +13,14 @@ comm_()
 
     hdf5exporter_.reset( new HDF5_Type(mpiComm) ); // Building HDF5 Exporter
 
+    // The output file may lie in a (checkpoint) directory: create it first
+    std::string::size_type slash = outputFilename.rfind('/');
+    if (slash != std::string::npos) {
+        if (mpiComm->getRank() == 0)
+            mkdir(outputFilename.substr(0, slash).c_str(), 0777);
+        mpiComm->barrier();
+    }
+
     hdf5exporter_->create(outputFilename+".h5"); // Creating output file with the 'outoutFilename'
 
     outputFilename_ = outputFilename; 

@@ -577,6 +577,118 @@ void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
 }
 
 template <class SC, class LO, class GO, class NO>
+void FE<SC,LO,GO,NO>::assemblyLaplaceDiffusion(int dim,
+                                        std::string FEType,
+                                        int degree,
+                                        MatrixPtr_Type &A,
+										vec2D_dbl_Type diffusionTensor,
+                                        ParameterListPtr_Type params,
+                                        bool callFillComplete,
+                                        int FELocExternal){
+    TEUCHOS_TEST_FOR_EXCEPTION(FEType == "P0",std::logic_error, "Not implemented for P0");
+    UN FEloc;
+    if (FELocExternal<0)
+        FEloc = this->checkFE(dim,FEType);
+    else
+        FEloc = FELocExternal;
+    
+    ElementsPtr_Type elements = this->domainVec_.at(FEloc)->getElementsC();
+
+    vec2D_dbl_ptr_Type pointsRep = this->domainVec_.at(FEloc)->getPointsRepeated();
+
+    MapConstPtr_Type map = this->domainVec_.at(FEloc)->getMapRepeated();
+
+    vec3D_dbl_ptr_Type 	dPhi;
+    vec_dbl_ptr_Type weights = Teuchos::rcp(new vec_dbl_Type(0));
+
+    // inner( grad(u) , grad(v) ) has twice the polyonimial degree than grad(u) or grad(v).
+    // The diffusion tensor is constant and, thus, does not require a higher-order quadrature rule.
+    UN deg = 2*Helper::determineDegree(dim,FEType,Helper::Deriv1);//+1;
+    Helper::getDPhi(dPhi, weights, dim, FEType, deg);
+    
+    SC detB;
+    SC absDetB;
+    SmallMatrix<SC> B(dim);
+    SmallMatrix<SC> Binv(dim);
+    GO glob_i, glob_j;
+    vec_dbl_Type v_i(dim);
+    vec_dbl_Type v_j(dim);
+
+
+ 	SmallMatrix<SC> diffusionT(dim);
+	// Linear Diffusion Tensor
+	if(diffusionTensor.size()==0 || diffusionTensor.size() < dim ){
+		vec2D_dbl_Type diffusionTensor(3,vec_dbl_Type(3,0));
+		for(int i=0; i< dim; i++){
+			diffusionTensor[i][i]=1.;
+		}
+	}
+
+	for(int i=0; i< dim; i++){
+		for(int j=0; j<dim; j++){
+			diffusionT[i][j]=diffusionTensor[i][j];
+		}
+	}
+
+    // Diffusion per material: D0 of the material with the element's volume flag scales the tensor
+    int numMaterials = params->sublist("Parameter Solid").get("Number of Materials", 0);
+    vec_int_Type materialFlag(numMaterials);
+    vec_dbl_Type materialD0(numMaterials);
+    for (int i=1; i<=numMaterials; i++) {
+        materialFlag[i-1] = params->sublist("Parameter Solid").sublist(std::to_string(i)).get("Volume Flag", 15);
+        materialD0[i-1] = params->sublist("Parameter Solid").sublist(std::to_string(i)).get("D0", 1.0);
+    }
+
+    for (UN T=0; T<elements->numberElements(); T++) {
+
+        Helper::buildTransformation(elements->getElement(T).getVectorNodeList(), pointsRep, B, FEType);
+        detB = B.computeInverse(Binv);
+        absDetB = std::fabs(detB);
+
+        vec3D_dbl_Type dPhiTrans( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
+        applyBTinv( dPhi, dPhiTrans, Binv );
+
+        if (numMaterials > 0) {
+            auto it = std::find(materialFlag.begin(), materialFlag.end(), elements->getElement(T).getFlag());
+            TEUCHOS_TEST_FOR_EXCEPTION(it == materialFlag.end(), std::runtime_error, "assemblyLaplaceDiffusion: no material with volume flag " << elements->getElement(T).getFlag());
+            double d0 = materialD0[std::distance(materialFlag.begin(), it)];
+            for (int i=0; i<dim; i++)
+                for (int j=0; j<dim; j++)
+                    diffusionT[i][j] = d0 * diffusionTensor[i][j];
+        }
+
+        vec3D_dbl_Type dPhiTransDiff( dPhi->size(), vec2D_dbl_Type( dPhi->at(0).size(), vec_dbl_Type(dim,0.) ) );
+        applyDiff( dPhiTrans, dPhiTransDiff, diffusionT );
+
+        for (UN i=0; i < dPhiTrans[0].size(); i++) {
+            Teuchos::Array<SC> value( dPhiTrans[0].size(), 0. );
+            Teuchos::Array<GO> indices( dPhiTrans[0].size(), 0 );
+
+            for (UN j=0; j < value.size(); j++) {
+                for (UN w=0; w<dPhiTrans.size(); w++) {
+                    for (UN d=0; d<dim; d++){
+                        value[j] += weights->at(w) * dPhiTrans[w][i][d] * dPhiTransDiff[w][j][d];
+                    }
+                }
+                value[j] *= absDetB;
+                indices[j] = map->getGlobalElement( elements->getElement(T).getNode(j) );
+                if (this->setZeros_ && std::fabs(value[j]) < this->myeps_) {
+                    value[j] = 0.;
+                }
+            }
+            GO row = map->getGlobalElement( elements->getElement(T).getNode(i) );
+
+            A->insertGlobalValues( row, indices(), value() );
+        }
+
+
+    }
+    if (callFillComplete)
+        A->fillComplete();
+
+}
+
+template <class SC, class LO, class GO, class NO>
 void FE<SC,LO,GO,NO>::applyDiff( vec3D_dbl_Type& dPhiIn,
                                     vec3D_dbl_Type& dPhiOut,
                                     SmallMatrix<SC>& diffT){
@@ -6592,7 +6704,11 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
                		
                
                 paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();
-                vec_dbl_Type p1 = {0.,0.,0.}; // Dummy vector
+                // The load function is evaluated at the midpoint of the surface (its corner nodes)
+                vec_dbl_Type p1(3, 0.);
+                for (int n = 0; n < 3; n++)
+                    for (int k = 0; k < 3; k++)
+                        p1[k] += nodes[n][k] / 3.;
                 func( &p1[0], &valueFunc[0], paramsFunc);
   
                 if(valueFunc[0] != 0.){
@@ -6603,6 +6719,8 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
                     AceGenInterface::PressureTriangle3D6 pt(valueFunc[0], 1., 35, &positions[0], &solution_d[0]);
                     pt.computeTangentResidual();
                     residuumVector = pt.getResiduum();
+                    #else
+                    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "assemblySurfaceIntegralExternal needs FEDDLib built with the AceGen interface (Interface2).");
                     #endif
                    
                     for(int i=0; i< nodeList.size() ; i++){
@@ -6616,7 +6734,8 @@ void FE<SC,LO,GO,NO>::assemblySurfaceIntegralExternal(int dim,
             }
         }
     }
-    //f->scale(-1.);
+    // The pressure acts against the surface normal (as in assemblyNonlinearSurfaceIntegralExternal)
+    f->scale(-1.);
 
 }
     
@@ -6675,7 +6794,11 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
                     }
                 }
 
-                vec_dbl_Type p1 = {0.,0.,0.}; // Dummy vector
+                // The load function is evaluated at the midpoint of the surface (its corner nodes)
+                vec_dbl_Type p1(3, 0.);
+                for (int n = 0; n < 3; n++)
+                    for (int k = 0; k < 3; k++)
+                        p1[k] += nodes[n][k] / 3.;
                 paramsFunc[ funcParameter.size() - 1 ] = feSub.getFlag();          
                 func( &p1[0], &valueFunc[0], paramsFunc);
   
@@ -6690,6 +6813,8 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
 
                     residuumVector = pt.getResiduum();
                     stiffMat = pt.getStiffnessMatrix();
+                    #else
+                    TEUCHOS_TEST_FOR_EXCEPTION(true, std::runtime_error, "assemblyNonlinearSurfaceIntegralExternal needs FEDDLib built with the AceGen interface (Interface2).");
                     #endif
 
                  
@@ -6744,7 +6869,9 @@ void FE<SC,LO,GO,NO>::assemblyNonlinearSurfaceIntegralExternal(int dim,
             }
         }
     }
-    //f->scale(-1.);
+    // The residual of the load enters the right-hand side, while its tangent Kext is added to the
+    // system (A + Kext): the right-hand side takes the negative residual
+    f->scale(-1.);
     Kext->fillComplete(this->domainVec_.at(FEloc)->getMapVecFieldUnique(),this->domainVec_.at(FEloc)->getMapVecFieldUnique());
 }
 

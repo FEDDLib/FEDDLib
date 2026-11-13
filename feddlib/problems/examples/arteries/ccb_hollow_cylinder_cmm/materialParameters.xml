@@ -1,0 +1,96 @@
+<ParameterList name="SCI">
+  <ParameterList name="Parameter Solid">
+    <Parameter name="Number of Materials" type="int" value="1" />
+    <ParameterList name="1">
+      <!-- The 71 domain-data values below are in the element's own
+           domain-data order. All active/growth/remodeling switches are
+           off (purely passive response). -->
+      <Parameter name="Volume Flag" type="int" value="15" />
+      <Parameter name="Material Model" type="string" value="SCI_SMC_CMM_Active_Growth_Reorientation" />
+      <Parameter name="Integration Code" type="int" value="18" />
+      <Parameter name="Subiteration Tolerance" type="double" value="1e-7" />
+      <Parameter name="fA" type="double" value="30" />
+      <Parameter name="kEtaPlus" type="double" value="0.6" />
+      <Parameter name="mEtaPlus" type="double" value="5" />
+      <Parameter name="Alpha1" type="double" value="11.52507" />
+      <Parameter name="Alpha2" type="double" value="151.73775" />
+      <Parameter name="Alpha3" type="double" value="2.75662" />
+      <Parameter name="Alpha4" type="double" value="1.27631" />
+      <Parameter name="Alpha5" type="double" value="3.08798" />
+      <Parameter name="GroundGrowthBool" type="double" value="0" />
+      <Parameter name="ReorientationBool" type="double" value="0" />
+      <Parameter name="CollRemodelingBool" type="double" value="0" />
+      <Parameter name="Density" type="double" value="1" />
+      <Parameter name="ElastinFrac" type="double" value="0.370370370" />
+      <Parameter name="CollagenFrac" type="double" value="0.370370370" />
+      <Parameter name="TElastin" type="double" value="1000" />
+      <Parameter name="TCollagen" type="double" value="1000" />
+      <Parameter name="KElastin" type="double" value="1" />
+      <Parameter name="KCollagen" type="double" value="1" />
+      <Parameter name="IHomo" type="double" value="50" />
+      <Parameter name="QMax" type="double" value="1" />
+      <Parameter name="QMin" type="double" value="0.2" />
+      <Parameter name="AlphaMech" type="double" value="1" />
+      <Parameter name="PCirc" type="double" value="1" />
+      <Parameter name="PAx" type="double" value="1" />
+      <Parameter name="PRad" type="double" value="1" />
+      <Parameter name="GNInit" type="double" value="1.008" />
+      <Parameter name="TC" type="double" value="1000" />
+      <Parameter name="LambdaC50" type="double" value="1.2" />
+      <Parameter name="Gamma3Max" type="double" value="0.9" />
+      <Parameter name="LambdaBarCDotMax" type="double" value="0.0443" />
+      <Parameter name="LambdaBarCDotMin" type="double" value="-0.0443" />
+      <Parameter name="Gamma2" type="double" value="50" />
+      <Parameter name="Gamma1Max" type="double" value="0.5131" />
+      <Parameter name="Eta" type="double" value="0.1624" />
+      <Parameter name="Ca50" type="double" value="0.4" />
+      <Parameter name="K3" type="double" value="0.134" />
+      <Parameter name="K4" type="double" value="0.00166" />
+      <Parameter name="K7" type="double" value="6.6e-05" />
+      <Parameter name="Kappa" type="double" value="148.262" />
+      <Parameter name="Beta1" type="double" value="0.001006" />
+      <Parameter name="MuA" type="double" value="11.857" />
+      <Parameter name="Beta2" type="double" value="26.68" />
+      <Parameter name="Gamma6" type="double" value="1.5" />
+      <Parameter name="LambdaP50" type="double" value="1" />
+      <Parameter name="KDotMin" type="double" value="-0.0010694" />
+      <Parameter name="Zeta1" type="double" value="100" />
+      <Parameter name="KDotMax" type="double" value="0.0009735" />
+      <Parameter name="Gamma4" type="double" value="200" />
+      <Parameter name="LambdaBarDotPMin" type="double" value="-0.0002323" />
+      <Parameter name="LambdaBarDotPMax" type="double" value="6.99e-05" />
+      <Parameter name="Gamma5" type="double" value="50" />
+      <Parameter name="Zeta2" type="double" value="1000" />
+      <Parameter name="DeltaLambdaBarPMin" type="double" value="-1e-05" />
+      <Parameter name="Gamma1Min" type="double" value="0.0779791039" />
+      <Parameter name="Gamma3Min" type="double" value="0.136778783" />
+      <Parameter name="C50" type="double" value="0.6673453236" />
+      <Parameter name="D0" type="double" value="6e-05" />
+      <Parameter name="M" type="double" value="0" />
+      <Parameter name="ActiveStartTime" type="double" value="1000" />
+      <Parameter name="KMin" type="double" value="0.15" />
+      <Parameter name="ActiveBool" type="double" value="0" />
+      <Parameter name="kFiberDistribution" type="double" value="0.1333333333" />
+      <Parameter name="P" type="double" value="2.958083521" />
+      <Parameter name="TSMC" type="double" value="1000" />
+      <Parameter name="SMCFrac" type="double" value="0.259259259" />
+      <Parameter name="NCOpt" type="double" value="0.6" />
+      <Parameter name="AlphaBio" type="double" value="1" />
+      <Parameter name="KSMC" type="double" value="1" />
+      <Parameter name="SMCGrowthBool" type="double" value="0" />
+      <Parameter name="PostProcessingType" type="double" value="1" />
+      <Parameter name="PostProcessingPower" type="double" value="1" />
+      <!-- No time intervals: the switches above stay as given for the whole
+           run. -->
+      <ParameterList name="Timestepping Intervalls Active">
+        <Parameter name="Number of Segments" type="int" value="0" />
+      </ParameterList>
+      <ParameterList name="Timestepping Intervalls Growth">
+        <Parameter name="Number of Segments" type="int" value="0" />
+      </ParameterList>
+      <ParameterList name="Timestepping Intervalls Reorientation">
+        <Parameter name="Number of Segments" type="int" value="0" />
+      </ParameterList>
+    </ParameterList>
+  </ParameterList>
+</ParameterList>

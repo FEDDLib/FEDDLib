@@ -40,8 +40,12 @@ public:
     typedef typename Problem_Type::Matrix_Type Matrix_Type;    
     typedef typename Problem_Type::MatrixPtr_Type MatrixPtr_Type;    
     typedef typename Problem_Type::BlockMatrixPtr_Type BlockMatrixPtr_Type;
+    typedef typename Problem_Type::MultiVectorPtr_Type MultiVectorPtr_Type;
+    typedef typename Problem_Type::MultiVector_Type MultiVector_Type;
+
     typedef BlockMultiVector<SC,LO,GO,NO> BlockMultiVector_Type;
     typedef Teuchos::RCP<BlockMultiVector_Type> BlockMultiVectorPtr_Type;
+
 
 //    typedef typename Problem_Type::Preconditioner_Type Preconditioner_Type;
 //    typedef typename Problem_Type::PreconditionerPtr_Type PreconditionerPtr_Type;

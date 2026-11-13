@@ -7,6 +7,8 @@
 // Trilinos
 #include <Teuchos_Array.hpp>
 #include "HDF5Toolbox_decl.hpp"
+#include "feddlib/core/General/CheckpointFiles.hpp"
+#include <sys/stat.h>
 
 #include <hdf5.h>
 

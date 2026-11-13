@@ -1361,7 +1361,8 @@ double ErrorEstimation<SC,LO,GO,NO>::determineResElement(FiniteElement element, 
 	detB1 = B1.computeInverse(Binv1);
 	detB1 = std::fabs(detB1);
 
-	vec_dbl_Type valueFunc(dofs_);
+	// Source functions may set three components regardless of the dimension (e.g. rhs0 of the steadyNavierStokesAdaptive test)
+	vec_dbl_Type valueFunc(std::max(dofs_, 3));
 
 	vec2D_dbl_Type quadPointsTrans(QuadW.size(),vec_dbl_Type(dim));
 

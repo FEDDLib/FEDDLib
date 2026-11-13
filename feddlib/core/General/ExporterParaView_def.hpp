@@ -207,6 +207,16 @@ void ExporterParaView<SC,LO,GO,NO>::setup(std::string filename,
 }
 
 template<class SC,class LO,class GO,class NO>
+void ExporterParaView<SC,LO,GO,NO>::updateVariables(MultiVecConstPtr_Type &u, std::string varName){
+
+    for (int i=0; i<this->variables_.size(); i++) {
+        if(this->varNames_[i] == varName)
+            this->variables_[i] = u;
+    }
+
+}
+
+template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::addVariable(MultiVecConstPtr_Type &u,
                                                   std::string varName,
                                                   std::string varType,
@@ -304,30 +314,19 @@ void ExporterParaView<SC,LO,GO,NO>::initHDF5(){
 }
 
 template<class SC,class LO,class GO,class NO>
-void ExporterParaView<SC,LO,GO,NO>::writeMeshPointsHDF5(){
-    if (!parameterList_.is_null()){
-        if ( parameterList_->sublist("Exporter").get("Write new mesh",false) ) {
-            updatePoints();
-            std::string nameP_X = "PointsX" + std::to_string(timeIndex_);
-            std::string nameP_Y = "PointsY" + std::to_string(timeIndex_);
-            std::string nameP_Z = "PointsZ" + std::to_string(timeIndex_);
+std::string ExporterParaView<SC,LO,GO,NO>::pointsSuffix() const{
+    // A moving mesh writes its points for every export, under the export's time index
+    if (!parameterList_.is_null() && parameterList_->sublist("Exporter").get("Write new mesh",false))
+        return std::to_string(timeIndex_);
+    return "";
+}
 
-            writeMeshPoints(nameP_X, nameP_Y, nameP_Z );
-        }
-    
-        else{
-            std::string nameP_X = "PointsX";
-            std::string nameP_Y = "PointsY";
-            std::string nameP_Z = "PointsZ";
-            writeMeshPoints( nameP_X, nameP_Y, nameP_Z );
-        }
-    }
-    else{
-        std::string nameP_X = "PointsX";
-        std::string nameP_Y = "PointsY";
-        std::string nameP_Z = "PointsZ";
-        writeMeshPoints( nameP_X, nameP_Y, nameP_Z );
-    }
+template<class SC,class LO,class GO,class NO>
+void ExporterParaView<SC,LO,GO,NO>::writeMeshPointsHDF5(){
+    std::string suffix = pointsSuffix();
+    if (suffix != "")
+        updatePoints();
+    writeMeshPoints("PointsX" + suffix, "PointsY" + suffix, "PointsZ" + suffix, "Points" + suffix);
 }
 
 template<class SC,class LO,class GO,class NO>
@@ -341,9 +340,13 @@ void ExporterParaView<SC,LO,GO,NO>::writeMeshElements( std::string nameConn ){
 template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::writeMeshPoints(std::string nameP_X,
                                                     std::string nameP_Y,
-                                                    std::string nameP_Z){
+                                                    std::string nameP_Z,
+                                                    std::string namePoints){
 
-
+    // The points as one (number of points) x dim array: the geometry the xmf refers to (XDMF 3 readers
+    // cannot assemble it from the components). The components are kept for postprocessing scripts.
+    hdf5exporter_->createGroup(namePoints);
+    hdf5exporter_->write(namePoints,pointsHDF_,true);
 
     hdf5exporter_->createGroup(nameP_X);
     hdf5exporter_->createGroup(nameP_Y);
@@ -373,6 +376,15 @@ void ExporterParaView<SC,LO,GO,NO>::updatePoints(){
 }
 
 template<class SC,class LO,class GO,class NO>
+std::string ExporterParaView<SC,LO,GO,NO>::dataSetName(int i) const{
+    // XDMF 3 readers split a DataItem's content at '|', so variable names like "|u-u_h|" get a dataset name without
+    // it; the attribute keeps the variable name
+    std::string name = varNames_.at(i) + postfix_;
+    std::replace(name.begin(), name.end(), '|', '_');
+    return name;
+}
+
+template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::writeVariablesHDF5(){
 
     for (int i=0; i<variables_.size(); i++) {
@@ -380,20 +392,20 @@ void ExporterParaView<SC,LO,GO,NO>::writeVariablesHDF5(){
         if (varTypes_.at(i)=="Vector") {
             MultiVectorPtr_Type u_export(new MultiVector_Type(uniqueMaps_.at(i),3)); // ParaView always uses 3D Data. for 2D Data the last entries (for the 3rd Dim) are all zero.
 
-            hdf5exporter_->createGroup(varNames_[i]+postfix_);
+            hdf5exporter_->createGroup(dataSetName(i));
 
             prepareVectorField(variables_.at(i),u_export, varDofPerNode_.at(i));
 
-            hdf5exporter_->write(varNames_[i]+postfix_,u_export,true);
+            hdf5exporter_->write(dataSetName(i),u_export,true);
         }
         else if(varTypes_.at(i)=="Scalar"){
             MultiVectorPtr_Type u_export(new MultiVector_Type(uniqueMaps_.at(i),1)); // ParaView always uses 3D Data. for 2D Data the last entries (for the 3rd Dim) are all zero.
 
-            hdf5exporter_->createGroup(varNames_[i]+postfix_);
+            hdf5exporter_->createGroup(dataSetName(i));
 
             prepareScalar(variables_.at(i),u_export); //conversion to int
 
-            hdf5exporter_->write(varNames_[i]+postfix_,u_export);
+            hdf5exporter_->write(dataSetName(i),u_export);
         }
         hdf5exporter_->flush();
     }
@@ -407,17 +419,10 @@ void ExporterParaView<SC,LO,GO,NO>::initXmf(){
 
         xmf_out_.open((filename_ + ".xmf").c_str(),std::ios_base::out);
         xmf_out_ 	<< "<?xml version=\"1.0\" ?>\n"
-                    << "<!DOCTYPE Xdmf SYSTEM \""
-                    << filename_
-                    << ".xdmf\" [\n"
-                    << "<!ENTITY DataFile \""
-                    << filename_
-                    << ".h5\">\n"
-                    << "]>\n"
                     << "<!-- "
                     << filename_
                     << ".h5  -->\n"
-                    << "<Xdmf>\n"
+                    << "<Xdmf Version=\"3.0\">\n"
                     << "  <Domain Name=\""
                     << filename_
                     << "\">\n"
@@ -441,10 +446,7 @@ void ExporterParaView<SC,LO,GO,NO>::initXmfTimes(){
 
         xmf_times_out_.open((filename_ + "_times.xmf").c_str(),std::ios_base::out);
         xmf_times_out_ 	<< "<?xml version=\"1.0\" ?>\n"
-        << "<!DOCTYPE Xdmf SYSTEM \""
-        << filename_
-        << ".xdmf\" []>\n"
-        << "<Xdmf>\n"
+        << "<Xdmf Version=\"3.0\">\n"
         << "  <Domain Name=\""
         << filename_
         << "\">\n"
@@ -463,31 +465,11 @@ void ExporterParaView<SC,LO,GO,NO>::initXmfTimes(){
 template<class SC,class LO,class GO,class NO>
 void ExporterParaView<SC,LO,GO,NO>::writeXmf(double time){
 
-    std::string nameP_X;
-    std::string nameP_Y;
-    std::string nameP_Z;
     std::string nameConn = "Connections";
 	if(redo_ == true)
     	nameConn = "Connections" + std::to_string(timeIndex_);
-    if (!parameterList_.is_null()){
-        if ( parameterList_->sublist("Exporter").get("Write new mesh",false) ) {
-            nameP_X = "PointsX" + std::to_string(timeIndex_);
-            nameP_Y = "PointsY" + std::to_string(timeIndex_);
-            nameP_Z = "PointsZ" + std::to_string(timeIndex_);
-        }
-        else{
-            nameP_X = "PointsX";
-            nameP_Y = "PointsY";
-            nameP_Z = "PointsZ";
-        }
-    }
-    else {
-        nameP_X = "PointsX";
-        nameP_Y = "PointsY";
-        nameP_Z = "PointsZ";
-    }
     writeXmfElements( nameConn, time);
-    writeXmfPoints( nameP_X, nameP_Y, nameP_Z );
+    writeXmfPoints( "Points" + pointsSuffix() );
     writeXmfVariables();
 
 }
@@ -500,9 +482,10 @@ void ExporterParaView<SC,LO,GO,NO>::writeXmfElements( std::string nameConn, doub
 
         xmf_out_ <<
         "<!-- Time " << time << " Iteration " << postfix_.substr (1, 5) << " -->\n" <<
-        "    <Grid Name=\"Mesh" << FEType_ << " " << time << "\">\n" <<
+        "    <Grid Name=\"Mesh" << FEType_ << " " << time << "\" GridType=\"Uniform\">\n" <<
         "      <Time TimeType=\"Single\" Value=\"" << time << "\" />\n";
 
+        // XDMF 3 element names
         //        writeTopology (M_xdmf);
         std::string FEstring;
         if (FEType_=="P0") {
@@ -532,16 +515,16 @@ void ExporterParaView<SC,LO,GO,NO>::writeXmfElements( std::string nameConn, doub
 
         else if (FEType_=="P2"){
             if (dim_ == 2) {
-                FEstring = "Tri_6";
+                FEstring = "Triangle_6";
             }
             else if(dim_ == 3){
-                FEstring = "Tet_10";
+                FEstring = "Tetrahedron_10";
             }
         }
         else if (FEType_=="P2-CR"){
             //there is no 2D version
             if(dim_ == 3){
-                FEstring = "Tet_10";
+                FEstring = "Tetrahedron_10";
             }
         }
         else if (FEType_=="Q1"){
@@ -553,90 +536,40 @@ void ExporterParaView<SC,LO,GO,NO>::writeXmfElements( std::string nameConn, doub
         else if (FEType_=="Q2"){
             //there is no 2D version
             if(dim_ == 3){
-                FEstring = "Hex_20";
+                FEstring = "Hexahedron_20";
             }
         }
         else if (FEType_=="Q2-20"){
             //there is no 2D version
             if(dim_ == 3){
-                FEstring = "Hex_20";
+                FEstring = "Hexahedron_20";
             }
         }
 
-        xmf_out_	  << "      <Topology\n"
-        << "         Type=\""
-        << FEstring
-        << "\"\n"
-        << "         NumberOfElements=\""
-        << nmbElementsGlob_
-        << "\"\n"
-        << "         BaseOffset=\""
-        << 0
-        << "\">\n"
-        << "         <DataStructure Format=\"HDF\"\n"
-        << "                        Dimensions=\""
-        << nmbElementsGlob_//this->M_mesh->numGlobalElements()
-        << " "
-        << nmbPointsPerElement_//this->M_mesh->numLocalVertices()
-        << "\"\n" << "                        DataType=\"Int\"\n"
-        << "                        Precision=\"8\">\n" <<  "             "
-        << outputFilename_ << ":/"<< nameConn <<"/Values\n"
-        << "         </DataStructure>\n" << "      </Topology>\n";
+        // The connections are a 1 x (elements * points per element) HDF5 array, declared one-dimensional: XDMF 3
+        // readers warn about "elements x points per element" (not the stored shape), the legacy XDMF reader
+        // crashes on "1 x ..." (one element with all the points)
+        xmf_out_ <<
+        "      <Topology TopologyType=\"" << FEstring << "\" NumberOfElements=\"" << nmbElementsGlob_ << "\">\n" <<
+        "        <DataItem Format=\"HDF\" Dimensions=\"" << nmbElementsGlob_ * nmbPointsPerElement_ <<
+        "\" NumberType=\"Int\" Precision=\"8\">" << outputFilename_ << ":/" << nameConn << "/Values</DataItem>\n" <<
+        "      </Topology>\n";
 
         closingLinesPosition_ = xmf_out_.tellp();
 
     }
 }
 template<class SC,class LO,class GO,class NO>
-void ExporterParaView<SC,LO,GO,NO>::writeXmfPoints(std::string nameP_X,
-                                                   std::string nameP_Y,
-                                                   std::string nameP_Z ){
+void ExporterParaView<SC,LO,GO,NO>::writeXmfPoints(std::string namePoints){
 
     if (verbose_) {
         xmf_out_.seekp (closingLinesPosition_);
-        //        writeGeometry (M_xdmf);
-        if (dim_ == 2) {
-            xmf_out_ <<
-            "      <Geometry Type=\"X_Y\">\n" <<
-            "         <DataStructure Format=\"HDF\"\n" <<
-            "                        Dimensions=\"" << nmbPointsGlob_ << "\"\n" <<
-            "                        DataType=\"Float\"\n" <<
-            "                        Precision=\"8\">\n" <<
-            "             " << outputFilename_ << ":/" << nameP_X << "/Values\n" <<
-            "         </DataStructure>\n" <<
-            "         <DataStructure Format=\"HDF\"\n" <<
-            "                        Dimensions=\"" << nmbPointsGlob_ << "\"\n" <<
-            "                        DataType=\"Float\"\n" <<
-            "                        Precision=\"8\">\n" <<
-            "             " << outputFilename_ << ":/" << nameP_Y << "/Values\n" <<
-            "         </DataStructure>\n" <<
-            "      </Geometry>\n" <<
-            "\n";
-        }
-        else if(dim_ ==3){
-            xmf_out_ <<
-            "      <Geometry Type=\"X_Y_Z\">\n" <<
-            "         <DataStructure Format=\"HDF\"\n" <<
-            "                        Dimensions=\"" << nmbPointsGlob_ << "\"\n" <<
-            "                        DataType=\"Float\"\n" <<
-            "                        Precision=\"8\">\n" <<
-            "             " << outputFilename_ << ":/" << nameP_X << "/Values\n" <<
-            "         </DataStructure>\n" <<
-            "         <DataStructure Format=\"HDF\"\n" <<
-            "                        Dimensions=\"" << nmbPointsGlob_ << "\"\n" <<
-            "                        DataType=\"Float\"\n" <<
-            "                        Precision=\"8\">\n" <<
-            "             " << outputFilename_ << ":/" << nameP_Y << "/Values\n" <<
-            "         </DataStructure>\n" <<
-            "         <DataStructure Format=\"HDF\"\n" <<
-            "                        Dimensions=\"" << nmbPointsGlob_ << "\"\n" <<
-            "                        DataType=\"Float\"\n" <<
-            "                        Precision=\"8\">\n" <<
-            "             " << outputFilename_ << ":/" << nameP_Z << "/Values\n" <<
-            "         </DataStructure>\n" <<
-            "      </Geometry>\n" <<
-            "\n";
-        }
+        // One (number of points) x dim array, see writeMeshPoints
+        xmf_out_ <<
+        "      <Geometry GeometryType=\"" << (dim_ == 2 ? "XY" : "XYZ") << "\">\n" <<
+        "        <DataItem Format=\"HDF\" Dimensions=\"" << nmbPointsGlob_ << " " << dim_ <<
+        "\" NumberType=\"Float\" Precision=\"8\">" << outputFilename_ << ":/" << namePoints << "/Values</DataItem>\n" <<
+        "      </Geometry>\n";
         closingLinesPosition_ = xmf_out_.tellp();
 
     }
@@ -668,44 +601,24 @@ void ExporterParaView<SC,LO,GO,NO>::writeXmfVariables(){
         xmf_out_.seekp (closingLinesPosition_);
 
         for (int i=0; i<varNames_.size(); i++) {
-            int dof = varDofPerNode_.at(i);
-            if (dof == 2) {
-                dof=3; // ParaView always uses 3D Data. for 2D Data the last entries (for the 3rd Dim) are all zero.
-            }
+            // As written by writeVariablesHDF5: a vector is a (number of values) x 3 array (ParaView always uses
+            // 3D data, for 2D data the 3rd components are zero), a scalar a 1 x (number of values) array, declared
+            // one-dimensional like the connections ("values x 1" makes XDMF 3 readers return zeros)
+            std::ostringstream dimensions;
+            if (varTypes_.at(i) == "Vector")
+                dimensions << nmbExportValuesGlob_ << " 3";
+            else
+                dimensions << nmbExportValuesGlob_;
             xmf_out_ <<
-            "\n      <Attribute\n" <<
-            "         Type=\"" << varTypes_.at(i) << "\"\n" <<
-            "         Center=\"" << centerString << "\"\n" <<
-            "         Name=\"" << varNames_.at(i) << "\">\n";
-
-
-            xmf_out_ <<
-            "         <DataStructure ItemType=\"HyperSlab\"\n" <<
-            "                        Dimensions=\"" << nmbExportValuesGlob_ << " " << dof << "\"\n" <<
-            "                        Type=\"HyperSlab\">\n" <<
-            "           <DataStructure  Dimensions=\"3 2\"\n" <<
-            "                           Format=\"XML\">\n" <<
-            "               0    0\n" <<
-            "               1    1\n" <<
-            "               " << nmbExportValuesGlob_ << " " << dof << "\n" <<
-            "           </DataStructure>\n" <<
-
-            "           <DataStructure  Format=\"HDF\"\n" <<
-            "                           Dimensions=\"" << nmbExportValuesGlob_ << " " << dof << "\"\n" <<
-            "                           DataType=\"Float\"\n" <<
-            "                           Precision=\"8\">\n" <<
-            "               " << outputFilename_ << ":/" << varNames_.at(i)
-            << postfix_  << "/Values\n" << // see also in writeVector/scalar
-            "           </DataStructure>\n" <<
-            "         </DataStructure>\n";
-
-
-            xmf_out_ <<
+            "      <Attribute Name=\"" << varNames_.at(i) << "\" AttributeType=\"" << varTypes_.at(i) <<
+            "\" Center=\"" << centerString << "\">\n" <<
+            "        <DataItem Format=\"HDF\" Dimensions=\"" << dimensions.str() << "\" NumberType=\"Float\" Precision=\"8\">" <<
+            outputFilename_ << ":/" << dataSetName(i) << "/Values</DataItem>\n" << // see also in writeVector/scalar
             "      </Attribute>\n";
 
             }
 
-        xmf_out_ << "\n"
+        xmf_out_ <<
         "    </Grid>\n\n";
         closingLinesPosition_ = xmf_out_.tellp();
         // write closing lines
@@ -720,62 +633,20 @@ void ExporterParaView<SC,LO,GO,NO>::writeXmfTime(double time, double dt){
 
         xmf_times_out_.seekp (closingLinesPositionTimes_);
 
+        // Two points (0,0) and (1,1) carrying the values time and dt
         xmf_times_out_ <<
         "<!-- Time " << time << " Iteration " << postfix_.substr (1, 5) << " -->\n" <<
-        "    <Grid Name=\"Mesh Times " << time << "\">\n" <<
-        "      <Time TimeType=\"Single\" Value=\"" << time << "\" />\n";
-        xmf_times_out_	  <<
-        "      <Topology\n"
-        << "         Type=\"Polyvertex\"\n"
-        << "         NumberOfElements=\""
-        << 2
-        << "\"\n"
-        << "         BaseOffset=\""
-        << 0
-        << "\">\n"
-        << "         <DataStructure Format=\"XML\"\n"
-        << "                        Dimensions=\"2\"\n"
-        << "                        DataType=\"Int\"\n"
-        << "                        Precision=\"8\">\n"
-        << "                    0 1 \n"
-        << "         </DataStructure>\n" << "      </Topology>\n";
-
-
-        xmf_times_out_ <<
-        "      <Geometry Type=\"X_Y\">\n" <<
-        "         <DataStructure Format=\"XML\"\n" <<
-        "                        Dimensions=\"" << 2 << "\"\n" <<
-        "                        DataType=\"Float\"\n" <<
-        "                        Precision=\"8\">\n" <<
-        "             " << "0.0 1.0 \n" <<
-        "         </DataStructure>\n" <<
-        "         <DataStructure Format=\"XML\"\n" <<
-        "                        Dimensions=\"" << 2 << "\"\n" <<
-        "                        DataType=\"Float\"\n" <<
-        "                        Precision=\"8\">\n" <<
-        "             " << "0.0 1.0 \n" <<
-        "         </DataStructure>\n" <<        "      </Geometry>\n" <<
-        "\n";
-
-        xmf_times_out_ <<
-        "\n      <Attribute\n" <<
-        "         Type=\"" << "Scalar" << "\"\n" <<
-        "         Center=\"" << "Node" << "\"\n" <<
-        "         Name=\"" << "t_dt" << "\">\n";
-
-
-        xmf_times_out_ <<
-        "        <DataStructure  Format=\"XML\"\n" <<
-        "                        Dimensions=\"" << 2 << "\"\n" <<
-        "                        DataType=\"Float\"\n" <<
-        "                        Precision=\"8\">\n" <<
-        "           " << time << " " << dt << "\n" <<
-        "        </DataStructure>\n";
-
-        xmf_times_out_ <<
-        "      </Attribute>\n";
-
-        xmf_times_out_ << "\n"
+        "    <Grid Name=\"Mesh Times " << time << "\" GridType=\"Uniform\">\n" <<
+        "      <Time TimeType=\"Single\" Value=\"" << time << "\" />\n" <<
+        "      <Topology TopologyType=\"Polyvertex\" NumberOfElements=\"2\" NodesPerElement=\"1\">\n" <<
+        "        <DataItem Format=\"XML\" Dimensions=\"2\" NumberType=\"Int\" Precision=\"8\">0 1</DataItem>\n" <<
+        "      </Topology>\n" <<
+        "      <Geometry GeometryType=\"XY\">\n" <<
+        "        <DataItem Format=\"XML\" Dimensions=\"2 2\" NumberType=\"Float\" Precision=\"8\">0.0 0.0 1.0 1.0</DataItem>\n" <<
+        "      </Geometry>\n" <<
+        "      <Attribute Name=\"t_dt\" AttributeType=\"Scalar\" Center=\"Node\">\n" <<
+        "        <DataItem Format=\"XML\" Dimensions=\"2\" NumberType=\"Float\" Precision=\"8\">" << time << " " << dt << "</DataItem>\n" <<
+        "      </Attribute>\n" <<
         "    </Grid>\n\n";
         closingLinesPositionTimes_ = xmf_times_out_.tellp();
         // write closing lines

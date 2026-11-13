@@ -5,3 +5,5 @@
 #cmakedefine FEDD_HAVE_ZOLTAN2
 
 #cmakedefine FEDD_HAVE_ACEGENINTERFACE
+
+#cmakedefine FEDD_HAVE_ACEGEN_ERRORLOG_STEP

@@ -78,9 +78,11 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
 #endif
 
 
-  // Select hyperslab in the file.
-  hsize_t offset[] = {static_cast<hsize_t>(linearX->getMap()->getGlobalElement(0)-X->getMap()->getIndexBase()),
-                      static_cast<hsize_t>(linearX->getMap()->getGlobalElement(0)-X->getMap()->getIndexBase())};
+  // Select hyperslab in the file. A rank without entries (e.g. a mesh with fewer subdomains than ranks)
+  // has no first global element; it still takes part in the collective write, with an empty selection
+  const bool hasLocalEntries = linearX->getLocalLength() > 0;
+  const hsize_t firstIndex = hasLocalEntries ? static_cast<hsize_t>(linearX->getMap()->getGlobalElement(0)-X->getMap()->getIndexBase()) : 0;
+  hsize_t offset[] = {firstIndex, firstIndex};
   hsize_t stride[] = {1, 1};
   hsize_t count[] = {static_cast<hsize_t>(linearX->getLocalLength()),
                      static_cast<hsize_t>(linearX->getLocalLength())};
@@ -104,8 +106,9 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
     // Get the dataset's file dataspace and select the correct hyperslab
     filespace_id = H5Dget_space(dset_id);
 
-    herr_t selStatus = H5Sselect_hyperslab(
-        filespace_id, H5S_SELECT_SET, offset, stride, count, block);
+    herr_t selStatus = hasLocalEntries
+        ? H5Sselect_hyperslab(filespace_id, H5S_SELECT_SET, offset, stride, count, block)
+        : H5Sselect_none(filespace_id);
 
     if (selStatus < 0) {
       std::cerr << "[Rank " << comm_->getRank()
@@ -115,8 +118,10 @@ void HDF5Toolbox<SC, LO, GO, NO>::write(const std::string& GroupName, const Mult
     }
 
     // Each process defines dataset in memory (its local buffer)
-    hsize_t dimsm[] = { static_cast<hsize_t>(linearX->getLocalLength()) };
+    hsize_t dimsm[] = { std::max<hsize_t>(linearX->getLocalLength(), 1) };
     memspace_id = H5Screate_simple(1, dimsm, NULL);
+    if (!hasLocalEntries)
+      H5Sselect_none(memspace_id);
 
     if (memspace_id < 0) {
       std::cerr << "[Rank " << comm_->getRank()
@@ -254,7 +259,10 @@ if (filespace_id < 0) {
 hsize_t offset[2] = { 0, Offset_t };   // row index, element offset
 hsize_t count [2] = { 1, MySize_t };  // one vector, 29 elements
 
-herr_t selStatus = H5Sselect_hyperslab(filespace_id, H5S_SELECT_SET, offset, NULL, count, NULL);
+// A rank without entries selects nothing
+herr_t selStatus = MySize_t > 0
+    ? H5Sselect_hyperslab(filespace_id, H5S_SELECT_SET, offset, NULL, count, NULL)
+    : H5Sselect_none(filespace_id);
 
 if (selStatus < 0) {
   std::cerr << "[Rank " << comm_->getRank()
@@ -267,7 +275,10 @@ if (selStatus < 0) {
 }
 
 // Create memory dataspace for local buffer
-hid_t mem_dataspace = H5Screate_simple(1, &MySize_t, NULL);
+hsize_t memSize_t = std::max<hsize_t>(MySize_t, 1);
+hid_t mem_dataspace = H5Screate_simple(1, &memSize_t, NULL);
+if (MySize_t == 0)
+  H5Sselect_none(mem_dataspace);
 if (mem_dataspace < 0) {
   std::cerr << "[Rank " << comm_->getRank()
             << "] ERROR creating memory dataspace (size=" << MySize_t << ")\n";

@@ -188,10 +188,7 @@ LO Domain<SC,LO,GO,NO>::getApproxEntriesPerRow() const{
         if ( this->FEType_ == "P1" ) {
             return 100;
         }
-        else if ( this->FEType_ == "P2" ) {
-            return 200;
-        }
-        else {
+        else { // P2 (unstructured meshes can have vertices with 90+ tetrahedra, i.e. 240 P2 couplings) and the other types
             return 300;
         }
     }
@@ -262,6 +259,18 @@ void Domain<SC,LO,GO,NO>::buildMesh(int flagsOption , std::string meshType, int 
     meshStructured->buildSurfaces(flagsOption,FEType);
     
     mesh_ = meshStructured;
+}
+
+template <class SC, class LO, class GO, class NO>
+void Domain<SC, LO, GO, NO>::setDofs(int dofs)
+{
+    dofs_ = dofs;
+}
+
+template <class SC, class LO, class GO, class NO>
+int Domain<SC, LO, GO, NO>::getDofs() const
+{
+    return dofs_;
 }
 
 template <class SC, class LO, class GO, class NO>

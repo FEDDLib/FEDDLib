@@ -203,7 +203,7 @@ public:
     
     void putScalar( const SC& alpha );
 
-    void scale( const SC& alpha );
+    void scale( const SC& alpha ) const;
 
     void importFromVector( MultiVectorConstPtr_Type mvIn, bool reuseImport = false, std::string combineMode = "Insert", std::string type="Forward" );
     

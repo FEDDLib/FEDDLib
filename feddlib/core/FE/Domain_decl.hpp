@@ -461,6 +461,8 @@ public:
          @param[in] dimension
          @param[in] FEType
          @param[in] volumeID       
+         @param[in] meshUnit unit of the mesh being read (i.e. cm, mm ..)
+         @param[in] convertToCM convert the mesh to cm
     */
     void initializeUnstructuredMesh(int dimension, std::string feType, int volumeID=10,  std::string meshUnit = "cm", bool convertToCM = false);
 
@@ -508,6 +510,17 @@ public:
     MultiVectorPtr_Type getNodeListMV() const;
 
     /*!
+         \brief Set the number of degrees of freedom per node of this domain
+         @param[in] dofs degrees of freedom per node
+    */
+   void setDofs(int dofs);
+
+   /*!
+         \brief Degrees of freedom per node of this domain
+    */
+   int getDofs() const;
+
+    /*!
          \brief Exporting Mesh
          
     */
@@ -545,6 +558,7 @@ public:
    CommConstPtr_Type comm_; // underlying comm
    MeshPtr_Type mesh_;      // underlying mesh as base class mesh type. usually underlying mesh is either structured or unstructured
    int dim_;                // dimension
+   int dofs_ = 1;           // degrees of freedom per node
    vec_dbl_Type coorRec;
    double length;
    double height;

@@ -24,7 +24,8 @@ namespace FEDD
                                                                                  previousSolution_(),
                                                                                  residualVec_(),
                                                                                  nonLinearTolerance_(1.e-6),
-                                                                                 coeff_(0)
+                                                                                 coeff_(0),
+                                                                                 exporterResidual_(0)
     {
     }
 
@@ -33,12 +34,22 @@ namespace FEDD
                                                                                                                        previousSolution_(),
                                                                                                                        residualVec_(),
                                                                                                                        nonLinearTolerance_(1.e-6),
-                                                                                                                       coeff_(0)
+                                                                                                                       coeff_(0),
+                                                                                                                       exporterResidual_(0)
     {
+        
     }
     template <class SC, class LO, class GO, class NO>
     NonLinearProblem<SC, LO, GO, NO>::~NonLinearProblem()
     {
+        if(exporterResidual_.size()>0){
+            UN size= exporterResidual_.size();
+            for(int i=0; i< size; i++){ 
+                exporterResidual_[i]->closeExporter();
+            }
+
+        }
+        
     }
 
     template <class SC, class LO, class GO, class NO>
@@ -54,6 +65,74 @@ namespace FEDD
         this->initVectorSpaces();
 
         this->newtonStep_=0;
+    }
+
+    template <class SC, class LO, class GO, class NO>
+    void NonLinearProblem<SC, LO, GO, NO>::plotResidualVec(double time) const {
+        if(exporterResidual_.size()<1)
+            initExporterResidual();
+
+        UN size= exporterResidual_.size();
+        if(currentTimeExport_ < time  ){
+            currentTimeExport_ = time;
+            newtonStep_ =0;
+            timeStep_++;
+        }
+
+        for(int i=0; i< size; i++){ 
+
+            bool exportBlock =  true;
+            if(this->parameterList_->sublist("Parameter").get("FSI",false) == true ||this->parameterList_->sublist("Parameter").get("FSCI",false))
+                exportBlock = (i != 3);
+
+            if(exportBlock){
+                double exportTime = timeStep_ + (double) newtonStep_*0.01;
+                MultiVectorConstPtr_Type exportVector = this->residualVec_->getBlock(i);
+                std::string varName ="Component"+std::to_string(i);
+                exporterResidual_[i]->updateVariables(exportVector, varName);
+
+                exporterResidual_[i]->save(exportTime);
+            }
+        }
+        newtonStep_++;
+
+
+            
+    }
+    
+    template <class SC, class LO, class GO, class NO>
+    void NonLinearProblem<SC, LO, GO, NO>::initExporterResidual() const{
+        UN size = this->residualVec_->size();
+    
+        exporterResidual_.resize(size);
+
+        for (UN i = 0; i < size; i++)
+        {
+
+            bool exportBlock =  true;
+            if(this->parameterList_->sublist("Parameter").get("FSI",false) == true ||this->parameterList_->sublist("Parameter").get("FSCI",false))
+                exportBlock = (i != 3);
+
+            if(exportBlock){
+
+                ExporterPtr_Type exporter = Teuchos::rcp(new Exporter_Type());
+                
+                std::string suffix = this->parameterList_->sublist("Exporter").get("Geometry Suffix", "" );
+                std::string varName ="Component"+std::to_string(i);
+                
+                MeshPtr_Type meshNonConst = Teuchos::rcp_const_cast<Mesh_Type>( this->domainPtr_vec_.at(i)->getMesh() );
+                exporter->setup(varName, meshNonConst, this->domainPtr_vec_.at(i)->getFEType(), this->parameterList_);
+                
+                MultiVectorConstPtr_Type exportVector = this->residualVec_->getBlock(i);
+                
+                if(this->dofsPerNode_vec_[i] >1)
+                    exporter->addVariable( exportVector, varName, "Vector", this->dofsPerNode_vec_[i], this->domainPtr_vec_.at(i)->getMapUnique() );
+                else     
+                    exporter->addVariable( exportVector, varName, "Scalar", this->dofsPerNode_vec_[i], this->domainPtr_vec_.at(i)->getMapUnique() );
+
+                exporterResidual_[i] = exporter;
+            }
+        }
     }
 
     template <class SC, class LO, class GO, class NO>
@@ -140,6 +219,20 @@ namespace FEDD
     }
 
     template <class SC, class LO, class GO, class NO>
+    vec_dbl_Type NonLinearProblem<SC, LO, GO, NO>::calculateResidualNormVec() const
+    {
+        int sizeResidual = residualVec_->size();
+        vec_dbl_Type residualNormVec(sizeResidual);
+        for(int i=0; i<sizeResidual ; i++){
+            Teuchos::Array<SC> residual(1);
+            residualVec_->getBlock(i)->norm2(residual);
+            residualNormVec[i] = residual[0];
+            TEUCHOS_TEST_FOR_EXCEPTION(residual.size() != 1, std::logic_error, "We need to change the code for numVectors>1.");
+        }
+        return residualNormVec;
+    }
+
+    template <class SC, class LO, class GO, class NO>
     int NonLinearProblem<SC, LO, GO, NO>::solveUpdate()
     {
 
@@ -164,6 +257,7 @@ namespace FEDD
             criterionValue = updateNorm[0];
         }
         this->solution_->update(1., *previousSolution_, 1.);
+        this->solution_->print();
 
         return its;
     }
@@ -242,7 +336,7 @@ namespace FEDD
         std::string type = this->parameterList_->sublist("General").get("Preconditioner Method", "Monolithic");
         if (!type.compare("Monolithic"))
             initVectorSpacesMonolithic();
-        else if (!type.compare("Teko") || type == "FaCSI" || type == "FaCSI-Teko"  || type == "FaCSI-Block" || type == "Diagonal" || type == "Triangular" || type == "PCD"|| type == "LSC")
+        else if (!type.compare("Teko") || type == "FaCSI" || type == "FaCSI-Teko"  || type == "FaCSI-Block" || type == "Diagonal" || type == "Triangular" || type == "PCD"|| type == "LSC" || type == "FaCSCI")
             initVectorSpacesBlock();
         else
             TEUCHOS_TEST_FOR_EXCEPTION(true, std::logic_error, "Unkown preconditioner/solver type.");

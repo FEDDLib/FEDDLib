@@ -5,6 +5,7 @@
 #include "feddlib/core/FE/FE.hpp"
 #include "feddlib/core/General/ExporterParaView.hpp"
 #include "feddlib/core/LinearAlgebra/MultiVector.hpp"
+#include "feddlib/core/LinearAlgebra/BlockMatrix.hpp"
 #include <Teuchos_GlobalMPISession.hpp>
 #include "feddlib/core/Mesh/MeshPartitioner.hpp"
 #include "feddlib/core/Mesh/MeshUnstructured.hpp"
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]) {
     int m = 2;
     myCLP.setOption("m",&m,"H/h");
     
-    string filename = "square.mesh";
+    std::string filename = "square.mesh";
 
     myCLP.recogniseAllOptions(true);
     myCLP.throwExceptions(false);
@@ -156,7 +157,7 @@ int main(int argc, char *argv[]) {
 	reduceAll<int, double> (*comm, REDUCE_SUM, res, outArg (res));
 
 	if(comm->getRank() == 0)
-		cout << " Norm of Difference between StiffnessMatrices: " << res << endl;
+		std::cout << " Norm of Difference between StiffnessMatrices: " << res << std::endl;
 	
 
     return(EXIT_SUCCESS);
